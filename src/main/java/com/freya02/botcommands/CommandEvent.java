@@ -9,9 +9,15 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <p>Contains all the information about the triggered command</p>
+ * <p>Arguments are tokenized and resolved into entities if possible</p>
+ * <p>Also contains utility methods for fast error handling, default embeds specified in {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier) setDefaultEmbedFunction(...)}, and embed sender with the default icon stream</p>
+ */
 public class CommandEvent extends GuildMessageReceivedEvent {
 	private static final Pattern idPattern = Pattern.compile("(\\d+)");
 
@@ -21,7 +27,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 
 	private final List<String> argumentsStrList;
 
-	public CommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String arguments) {
+	CommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String arguments) {
 		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
 		this.commandListener = commandListener;
 		argumentsStr = arguments;
@@ -36,18 +42,39 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		}
 	}
 
+	/** Returns the {@linkplain CommandInfo} object of the specified command, the name can be an alias too
+	 * @param cmdName Name / alias of the command
+	 * @return The {@linkplain CommandInfo} object of the command
+	 */
 	public CommandInfo getCommandInfo(String cmdName) {
 		return commandListener.getCommandInfo(cmdName);
 	}
 
+	/** Returns the <b>resolved</b> arguments of the command event, these can be a {@linkplain User}, {@linkplain Role}, {@linkplain TextChannel} or a {@linkplain String}
+	 * @return List of arguments
+	 */
 	public List<Object> getArguments() {
 		return arguments;
 	}
 
+	/** Returns the <b>unresolved</b> arguments of the command event
+	 * @return List of String arguments
+	 */
 	public List<String> getArgumentsStrList() {
 		return argumentsStrList;
 	}
 
+	/** Returns the full argument part of the message
+	 * @return Argument part of the message
+	 */
+	public String getArgumentsStr() {
+		return argumentsStr;
+	}
+
+	/** Send an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
+	 * @param message Custom message of what part of the command failed
+	 * @param e The Exception that occured
+	 */
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> System.err.println("Could not send message to channel : " + message));
 
@@ -58,15 +85,23 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 			return;
 		}
 
-		owner.openPrivateChannel().queue(channel -> {
-			channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null , t -> System.err.println("Could not send message to owner : " + message));
-		}, t -> System.err.println("Could not send message to owner : " + message));
+		owner.openPrivateChannel().queue(
+				channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null , t -> System.err.println("Could not send message to owner : " + message)),
+				t -> System.err.println("Could not send message to owner : " + message));
 	}
 
+	/** Throwable consumer that, when triggered, sends an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
+	 * @param message Custom message of what part of the command failed
+	 */
 	public Consumer<? super Throwable> failureReporter(String message) {
 		return t -> reportError(message, t);
 	}
 
+	/** Checks if the next argument exists and is of type T, returns <code>true</code> if so
+	 * @param clazz Class of the requested type
+	 * @param <T> Type of the requested argument
+	 * @return <code>true</code> if the argument exists, <code>false</code> if not
+	 */
 	public <T> boolean hasNext(Class<T> clazz) {
 		if (arguments.isEmpty()) {
 			return false;
@@ -85,6 +120,11 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		return null;
 	}*/
 
+	/** Returns the next argument if it is of type T
+	 * @param clazz Class of the requested type
+	 * @param <T> Type of the requested argument
+	 * @return The argument of type T if it exists, or <code>null</code> it it isn't the right type or doesn't exists
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
 		if (arguments.isEmpty()) {
@@ -100,18 +140,39 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		}
 	}
 
+	/** Returns the default embed set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 * @return Default embed of the bot
+	 */
 	public EmbedBuilder getDefaultEmbed() {
 		return commandListener.getDefaultEmbedFunction().get();
 	}
 
+	/** Returns the default embed footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 * @return Default embed footer icon of the bot
+	 */
 	public InputStream getDefaultIconStream() {
 		return commandListener.getDefaultFooterIconSupplier().get();
 	}
 
+	/** Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel {@linkplain MessageChannel} to send the embed in
+	 * @param embed {@linkplain MessageEmbed} to send
+	 * @param onSuccess Consumer to call when the embed has been successfully sent
+	 * @param onException Consumer to call when an exception occurred
+	 */
 	public void sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Message> onSuccess, Consumer<? super Throwable> onException) {
 		sendWithEmbedFooterIcon(channel, getDefaultIconStream(), embed, onSuccess, onException);
 	}
 
+	/** Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel {@linkplain MessageChannel} to send the embed in
+	 * @param iconStream InputStream of the footer icon, the input stream is closed upon success / error
+	 * @param embed {@linkplain MessageEmbed} to send
+	 * @param onSuccess Consumer to call when the embed has been successfully sent
+	 * @param onException Consumer to call when an exception occurred
+	 */
 	public void sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Message> onSuccess, Consumer<? super Throwable> onException) {
 		final SimpleStream stream = SimpleStream.of(iconStream, onException);
 		channel.sendFile(stream, "icon.jpg").embed(embed).queue(x -> {
@@ -178,10 +239,6 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 
 		String substring = str.substring(endIndex);
 		processSubstring(mentions, substring);
-	}
-
-	public String getArgumentsStr() {
-		return argumentsStr;
 	}
 
 	private static class MentionCut {
