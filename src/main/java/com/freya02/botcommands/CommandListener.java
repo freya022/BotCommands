@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-public class CommandListener extends ListenerAdapter {
+public final class CommandListener extends ListenerAdapter {
 	private final String prefix;
 	private final Supplier<InputStream> defaultFooterIconSupplier;
 	private final Supplier<EmbedBuilder> defaultEmbedFunction;

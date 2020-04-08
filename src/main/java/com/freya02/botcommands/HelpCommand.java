@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 		description = "Gives help about a command",
 		category = "Utils"
 )
-public class HelpCommand extends Command {
+final class HelpCommand extends Command {
 	private static class CommandDescription {
 		private String name, description;
 
