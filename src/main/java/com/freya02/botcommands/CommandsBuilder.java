@@ -4,8 +4,6 @@ import com.freya02.botcommands.annotation.Hidden;
 import com.freya02.botcommands.annotation.JdaCommand;
 import com.freya02.botcommands.annotation.JdaSubcommand;
 import com.freya02.botcommands.annotation.RequireOwner;
-import com.freya02.io.IOUtils;
-import com.freya02.misc.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
