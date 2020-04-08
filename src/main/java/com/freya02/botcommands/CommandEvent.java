@@ -77,13 +77,13 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		return clazz.isAssignableFrom(o.getClass());
 	}
 
-	public <T> T nextIfExists(Class<T> clazz) {
+	/*public <T> T nextIfExists(Class<T> clazz) {
 		if (hasNext(clazz)) {
 			return nextArgument(clazz);
 		}
 
 		return null;
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
