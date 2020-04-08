@@ -73,7 +73,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 
 	/** Send an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
 	 * @param message Custom message of what part of the command failed
-	 * @param e The Exception that occured
+	 * @param e The Exception that occurred
 	 */
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> System.err.println("Could not send message to channel : " + message));
@@ -92,6 +92,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 
 	/** Throwable consumer that, when triggered, sends an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
 	 * @param message Custom message of what part of the command failed
+	 * @return A Throwable consumer
 	 */
 	public Consumer<? super Throwable> failureReporter(String message) {
 		return t -> reportError(message, t);

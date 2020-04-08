@@ -42,51 +42,103 @@ public final class CommandsBuilder {
 	private Supplier<EmbedBuilder> defaultEmbedFunction = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = InputStream::nullInputStream;
 
+	/** Triggers the commands when the bot is pinged instead of checking the prefix
+	 * @param usePingAsPrefix <code>true</code> to use pings instead of prefix
+	 * @return This builder
+	 */
 	public CommandsBuilder setUsePingAsPrefix(boolean usePingAsPrefix) {
 		this.usePingAsPrefix = usePingAsPrefix;
 		return this;
 	}
 
+	/**Constructs a new instance of {@linkplain CommandsBuilder}
+	 * @param prefix Prefix of the bot
+	 * @param topOwnerId The most owner of the bot
+	 */
 	public CommandsBuilder(String prefix, long topOwnerId) {
 		this.prefix = prefix;
 		ownerIds.add(topOwnerId);
 	}
 
+	/** <p>Sets the displayed message when the user does not have the command's specified role</p>
+	 * <p><b>Requires one string format for the role name</b></p>
+	 * <p><i>Default message : You must have the role `%s` for this</i></p>
+	 * @param roleOnlyErrorMsg Message to display when the user does not have the command's specified role
+	 * @return This builder
+	 */
 	public CommandsBuilder setRoleOnlyErrorMsg(String roleOnlyErrorMsg) {
 		this.roleOnlyErrorMsg = roleOnlyErrorMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is on per-user cooldown</p>
+	 * <p><b>Requires one string format for the per-user cooldown time (in seconds)</b></p>
+	 * <p><i>Default message : You must wait **%.2f seconds**</i></p>
+	 * @param userCooldownMsg Message to display when the command is on per-user cooldown
+	 * @return This builder
+	 */
 	public CommandsBuilder setUserCooldownMsg(String userCooldownMsg) {
 		this.userCooldownMsg = userCooldownMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is on per-channel cooldown</p>
+	 * <p><b>Requires one string format for the per-channel cooldown time (in seconds)</b></p>
+	 * <p><i>Default message : You must wait **%.2f seconds in this channel**</i></p>
+	 * @param channelCooldownMsg Message to display when the command is on per-channel cooldown
+	 * @return This builder
+	 */
 	public CommandsBuilder setChannelCooldownMsg(String channelCooldownMsg) {
 		this.channelCooldownMsg = channelCooldownMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is on per-guild cooldown</p>
+	 * <p><b>Requires one string format for the per-guild cooldown time (in seconds)</b></p>
+	 * <p><i>Default message : You must wait **%.2f seconds in this guild**</i></p>
+	 * @param guildCooldownMsg Message to display when the command is on per-guild cooldown
+	 * @return This builder
+	 */
 	public CommandsBuilder setGuildCooldownMsg(String guildCooldownMsg) {
 		this.guildCooldownMsg = guildCooldownMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is only usable by the owner</p>
+	 * <p><i>Default message : Only the owner can use this</i></p>
+	 * @param ownerOnlyErrorMsg Message to display when the command is only usable by the owner
+	 * @return This builder
+	 */
 	public CommandsBuilder setOwnerOnlyErrorMsg(String ownerOnlyErrorMsg) {
 		this.ownerOnlyErrorMsg = ownerOnlyErrorMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the user does not have enough permissions</p>
+	 * <p><i>Default message : You are not allowed to do this</i></p>
+	 * @param userPermErrorMsg Message to display when the user does not have enough permissions
+	 * @return This builder
+	 */
 	public CommandsBuilder setUserPermErrorMsg(String userPermErrorMsg) {
 		this.userPermErrorMsg = userPermErrorMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the bot does not have enough permissions</p>
+	 * <p><i>Default message : I don't have the required permissions to do this</i></p>
+	 * @param botPermErrorMsg Message to display when the bot does not have enough permissions
+	 * @return This builder
+	 */
 	public CommandsBuilder setBotPermErrorMsg(String botPermErrorMsg) {
 		this.botPermErrorMsg = botPermErrorMsg;
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is not found</p>
+	 * <p><i>Default message : Unknown command</i></p>
+	 * @param commandNotFoundMsg Message to display when the command is not found
+	 * @return This builder
+	 */
 	public CommandsBuilder setCommandNotFoundMsg(String commandNotFoundMsg) {
 		this.commandNotFoundMsg = commandNotFoundMsg;
 		return this;
@@ -97,7 +149,7 @@ public final class CommandsBuilder {
 	 *
 	 * @param defaultEmbedFunction The default embed builder
 	 * @param defaultFooterIconSupplier The default icon for the footer
-	 * @return This instance
+	 * @return This builder
 	 */
 	public CommandsBuilder setDefaultEmbedFunction(Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier) {
 		this.defaultEmbedFunction = Objects.requireNonNull(defaultEmbedFunction);
@@ -105,6 +157,11 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
+	 *
+	 * @param ownerIds Owners Long IDs to add
+	 * @return This builder
+	 */
 	public CommandsBuilder addOwners(long... ownerIds) {
 		for (long ownerId : ownerIds) {
 			this.ownerIds.add(ownerId);
@@ -163,6 +220,11 @@ public final class CommandsBuilder {
 		return new CommandListener(prefix, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, usePingAsPrefix, defaultEmbedFunction, defaultFooterIconSupplier, commandMap);
 	}
 
+	/** Builds the command listener
+	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
+	 * @return The ListenerAdapter
+	 * @throws IOException If an exception occurs when reading the jar path or getting classes
+	 */
 	public ListenerAdapter build(String commandPackageName) throws IOException {
 		if (!usePingAsPrefix && (prefix == null || prefix.isBlank())) {
 			throw new IllegalArgumentException("You must either use ping as prefix or a prefix");
@@ -172,6 +234,11 @@ public final class CommandsBuilder {
 		return buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
 	}
 
+	/** Builds the command listener
+	 *
+	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
+	 * @return The ListenerAdapter
+	 */
 	public ListenerAdapter build(InputStream classStream) {
 		if (!usePingAsPrefix && (prefix == null || prefix.isBlank())) {
 			throw new IllegalArgumentException("You must either use ping as prefix or a prefix");
