@@ -36,11 +36,14 @@ public class SimpleStream extends InputStream {
 		return stream.read();
 	}
 
+	@Override
 	public void close() {
 		try {
 			stream.close();
 		} catch (Throwable e) {
-			onException.accept(e);
+			if (onException != null) {
+				onException.accept(e);
+			}
 		}
 	}
 }
