@@ -1,6 +1,7 @@
 package com.freya02.botcommands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
@@ -21,5 +22,6 @@ public abstract class Command {
 	 * <p>It will also set the embed's description to be the command's description, <b>you can override with {@linkplain EmbedBuilder#setDescription(CharSequence)}</b></p>
 	 * @return The EmbedBuilder to use as a detailed description
 	 */
+	@Nullable
 	public Consumer<EmbedBuilder> getDetailedDescription() { return null; }
 }

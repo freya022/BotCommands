@@ -4,6 +4,8 @@ import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.*;
@@ -46,6 +48,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @param cmdName Name / alias of the command
 	 * @return The {@linkplain CommandInfo} object of the command
 	 */
+	@Nullable
 	public CommandInfo getCommandInfo(String cmdName) {
 		return commandListener.getCommandInfo(cmdName);
 	}
@@ -126,6 +129,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @param <T> Type of the requested argument
 	 * @return The argument of type T if it exists, or <code>null</code> it it isn't the right type or doesn't exists
 	 */
+	@Nullable
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
 		if (arguments.isEmpty()) {
@@ -144,6 +148,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	/** Returns the default embed set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
 	 * @return Default embed of the bot
 	 */
+	@NotNull
 	public EmbedBuilder getDefaultEmbed() {
 		return commandListener.getDefaultEmbedFunction().get();
 	}
@@ -151,6 +156,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	/** Returns the default embed footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
 	 * @return Default embed footer icon of the bot
 	 */
+	@NotNull
 	public InputStream getDefaultIconStream() {
 		return commandListener.getDefaultFooterIconSupplier().get();
 	}
