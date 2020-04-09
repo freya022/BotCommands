@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 )
 final class HelpCommand extends Command {
 	private static class CommandDescription {
-		private String name, description;
+		private final String name, description;
 
 		private CommandDescription(String name, String description) {
 			this.name = name;
@@ -25,7 +25,7 @@ final class HelpCommand extends Command {
 		}
 	}
 
-	private EmbedBuilder generalHelpBuilder;
+	private final EmbedBuilder generalHelpBuilder;
 
 	private final Map<String, EmbedBuilder> cmdToEmbed = new HashMap<>();
 	private final EmbedBuilder defaultEmbed;
