@@ -44,4 +44,12 @@ final class Utils {
 			}
 		}).collect(Collectors.toList());
 	}
+
+	static String requireNonBlankString(String str, String onError) {
+		if (str == null || str.isBlank()) {
+			throw new NullPointerException(onError);
+		}
+
+		return str;
+	}
 }
