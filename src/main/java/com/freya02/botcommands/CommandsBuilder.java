@@ -7,6 +7,7 @@ import com.freya02.botcommands.annotation.RequireOwner;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +24,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
-	private final String prefix;
+	private String prefix;
 	private final List<Long> ownerIds = new ArrayList<>();
 
 	private String userPermErrorMsg = "You are not allowed to do this";
@@ -42,21 +43,20 @@ public final class CommandsBuilder {
 	private Supplier<EmbedBuilder> defaultEmbedFunction = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = InputStream::nullInputStream;
 
-	/** Triggers the commands when the bot is pinged instead of checking the prefix
-	 * @param usePingAsPrefix <code>true</code> to use pings instead of prefix
-	 * @return This builder
-	 */
-	public CommandsBuilder setUsePingAsPrefix(boolean usePingAsPrefix) {
-		this.usePingAsPrefix = usePingAsPrefix;
-		return this;
-	}
-
 	/**Constructs a new instance of {@linkplain CommandsBuilder}
 	 * @param prefix Prefix of the bot
 	 * @param topOwnerId The most owner of the bot
 	 */
-	public CommandsBuilder(String prefix, long topOwnerId) {
-		this.prefix = prefix;
+	public CommandsBuilder(@NotNull String prefix, long topOwnerId) {
+		this.prefix = Utils.requireNonBlankString(prefix, "Prefix is null");
+		ownerIds.add(topOwnerId);
+	}
+
+	/**Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
+	 * @param topOwnerId The most owner of the bot
+	 */
+	public CommandsBuilder(long topOwnerId) {
+		this.usePingAsPrefix = true;
 		ownerIds.add(topOwnerId);
 	}
 
@@ -66,8 +66,8 @@ public final class CommandsBuilder {
 	 * @param roleOnlyErrorMsg Message to display when the user does not have the command's specified role
 	 * @return This builder
 	 */
-	public CommandsBuilder setRoleOnlyErrorMsg(String roleOnlyErrorMsg) {
-		this.roleOnlyErrorMsg = roleOnlyErrorMsg;
+	public CommandsBuilder setRoleOnlyErrorMsg(@NotNull String roleOnlyErrorMsg) {
+		this.roleOnlyErrorMsg = Utils.requireNonBlankString(roleOnlyErrorMsg, "Role only error message is null");
 		return this;
 	}
 
@@ -77,8 +77,8 @@ public final class CommandsBuilder {
 	 * @param userCooldownMsg Message to display when the command is on per-user cooldown
 	 * @return This builder
 	 */
-	public CommandsBuilder setUserCooldownMsg(String userCooldownMsg) {
-		this.userCooldownMsg = userCooldownMsg;
+	public CommandsBuilder setUserCooldownMsg(@NotNull String userCooldownMsg) {
+		this.userCooldownMsg = Utils.requireNonBlankString(userCooldownMsg, "User cooldown error message is null");
 		return this;
 	}
 
@@ -88,8 +88,8 @@ public final class CommandsBuilder {
 	 * @param channelCooldownMsg Message to display when the command is on per-channel cooldown
 	 * @return This builder
 	 */
-	public CommandsBuilder setChannelCooldownMsg(String channelCooldownMsg) {
-		this.channelCooldownMsg = channelCooldownMsg;
+	public CommandsBuilder setChannelCooldownMsg(@NotNull String channelCooldownMsg) {
+		this.channelCooldownMsg = Utils.requireNonBlankString(channelCooldownMsg, "Channel cooldown error message is null");
 		return this;
 	}
 
@@ -99,8 +99,8 @@ public final class CommandsBuilder {
 	 * @param guildCooldownMsg Message to display when the command is on per-guild cooldown
 	 * @return This builder
 	 */
-	public CommandsBuilder setGuildCooldownMsg(String guildCooldownMsg) {
-		this.guildCooldownMsg = guildCooldownMsg;
+	public CommandsBuilder setGuildCooldownMsg(@NotNull String guildCooldownMsg) {
+		this.guildCooldownMsg = Utils.requireNonBlankString(guildCooldownMsg, "Guild cooldown error message is null");
 		return this;
 	}
 
@@ -109,8 +109,8 @@ public final class CommandsBuilder {
 	 * @param ownerOnlyErrorMsg Message to display when the command is only usable by the owner
 	 * @return This builder
 	 */
-	public CommandsBuilder setOwnerOnlyErrorMsg(String ownerOnlyErrorMsg) {
-		this.ownerOnlyErrorMsg = ownerOnlyErrorMsg;
+	public CommandsBuilder setOwnerOnlyErrorMsg(@NotNull String ownerOnlyErrorMsg) {
+		this.ownerOnlyErrorMsg = Utils.requireNonBlankString(ownerOnlyErrorMsg, "Owner only error message is null");
 		return this;
 	}
 
@@ -119,8 +119,8 @@ public final class CommandsBuilder {
 	 * @param userPermErrorMsg Message to display when the user does not have enough permissions
 	 * @return This builder
 	 */
-	public CommandsBuilder setUserPermErrorMsg(String userPermErrorMsg) {
-		this.userPermErrorMsg = userPermErrorMsg;
+	public CommandsBuilder setUserPermErrorMsg(@NotNull String userPermErrorMsg) {
+		this.userPermErrorMsg = Utils.requireNonBlankString(userPermErrorMsg, "User permission error message is null");
 		return this;
 	}
 
@@ -129,8 +129,8 @@ public final class CommandsBuilder {
 	 * @param botPermErrorMsg Message to display when the bot does not have enough permissions
 	 * @return This builder
 	 */
-	public CommandsBuilder setBotPermErrorMsg(String botPermErrorMsg) {
-		this.botPermErrorMsg = botPermErrorMsg;
+	public CommandsBuilder setBotPermErrorMsg(@NotNull String botPermErrorMsg) {
+		this.botPermErrorMsg = Utils.requireNonBlankString(botPermErrorMsg, "Bot permission error message is null");
 		return this;
 	}
 
@@ -139,8 +139,8 @@ public final class CommandsBuilder {
 	 * @param commandNotFoundMsg Message to display when the command is not found
 	 * @return This builder
 	 */
-	public CommandsBuilder setCommandNotFoundMsg(String commandNotFoundMsg) {
-		this.commandNotFoundMsg = commandNotFoundMsg;
+	public CommandsBuilder setCommandNotFoundMsg(@NotNull String commandNotFoundMsg) {
+		this.commandNotFoundMsg = Utils.requireNonBlankString(commandNotFoundMsg, "'Command not found' error message is null");
 		return this;
 	}
 
@@ -151,7 +151,7 @@ public final class CommandsBuilder {
 	 * @param defaultFooterIconSupplier The default icon for the footer
 	 * @return This builder
 	 */
-	public CommandsBuilder setDefaultEmbedFunction(Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier) {
+	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
 		this.defaultEmbedFunction = Objects.requireNonNull(defaultEmbedFunction);
 		this.defaultFooterIconSupplier = Objects.requireNonNull(defaultFooterIconSupplier);
 		return this;
@@ -225,10 +225,8 @@ public final class CommandsBuilder {
 	 * @return The ListenerAdapter
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 */
-	public ListenerAdapter build(String commandPackageName) throws IOException {
-		if (!usePingAsPrefix && (prefix == null || prefix.isBlank())) {
-			throw new IllegalArgumentException("You must either use ping as prefix or a prefix");
-		}
+	public ListenerAdapter build(@NotNull String commandPackageName) throws IOException {
+		Utils.requireNonBlankString(commandPackageName, "Command package name is null");
 
 		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
 		return buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
