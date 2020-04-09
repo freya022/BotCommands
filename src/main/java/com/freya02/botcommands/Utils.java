@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 final class Utils {
-	public static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
+	static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
 		if (isJar) {

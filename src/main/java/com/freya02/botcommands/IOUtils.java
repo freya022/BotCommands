@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 final class IOUtils {
-	public static Path getJarPath(Class<?> classs) {
+	static Path getJarPath(Class<?> classs) {
 		try {
 			return Paths.get(classs.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (URISyntaxException e) {
@@ -14,7 +14,7 @@ final class IOUtils {
 		return null;
 	}
 
-	public static String getFileExtension(Path path) {
+	static String getFileExtension(Path path) {
 		return path.toString().substring(path.toString().lastIndexOf(".")+1);
 	}
 }
