@@ -1,9 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.Hidden;
-import com.freya02.botcommands.annotation.JdaCommand;
-import com.freya02.botcommands.annotation.JdaSubcommand;
-import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.annotation.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -13,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -256,21 +252,13 @@ public final class CommandsBuilder {
 		return buildClasses(classes);
 	}
 
-	@SuppressWarnings("DuplicatedCode")
 	private CommandInfo processCommand(Command cmd) {
 		final Class<? extends Command> commandClass = cmd.getClass();
 
 		if (commandClass.isAnnotationPresent(JdaCommand.class) || commandClass.isAnnotationPresent(JdaSubcommand.class)) {
-			boolean isHidden = false;
-			boolean isOwnerOnly = false;
-
-			for (Annotation annotation : commandClass.getAnnotations()) {
-				if (annotation instanceof Hidden) {
-					isHidden = true;
-				} else if (annotation instanceof RequireOwner) {
-					isOwnerOnly = true;
-				}
-			}
+			boolean isHidden = commandClass.isAnnotationPresent(Hidden.class);
+			boolean isOwnerOnly = commandClass.isAnnotationPresent(RequireOwner.class);
+			boolean addSubcommandHelp = commandClass.isAnnotationPresent(AddSubcommandHelp.class);
 
 			String name;
 			String[] aliases = null;
@@ -330,7 +318,7 @@ public final class CommandsBuilder {
 				cooldownScope = commandAnnot.cooldownScope();
 			}
 
-			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo);
+			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp);
 		}
 
 		throw new IllegalArgumentException("Command does not have JdaCommand annotation");

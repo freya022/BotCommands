@@ -26,12 +26,14 @@ public final class CommandInfo {
 
 	private final List<CommandInfo> subcommandsInfo;
 
+	private final boolean addSubcommandHelp;
+
 	public CommandInfo(Command command, String name, String[] aliases, String description, String category,
 	                   boolean hidden, boolean requireOwner,
 	                   Permission[] userPermissions, Permission[] botPermissions,
 	                   String requiredRole,
 	                   int cooldown, CooldownScope cooldownScope,
-	                   List<CommandInfo> subcommandsInfo) {
+	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp) {
 		this.command = command;
 		this.name = name;
 		this.aliases = aliases;
@@ -45,6 +47,7 @@ public final class CommandInfo {
 		this.cooldown = cooldown;
 		this.cooldownScope = cooldownScope;
 		this.subcommandsInfo = subcommandsInfo;
+		this.addSubcommandHelp = addSubcommandHelp;
 	}
 
 	public boolean isRequireOwner() {
@@ -97,5 +100,9 @@ public final class CommandInfo {
 
 	public List<CommandInfo> getSubcommandsInfo() {
 		return subcommandsInfo;
+	}
+
+	public boolean isAddSubcommandHelp() {
+		return addSubcommandHelp;
 	}
 }

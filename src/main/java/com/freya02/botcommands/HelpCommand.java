@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @JdaCommand(
 		name = "help",
@@ -30,7 +31,8 @@ final class HelpCommand extends Command {
 	private final Map<String, EmbedBuilder> cmdToEmbed = new HashMap<>();
 	private final EmbedBuilder defaultEmbed;
 
-	private void addDetailedHelp(Command command, String name, String description) {
+	//Method can't have direct CommandInfo object as the HelpCommand is built before it is put in the command map
+	private void addDetailedHelp(Command command, String name, String description, boolean addSubcommandHelp, List<CommandInfo> subcommandsInfo) {
 		final EmbedBuilder builder = new EmbedBuilder(defaultEmbed);
 		final MessageEmbed.AuthorInfo author = defaultEmbed.build().getAuthor();
 		if (author != null) {
@@ -39,6 +41,11 @@ final class HelpCommand extends Command {
 			builder.setAuthor('\'' + name + "' command");
 		}
 		builder.addField("Description", description, false);
+
+		if (addSubcommandHelp) {
+			final String subcommandHelp = subcommandsInfo.stream().filter(info2 -> !info2.isHidden()).map(info2 -> "**" + info2.getName() + "** : " + info2.getDescription()).collect(Collectors.joining("\r\n"));
+			builder.addField("Subcommands", subcommandHelp, false);
+		}
 
 		final Consumer<EmbedBuilder> descConsumer = command.getDetailedDescription();
 		if (descConsumer != null) {
@@ -63,7 +70,7 @@ final class HelpCommand extends Command {
 						);
 			}
 
-			addDetailedHelp(info.getCommand(), info.getName(), info.getDescription());
+			addDetailedHelp(info.getCommand(), info.getName(), info.getDescription(), info.isAddSubcommandHelp(), info.getSubcommandsInfo());
 		}
 
 		boolean addedHelpEntry = false;
@@ -87,7 +94,7 @@ final class HelpCommand extends Command {
 		}
 
 		//Add the precise help of this one
-		addDetailedHelp(this, "help", "Gives help about a command");
+		addDetailedHelp(this, "help", "Gives help about a command", false, List.of());
 	}
 
 	@Override
