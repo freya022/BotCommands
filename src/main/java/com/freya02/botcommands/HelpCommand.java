@@ -32,9 +32,13 @@ final class HelpCommand extends Command {
 
 	private void addDetailedHelp(Command command, String name, String description) {
 		final EmbedBuilder builder = new EmbedBuilder(defaultEmbed);
-
-		builder.setTitle("Command '" + name + "'");
-		builder.setDescription(description);
+		final MessageEmbed.AuthorInfo author = defaultEmbed.build().getAuthor();
+		if (author != null) {
+			builder.setAuthor(author.getName() + " – '" + name + "' command", author.getUrl(), author.getIconUrl());
+		} else {
+			builder.setAuthor('\'' + name + "' command");
+		}
+		builder.addField("Description", description, false);
 
 		final Consumer<EmbedBuilder> descConsumer = command.getDetailedDescription();
 		if (descConsumer != null) {
