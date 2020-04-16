@@ -13,7 +13,7 @@ final class Utils {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
 		if (isJar) {
-			final FileSystem zfs = FileSystems.newFileSystem(jarPath, null);
+			final FileSystem zfs = FileSystems.newFileSystem(jarPath, (ClassLoader) null);
 			walkRoot = zfs.getPath("");
 		}
 
