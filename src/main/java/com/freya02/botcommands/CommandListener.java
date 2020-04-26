@@ -50,6 +50,7 @@ final class CommandListener extends ListenerAdapter {
 
 	private String botId = null;
 	private Pattern userPattern;
+	private final ExecutorService commandService = Executors.newCachedThreadPool();
 
 	public CommandListener(String prefix, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, boolean usePingAsPrefix, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, TreeMap<String, CommandInfo> stringCommandMap) {
 		this.prefix = prefix;
@@ -71,8 +72,6 @@ final class CommandListener extends ListenerAdapter {
 		this.defaultFooterIconSupplier = defaultFooterIconSupplier;
 		this.stringCommandMap = stringCommandMap;
 	}
-
-	private final Object mutex = new Object();
 
 	public Supplier<EmbedBuilder> getDefaultEmbedFunction() {
 		return defaultEmbedFunction;
@@ -296,7 +295,9 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		commandInfo.getCommand().execute(new CommandEvent(this, event, args));
+		final CommandEvent commandEvent = new CommandEvent(this, event, args);
+		CommandInfo finalCommandInfo = commandInfo;
+		commandService.submit(() -> finalCommandInfo.getCommand().execute(commandEvent));
 	}
 
 	public List<Long> getOwnerIds() {
