@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
@@ -193,6 +194,38 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 				onException.accept(t);
 			}
 		});
+	}
+
+	/** Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel {@linkplain MessageChannel} to send the embed in
+	 * @param embed {@linkplain MessageEmbed} to send
+	 * @return The sent message
+	 */
+	public Message completeWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed) {
+		return completeWithEmbedFooterIcon(channel, getDefaultIconStream(), embed);
+	}
+
+	/** Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel {@linkplain MessageChannel} to send the embed in
+	 * @param iconStream InputStream of the footer icon, the input stream is closed upon success / error
+	 * @param embed {@linkplain MessageEmbed} to send
+	 * @return The sent message
+	 */
+	public Message completeWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed) {
+		final Message message;
+		try {
+			message = channel.sendFile(iconStream, "icon.jpg").embed(embed).complete();
+		} finally {
+			try {
+				iconStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return message;
 	}
 
 	private static IMentionable tryGetId(String mention, Function<Long, IMentionable> idToMentionableFunc) {
