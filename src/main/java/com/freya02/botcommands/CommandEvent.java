@@ -102,6 +102,16 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		return t -> reportError(message, t);
 	}
 
+	/**
+	 * <p>Returns the best author name possible</p>
+	 * <p>If the User is not in the guild then returns his tag (Name#Discriminator)</p>
+	 * <p>If the User is in the guild then returns his effective name</p>
+	 * @return The best way to describe someone's name
+	 */
+	public String getAuthorBestName() {
+		return getMember() == null ? getAuthor().getAsTag() : getMember().getEffectiveName();
+	}
+
 	/** Checks if the next argument exists and is of type T, returns <code>true</code> if so
 	 * @param clazz Class of the requested type
 	 * @param <T> Type of the requested argument
