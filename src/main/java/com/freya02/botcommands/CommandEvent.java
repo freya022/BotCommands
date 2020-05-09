@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -109,7 +110,21 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @return The best way to describe someone's name
 	 */
 	public String getAuthorBestName() {
-		return getMember() == null ? getAuthor().getAsTag() : getMember().getEffectiveName();
+		return getMember().getEffectiveName();
+	}
+
+	/** The Author of the Message received as {@link net.dv8tion.jda.api.entities.Member Member} object.
+	 * <br>The {@linkplain Member} will never be null as this {@linkplain CommandEvent} is not constructed if the author is a web hook
+	 *
+	 * @return The Author of the Message as Member object.
+	 *
+	 * @see    #isWebhookMessage()
+	 */
+	@SuppressWarnings("ConstantConditions")
+	@Nonnull
+	@Override
+	public Member getMember() {
+		return super.getMember();
 	}
 
 	/** Checks if the next argument exists and is of type T, returns <code>true</code> if so
