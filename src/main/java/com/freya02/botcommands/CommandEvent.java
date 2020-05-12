@@ -153,13 +153,13 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	/** Returns the next argument if it is of type T
 	 * @param clazz Class of the requested type
 	 * @param <T> Type of the requested argument
-	 * @return The argument of type T if it exists, or <code>null</code> it it isn't the right type or doesn't exists
+	 * @return The argument of type T if it exists, or throws {@linkplain NoSuchElementException} if it isn't the right type or doesn't exists
 	 */
-	@Nullable
+	@Nonnull
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
 		if (arguments.isEmpty()) {
-			return null;
+			throw new NoSuchElementException();
 		}
 
 		Object o = arguments.remove(0);
@@ -167,7 +167,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		if (clazz.isAssignableFrom(o.getClass())) {
 			return (T) o;
 		} else {
-			return null;
+			throw new NoSuchElementException();
 		}
 	}
 
