@@ -109,9 +109,7 @@ final class HelpCommand extends Command {
 	private synchronized void getAllHelp(CommandEvent event) {
 		generalHelpBuilder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
-		if (member != null) {
-			generalHelpBuilder.setColor(member.getColorRaw());
-		}
+		generalHelpBuilder.setColor(member.getColorRaw());
 
 		final MessageEmbed embed = generalHelpBuilder.build();
 		event.getAuthor().openPrivateChannel().queue(
@@ -132,9 +130,7 @@ final class HelpCommand extends Command {
 		builder.setTimestamp(Instant.now());
 
 		final Member member = event.getMember();
-		if (member != null) {
-			builder.setColor(member.getColorRaw());
-		}
+		builder.setColor(member.getColorRaw());
 
 		event.sendWithEmbedFooterIcon(event.getChannel(), event.getDefaultIconStream(), builder.build(), null, event.failureReporter("Unable to send help message"));
 	}
