@@ -98,7 +98,7 @@ final class HelpCommand extends Command {
 	}
 
 	@Override
-	public void execute(CommandEvent event) {
+	protected void execute(CommandEvent event) {
 		if (event.hasNext(String.class)) {
 			getCommandHelp(event, event.nextArgument(String.class));
 		} else {

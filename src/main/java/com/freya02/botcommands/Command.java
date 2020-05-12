@@ -14,7 +14,7 @@ public abstract class Command {
 	 *
 	 * @param event {@linkplain CommandEvent} object for gathering arguments / author / channel / etc...
 	 */
-	public abstract void execute(CommandEvent event);
+	protected abstract void execute(CommandEvent event);
 
 	/**
 	 * <p>Returns a detailed embed of what the command is, it is used by the internal 'help' command</p>
@@ -23,5 +23,5 @@ public abstract class Command {
 	 * @return The EmbedBuilder to use as a detailed description
 	 */
 	@Nullable
-	public Consumer<EmbedBuilder> getDetailedDescription() { return null; }
+	protected Consumer<EmbedBuilder> getDetailedDescription() { return null; }
 }
