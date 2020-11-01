@@ -1,9 +1,12 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.exceptions.BadIdException;
+import com.freya02.botcommands.exceptions.NoIdException;
 import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,7 +156,8 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	/** Returns the next argument if it is of type T
 	 * @param clazz Class of the requested type
 	 * @param <T> Type of the requested argument
-	 * @return The argument of type T if it exists, or throws {@linkplain NoSuchElementException} if it isn't the right type or doesn't exists
+	 * @return The argument of type T if it exists
+	 * @throws NoSuchElementException In case there is no more arguments to be read
 	 */
 	@Nonnull
 	@SuppressWarnings("unchecked")
@@ -168,6 +172,63 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 			return (T) o;
 		} else {
 			throw new NoSuchElementException();
+		}
+	}
+
+	/** Returns the next IMentionable
+	 * @param clazz Class of the requested type
+	 * @param <T> Type of the requested argument
+	 * @return The argument of type T, extending IMentionable, if it exists
+	 * @throws BadIdException In case the ID is not a valid snowflake, or does not refer to a known IMentionable
+	 * @throws NoIdException In case there is no ID / IMentionable in the message
+	 * @throws NoSuchElementException In case there is no more arguments to be read, or the type isn't the same
+	 */
+	@Nonnull
+	@SuppressWarnings("unchecked")
+	public <T extends IMentionable> T resolveNext(Class<T> clazz) throws NoIdException, BadIdException {
+		if (arguments.isEmpty()) {
+			throw new NoSuchElementException();
+		}
+
+		Object o = arguments.remove(0);
+
+		if (clazz.isAssignableFrom(o.getClass())) {
+			return (T) o;
+		} else {
+			if (o instanceof String) {
+				final IMentionable mentionable;
+
+				try {
+					final String idStr = (String) o;
+
+					//See net.dv8tion.jda.internal.utils.Checks#isSnowflake(String)
+					if (idStr.length() > 20 || !Helpers.isNumeric(idStr)) {
+						throw new BadIdException();
+					}
+
+					final long id = Long.parseLong(idStr);
+
+					if (clazz == Role.class) {
+						mentionable = getGuild().getRoleById(id);
+					} else if (clazz == User.class) {
+						mentionable = getJDA().getUserById(id);
+					} else if (clazz == TextChannel.class) {
+						mentionable = getGuild().getTextChannelById(id);
+					} else {
+						throw new IllegalArgumentException(clazz.getSimpleName() + " is not a valid IMentionable class");
+					}
+
+					if (mentionable == null) {
+						throw new BadIdException();
+					}
+
+					return (T) mentionable;
+				} catch (NumberFormatException ignored) {
+					throw new BadIdException();
+				}
+			} else {
+				throw new NoIdException();
+			}
 		}
 	}
 
