@@ -10,12 +10,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -32,12 +31,14 @@ public final class CommandsBuilder {
 	private String guildCooldownMsg = "You must wait **%.2f seconds in this guild**";
 
 	private String commandNotFoundMsg = "Unknown command";
+	private String commandDisabledMsg = "This command is disabled for the moment";
 	private String roleOnlyErrorMsg = "You must have the role `%s` for this";
 
 	private boolean usePingAsPrefix;
 
 	private Supplier<EmbedBuilder> defaultEmbedFunction = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = InputStream::nullInputStream;
+	private final List<String> disabledCommands = new ArrayList<>();
 
 	/**Constructs a new instance of {@linkplain CommandsBuilder}
 	 * @param prefix Prefix of the bot
@@ -140,6 +141,16 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/** <p>Sets the displayed message when the command is disabled (via {@linkplain ConditionalUse})</p>
+	 * <p><i>Default message : The command is disabled for the moment</i></p>
+	 * @param commandDisabledMsg Message to display when the command is not found
+	 * @return This builder
+	 */
+	public CommandsBuilder setCommandDisabledMsg(String commandDisabledMsg) {
+		this.commandDisabledMsg = commandDisabledMsg;
+		return this;
+	}
+
 	/** <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
 	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *
@@ -170,7 +181,22 @@ public final class CommandsBuilder {
 	private Command getSubcommand(Class<? extends Command> clazz, Command parent) {
 		if (!Modifier.isAbstract(clazz.getModifiers())) {
 			try {
-				return clazz.getDeclaredConstructor(parent.getClass()).newInstance(parent);
+				boolean isInstantiable = isInstantiable(clazz);
+
+				if (isInstantiable) {
+					try {
+						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(parent.getClass());
+						constructor.setAccessible(true);
+						return constructor.newInstance(parent);
+					} catch (NoSuchMethodException ignored) {
+						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor();
+						constructor.setAccessible(true);
+						return constructor.newInstance();
+					}
+				} else {
+					final String completeCmdName = getCommandName(parent.getClass()) + '.' + getCommandName(clazz);
+					disabledCommands.add(completeCmdName);
+				}
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
 				failedClasses.add(" - " + clazz.getSimpleName());
@@ -181,20 +207,28 @@ public final class CommandsBuilder {
 	}
 
 	private ListenerAdapter buildClasses(List<Class<?>> classes) {
-		final TreeMap<String, CommandInfo> commandMap = new TreeMap<>();
+		final Map<String, CommandInfo> commandMap = new HashMap<>();
 		for (Class<?> aClass : classes) {
 			if (!Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && !aClass.isAnnotationPresent(JdaSubcommand.class) && Command.class.isAssignableFrom(aClass)) {
 				try {
-					final Command command = (Command) aClass.getDeclaredConstructors()[0].newInstance();
+					boolean isInstantiable = isInstantiable(aClass);
 
-					CommandInfo info = processCommand(command);
+					if (isInstantiable) {
+						final Constructor<?> constructor = aClass.getDeclaredConstructor();
+						constructor.setAccessible(true);
+						final Command command = (Command) constructor.newInstance();
 
-					commandMap.put(info.getName(), info);
+						CommandInfo info = processCommand(command);
 
-					for (String alias : info.getAliases()) {
-						commandMap.put(alias, info);
+						commandMap.put(info.getName(), info);
+
+						for (String alias : info.getAliases()) {
+							commandMap.put(alias, info);
+						}
+					} else {
+						disabledCommands.add(getCommandName(aClass));
 					}
-				} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+				} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 					e.printStackTrace();
 					failedClasses.add(" - " + aClass.getSimpleName());
 				}
@@ -213,7 +247,27 @@ public final class CommandsBuilder {
 			System.err.println(failedClasses.size() + " command(s) failed loading:\r\n" + String.join("\r\n", failedClasses));
 		}
 
-		return new CommandListener(prefix, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, usePingAsPrefix, defaultEmbedFunction, defaultFooterIconSupplier, commandMap);
+		return new CommandListener(prefix, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, commandDisabledMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, usePingAsPrefix, defaultEmbedFunction, defaultFooterIconSupplier, commandMap, disabledCommands);
+	}
+
+	private boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
+		boolean canInstantiate = true;
+		for (Method declaredMethod : aClass.getDeclaredMethods()) {
+			if (declaredMethod.isAnnotationPresent(ConditionalUse.class)) {
+				if (Modifier.isStatic(declaredMethod.getModifiers())) {
+					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
+						declaredMethod.setAccessible(true);
+						canInstantiate = (boolean) declaredMethod.invoke(null);
+					} else {
+						System.err.println("WARN: method " + aClass.getName() + '#' + declaredMethod.getName() + " is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)");
+					}
+				} else {
+					System.err.println("WARN: method " + aClass.getName() + '#' + declaredMethod.getName() + " is annotated @ConditionalUse but is not static");
+				}
+				break;
+			}
+		}
+		return canInstantiate;
 	}
 
 	/** Builds the command listener
@@ -250,6 +304,16 @@ public final class CommandsBuilder {
 		}).collect(Collectors.toList());
 
 		return buildClasses(classes);
+	}
+
+	private static String getCommandName(Class<?> clazz) {
+		if (clazz.isAnnotationPresent(JdaCommand.class)) {
+			return clazz.getAnnotation(JdaCommand.class).name();
+		} else if (clazz.isAnnotationPresent(JdaSubcommand.class)) {
+			return clazz.getAnnotation(JdaSubcommand.class).name();
+		}
+
+		return null;
 	}
 
 	private CommandInfo processCommand(Command cmd) {

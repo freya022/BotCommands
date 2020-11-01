@@ -7,7 +7,10 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -32,7 +35,9 @@ final class CommandListener extends ListenerAdapter {
 
 	private final boolean usePingAsPrefix;
 
-	private final TreeMap<String, CommandInfo> stringCommandMap;
+	private final Map<String, CommandInfo> stringCommandMap;
+	private final String commandDisabledMsg;
+	private final List<String> disabledCommands;
 
 	private static final ThreadFactory threadFactory = runnable -> {
 		final Thread thread = new Thread(runnable);
@@ -52,8 +57,9 @@ final class CommandListener extends ListenerAdapter {
 	private Pattern userPattern;
 	private final ExecutorService commandService = Executors.newCachedThreadPool();
 
-	public CommandListener(String prefix, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, boolean usePingAsPrefix, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, TreeMap<String, CommandInfo> stringCommandMap) {
+	public CommandListener(String prefix, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String commandDisabledMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, boolean usePingAsPrefix, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, Map<String, CommandInfo> stringCommandMap, List<String> disabledCommands) {
 		this.prefix = prefix;
+		this.disabledCommands = disabledCommands;
 		if (!usePingAsPrefix) {
 			this.prefixLength = prefix.length();
 		}
@@ -62,6 +68,7 @@ final class CommandListener extends ListenerAdapter {
 		this.userPermErrorMsg = userPermErrorMsg;
 		this.botPermErrorMsg = botPermErrorMsg;
 		this.commandNotFoundMsg = commandNotFoundMsg;
+		this.commandDisabledMsg = commandDisabledMsg;
 		this.ownerOnlyErrorMsg = ownerOnlyErrorMsg;
 		this.roleOnlyErrorMsg = roleOnlyErrorMsg;
 		this.userCooldownMsg = userCooldownMsg;
@@ -209,7 +216,11 @@ final class CommandListener extends ListenerAdapter {
 
 		CommandInfo commandInfo = stringCommandMap.get(commandName);
 		if (commandInfo == null) {
-			reply(event, commandNotFoundMsg);
+			if (disabledCommands.contains(commandName)) {
+				reply(event, commandDisabledMsg);
+			} else {
+				reply(event, commandNotFoundMsg);
+			}
 			return;
 		}
 
@@ -220,6 +231,14 @@ final class CommandListener extends ListenerAdapter {
 				args = args.replace(info.getName(), "").trim();
 				break;
 			}
+		}
+
+		//Check for disabled subcommands
+		final int i = args.indexOf(' ', 1);
+		final String subcommandName = i == -1 ? args : args.substring(0, i);
+		if (disabledCommands.contains(commandInfo.getName() + "." + subcommandName)) {
+			reply(event, commandDisabledMsg);
+			return;
 		}
 
 		final Member member = event.getMember();
