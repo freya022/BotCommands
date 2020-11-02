@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import java.io.CharArrayWriter;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -316,7 +318,17 @@ final class CommandListener extends ListenerAdapter {
 
 		final CommandEvent commandEvent = new CommandEvent(this, event, args);
 		CommandInfo finalCommandInfo = commandInfo;
-		commandService.submit(() -> finalCommandInfo.getCommand().execute(commandEvent));
+		commandService.submit(() -> {
+			try {
+				finalCommandInfo.getCommand().execute(commandEvent);
+			} catch (Exception e) {
+				final CharArrayWriter out = new CharArrayWriter(512);
+				out.append("Unhandled exception in thread '").append(Thread.currentThread().getName()).append("' while executing request '").append(msg).append("'\n");
+				final PrintWriter printWriter = new PrintWriter(out);
+				e.printStackTrace(printWriter);
+				System.err.println(out.toString());
+			}
+		});
 	}
 
 	public List<Long> getOwnerIds() {
