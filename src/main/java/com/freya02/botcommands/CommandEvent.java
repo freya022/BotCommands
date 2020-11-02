@@ -6,6 +6,8 @@ import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -226,6 +228,12 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 						}
 					} catch (NumberFormatException ignored) {
 						throw new BadIdException();
+					} catch (ErrorResponseException e) {
+						if (e.getErrorResponse() == ErrorResponse.UNKNOWN_USER || e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+							throw new BadIdException();
+						} else {
+							throw e;
+						}
 					}
 				} else {
 					throw new NoIdException();
