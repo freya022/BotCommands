@@ -211,7 +211,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 					if (clazz == Role.class) {
 						mentionable = getGuild().getRoleById(id);
 					} else if (clazz == User.class) {
-						mentionable = getJDA().getUserById(id);
+						mentionable = getJDA().retrieveUserById(id).complete();
 					} else if (clazz == TextChannel.class) {
 						mentionable = getGuild().getTextChannelById(id);
 					} else {
