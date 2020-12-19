@@ -9,10 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.io.CharArrayWriter;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -66,7 +63,7 @@ final class CommandListener extends ListenerAdapter {
 			this.prefixLength = prefix.length();
 		}
 
-		this.ownerIds = ownerIds;
+		this.ownerIds = Collections.unmodifiableList(ownerIds);
 		this.userPermErrorMsg = userPermErrorMsg;
 		this.botPermErrorMsg = botPermErrorMsg;
 		this.commandNotFoundMsg = commandNotFoundMsg;

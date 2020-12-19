@@ -121,7 +121,7 @@ final class HelpCommand extends Command {
 	private synchronized void getCommandHelp(CommandEvent event, String cmdName) {
 		final CommandInfo info = event.getCommandInfo(cmdName);
 
-		if (info == null || info.isHidden()) {
+		if (info == null || (info.isHidden() && !event.getOwnerIds().contains(event.getAuthor().getIdLong()))) {
 			event.getChannel().sendMessage("Command '" + cmdName + "' does not exists").queue(null, event.failureReporter("Failed to send help"));
 			return;
 		}

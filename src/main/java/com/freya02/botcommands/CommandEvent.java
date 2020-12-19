@@ -51,6 +51,10 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		}
 	}
 
+	public List<Long> getOwnerIds() {
+		return commandListener.getOwnerIds();
+	}
+
 	/** Returns the {@linkplain CommandInfo} object of the specified command, the name can be an alias too
 	 * @param cmdName Name / alias of the command
 	 * @return The {@linkplain CommandInfo} object of the command
