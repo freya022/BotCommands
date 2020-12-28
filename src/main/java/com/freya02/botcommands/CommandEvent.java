@@ -194,7 +194,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @throws NoSuchElementException In case there is no more arguments to be read, or the type isn't the same
 	 */
 	@Nonnull
-	@SuppressWarnings({"unchecked", "ConstantConditions"})
+	@SuppressWarnings({"unchecked"})
 	public <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException {
 		if (arguments.isEmpty()) {
 			throw new NoIdException();
@@ -372,7 +372,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 				System.err.println("Unresolved mentionable : '" + substring + "' of type " + type.name());
 			}
 		} else if (!substring.isEmpty()) {
-			this.arguments.add(substring);
+			Collections.addAll(arguments, substring.split(" "));
 		}
 	}
 
