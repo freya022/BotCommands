@@ -2,6 +2,8 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.exceptions.BadIdException;
 import com.freya02.botcommands.exceptions.NoIdException;
+import com.freya02.botcommands.utils.RichTextFinder;
+import com.freya02.botcommands.utils.RichTextType;
 import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -15,7 +17,10 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -34,21 +39,12 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	private final String argumentsStr;
 	private final List<Object> arguments = new ArrayList<>();
 
-	private final List<String> argumentsStrList;
-
 	CommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String arguments) {
 		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
 		this.commandListener = commandListener;
-		argumentsStr = arguments;
+		this.argumentsStr = arguments;
 
-		if (!arguments.isBlank()) {
-			argumentsStrList = Arrays.asList(arguments.split(" "));
-		} else {
-			argumentsStrList = List.of();
-		}
-		for (String argument : argumentsStrList) {
-			processMessageBody(argument);
-		}
+		new RichTextFinder(arguments, true, false, true, false).processResults(this::processText);
 	}
 
 	public List<Long> getOwnerIds() {
@@ -75,7 +71,11 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @return List of String arguments
 	 */
 	public List<String> getArgumentsStrList() {
-		return argumentsStrList;
+		if (!argumentsStr.isBlank()) {
+			return Arrays.asList(argumentsStr.split(" "));
+		} else {
+			return List.of();
+		}
 	}
 
 	/** Returns the full argument part of the message
@@ -193,54 +193,54 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	@SuppressWarnings({"unchecked", "ConstantConditions"})
 	public <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException {
 		if (arguments.isEmpty()) {
-			throw new NoSuchElementException();
+			throw new NoIdException();
 		}
 
 		Object o = arguments.remove(0);
 
-		for (Class<?> clazz : classes) {
-			if (clazz.isAssignableFrom(o.getClass())) {
+		for (Class<?> c : classes) {
+			if (c.isAssignableFrom(o.getClass())) {
 				return (T) o;
-			} else {
-				if (o instanceof String) {
-					final IMentionable mentionable;
+			}
+		}
+		if (!(o instanceof String)) throw new NoIdException();
 
-					try {
-						final String idStr = (String) o;
+		final String idStr = (String) o;
+		for (Class<?> clazz : classes) {
+			final IMentionable mentionable;
 
-						//See net.dv8tion.jda.internal.utils.Checks#isSnowflake(String)
-						if (idStr.length() > 20 || !Helpers.isNumeric(idStr)) {
-							throw new BadIdException();
-						}
+			try {
+				//See net.dv8tion.jda.internal.utils.Checks#isSnowflake(String)
+				if (idStr.length() > 20 || !Helpers.isNumeric(idStr)) {
+					throw new BadIdException();
+				}
 
-						final long id = Long.parseLong(idStr);
+				final long id = Long.parseLong(idStr);
 
-						if (clazz == Role.class) {
-							mentionable = getGuild().getRoleById(id);
-						} else if (clazz == User.class) {
-							mentionable = getJDA().retrieveUserById(id).complete();
-						} else if (clazz == Member.class) {
-							mentionable = getGuild().retrieveMemberById(id).complete();
-						} else if (clazz == TextChannel.class) {
-							mentionable = getGuild().getTextChannelById(id);
-						} else {
-							throw new IllegalArgumentException(clazz.getSimpleName() + " is not a valid IMentionable class");
-						}
-
-						if (mentionable != null) {
-							return (T) mentionable;
-						}
-					} catch (NumberFormatException ignored) {
-						throw new BadIdException();
-					} catch (ErrorResponseException e) {
-						if (e.getErrorResponse() == ErrorResponse.UNKNOWN_USER || e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-							throw new BadIdException();
-						} else {
-							throw e;
-						}
-					}
+				if (clazz == Role.class) {
+					mentionable = getGuild().getRoleById(id);
+				} else if (clazz == User.class) {
+					mentionable = getJDA().retrieveUserById(id).complete();
+				} else if (clazz == Member.class) {
+					mentionable = getGuild().retrieveMemberById(id).complete();
+				} else if (clazz == TextChannel.class) {
+					mentionable = getGuild().getTextChannelById(id);
+				} else if (clazz == Emote.class) {
+					mentionable = getJDA().getEmoteById(id);
 				} else {
-					throw new NoIdException();
+					throw new IllegalArgumentException(clazz.getSimpleName() + " is not a valid IMentionable class");
+				}
+
+				if (mentionable != null) {
+					return (T) mentionable;
+				}
+			} catch (NumberFormatException ignored) {
+				throw new BadIdException();
+			} catch (ErrorResponseException e) {
+				if (e.getErrorResponse() == ErrorResponse.UNKNOWN_USER || e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
+					throw new BadIdException();
+				} else {
+					throw e;
 				}
 			}
 		}
@@ -339,79 +339,60 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		return null;
 	}
 
-	private void processSubstring(Map<String, Message.MentionType> mentions, String substring) {
-		Message.MentionType mentionType;
-		if ((mentionType = mentions.get(substring)) != null) {
-			IMentionable mentionable = null;
+	private void processText(String substring, RichTextType type) {
+		if (substring.isBlank()) return;
 
-			if (mentionType == Message.MentionType.USER) {
-				mentionable = tryGetId(substring, id -> getJDA().getUserById(id));
+		Message.MentionType mentionType = type.getMentionType();
+		if (mentionType != null || type == RichTextType.UNICODE_EMOTE) {
+			Object mentionable = null;
+
+			if (type == RichTextType.UNICODE_EMOTE) {
+				mentionable = new EmojiImpl(substring);
 			} else if (mentionType == Message.MentionType.ROLE) {
 				mentionable = tryGetId(substring, id -> getGuild().getRoleById(id));
 			} else if (mentionType == Message.MentionType.CHANNEL) {
 				mentionable = tryGetId(substring, id -> getGuild().getTextChannelById(id));
+			} else if (mentionType == Message.MentionType.EMOTE) {
+				final Matcher matcher = Message.MentionType.EMOTE.getPattern().matcher(substring);
+				if (matcher.find()) {
+					String id = matcher.group(2);
+					mentionable = getGuild().getEmoteById(id);
+				}
+			} else if (mentionType == Message.MentionType.USER) {
+				mentionable = tryGetId(substring, id -> getJDA().getUserById(id));
 			}
 
 			if (mentionable != null) {
-				arguments.add(mentionable);
+				this.arguments.add(mentionable);
 			} else {
-				System.err.println("Unresolved mentionable : " + substring);
+				System.err.println("Unresolved mentionable : '" + substring + "' of type " + type.name());
 			}
 		} else if (!substring.isEmpty()) {
-			arguments.add(substring);
+			this.arguments.add(substring);
 		}
 	}
 
-	private void processMessageBody(String str) {
-		MentionCut cut = new MentionCut(str);
+	private static class EmojiImpl implements Emoji {
+		private final String substring;
 
-		Set<Integer> indexes = cut.getIndexes();
-		Map<String, Message.MentionType> mentions = cut.getMentions();
-
-		int startIndex = 0;
-		int endIndex = 0;
-		for (int index : indexes) {
-			endIndex = index;
-
-			String substring = str.substring(startIndex, endIndex);
-			processSubstring(mentions, substring);
-
-			startIndex = endIndex;
+		public EmojiImpl(String substring) {
+			this.substring = substring;
 		}
 
-		String substring = str.substring(endIndex);
-		processSubstring(mentions, substring);
-	}
-
-	private static class MentionCut {
-		private final String input;
-		private final Set<Integer> indexes = new TreeSet<>();
-		private final Map<String, Message.MentionType> mentions = new HashMap<>();
-
-		private MentionCut(String input) {
-			this.input = input;
-
-			findAllMentions(Message.MentionType.USER);
-			findAllMentions(Message.MentionType.CHANNEL);
-			findAllMentions(Message.MentionType.EMOTE);
-			findAllMentions(Message.MentionType.ROLE);
+		@Override
+		public long getIdLong() {
+			throw new RuntimeException("Emojis doesn't have IDs");
 		}
 
-		private void findAllMentions(Message.MentionType type) {
-			Matcher matcher = type.getPattern().matcher(input);
-			while (matcher.find()) {
-				indexes.add(matcher.start());
-				indexes.add(matcher.end());
-				mentions.put(matcher.group(), type);
-			}
+		@NotNull
+		@Override
+		public String getAsMention() {
+			return substring;
 		}
 
-		private Set<Integer> getIndexes() {
-			return indexes;
-		}
-
-		private Map<String, Message.MentionType> getMentions() {
-			return mentions;
+		@Override
+		public String getUnicode() {
+			return substring;
 		}
 	}
 }
