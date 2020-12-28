@@ -17,10 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -151,13 +148,20 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 		return clazz.isAssignableFrom(o.getClass());
 	}
 
-	/*public <T> T nextIfExists(Class<T> clazz) {
-		if (hasNext(clazz)) {
-			return nextArgument(clazz);
+	@SuppressWarnings("unchecked")
+	public <T> T peekArgument(Class<T> clazz) {
+		if (arguments.isEmpty()) {
+			throw new NoSuchElementException();
 		}
 
-		return null;
-	}*/
+		Object o = arguments.get(0);
+
+		if (clazz.isAssignableFrom(o.getClass())) {
+			return (T) o;
+		} else {
+			throw new NoSuchElementException();
+		}
+	}
 
 	/** Returns the next argument if it is of type T
 	 * @param clazz Class of the requested type
