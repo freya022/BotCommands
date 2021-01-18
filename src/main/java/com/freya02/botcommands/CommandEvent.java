@@ -263,7 +263,7 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	/** Returns the default embed footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
 	 * @return Default embed footer icon of the bot
 	 */
-	@NotNull
+	@Nullable
 	public InputStream getDefaultIconStream() {
 		return commandListener.getDefaultFooterIconSupplier().get();
 	}
@@ -288,18 +288,30 @@ public class CommandEvent extends GuildMessageReceivedEvent {
 	 * @param onException Consumer to call when an exception occurred
 	 */
 	public void sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Message> onSuccess, Consumer<? super Throwable> onException) {
-		final SimpleStream stream = SimpleStream.of(iconStream, onException);
-		channel.sendFile(stream, "icon.jpg").embed(embed).queue(x -> {
-			stream.close();
-			if (onSuccess != null) {
-				onSuccess.accept(x);
-			}
-		}, t -> {
-			stream.close();
-			if (onException != null) {
-				onException.accept(t);
-			}
-		});
+		if (iconStream != null) {
+			final SimpleStream stream = SimpleStream.of(iconStream, onException);
+			channel.sendFile(stream, "icon.jpg").embed(embed).queue(x -> {
+				stream.close();
+				if (onSuccess != null) {
+					onSuccess.accept(x);
+				}
+			}, t -> {
+				stream.close();
+				if (onException != null) {
+					onException.accept(t);
+				}
+			});
+		} else {
+			channel.sendMessage(embed).queue(x -> {
+				if (onSuccess != null) {
+					onSuccess.accept(x);
+				}
+			}, t -> {
+				if (onException != null) {
+					onException.accept(t);
+				}
+			});
+		}
 	}
 
 	/** Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
