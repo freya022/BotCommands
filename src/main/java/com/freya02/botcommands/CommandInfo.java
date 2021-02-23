@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.Permission;
 
 import java.util.List;
@@ -28,12 +29,14 @@ public final class CommandInfo {
 
 	private final boolean addSubcommandHelp;
 
+	private final List<MethodPattern> methodPatterns;
+
 	public CommandInfo(Command command, String name, String[] aliases, String description, String category,
 	                   boolean hidden, boolean requireOwner,
 	                   Permission[] userPermissions, Permission[] botPermissions,
 	                   String requiredRole,
 	                   int cooldown, CooldownScope cooldownScope,
-	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp) {
+	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp, List<MethodPattern> methodPatterns) {
 		this.command = command;
 		this.name = name;
 		this.aliases = aliases;
@@ -48,6 +51,7 @@ public final class CommandInfo {
 		this.cooldownScope = cooldownScope;
 		this.subcommandsInfo = subcommandsInfo;
 		this.addSubcommandHelp = addSubcommandHelp;
+		this.methodPatterns = methodPatterns;
 	}
 
 	public boolean isRequireOwner() {
@@ -104,5 +108,9 @@ public final class CommandInfo {
 
 	public boolean isAddSubcommandHelp() {
 		return addSubcommandHelp;
+	}
+
+	public List<MethodPattern> getMethodPatterns() {
+		return methodPatterns;
 	}
 }

@@ -1,6 +1,8 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.*;
+import com.freya02.botcommands.regex.CommandTransformer;
+import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -382,7 +384,9 @@ public final class CommandsBuilder {
 				cooldownScope = commandAnnot.cooldownScope();
 			}
 
-			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp);
+			final List<MethodPattern> methodPatterns = CommandTransformer.getMethodPatterns(cmd);
+
+			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp, methodPatterns);
 		}
 
 		throw new IllegalArgumentException("Command does not have JdaCommand annotation");

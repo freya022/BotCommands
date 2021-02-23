@@ -1,9 +1,12 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.regex.ArgumentFunction;
+import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.CharArrayWriter;
@@ -12,6 +15,7 @@ import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 final class CommandListener extends ListenerAdapter {
@@ -313,11 +317,48 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final CommandEvent commandEvent = new CommandEvent(this, event, args);
 		CommandInfo finalCommandInfo = commandInfo;
+		for (MethodPattern m : commandInfo.getMethodPatterns()) {
+			try {
+				final Matcher matcher = m.pattern.matcher(args);
+				if (matcher.find()) {
+					final List<Object> objects = new ArrayList<>(matcher.groupCount());
+					objects.add(new BaseCommandEvent(this, event, args));
+
+					int groupIndex = 1;
+					for (ArgumentFunction argumentFunction : m.argumentsArr) {
+						final String[] groups = new String[argumentFunction.groups];
+						for (int j = 0; j < argumentFunction.groups; j++) {
+							groups[j] = matcher.group(groupIndex++);
+						}
+
+						objects.add(argumentFunction.function.solve(event, groups));
+					}
+
+					runCommand(() -> m.method.invoke(finalCommandInfo.getCommand(), objects.toArray()), msg);
+					return;
+				}
+			} catch (NumberFormatException e) {
+				System.err.println("Invalid number");
+			} catch (ErrorResponseException | NoSuchElementException e) {
+				//might be normal
+			}  catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		final CommandEvent commandEvent = new CommandEvent(this, event, args);
+		runCommand(() -> finalCommandInfo.getCommand().execute(commandEvent), msg);
+	}
+
+	private interface RunnableEx {
+		void run() throws Exception;
+	}
+
+	private void runCommand(RunnableEx code, String msg) {
 		commandService.submit(() -> {
 			try {
-				finalCommandInfo.getCommand().execute(commandEvent);
+				code.run();
 			} catch (Exception e) {
 				final CharArrayWriter out = new CharArrayWriter(512);
 				out.append("Unhandled exception in thread '").append(Thread.currentThread().getName()).append("' while executing request '").append(msg).append("'\n");
