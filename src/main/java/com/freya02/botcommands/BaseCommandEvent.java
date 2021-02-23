@@ -25,6 +25,10 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 		this.argumentsStr = arguments;
 	}
 
+	public void showHelp() {
+		HelpCommand.showHelp(this);
+	}
+
 	public List<Long> getOwnerIds() {
 		return commandListener.getOwnerIds();
 	}
