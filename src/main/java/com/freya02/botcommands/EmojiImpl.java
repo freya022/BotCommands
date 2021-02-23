@@ -2,11 +2,11 @@ package com.freya02.botcommands;
 
 import org.jetbrains.annotations.NotNull;
 
-class EmojiImpl implements Emoji {
-	private final String substring;
+public class EmojiImpl implements Emoji {
+	private final String unicode;
 
-	public EmojiImpl(String substring) {
-		this.substring = substring;
+	public EmojiImpl(String unicode) {
+		this.unicode = unicode;
 	}
 
 	@Override
@@ -17,11 +17,11 @@ class EmojiImpl implements Emoji {
 	@NotNull
 	@Override
 	public String getAsMention() {
-		return substring;
+		return unicode;
 	}
 
 	@Override
 	public String getUnicode() {
-		return substring;
+		return unicode;
 	}
 }
