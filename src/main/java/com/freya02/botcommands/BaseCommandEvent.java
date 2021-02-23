@@ -109,7 +109,6 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * <br>The {@linkplain Member} will never be null as this {@linkplain CommandEvent} is not constructed if the author is a web hook
 	 *
 	 * @return The Author of the Message as Member object.
-	 * @see #isWebhookMessage()
 	 */
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
