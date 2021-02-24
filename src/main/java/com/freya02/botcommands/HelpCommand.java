@@ -2,12 +2,14 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.JdaCommand;
 import com.freya02.botcommands.annotation.JdaSubcommand;
+import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.*;
 
+import java.lang.reflect.Parameter;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -35,7 +37,7 @@ final class HelpCommand extends Command {
 	private final EmbedBuilder defaultEmbed;
 
 	//Method can't have direct CommandInfo object as the HelpCommand is built before it is put in the command map
-	private void addDetailedHelp(Command command, String name, String description, boolean addSubcommandHelp, List<CommandInfo> subcommandsInfo) {
+	private void addDetailedHelp(Command command, String name, String description, boolean addSubcommandHelp, boolean addExecutableHelp, List<CommandInfo> subcommandsInfo, List<MethodPattern> methodPatterns, String prefix) {
 		final EmbedBuilder builder = new EmbedBuilder(defaultEmbed);
 		final MessageEmbed.AuthorInfo author = defaultEmbed.build().getAuthor();
 		if (author != null) {
@@ -44,6 +46,67 @@ final class HelpCommand extends Command {
 			builder.setAuthor('\'' + name + "' command");
 		}
 		builder.addField("Description", description, false);
+
+		if (addExecutableHelp) {
+			for (int i = 0; i < methodPatterns.size(); i++) {
+				MethodPattern methodPattern = methodPatterns.get(i);
+
+				final StringBuilder syntax = new StringBuilder("**Syntax**: ");
+				final StringBuilder example = new StringBuilder("**Example**: " + prefix + name + ' ');
+				final Parameter[] parameters = methodPattern.method.getParameters();
+				boolean hasEmoji = Arrays.stream(parameters).anyMatch(p -> p.getType() == Emoji.class);
+				for (int j = 1; j < parameters.length; j++) {
+					Parameter parameter = parameters[j];
+					final Class<?> type = parameter.getType();
+					final String argSyntax;
+					if (type == String.class) {
+						argSyntax = hasEmoji ? "\"string\"" : "string";
+						example.append(hasEmoji ? "\"foo bar\"" : "foo bar");
+					} else if (type == Emoji.class) {
+						argSyntax = "unicode emoji/shortcode";
+						example.append(":joy:");
+					} else if (type == int.class || type == long.class) {
+						argSyntax = "integer";
+						example.append(ThreadLocalRandom.current().nextInt(100));
+					} else if (type == float.class || type == double.class) {
+						argSyntax = "decimal";
+						example.append(ThreadLocalRandom.current().nextDouble(100));
+					} else if (type == Emote.class) {
+						argSyntax = "emote/emote id";
+						example.append("<:kekw:673277564034482178>");
+					} else if (type == Guild.class) {
+						argSyntax = "guild id";
+						example.append("331718482485837825");
+					} else if (type == Role.class) {
+						argSyntax = "role mention/role id";
+						example.append("801161492296499261");
+					} else if (type == User.class) {
+						argSyntax = "user mention/user id";
+						example.append("222046562543468545");
+					} else if (type == Member.class) {
+						argSyntax = "member mention/member id";
+						example.append("<@222046562543468545>");
+					} else if (type == TextChannel.class) {
+						argSyntax = "text channel mention/text channel id";
+						example.append("331718482485837825");
+					} else {
+						argSyntax = "?";
+						example.append("?");
+						System.err.println("Unknown type: " + type);
+					}
+
+					final boolean isOptional = parameter.isAnnotationPresent(com.freya02.botcommands.annotation.Optional.class);
+					syntax.append(isOptional ? '[' : '`').append(argSyntax).append(isOptional ? ']' : '`').append(' ');
+					example.append(' ');
+				}
+
+				if (methodPatterns.size() == 1) {
+					builder.addField("Usage", syntax + "\n" + example, false);
+				} else {
+					builder.addField("Overload #" + (i + 1), syntax + "\n" + example, false);
+				}
+			}
+		}
 
 		if (addSubcommandHelp) {
 			final String subcommandHelp = subcommandsInfo.stream().filter(info2 -> !info2.isHidden()).map(info2 -> "**" + info2.getName() + "** : " + info2.getDescription()).collect(Collectors.joining("\r\n"));
@@ -58,7 +121,7 @@ final class HelpCommand extends Command {
 		cmdToEmbed.put(name, builder);
 	}
 
-	public HelpCommand(Supplier<EmbedBuilder> defaultEmbedSupplier, Map<String, CommandInfo> commands) {
+	public HelpCommand(Supplier<EmbedBuilder> defaultEmbedSupplier, Map<String, CommandInfo> commands, String prefix) {
 		instance = this;
 
 		this.defaultEmbed = defaultEmbedSupplier.get();
@@ -75,7 +138,7 @@ final class HelpCommand extends Command {
 						);
 			}
 
-			addDetailedHelp(info.getCommand(), info.getName(), info.getDescription(), info.isAddSubcommandHelp(), info.getSubcommandsInfo());
+			addDetailedHelp(info.getCommand(), info.getName(), info.getDescription(), info.isAddSubcommandHelp(), info.isAddExecutableHelp(), info.getSubcommandsInfo(), info.getMethodPatterns(), prefix);
 		}
 
 		boolean addedHelpEntry = false;
@@ -99,7 +162,7 @@ final class HelpCommand extends Command {
 		}
 
 		//Add the precise help of this one
-		addDetailedHelp(this, "help", "Gives help about a command", false, List.of());
+		addDetailedHelp(this, "help", "Gives help about a command", false, false, List.of(), List.of(), prefix);
 	}
 
 	@Override

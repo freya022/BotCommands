@@ -27,7 +27,7 @@ public final class CommandInfo {
 
 	private final List<CommandInfo> subcommandsInfo;
 
-	private final boolean addSubcommandHelp;
+	private final boolean addSubcommandHelp, addExecutableHelp;
 
 	private final List<MethodPattern> methodPatterns;
 
@@ -36,7 +36,7 @@ public final class CommandInfo {
 	                   Permission[] userPermissions, Permission[] botPermissions,
 	                   String requiredRole,
 	                   int cooldown, CooldownScope cooldownScope,
-	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp, List<MethodPattern> methodPatterns) {
+	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp, boolean addExecutableHelp, List<MethodPattern> methodPatterns) {
 		this.command = command;
 		this.name = name;
 		this.aliases = aliases;
@@ -51,6 +51,7 @@ public final class CommandInfo {
 		this.cooldownScope = cooldownScope;
 		this.subcommandsInfo = subcommandsInfo;
 		this.addSubcommandHelp = addSubcommandHelp;
+		this.addExecutableHelp = addExecutableHelp;
 		this.methodPatterns = methodPatterns;
 	}
 
@@ -108,6 +109,10 @@ public final class CommandInfo {
 
 	public boolean isAddSubcommandHelp() {
 		return addSubcommandHelp;
+	}
+
+	public boolean isAddExecutableHelp() {
+		return addExecutableHelp;
 	}
 
 	public List<MethodPattern> getMethodPatterns() {

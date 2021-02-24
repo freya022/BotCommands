@@ -333,6 +333,7 @@ public final class CommandsBuilder {
 			boolean isHidden = commandClass.isAnnotationPresent(Hidden.class);
 			boolean isOwnerOnly = commandClass.isAnnotationPresent(RequireOwner.class);
 			boolean addSubcommandHelp = commandClass.isAnnotationPresent(AddSubcommandHelp.class);
+			boolean addExecutableHelp = commandClass.isAnnotationPresent(AddExecutableHelp.class);
 
 			String name;
 			String[] aliases = null;
@@ -394,7 +395,7 @@ public final class CommandsBuilder {
 
 			final List<MethodPattern> methodPatterns = CommandTransformer.getMethodPatterns(cmd);
 
-			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp, methodPatterns);
+			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp, addExecutableHelp, methodPatterns);
 		}
 
 		throw new IllegalArgumentException("Command does not have JdaCommand annotation");
