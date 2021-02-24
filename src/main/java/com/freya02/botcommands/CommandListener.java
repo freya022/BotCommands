@@ -16,13 +16,11 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 final class CommandListener extends ListenerAdapter {
-	private final String prefix;
+	private final List<String> prefixes;
 	private final Supplier<InputStream> defaultFooterIconSupplier;
 	private final Supplier<EmbedBuilder> defaultEmbedFunction;
-	private int prefixLength;
 
 	private final List<Long> ownerIds;
 
@@ -35,8 +33,6 @@ final class CommandListener extends ListenerAdapter {
 	private final String userCooldownMsg;
 	private final String channelCooldownMsg;
 	private final String guildCooldownMsg;
-
-	private final boolean usePingAsPrefix;
 
 	private final Map<String, CommandInfo> stringCommandMap;
 	private final String commandDisabledMsg;
@@ -56,16 +52,11 @@ final class CommandListener extends ListenerAdapter {
 	private static final Map<Long, ScheduledFuture<?>> channelCooldowns = new HashMap<>();
 	private static final Map<Long, ScheduledFuture<?>> guildCooldowns = new HashMap<>();
 
-	private String botId = null;
-	private Pattern userPattern;
 	private final ExecutorService commandService = Executors.newCachedThreadPool();
 
-	public CommandListener(String prefix, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String commandDisabledMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, boolean usePingAsPrefix, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, Map<String, CommandInfo> stringCommandMap, List<String> disabledCommands) {
-		this.prefix = prefix;
+	public CommandListener(List<String> prefixes, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String commandDisabledMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, Map<String, CommandInfo> stringCommandMap, List<String> disabledCommands) {
+		this.prefixes = prefixes;
 		this.disabledCommands = disabledCommands;
-		if (!usePingAsPrefix) {
-			this.prefixLength = prefix.length();
-		}
 
 		this.ownerIds = Collections.unmodifiableList(ownerIds);
 		this.userPermErrorMsg = userPermErrorMsg;
@@ -77,7 +68,6 @@ final class CommandListener extends ListenerAdapter {
 		this.userCooldownMsg = userCooldownMsg;
 		this.channelCooldownMsg = channelCooldownMsg;
 		this.guildCooldownMsg = guildCooldownMsg;
-		this.usePingAsPrefix = usePingAsPrefix;
 		this.defaultEmbedFunction = defaultEmbedFunction;
 		this.defaultFooterIconSupplier = defaultFooterIconSupplier;
 		this.stringCommandMap = stringCommandMap;
@@ -92,110 +82,38 @@ final class CommandListener extends ListenerAdapter {
 	}
 
 	private static class Cmd {
-		private String commandName, args;
-
-		private Cmd() {}
+		private final String commandName;
+		private final String args;
 
 		private Cmd(String commandName, String args) {
 			this.commandName = commandName;
 			this.args = args;
 		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			Cmd cmd = (Cmd) o;
-
-			if (!Objects.equals(commandName, cmd.commandName)) return false;
-			return Objects.equals(args, cmd.args);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = commandName != null ? commandName.hashCode() : 0;
-			result = 31 * result + (args != null ? args.hashCode() : 0);
-			return result;
-		}
 	}
 
-	/*private static Pattern pattern;
-	private static Matcher matcher;
-	private Cmd getCmdRegex(GuildMessageReceivedEvent event, String msg) {
-		if (pattern == null) {
-			if (usePingAsPrefix) {
-				pattern = Pattern.compile("<@!?" + event.getJDA().getSelfUser().getId() + "> (\\S+)( \\S+.*)?");
-			} else {
-				pattern = Pattern.compile(prefix + "(\\S+)( \\S+.*)?");
-			}
-
-			matcher = pattern.matcher("");
-		}
-
-		matcher.reset(msg);
-		if (matcher.find()) {
-			final int groupCount = matcher.groupCount();
-			final Cmd cmd = new Cmd();
-
-			if (groupCount >= 1) {
-				cmd.commandName = matcher.group(1);
-			}
-
-			if (groupCount >= 2) {
-				final String group = matcher.group(2);
-				if (group != null) {
-					cmd.args = group.substring(1);
-				} else cmd.args = "";
-			} else {
-				cmd.args = "";
-			}
-
-			return cmd;
-		}
-
-		return null;
-	}*/
-
-	private Cmd getCmdFast(GuildMessageReceivedEvent event, String msg) {
+	private Cmd getCmdFast(String msg) {
 		final String msgNoPrefix;
 		final String commandName;
-		final String args;
 
-		if (usePingAsPrefix) {
-			if (botId == null) {
-				botId = event.getJDA().getSelfUser().getId();
-				userPattern = Pattern.compile("<@!?" + botId + ">");
+		int prefixLength = -1;
+		for (String prefix : prefixes) {
+			if (msg.startsWith(prefix)) {
+				prefixLength = prefix.length();
+				break;
 			}
-
-			if (!userPattern.matcher(msg).find())
-				return null;
-
-			final int i = msg.indexOf(' ');
-			if (i == -1) {
-				return null; //No command was issued
-			}
-
-			msgNoPrefix = msg.substring(i + 1);
-		} else {
-			if (!msg.startsWith(prefix)) {
-				return null; //No prefix found
-			}
-
-			msgNoPrefix = msg.substring(prefixLength);
 		}
+		if (prefixLength == -1) return null;
+
+		msgNoPrefix = msg.substring(prefixLength);
 
 		final int endIndex = msgNoPrefix.indexOf(' ');
 
 		if (endIndex > -1) {
 			commandName = msgNoPrefix.substring(0, endIndex);
+			return new Cmd(commandName, msgNoPrefix.substring(commandName.length()).trim());
 		} else {
-			commandName = msgNoPrefix;
+			return new Cmd(msgNoPrefix, "");
 		}
-
-		args = msgNoPrefix.substring(commandName.length()).trim();
-
-		return new Cmd(commandName, args);
 	}
 
 	@Override
@@ -205,14 +123,10 @@ final class CommandListener extends ListenerAdapter {
 
 		final String msg = event.getMessage().getContentRaw();
 
-		final Cmd cmdFast = getCmdFast(event, msg);
-		//final Cmd cmdRegex = Benchmark.run("Regex", () -> getCmdRegex(event, msg)).getResult();
+		final Cmd cmdFast = getCmdFast(msg);
 
 		if (cmdFast == null)
 			return;
-
-		/*if (!cmdFast.equals(cmdRegex))
-			System.err.println("Fast != regex");*/
 
 		final String commandName = cmdFast.commandName;
 		String args = cmdFast.args;

@@ -4,6 +4,7 @@ import com.freya02.botcommands.annotation.*;
 import com.freya02.botcommands.regex.CommandTransformer;
 import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
-	private String prefix;
+	private List<String> prefixes;
 	private final List<Long> ownerIds = new ArrayList<>();
 
 	private String userPermErrorMsg = "You are not allowed to do this";
@@ -36,27 +37,34 @@ public final class CommandsBuilder {
 	private String commandDisabledMsg = "This command is disabled for the moment";
 	private String roleOnlyErrorMsg = "You must have the role `%s` for this";
 
-	private boolean usePingAsPrefix;
-
 	private Supplier<EmbedBuilder> defaultEmbedFunction = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = InputStream::nullInputStream;
 	private final List<String> disabledCommands = new ArrayList<>();
 
-	/**Constructs a new instance of {@linkplain CommandsBuilder}
-	 * @param prefix Prefix of the bot
-	 * @param topOwnerId The most owner of the bot
-	 */
-	public CommandsBuilder(@NotNull String prefix, long topOwnerId) {
-		this.prefix = Utils.requireNonBlankString(prefix, "Prefix is null");
+	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
+		Utils.requireNonBlankString(prefix, "Prefix is null");
+		this.prefixes = List.of(prefix);
+		ownerIds.add(topOwnerId);
+	}
+
+	private CommandsBuilder(long topOwnerId) {
+		this.prefixes = null;
 		ownerIds.add(topOwnerId);
 	}
 
 	/**Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
 	 * @param topOwnerId The most owner of the bot
 	 */
-	public CommandsBuilder(long topOwnerId) {
-		this.usePingAsPrefix = true;
-		ownerIds.add(topOwnerId);
+	public static CommandsBuilder withPing(long topOwnerId) {
+		return new CommandsBuilder(topOwnerId);
+	}
+
+	/**Constructs a new instance of {@linkplain CommandsBuilder}
+	 * @param prefix Prefix of the bot
+	 * @param topOwnerId The most owner of the bot
+	 */
+	public static CommandsBuilder withPrefix(@NotNull String prefix, long topOwnerId) {
+		return new CommandsBuilder(prefix, topOwnerId);
 	}
 
 	/** <p>Sets the displayed message when the user does not have the command's specified role</p>
@@ -237,7 +245,7 @@ public final class CommandsBuilder {
 			}
 		}
 
-		CommandInfo helpCommandInfo = processCommand(new HelpCommand(defaultEmbedFunction, commandMap));
+		CommandInfo helpCommandInfo = processCommand(new HelpCommand(defaultEmbedFunction, commandMap, prefixes.get(0)));
 
 		commandMap.put(helpCommandInfo.getName(), helpCommandInfo);
 
@@ -249,7 +257,7 @@ public final class CommandsBuilder {
 			System.err.println(failedClasses.size() + " command(s) failed loading:\r\n" + String.join("\r\n", failedClasses));
 		}
 
-		return new CommandListener(prefix, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, commandDisabledMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, usePingAsPrefix, defaultEmbedFunction, defaultFooterIconSupplier, commandMap, disabledCommands);
+		return new CommandListener(prefixes, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, commandDisabledMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, defaultEmbedFunction, defaultFooterIconSupplier, commandMap, disabledCommands);
 	}
 
 	private boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
@@ -277,8 +285,10 @@ public final class CommandsBuilder {
 	 * @return The ListenerAdapter
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 */
-	public ListenerAdapter build(@NotNull String commandPackageName) throws IOException {
+	public ListenerAdapter build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		Utils.requireNonBlankString(commandPackageName, "Command package name is null");
+
+		if (prefixes == null) prefixes = List.of(jda.getSelfUser().getAsMention() + ' ', "<@!" + jda.getSelfUser().getId() + "> ");
 
 		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
 		return buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
@@ -289,10 +299,8 @@ public final class CommandsBuilder {
 	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
 	 * @return The ListenerAdapter
 	 */
-	public ListenerAdapter build(InputStream classStream) {
-		if (!usePingAsPrefix && (prefix == null || prefix.isBlank())) {
-			throw new IllegalArgumentException("You must either use ping as prefix or a prefix");
-		}
+	public ListenerAdapter build(JDA jda, InputStream classStream) {
+		if (prefixes == null) prefixes = List.of(jda.getSelfUser().getAsMention() + ' ', "<@!" + jda.getSelfUser().getId() + "> ");
 
 		final BufferedReader stream = new BufferedReader(new InputStreamReader(classStream));
 		final List<Class<?>> classes = stream.lines().map(s -> {
