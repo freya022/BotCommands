@@ -1,5 +1,7 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.annotation.JdaCommand;
+import com.freya02.botcommands.annotation.JdaSubcommand;
 import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -26,7 +29,20 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 	}
 
 	public void showHelp() {
-		HelpCommand.showHelp(this);
+		final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+		final Optional<StackWalker.StackFrame> opt = walker.walk(s -> s.dropWhile(frame -> (!frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class) && !frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class)) || frame.getDeclaringClass() == HelpCommand.class).findFirst());
+		final Class<?> declaringClass = opt.orElseThrow().getDeclaringClass();
+		final CommandInfo helpInfo = getCommandInfo("help");
+		if (helpInfo == null) {
+			System.err.println("ERROR: help command info not found");
+			return;
+		}
+
+		if (declaringClass.isAnnotationPresent(JdaCommand.class)) {
+			((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, declaringClass.getAnnotation(JdaCommand.class).name());
+		} else if (declaringClass.isAnnotationPresent(JdaSubcommand.class)) {
+			((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, declaringClass.getAnnotation(JdaSubcommand.class).name());
+		}
 	}
 
 	public List<Long> getOwnerIds() {

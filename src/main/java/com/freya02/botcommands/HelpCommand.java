@@ -1,7 +1,6 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.JdaCommand;
-import com.freya02.botcommands.annotation.JdaSubcommand;
 import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -20,8 +19,6 @@ import java.util.stream.Collectors;
 		category = "Utils"
 )
 final class HelpCommand extends Command {
-	private static HelpCommand instance;
-
 	private static class CommandDescription {
 		private final String name, description;
 
@@ -122,8 +119,6 @@ final class HelpCommand extends Command {
 	}
 
 	public HelpCommand(Supplier<EmbedBuilder> defaultEmbedSupplier, Map<String, CommandInfo> commands, String prefix) {
-		instance = this;
-
 		this.defaultEmbed = defaultEmbedSupplier.get();
 		this.generalHelpBuilder = new EmbedBuilder(this.defaultEmbed);
 
@@ -174,18 +169,6 @@ final class HelpCommand extends Command {
 		}
 	}
 
-	public static void showHelp(BaseCommandEvent event) {
-		final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-		final Optional<StackWalker.StackFrame> opt = walker.walk(s -> s.dropWhile(frame -> (!frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class) && !frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class)) || frame.getDeclaringClass() == HelpCommand.class).findFirst());
-		final Class<?> declaringClass = opt.orElseThrow().getDeclaringClass();
-		if (declaringClass.isAnnotationPresent(JdaCommand.class)) {
-			HelpCommand.instance.getCommandHelp(event, declaringClass.getAnnotation(JdaCommand.class).name());
-		} else if (declaringClass.isAnnotationPresent(JdaSubcommand.class)) {
-			HelpCommand.instance.getCommandHelp(event, declaringClass.getAnnotation(JdaSubcommand.class).name());
-		}
-
-	}
-
 	private synchronized void getAllHelp(BaseCommandEvent event) {
 		generalHelpBuilder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
@@ -198,7 +181,7 @@ final class HelpCommand extends Command {
 
 	}
 
-	private synchronized void getCommandHelp(BaseCommandEvent event, String cmdName) {
+	public synchronized void getCommandHelp(BaseCommandEvent event, String cmdName) {
 		final CommandInfo info = event.getCommandInfo(cmdName);
 
 		if (info == null || (info.isHidden() && !event.getOwnerIds().contains(event.getAuthor().getIdLong()))) {
@@ -208,11 +191,12 @@ final class HelpCommand extends Command {
 
 		final EmbedBuilder builder = cmdToEmbed.get(cmdName);
 		builder.setTimestamp(Instant.now());
+		builder.setFooter("Arguments in black boxes `foo` are obligatory, but arguments in brackets [bar] are optional");
 
 		final Member member = event.getMember();
 		builder.setColor(member.getColorRaw());
 
-		event.sendWithEmbedFooterIcon(event.getChannel(), event.getDefaultIconStream(), builder.build(), null, event.failureReporter("Unable to send help message"));
+		event.getChannel().sendMessage(builder.build()).queue(null, event.failureReporter("Unable to send help message"));
 	}
 
 	@Override
