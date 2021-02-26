@@ -1,8 +1,10 @@
 package com.freya02.botcommands.utils;
 
 import com.vdurmont.emoji.EmojiParser;
+import org.jetbrains.annotations.NotNull;
 
 public class EmojiResolver extends EmojiParser {
+	@NotNull
 	public static String resolveEmojis(String input) {
 		//Find emoji aliases (shortcodes)
 		AliasCandidate alias = getAliasAt(input, 0);
@@ -14,6 +16,6 @@ public class EmojiResolver extends EmojiParser {
 		UnicodeCandidate candidate = getNextUnicodeCandidate(input.toCharArray(), 0);
 		if (candidate != null) return candidate.getEmoji().getUnicode() + candidate.getFitzpatrickUnicode();
 
-		return null;
+		throw new IllegalArgumentException("No emoji for input: " + input);
 	}
 }
