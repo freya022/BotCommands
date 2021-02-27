@@ -49,6 +49,15 @@ public class SimpleStream extends InputStream {
 		return new SimpleStream(stream, onException);
 	}
 
+	/** Constructs a new SimpleStream with the specified {@linkplain InputStream} and the exception consumer
+	 * @param jarPath absolute JAR path to the resource (example: <code>/com/freya02/botcommands/image.png</code>)
+	 * @param onException {@linkplain Consumer} to use when an exception occurs when closing the stream
+	 * @return A {@linkplain SimpleStream}
+	 */
+	public static SimpleStream ofResource(@NotNull String jarPath, @Nullable Consumer<? super Throwable> onException) {
+		return new SimpleStream(SimpleStream.class.getResourceAsStream(jarPath), onException);
+	}
+
 	@Override
 	public int read() throws IOException {
 		return stream.read();
