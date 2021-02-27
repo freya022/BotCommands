@@ -118,7 +118,7 @@ final class CommandListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-		if (event.getAuthor().isBot() || event.getAuthor().isFake() || event.isWebhookMessage())
+		if (event.getAuthor().isBot() || event.isWebhookMessage())
 			return;
 
 		final String msg = event.getMessage().getContentRaw();
