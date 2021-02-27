@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Base class containing several utility methods:</p>
+ * <p>Base class containing several utility methods:</p>
  * <ul>
  *     <li>Unhandled exception reporting</li>
  *     <li>Send embeds with footer icon with specified icons / default icon</li>
