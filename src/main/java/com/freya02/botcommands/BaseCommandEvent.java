@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -157,5 +158,40 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBase
 	@CheckReturnValue
 	public RestAction<Void> reactError() {
 		return channel.addReactionById(messageId, ERROR);
+	}
+
+	@CheckReturnValue
+	@Nonnull
+	public MessageAction reply(@NotNull CharSequence text) {
+		return new MessageActionWrapper(channel.sendMessage(text),
+				failureReporter(String.format("Failed to reply in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	}
+
+	@CheckReturnValue
+	@Nonnull
+	public MessageAction replyFormat(@NotNull String format, @NotNull Object... args) {
+		return new MessageActionWrapper(channel.sendMessageFormat(format, args),
+				failureReporter(String.format("Failed to reply format in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	}
+
+	@CheckReturnValue
+	@Nonnull
+	public MessageAction reply(@NotNull MessageEmbed embed) {
+		return new MessageActionWrapper(channel.sendMessage(embed),
+				failureReporter(String.format("Failed to reply in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	}
+
+	@CheckReturnValue
+	@Nonnull
+	public MessageAction replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+		return new MessageActionWrapper(channel.sendFile(data, fileName, options),
+				failureReporter(String.format("Failed to reply file in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	}
+
+	@CheckReturnValue
+	@Nonnull
+	public MessageAction replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+		return new MessageActionWrapper(channel.sendFile(data, fileName, options),
+				failureReporter(String.format("Failed to reply file in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
 	}
 }
