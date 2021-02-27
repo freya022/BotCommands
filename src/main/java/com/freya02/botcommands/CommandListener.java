@@ -237,7 +237,7 @@ final class CommandListener extends ListenerAdapter {
 				final Matcher matcher = m.pattern.matcher(args);
 				if (matcher.find()) {
 					final List<Object> objects = new ArrayList<>(matcher.groupCount());
-					objects.add(new BaseCommandEvent(this, event, args));
+					objects.add(new BaseCommandEvent(this, event, commandName, args));
 
 					int groupIndex = 1;
 					for (ArgumentFunction argumentFunction : m.argumentsArr) {
@@ -261,7 +261,7 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final CommandEvent commandEvent = new CommandEvent(this, event, args);
+		final CommandEvent commandEvent = new CommandEvent(this, event, commandName, args);
 		runCommand(() -> finalCommandInfo.getCommand().execute(commandEvent), msg);
 	}
 

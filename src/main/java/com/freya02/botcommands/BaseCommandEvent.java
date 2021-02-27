@@ -1,70 +1,63 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.JdaCommand;
-import com.freya02.botcommands.annotation.JdaSubcommand;
+import com.freya02.botcommands.utils.EmojiResolver;
 import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-public class BaseCommandEvent extends GuildMessageReceivedEvent {
+public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBaseCommandEvent {
+	private static final String SUCCESS = EmojiResolver.resolveEmojis(":white_check_mark:");
+	private static final String ERROR = EmojiResolver.resolveEmojis(":x:");
+
 	protected final CommandListener commandListener;
+	protected final String commandName;
 	protected final String argumentsStr;
 
-	BaseCommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String arguments) {
+	BaseCommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String commandName, String arguments) {
 		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
 		this.commandListener = commandListener;
+		this.commandName = commandName;
 		this.argumentsStr = arguments;
 	}
 
+	@Override
 	public void showHelp() {
-		final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-		final Optional<StackWalker.StackFrame> opt = walker.walk(s -> s.dropWhile(frame -> (!frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class) && !frame.getDeclaringClass().isAnnotationPresent(JdaCommand.class)) || frame.getDeclaringClass() == HelpCommand.class).findFirst());
-		final Class<?> declaringClass = opt.orElseThrow().getDeclaringClass();
 		final CommandInfo helpInfo = getCommandInfo("help");
 		if (helpInfo == null) {
 			System.err.println("ERROR: help command info not found");
 			return;
 		}
 
-		if (declaringClass.isAnnotationPresent(JdaCommand.class)) {
-			((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, declaringClass.getAnnotation(JdaCommand.class).name());
-		} else if (declaringClass.isAnnotationPresent(JdaSubcommand.class)) {
-			((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, declaringClass.getAnnotation(JdaSubcommand.class).name());
-		}
+		((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, commandName);
 	}
 
+	@Override
 	public List<Long> getOwnerIds() {
 		return commandListener.getOwnerIds();
 	}
 
-	/**
-	 * Returns the {@linkplain CommandInfo} object of the specified command, the name can be an alias too
-	 *
-	 * @param cmdName Name / alias of the command
-	 * @return The {@linkplain CommandInfo} object of the command
-	 */
+	@Override
 	@Nullable
 	public CommandInfo getCommandInfo(String cmdName) {
 		return commandListener.getCommandInfo(cmdName);
 	}
 
-	/**
-	 * Returns the <b>unresolved</b> arguments of the command event
-	 *
-	 * @return List of String arguments
-	 */
+	@Override
 	public List<String> getArgumentsStrList() {
 		if (!argumentsStr.isBlank()) {
 			return Arrays.asList(argumentsStr.split(" "));
@@ -73,21 +66,12 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 		}
 	}
 
-	/**
-	 * Returns the full argument part of the message
-	 *
-	 * @return Argument part of the message
-	 */
+	@Override
 	public String getArgumentsStr() {
 		return argumentsStr;
 	}
 
-	/**
-	 * Send an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
-	 *
-	 * @param message Custom message of what part of the command failed
-	 * @param e       The Exception that occurred
-	 */
+	@Override
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> System.err.println("Could not send message to channel : " + message));
 
@@ -103,33 +87,16 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 				t -> System.err.println("Could not send message to owner : " + message));
 	}
 
-	/**
-	 * Throwable consumer that, when triggered, sends an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
-	 *
-	 * @param message Custom message of what part of the command failed
-	 * @return A Throwable consumer
-	 */
+	@Override
 	public Consumer<? super Throwable> failureReporter(String message) {
 		return t -> reportError(message, t);
 	}
 
-	/**
-	 * <p>Returns the best author name possible</p>
-	 * <p>If the User is not in the guild then returns his tag (Name#Discriminator)</p>
-	 * <p>If the User is in the guild then returns his effective name</p>
-	 *
-	 * @return The best way to describe someone's name
-	 */
+	@Override
 	public String getAuthorBestName() {
 		return getMember().getEffectiveName();
 	}
 
-	/**
-	 * The Author of the Message received as {@link net.dv8tion.jda.api.entities.Member Member} object.
-	 * <br>The {@linkplain Member} will never be null as this {@linkplain CommandEvent} is not constructed if the author is a web hook
-	 *
-	 * @return The Author of the Message as Member object.
-	 */
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
 	@Override
@@ -137,105 +104,49 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent {
 		return super.getMember();
 	}
 
-	/**
-	 * Returns the default embed set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @return Default embed of the bot
-	 */
+	@Override
 	@NotNull
 	public EmbedBuilder getDefaultEmbed() {
 		return commandListener.getDefaultEmbedFunction().get();
 	}
 
-	/**
-	 * Returns the default embed footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @return Default embed footer icon of the bot
-	 */
+	@Override
 	@Nullable
 	public InputStream getDefaultIconStream() {
 		return commandListener.getDefaultFooterIconSupplier().get();
 	}
 
-	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @param channel     {@linkplain MessageChannel} to send the embed in
-	 * @param embed       {@linkplain MessageEmbed} to send
-	 * @param onSuccess   Consumer to call when the embed has been successfully sent
-	 * @param onException Consumer to call when an exception occurred
-	 */
-	public void sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Message> onSuccess, Consumer<? super Throwable> onException) {
-		sendWithEmbedFooterIcon(channel, getDefaultIconStream(), embed, onSuccess, onException);
+	@Override
+	public MessageAction sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException) {
+		return sendWithEmbedFooterIcon(channel, embed, onException);
 	}
 
-	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @param channel     {@linkplain MessageChannel} to send the embed in
-	 * @param iconStream  InputStream of the footer icon, the input stream is closed upon success / error
-	 * @param embed       {@linkplain MessageEmbed} to send
-	 * @param onSuccess   Consumer to call when the embed has been successfully sent
-	 * @param onException Consumer to call when an exception occurred
-	 */
-	public void sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Message> onSuccess, Consumer<? super Throwable> onException) {
+	@Override
+	@CheckReturnValue
+	public MessageAction sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException) {
+		return sendWithEmbedFooterIcon(channel, getDefaultIconStream(), embed, onException);
+	}
+
+	@Override
+	@CheckReturnValue
+	public MessageAction sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		if (iconStream != null) {
 			final SimpleStream stream = SimpleStream.of(iconStream, onException);
-			channel.sendFile(stream, "icon.jpg").embed(embed).queue(x -> {
-				stream.close();
-				if (onSuccess != null) {
-					onSuccess.accept(x);
-				}
-			}, t -> {
-				stream.close();
-				if (onException != null) {
-					onException.accept(t);
-				}
-			});
+			return new MessageActionWrapper(channel.sendFile(stream, "icon.jpg").embed(embed), onException);
 		} else {
-			channel.sendMessage(embed).queue(x -> {
-				if (onSuccess != null) {
-					onSuccess.accept(x);
-				}
-			}, t -> {
-				if (onException != null) {
-					onException.accept(t);
-				}
-			});
+			return new MessageActionWrapper(channel.sendMessage(embed), onException);
 		}
 	}
 
-	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @param channel {@linkplain MessageChannel} to send the embed in
-	 * @param embed   {@linkplain MessageEmbed} to send
-	 * @return The sent message
-	 */
-	public Message completeWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed) {
-		return completeWithEmbedFooterIcon(channel, getDefaultIconStream(), embed);
+	@Override
+	@CheckReturnValue
+	public RestAction<Void> reactSuccess() {
+		return channel.addReactionById(messageId, SUCCESS);
 	}
 
-	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
-	 *
-	 * @param channel    {@linkplain MessageChannel} to send the embed in
-	 * @param iconStream InputStream of the footer icon, the input stream is closed upon success / error
-	 * @param embed      {@linkplain MessageEmbed} to send
-	 * @return The sent message
-	 */
-	public Message completeWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed) {
-		final Message message;
-		try {
-			message = channel.sendFile(iconStream, "icon.jpg").embed(embed).complete();
-		} finally {
-			try {
-				iconStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return message;
+	@Override
+	@CheckReturnValue
+	public RestAction<Void> reactError() {
+		return channel.addReactionById(messageId, ERROR);
 	}
 }

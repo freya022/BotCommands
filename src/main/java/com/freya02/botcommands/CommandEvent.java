@@ -30,8 +30,8 @@ public class CommandEvent extends BaseCommandEvent {
 
 	private final List<Object> arguments = new ArrayList<>();
 
-	CommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String arguments) {
-		super(commandListener, event, arguments);
+	CommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String commandName, String arguments) {
+		super(commandListener, event, commandName, arguments);
 
 		new RichTextFinder(arguments, true, false, true, false).processResults(this::processText);
 	}

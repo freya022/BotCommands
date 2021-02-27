@@ -176,7 +176,7 @@ final class HelpCommand extends Command {
 
 		final MessageEmbed embed = generalHelpBuilder.build();
 		event.getAuthor().openPrivateChannel().queue(
-				privateChannel -> event.sendWithEmbedFooterIcon(privateChannel, event.getDefaultIconStream(), embed, x -> event.getMessage().addReaction("✅").queue(), event.failureReporter("Unable to send help message")),
+				privateChannel -> event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).queue(),
 				t -> event.getChannel().sendMessage("Your DMs are not open").queue());
 
 	}
