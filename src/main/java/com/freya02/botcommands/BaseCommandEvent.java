@@ -20,6 +20,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Base class containing several utility methods:</p>
+ * <ul>
+ *     <li>Unhandled exception reporting</li>
+ *     <li>Send embeds with footer icon with specified icons / default icon</li>
+ *     <li>Sending the command's help embed</li>
+ *     <li>Adding a reaction to indicate command success/failure</li>
+ * </ul>
+ */
 public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBaseCommandEvent {
 	private static final String SUCCESS = EmojiResolver.resolveEmojis(":white_check_mark:");
 	private static final String ERROR = EmojiResolver.resolveEmojis(":x:");

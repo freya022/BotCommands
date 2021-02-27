@@ -23,7 +23,8 @@ import java.util.regex.Pattern;
 /**
  * <p>Contains all the information about the triggered command</p>
  * <p>Arguments are tokenized and resolved into entities if possible</p>
- * <p>Also contains utility methods for fast error handling, default embeds specified in {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier) setDefaultEmbedFunction(...)}, and embed sender with the default icon stream</p>
+ *
+ * @see BaseCommandEvent
  */
 public class CommandEvent extends BaseCommandEvent {
 	private static final Pattern idPattern = Pattern.compile("(\\d+)");
