@@ -28,7 +28,6 @@ public interface ICommandEvent {
 	 */
 	<T> boolean hasNext(Class<T> clazz);
 
-	@SuppressWarnings("unchecked")
 	<T> T peekArgument(Class<T> clazz);
 
 	/**
