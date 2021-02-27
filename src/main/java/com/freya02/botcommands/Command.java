@@ -14,7 +14,9 @@ public abstract class Command {
 	 *
 	 * @param event {@linkplain CommandEvent} object for gathering arguments / author / channel / etc...
 	 */
-	protected abstract void execute(CommandEvent event);
+	protected void execute(CommandEvent event) {
+		event.showHelp();
+	}
 
 	/**
 	 * <p>Returns a detailed embed of what the command is, it is used by the internal 'help' command</p>
