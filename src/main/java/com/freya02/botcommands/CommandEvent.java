@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,7 +25,7 @@ import java.util.regex.Pattern;
  *
  * @see BaseCommandEvent
  */
-public class CommandEvent extends BaseCommandEvent {
+public class CommandEvent extends BaseCommandEvent implements ICommandEvent {
 	private static final Pattern idPattern = Pattern.compile("(\\d+)");
 
 	private final List<Object> arguments = new ArrayList<>();
@@ -46,22 +45,12 @@ public class CommandEvent extends BaseCommandEvent {
 		return null;
 	}
 
-	/**
-	 * Returns the <b>resolved</b> arguments of the command event, these can be a {@linkplain User}, {@linkplain Role}, {@linkplain TextChannel} or a {@linkplain String}
-	 *
-	 * @return List of arguments
-	 */
+	@Override
 	public List<Object> getArguments() {
 		return arguments;
 	}
 
-	/**
-	 * Checks if the next argument exists and is of type T, returns <code>true</code> if so
-	 *
-	 * @param clazz Class of the requested type
-	 * @param <T>   Type of the requested argument
-	 * @return <code>true</code> if the argument exists, <code>false</code> if not
-	 */
+	@Override
 	public <T> boolean hasNext(Class<T> clazz) {
 		if (arguments.isEmpty()) {
 			return false;
@@ -72,6 +61,7 @@ public class CommandEvent extends BaseCommandEvent {
 		return clazz.isAssignableFrom(o.getClass());
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T peekArgument(Class<T> clazz) {
 		if (arguments.isEmpty()) {
@@ -87,14 +77,7 @@ public class CommandEvent extends BaseCommandEvent {
 		}
 	}
 
-	/**
-	 * Returns the next argument if it is of type T
-	 *
-	 * @param clazz Class of the requested type
-	 * @param <T>   Type of the requested argument
-	 * @return The argument of type T if it exists
-	 * @throws NoSuchElementException In case there is no more arguments to be read
-	 */
+	@Override
 	@Nonnull
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
@@ -111,16 +94,7 @@ public class CommandEvent extends BaseCommandEvent {
 		}
 	}
 
-	/**
-	 * Returns the next IMentionable
-	 *
-	 * @param classes Class(es) of the requested type
-	 * @param <T>     Type of the requested argument
-	 * @return The argument of type T, extending IMentionable, if it exists
-	 * @throws BadIdException         In case the ID is not a valid snowflake, or does not refer to a known IMentionable
-	 * @throws NoIdException          In case there is no ID / IMentionable in the message
-	 * @throws NoSuchElementException In case there is no more arguments to be read, or the type isn't the same
-	 */
+	@Override
 	@Nonnull
 	@SuppressWarnings({"unchecked"})
 	public <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException {
