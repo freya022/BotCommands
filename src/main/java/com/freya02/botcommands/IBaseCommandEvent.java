@@ -22,6 +22,7 @@ public interface IBaseCommandEvent {
 
 	/**
 	 * Returns a list of IDs of the bot owners
+	 *
 	 * @return a list of IDs of the bot owners
 	 */
 	List<Long> getOwnerIds();
@@ -145,22 +146,62 @@ public interface IBaseCommandEvent {
 	@CheckReturnValue
 	RestAction<Void> reactError();
 
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param text {@linkplain CharSequence} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(CharSequence)
+	 */
 	@CheckReturnValue
 	@Nonnull
 	RestAction<Message> reply(@NotNull CharSequence text);
 
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param args   Objects to use for formatting
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessageFormat(String, Object...)
+	 */
 	@CheckReturnValue
 	@Nonnull
 	RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args);
 
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 */
 	@CheckReturnValue
 	@Nonnull
 	RestAction<Message> reply(@NotNull MessageEmbed embed);
 
+	/**
+	 * Sends a file as a reply in the event's channel
+	 *
+	 * @param data     {@linkplain InputStream} of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+	 */
 	@CheckReturnValue
 	@Nonnull
 	RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
 
+	/**
+	 * Sends a file as a reply in the event's channel
+	 *
+	 * @param data     byte array of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
+	 */
 	@CheckReturnValue
 	@Nonnull
 	RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
