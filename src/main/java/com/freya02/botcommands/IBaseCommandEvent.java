@@ -1,12 +1,9 @@
 package com.freya02.botcommands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,7 +104,7 @@ public interface IBaseCommandEvent {
 	 * @return The MessageAction to send
 	 */
 	@CheckReturnValue
-	MessageAction sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
+	RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
 
 	/**
 	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
@@ -118,7 +115,7 @@ public interface IBaseCommandEvent {
 	 * @return The MessageAction to send
 	 */
 	@CheckReturnValue
-	MessageAction sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
+	RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
 
 	/**
 	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
@@ -130,7 +127,7 @@ public interface IBaseCommandEvent {
 	 * @return The MessageAction to send
 	 */
 	@CheckReturnValue
-	MessageAction sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException);
+	RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException);
 
 	/**
 	 * Add a :white_check_mark: reaction on the event message to indicate command success
@@ -147,4 +144,24 @@ public interface IBaseCommandEvent {
 	 */
 	@CheckReturnValue
 	RestAction<Void> reactError();
+
+	@CheckReturnValue
+	@Nonnull
+	RestAction<Message> reply(@NotNull CharSequence text);
+
+	@CheckReturnValue
+	@Nonnull
+	RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args);
+
+	@CheckReturnValue
+	@Nonnull
+	RestAction<Message> reply(@NotNull MessageEmbed embed);
+
+	@CheckReturnValue
+	@Nonnull
+	RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
+
+	@CheckReturnValue
+	@Nonnull
+	RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
 }

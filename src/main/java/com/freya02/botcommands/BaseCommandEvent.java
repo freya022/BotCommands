@@ -3,13 +3,9 @@ package com.freya02.botcommands;
 import com.freya02.botcommands.utils.EmojiResolver;
 import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -127,24 +123,24 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBase
 	}
 
 	@Override
-	public MessageAction sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException) {
+	public RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException) {
 		return sendWithEmbedFooterIcon(channel, embed, onException);
 	}
 
 	@Override
 	@CheckReturnValue
-	public MessageAction sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException) {
+	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		return sendWithEmbedFooterIcon(channel, getDefaultIconStream(), embed, onException);
 	}
 
 	@Override
 	@CheckReturnValue
-	public MessageAction sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
+	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		if (iconStream != null) {
 			final SimpleStream stream = SimpleStream.of(iconStream, onException);
-			return new MessageActionWrapper(channel.sendFile(stream, "icon.jpg").embed(embed), onException);
+			return channel.sendTyping().flatMap(v -> channel.sendFile(stream, "icon.jpg").embed(embed));
 		} else {
-			return new MessageActionWrapper(channel.sendMessage(embed), onException);
+			return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
 		}
 	}
 
@@ -160,38 +156,38 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBase
 		return channel.addReactionById(messageId, ERROR);
 	}
 
+	@Override
 	@CheckReturnValue
 	@Nonnull
-	public MessageAction reply(@NotNull CharSequence text) {
-		return new MessageActionWrapper(channel.sendMessage(text),
-				failureReporter(String.format("Failed to reply in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	public RestAction<Message> reply(@NotNull CharSequence text) {
+		return channel.sendTyping().flatMap(v -> channel.sendMessage(text));
 	}
 
+	@Override
 	@CheckReturnValue
 	@Nonnull
-	public MessageAction replyFormat(@NotNull String format, @NotNull Object... args) {
-		return new MessageActionWrapper(channel.sendMessageFormat(format, args),
-				failureReporter(String.format("Failed to reply format in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	public RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args) {
+		return channel.sendTyping().flatMap(v -> channel.sendMessageFormat(format, args));
 	}
 
+	@Override
 	@CheckReturnValue
 	@Nonnull
-	public MessageAction reply(@NotNull MessageEmbed embed) {
-		return new MessageActionWrapper(channel.sendMessage(embed),
-				failureReporter(String.format("Failed to reply in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	public RestAction<Message> reply(@NotNull MessageEmbed embed) {
+		return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
 	}
 
+	@Override
 	@CheckReturnValue
 	@Nonnull
-	public MessageAction replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return new MessageActionWrapper(channel.sendFile(data, fileName, options),
-				failureReporter(String.format("Failed to reply file in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	public RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+		return channel.sendTyping().flatMap(v -> channel.sendFile(data, fileName, options));
 	}
 
+	@Override
 	@CheckReturnValue
 	@Nonnull
-	public MessageAction replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return new MessageActionWrapper(channel.sendFile(data, fileName, options),
-				failureReporter(String.format("Failed to reply file in channel %s (%d) in guild %s (%d)", channel.getName(), channel.getIdLong(), guild.getName(), guild.getIdLong())));
+	public RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+		return channel.sendTyping().flatMap(v -> channel.sendFile(data, fileName, options));
 	}
 }
