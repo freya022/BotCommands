@@ -132,11 +132,26 @@ final class CommandListener extends ListenerAdapter {
 		String args = cmdFast.args;
 
 		CommandInfo commandInfo = stringCommandMap.get(commandName);
+
 		if (commandInfo == null) {
 			if (disabledCommands.contains(commandName)) {
 				reply(event, commandDisabledMsg);
 			} else {
-				reply(event, commandNotFoundMsg);
+				List<String> suggestions = new ArrayList<>();
+				for (String s : stringCommandMap.keySet()) {
+					int i;
+					for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
+						if (s.charAt(i) != commandName.charAt(i)) break;
+					}
+
+					if (i > 1) {
+						suggestions.add(s);
+					}
+				}
+
+				if (!suggestions.isEmpty()) {
+					reply(event, String.format(commandNotFoundMsg, "**" + String.join("**, **", suggestions) + "**"));
+				}
 			}
 			return;
 		}

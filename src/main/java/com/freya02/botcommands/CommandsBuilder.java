@@ -33,7 +33,7 @@ public final class CommandsBuilder {
 	private String channelCooldownMsg = "You must wait **%.2f seconds in this channel**";
 	private String guildCooldownMsg = "You must wait **%.2f seconds in this guild**";
 
-	private String commandNotFoundMsg = "Unknown command";
+	private String commandNotFoundMsg = "Unknown command, maybe you meant: %s";
 	private String commandDisabledMsg = "This command is disabled for the moment";
 	private String roleOnlyErrorMsg = "You must have the role `%s` for this";
 
@@ -142,12 +142,16 @@ public final class CommandsBuilder {
 	}
 
 	/** <p>Sets the displayed message when the command is not found</p>
-	 * <p><i>Default message : Unknown command</i></p>
+	 * <p><i>Default message : Unknown command, maybe you meant: %s</i></p>
 	 * @param commandNotFoundMsg Message to display when the command is not found
 	 * @return This builder
 	 */
 	public CommandsBuilder setCommandNotFoundMsg(@NotNull String commandNotFoundMsg) {
-		this.commandNotFoundMsg = Utils.requireNonBlankString(commandNotFoundMsg, "'Command not found' error message is null");
+		Utils.requireNonBlankString(commandNotFoundMsg, "'Command not found' error message is null");
+		if (!commandNotFoundMsg.contains("%s")) {
+			throw new IllegalArgumentException("The 'Command not found' string must contain one %s formatter");
+		}
+		this.commandNotFoundMsg = commandNotFoundMsg;
 		return this;
 	}
 
