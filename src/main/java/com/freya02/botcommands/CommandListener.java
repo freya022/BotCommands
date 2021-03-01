@@ -123,6 +123,13 @@ final class CommandListener extends ListenerAdapter {
 		if (event.getAuthor().isBot() || event.isWebhookMessage())
 			return;
 
+		final Member member = event.getMember();
+
+		if (member == null) {
+			System.err.println("Command caller member is null !");
+			return;
+		}
+
 		final String msg = event.getMessage().getContentRaw();
 
 		final Cmd cmdFast = getCmdFast(msg);
@@ -135,12 +142,25 @@ final class CommandListener extends ListenerAdapter {
 
 		CommandInfo commandInfo = stringCommandMap.get(commandName);
 
+		final boolean isNotOwner = !ownerIds.contains(member.getIdLong());
 		if (commandInfo == null) {
 			if (disabledCommands.contains(commandName)) {
 				reply(event, commandDisabledMsg);
 			} else {
 				List<String> suggestions = new ArrayList<>();
-				for (String s : stringCommandMap.keySet()) {
+
+				for (var entry : stringCommandMap.entrySet()) {
+					String s = entry.getKey();
+					CommandInfo lCommandInfo = entry.getValue();
+
+					if (isNotOwner && lCommandInfo.isHidden()) {
+						continue;
+					}
+
+					if (isNotOwner && lCommandInfo.isRequireOwner()) {
+						continue;
+					}
+
 					int i;
 					for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
 						if (s.charAt(i) != commandName.charAt(i)) break;
@@ -175,14 +195,6 @@ final class CommandListener extends ListenerAdapter {
 			return;
 		}
 
-		final Member member = event.getMember();
-
-		if (member == null) {
-			System.err.println("Command caller member is null !");
-			return;
-		}
-
-		final boolean isNotOwner = !ownerIds.contains(member.getIdLong());
 		if (isNotOwner && commandInfo.isHidden()) {
 			reply(event, commandNotFoundMsg);
 			return;
