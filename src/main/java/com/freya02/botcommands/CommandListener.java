@@ -38,21 +38,23 @@ final class CommandListener extends ListenerAdapter {
 	private final String commandDisabledMsg;
 	private final List<String> disabledCommands;
 
-	private static final ThreadFactory threadFactory = runnable -> {
-		final Thread thread = new Thread(runnable);
-		thread.setDaemon(true);
-		return thread;
-	};
-
-	private static final ScheduledExecutorService userCooldownService = Executors.newSingleThreadScheduledExecutor(threadFactory);
-	private static final ScheduledExecutorService channelCooldownService = Executors.newSingleThreadScheduledExecutor(threadFactory);
-	private static final ScheduledExecutorService guildCooldownService = Executors.newSingleThreadScheduledExecutor(threadFactory);
+	private static final ScheduledExecutorService userCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("User cooldown thread"));
+	private static final ScheduledExecutorService channelCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Channel cooldown thread"));
+	private static final ScheduledExecutorService guildCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Guild cooldown thread"));
 
 	private static final Map<Long, ScheduledFuture<?>> userCooldowns = new HashMap<>();
 	private static final Map<Long, ScheduledFuture<?>> channelCooldowns = new HashMap<>();
 	private static final Map<Long, ScheduledFuture<?>> guildCooldowns = new HashMap<>();
 
-	private final ExecutorService commandService = Executors.newCachedThreadPool();
+	private int commandThreadNumber = 0;
+	private final ExecutorService commandService = Executors.newCachedThreadPool(r -> {
+		final Thread thread = new Thread(r);
+		thread.setDaemon(false);
+		thread.setUncaughtExceptionHandler((t, e) -> printExceptionString("An unexpected exception happened in command thread '" + t.getName() + "':", e));
+		thread.setName("Command thread #" + commandThreadNumber++);
+
+		return thread;
+	});
 
 	public CommandListener(List<String> prefixes, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String commandDisabledMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, Map<String, CommandInfo> stringCommandMap, List<String> disabledCommands) {
 		this.prefixes = prefixes;
@@ -284,16 +286,20 @@ final class CommandListener extends ListenerAdapter {
 		void run() throws Exception;
 	}
 
+	private static void printExceptionString(String message, Throwable e) {
+		final CharArrayWriter out = new CharArrayWriter(1024);
+		out.append(message).append("'\n");
+		final PrintWriter printWriter = new PrintWriter(out);
+		e.printStackTrace(printWriter);
+		System.err.println(out.toString());
+	}
+
 	private void runCommand(RunnableEx code, String msg) {
 		commandService.submit(() -> {
 			try {
 				code.run();
 			} catch (Exception e) {
-				final CharArrayWriter out = new CharArrayWriter(512);
-				out.append("Unhandled exception in thread '").append(Thread.currentThread().getName()).append("' while executing request '").append(msg).append("'\n");
-				final PrintWriter printWriter = new PrintWriter(out);
-				e.printStackTrace(printWriter);
-				System.err.println(out.toString());
+				printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg, e);
 			}
 		});
 	}

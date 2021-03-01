@@ -6,6 +6,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 final class Utils {
@@ -51,5 +52,14 @@ final class Utils {
 		}
 
 		return str;
+	}
+
+	static ThreadFactory createThreadFactory(String name) {
+		return runnable -> {
+			final Thread thread = new Thread(runnable);
+			thread.setDaemon(true);
+			thread.setName(name);
+			return thread;
+		};
 	}
 }
