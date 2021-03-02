@@ -160,21 +160,21 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBase
 	@CheckReturnValue
 	@Nonnull
 	public RestAction<Message> reply(@NotNull CharSequence text) {
-		return channel.sendTyping().flatMap(v -> channel.sendMessage(text));
+		return channel.sendMessage(text);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
 	public RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args) {
-		return channel.sendTyping().flatMap(v -> channel.sendMessageFormat(format, args));
+		return channel.sendMessageFormat(format, args);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
 	public RestAction<Message> reply(@NotNull MessageEmbed embed) {
-		return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
+		return channel.sendMessage(embed);
 	}
 
 	@Override
