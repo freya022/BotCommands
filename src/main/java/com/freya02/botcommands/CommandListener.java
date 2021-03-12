@@ -106,7 +106,7 @@ final class CommandListener extends ListenerAdapter {
 		}
 		if (prefixLength == -1) return null;
 
-		msgNoPrefix = msg.substring(prefixLength);
+		msgNoPrefix = msg.substring(prefixLength).trim();
 
 		final int endIndex = msgNoPrefix.indexOf(' ');
 
