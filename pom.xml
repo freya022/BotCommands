@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.freya02</groupId>
-    <artifactId>BotCommands</artifactId>
+    <artifactId>botcommands</artifactId>
     <version>1.2</version>
 
     <distributionManagement>
