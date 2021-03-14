@@ -4,6 +4,12 @@ import com.vdurmont.emoji.EmojiParser;
 import org.jetbrains.annotations.NotNull;
 
 public class EmojiResolver extends EmojiParser {
+	/**
+	 * Resolves a shortcode emoji (e.g: :joy:) into a unicode emoji for JDA to use (on reactions for example)
+	 *
+	 * @param input An emoji shortcode
+	 * @return The unicode string of this emoji
+	 */
 	@NotNull
 	public static String resolveEmojis(String input) {
 		//Find emoji aliases (shortcodes)
