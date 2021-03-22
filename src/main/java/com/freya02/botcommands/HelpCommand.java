@@ -81,11 +81,13 @@ final class HelpCommand extends Command {
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
-		generalHelpBuilder.setTimestamp(Instant.now());
-		final Member member = event.getMember();
-		generalHelpBuilder.setColor(member.getColorRaw());
+		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : generalHelpBuilder;
 
-		final MessageEmbed embed = generalHelpBuilder.build();
+		builder.setTimestamp(Instant.now());
+		final Member member = event.getMember();
+		builder.setColor(member.getColorRaw());
+
+		final MessageEmbed embed = builder.build();
 		event.getAuthor().openPrivateChannel().queue(
 				privateChannel -> event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).queue(
 						m -> event.reactSuccess().queue(),
