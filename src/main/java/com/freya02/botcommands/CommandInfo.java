@@ -1,17 +1,23 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.annotation.*;
+import com.freya02.botcommands.regex.CommandTransformer;
 import com.freya02.botcommands.regex.MethodPattern;
 import net.dv8tion.jda.api.Permission;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public final class CommandInfo {
-	private final Command command;
+	private final Command parentCommand;
 
 	private final String name;
 	private final String[] aliases;
 
 	private final String description;
+
 	private final String category;
 
 	private final boolean requireOwner;
@@ -21,50 +27,83 @@ public final class CommandInfo {
 	private final Permission[] botPermissions;
 
 	private final String requiredRole;
-
 	private final int cooldown;
 	private final CooldownScope cooldownScope;
-
-	private final List<CommandInfo> subcommandsInfo;
 
 	private final boolean addSubcommandHelp, addExecutableHelp;
 
 	private final List<MethodPattern> methodPatterns;
+	private final List<Command> subcommands = new ArrayList<>();
 
-	public CommandInfo(Command command, String name, String[] aliases, String description, String category,
-	                   boolean hidden, boolean requireOwner,
-	                   Permission[] userPermissions, Permission[] botPermissions,
-	                   String requiredRole,
-	                   int cooldown, CooldownScope cooldownScope,
-	                   List<CommandInfo> subcommandsInfo, boolean addSubcommandHelp, boolean addExecutableHelp, List<MethodPattern> methodPatterns) {
-		this.command = command;
-		this.name = name;
-		this.aliases = aliases;
-		this.description = description;
-		this.category = category;
-		this.hidden = hidden;
-		this.requireOwner = requireOwner;
-		this.userPermissions = userPermissions;
-		this.botPermissions = botPermissions;
-		this.requiredRole = requiredRole;
-		this.cooldown = cooldown;
-		this.cooldownScope = cooldownScope;
-		this.subcommandsInfo = subcommandsInfo;
-		this.addSubcommandHelp = addSubcommandHelp;
-		this.addExecutableHelp = addExecutableHelp;
-		this.methodPatterns = methodPatterns;
+	public CommandInfo(Command command, BContext context) {
+		try {
+			final Class<?> declaringClass = command.getClass().getDeclaringClass();
+			if (declaringClass != null) {
+				this.parentCommand = context.findCommand(declaringClass.getAnnotation(JdaCommand.class).name());
+			} else {
+				this.parentCommand = null;
+			}
+
+			final JdaCommand jdaCommand = command.getClass().getAnnotation(JdaCommand.class);
+			category = jdaCommand.category();
+			name = jdaCommand.name();
+
+			if (name.contains(" "))
+				throw new IllegalArgumentException("Command name cannot have spaces in '" + name + "'");
+
+			aliases = jdaCommand.aliases();
+			description = jdaCommand.description();
+
+			userPermissions = jdaCommand.userPermissions();
+			botPermissions = jdaCommand.botPermissions();
+
+			requiredRole = jdaCommand.requiredRole();
+
+			cooldown = jdaCommand.cooldown();
+			cooldownScope = jdaCommand.cooldownScope();
+
+			methodPatterns = CommandTransformer.getMethodPatterns(command, command.getClass().isAnnotationPresent(DebugPatterns.class));
+
+			hidden = command.getClass().isAnnotationPresent(Hidden.class);
+			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class);
+			addSubcommandHelp = command.getClass().isAnnotationPresent(AddSubcommandHelp.class);
+			addExecutableHelp = command.getClass().isAnnotationPresent(AddExecutableHelp.class);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Nullable
+	public Command getSubcommand(@NotNull Command parent, @NotNull String name) {
+		final List<Command> subcommands = parent.getInfo().getSubcommands();
+
+		for (Command subcommand : subcommands) {
+			if (subcommand.getInfo().getName().equals(name)) {
+				return subcommand;
+			}
+		}
+
+		return null;
+	}
+
+	void addSubcommand(Command command) {
+		subcommands.add(command);
+	}
+
+	public List<Command> getSubcommands() {
+		return subcommands;
 	}
 
 	public boolean isRequireOwner() {
 		return requireOwner;
 	}
 
-	public boolean isHidden() {
-		return hidden;
+	public Command getParentCommand() {
+		return parentCommand;
 	}
 
-	public Command getCommand() {
-		return command;
+	public boolean isHidden() {
+		return hidden;
 	}
 
 	public String getName() {
@@ -101,10 +140,6 @@ public final class CommandInfo {
 
 	public CooldownScope getCooldownScope() {
 		return cooldownScope;
-	}
-
-	public List<CommandInfo> getSubcommandsInfo() {
-		return subcommandsInfo;
 	}
 
 	public boolean isAddSubcommandHelp() {

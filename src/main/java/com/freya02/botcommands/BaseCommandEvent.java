@@ -1,8 +1,7 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.utils.EmojiResolver;
-import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -13,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * <p>Base class containing several utility methods:</p>
@@ -26,83 +25,58 @@ import java.util.function.Consumer;
  *     <li>Adding a reaction to indicate command success/failure</li>
  * </ul>
  */
-public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBaseCommandEvent {
-	private static final String SUCCESS = EmojiResolver.resolveEmojis(":white_check_mark:");
-	private static final String ERROR = EmojiResolver.resolveEmojis(":x:");
-
-	protected final CommandListener commandListener;
-	protected final String commandName;
-	protected final String argumentsStr;
-
-	BaseCommandEvent(CommandListener commandListener, GuildMessageReceivedEvent event, String commandName, String arguments) {
-		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
-		this.commandListener = commandListener;
-		this.commandName = commandName;
-		this.argumentsStr = arguments;
+public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
+	public BaseCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
+		super(api, responseNumber, message);
 	}
 
-	@Override
-	public void showHelp() {
-		final CommandInfo helpInfo = getCommandInfo("help");
-		if (helpInfo == null) {
-			System.err.println("ERROR: help command info not found");
-			return;
-		}
+	public abstract BContext getContext();
 
-		((HelpCommand) helpInfo.getCommand()).getCommandHelp(this, commandName);
-	}
+	/**
+	 * Returns the <b>unresolved</b> arguments of the command event
+	 *
+	 * @return List of String arguments
+	 */
+	public abstract List<String> getArgumentsStrList();
 
-	@Override
-	public List<Long> getOwnerIds() {
-		return commandListener.getOwnerIds();
-	}
+	/**
+	 * Returns the full argument part of the message
+	 *
+	 * @return Argument part of the message
+	 */
+	public abstract String getArgumentsStr();
 
-	@Override
-	@Nullable
-	public CommandInfo getCommandInfo(String cmdName) {
-		return commandListener.getCommandInfo(cmdName);
-	}
+	/**
+	 * Send an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
+	 *
+	 * @param message Custom message of what part of the command failed
+	 * @param e       The Exception that occurred
+	 */
+	public abstract void reportError(String message, Throwable e);
 
-	@Override
-	public List<String> getArgumentsStrList() {
-		if (!argumentsStr.isBlank()) {
-			return Arrays.asList(argumentsStr.split(" "));
-		} else {
-			return List.of();
-		}
-	}
+	/**
+	 * Throwable consumer that, when triggered, sends an error message to the event's {@linkplain TextChannel} and to the bot owner with the exception name and the simple exception description
+	 *
+	 * @param message Custom message of what part of the command failed
+	 * @return A Throwable consumer
+	 */
+	public abstract Consumer<? super Throwable> failureReporter(String message);
 
-	@Override
-	public String getArgumentsStr() {
-		return argumentsStr;
-	}
+	/**
+	 * <p>Returns the best author name possible</p>
+	 * <p>If the User is not in the guild then returns his tag (Name#Discriminator)</p>
+	 * <p>If the User is in the guild then returns his effective name</p>
+	 *
+	 * @return The best way to describe someone's name
+	 */
+	public abstract String getAuthorBestName();
 
-	@Override
-	public void reportError(String message, Throwable e) {
-		channel.sendMessage(message).queue(null, t -> System.err.println("Could not send message to channel : " + message));
-
-		final User owner = getJDA().getUserById(commandListener.getOwnerIds().get(0));
-
-		if (owner == null) {
-			System.err.println("Top owner ID is wrong !");
-			return;
-		}
-
-		owner.openPrivateChannel().queue(
-				channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null, t -> System.err.println("Could not send message to owner : " + message)),
-				t -> System.err.println("Could not send message to owner : " + message));
-	}
-
-	@Override
-	public Consumer<? super Throwable> failureReporter(String message) {
-		return t -> reportError(message, t);
-	}
-
-	@Override
-	public String getAuthorBestName() {
-		return getMember().getEffectiveName();
-	}
-
+	/**
+	 * The Author of the Message received as {@link net.dv8tion.jda.api.entities.Member Member} object.
+	 * <br>The {@linkplain Member} will never be null as this {@linkplain CommandEvent} is not constructed if the author is a web hook
+	 *
+	 * @return The Author of the Message as Member object.
+	 */
 	@SuppressWarnings("ConstantConditions")
 	@Nonnull
 	@Override
@@ -110,84 +84,162 @@ public class BaseCommandEvent extends GuildMessageReceivedEvent implements IBase
 		return super.getMember();
 	}
 
-	@Override
+	/**
+	 * Returns the default embed set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @return Default embed of the bot
+	 */
 	@NotNull
-	public EmbedBuilder getDefaultEmbed() {
-		return commandListener.getDefaultEmbedFunction().get();
-	}
+	public abstract EmbedBuilder getDefaultEmbed();
 
-	@Override
+	/**
+	 * Returns the default embed footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @return Default embed footer icon of the bot
+	 */
 	@Nullable
-	public InputStream getDefaultIconStream() {
-		return commandListener.getDefaultFooterIconSupplier().get();
-	}
+	public abstract InputStream getDefaultIconStream();
 
-	@Override
-	public RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException) {
-		return sendWithEmbedFooterIcon(channel, embed, onException);
-	}
-
-	@Override
+	/**
+	 * Sends a {@linkplain MessageEmbed} on the event's channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param onException Consumer to call when an exception occurred
+	 * @return The MessageAction to send
+	 */
 	@CheckReturnValue
-	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException) {
-		return sendWithEmbedFooterIcon(channel, getDefaultIconStream(), embed, onException);
-	}
+	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
 
-	@Override
+	/**
+	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel     {@linkplain MessageChannel} to send the embed in
+	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param onException Consumer to call when an exception occurred
+	 * @return The MessageAction to send
+	 */
 	@CheckReturnValue
-	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
-		if (iconStream != null) {
-			final SimpleStream stream = SimpleStream.of(iconStream, onException);
-			return channel.sendTyping().flatMap(v -> channel.sendFile(stream, "icon.jpg").embed(embed));
-		} else {
-			return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
-		}
-	}
+	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
 
-	@Override
+	/**
+	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon set by {@linkplain CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)}
+	 *
+	 * @param channel     {@linkplain MessageChannel} to send the embed in
+	 * @param iconStream  InputStream of the footer icon, the input stream is closed once it is unreachable
+	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param onException Consumer to call when an exception occurred
+	 * @return The MessageAction to send
+	 */
 	@CheckReturnValue
-	public RestAction<Void> reactSuccess() {
-		return channel.addReactionById(messageId, SUCCESS);
-	}
+	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException);
 
-	@Override
+	/**
+	 * Add a :white_check_mark: reaction on the event message to indicate command success
+	 *
+	 * @return The {@linkplain RestAction} responsible for adding the reaction
+	 */
 	@CheckReturnValue
-	public RestAction<Void> reactError() {
-		return channel.addReactionById(messageId, ERROR);
-	}
+	public abstract RestAction<Void> reactSuccess();
 
-	@Override
+	/**
+	 * Add a :x: reaction on the event message to indicate a command error
+	 *
+	 * @return The {@linkplain RestAction} responsible for adding the reaction
+	 */
 	@CheckReturnValue
-	@Nonnull
-	public RestAction<Message> reply(@NotNull CharSequence text) {
-		return channel.sendMessage(text);
-	}
+	public abstract RestAction<Void> reactError();
 
-	@Override
-	@CheckReturnValue
-	@Nonnull
-	public RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args) {
-		return channel.sendMessageFormat(format, args);
-	}
-
-	@Override
-	@CheckReturnValue
-	@Nonnull
-	public RestAction<Message> reply(@NotNull MessageEmbed embed) {
-		return channel.sendMessage(embed);
-	}
-
-	@Override
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param text {@linkplain CharSequence} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(CharSequence)
+	 */
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendTyping().flatMap(v -> channel.sendFile(data, fileName, options));
-	}
+	public abstract RestAction<Message> reply(@NotNull CharSequence text);
 
-	@Override
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param args   Objects to use for formatting
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessageFormat(String, Object...)
+	 */
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendTyping().flatMap(v -> channel.sendFile(data, fileName, options));
-	}
+	public abstract RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args);
+
+	/**
+	 * Sends a reply in the event's channel
+	 *
+	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> reply(@NotNull MessageEmbed embed);
+
+	/**
+	 * Sends a file as a reply in the event's channel
+	 *
+	 * @param data     {@linkplain InputStream} of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
+
+	/**
+	 * Sends a file as a reply in the event's channel
+	 *
+	 * @param data     byte array of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
+
+	/**
+	 * Sends an error reply in the event's channel
+	 *
+	 * @param text {@linkplain CharSequence} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(CharSequence)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> indicateError(@NotNull CharSequence text);
+
+	/**
+	 * Sends an error reply in the event's channel
+	 *
+	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param args   Objects to use for formatting
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessageFormat(String, Object...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> indicateErrorFormat(@NotNull String format, @NotNull Object... args);
+
+	/**
+	 * Sends an error reply in the event's channel
+	 *
+	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed);
 }

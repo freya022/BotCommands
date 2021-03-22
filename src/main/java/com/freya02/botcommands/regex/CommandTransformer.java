@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class CommandTransformer {
 	public static final Map<Class<?>, ArgumentFunction> map = new HashMap<>() {{
-		put(String.class, new ArgumentFunction("\"([^\"]+)\"", 1, (e, p) -> p[0]));
+		put(String.class, new ArgumentFunction("\"(\\X+?)\"", 1, (e, p) -> p[0]));
 		put(Emoji.class, new ArgumentFunction("([^\"]+)", 1, (e, p) -> new EmojiImpl(EmojiResolver.resolveEmojis(p[0]))));
 
 		put(int.class, new ArgumentFunction("(\\d+)", 1, (e, p) -> Integer.valueOf(p[0])));
@@ -41,10 +41,12 @@ public class CommandTransformer {
 		return t;
 	}
 
-	public static List<MethodPattern> getMethodPatterns(Command command) {
+	public static List<MethodPattern> getMethodPatterns(Command command, boolean debug) {
 		List<MethodPattern> list = new ArrayList<>();
 
-		for (Method method : command.getClass().getMethods()) {
+		final List<Method> candidates = new ArrayList<>();
+		final Method[] methods = command.getClass().getMethods();
+		for (Method method : methods) {
 			if (!method.isAnnotationPresent(Executable.class)) continue;
 			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
 
@@ -62,6 +64,25 @@ public class CommandTransformer {
 				continue;
 			}
 
+			candidates.add(method);
+		}
+
+		final boolean hasSpecificOrder = candidates.stream().anyMatch(m -> m.getAnnotation(Executable.class).order() != 0);
+		candidates.sort(new MethodComparator());
+		for (Method method : candidates) {
+			if (hasSpecificOrder) {
+				if (method.getAnnotation(Executable.class).order() == 0) {
+					System.err.println("Method " + method + " does not have an order specified but this class has at least one specified. Do not forget order cannot be 0");
+				}
+			}
+
+			if (debug) {
+				System.out.println("method = " + method);
+			}
+
+			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
+			parameterTypes.remove(0);
+
 			boolean hasEmoji = parameterTypes.stream().anyMatch(c -> c == Emoji.class);
 			List<ArgumentFunction> groupsList = new ArrayList<>();
 			StringBuilder patternBuilder = new StringBuilder(128);
@@ -71,13 +92,13 @@ public class CommandTransformer {
 				ArgumentFunction argumentFunction = map.get(parameterType);
 				if (i + 1 != parameterTypesSize) { //Replace greedy quantifier by a lazy one in situations where parsing shouldn't change, to save steps
 					if (parameterType == String.class) {
-						argumentFunction = argumentFunction.optimize(hasEmoji ? "\"([^\"]+?)\"" : "([^\"]+?)");
+						argumentFunction = argumentFunction.optimize(hasEmoji ? "\"(\\X+?)\"" : "(\\X+?)");
 					} else if (parameterType == Emoji.class) {
 						argumentFunction = argumentFunction.optimize("([^\"]+?)");
 					}
 				} else if (!hasEmoji) {
 					if (parameterType == String.class) {
-						argumentFunction = argumentFunction.optimize("([^\"]+)");
+						argumentFunction = argumentFunction.optimize("(\\X+?)");
 					}
 				}
 
@@ -101,6 +122,7 @@ public class CommandTransformer {
 			}
 			list.add(new MethodPattern(method, Pattern.compile(regex), groupsList.toArray(new ArgumentFunction[0])));
 		}
+
 		return list;
 	}
 

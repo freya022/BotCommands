@@ -1,11 +1,10 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.*;
-import com.freya02.botcommands.regex.CommandTransformer;
-import com.freya02.botcommands.regex.MethodPattern;
+import com.freya02.botcommands.annotation.ConditionalUse;
+import com.freya02.botcommands.annotation.JdaCommand;
+import com.freya02.botcommands.annotation.RequireOwner;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,39 +16,22 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
-	private List<String> prefixes;
-	private final List<Long> ownerIds = new ArrayList<>();
-
-	private String userPermErrorMsg = "You are not allowed to do this";
-	private String botPermErrorMsg = "I don't have the required permissions to do this";
-	private String ownerOnlyErrorMsg = "Only the owner can use this";
-
-	private String userCooldownMsg = "You must wait **%.2f seconds**";
-	private String channelCooldownMsg = "You must wait **%.2f seconds in this channel**";
-	private String guildCooldownMsg = "You must wait **%.2f seconds in this guild**";
-
-	private String commandNotFoundMsg = "Unknown command, maybe you meant: %s";
-	private String commandDisabledMsg = "This command is disabled for the moment";
-	private String roleOnlyErrorMsg = "You must have the role `%s` for this";
-
-	private Supplier<EmbedBuilder> defaultEmbedFunction = EmbedBuilder::new;
-	private Supplier<InputStream> defaultFooterIconSupplier = InputStream::nullInputStream;
-	private final List<String> disabledCommands = new ArrayList<>();
+	private final BContextImpl context = new BContextImpl();
 
 	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
 		Utils.requireNonBlankString(prefix, "Prefix is null");
-		this.prefixes = List.of(prefix);
-		ownerIds.add(topOwnerId);
+		context.setPrefixes(List.of(prefix));
+		context.addOwner(topOwnerId);
 	}
 
 	private CommandsBuilder(long topOwnerId) {
-		this.prefixes = null;
-		ownerIds.add(topOwnerId);
+		context.addOwner(topOwnerId);
 	}
 
 	/**Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
@@ -67,17 +49,6 @@ public final class CommandsBuilder {
 		return new CommandsBuilder(prefix, topOwnerId);
 	}
 
-	/** <p>Sets the displayed message when the user does not have the command's specified role</p>
-	 * <p><b>Requires one string format for the role name</b></p>
-	 * <p><i>Default message : You must have the role `%s` for this</i></p>
-	 * @param roleOnlyErrorMsg Message to display when the user does not have the command's specified role
-	 * @return This builder
-	 */
-	public CommandsBuilder setRoleOnlyErrorMsg(@NotNull String roleOnlyErrorMsg) {
-		this.roleOnlyErrorMsg = Utils.requireNonBlankString(roleOnlyErrorMsg, "Role only error message is null");
-		return this;
-	}
-
 	/** <p>Sets the displayed message when the command is on per-user cooldown</p>
 	 * <p><b>Requires one string format for the per-user cooldown time (in seconds)</b></p>
 	 * <p><i>Default message : You must wait **%.2f seconds**</i></p>
@@ -85,7 +56,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setUserCooldownMsg(@NotNull String userCooldownMsg) {
-		this.userCooldownMsg = Utils.requireNonBlankString(userCooldownMsg, "User cooldown error message is null");
+		context.getDefaultMessages().setUserCooldownMsg(userCooldownMsg);
 		return this;
 	}
 
@@ -96,7 +67,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setChannelCooldownMsg(@NotNull String channelCooldownMsg) {
-		this.channelCooldownMsg = Utils.requireNonBlankString(channelCooldownMsg, "Channel cooldown error message is null");
+		context.getDefaultMessages().setChannelCooldownMsg(channelCooldownMsg);
 		return this;
 	}
 
@@ -107,7 +78,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setGuildCooldownMsg(@NotNull String guildCooldownMsg) {
-		this.guildCooldownMsg = Utils.requireNonBlankString(guildCooldownMsg, "Guild cooldown error message is null");
+		context.getDefaultMessages().setGuildCooldownMsg(guildCooldownMsg);
 		return this;
 	}
 
@@ -117,7 +88,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setOwnerOnlyErrorMsg(@NotNull String ownerOnlyErrorMsg) {
-		this.ownerOnlyErrorMsg = Utils.requireNonBlankString(ownerOnlyErrorMsg, "Owner only error message is null");
+		context.getDefaultMessages().setOwnerOnlyErrorMsg(ownerOnlyErrorMsg);
 		return this;
 	}
 
@@ -127,7 +98,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setUserPermErrorMsg(@NotNull String userPermErrorMsg) {
-		this.userPermErrorMsg = Utils.requireNonBlankString(userPermErrorMsg, "User permission error message is null");
+		context.getDefaultMessages().setUserPermErrorMsg(userPermErrorMsg);
 		return this;
 	}
 
@@ -137,7 +108,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setBotPermErrorMsg(@NotNull String botPermErrorMsg) {
-		this.botPermErrorMsg = Utils.requireNonBlankString(botPermErrorMsg, "Bot permission error message is null");
+		context.getDefaultMessages().setBotPermErrorMsg(botPermErrorMsg);
 		return this;
 	}
 
@@ -147,21 +118,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setCommandNotFoundMsg(@NotNull String commandNotFoundMsg) {
-		Utils.requireNonBlankString(commandNotFoundMsg, "'Command not found' error message is null");
-		if (!commandNotFoundMsg.contains("%s")) {
-			throw new IllegalArgumentException("The 'Command not found' string must contain one %s formatter");
-		}
-		this.commandNotFoundMsg = commandNotFoundMsg;
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the command is disabled (via {@linkplain ConditionalUse})</p>
-	 * <p><i>Default message : The command is disabled for the moment</i></p>
-	 * @param commandDisabledMsg Message to display when the command is not found
-	 * @return This builder
-	 */
-	public CommandsBuilder setCommandDisabledMsg(String commandDisabledMsg) {
-		this.commandDisabledMsg = commandDisabledMsg;
+		context.getDefaultMessages().setCommandNotFoundMsg(commandNotFoundMsg);
 		return this;
 	}
 
@@ -173,8 +130,8 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
-		this.defaultEmbedFunction = Objects.requireNonNull(defaultEmbedFunction);
-		this.defaultFooterIconSupplier = Objects.requireNonNull(defaultFooterIconSupplier);
+		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
+		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
 		return this;
 	}
 
@@ -185,7 +142,7 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder addOwners(long... ownerIds) {
 		for (long ownerId : ownerIds) {
-			this.ownerIds.add(ownerId);
+			context.addOwner(ownerId);
 		}
 
 		return this;
@@ -198,18 +155,15 @@ public final class CommandsBuilder {
 				boolean isInstantiable = isInstantiable(clazz);
 
 				if (isInstantiable) {
-					try {
-						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(parent.getClass());
+					if (Modifier.isStatic(clazz.getModifiers())) { //Static inner class doesn't need declaring class's instance
+						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(BContext.class);
 						constructor.setAccessible(true);
-						return constructor.newInstance(parent);
-					} catch (NoSuchMethodException ignored) {
-						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor();
+						return constructor.newInstance(context);
+					} else {
+						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(parent.getClass(), BContext.class);
 						constructor.setAccessible(true);
-						return constructor.newInstance();
+						return constructor.newInstance(parent, context);
 					}
-				} else {
-					final String completeCmdName = getCommandName(parent.getClass()) + '.' + getCommandName(clazz);
-					disabledCommands.add(completeCmdName);
 				}
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
 				e.printStackTrace();
@@ -221,39 +175,16 @@ public final class CommandsBuilder {
 	}
 
 	private ListenerAdapter buildClasses(List<Class<?>> classes) {
-		final Map<String, CommandInfo> commandMap = new HashMap<>();
 		for (Class<?> aClass : classes) {
-			if (!Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && !aClass.isAnnotationPresent(JdaSubcommand.class) && Command.class.isAssignableFrom(aClass)) {
-				try {
-					boolean isInstantiable = isInstantiable(aClass);
-
-					if (isInstantiable) {
-						final Constructor<?> constructor = aClass.getDeclaredConstructor();
-						constructor.setAccessible(true);
-						final Command command = (Command) constructor.newInstance();
-
-						CommandInfo info = processCommand(command);
-
-						commandMap.put(info.getName(), info);
-
-						for (String alias : info.getAliases()) {
-							commandMap.put(alias, info);
-						}
-					} else {
-						disabledCommands.add(getCommandName(aClass));
-					}
-				} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					e.printStackTrace();
-					failedClasses.add(" - " + aClass.getSimpleName());
-				}
-			}
+			processClass(aClass);
 		}
+		processClass(HelpCommand.class);
 
-		CommandInfo helpCommandInfo = processCommand(new HelpCommand(defaultEmbedFunction, commandMap, prefixes.get(0)));
+		final HelpCommand help = (HelpCommand) context.findCommand("help");
+		if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
+		help.generate();
 
-		commandMap.put(helpCommandInfo.getName(), helpCommandInfo);
-
-		System.out.println("Loaded " + commandMap.size() + " command");
+		System.out.println("Loaded " + context.getCommands().size() + " command");
 		if (failedClasses.isEmpty()) {
 			System.err.println("Finished registering all commands");
 		} else {
@@ -261,7 +192,35 @@ public final class CommandsBuilder {
 			System.err.println(failedClasses.size() + " command(s) failed loading:\r\n" + String.join("\r\n", failedClasses));
 		}
 
-		return new CommandListener(prefixes, ownerIds, userPermErrorMsg, botPermErrorMsg, commandNotFoundMsg, commandDisabledMsg, ownerOnlyErrorMsg, roleOnlyErrorMsg, userCooldownMsg, channelCooldownMsg, guildCooldownMsg, defaultEmbedFunction, defaultFooterIconSupplier, commandMap, disabledCommands);
+		return new CommandListener(context);
+	}
+
+	private void processClass(Class<?> aClass) {
+		if (!Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && Command.class.isAssignableFrom(aClass)
+				&& aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
+			try {
+				boolean isInstantiable = isInstantiable(aClass);
+
+				if (isInstantiable) {
+					final Constructor<?> constructor = aClass.getDeclaredConstructor(BContext.class);
+					constructor.setAccessible(true);
+					final Command command = (Command) constructor.newInstance(context);
+
+					context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
+
+					for (Class<? extends Command> subcommandClazz : aClass.getAnnotation(JdaCommand.class).subcommands()) {
+						final Command subcommand = getSubcommand(subcommandClazz, command);
+
+						if (subcommand != null) {
+							command.getInfo().addSubcommand(subcommand);
+						}
+					}
+				}
+			} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+				e.printStackTrace();
+				failedClasses.add(" - " + aClass.getSimpleName());
+			}
+		}
 	}
 
 	private boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
@@ -292,10 +251,17 @@ public final class CommandsBuilder {
 	public ListenerAdapter build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		Utils.requireNonBlankString(commandPackageName, "Command package name is null");
 
-		if (prefixes == null) prefixes = List.of(jda.getSelfUser().getAsMention() + ' ', "<@!" + jda.getSelfUser().getId() + "> ");
+		setupContext(jda);
 
 		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
 		return buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
+	}
+
+	private void setupContext(JDA jda) {
+		context.setJda(jda);
+		if (context.getPrefixes().isEmpty()) {
+			context.setPrefixes(List.of("<@" + jda.getSelfUser().getId() + "> ", "<@!" + jda.getSelfUser().getId() + "> "));
+		}
 	}
 
 	/** Builds the command listener
@@ -304,7 +270,7 @@ public final class CommandsBuilder {
 	 * @return The ListenerAdapter
 	 */
 	public ListenerAdapter build(JDA jda, InputStream classStream) {
-		if (prefixes == null) prefixes = List.of(jda.getSelfUser().getAsMention() + ' ', "<@!" + jda.getSelfUser().getId() + "> ");
+		setupContext(jda);
 
 		final BufferedReader stream = new BufferedReader(new InputStreamReader(classStream));
 		final List<Class<?>> classes = stream.lines().map(s -> {
@@ -318,90 +284,5 @@ public final class CommandsBuilder {
 		}).collect(Collectors.toList());
 
 		return buildClasses(classes);
-	}
-
-	private static String getCommandName(Class<?> clazz) {
-		if (clazz.isAnnotationPresent(JdaCommand.class)) {
-			return clazz.getAnnotation(JdaCommand.class).name();
-		} else if (clazz.isAnnotationPresent(JdaSubcommand.class)) {
-			return clazz.getAnnotation(JdaSubcommand.class).name();
-		}
-
-		return null;
-	}
-
-	private CommandInfo processCommand(Command cmd) {
-		final Class<? extends Command> commandClass = cmd.getClass();
-
-		if (commandClass.isAnnotationPresent(JdaCommand.class) || commandClass.isAnnotationPresent(JdaSubcommand.class)) {
-			boolean isHidden = commandClass.isAnnotationPresent(Hidden.class);
-			boolean isOwnerOnly = commandClass.isAnnotationPresent(RequireOwner.class);
-			boolean addSubcommandHelp = commandClass.isAnnotationPresent(AddSubcommandHelp.class);
-			boolean addExecutableHelp = commandClass.isAnnotationPresent(AddExecutableHelp.class);
-
-			String name;
-			String[] aliases = null;
-			String description;
-			String category = null;
-
-			Permission[] userPermissions;
-			Permission[] botPermissions;
-
-			String requiredRole;
-
-			int cooldown;
-			CooldownScope cooldownScope;
-
-			List<CommandInfo> subcommandInfo = new ArrayList<>();
-			if (commandClass.isAnnotationPresent(JdaCommand.class)) {
-				final JdaCommand commandAnnot = commandClass.getAnnotation(JdaCommand.class);
-				category = commandAnnot.category();
-
-				if (commandAnnot.name().contains(" "))
-					throw new IllegalArgumentException("Command name cannot have spaces in '" + commandAnnot.name() + "'");
-
-				name = commandAnnot.name();
-				aliases = commandAnnot.aliases();
-				description = commandAnnot.description();
-
-				userPermissions = commandAnnot.userPermissions();
-				botPermissions = commandAnnot.botPermissions();
-
-				requiredRole = commandAnnot.requiredRole();
-
-				cooldown = commandAnnot.cooldown();
-				cooldownScope = commandAnnot.cooldownScope();
-
-				for (Class<? extends Command> subcommandClazz : commandAnnot.subcommands()) {
-					final Command subcommand = getSubcommand(subcommandClazz, cmd);
-
-					if (subcommand != null) {
-						subcommandInfo.add(processCommand(subcommand));
-					}
-				}
-			} else {
-				final JdaSubcommand commandAnnot = commandClass.getAnnotation(JdaSubcommand.class);
-
-				if (commandAnnot.name().contains(" "))
-					throw new IllegalArgumentException("Command name cannot have spaces in '" + commandAnnot.name() + "'");
-
-				name = commandAnnot.name();
-				description = commandAnnot.description();
-
-				userPermissions = commandAnnot.userPermissions();
-				botPermissions = commandAnnot.botPermissions();
-
-				requiredRole = commandAnnot.requiredRole();
-
-				cooldown = commandAnnot.cooldown();
-				cooldownScope = commandAnnot.cooldownScope();
-			}
-
-			final List<MethodPattern> methodPatterns = CommandTransformer.getMethodPatterns(cmd);
-
-			return new CommandInfo(cmd, name, aliases, description, category, isHidden, isOwnerOnly, userPermissions, botPermissions, requiredRole, cooldown, cooldownScope, subcommandInfo, addSubcommandHelp, addExecutableHelp, methodPatterns);
-		}
-
-		throw new IllegalArgumentException("Command does not have JdaCommand annotation");
 	}
 }

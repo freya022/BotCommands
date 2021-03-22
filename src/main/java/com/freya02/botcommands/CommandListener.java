@@ -2,41 +2,21 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.regex.ArgumentFunction;
 import com.freya02.botcommands.regex.MethodPattern;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.CharArrayWriter;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 
 final class CommandListener extends ListenerAdapter {
-	private final List<String> prefixes;
-	private final Supplier<InputStream> defaultFooterIconSupplier;
-	private final Supplier<EmbedBuilder> defaultEmbedFunction;
-
-	private final List<Long> ownerIds;
-
-	private final String userPermErrorMsg;
-	private final String botPermErrorMsg;
-	private final String commandNotFoundMsg;
-	private final String ownerOnlyErrorMsg;
-	private final String roleOnlyErrorMsg;
-
-	private final String userCooldownMsg;
-	private final String channelCooldownMsg;
-	private final String guildCooldownMsg;
-
-	private final Map<String, CommandInfo> stringCommandMap;
-	private final String commandDisabledMsg;
-	private final List<String> disabledCommands;
+	private final BContext context;
 
 	private static final ScheduledExecutorService userCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("User cooldown thread"));
 	private static final ScheduledExecutorService channelCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Channel cooldown thread"));
@@ -56,31 +36,8 @@ final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public CommandListener(List<String> prefixes, List<Long> ownerIds, String userPermErrorMsg, String botPermErrorMsg, String commandNotFoundMsg, String commandDisabledMsg, String ownerOnlyErrorMsg, String roleOnlyErrorMsg, String userCooldownMsg, String channelCooldownMsg, String guildCooldownMsg, Supplier<EmbedBuilder> defaultEmbedFunction, Supplier<InputStream> defaultFooterIconSupplier, Map<String, CommandInfo> stringCommandMap, List<String> disabledCommands) {
-		this.prefixes = prefixes;
-		this.disabledCommands = disabledCommands;
-
-		this.ownerIds = Collections.unmodifiableList(ownerIds);
-		this.userPermErrorMsg = userPermErrorMsg;
-		this.botPermErrorMsg = botPermErrorMsg;
-		this.commandNotFoundMsg = commandNotFoundMsg;
-		this.commandDisabledMsg = commandDisabledMsg;
-		this.ownerOnlyErrorMsg = ownerOnlyErrorMsg;
-		this.roleOnlyErrorMsg = roleOnlyErrorMsg;
-		this.userCooldownMsg = userCooldownMsg;
-		this.channelCooldownMsg = channelCooldownMsg;
-		this.guildCooldownMsg = guildCooldownMsg;
-		this.defaultEmbedFunction = defaultEmbedFunction;
-		this.defaultFooterIconSupplier = defaultFooterIconSupplier;
-		this.stringCommandMap = stringCommandMap;
-	}
-
-	public Supplier<EmbedBuilder> getDefaultEmbedFunction() {
-		return defaultEmbedFunction;
-	}
-
-	public Supplier<InputStream> getDefaultFooterIconSupplier() {
-		return defaultFooterIconSupplier;
+	public CommandListener(BContext context) {
+		this.context = context;
 	}
 
 	private static class Cmd {
@@ -98,7 +55,7 @@ final class CommandListener extends ListenerAdapter {
 		final String commandName;
 
 		int prefixLength = -1;
-		for (String prefix : prefixes) {
+		for (String prefix : context.getPrefixes()) {
 			if (msg.startsWith(prefix)) {
 				prefixLength = prefix.length();
 				break;
@@ -140,114 +97,65 @@ final class CommandListener extends ListenerAdapter {
 		final String commandName = cmdFast.commandName;
 		String args = cmdFast.args;
 
-		CommandInfo commandInfo = stringCommandMap.get(commandName);
+		Command command = context.findCommand(commandName);
 
+		final List<Long> ownerIds = context.getOwnerIds();
 		final boolean isNotOwner = !ownerIds.contains(member.getIdLong());
-		if (commandInfo == null) {
-			if (disabledCommands.contains(commandName)) {
-				reply(event, commandDisabledMsg);
-			} else {
-				List<String> suggestions = new ArrayList<>();
-
-				for (var entry : stringCommandMap.entrySet()) {
-					String s = entry.getKey();
-					CommandInfo lCommandInfo = entry.getValue();
-
-					if (isNotOwner && lCommandInfo.isHidden()) {
-						continue;
-					}
-
-					if (isNotOwner && lCommandInfo.isRequireOwner()) {
-						continue;
-					}
-
-					int i;
-					for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
-						if (s.charAt(i) != commandName.charAt(i)) break;
-					}
-
-					if (i > 1) {
-						suggestions.add(s);
-					}
-				}
-
-				if (!suggestions.isEmpty()) {
-					reply(event, String.format(commandNotFoundMsg, "**" + String.join("**, **", suggestions) + "**"));
-				}
-			}
+		if (command == null) {
+			onCommandNotFound(event, commandName, isNotOwner);
 			return;
 		}
 
 		//Check for subcommands
-		for (CommandInfo info : commandInfo.getSubcommandsInfo()) {
-			if (args.startsWith(info.getName())) {
-				commandInfo = info; //Replace command with subcommand
-				args = args.replace(info.getName(), "").trim();
+		final CommandInfo commandInfo = command.getInfo();
+		for (Command subcommand : commandInfo.getSubcommands()) {
+			final String subcommandName = subcommand.getInfo().getName();
+			if (args.startsWith(subcommandName)) {
+				command = subcommand; //Replace command with subcommand
+				args = args.replace(subcommandName, "").trim();
 				break;
 			}
 		}
 
-		//Check for disabled subcommands
-		final int i = args.indexOf(' ', 1);
-		final String subcommandName = i == -1 ? args : args.substring(0, i);
-		if (disabledCommands.contains(commandInfo.getName() + "." + subcommandName)) {
-			reply(event, commandDisabledMsg);
-			return;
-		}
-
-		if (isNotOwner && commandInfo.isHidden()) {
-			reply(event, commandNotFoundMsg);
-			return;
-		}
-
-		if (isNotOwner && commandInfo.isRequireOwner()) {
-			reply(event, ownerOnlyErrorMsg);
-			return;
-		}
-
-		if (isNotOwner && !member.hasPermission(commandInfo.getUserPermissions())) {
-			reply(event, userPermErrorMsg);
-			return;
-		}
-
-		if (isNotOwner && !commandInfo.getRequiredRole().isEmpty()) {
-			String requiredRole = commandInfo.getRequiredRole();
-
-			boolean foundRole = false;
-			for (Role role : member.getRoles()) {
-				if (role.getName().equals(requiredRole)) {
-					foundRole = true;
-					break;
-				}
-			}
-
-			if (!foundRole) {
-				reply(event, String.format(roleOnlyErrorMsg, requiredRole));
+		Command recurCmd = command;
+		do {
+			if (isNotOwner && recurCmd.getInfo().isHidden()) {
+				onCommandNotFound(event, commandName, true);
 				return;
 			}
-		}
+
+			if (isNotOwner && recurCmd.getInfo().isRequireOwner()) {
+				reply(event, context.getDefaultMessages().getOwnerOnlyErrorMsg());
+				return;
+			}
+
+			if (isNotOwner && !member.hasPermission(recurCmd.getInfo().getUserPermissions())) {
+				reply(event, context.getDefaultMessages().getUserPermErrorMsg());
+				return;
+			}
+
+			if (!event.getGuild().getSelfMember().hasPermission(recurCmd.getInfo().getBotPermissions())) {
+				reply(event, context.getDefaultMessages().getBotPermErrorMsg());
+				return;
+			}
+		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);
 
 		ScheduledFuture<?> cooldownFuture;
 		if (commandInfo.getCooldownScope() == CooldownScope.USER) {
 			if ((cooldownFuture = userCooldowns.get(member.getIdLong())) != null) {
-				reply(event, String.format(userCooldownMsg, cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+				reply(event, String.format(context.getDefaultMessages().getUserCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 				return;
 			}
 		} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
 			if ((cooldownFuture = guildCooldowns.get(event.getGuild().getIdLong())) != null) {
-				reply(event, String.format(guildCooldownMsg, cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+				reply(event, String.format(context.getDefaultMessages().getGuildCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 				return;
 			}
 		} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
 			if ((cooldownFuture = channelCooldowns.get(event.getChannel().getIdLong())) != null) {
-				reply(event, String.format(channelCooldownMsg, cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+				reply(event, String.format(context.getDefaultMessages().getChannelCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 				return;
 			//}
-		}
-
-		if (!event.getGuild().getSelfMember().hasPermission(commandInfo.getBotPermissions())) {
-			reply(event, botPermErrorMsg);
-			return;
 		}
 
 		if (commandInfo.getCooldown() > 0) {
@@ -260,13 +168,13 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		CommandInfo finalCommandInfo = commandInfo;
-		for (MethodPattern m : commandInfo.getMethodPatterns()) {
+		final Command finalCommand = command;
+		for (MethodPattern m : finalCommand.getInfo().getMethodPatterns()) {
 			try {
 				final Matcher matcher = m.pattern.matcher(args);
-				if (matcher.find()) {
+				if (matcher.matches()) {
 					final List<Object> objects = new ArrayList<>(matcher.groupCount());
-					objects.add(new BaseCommandEvent(this, event, commandName, args));
+					objects.add(new BaseCommandEventImpl(context, event, args));
 
 					int groupIndex = 1;
 					for (ArgumentFunction argumentFunction : m.argumentsArr) {
@@ -278,7 +186,7 @@ final class CommandListener extends ListenerAdapter {
 						objects.add(argumentFunction.function.solve(event, groups));
 					}
 
-					runCommand(() -> m.method.invoke(finalCommandInfo.getCommand(), objects.toArray()), msg);
+					runCommand(() -> m.method.invoke(finalCommand, objects.toArray()), msg, event.getMessage());
 					return;
 				}
 			} catch (NumberFormatException e) {
@@ -290,8 +198,38 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final CommandEvent commandEvent = new CommandEvent(this, event, commandName, args);
-		runCommand(() -> finalCommandInfo.getCommand().execute(commandEvent), msg);
+		final CommandEvent commandEvent = new CommandEventImpl(context, event, args);
+		runCommand(() -> finalCommand.execute(commandEvent), msg, event.getMessage());
+	}
+
+	private void onCommandNotFound(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
+		List<String> suggestions = new ArrayList<>();
+
+		for (Command otherCommand : ((BContextImpl) context).getCommands()) {
+			String s = otherCommand.getInfo().getName();
+			CommandInfo lCommandInfo = otherCommand.getInfo();
+
+			if (isNotOwner && lCommandInfo.isHidden()) {
+				continue;
+			}
+
+			if (isNotOwner && lCommandInfo.isRequireOwner()) {
+				continue;
+			}
+
+			int i;
+			for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
+				if (s.charAt(i) != commandName.charAt(i)) break;
+			}
+
+			if (i > 1) {
+				suggestions.add(s);
+			}
+		}
+
+		if (!suggestions.isEmpty()) {
+			reply(event, String.format(context.getDefaultMessages().getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
+		}
 	}
 
 	private interface RunnableEx {
@@ -306,22 +244,18 @@ final class CommandListener extends ListenerAdapter {
 		System.err.println(out.toString());
 	}
 
-	private void runCommand(RunnableEx code, String msg) {
+	private void runCommand(RunnableEx code, String msg, Message message) {
 		commandService.submit(() -> {
 			try {
 				code.run();
 			} catch (Exception e) {
 				printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg, e);
+				message.addReaction(BaseCommandEventImpl.ERROR).queue();
+				if (((TextChannel) message.getChannel()).canTalk()) {
+					message.getChannel().sendMessage("An uncaught exception occured").queue();
+				}
 			}
 		});
-	}
-
-	public List<Long> getOwnerIds() {
-		return ownerIds;
-	}
-
-	public CommandInfo getCommandInfo(String cmdName) {
-		return stringCommandMap.get(cmdName);
 	}
 
 	private void startCooldown(Map<Long, ScheduledFuture<?>> cooldownMap, ScheduledExecutorService service, Long key, int cooldown) {

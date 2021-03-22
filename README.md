@@ -7,7 +7,7 @@ It is recommended that you have some experience with Java and [JDA](https://gith
 ### Prerequisites
 [OpenJDK 11+](https://adoptopenjdk.net/) <br>
 An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://maven.apache.org/download.cgi) manually <br>
-**Do not forget to add the maven bin directory to your PATH environment variables**
+**Do not forget to add the Maven bin directory to your PATH environment variables**
 
 ### Building / Installing
 #### Getting the library
@@ -17,10 +17,10 @@ You can choose one of the methods:
 
 #### Building the library
 Once you have it in a folder, change your working directory to it `cd [path_of_your_choice]/BotCommands` <br>
-Then you can build the library with `mvn install`, it will build the library and put it in your local maven dependency folder <br>
+Then you can build the library with `mvn install`, it will build the library and put it in your local Maven dependency folder <br>
 
 #### Using the library
-You can now use the library in your Maven projects by adding the dependency like any other maven dependency.
+You can now use the library in your Maven projects by adding the dependency like any other Maven dependency.
 
 <details>
 <summary>Maven XML - How to add the library</summary>
@@ -64,10 +64,10 @@ You can now use the library in your Maven projects by adding the dependency like
 ```
 </details>
 
-**You're now ready to start coding !**
+**You're now ready to start coding!**
 
 ## How to use
-You first need to get your JDA instance
+You first need to get your JDA instance:
 ```java
 final JDA jda = JDABuilder.create(token, /* GatewayIntents here */)
 		/* Other options */
@@ -116,7 +116,7 @@ commandsBuilder
 ### Making commands
 Every command must be in the package or subpackage of the package you supplied to CommandsBuild#build
 
-**The class must be annotated with @JdaCommand or @JdaSubcommand for subcommands and extend Command**
+**The class must be annotated with @JdaCommand and extend Command**
 
 <details>
 <summary>Example</summary>
@@ -164,3 +164,12 @@ public class TestCommand extends Command {
 }
 ```
 </details>
+
+**Be aware of the ordering of your functions**, the implementation looks at each Executable method and tries to match the pattern against the arguments, if it works, it gets executed, if it doesn't, it goes to the next one.
+
+If a command invocation does not call the correct function during testing, you can use the @DebugPatterns annotation to print the order in which the executables are loaded.
+
+Changing the order of the methods at a source code level is not reliable, **to fix this, specify the `order` value in the Executable annotation on each method**
+
+**If annotated with @AddExecutableHelp**, the parameter names of your executable are used in order to create the help content if you compile your bot with the `-parameters` switch on `javac`. In case the parameter names are not found, fallback ones are used.<br>
+Note that you can also force a parameter name with the @ArgName annotation, alongside add an example with @ArgExample

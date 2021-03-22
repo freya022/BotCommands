@@ -50,11 +50,12 @@ public @interface JdaCommand {
     CooldownScope cooldownScope() default CooldownScope.USER;
 
     /** Name of the category the command should be in
+     * <b>This is ignored in a subcommand</b>
      * @return Name of the category
      */
     String category() default "No category";
 
-    /** Classes of the subcommands for this command, they must extend {@linkplain Command} and have the annotation {@linkplain JdaSubcommand}
+    /** Classes of the subcommands for this command, they must extend {@linkplain Command} and have the annotation {@linkplain JdaCommand}
      * @return List of subcommand classes
      */
     Class<? extends Command>[] subcommands() default {};
