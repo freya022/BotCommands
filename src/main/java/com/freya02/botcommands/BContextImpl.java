@@ -24,7 +24,7 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public JDA getJda() {
+	public JDA getJDA() {
 		return jda;
 	}
 
