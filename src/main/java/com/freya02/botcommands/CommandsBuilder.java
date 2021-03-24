@@ -264,6 +264,10 @@ public final class CommandsBuilder {
 		}
 	}
 
+	public BContext getContext() {
+		return context;
+	}
+
 	/** Builds the command listener
 	 *
 	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
