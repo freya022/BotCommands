@@ -52,10 +52,6 @@ public interface BContext {
 	@NotNull
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
-	void setPrefixes(List<String> prefix);
-
-	void addOwner(long ownerId);
-
 	/**
 	 * Adds an user to the blacklist, they won't be able to use commands
 	 * @param userId ID of the user to blacklist
