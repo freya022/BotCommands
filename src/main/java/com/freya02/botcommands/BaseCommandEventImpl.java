@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -58,16 +57,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> System.err.println("Could not send message to channel : " + message));
 
-		final User owner = getJDA().retrieveUserById(getContext().getOwnerIds().get(0)).complete();
-
-		if (owner == null) {
-			System.err.println("Top owner ID is wrong !");
-			return;
-		}
-
-		owner.openPrivateChannel().queue(
-				channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null, t -> System.err.println("Could not send message to owner : " + message)),
-				t -> System.err.println("Could not send message to owner : " + message));
+		((BContextImpl) context).dispatchException(message, e);
 	}
 
 	@Override

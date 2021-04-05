@@ -257,6 +257,8 @@ final class CommandListener extends ListenerAdapter {
 				if (((TextChannel) message.getChannel()).canTalk()) {
 					message.getChannel().sendMessage("An uncaught exception occured").queue();
 				}
+
+				((BContextImpl) context).dispatchException(msg, e);
 			}
 		});
 	}

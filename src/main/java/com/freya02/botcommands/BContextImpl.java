@@ -2,6 +2,7 @@ package com.freya02.botcommands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -130,5 +131,20 @@ public class BContextImpl implements BContext {
 
 	public Collection<Command> getCommands() {
 		return Collections.unmodifiableCollection(commandMap.values());
+	}
+
+	public void dispatchException(String message, Throwable e) {
+		for (Long ownerId : getOwnerIds()) {
+			final User owner = getJDA().retrieveUserById(ownerId, false).complete();
+
+			if (owner == null) {
+				System.err.println("Top owner ID is wrong !");
+				return;
+			}
+
+			owner.openPrivateChannel().queue(
+					channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null, t -> System.err.println("Could not send message to owner : " + message)),
+					ignored -> {});
+		}
 	}
 }
