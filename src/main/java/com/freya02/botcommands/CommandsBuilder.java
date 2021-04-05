@@ -115,6 +115,7 @@ public final class CommandsBuilder {
 
 	/** <p>Sets the displayed message when the command is not found</p>
 	 * <p><i>Default message : Unknown command, maybe you meant: %s</i></p>
+	 * <b>The message must have a %s format specifier to insert the suggested commands</b>
 	 * @param commandNotFoundMsg Message to display when the command is not found
 	 * @return This builder
 	 */
