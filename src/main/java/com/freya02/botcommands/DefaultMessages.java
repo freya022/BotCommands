@@ -2,7 +2,7 @@ package com.freya02.botcommands;
 
 public final class DefaultMessages {
 	private String userPermErrorMsg = "You are not allowed to do this";
-	private String botPermErrorMsg = "I don't have the required permissions to do this";
+	private String botPermErrorMsg = "I am missing these permissions: %s";
 	private String ownerOnlyErrorMsg = "Only the owner can use this";
 
 	private String userCooldownMsg = "You must wait **%.2f seconds**";
@@ -16,7 +16,11 @@ public final class DefaultMessages {
 	}
 
 	void setBotPermErrorMsg(String botPermErrorMsg) {
-		this.botPermErrorMsg = Utils.requireNonBlankString(botPermErrorMsg, "Bot permission error message is null");
+		Utils.requireNonBlankString(botPermErrorMsg, "Bot permission error message is null");
+		if (!botPermErrorMsg.contains("%s")) {
+			throw new IllegalArgumentException("The bot permission error string must contain one %s formatter");
+		}
+		this.botPermErrorMsg = botPermErrorMsg;
 	}
 
 	void setOwnerOnlyErrorMsg(String ownerOnlyErrorMsg) {

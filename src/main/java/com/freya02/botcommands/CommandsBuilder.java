@@ -103,7 +103,8 @@ public final class CommandsBuilder {
 	}
 
 	/** <p>Sets the displayed message when the bot does not have enough permissions</p>
-	 * <p><i>Default message : I don't have the required permissions to do this</i></p>
+	 * <p><i>Default message : I am missing these permissions: %s</i></p>
+	 * <b>The message must have a %s format specifier to insert the needed permissions</b>
 	 * @param botPermErrorMsg Message to display when the bot does not have enough permissions
 	 * @return This builder
 	 */

@@ -2,6 +2,7 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.regex.ArgumentFunction;
 import com.freya02.botcommands.regex.MethodPattern;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -138,7 +139,15 @@ final class CommandListener extends ListenerAdapter {
 			}
 
 			if (!event.getGuild().getSelfMember().hasPermission(recurCmd.getInfo().getBotPermissions())) {
-				reply(event, context.getDefaultMessages().getBotPermErrorMsg());
+				final EnumSet<Permission> permissions = event.getGuild().getSelfMember().getPermissions(event.getChannel());
+				final StringJoiner missingBuilder = new StringJoiner(", ");
+				for (Permission botPermission : recurCmd.getInfo().getBotPermissions()) {
+					if (!permissions.contains(botPermission)) {
+						missingBuilder.add(botPermission.getName());
+					}
+				}
+
+				reply(event, String.format(context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder.toString()));
 				return;
 			}
 		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);
