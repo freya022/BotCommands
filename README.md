@@ -122,12 +122,19 @@ Every command must be in the package or subpackage of the package you supplied t
 <summary>Example</summary>
 
 ```java
+import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.Command;
+import com.freya02.botcommands.CommandEvent;
+import com.freya02.botcommands.annotation.JdaCommand;
+
 @JdaCommand(
 		name = "test", //Mandatory
 		description = "A test command",
 		category = "Misc"
 )
 public class TestCommand extends Command {
+	public TestCommand(BContext context) { super(context); }
+
 	@Override
 	protected void execute(CommandEvent event) {
 		...
@@ -147,8 +154,11 @@ For example if you need a command which accepts a `TextChannel` and a `long`, yo
 <summary>Example</summary>
 
 ```java
+import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.BaseCommandEvent;
+import com.freya02.botcommands.Command;
 import com.freya02.botcommands.annotation.Executable;
+import com.freya02.botcommands.annotation.JdaCommand;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 @JdaCommand(
@@ -157,10 +167,12 @@ import net.dv8tion.jda.api.entities.TextChannel;
 		category = "Misc"
 )
 public class TestCommand extends Command {
+	public TestCommand(BContext context) { super(context); }
+
 	@Executable
 	public void exec(BaseCommandEvent event, TextChannel textChannel, long someLong) {
 		//Only gets executed on commands like '!test #lobby 1234'
-    }
+	}
 }
 ```
 </details>
