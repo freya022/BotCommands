@@ -185,3 +185,7 @@ Changing the order of the methods at a source code level is not reliable, **to f
 
 **If annotated with @AddExecutableHelp**, the parameter names of your executable are used in order to create the help content if you compile your bot with the `-parameters` switch on `javac`. In case the parameter names are not found, fallback ones are used.<br>
 Note that you can also force a parameter name with the @ArgName annotation, alongside add an example with @ArgExample
+
+## Examples
+
+You can find example bots in the [examples](https://github.com/freya022/BotCommands/blob/master/examples) folder
