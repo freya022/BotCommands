@@ -147,7 +147,7 @@ The `Command#execute` sends the command's help content by default, you can overr
 
 ### Making regex based commands
 
-You can declare **instance** methods with parameters supported by [@Executable](https://github.com/freya022/BotCommands/blob/master/src/main/java/com/freya02/botcommands/annotation/Executable.java) but with the first argument being a BaseCommandEvent <br>
+You can declare **instance** methods with parameters supported by [@Executable](src/main/java/com/freya02/botcommands/annotation/Executable.java) but with the first argument being a BaseCommandEvent <br>
 For example if you need a command which accepts a `TextChannel` and a `long`, you can do
 
 <details>
@@ -188,4 +188,4 @@ Note that you can also force a parameter name with the @ArgName annotation, alon
 
 ## Examples
 
-You can find example bots in the [examples](https://github.com/freya022/BotCommands/blob/master/examples) folder
+You can find example bots in the [examples](examples) folder
