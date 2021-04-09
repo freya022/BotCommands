@@ -76,10 +76,6 @@ public class CommandTransformer {
 				}
 			}
 
-			if (debug) {
-				System.out.println("method = " + method);
-			}
-
 			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
 			parameterTypes.remove(0);
 
@@ -121,6 +117,10 @@ public class CommandTransformer {
 				regex = regex.substring(0, regex.length() - 2);
 			}
 			list.add(new MethodPattern(method, Pattern.compile(regex), groupsList.toArray(new ArgumentFunction[0])));
+
+			if (debug) {
+				System.out.println("Method: " + method + ", pattern: '" + regex + "'");
+			}
 		}
 
 		return list;
