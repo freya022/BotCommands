@@ -94,7 +94,7 @@ public class CommandTransformer {
 					}
 				} else if (!hasEmoji) {
 					if (parameterType == String.class) {
-						argumentFunction = argumentFunction.optimize("(\\X+?)");
+						argumentFunction = argumentFunction.optimize("(\\X+)");
 					}
 				}
 
