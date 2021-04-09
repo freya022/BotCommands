@@ -70,7 +70,7 @@ public abstract class Command {
 		final var methodPatterns = commandInfo.getMethodPatterns();
 		final var prefix = event.getContext().getPrefix();
 
-		final MessageEmbed.AuthorInfo author = event.getDefaultEmbed().build().getAuthor();
+		final MessageEmbed.AuthorInfo author = builder.isEmpty() ? null : event.getDefaultEmbed().build().getAuthor();
 		if (author != null) {
 			builder.setAuthor(author.getName() + " – '" + name + "' command", author.getUrl(), author.getIconUrl());
 		} else {
