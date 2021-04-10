@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Matcher;
@@ -261,6 +262,7 @@ final class CommandListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Exception e) {
+				if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
 				printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg, e);
 				message.addReaction(BaseCommandEventImpl.ERROR).queue();
 				if (((TextChannel) message.getChannel()).canTalk()) {
