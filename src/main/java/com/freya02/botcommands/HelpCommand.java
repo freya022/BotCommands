@@ -81,7 +81,7 @@ final class HelpCommand extends Command {
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : generalHelpBuilder;
+		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberHelpContent(event.getMember());
 
 		builder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
@@ -94,6 +94,14 @@ final class HelpCommand extends Command {
 						t -> event.reactError().queue()),
 				t -> event.getChannel().sendMessage("Your DMs are not open").queue());
 
+	}
+
+	private EmbedBuilder getMemberHelpContent(Member member) {
+		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
+
+		fillHelp(builder, info -> !info.isHidden() && !info.isRequireOwner() && member.hasPermission(info.getUserPermissions()));
+
+		return builder;
 	}
 
 	private void getCommandHelp(CommandEvent event, String cmdName) {
