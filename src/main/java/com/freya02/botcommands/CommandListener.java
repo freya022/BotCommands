@@ -249,7 +249,7 @@ final class CommandListener extends ListenerAdapter {
 		void run() throws Exception;
 	}
 
-	private static void printExceptionString(String message, Throwable e) {
+	static void printExceptionString(String message, Throwable e) {
 		final CharArrayWriter out = new CharArrayWriter(1024);
 		out.append(message).append("\n");
 		final PrintWriter printWriter = new PrintWriter(out);

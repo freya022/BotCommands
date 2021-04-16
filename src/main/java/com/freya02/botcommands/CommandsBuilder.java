@@ -194,6 +194,7 @@ public final class CommandsBuilder {
 			System.err.println(failedClasses.size() + " command(s) failed loading:\r\n" + String.join("\r\n", failedClasses));
 		}
 
+		EventWaiter.createWaiter(context);
 		return new CommandListener(context);
 	}
 
