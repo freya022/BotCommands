@@ -116,6 +116,36 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 		return channel.addReactionById(messageId, ERROR);
 	}
 
+	@Nonnull
+	@Override
+	public RestAction<Message> respond(@NotNull CharSequence text) {
+		return channel.sendMessage(text);
+	}
+
+	@Nonnull
+	@Override
+	public RestAction<Message> respondFormat(@NotNull String format, @Nonnull @NotNull Object... args) {
+		return channel.sendMessageFormat(format, args);
+	}
+
+	@Nonnull
+	@Override
+	public RestAction<Message> respond(@NotNull MessageEmbed embed) {
+		return channel.sendMessage(embed);
+	}
+
+	@Nonnull
+	@Override
+	public RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @Nonnull @NotNull AttachmentOption... options) {
+		return channel.sendFile(data, fileName, options);
+	}
+
+	@Nonnull
+	@Override
+	public RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @Nonnull @NotNull AttachmentOption... options) {
+		return channel.sendFile(data, fileName, options);
+	}
+
 	@Override
 	@CheckReturnValue
 	@Nonnull

@@ -150,6 +150,66 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	public abstract RestAction<Void> reactError();
 
 	/**
+	 * Sends a response in the event's channel
+	 *
+	 * @param text {@linkplain CharSequence} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(CharSequence)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> respond(@NotNull CharSequence text);
+
+	/**
+	 * Sends a response in the event's channel
+	 *
+	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param args   Objects to use for formatting
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessageFormat(String, Object...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> respondFormat(@NotNull String format, @NotNull Object... args);
+
+	/**
+	 * Sends a response in the event's channel
+	 *
+	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> respond(@NotNull MessageEmbed embed);
+
+	/**
+	 * Sends a file as a response in the event's channel
+	 *
+	 * @param data     {@linkplain InputStream} of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
+
+	/**
+	 * Sends a file as a response in the event's channel
+	 *
+	 * @param data     byte array of the data to send
+	 * @param fileName Name of the file appearing on Discord
+	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
+	 * @return {@linkplain RestAction} to send the message
+	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
+	 */
+	@CheckReturnValue
+	@Nonnull
+	public abstract RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
+
+	/**
 	 * Sends a reply in the event's channel
 	 *
 	 * @param text {@linkplain CharSequence} to send to the event channel

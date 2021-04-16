@@ -107,7 +107,7 @@ final class HelpCommand extends Command {
 	private void getCommandHelp(CommandEvent event, String cmdName) {
 		Command cmd = event.getContext().findCommand(cmdName);
 		if (cmd == null) {
-			event.reply("Command '" + cmdName + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
+			event.respond("Command '" + cmdName + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
 			return;
 		}
 
@@ -125,7 +125,7 @@ final class HelpCommand extends Command {
 		Command recurCmd = cmd;
 		do {
 			if (recurCmd.getInfo().isHidden() && !event.getContext().isOwner(event.getAuthor().getIdLong())) {
-				event.reply("Command '" + recurCmd.getInfo().getName() + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
+				event.respond("Command '" + recurCmd.getInfo().getName() + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
 				return;
 			}
 		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);

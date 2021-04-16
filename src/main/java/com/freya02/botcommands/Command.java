@@ -208,7 +208,7 @@ public abstract class Command {
 		final Member member = event.getMember();
 		helpBuilder.setColor(member.getColorRaw());
 
-		event.reply(helpBuilder.build()).queue(null, event.failureReporter("Unable to send help message"));
+		event.respond(helpBuilder.build()).queue(null, event.failureReporter("Unable to send help message"));
 	}
 
 	public CommandInfo getInfo() {
