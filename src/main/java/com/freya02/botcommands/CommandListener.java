@@ -251,7 +251,7 @@ final class CommandListener extends ListenerAdapter {
 
 	private static void printExceptionString(String message, Throwable e) {
 		final CharArrayWriter out = new CharArrayWriter(1024);
-		out.append(message).append("'\n");
+		out.append(message).append("\n");
 		final PrintWriter printWriter = new PrintWriter(out);
 		e.printStackTrace(printWriter);
 		System.err.println(out.toString());
@@ -263,7 +263,7 @@ final class CommandListener extends ListenerAdapter {
 				code.run();
 			} catch (Exception e) {
 				if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
-				printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg, e);
+				printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", e);
 				message.addReaction(BaseCommandEventImpl.ERROR).queue();
 				if (((TextChannel) message.getChannel()).canTalk()) {
 					message.getChannel().sendMessage("An uncaught exception occured").queue();
