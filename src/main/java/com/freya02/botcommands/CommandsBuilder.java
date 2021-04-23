@@ -17,12 +17,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
 	private final BContextImpl context = new BContextImpl();
+	private boolean showLoadedCommands;
 
 	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
 		Utils.requireNonBlankString(prefix, "Prefix is null");
@@ -47,6 +49,16 @@ public final class CommandsBuilder {
 	 */
 	public static CommandsBuilder withPrefix(@NotNull String prefix, long topOwnerId) {
 		return new CommandsBuilder(prefix, topOwnerId);
+	}
+
+	/**
+	 * Shows the commands and subcommands built on build time
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder showLoadedCommands() {
+		this.showLoadedCommands = true;
+
+		return this;
 	}
 
 	/** <p>Sets the displayed message when the command is on per-user cooldown</p>
@@ -186,6 +198,10 @@ public final class CommandsBuilder {
 		if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
 		help.generate();
 
+		if (showLoadedCommands) {
+			printCommands(context.getCommands(), 0);
+		}
+
 		System.out.println("Loaded " + context.getCommands().size() + " command");
 		if (failedClasses.isEmpty()) {
 			System.err.println("Finished registering all commands");
@@ -196,6 +212,14 @@ public final class CommandsBuilder {
 
 		EventWaiter.createWaiter(context);
 		return new CommandListener(context);
+	}
+
+	private void printCommands(Collection<Command> commands, int indent) {
+		for (Command command : commands) {
+			System.out.println("\t".repeat(indent) + "- " + command.getInfo().getName());
+
+			printCommands(command.getInfo().getSubcommands(), indent + 1);
+		}
 	}
 
 	private void processClass(Class<?> aClass) {
