@@ -1,6 +1,5 @@
 package com.freya02.botcommands.annotation;
 
-import com.freya02.botcommands.Command;
 import com.freya02.botcommands.CooldownScope;
 import net.dv8tion.jda.api.Permission;
 
@@ -49,9 +48,4 @@ public @interface JdaCommand {
      * @return Name of the category
      */
     String category() default "No category";
-
-    /** Classes of the subcommands for this command, they must extend {@linkplain Command} and have the annotation {@linkplain JdaCommand}
-     * @return List of subcommand classes
-     */
-    Class<? extends Command>[] subcommands() default {};
 }

@@ -222,8 +222,9 @@ public final class CommandsBuilder {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void processClass(Class<?> aClass) {
-		if (!Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && Command.class.isAssignableFrom(aClass)
+		if (isCommandOrSubcommand(aClass)
 				&& aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
 			try {
 				boolean isInstantiable = isInstantiable(aClass);
@@ -235,11 +236,13 @@ public final class CommandsBuilder {
 
 					context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
 
-					for (Class<? extends Command> subcommandClazz : aClass.getAnnotation(JdaCommand.class).subcommands()) {
-						final Command subcommand = getSubcommand(subcommandClazz, command);
+					for (Class<?> subcommandClazz : aClass.getClasses()) {
+						if (isCommandOrSubcommand(subcommandClazz)) {
+							final Command subcommand = getSubcommand((Class<? extends Command>) subcommandClazz, command);
 
-						if (subcommand != null) {
-							command.getInfo().addSubcommand(subcommand);
+							if (subcommand != null) {
+								command.getInfo().addSubcommand(subcommand);
+							}
 						}
 					}
 				}
@@ -248,6 +251,10 @@ public final class CommandsBuilder {
 				failedClasses.add(" - " + aClass.getSimpleName());
 			}
 		}
+	}
+
+	private boolean isCommandOrSubcommand(Class<?> aClass) {
+		return !Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && Command.class.isAssignableFrom(aClass);
 	}
 
 	private boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
