@@ -19,6 +19,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -61,78 +62,9 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	/** <p>Sets the displayed message when the command is on per-user cooldown</p>
-	 * <p><b>Requires one string format for the per-user cooldown time (in seconds)</b></p>
-	 * <p><i>Default message : You must wait **%.2f seconds**</i></p>
-	 * @param userCooldownMsg Message to display when the command is on per-user cooldown
-	 * @return This builder
-	 */
-	public CommandsBuilder setUserCooldownMsg(@NotNull String userCooldownMsg) {
-		context.getDefaultMessages().setUserCooldownMsg(userCooldownMsg);
-		return this;
-	}
+	public CommandsBuilder overrideMessages(Consumer<DefaultMessages> modifier) {
+		modifier.accept(context.getDefaultMessages());
 
-	/** <p>Sets the displayed message when the command is on per-channel cooldown</p>
-	 * <p><b>Requires one string format for the per-channel cooldown time (in seconds)</b></p>
-	 * <p><i>Default message : You must wait **%.2f seconds in this channel**</i></p>
-	 * @param channelCooldownMsg Message to display when the command is on per-channel cooldown
-	 * @return This builder
-	 */
-	public CommandsBuilder setChannelCooldownMsg(@NotNull String channelCooldownMsg) {
-		context.getDefaultMessages().setChannelCooldownMsg(channelCooldownMsg);
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the command is on per-guild cooldown</p>
-	 * <p><b>Requires one string format for the per-guild cooldown time (in seconds)</b></p>
-	 * <p><i>Default message : You must wait **%.2f seconds in this guild**</i></p>
-	 * @param guildCooldownMsg Message to display when the command is on per-guild cooldown
-	 * @return This builder
-	 */
-	public CommandsBuilder setGuildCooldownMsg(@NotNull String guildCooldownMsg) {
-		context.getDefaultMessages().setGuildCooldownMsg(guildCooldownMsg);
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the command is only usable by the owner</p>
-	 * <p><i>Default message : Only the owner can use this</i></p>
-	 * @param ownerOnlyErrorMsg Message to display when the command is only usable by the owner
-	 * @return This builder
-	 */
-	public CommandsBuilder setOwnerOnlyErrorMsg(@NotNull String ownerOnlyErrorMsg) {
-		context.getDefaultMessages().setOwnerOnlyErrorMsg(ownerOnlyErrorMsg);
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the user does not have enough permissions</p>
-	 * <p><i>Default message : You are not allowed to do this</i></p>
-	 * @param userPermErrorMsg Message to display when the user does not have enough permissions
-	 * @return This builder
-	 */
-	public CommandsBuilder setUserPermErrorMsg(@NotNull String userPermErrorMsg) {
-		context.getDefaultMessages().setUserPermErrorMsg(userPermErrorMsg);
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the bot does not have enough permissions</p>
-	 * <p><i>Default message : I am missing these permissions: %s</i></p>
-	 * <b>The message must have a %s format specifier to insert the needed permissions</b>
-	 * @param botPermErrorMsg Message to display when the bot does not have enough permissions
-	 * @return This builder
-	 */
-	public CommandsBuilder setBotPermErrorMsg(@NotNull String botPermErrorMsg) {
-		context.getDefaultMessages().setBotPermErrorMsg(botPermErrorMsg);
-		return this;
-	}
-
-	/** <p>Sets the displayed message when the command is not found</p>
-	 * <p><i>Default message : Unknown command, maybe you meant: %s</i></p>
-	 * <b>The message must have a %s format specifier to insert the suggested commands</b>
-	 * @param commandNotFoundMsg Message to display when the command is not found
-	 * @return This builder
-	 */
-	public CommandsBuilder setCommandNotFoundMsg(@NotNull String commandNotFoundMsg) {
-		context.getDefaultMessages().setCommandNotFoundMsg(commandNotFoundMsg);
 		return this;
 	}
 
