@@ -210,6 +210,7 @@ public final class CommandsBuilder {
 	}
 
 	/** Builds the command listener
+	 * @param jda The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
 	 * @return The ListenerAdapter
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
@@ -236,6 +237,7 @@ public final class CommandsBuilder {
 
 	/** Builds the command listener
 	 *
+	 * @param jda The JDA instance of your bot
 	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
 	 * @return The ListenerAdapter
 	 */
