@@ -35,11 +35,6 @@ public @interface JdaCommand {
      */
     Permission[] userPermissions() default {};
 
-    /** Required role of the user
-     * @return Required role of the user
-     */
-    String requiredRole() default "";
-
     /** Cooldown time <b>in milliseconds</b> before the command can be used again in the scope specified by {@linkplain #cooldownScope()}
      * @return Cooldown time
      */

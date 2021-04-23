@@ -26,7 +26,6 @@ public final class CommandInfo {
 	private final Permission[] userPermissions;
 	private final Permission[] botPermissions;
 
-	private final String requiredRole;
 	private final int cooldown;
 	private final CooldownScope cooldownScope;
 
@@ -56,8 +55,6 @@ public final class CommandInfo {
 
 			userPermissions = jdaCommand.userPermissions();
 			botPermissions = jdaCommand.botPermissions();
-
-			requiredRole = jdaCommand.requiredRole();
 
 			cooldown = jdaCommand.cooldown();
 			cooldownScope = jdaCommand.cooldownScope();
@@ -128,10 +125,6 @@ public final class CommandInfo {
 
 	public Permission[] getBotPermissions() {
 		return botPermissions;
-	}
-
-	public String getRequiredRole() {
-		return requiredRole;
 	}
 
 	public int getCooldown() {
