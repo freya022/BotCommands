@@ -1,13 +1,27 @@
 # BotCommands
 This library aims at simplifying Discord bots creation with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
 
+## Nice to have
+
+The framework mainly automates these:
+* Help content
+* Command registration
+* Permission checks
+* Cooldown
+* Message parsing (and mapping message to command)
+
+It also helps in:
+* [Waiting for events](src/main/java/com/freya02/botcommands/EventWaiter.java)
+* [Resolving Discord entities](src/main/java/com/freya02/botcommands/utils/RichTextFinder.java) and [emojis](src/main/java/com/freya02/botcommands/utils/EmojiResolver.java)
+* [Exception-free and garbage collectible InputStream](src/main/java/com/freya02/botcommands/utils/SimpleStream.java)
+
 ## Getting Started
 It is recommended that you have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
 [OpenJDK 11+](https://adoptopenjdk.net/) <br>
 An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://maven.apache.org/download.cgi) manually <br>
-**Do not forget to add the Maven bin directory to your PATH environment variables**
+**Do not forget to add the Maven bin directory to your PATH environment variables**, if you choose not to use an IDE
 
 ### Building / Installing
 #### Getting the library
