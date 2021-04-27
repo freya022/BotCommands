@@ -134,12 +134,12 @@ final class CommandListener extends ListenerAdapter {
 				return;
 			}
 
-			if (isNotOwner && !member.hasPermission(recurCmd.getInfo().getUserPermissions())) {
+			if (isNotOwner && !member.hasPermission(event.getChannel(), recurCmd.getInfo().getUserPermissions())) {
 				reply(event, context.getDefaultMessages().getUserPermErrorMsg());
 				return;
 			}
 
-			if (!event.getGuild().getSelfMember().hasPermission(recurCmd.getInfo().getBotPermissions())) {
+			if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), recurCmd.getInfo().getBotPermissions())) {
 				final EnumSet<Permission> permissions = event.getGuild().getSelfMember().getPermissions(event.getChannel());
 				final StringJoiner missingBuilder = new StringJoiner(", ");
 				for (Permission botPermission : recurCmd.getInfo().getBotPermissions()) {
