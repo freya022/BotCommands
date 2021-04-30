@@ -153,31 +153,33 @@ final class CommandListener extends ListenerAdapter {
 			}
 		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);
 
-		ScheduledFuture<?> cooldownFuture;
-		if (commandInfo.getCooldownScope() == CooldownScope.USER) {
-			if ((cooldownFuture = userCooldowns.get(member.getIdLong())) != null) {
-				reply(event, String.format(context.getDefaultMessages().getUserCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
-				return;
-			}
-		} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
-			if ((cooldownFuture = guildCooldowns.get(event.getGuild().getIdLong())) != null) {
-				reply(event, String.format(context.getDefaultMessages().getGuildCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
-				return;
-			}
-		} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
-			if ((cooldownFuture = channelCooldowns.get(event.getChannel().getIdLong())) != null) {
-				reply(event, String.format(context.getDefaultMessages().getChannelCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
-				return;
-			//}
-		}
-
-		if (commandInfo.getCooldown() > 0) {
+		if (isNotOwner) {
+			ScheduledFuture<?> cooldownFuture;
 			if (commandInfo.getCooldownScope() == CooldownScope.USER) {
-				startCooldown(userCooldowns, userCooldownService, member.getIdLong(), commandInfo.getCooldown());
+				if ((cooldownFuture = userCooldowns.get(member.getIdLong())) != null) {
+					reply(event, String.format(context.getDefaultMessages().getUserCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					return;
+				}
 			} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
-				startCooldown(guildCooldowns, guildCooldownService, event.getGuild().getIdLong(), commandInfo.getCooldown());
-			} else if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {
-				startCooldown(channelCooldowns, channelCooldownService, event.getChannel().getIdLong(), commandInfo.getCooldown());
+				if ((cooldownFuture = guildCooldowns.get(event.getGuild().getIdLong())) != null) {
+					reply(event, String.format(context.getDefaultMessages().getGuildCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					return;
+				}
+			} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
+				if ((cooldownFuture = channelCooldowns.get(event.getChannel().getIdLong())) != null) {
+					reply(event, String.format(context.getDefaultMessages().getChannelCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					return;
+					//}
+				}
+
+			if (commandInfo.getCooldown() > 0) {
+				if (commandInfo.getCooldownScope() == CooldownScope.USER) {
+					startCooldown(userCooldowns, userCooldownService, member.getIdLong(), commandInfo.getCooldown());
+				} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
+					startCooldown(guildCooldowns, guildCooldownService, event.getGuild().getIdLong(), commandInfo.getCooldown());
+				} else if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {
+					startCooldown(channelCooldowns, channelCooldownService, event.getChannel().getIdLong(), commandInfo.getCooldown());
+				}
 			}
 		}
 
