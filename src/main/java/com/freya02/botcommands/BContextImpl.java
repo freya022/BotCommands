@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class BContextImpl implements BContext {
@@ -18,6 +19,8 @@ public class BContextImpl implements BContext {
 	private final Map<String, Command> commandMap = new HashMap<>();
 
 	private List<Long> blacklist = new ArrayList<>();
+
+	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
 	private JDA jda;
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
@@ -146,5 +149,19 @@ public class BContextImpl implements BContext {
 					channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null, t -> System.err.println("Could not send message to owner : " + message)),
 					ignored -> {});
 		}
+	}
+
+	@Override
+	public void addFilter(Predicate<MessageInfo> filter) {
+		filters.add(filter);
+	}
+
+	@Override
+	public void removeFilter(Predicate<MessageInfo> filter) {
+		filters.remove(filter);
+	}
+
+	public List<Predicate<MessageInfo>> getFilters() {
+		return filters;
 	}
 }

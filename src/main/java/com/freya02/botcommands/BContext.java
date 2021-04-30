@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -149,4 +150,16 @@ public interface BContext {
 	 * @param blacklist A blacklist to use
 	 */
 	void setBlacklist(List<Long> blacklist);
+
+	/**
+	 * Adds a filter for the command listener to check on each command
+	 * @param filter The filter to add
+	 */
+	void addFilter(Predicate<MessageInfo> filter);
+
+	/**
+	 * Removes a previously set filter
+	 * @param filter The filter to remove
+	 */
+	void removeFilter(Predicate<MessageInfo> filter);
 }

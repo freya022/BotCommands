@@ -18,6 +18,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 final class CommandListener extends ListenerAdapter {
@@ -125,6 +126,13 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
+		final MessageInfo messageInfo = new MessageInfo(context, event, command, args);
+		for (Predicate<MessageInfo> filter : ((BContextImpl) context).getFilters()) {
+			if (!filter.test(messageInfo)) {
+				return;
+			}
+		}
+
 		Command recurCmd = command;
 		do {
 			if (isNotOwner && recurCmd.getInfo().isHidden()) {
@@ -133,12 +141,12 @@ final class CommandListener extends ListenerAdapter {
 			}
 
 			if (isNotOwner && recurCmd.getInfo().isRequireOwner()) {
-				reply(event, context.getDefaultMessages().getOwnerOnlyErrorMsg());
+				reply(event, this.context.getDefaultMessages().getOwnerOnlyErrorMsg());
 				return;
 			}
 
 			if (isNotOwner && !member.hasPermission(event.getChannel(), recurCmd.getInfo().getUserPermissions())) {
-				reply(event, context.getDefaultMessages().getUserPermErrorMsg());
+				reply(event, this.context.getDefaultMessages().getUserPermErrorMsg());
 				return;
 			}
 
@@ -151,7 +159,7 @@ final class CommandListener extends ListenerAdapter {
 					}
 				}
 
-				reply(event, String.format(context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder.toString()));
+				reply(event, String.format(this.context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder.toString()));
 				return;
 			}
 		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);
@@ -160,17 +168,17 @@ final class CommandListener extends ListenerAdapter {
 			ScheduledFuture<?> cooldownFuture;
 			if (commandInfo.getCooldownScope() == CooldownScope.USER) {
 				if ((cooldownFuture = userCooldowns.get(member.getIdLong())) != null) {
-					reply(event, String.format(context.getDefaultMessages().getUserCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 					return;
 				}
 			} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
 				if ((cooldownFuture = guildCooldowns.get(event.getGuild().getIdLong())) != null) {
-					reply(event, String.format(context.getDefaultMessages().getGuildCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages().getGuildCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 					return;
 				}
 			} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
 				if ((cooldownFuture = channelCooldowns.get(event.getChannel().getIdLong())) != null) {
-					reply(event, String.format(context.getDefaultMessages().getChannelCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages().getChannelCooldownMsg(), cooldownFuture.getDelay(TimeUnit.MILLISECONDS) / 1000.0));
 					return;
 					//}
 				}
@@ -192,7 +200,7 @@ final class CommandListener extends ListenerAdapter {
 				final Matcher matcher = m.pattern.matcher(args);
 				if (matcher.matches()) {
 					final List<Object> objects = new ArrayList<>(matcher.groupCount());
-					objects.add(new BaseCommandEventImpl(context, event, args));
+					objects.add(new BaseCommandEventImpl(this.context, event, args));
 
 					int groupIndex = 1;
 					for (ArgumentFunction argumentFunction : m.argumentsArr) {
@@ -216,7 +224,7 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final CommandEvent commandEvent = new CommandEventImpl(context, event, args);
+		final CommandEvent commandEvent = new CommandEventImpl(this.context, event, args);
 		runCommand(() -> finalCommand.execute(commandEvent), msg, event.getMessage());
 	}
 
