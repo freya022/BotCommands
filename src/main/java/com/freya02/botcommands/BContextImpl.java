@@ -18,8 +18,6 @@ public class BContextImpl implements BContext {
 
 	private final Map<String, Command> commandMap = new HashMap<>();
 
-	private List<Long> blacklist = new ArrayList<>();
-
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
 	private JDA jda;
@@ -80,31 +78,6 @@ public class BContextImpl implements BContext {
 
 	public void addOwner(long ownerId) {
 		ownerIds.add(ownerId);
-	}
-
-	@Override
-	public void addToBlacklist(long userId) {
-		blacklist.add(userId);
-	}
-
-	@Override
-	public void removeFromBlacklist(long userId) {
-		blacklist.remove(userId);
-	}
-
-	@Override
-	public boolean isBlacklisted(long userId) {
-		return blacklist.contains(userId);
-	}
-
-	@Override
-	public List<Long> getBlacklist() {
-		return blacklist;
-	}
-
-	@Override
-	public void setBlacklist(List<Long> blacklist) {
-		this.blacklist = blacklist;
 	}
 
 	public void setDefaultFooterIconSupplier(Supplier<InputStream> defaultFooterIconSupplier) {

@@ -86,9 +86,6 @@ final class CommandListener extends ListenerAdapter {
 		if (event.getAuthor().isBot() || event.isWebhookMessage())
 			return;
 
-		if (context.isBlacklisted(event.getAuthor()) && !context.isOwner(event.getAuthor().getIdLong()))
-			return;
-
 		final Member member = event.getMember();
 
 		if (member == null) {
