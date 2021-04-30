@@ -2,6 +2,9 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.regex.ArgumentFunction;
 import com.freya02.botcommands.regex.MethodPattern;
+import gnu.trove.TCollections;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -24,9 +27,9 @@ final class CommandListener extends ListenerAdapter {
 	private static final ScheduledExecutorService channelCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Channel cooldown thread"));
 	private static final ScheduledExecutorService guildCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Guild cooldown thread"));
 
-	private static final Map<Long, ScheduledFuture<?>> userCooldowns = new HashMap<>();
-	private static final Map<Long, ScheduledFuture<?>> channelCooldowns = new HashMap<>();
-	private static final Map<Long, ScheduledFuture<?>> guildCooldowns = new HashMap<>();
+	private static final TLongObjectMap<ScheduledFuture<?>> userCooldowns = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+	private static final TLongObjectMap<ScheduledFuture<?>> channelCooldowns = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+	private static final TLongObjectMap<ScheduledFuture<?>> guildCooldowns = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	private int commandThreadNumber = 0;
 	private final ExecutorService commandService = Executors.newCachedThreadPool(r -> {
@@ -276,7 +279,7 @@ final class CommandListener extends ListenerAdapter {
 		});
 	}
 
-	private void startCooldown(Map<Long, ScheduledFuture<?>> cooldownMap, ScheduledExecutorService service, Long key, int cooldown) {
+	private void startCooldown(TLongObjectMap<ScheduledFuture<?>> cooldownMap, ScheduledExecutorService service, long key, int cooldown) {
 		final ScheduledFuture<?> future = service.schedule(() -> cooldownMap.remove(key), cooldown, TimeUnit.MILLISECONDS);
 
 		cooldownMap.put(key, future);
