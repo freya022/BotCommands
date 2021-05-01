@@ -240,6 +240,14 @@ final class CommandListener extends ListenerAdapter {
 				continue;
 			}
 
+			if (isNotOwner && !Objects.requireNonNull(event.getMember()).hasPermission(event.getChannel(), lCommandInfo.getUserPermissions())) {
+				continue;
+			}
+
+			if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), lCommandInfo.getBotPermissions())) {
+				continue;
+			}
+
 			int i;
 			for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
 				if (s.charAt(i) != commandName.charAt(i)) break;
