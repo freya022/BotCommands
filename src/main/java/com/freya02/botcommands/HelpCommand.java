@@ -4,6 +4,7 @@ import com.freya02.botcommands.annotation.JdaCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,19 +31,16 @@ final class HelpCommand extends Command {
 		}
 	}
 
-	private final EmbedBuilder generalHelpBuilder;
 	private final EmbedBuilder ownerHelpBuilder;
 
 	public HelpCommand(BContext context) {
 		super(context);
 
 		this.context = context;
-		this.generalHelpBuilder = new EmbedBuilder(context.getDefaultEmbedSupplier().get());
 		this.ownerHelpBuilder = new EmbedBuilder(context.getDefaultEmbedSupplier().get());
 	}
 
 	void generate() {
-		fillHelp(generalHelpBuilder, info -> !info.isHidden());
 		fillHelp(ownerHelpBuilder, info -> true);
 	}
 
@@ -81,7 +79,7 @@ final class HelpCommand extends Command {
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberHelpContent(event.getMember());
+		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberHelpContent(event.getMember(), event.getChannel());
 
 		builder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
@@ -96,10 +94,10 @@ final class HelpCommand extends Command {
 
 	}
 
-	private EmbedBuilder getMemberHelpContent(Member member) {
+	private EmbedBuilder getMemberHelpContent(Member member, TextChannel channel) {
 		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
 
-		fillHelp(builder, info -> !info.isHidden() && !info.isRequireOwner() && member.hasPermission(info.getUserPermissions()));
+		fillHelp(builder, info -> Usability.of(info, member, channel, !context.isOwner(member.getIdLong())).isShowable());
 
 		return builder;
 	}

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 public final class CommandInfo {
@@ -23,8 +25,8 @@ public final class CommandInfo {
 	private final boolean requireOwner;
 	private final boolean hidden;
 
-	private final Permission[] userPermissions;
-	private final Permission[] botPermissions;
+	private final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
+	private final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
 
 	private final int cooldown;
 	private final CooldownScope cooldownScope;
@@ -53,16 +55,21 @@ public final class CommandInfo {
 			aliases = jdaCommand.aliases();
 			description = jdaCommand.description();
 
-			userPermissions = jdaCommand.userPermissions();
-			botPermissions = jdaCommand.botPermissions();
+			if (parentCommand != null) {
+				userPermissions.addAll(parentCommand.getInfo().getUserPermissions());
+				botPermissions.addAll(parentCommand.getInfo().getBotPermissions());
+			}
+
+			Collections.addAll(userPermissions, jdaCommand.userPermissions());
+			Collections.addAll(botPermissions, jdaCommand.botPermissions());
 
 			cooldown = jdaCommand.cooldown();
 			cooldownScope = jdaCommand.cooldownScope();
 
 			methodPatterns = CommandTransformer.getMethodPatterns(command, command.getClass().isAnnotationPresent(DebugPatterns.class));
 
-			hidden = command.getClass().isAnnotationPresent(Hidden.class);
-			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class);
+			hidden = command.getClass().isAnnotationPresent(Hidden.class) || (parentCommand != null && parentCommand.getInfo().isHidden());
+			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class) || (parentCommand != null && parentCommand.getInfo().isRequireOwner());
 			addSubcommandHelp = command.getClass().isAnnotationPresent(AddSubcommandHelp.class);
 			addExecutableHelp = command.getClass().isAnnotationPresent(AddExecutableHelp.class);
 		} catch (Exception e) {
@@ -119,11 +126,11 @@ public final class CommandInfo {
 		return category;
 	}
 
-	public Permission[] getUserPermissions() {
+	public EnumSet<Permission> getUserPermissions() {
 		return userPermissions;
 	}
 
-	public Permission[] getBotPermissions() {
+	public EnumSet<Permission> getBotPermissions() {
 		return botPermissions;
 	}
 

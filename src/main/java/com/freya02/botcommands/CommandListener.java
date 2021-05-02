@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.Usability.UnusableReason;
 import com.freya02.botcommands.regex.ArgumentFunction;
 import com.freya02.botcommands.regex.MethodPattern;
 import gnu.trove.TCollections;
@@ -130,36 +131,34 @@ final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		Command recurCmd = command;
-		do {
-			if (isNotOwner && recurCmd.getInfo().isHidden()) {
+		final Usability usability = Usability.of(command.getInfo(), member, event.getChannel(), isNotOwner);
+
+		if (usability.isUnusable()) {
+			final var unusableReasons = usability.getUnusableReasons();
+			if (unusableReasons.contains(UnusableReason.HIDDEN)) {
 				onCommandNotFound(event, commandName, true);
 				return;
-			}
-
-			if (isNotOwner && recurCmd.getInfo().isRequireOwner()) {
+			} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
 				reply(event, this.context.getDefaultMessages().getOwnerOnlyErrorMsg());
 				return;
-			}
-
-			if (isNotOwner && !member.hasPermission(event.getChannel(), recurCmd.getInfo().getUserPermissions())) {
+			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
 				reply(event, this.context.getDefaultMessages().getUserPermErrorMsg());
 				return;
-			}
-
-			if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), recurCmd.getInfo().getBotPermissions())) {
-				final EnumSet<Permission> permissions = event.getGuild().getSelfMember().getPermissions(event.getChannel());
+			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
 				final StringJoiner missingBuilder = new StringJoiner(", ");
-				for (Permission botPermission : recurCmd.getInfo().getBotPermissions()) {
-					if (!permissions.contains(botPermission)) {
-						missingBuilder.add(botPermission.getName());
-					}
+
+				//Take needed permissions, extract bot current permissions
+				final EnumSet<Permission> missingPerms = command.getInfo().getBotPermissions();
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getChannel()));
+
+				for (Permission botPermission : missingPerms) {
+					missingBuilder.add(botPermission.getName());
 				}
 
 				reply(event, String.format(this.context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder.toString()));
 				return;
 			}
-		} while ((recurCmd = recurCmd.getInfo().getParentCommand()) != null);
+		}
 
 		if (isNotOwner) {
 			ScheduledFuture<?> cooldownFuture;
@@ -229,24 +228,11 @@ final class CommandListener extends ListenerAdapter {
 		List<String> suggestions = new ArrayList<>();
 
 		for (Command otherCommand : ((BContextImpl) context).getCommands()) {
+			if (Usability.of(otherCommand.getInfo(), event.getMember(), event.getChannel(), isNotOwner).isUnusable()) {
+				continue;
+			}
+
 			String s = otherCommand.getInfo().getName();
-			CommandInfo lCommandInfo = otherCommand.getInfo();
-
-			if (isNotOwner && lCommandInfo.isHidden()) {
-				continue;
-			}
-
-			if (isNotOwner && lCommandInfo.isRequireOwner()) {
-				continue;
-			}
-
-			if (isNotOwner && !Objects.requireNonNull(event.getMember()).hasPermission(event.getChannel(), lCommandInfo.getUserPermissions())) {
-				continue;
-			}
-
-			if (!event.getGuild().getSelfMember().hasPermission(event.getChannel(), lCommandInfo.getBotPermissions())) {
-				continue;
-			}
 
 			int i;
 			for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
