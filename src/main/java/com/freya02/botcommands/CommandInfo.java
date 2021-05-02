@@ -69,7 +69,7 @@ public final class CommandInfo {
 			methodPatterns = CommandTransformer.getMethodPatterns(command, command.getClass().isAnnotationPresent(DebugPatterns.class));
 
 			hidden = command.getClass().isAnnotationPresent(Hidden.class) || (parentCommand != null && parentCommand.getInfo().isHidden());
-			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class) || (parentCommand != null && parentCommand.getInfo().isRequireOwner());
+			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class) || (parentCommand != null && parentCommand.getInfo().isOwnerRequired());
 			addSubcommandHelp = command.getClass().isAnnotationPresent(AddSubcommandHelp.class);
 			addExecutableHelp = command.getClass().isAnnotationPresent(AddExecutableHelp.class);
 		} catch (Exception e) {
@@ -98,7 +98,7 @@ public final class CommandInfo {
 		return subcommands;
 	}
 
-	public boolean isRequireOwner() {
+	public boolean isOwnerRequired() {
 		return requireOwner;
 	}
 

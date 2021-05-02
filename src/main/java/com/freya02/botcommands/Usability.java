@@ -20,7 +20,7 @@ public class Usability {
 			unusableReasons.add(HIDDEN);
 		}
 
-		if (isNotOwner && cmdInfo.isRequireOwner()) {
+		if (isNotOwner && cmdInfo.isOwnerRequired()) {
 			unusableReasons.add(OWNER_ONLY);
 		}
 
