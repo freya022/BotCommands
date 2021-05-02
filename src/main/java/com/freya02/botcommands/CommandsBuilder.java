@@ -5,6 +5,7 @@ import com.freya02.botcommands.annotation.JdaCommand;
 import com.freya02.botcommands.annotation.RequireOwner;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -148,7 +149,11 @@ public final class CommandsBuilder {
 
 	private void printCommands(Collection<Command> commands, int indent) {
 		for (Command command : commands) {
-			System.out.println("\t".repeat(indent) + "- " + command.getInfo().getName());
+			System.out.printf("%s- '%s' Bot permission=[%s] User permissions=[%s]%n",
+					"\t".repeat(indent),
+					command.getInfo().getName(),
+					command.getInfo().getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+					command.getInfo().getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
 
 			printCommands(command.getInfo().getSubcommands(), indent + 1);
 		}
