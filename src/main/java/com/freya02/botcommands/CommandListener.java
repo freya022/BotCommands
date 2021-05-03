@@ -6,6 +6,7 @@ import com.freya02.botcommands.regex.MethodPattern;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import me.xdrop.fuzzywuzzy.FuzzySearch;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -234,12 +235,7 @@ final class CommandListener extends ListenerAdapter {
 
 			String s = otherCommand.getInfo().getName();
 
-			int i;
-			for (i = 0; i < Math.min(s.length(), commandName.length()); i++) {
-				if (s.charAt(i) != commandName.charAt(i)) break;
-			}
-
-			if (i > 1) {
+			if (FuzzySearch.partialRatio(s, commandName) > 75) {
 				suggestions.add(s);
 			}
 		}
