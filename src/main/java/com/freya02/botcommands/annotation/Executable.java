@@ -1,6 +1,7 @@
 package com.freya02.botcommands.annotation;
 
 import com.freya02.botcommands.Emoji;
+import com.freya02.botcommands.EmojiOrEmote;
 import net.dv8tion.jda.api.entities.*;
 
 import java.lang.annotation.ElementType;
@@ -21,6 +22,7 @@ import java.lang.annotation.Target;
  *
  *     <li>{@linkplain Emoji}</li>
  *     <li>{@linkplain Emote}</li>
+ *     <li>{@linkplain EmojiOrEmote}</li>
  *
  *     <li>{@linkplain Guild}</li>
  *
