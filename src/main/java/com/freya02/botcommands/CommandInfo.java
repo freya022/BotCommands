@@ -55,7 +55,7 @@ public final class CommandInfo {
 			aliases = jdaCommand.aliases();
 			description = jdaCommand.description();
 
-			if (parentCommand != null) {
+			if (parentCommand != null && !command.getClass().isAnnotationPresent(DontInheritPermissions.class)) {
 				userPermissions.addAll(parentCommand.getInfo().getUserPermissions());
 				botPermissions.addAll(parentCommand.getInfo().getBotPermissions());
 			}
