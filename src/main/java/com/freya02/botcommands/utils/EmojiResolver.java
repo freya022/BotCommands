@@ -3,6 +3,8 @@ package com.freya02.botcommands.utils;
 import com.vdurmont.emoji.EmojiParser;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.NoSuchElementException;
+
 public class EmojiResolver extends EmojiParser {
 	/**
 	 * Resolves a shortcode emoji (e.g: :joy:) into a unicode emoji for JDA to use (on reactions for example)
@@ -22,6 +24,6 @@ public class EmojiResolver extends EmojiParser {
 		UnicodeCandidate candidate = getNextUnicodeCandidate(input.toCharArray(), 0);
 		if (candidate != null) return candidate.getEmoji().getUnicode() + candidate.getFitzpatrickUnicode();
 
-		throw new IllegalArgumentException("No emoji for input: " + input);
+		throw new NoSuchElementException("No emoji for input: " + input);
 	}
 }

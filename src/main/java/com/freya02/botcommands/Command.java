@@ -126,6 +126,8 @@ public abstract class Command {
 							argName = "member mention/member id";
 						} else if (type == TextChannel.class) {
 							argName = "text channel mention/text channel id";
+						} else if (type == EmojiOrEmote.class) {
+							argName = "emoji/emote";
 						} else {
 							argName = "?";
 							System.err.println("Unknown type: " + type);
@@ -166,6 +168,8 @@ public abstract class Command {
 							argExample = "<@222046562543468545>";
 						} else if (type == TextChannel.class) {
 							argExample = "331718482485837825";
+						} else if (type == EmojiOrEmote.class) {
+							argExample = ":flushed:";
 						} else {
 							argExample = "?";
 						}

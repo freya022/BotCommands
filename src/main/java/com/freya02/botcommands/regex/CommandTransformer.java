@@ -1,9 +1,6 @@
 package com.freya02.botcommands.regex;
 
-import com.freya02.botcommands.BaseCommandEvent;
-import com.freya02.botcommands.Command;
-import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.EmojiImpl;
+import com.freya02.botcommands.*;
 import com.freya02.botcommands.annotation.Executable;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.utils.EmojiResolver;
@@ -11,6 +8,7 @@ import net.dv8tion.jda.api.entities.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -18,6 +16,14 @@ public class CommandTransformer {
 	public static final Map<Class<?>, ArgumentFunction> map = new HashMap<>() {{
 		put(String.class, new ArgumentFunction("\"(\\X+?)\"", 1, (e, p) -> p[0]));
 		put(Emoji.class, new ArgumentFunction("([^\"]+)", 1, (e, p) -> new EmojiImpl(EmojiResolver.resolveEmojis(p[0]))));
+		put(EmojiOrEmote.class, new ArgumentFunction("([^\"]+)", 1, (e, p) -> {
+			final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(p[0]);
+			if (emoteMatcher.find()) {
+				return new EmojiOrEmoteImpl(emoteMatcher.group(1), emoteMatcher.group(2));
+			} else {
+				return new EmojiOrEmoteImpl(EmojiResolver.resolveEmojis(p[0]));
+			}
+		}));
 
 		put(int.class, new ArgumentFunction("(\\d+)", 1, (e, p) -> Integer.valueOf(p[0])));
 		put(long.class, new ArgumentFunction("(\\d+)", 1, (e, p) -> Long.valueOf(p[0])));
@@ -79,7 +85,7 @@ public class CommandTransformer {
 			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
 			parameterTypes.remove(0);
 
-			boolean hasEmoji = parameterTypes.stream().anyMatch(c -> c == Emoji.class);
+			boolean hasEmoji = parameterTypes.stream().anyMatch(c -> c == Emoji.class || c == EmojiOrEmote.class);
 			List<ArgumentFunction> groupsList = new ArrayList<>();
 			StringBuilder patternBuilder = new StringBuilder(128);
 			for (int i = 0, parameterTypesSize = parameterTypes.size(); i < parameterTypesSize; i++) {
@@ -89,7 +95,7 @@ public class CommandTransformer {
 				if (i + 1 != parameterTypesSize) { //Replace greedy quantifier by a lazy one in situations where parsing shouldn't change, to save steps
 					if (parameterType == String.class) {
 						argumentFunction = argumentFunction.optimize(hasEmoji ? "\"(\\X+?)\"" : "(\\X+?)");
-					} else if (parameterType == Emoji.class) {
+					} else if (parameterType == Emoji.class || parameterType == EmojiOrEmote.class) {
 						argumentFunction = argumentFunction.optimize("([^\"]+?)");
 					}
 				} else if (!hasEmoji) {
