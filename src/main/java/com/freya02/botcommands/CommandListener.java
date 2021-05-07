@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 final class CommandListener extends ListenerAdapter {
-	private final BContext context;
+	private final BContextImpl context;
 
 	private static final ScheduledExecutorService userCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("User cooldown thread"));
 	private static final ScheduledExecutorService channelCooldownService = Executors.newSingleThreadScheduledExecutor(Utils.createThreadFactory("Channel cooldown thread"));
@@ -47,7 +47,7 @@ final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public CommandListener(BContext context) {
+	public CommandListener(BContextImpl context) {
 		this.context = context;
 	}
 

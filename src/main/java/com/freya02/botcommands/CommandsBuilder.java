@@ -1,8 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.ConditionalUse;
-import com.freya02.botcommands.annotation.JdaCommand;
-import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.annotation.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -65,6 +63,28 @@ public final class CommandsBuilder {
 
 	public CommandsBuilder overrideMessages(Consumer<DefaultMessages> modifier) {
 		modifier.accept(context.getDefaultMessages());
+
+		return this;
+	}
+
+	/**
+	 * Enables {@linkplain AddSubcommandHelp} on all registered commands
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder addSubcommandHelpByDefault() {
+		context.setAddSubcommandHelpByDefault(true);
+
+		return this;
+	}
+
+	/**
+	 * Enables {@linkplain AddExecutableHelp} on all registered commands
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder addExecutableHelpByDefault() {
+		context.setAddExecutableHelpByDefault(true);
 
 		return this;
 	}

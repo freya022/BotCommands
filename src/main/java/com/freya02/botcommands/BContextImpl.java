@@ -24,6 +24,8 @@ public class BContextImpl implements BContext {
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = () -> null;
 
+	private boolean addSubcommandHelpByDefault, addExecutableHelpByDefault;
+
 	@Override
 	@NotNull
 	public JDA getJDA() {
@@ -136,5 +138,21 @@ public class BContextImpl implements BContext {
 
 	public List<Predicate<MessageInfo>> getFilters() {
 		return filters;
+	}
+
+	public boolean shouldAddSubcommandHelpByDefault() {
+		return addSubcommandHelpByDefault;
+	}
+
+	public void setAddSubcommandHelpByDefault(boolean addSubcommandHelpByDefault) {
+		this.addSubcommandHelpByDefault = addSubcommandHelpByDefault;
+	}
+
+	public boolean shouldAddExecutableHelpByDefault() {
+		return addExecutableHelpByDefault;
+	}
+
+	public void setAddExecutableHelpByDefault(boolean addExecutableHelpByDefault) {
+		this.addExecutableHelpByDefault = addExecutableHelpByDefault;
 	}
 }

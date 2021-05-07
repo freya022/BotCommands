@@ -70,8 +70,10 @@ public final class CommandInfo {
 
 			hidden = command.getClass().isAnnotationPresent(Hidden.class) || (parentCommand != null && parentCommand.getInfo().isHidden());
 			requireOwner = command.getClass().isAnnotationPresent(RequireOwner.class) || (parentCommand != null && parentCommand.getInfo().isOwnerRequired());
-			addSubcommandHelp = command.getClass().isAnnotationPresent(AddSubcommandHelp.class);
-			addExecutableHelp = command.getClass().isAnnotationPresent(AddExecutableHelp.class);
+			addSubcommandHelp = ((BContextImpl) context).shouldAddSubcommandHelpByDefault()
+					|| command.getClass().isAnnotationPresent(AddSubcommandHelp.class);
+			addExecutableHelp = ((BContextImpl) context).shouldAddExecutableHelpByDefault()
+					|| command.getClass().isAnnotationPresent(AddExecutableHelp.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
