@@ -9,6 +9,22 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Utility class to search for rich text such as:
+ * <ul>
+ *     <li>Users</li>
+ *     <li>Text channels</li>
+ *     <li>Emotes</li>
+ *     <li>Roles</li>
+ *     <li>Unicode/shortcode emojis</li>
+ *     <li><code>@here</code> and <code>@everyone</code> mentions</li>
+ *     <li>URLs</li>
+ * </ul>
+ *
+ * This class takes your input and tokenises it as it finds what you're asking it to find
+ *
+ * <br><br>You can then take the output using {@linkplain #getResults()} or consume it directly using {@linkplain #processResults(RichTextConsumer)}
+ */
 public class RichTextFinder extends EmojiParser {
 	private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 	private static final Pattern EMPTY_PATTERN = Pattern.compile("");
@@ -18,7 +34,16 @@ public class RichTextFinder extends EmojiParser {
 	private final Map<Integer, RichText> normalMentionMap = new TreeMap<>();
 	private final Map<Integer, String> addedStrs = new TreeMap<>();
 
-	public RichTextFinder(String input, boolean getIMentionable, boolean getGlobalMentions, boolean getEmotes, boolean getUrls) {
+	/**
+	 * Parses the input for what you're asking
+	 *
+	 * @param input The input to parse
+	 * @param getIMentionable Whether to take Users/Channels/Emotes/Roles
+	 * @param getGlobalMentions Whether to take <code>@here</code> and <code>@everyone</code> mentions
+	 * @param getEmojis Whether to take Unicode/shortcode emojis
+	 * @param getUrls Whether to take URLs
+	 */
+	public RichTextFinder(String input, boolean getIMentionable, boolean getGlobalMentions, boolean getEmojis, boolean getUrls) {
 		this.input = input;
 		this.matcher = EMPTY_PATTERN.matcher(this.input);
 
@@ -34,7 +59,7 @@ public class RichTextFinder extends EmojiParser {
 			findAllMentions(RichTextType.EVERYONE, RichTextType.EVERYONE.getPattern());
 		}
 
-		if (getEmotes) {
+		if (getEmojis) {
 			resolveEmojis();
 		}
 
@@ -76,6 +101,9 @@ public class RichTextFinder extends EmojiParser {
 		}
 	}
 
+	/**
+	 * @return The tokens parsed as rich text
+	 */
 	public List<RichText> getResults() {
 		return List.copyOf(normalMentionMap.values());
 	}
@@ -143,6 +171,10 @@ public class RichTextFinder extends EmojiParser {
 		}
 	}
 
+	/**
+	 * Processes each rich text token
+	 * @param consumer The consumer accepting a substring and a rich text type
+	 */
 	public void processResults(RichTextConsumer consumer) {
 		for (RichText richText : normalMentionMap.values()) {
 			consumer.consume(richText.substring, richText.type);

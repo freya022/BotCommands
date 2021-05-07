@@ -36,15 +36,19 @@ public final class CommandsBuilder {
 		context.addOwner(topOwnerId);
 	}
 
-	/**Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
+	/**
+	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
+	 *
 	 * @param topOwnerId The most owner of the bot
 	 */
 	public static CommandsBuilder withPing(long topOwnerId) {
 		return new CommandsBuilder(topOwnerId);
 	}
 
-	/**Constructs a new instance of {@linkplain CommandsBuilder}
-	 * @param prefix Prefix of the bot
+	/**
+	 * Constructs a new instance of {@linkplain CommandsBuilder}
+	 *
+	 * @param prefix     Prefix of the bot
 	 * @param topOwnerId The most owner of the bot
 	 */
 	public static CommandsBuilder withPrefix(@NotNull String prefix, long topOwnerId) {
@@ -53,6 +57,7 @@ public final class CommandsBuilder {
 
 	/**
 	 * Shows the commands and subcommands built on build time
+	 *
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder showLoadedCommands() {
@@ -61,6 +66,12 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**
+	 * Allows to change the framework's default messages while keeping the builder pattern
+	 *
+	 * @param modifier Consumer to change the default messages
+	 * @return This builder for chaining convenience
+	 */
 	public CommandsBuilder overrideMessages(Consumer<DefaultMessages> modifier) {
 		modifier.accept(context.getDefaultMessages());
 
@@ -89,10 +100,11 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	/** <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
+	/**
+	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
 	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *
-	 * @param defaultEmbedFunction The default embed builder
+	 * @param defaultEmbedFunction      The default embed builder
 	 * @param defaultFooterIconSupplier The default icon for the footer
 	 * @return This builder
 	 */
@@ -102,7 +114,8 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	/**Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
+	/**
+	 * Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
 	 *
 	 * @param ownerIds Owners Long IDs to add
 	 * @return This builder
@@ -234,8 +247,10 @@ public final class CommandsBuilder {
 		return canInstantiate;
 	}
 
-	/** Builds the command listener
-	 * @param jda The JDA instance of your bot
+	/**
+	 * Builds the command listener
+	 *
+	 * @param jda                The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
 	 * @return The ListenerAdapter
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
@@ -260,9 +275,10 @@ public final class CommandsBuilder {
 		return context;
 	}
 
-	/** Builds the command listener
+	/**
+	 * Builds the command listener
 	 *
-	 * @param jda The JDA instance of your bot
+	 * @param jda         The JDA instance of your bot
 	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
 	 * @return The ListenerAdapter
 	 */
