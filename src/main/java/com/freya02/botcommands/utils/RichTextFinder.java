@@ -76,6 +76,10 @@ public class RichTextFinder extends EmojiParser {
 		}
 	}
 
+	public List<RichText> getResults() {
+		return List.copyOf(normalMentionMap.values());
+	}
+
 	private void resolveEmojis() {
 		//Find emoji aliases
 		final int inputLength = input.length();
@@ -145,13 +149,21 @@ public class RichTextFinder extends EmojiParser {
 		}
 	}
 
-	private static class RichText {
+	public static class RichText {
 		private final String substring;
 		private final RichTextType type;
 
 		RichText(String substring, RichTextType type) {
 			this.substring = substring;
 			this.type = type;
+		}
+
+		public String getSubstring() {
+			return substring;
+		}
+
+		public RichTextType getType() {
+			return type;
 		}
 	}
 }
