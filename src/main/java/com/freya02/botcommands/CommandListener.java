@@ -7,6 +7,7 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
+import javax.annotation.Nonnull;
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +24,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 final class CommandListener extends ListenerAdapter {
 	private final BContext context;
@@ -226,23 +229,32 @@ final class CommandListener extends ListenerAdapter {
 	}
 
 	private void onCommandNotFound(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
-		List<String> suggestions = new ArrayList<>();
-
-		for (Command otherCommand : ((BContextImpl) context).getCommands()) {
-			if (Usability.of(otherCommand.getInfo(), event.getMember(), event.getChannel(), isNotOwner).isUnusable()) {
-				continue;
-			}
-
-			String s = otherCommand.getInfo().getName();
-
-			if (FuzzySearch.partialRatio(s, commandName) > 75) {
-				suggestions.add(s);
-			}
-		}
+		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
 			reply(event, String.format(context.getDefaultMessages().getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
 		}
+	}
+
+	@Nonnull
+	private List<String> getSuggestions(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
+		final List<String> commandNames = ((BContextImpl) context).getCommands().stream()
+				.filter(c -> Usability.of(c.getInfo(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
+				.map(c -> c.getInfo().getName())
+				.collect(Collectors.toList());
+
+		final List<String> topPartial = FuzzySearch.extractAll(commandName,
+				commandNames,
+				FuzzySearch::partialRatio,
+				90
+		).stream().map(ExtractedResult::getString).collect(Collectors.toList());
+
+		return FuzzySearch.extractTop(commandName,
+				topPartial,
+				FuzzySearch::ratio,
+				5,
+				42
+		).stream().map(ExtractedResult::getString).collect(Collectors.toList());
 	}
 
 	private interface RunnableEx {
