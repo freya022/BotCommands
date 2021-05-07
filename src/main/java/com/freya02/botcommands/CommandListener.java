@@ -129,7 +129,7 @@ final class CommandListener extends ListenerAdapter {
 		}
 
 		final MessageInfo messageInfo = new MessageInfo(context, event, command, args);
-		for (Predicate<MessageInfo> filter : ((BContextImpl) context).getFilters()) {
+		for (Predicate<MessageInfo> filter : context.getFilters()) {
 			if (!filter.test(messageInfo)) {
 				return;
 			}
@@ -238,7 +238,7 @@ final class CommandListener extends ListenerAdapter {
 
 	@Nonnull
 	private List<String> getSuggestions(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
-		final List<String> commandNames = ((BContextImpl) context).getCommands().stream()
+		final List<String> commandNames = context.getCommands().stream()
 				.filter(c -> Usability.of(c.getInfo(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
 				.map(c -> c.getInfo().getName())
 				.collect(Collectors.toList());
@@ -281,7 +281,7 @@ final class CommandListener extends ListenerAdapter {
 					message.getChannel().sendMessage("An uncaught exception occured").queue();
 				}
 
-				((BContextImpl) context).dispatchException(msg, e);
+				context.dispatchException(msg, e);
 			}
 		});
 	}
