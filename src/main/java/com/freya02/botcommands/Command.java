@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Parameter;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -189,8 +190,15 @@ public abstract class Command {
 		}
 
 		if (addSubcommandHelp) {
-			final String subcommandHelp = info.getSubcommands().stream().map(Command::getInfo).filter(info2 -> !info2.isHidden()).map(info2 -> "**" + info2.getName() + "** : " + info2.getDescription()).collect(Collectors.joining("\r\n"));
-			builder.addField("Subcommands", subcommandHelp, false);
+			final List<Command> subcommands = info.getSubcommands();
+			if (!subcommands.isEmpty()) {
+				final String subcommandHelp = subcommands.stream()
+						.map(Command::getInfo)
+						.filter(info2 -> !info2.isHidden())
+						.map(info2 -> "**" + info2.getName() + "** : " + info2.getDescription())
+						.collect(Collectors.joining("\n"));
+				builder.addField("Subcommands", subcommandHelp, false);
+			}
 		}
 
 		final Consumer<EmbedBuilder> descConsumer = getDetailedDescription();
