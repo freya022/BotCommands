@@ -7,6 +7,14 @@
     <groupId>com.freya02</groupId>
     <artifactId>BotCommands</artifactId>
     <version>1.4.6</version>
+         
+    <distributionManagement>
+       <repository>
+           <id>github</id>
+           <name>GitHub freya022 Apache Maven Packages</name>
+           <url>https://maven.pkg.github.com/freya022/BotCommands</url>
+       </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
