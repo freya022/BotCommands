@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -137,9 +138,14 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	//TODO
+	/**
+	 * Sets the key provider, used to encrypt Discord buttons IDs
+	 *
+	 * @param provider The {@link KeyProvider}
+	 * @return This builder for chaining convenience
+	 */
 	public CommandsBuilder setKeyProvider(KeyProvider provider) {
-		context.setKeyProvider(provider);
+		context.setKeyProvider(Objects.requireNonNull(provider, "Key provider cannot be null"));
 
 		return this;
 	}

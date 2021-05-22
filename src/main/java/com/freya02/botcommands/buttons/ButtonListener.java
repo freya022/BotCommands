@@ -2,6 +2,7 @@ package com.freya02.botcommands.buttons;
 
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.buttons.annotation.JdaButtonListener;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -20,6 +21,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.StringJoiner;
 
 public class ButtonListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -33,25 +35,62 @@ public class ButtonListener extends ListenerAdapter {
 		context.getJDA().addEventListener(new ButtonListener());
 	}
 
-	public static String getButtonId(Guild guild, Object... args) {
-		return encryptId(context.getKeyProvider().getKey(guild), args);
+	/**
+	 * Creates a button ID with the supplied arguments, so they can be passed to a {@linkplain JdaButtonListener button listener}
+	 *
+	 * @param guild The guild in which the command occurred
+	 * @param handlerName Name of the method which should handle the provided arguments
+	 * @param args  The objects objects to use in the string
+	 * @return The encrypted button ID containing the provided arguments
+	 */
+	public static String getButtonId(Guild guild, String handlerName, Object... args) {
+		return encryptId(handlerName, context.getKeyProvider().getKey(guild), args);
 	}
 
-	public static String getButtonId(User user, Object... args) {
-		return encryptId(context.getKeyProvider().getKey(user), args);
+	/**
+	 * Creates a button ID with the supplied arguments, so they can be passed to a {@linkplain JdaButtonListener button listener}
+	 *
+	 * @param user The DM user
+	 * @param handlerName Name of the method which should handle the provided arguments
+	 * @param args  The objects objects to use in the string
+	 * @return The encrypted button ID containing the provided arguments
+	 */
+	public static String getButtonId(User user, String handlerName, Object... args) {
+		return encryptId(handlerName, context.getKeyProvider().getKey(user), args);
 	}
 
-	public static String getButtonId(SlashCommandEvent event, Object... args) {
+	/**
+	 * Creates a button ID with the supplied arguments, so they can be passed to a {@linkplain JdaButtonListener button listener}
+	 *
+	 * @param event The current slash command event
+	 * @param handlerName Name of the method which should handle the provided arguments
+	 * @param args  The objects objects to use in the string
+	 * @return The encrypted button ID containing the provided arguments
+	 */
+	public static String getButtonId(SlashCommandEvent event, String handlerName, Object... args) {
 		if (event.isFromGuild()) {
-			return encryptId(context.getKeyProvider().getKey(event.getGuild()), args);
+			return encryptId(handlerName, context.getKeyProvider().getKey(event.getGuild()), args);
 		} else {
-			return encryptId(context.getKeyProvider().getKey(event.getUser()), args);
+			return encryptId(handlerName, context.getKeyProvider().getKey(event.getUser()), args);
 		}
 	}
 
 	@Nonnull
-	private static String encryptId(Key key, Object[] args) {
-		final byte[] idBytes = getIdBytes(args);
+	private static String encryptId(String handlerName, Key key, Object[] args) {
+		final ButtonDescriptor descriptor = map.get(handlerName);
+		if (descriptor == null) throw new IllegalStateException("Button listener with name '" + handlerName + "' doesn't exist");
+
+		Class<?>[] parameterTypes = descriptor.getMethod().getParameterTypes();
+		for (int i = 1, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
+			final Class<?> parameterType = parameterTypes[i];
+			final Class<?> argType = args[i - 1].getClass();
+
+			if (!parameterType.isAssignableFrom(argType)) {
+				throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
+			}
+		}
+
+		final byte[] idBytes = getIdBytes(handlerName, args);
 
 		try {
 			final Cipher encryptCipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
@@ -69,8 +108,8 @@ public class ButtonListener extends ListenerAdapter {
 	}
 
 	@Nonnull
-	private static byte[] getIdBytes(Object[] args) {
-		StringBuilder idBuilder = new StringBuilder(100);
+	private static byte[] getIdBytes(String handlerName, Object[] args) {
+		StringJoiner idBuilder = new StringJoiner("²").add(handlerName);
 		for (int i = 0, argsLength = args.length; i < argsLength; i++) {
 			Object arg = args[i];
 
@@ -78,7 +117,7 @@ public class ButtonListener extends ListenerAdapter {
 
 			if (s.contains("²")) throw new IllegalArgumentException("Argument #" + i + " cannot have a ² inside");
 
-			idBuilder.append(s).append('²');
+			idBuilder.add(s);
 		}
 
 		return idBuilder.toString().getBytes(StandardCharsets.UTF_8);
@@ -86,6 +125,8 @@ public class ButtonListener extends ListenerAdapter {
 
 	@Override
 	public void onButtonClick(@Nonnull ButtonClickEvent event) {
+		if (context.getKeyProvider() == null) return;
+
 		final Key key;
 		if (event.isFromGuild()) {
 			key = context.getKeyProvider().getKey(event.getGuild());
