@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import javax.annotation.Nullable;
+
 public class BooleanResolver extends ParameterResolver {
 	@Override
 	public boolean isRegexCommandSupported() {
@@ -13,7 +15,7 @@ public class BooleanResolver extends ParameterResolver {
 
 	@Override
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
-		return Boolean.valueOf(args[0]);
+		return parseBoolean(args[0]);
 	}
 
 	@Override
@@ -33,6 +35,17 @@ public class BooleanResolver extends ParameterResolver {
 
 	@Override
 	public Object resolve(ButtonClickEvent event, String arg) {
-		return Boolean.valueOf(arg);
+		return parseBoolean(arg);
+	}
+
+	@Nullable
+	private Object parseBoolean(String arg) {
+		if (arg.equalsIgnoreCase("false")) {
+			return Boolean.FALSE;
+		} else if (arg.equalsIgnoreCase("true")) {
+			return Boolean.TRUE;
+		} else {
+			return null;
+		}
 	}
 }

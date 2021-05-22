@@ -24,6 +24,7 @@ public class CommandTransformer {
 		put(Emoji.class, new ArgumentFunction("(\"[^\"]+\")", 1, Emoji.class));
 		put(EmojiOrEmote.class, new ArgumentFunction("(\"[^\"]+\")", 1, EmojiOrEmote.class));
 
+		put(boolean.class, new ArgumentFunction("[a-zA-Z]{4,5}", 1, boolean.class));
 		put(long.class, new ArgumentFunction("(\\d+)", 1, long.class));
 		put(double.class, new ArgumentFunction("(-?[0-9]*[.]?[0-9]+)", 1, double.class));
 
