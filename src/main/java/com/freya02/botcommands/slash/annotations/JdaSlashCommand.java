@@ -1,8 +1,10 @@
 package com.freya02.botcommands.slash.annotations;
 
 import com.freya02.botcommands.CooldownScope;
+import com.freya02.botcommands.Emoji;
+import com.freya02.botcommands.EmojiOrEmote;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -37,6 +39,25 @@ import java.lang.annotation.Target;
  *         <li><code>/info complete role</code></li>
  *     </ul>
  *     </li>
+ * </ul>
+ *
+ * Supported parameters:
+ * <ul>
+ *     <li>{@linkplain String}</li>
+ *
+ *     <li>boolean</li>
+ *     <li>long</li>
+ *     <li>double</li>
+ *
+ *     <li>{@linkplain Emoji}</li>
+ *     <li>{@linkplain Emote}</li>
+ *     <li>{@linkplain EmojiOrEmote}</li>
+ *
+ *     <li>{@linkplain IMentionable}</li>
+ *     <li>{@linkplain Role}</li>
+ *     <li>{@linkplain User}</li>
+ *     <li>{@linkplain Member}</li>
+ *     <li>{@linkplain TextChannel}</li>
  * </ul>
  *
  * @see <a href="https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups">Discord docs</a>
