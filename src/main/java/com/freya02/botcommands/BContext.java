@@ -111,6 +111,10 @@ public interface BContext {
 	 */
 	void overrideHelp(Consumer<BaseCommandEvent> helpConsumer);
 
-	//TODO
+	/**
+	 * Returns the help consumer used when commands are found but not understood
+	 *
+	 * @return Consumer which should output help
+	 */
 	Consumer<BaseCommandEvent> getHelpConsumer();
 }
