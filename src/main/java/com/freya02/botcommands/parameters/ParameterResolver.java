@@ -36,6 +36,7 @@ public abstract class ParameterResolver {
 		else if (TextChannel.class.isAssignableFrom(type)) return new TextChannelResolver();
 		else if (User.class.isAssignableFrom(type)) return new UserResolver();
 		else if (Double.class.isAssignableFrom(type)) return new DoubleResolver();
+		else if (IMentionable.class.isAssignableFrom(type)) return new MentionableResolver();
 
 		return null;
 	}

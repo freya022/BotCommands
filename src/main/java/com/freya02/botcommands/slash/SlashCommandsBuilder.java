@@ -165,19 +165,16 @@ public final class SlashCommandsBuilder {
 			final OptionData data;
 			if (type == User.class || type == Member.class) {
 				data = new OptionData(OptionType.USER, name, description);
-				list.add(data);
 			} else if (type == Role.class) {
 				data = new OptionData(OptionType.ROLE, name, description);
-				list.add(data);
-			} else if (type == TextChannel.class) { //TODO ugh
+			} else if (type == TextChannel.class) {
 				data = new OptionData(OptionType.CHANNEL, name, description);
-				list.add(data);
+			} else if (type == IMentionable.class) {
+				data = new OptionData(OptionType.MENTIONABLE, name, description);
 			} else if (type == boolean.class) {
 				data = new OptionData(OptionType.BOOLEAN, name, description);
-				list.add(data);
 			} else if (type == long.class) {
 				data = new OptionData(OptionType.INTEGER, name, description);
-				list.add(data);
 
 				final Choices choices = parameter.getAnnotation(Choices.class);
 				if (choices != null) {
@@ -187,7 +184,6 @@ public final class SlashCommandsBuilder {
 				}
 			} else if (type == String.class || type == Emote.class || type == Emoji.class || type == EmojiOrEmote.class) {
 				data = new OptionData(OptionType.STRING, name, description);
-				list.add(data);
 
 				final Choices choices = parameter.getAnnotation(Choices.class);
 				if (choices != null) {
@@ -198,6 +194,8 @@ public final class SlashCommandsBuilder {
 			} else {
 				throw new IllegalArgumentException("Unknown slash command option: " + type.getName());
 			}
+
+			list.add(data);
 
 			data.setRequired(!parameter.isAnnotationPresent(Optional.class));
 		}
