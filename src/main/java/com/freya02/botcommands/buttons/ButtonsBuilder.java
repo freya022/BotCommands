@@ -24,7 +24,7 @@ public class ButtonsBuilder {
 		for (Method method : clazz.getDeclaredMethods()) {
 			JdaButtonListener annotation = method.getAnnotation(JdaButtonListener.class);
 			if (annotation != null) {
-				if (!ButtonClickEvent.class.isAssignableFrom(method.getParameterTypes()[0]))
+				if (!Utils.hasFirstParameter(method, ButtonClickEvent.class))
 					throw new IllegalArgumentException("First parameter of method " + method + " should be a ButtonClickEvent");
 
 				final Object obj;

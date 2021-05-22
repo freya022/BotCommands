@@ -3,6 +3,7 @@ package com.freya02.botcommands.prefixed.regex;
 import com.freya02.botcommands.Emoji;
 import com.freya02.botcommands.EmojiOrEmote;
 import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
@@ -43,7 +44,7 @@ public class CommandTransformer {
 			if (!method.isAnnotationPresent(Executable.class)) continue;
 			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
 
-			if (parameterTypes.isEmpty() || parameterTypes.get(0) != BaseCommandEvent.class) {
+			if (!Utils.hasFirstParameter(method, BaseCommandEvent.class)) {
 				LOGGER.error("Error: method {} must at least have a BaseCommandEvent argument on first parameter", method);
 
 				continue;

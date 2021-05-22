@@ -1,9 +1,7 @@
 package com.freya02.botcommands.slash;
 
-import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.EmojiOrEmote;
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.*;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.slash.annotations.Choice;
 import com.freya02.botcommands.slash.annotations.Choices;
@@ -37,17 +35,16 @@ public final class SlashCommandsBuilder {
 				if (!method.canAccess(slashCommand))
 					throw new IllegalStateException("Slash command " + method + " is not public");
 
-				final Class<?> firstType = method.getParameterTypes()[0];
 				if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
-					if (!SlashEvent.class.isAssignableFrom(firstType) && !GuildSlashEvent.class.isAssignableFrom(firstType))
+					if (!Utils.hasFirstParameter(method, SlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
 						throw new IllegalArgumentException("Slash command at " + method + " must have a GuildSlashEvent or SlashEvent as first parameter");
 
-					if (!GuildSlashEvent.class.isAssignableFrom(firstType)) {
+					if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
 						//If type is correct but guild specialization isn't used
 						LOGGER.warn("Guild-only command {} uses SlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", method);
 					}
 				} else {
-					if (!SlashEvent.class.isAssignableFrom(firstType))
+					if (!Utils.hasFirstParameter(method, SlashEvent.class))
 						throw new IllegalArgumentException("Slash command at " + method + " must have a SlashEvent as first parameter");
 				}
 

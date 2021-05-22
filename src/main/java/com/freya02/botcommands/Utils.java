@@ -106,4 +106,8 @@ public final class Utils {
 
 		return canInstantiate;
 	}
+
+	public static boolean hasFirstParameter(Method method, Class<?> type) {
+		return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].isAssignableFrom(type);
+	}
 }
