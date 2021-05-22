@@ -49,13 +49,13 @@ An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://
         <!-- Possible build properties -->
     </build>
     <repositories>
-        <repository> <!-- Repository for JDA -->
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>https://jcenter.bintray.com</url>
+        <repository> <!-- JDA repository -->
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
         </repository>
-        <repository>
-            <id>jitpack.io</id>
+        <repository> <!-- for BotCommands and other libs perhaps -->
+            <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
@@ -63,9 +63,11 @@ An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://
         <!-- Your other project's dependencies here -->
         
         <dependency> <!-- Add JDA to your project -->
-            <groupId>net.dv8tion</groupId>
+            <!-- Uncomment this and comment the groupId below it if you use JDA snapshots -->
+            <!-- <groupId>com.github.DV8FromTheWorld</groupId> -->
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_229</version>
+            <version>JDA-Version</version>
         </dependency>
         <dependency> <!-- Add BotCommands to your project -->
             <groupId>com.github.freya022</groupId> <!-- Different if you choose to build from source -->
