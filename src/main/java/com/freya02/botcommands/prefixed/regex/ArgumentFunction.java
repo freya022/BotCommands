@@ -15,6 +15,10 @@ public class ArgumentFunction {
 		this.pattern = pattern;
 		this.groups = groups;
 		this.resolver = resolver;
+
+		if (resolver == null || !resolver.isRegexCommandSupported()) {
+			throw new IllegalArgumentException("Resolver is not supported");
+		}
 	}
 
 	ArgumentFunction optimize(String newPattern) {

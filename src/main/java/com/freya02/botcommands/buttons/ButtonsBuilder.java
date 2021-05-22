@@ -1,6 +1,7 @@
 package com.freya02.botcommands.buttons;
 
 import com.freya02.botcommands.BContextImpl;
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.buttons.annotation.JdaButtonListener;
 import com.freya02.botcommands.parameters.ParameterResolver;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -52,7 +53,7 @@ public class ButtonsBuilder {
 				}
 
 				if (!method.canAccess(obj))
-					throw new IllegalStateException("Slash command " + method + " is not public");
+					throw new IllegalStateException("Button listener " + method + " is not public");
 
 				final List<ParameterResolver> resolvers = new ArrayList<>();
 				Parameter[] parameters = method.getParameters();
@@ -62,8 +63,8 @@ public class ButtonsBuilder {
 
 					final ParameterResolver resolver = ParameterResolver.of(type);
 
-					if (resolver == null || !resolver.isSlashCommandSupported())
-						throw new IllegalArgumentException("Unknown slash command option type: " + type.getName());
+					if (resolver == null || !resolver.isButtonSupported())
+						throw new IllegalArgumentException("Unknown button value type: " + type.getName());
 
 					resolvers.add(resolver);
 				}
