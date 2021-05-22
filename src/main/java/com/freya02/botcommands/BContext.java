@@ -1,5 +1,9 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.prefixed.Command;
+import com.freya02.botcommands.prefixed.MessageInfo;
+import com.freya02.botcommands.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
@@ -7,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -67,6 +72,9 @@ public interface BContext {
 	@Nullable
 	Command findCommand(@NotNull String name);
 
+	@Nullable
+	SlashCommandInfo findSlashCommand(@NotNull String name);
+
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier
 	 *
@@ -96,4 +104,13 @@ public interface BContext {
 	 * @param filter The filter to remove
 	 */
 	void removeFilter(Predicate<MessageInfo> filter);
+
+	/**
+	 * Overrides the default help given in {@linkplain Command#showHelp(BaseCommandEvent)}
+	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
+	 */
+	void overrideHelp(Consumer<BaseCommandEvent> helpConsumer);
+
+	//TODO
+	Consumer<BaseCommandEvent> getHelpConsumer();
 }

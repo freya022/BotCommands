@@ -79,7 +79,7 @@ public class EventWaiter extends ListenerAdapter {
 					}
 				} catch (Exception e) {
 					final String msg = "An exception occurred while waiting for a " + waitingEvent.getType().getSimpleName();
-					CommandListener.printExceptionString(msg, e);
+					Utils.printExceptionString(msg, e);
 					context.dispatchException(msg, e);
 					iterator.remove();
 				}

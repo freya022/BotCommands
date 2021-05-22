@@ -1,9 +1,14 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.prefixed.CommandInfo;
+import com.freya02.botcommands.slash.SlashCommandInfo;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 import static com.freya02.botcommands.Usability.UnusableReason.*;
 
@@ -35,11 +40,37 @@ public class Usability {
 		return new Usability(unusableReasons);
 	}
 
+	public static Usability of(SlashCommandEvent event, SlashCommandInfo cmdInfo, boolean isNotOwner) {
+		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
+
+		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) {
+			unusableReasons.add(GUILD_ONLY);
+		}
+
+		if (!event.isFromGuild()) {
+			return new Usability(unusableReasons);
+		}
+
+		final TextChannel channel = event.getTextChannel();
+		final Guild guild = Objects.requireNonNull(event.getGuild(), "Guild shouldn't be null as this code path is guild-only");
+		final Member member = Objects.requireNonNull(event.getMember(), "Member shouldn't be null as this code path is guild-only");
+		if (!guild.getSelfMember().hasPermission(channel, cmdInfo.getBotPermissions())) {
+			unusableReasons.add(BOT_PERMISSIONS);
+		}
+
+		if (isNotOwner && !member.hasPermission(channel, cmdInfo.getUserPermissions())) {
+			unusableReasons.add(USER_PERMISSIONS);
+		}
+
+		return new Usability(unusableReasons);
+	}
+
 	public boolean isUnusable() {
 		return unusableReasons.contains(HIDDEN) ||
 				unusableReasons.contains(OWNER_ONLY) ||
 				unusableReasons.contains(USER_PERMISSIONS) ||
-				unusableReasons.contains(BOT_PERMISSIONS);
+				unusableReasons.contains(BOT_PERMISSIONS) ||
+				unusableReasons.contains(GUILD_ONLY);
 	}
 
 	public boolean isUsable() {
@@ -49,7 +80,8 @@ public class Usability {
 	public boolean isNotShowable() {
 		return unusableReasons.contains(HIDDEN) ||
 				unusableReasons.contains(OWNER_ONLY) ||
-				unusableReasons.contains(USER_PERMISSIONS);
+				unusableReasons.contains(USER_PERMISSIONS) ||
+				unusableReasons.contains(GUILD_ONLY);
 	}
 
 	public boolean isShowable() {
@@ -64,6 +96,7 @@ public class Usability {
 		HIDDEN,
 		OWNER_ONLY,
 		USER_PERMISSIONS,
-		BOT_PERMISSIONS
+		BOT_PERMISSIONS,
+		GUILD_ONLY
 	}
 }

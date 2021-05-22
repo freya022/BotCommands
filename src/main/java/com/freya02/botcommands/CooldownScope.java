@@ -1,6 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.JdaCommand;
+import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 

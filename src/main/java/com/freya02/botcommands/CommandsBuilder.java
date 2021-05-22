@@ -1,21 +1,24 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.*;
+import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.buttons.ButtonsBuilder;
+import com.freya02.botcommands.buttons.KeyProvider;
+import com.freya02.botcommands.prefixed.*;
+import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
+import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
+import com.freya02.botcommands.prefixed.annotation.JdaCommand;
+import com.freya02.botcommands.slash.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,11 +26,19 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
+	private static final Logger LOGGER = Logging.getLogger();
+
 	private final BContextImpl context = new BContextImpl();
-	private boolean showLoadedCommands;
+	private final PrefixedCommandsBuilder prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
+	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context);
+	private final ButtonsBuilder buttonsBuilder = new ButtonsBuilder(context);
+
+	private boolean disableHelpCommand;
+	private boolean disableSlashHelpCommand;
+	private List<Long> slashGuildIds = null;
 
 	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
-		Utils.requireNonBlankString(prefix, "Prefix is null");
+		Utils.requireNonBlank(prefix, "Prefix");
 		context.setPrefixes(List.of(prefix));
 		context.addOwner(topOwnerId);
 	}
@@ -53,17 +64,6 @@ public final class CommandsBuilder {
 	 */
 	public static CommandsBuilder withPrefix(@NotNull String prefix, long topOwnerId) {
 		return new CommandsBuilder(prefix, topOwnerId);
-	}
-
-	/**
-	 * Shows the commands and subcommands built on build time
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder showLoadedCommands() {
-		this.showLoadedCommands = true;
-
-		return this;
 	}
 
 	/**
@@ -101,6 +101,50 @@ public final class CommandsBuilder {
 	}
 
 	/**
+	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected
+	 *
+	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder disableHelpCommand(Consumer<BaseCommandEvent> helpConsumer) {
+		this.disableHelpCommand = true;
+		this.context.overrideHelp(helpConsumer);
+
+		return this;
+	}
+
+	/**
+	 * Disables the /help command for slash commands
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder disableSlashHelpCommand() {
+		this.disableSlashHelpCommand = true;
+
+		return this;
+	}
+
+	/**
+	 * Debug feature - Makes it so slash commands are only updated on these guilds
+	 *
+	 * @param slashGuildIds IDs of the guilds
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
+		this.slashGuildIds = slashGuildIds;
+
+		return this;
+	}
+
+	//TODO
+	public CommandsBuilder setKeyProvider(KeyProvider provider) {
+		context.setKeyProvider(provider);
+
+		return this;
+	}
+
+	/**
 	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
 	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *
@@ -128,61 +172,59 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	private final List<String> failedClasses = new ArrayList<>();
-	private Command getSubcommand(Class<? extends Command> clazz, Command parent) {
-		if (!Modifier.isAbstract(clazz.getModifiers())) {
-			try {
-				boolean isInstantiable = isInstantiable(clazz);
-
-				if (isInstantiable) {
-					if (Modifier.isStatic(clazz.getModifiers())) { //Static inner class doesn't need declaring class's instance
-						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(BContext.class);
-						constructor.setAccessible(true);
-						return constructor.newInstance(context);
-					} else {
-						final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(parent.getClass(), BContext.class);
-						constructor.setAccessible(true);
-						return constructor.newInstance(parent, context);
-					}
-				}
-			} catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-				e.printStackTrace();
-				failedClasses.add(" - " + clazz.getSimpleName());
+	private void buildClasses(List<Class<?>> classes) {
+		try {
+			for (Class<?> aClass : classes) {
+				processClass(aClass);
 			}
-		}
 
-		return null;
-	}
+			if (!disableHelpCommand) {
+				processClass(HelpCommand.class);
 
-	private ListenerAdapter buildClasses(List<Class<?>> classes) {
-		for (Class<?> aClass : classes) {
-			processClass(aClass);
-		}
-		processClass(HelpCommand.class);
+				final HelpCommand help = (HelpCommand) context.findCommand("help");
+				if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
+				help.generate();
+			}
 
-		final HelpCommand help = (HelpCommand) context.findCommand("help");
-		if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
-		help.generate();
+			if (!disableSlashHelpCommand) {
+				processClass(SlashHelpCommand.class);
 
-		if (showLoadedCommands) {
+				final SlashCommandInfo info = context.findSlashCommand("help");
+				if (info == null) throw new IllegalStateException("SlashHelpCommand did not build properly");
+
+				((SlashHelpCommand) info.getInstance()).generate();
+			}
+
+			//Load button listeners
+			for (Class<?> aClass : classes) {
+				buttonsBuilder.processButtonListener(aClass);
+			}
+
+			LOGGER.info("Loaded {} commands", context.getCommands().size());
 			printCommands(context.getCommands(), 0);
-		}
 
-		System.out.println("Loaded " + context.getCommands().size() + " command");
-		if (failedClasses.isEmpty()) {
-			System.err.println("Finished registering all commands");
-		} else {
-			System.err.println("Finished registering command, but some failed");
-			System.err.println(failedClasses.size() + " command(s) failed loading:\r\n" + String.join("\r\n", failedClasses));
-		}
+			LOGGER.info("Loaded {} slash commands", context.getSlashCommands().size());
+			printSlashCommands(context.getSlashCommands());
 
-		EventWaiter.createWaiter(context);
-		return new CommandListener(context);
+			slashCommandsBuilder.postProcess(slashGuildIds);
+
+			buttonsBuilder.postProcess();
+
+			LOGGER.info("Finished registering all commands");
+		} catch (Throwable e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("An error occured while loading the commands, the commands will not work");
+			} else { //Dont want this error hidden by the lack of logging framework
+				System.err.println("An error occured while loading the commands, the commands will not work");
+			}
+
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void printCommands(Collection<Command> commands, int indent) {
 		for (Command command : commands) {
-			System.out.printf("%s- '%s' Bot permission=[%s] User permissions=[%s]%n",
+			LOGGER.debug("{}- '{}' Bot permission=[{}] User permissions=[{}]",
 					"\t".repeat(indent),
 					command.getInfo().getName(),
 					command.getInfo().getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
@@ -192,76 +234,86 @@ public final class CommandsBuilder {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void processClass(Class<?> aClass) {
-		if (isCommandOrSubcommand(aClass)
-				&& aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
-			try {
-				boolean isInstantiable = isInstantiable(aClass);
+	private void printSlashCommands(Collection<SlashCommandInfo> commands) {
+		for (SlashCommandInfo command : commands) {
+			LOGGER.debug("{} - '{}' Bot permission=[{}] User permissions=[{}]",
+					command.isGuildOnly() ? "Guild    " : "Guild+DMs",
+					command.getPath(),
+					command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+					command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+		}
+	}
 
-				if (isInstantiable) {
+	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
+		if (isCommand(aClass) && aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
+			boolean isInstantiable = Utils.isInstantiable(aClass);
+
+			if (isInstantiable) {
+				Object someCommand;
+
+				if (Command.class.isAssignableFrom(aClass)) {
 					final Constructor<?> constructor = aClass.getDeclaredConstructor(BContext.class);
-					constructor.setAccessible(true);
-					final Command command = (Command) constructor.newInstance(context);
+					if (!constructor.canAccess(null))
+						throw new IllegalStateException("Constructor " + constructor + " is not public");
 
-					context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
+					someCommand = constructor.newInstance(context);
+				} else { //Slash command
+					try {
+						final Constructor<?> constructor = aClass.getDeclaredConstructor();
+						if (!constructor.canAccess(null))
+							throw new IllegalStateException("Constructor " + constructor + " is not public");
 
-					for (Class<?> subcommandClazz : aClass.getClasses()) {
-						if (isCommandOrSubcommand(subcommandClazz)) {
-							final Command subcommand = getSubcommand((Class<? extends Command>) subcommandClazz, command);
+						someCommand = constructor.newInstance();
+					} catch (NoSuchMethodException ignored) {
+						final Constructor<?> constructor = aClass.getDeclaredConstructor(BContext.class);
+						if (!constructor.canAccess(null))
+							throw new IllegalStateException("Constructor " + constructor + " is not public");
 
-							if (subcommand != null) {
-								command.getInfo().addSubcommand(subcommand);
-							}
-						}
+						someCommand = constructor.newInstance(context);
 					}
 				}
-			} catch (IllegalArgumentException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-				e.printStackTrace();
-				failedClasses.add(" - " + aClass.getSimpleName());
-			}
-		}
-	}
 
-	private boolean isCommandOrSubcommand(Class<?> aClass) {
-		return !Modifier.isAbstract(aClass.getModifiers()) && aClass.isAnnotationPresent(JdaCommand.class) && Command.class.isAssignableFrom(aClass);
-	}
+				context.getClassToObjMap().put(aClass, someCommand);
 
-	private boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
-		boolean canInstantiate = true;
-		for (Method declaredMethod : aClass.getDeclaredMethods()) {
-			if (declaredMethod.isAnnotationPresent(ConditionalUse.class)) {
-				if (Modifier.isStatic(declaredMethod.getModifiers())) {
-					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
-						declaredMethod.setAccessible(true);
-						canInstantiate = (boolean) declaredMethod.invoke(null);
-					} else {
-						System.err.println("WARN: method " + aClass.getName() + '#' + declaredMethod.getName() + " is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)");
-					}
+				if (someCommand instanceof Command) {
+					prefixedCommandsBuilder.processPrefixedCommand((Command) someCommand);
+				} else if (someCommand instanceof SlashCommand) {
+					slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand);
 				} else {
-					System.err.println("WARN: method " + aClass.getName() + '#' + declaredMethod.getName() + " is annotated @ConditionalUse but is not static");
+					throw new IllegalArgumentException("How is that a command " + someCommand.getClass().getName() + " ???");
 				}
-				break;
 			}
 		}
-		return canInstantiate;
+	}
+
+	private boolean isCommand(Class<?> aClass) {
+		if (Modifier.isAbstract(aClass.getModifiers()))
+			return false;
+
+		if (SlashCommand.class.isAssignableFrom(aClass))
+			return true;
+
+		return Command.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(JdaCommand.class);
 	}
 
 	/**
-	 * Builds the command listener
+	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda                The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
-	 * @return The ListenerAdapter
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 */
-	public ListenerAdapter build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		Utils.requireNonBlankString(commandPackageName, "Command package name is null");
+	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
+		Utils.requireNonBlank(commandPackageName, "Command package");
 
 		setupContext(jda);
 
 		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-		return buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
+		buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
+
+		EventWaiter.createWaiter(context);
+
+		jda.addEventListener(new CommandListener(context), new SlashCommandListener(context));
 	}
 
 	private void setupContext(JDA jda) {
@@ -273,29 +325,5 @@ public final class CommandsBuilder {
 
 	public BContext getContext() {
 		return context;
-	}
-
-	/**
-	 * Builds the command listener
-	 *
-	 * @param jda         The JDA instance of your bot
-	 * @param classStream Input stream of String(s), each line is a class name (package.classname)
-	 * @return The ListenerAdapter
-	 */
-	public ListenerAdapter build(JDA jda, InputStream classStream) {
-		setupContext(jda);
-
-		final BufferedReader stream = new BufferedReader(new InputStreamReader(classStream));
-		final List<Class<?>> classes = stream.lines().map(s -> {
-			try {
-				return Class.forName(s);
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}).collect(Collectors.toList());
-
-		return buildClasses(classes);
 	}
 }

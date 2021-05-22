@@ -17,7 +17,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setUserPermErrorMsg(String userPermErrorMsg) {
-		this.userPermErrorMsg = Utils.requireNonBlankString(userPermErrorMsg, "User permission error message is null");
+		this.userPermErrorMsg = Utils.requireNonBlank(userPermErrorMsg, "User permission error message");
 
 		return this;
 	}
@@ -29,7 +29,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setBotPermErrorMsg(String botPermErrorMsg) {
-		Utils.requireNonBlankString(botPermErrorMsg, "Bot permission error message is null");
+		Utils.requireNonBlank(botPermErrorMsg, "Bot permission error message");
 		if (!botPermErrorMsg.contains("%s")) {
 			throw new IllegalArgumentException("The bot permission error string must contain one %s formatter");
 		}
@@ -44,7 +44,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setOwnerOnlyErrorMsg(String ownerOnlyErrorMsg) {
-		this.ownerOnlyErrorMsg = Utils.requireNonBlankString(ownerOnlyErrorMsg, "Owner only error message is null");
+		this.ownerOnlyErrorMsg = Utils.requireNonBlank(ownerOnlyErrorMsg, "Owner only error message");
 
 		return this;
 	}
@@ -56,7 +56,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setUserCooldownMsg(String userCooldownMsg) {
-		Utils.requireNonBlankString(userCooldownMsg, "User cooldown error message is null");
+		Utils.requireNonBlank(userCooldownMsg, "User cooldown error message");
 		if (!userCooldownMsg.contains("%.2f"))
 			throw new IllegalArgumentException("User cooldown message should contain one '%.2f' format specifier");
 		this.userCooldownMsg = userCooldownMsg;
@@ -71,7 +71,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setChannelCooldownMsg(String channelCooldownMsg) {
-		Utils.requireNonBlankString(channelCooldownMsg, "Channel cooldown error message is null");
+		Utils.requireNonBlank(channelCooldownMsg, "Channel cooldown error message");
 		if (!channelCooldownMsg.contains("%.2f"))
 			throw new IllegalArgumentException("Channel cooldown message should contain one '%.2f' format specifier");
 		this.channelCooldownMsg = channelCooldownMsg;
@@ -86,7 +86,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setGuildCooldownMsg(String guildCooldownMsg) {
-		Utils.requireNonBlankString(guildCooldownMsg, "Guild cooldown error message is null");
+		Utils.requireNonBlank(guildCooldownMsg, "Guild cooldown error message");
 		if (!guildCooldownMsg.contains("%.2f"))
 			throw new IllegalArgumentException("Guild cooldown message should contain one '%.2f' format specifier");
 		this.guildCooldownMsg = guildCooldownMsg;
@@ -101,7 +101,7 @@ public final class DefaultMessages {
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setCommandNotFoundMsg(String commandNotFoundMsg) {
-		Utils.requireNonBlankString(commandNotFoundMsg, "'Command not found' error message is null");
+		Utils.requireNonBlank(commandNotFoundMsg, "'Command not found' error message");
 		if (!commandNotFoundMsg.contains("%s")) {
 			throw new IllegalArgumentException("The 'Command not found' string must contain one %s formatter");
 		}

@@ -1,15 +1,25 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.annotation.ConditionalUse;
+import org.slf4j.Logger;
+
+import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-final class Utils {
+public final class Utils {
+	private static final Logger LOGGER = Logging.getLogger();
+
 	static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
@@ -29,7 +39,7 @@ final class Utils {
 			if (isJar) {
 				result = p.toString().replace('/', '.').substring(0, p.toString().length() - 6);
 			} else {
-				String relativePath = p.toString().replace(finalWalkRoot.toString()+"\\","");
+				String relativePath = p.toString().replace(finalWalkRoot + "\\", "");
 				result = relativePath.replace(".class", "").replace("\\", ".");
 
 				if (packageName != null) {
@@ -40,26 +50,60 @@ final class Utils {
 			try {
 				return Class.forName(result, false, Utils.class.getClassLoader());
 			} catch (ClassNotFoundException e) {
-				System.err.println("Class not found: " + result + ", is it in the class path ?");
+				LOGGER.error("Class not found: {}, is it in the class path ?", result);
 				return null;
 			}
 		}).collect(Collectors.toList());
 	}
 
-	static String requireNonBlankString(String str, String onError) {
-		if (str == null || str.isBlank()) {
-			throw new NullPointerException(onError);
+	static String requireNonBlank(String str, String name) {
+		if (str == null) {
+			throw new IllegalArgumentException(name + " may not be null");
+		} else if (str.isBlank()) {
+			throw new IllegalArgumentException(name + " may not be blank");
 		}
 
 		return str;
 	}
 
-	static ThreadFactory createThreadFactory(String name) {
-		return runnable -> {
-			final Thread thread = new Thread(runnable);
-			thread.setDaemon(true);
-			thread.setName(name);
-			return thread;
-		};
+	public static ExecutorService createCommandPool(ThreadFactory factory) {
+		return new ThreadPoolExecutor(4, Runtime.getRuntime().availableProcessors() * 4, //*4 considering there should not be cpu intensive tasks but may be tasks sleeping
+				60, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<>(), factory);
+	}
+
+	public static void printExceptionString(String message, Throwable e) {
+		final CharArrayWriter out = new CharArrayWriter(1024);
+		out.append(message).append("\n");
+		final PrintWriter printWriter = new PrintWriter(out);
+		e.printStackTrace(printWriter);
+
+		if (LOGGER.isErrorEnabled()) {
+			LOGGER.error(out.toString());
+		} else {
+			System.err.println(out);
+		}
+	}
+
+	public static boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
+		boolean canInstantiate = true;
+		for (Method declaredMethod : aClass.getDeclaredMethods()) {
+			if (declaredMethod.isAnnotationPresent(ConditionalUse.class)) {
+				if (Modifier.isStatic(declaredMethod.getModifiers())) {
+					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
+						if (!declaredMethod.canAccess(null))
+							throw new IllegalStateException("Method " + declaredMethod + " is not public");
+						canInstantiate = (boolean) declaredMethod.invoke(null);
+					} else {
+						LOGGER.warn("Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)", aClass.getName(), declaredMethod.getName());
+					}
+				} else {
+					LOGGER.warn("Method {}#{} is annotated @ConditionalUse but is not static", aClass.getName(), declaredMethod.getName());
+				}
+				break;
+			}
+		}
+
+		return canInstantiate;
 	}
 }
