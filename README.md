@@ -210,7 +210,7 @@ Every slash command must be in the same package (or a subpackage) that you suppl
 
 **The class must extend SlashCommand**, but you can choose to not put a constructor or put one which accepts a [BContext](src/main/java/com/freya02/botcommands/BContext.java)
 
-**The slash commands are methods annotated with JdaSlashCommand**, their first parameter must be a SlashEvent, or a GuildSlashEvent (for guild-only commands), you can control it's option name/description with [@Option](src/main/java/com/freya02/botcommands/slash/annotations/Option.java) and command choices with [@Choices](src/main/java/com/freya02/botcommands/slash/annotations/Choices.java)
+**The slash commands are methods annotated with JdaSlashCommand**, their first parameter must be a SlashEvent, or a GuildSlashEvent (for guild-only commands), you can control its option name/description with [@Option](src/main/java/com/freya02/botcommands/slash/annotations/Option.java) and command choices with [@Choices](src/main/java/com/freya02/botcommands/slash/annotations/Choices.java)
 
 <details>
 <summary>Example</summary>
