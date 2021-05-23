@@ -1,5 +1,4 @@
-<img src="https://img.shields.io/badge/JDA%20Version-db92d7d-important" alt="JDA Version db92d7d"/>
-<img src="https://img.shields.io/badge/Version-1.4.6-informational" alt="Version 1.4.6"/>
+<img src="https://img.shields.io/badge/JDA%20Version-db92d7d-important" alt="JDA Version db92d7d"/> <img src="https://img.shields.io/badge/Version-1.4.6-informational" alt="Version 1.4.6"/>
 
 # BotCommands
 This library aims at simplifying Discord bots creation with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
@@ -198,7 +197,7 @@ public class TestCommand extends Command {
 
 **Be aware of the ordering of your functions**, the implementation looks at each Executable method and tries to match the pattern against the arguments, if it works, it gets executed, if it doesn't, it goes to the next one.
 
-If a command invocation does not call the correct function during testing, you can use the @DebugPatterns annotation to print the order in which the executables are loaded.
+If a command invocation does not call the correct function during testing, you can enable debug logs to print the order in which the executables are loaded.
 
 Changing the order of the methods at a source code level is not reliable, **to fix this, specify the `order` value in the Executable annotation on each method**
 
@@ -225,6 +224,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class TestSlashCommand extends SlashCommand {
 	@JdaSlashCommand(
+			//This command is guild-only by default
 			name = "say",
 			description = "Says what you type"
 	)
@@ -249,6 +249,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 
 public class TestSlashCommand extends SlashCommand {
 	@JdaSlashCommand(
+			//This command is guild-only by default
 			name = "say",
 			description = "Says what you type"
 	)
