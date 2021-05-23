@@ -25,18 +25,19 @@ public abstract class ParameterResolver {
 
 	@Nullable
 	public static ParameterResolver of(Class<?> type) {
-		if (Boolean.class.isAssignableFrom(type)) return new BooleanResolver();
+		if (boolean.class.isAssignableFrom(type)) return new BooleanResolver();
+		else if (double.class.isAssignableFrom(type)) return new DoubleResolver();
+		else if (Member.class.isAssignableFrom(type)) return new MemberResolver();
 		else if (EmojiOrEmote.class.isAssignableFrom(type)) return new EmojiOrEmoteResolver();
 		else if (Emoji.class.isAssignableFrom(type)) return new EmojiResolver();
 		else if (Emote.class.isAssignableFrom(type)) return new EmoteResolver();
-		else if (Long.class.isAssignableFrom(type)) return new LongResolver();
-		else if (Member.class.isAssignableFrom(type)) return new MemberResolver();
+		else if (long.class.isAssignableFrom(type)) return new LongResolver();
 		else if (Role.class.isAssignableFrom(type)) return new RoleResolver();
 		else if (String.class.isAssignableFrom(type)) return new StringResolver();
 		else if (TextChannel.class.isAssignableFrom(type)) return new TextChannelResolver();
 		else if (User.class.isAssignableFrom(type)) return new UserResolver();
-		else if (Double.class.isAssignableFrom(type)) return new DoubleResolver();
 		else if (IMentionable.class.isAssignableFrom(type)) return new MentionableResolver();
+		else if (Guild.class.isAssignableFrom(type)) return new GuildResolver();
 
 		return null;
 	}
