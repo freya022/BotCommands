@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ButtonsBuilder {
-	private static final Map<String, ButtonDescriptor> map = new HashMap<>();
+	static final Map<String, ButtonDescriptor> buttonsMap = new HashMap<>();
 	private final BContextImpl context;
 
 	public ButtonsBuilder(BContextImpl context) {
@@ -69,12 +69,12 @@ public class ButtonsBuilder {
 					resolvers.add(resolver);
 				}
 
-				map.put(annotation.name(), new ButtonDescriptor(obj, method, resolvers));
+				buttonsMap.put(annotation.name(), new ButtonDescriptor(obj, method, resolvers));
 			}
 		}
 	}
 
 	public void postProcess() {
-		ButtonListener.init(context, map);
+		ButtonListener.init(context);
 	}
 }

@@ -20,17 +20,16 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 import java.util.StringJoiner;
+
+import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 
 public class ButtonListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static BContextImpl context;
-	private static Map<String, ButtonDescriptor> map;
 
-	static void init(BContextImpl context, Map<String, ButtonDescriptor> map) {
+	static void init(BContextImpl context) {
 		ButtonListener.context = context;
-		ButtonListener.map = map;
 
 		context.getJDA().addEventListener(new ButtonListener());
 	}
@@ -77,7 +76,7 @@ public class ButtonListener extends ListenerAdapter {
 
 	@Nonnull
 	private static String encryptId(String handlerName, Key key, Object[] args) {
-		final ButtonDescriptor descriptor = map.get(handlerName);
+		final ButtonDescriptor descriptor = buttonsMap.get(handlerName);
 		if (descriptor == null) throw new IllegalStateException("Button listener with name '" + handlerName + "' doesn't exist");
 
 		Class<?>[] parameterTypes = descriptor.getMethod().getParameterTypes();
@@ -144,7 +143,7 @@ public class ButtonListener extends ListenerAdapter {
 			final String decryptedId = new String(decryptCipher.doFinal(id.getBytes(StandardCharsets.UTF_8)));
 
 			String[] args = decryptedId.split("²");
-			final ButtonDescriptor descriptor = map.get(args[0]);
+			final ButtonDescriptor descriptor = buttonsMap.get(args[0]);
 
 			final Object[] methodArgs = new Object[descriptor.getResolvers().size() + 1];
 			methodArgs[0] = event;
