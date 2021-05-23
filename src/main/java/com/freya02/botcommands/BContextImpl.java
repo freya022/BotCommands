@@ -125,8 +125,6 @@ public class BContextImpl implements BContext {
 	}
 
 	public void addSlashCommand(String path, SlashCommandInfo commandInfo) {
-		SlashCommandInfo oldCmd = slashCommandMap.put(path, commandInfo);
-
 		String path2 = path;
 		int index;
 		while ((index = path2.lastIndexOf('/')) != -1) {
@@ -138,6 +136,8 @@ public class BContextImpl implements BContext {
 
 			path2 = path2.substring(0, index);
 		}
+
+		SlashCommandInfo oldCmd = slashCommandMap.put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two slash commands have the same paths: '%s' from %s and %s",

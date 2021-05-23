@@ -50,6 +50,7 @@ public final class SlashCommandsBuilder {
 
 				final SlashCommandInfo info = new SlashCommandInfo(slashCommand, method);
 
+				LOGGER.debug("Adding command path {} for method {}", info.getPath(), method);
 				context.addSlashCommand(info.getPath(), info);
 			}
 		}
