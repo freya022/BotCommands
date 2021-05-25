@@ -42,8 +42,6 @@ public final class SlashCommandListener extends ListenerAdapter {
 		}
 
 		runCommand(() -> {
-			event.deferReply(true).queue();
-
 			final InteractionHook hook = event.getHook();
 			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
 
