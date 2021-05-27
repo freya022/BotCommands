@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -20,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.StringJoiner;
 
 import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
@@ -115,21 +119,29 @@ public class ButtonListener extends ListenerAdapter {
 			final Class<?> parameterType = parameterTypes[i];
 			final Class<?> argType = args[i - 1].getClass();
 
-			if (!parameterType.isAssignableFrom(argType)) {
+			if (parameterType.isPrimitive()) {
+				if (argType == Boolean.class && parameterType != boolean.class
+						|| argType == Double.class && parameterType != double.class
+						|| argType == Long.class && parameterType != long.class) {
+					throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
+				}
+			} else if (!parameterType.isAssignableFrom(argType)) {
 				throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
 			}
 		}
 
-		final byte[] idBytes = getIdBytes(handlerName, args);
+		final String idBytes = constructId(handlerName, args);
 
 		try {
 			final Cipher encryptCipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
 
 			encryptCipher.init(Cipher.ENCRYPT_MODE, key.getKey(), key.getIv());
 
-			final String encodedId = new String(encryptCipher.doFinal(idBytes));
+			final String encodedId = new String(Base64.getEncoder().encode(encryptCipher.doFinal(idBytes.getBytes(StandardCharsets.UTF_8))));
 			if (encodedId.length() > 100)
 				throw new IllegalArgumentException("Encrypted id should not be larger than 100 bytes, consider having less info in your arguments");
+
+			LOGGER.trace("Sent button id {} for handle {}", idBytes, handlerName);
 
 			return encodedId;
 		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
@@ -138,7 +150,7 @@ public class ButtonListener extends ListenerAdapter {
 	}
 
 	@Nonnull
-	private static byte[] getIdBytes(String handlerName, Object[] args) {
+	private static String constructId(String handlerName, Object[] args) {
 		StringJoiner idBuilder = new StringJoiner("²").add(handlerName);
 		for (int i = 0, argsLength = args.length; i < argsLength; i++) {
 			Object arg = args[i];
@@ -150,7 +162,7 @@ public class ButtonListener extends ListenerAdapter {
 			idBuilder.add(s);
 		}
 
-		return idBuilder.toString().getBytes(StandardCharsets.UTF_8);
+		return idBuilder.toString();
 	}
 
 	@Override
@@ -171,23 +183,32 @@ public class ButtonListener extends ListenerAdapter {
 
 			decryptCipher.init(Cipher.DECRYPT_MODE, key.getKey(), key.getIv());
 
-			final String decryptedId = new String(decryptCipher.doFinal(id.getBytes(StandardCharsets.UTF_8)));
+			final byte[] bytes = id.getBytes(StandardCharsets.UTF_8);
+			final String decryptedId = new String(decryptCipher.doFinal(Base64.getDecoder().decode(bytes)));
+			LOGGER.trace("Received button ID {}", decryptedId);
 
 			String[] args = decryptedId.split("²");
 			final ButtonDescriptor descriptor = buttonsMap.get(args[0]);
 
-			final Object[] methodArgs = new Object[descriptor.getResolvers().size() + 1];
-			methodArgs[0] = event;
+			//For some reason using an array list instead of a regular array
+			// magically unboxes primitives when passed to Method#invoke
+			final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
 
+			methodArgs.add(event);
 			for (int i = 1, splitLength = args.length; i < splitLength; i++) {
 				String arg = args[i];
 
-				final Object obj = descriptor.getResolvers().get(i).resolve(event, arg);
+				final Object obj = descriptor.getResolvers().get(i - 1).resolve(event, arg);
+				if (obj == null) {
+					LOGGER.warn("Invalid button id '{}', tried to resolve '{}' but result is null", decryptedId, arg);
 
-				methodArgs[i - 1] = obj;
+					return;
+				}
+
+				methodArgs.add(obj);
 			}
 
-			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs);
+			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
 		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | IllegalAccessException | InvocationTargetException e) {
 			if (LOGGER.isErrorEnabled()) {
 				LOGGER.error("An exception occurred while decrypting a button id", e);
