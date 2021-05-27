@@ -184,7 +184,7 @@ public final class CommandListener extends ListenerAdapter {
 				try {
 					final Matcher matcher = m.pattern.matcher(args);
 					if (matcher.matches()) {
-						final List<Object> objects = new ArrayList<>(matcher.groupCount());
+						final List<Object> objects = new ArrayList<>(matcher.groupCount() + 1);
 						objects.add(new BaseCommandEventImpl(this.context, event, args));
 
 						int groupIndex = 1;
@@ -194,6 +194,8 @@ public final class CommandListener extends ListenerAdapter {
 								groups[j] = matcher.group(groupIndex++);
 							}
 
+							//For some reason using an array list instead of a regular array
+							// magically unboxes primitives when passed to Method#invoke
 							final Object o = argumentFunction.resolver.resolve(event, groups);
 							if (o == null) {
 								continue patternsLoop;
