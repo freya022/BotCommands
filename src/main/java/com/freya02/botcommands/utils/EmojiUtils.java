@@ -21,7 +21,7 @@ public class EmojiUtils extends EmojiParser {
 			return alias.emoji.getUnicode() + (alias.fitzpatrick == null ? "" : alias.fitzpatrick.unicode);
 
 		//Find unicode emojis
-		UnicodeCandidate candidate = getNextUnicodeCandidate(input.toCharArray(), 0);
+		UnicodeCandidate candidate = getNextUnicodeCandidate(input.replace("\uFE0F", "").toCharArray(), 0);
 		if (candidate != null) return candidate.getEmoji().getUnicode() + candidate.getFitzpatrickUnicode();
 
 		throw new NoSuchElementException("No emoji for input: " + input);

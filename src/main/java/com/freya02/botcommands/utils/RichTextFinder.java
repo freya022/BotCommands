@@ -44,7 +44,7 @@ public class RichTextFinder extends EmojiParser {
 	 * @param getUrls Whether to take URLs
 	 */
 	public RichTextFinder(String input, boolean getIMentionable, boolean getGlobalMentions, boolean getEmojis, boolean getUrls) {
-		this.input = input;
+		this.input = input.replace("\uFE0F", "");
 		this.matcher = EMPTY_PATTERN.matcher(this.input);
 
 		if (getIMentionable) {
