@@ -43,7 +43,9 @@ public class ButtonListener extends ListenerAdapter {
 	 * @return The encrypted button ID containing the provided arguments
 	 */
 	public static String getButtonId(Guild guild, String handlerName, Object... args) {
-		return encryptId(handlerName, context.getKeyProvider().getKey(guild), args);
+		final KeyProvider provider = getKeyProvider();
+
+		return encryptId(handlerName, provider.getKey(guild), args);
 	}
 
 	/**
@@ -55,7 +57,9 @@ public class ButtonListener extends ListenerAdapter {
 	 * @return The encrypted button ID containing the provided arguments
 	 */
 	public static String getButtonId(User user, String handlerName, Object... args) {
-		return encryptId(handlerName, context.getKeyProvider().getKey(user), args);
+		final KeyProvider provider = getKeyProvider();
+
+		return encryptId(handlerName, provider.getKey(user), args);
 	}
 
 	/**
@@ -67,11 +71,38 @@ public class ButtonListener extends ListenerAdapter {
 	 * @return The encrypted button ID containing the provided arguments
 	 */
 	public static String getButtonId(SlashCommandEvent event, String handlerName, Object... args) {
+		final KeyProvider provider = getKeyProvider();
+
 		if (event.isFromGuild()) {
-			return encryptId(handlerName, context.getKeyProvider().getKey(event.getGuild()), args);
+			return encryptId(handlerName, provider.getKey(event.getGuild()), args);
 		} else {
-			return encryptId(handlerName, context.getKeyProvider().getKey(event.getUser()), args);
+			return encryptId(handlerName, provider.getKey(event.getUser()), args);
 		}
+	}
+
+	/**
+	 * Creates a button ID with the supplied arguments, so they can be passed to a {@linkplain JdaButtonListener button listener}
+	 *
+	 * @param event The current button command event
+	 * @param handlerName Name of the method which should handle the provided arguments
+	 * @param args  The objects objects to use in the string
+	 * @return The encrypted button ID containing the provided arguments
+	 */
+	public static String getButtonId(ButtonClickEvent event, String handlerName, Object... args) {
+		final KeyProvider provider = getKeyProvider();
+
+		if (event.isFromGuild()) {
+			return encryptId(handlerName, provider.getKey(event.getGuild()), args);
+		} else {
+			return encryptId(handlerName, provider.getKey(event.getUser()), args);
+		}
+	}
+
+	@NotNull
+	private static KeyProvider getKeyProvider() {
+		final KeyProvider provider = context.getKeyProvider();
+		if (provider == null) throw new IllegalStateException("Attempted to use encrypted buttons but no KeyProvider was set");
+		return provider;
 	}
 
 	@Nonnull
