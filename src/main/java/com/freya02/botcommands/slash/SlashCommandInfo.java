@@ -3,15 +3,14 @@ package com.freya02.botcommands.slash;
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.Optional;
-import com.freya02.botcommands.parameters.ParameterResolver;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import com.freya02.botcommands.slash.impl.SlashEventImpl;
 import com.freya02.botcommands.slash.parameters.SlashCommandParameter;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -66,19 +65,12 @@ public class SlashCommandInfo extends Cooldownable {
 
 			if (Member.class.isAssignableFrom(type)
 					|| Role.class.isAssignableFrom(type)
-					|| TextChannel.class.isAssignableFrom(type) ) {
+					|| GuildChannel.class.isAssignableFrom(type) ) {
 				if (!annotation.guildOnly())
 					throw new IllegalArgumentException("The slash command " + commandMethod + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
-			final ParameterResolver resolver = ParameterResolver.of(type);
-			if (resolver == null) {
-				throw new IllegalArgumentException("Unknown slash command option type: " + type.getName());
-			} else if (!resolver.isSlashCommandSupported()) {
-				throw new IllegalArgumentException("Unsupported slash command option type: " + type.getName());
-			}
-
-			commandParameters[i - 1] = new SlashCommandParameter(optional, name, resolver);
+			commandParameters[i - 1] = new SlashCommandParameter(optional, name, type);
 		}
 
 		if (annotation.name().isBlank()) throw new IllegalArgumentException("Command name for " + commandMethod + " is blank");
@@ -177,7 +169,18 @@ public class SlashCommandInfo extends Cooldownable {
 					}
 				}
 
-				objects.add(parameter.getResolver().resolve(event, optionData));
+				final Object obj = parameter.getResolver().resolve(event, optionData);
+				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
+					event.reply(String.format("The parameter '%s' is not a valid type (expected a %s)", parameter.getEffectiveName(), parameter.getType().getSimpleName()))
+							.setEphemeral(true)
+							.queue();
+
+					return false;
+				}
+
+				//For some reason using an array list instead of a regular array
+				// magically unboxes primitives when passed to Method#invoke
+				objects.add(obj);
 			}
 
 			commandMethod.invoke(instance, objects.toArray());
