@@ -154,7 +154,7 @@ public class SlashCommandInfo extends Cooldownable {
 		return path;
 	}
 
-	public void execute(BContext context, SlashCommandEvent event) {
+	public boolean execute(BContext context, SlashCommandEvent event) {
 		try {
 			List<Object> objects = new ArrayList<>(commandParameters.length) {{
 				if (guildOnly) {
@@ -181,6 +181,8 @@ public class SlashCommandInfo extends Cooldownable {
 			}
 
 			commandMethod.invoke(instance, objects.toArray());
+
+			return true;
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}

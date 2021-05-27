@@ -163,7 +163,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 
 			if (isNotOwner) {
-				final int cooldown = command.getInfo().applyCooldown(event);
+				final int cooldown = command.getInfo().getCooldown(event);
 				if (cooldown != 0) {
 					if (commandInfo.getCooldownScope() == CooldownScope.USER) {
 						reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
@@ -203,6 +203,7 @@ public final class CommandListener extends ListenerAdapter {
 							objects.add(o);
 						}
 
+						command.getInfo().applyCooldown(event);
 						m.method.invoke(finalCommand, objects.toArray());
 						return;
 					}

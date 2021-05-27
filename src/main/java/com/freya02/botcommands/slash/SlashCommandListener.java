@@ -82,7 +82,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 			}
 
 			if (isNotOwner) {
-				final int cooldown = slashCommand.applyCooldown(event);
+				final int cooldown = slashCommand.getCooldown(event);
 				if (cooldown != 0) {
 					if (slashCommand.getCooldownScope() == CooldownScope.USER) {
 						reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
@@ -97,7 +97,9 @@ public final class SlashCommandListener extends ListenerAdapter {
 			}
 
 			hook.setEphemeral(true);
-			slashCommand.execute(context, event);
+			if (slashCommand.execute(context, event)) {
+				slashCommand.applyCooldown(event);
+			}
 		}, event);
 	}
 
@@ -119,7 +121,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 	}
 
 	@Nonnull
-	private String reconstructCommand(SlashCommandEvent event) {
+	public static String reconstructCommand(SlashCommandEvent event) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("/").append(event.getName());
 		if (event.getSubcommandGroup() != null) sb.append(" ").append(event.getSubcommandGroup());
