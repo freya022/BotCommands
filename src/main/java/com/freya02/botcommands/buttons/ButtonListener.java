@@ -133,7 +133,7 @@ public class ButtonListener extends ListenerAdapter {
 			key = context.getKeyProvider().getKey(event.getUser());
 		}
 
-		final String id = event.getButton().getId();
+		final String id = event.getComponentId();
 
 		try {
 			final Cipher decryptCipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
