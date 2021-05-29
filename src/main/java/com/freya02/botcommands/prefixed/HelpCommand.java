@@ -10,9 +10,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -39,12 +37,16 @@ public final class HelpCommand extends Command {
 
 	private void fillHelp(EmbedBuilder builder, Function<CommandInfo, Boolean> shouldAddFunc) {
 		TreeMap<String, StringJoiner> categoryBuilderMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		Set<String> insertedCommands = new HashSet<>();
 		for (Command cmd : ((BContextImpl) context).getCommands()) {
 			final CommandInfo info = cmd.getInfo();
-			if (shouldAddFunc.apply(info)) {
-				categoryBuilderMap
-						.computeIfAbsent(info.getCategory(), s -> new StringJoiner("\n"))
-						.add("**" + info.getName() + "** : " + info.getDescription());
+
+			if (insertedCommands.add(info.getName())) {
+				if (shouldAddFunc.apply(info)) {
+					categoryBuilderMap
+							.computeIfAbsent(info.getCategory(), s -> new StringJoiner("\n"))
+							.add("**" + info.getName() + "** : " + info.getDescription());
+				}
 			}
 		}
 
