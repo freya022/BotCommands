@@ -14,12 +14,10 @@ import java.lang.annotation.Target;
  * <p>
  * <h2>For regex commands: Consider this annotation as experimental</h2>
  * <b>The behavior of {@linkplain Executable} commands is pretty unsafe if you combine strings and numbers in the same command</b>
- * </p>
  *
  * <p>
  * <h2>For slash commands:</h2>
  * <b>This works perfectly as it's just a hint for discord</b>
- * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
