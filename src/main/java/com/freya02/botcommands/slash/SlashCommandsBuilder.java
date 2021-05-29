@@ -74,7 +74,7 @@ public final class SlashCommandsBuilder {
 				map.put(path, rightCommand);
 
 				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOption(option);
+					rightCommand.addOptions(option);
 				}
 			} else if (info.getPathComponents() == 2) {
 				//Subcommand of a command
@@ -82,10 +82,10 @@ public final class SlashCommandsBuilder {
 				final CommandData commandData = map.computeIfAbsent(parent, s -> new CommandData(getName(parent), "we can't see this rite ?"));
 
 				final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-				commandData.addSubcommand(rightCommand);
+				commandData.addSubcommands(rightCommand);
 
 				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOption(option);
+					rightCommand.addOptions(option);
 				}
 			} else if (info.getPathComponents() == 3) {
 				final String namePath = getParent(getParent(path));
@@ -95,16 +95,16 @@ public final class SlashCommandsBuilder {
 					map.put(getName(namePath), nameData);
 
 					final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), "we can't see r-right ?");
-					nameData.addSubcommandGroup(groupDataTmp);
+					nameData.addSubcommandGroups(groupDataTmp);
 
 					return groupDataTmp;
 				});
 
 				final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-				groupData.addSubcommand(rightCommand);
+				groupData.addSubcommands(rightCommand);
 
 				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOption(option);
+					rightCommand.addOptions(option);
 				}
 			} else {
 				throw new IllegalStateException("A slash command with more than 4 names got registered");

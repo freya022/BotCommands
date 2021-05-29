@@ -1,4 +1,4 @@
-<img src="https://img.shields.io/badge/JDA%20Version-db92d7d-important" alt="JDA Version db92d7d"/> <img src="https://img.shields.io/badge/Version-1.4.6-informational" alt="Version 1.4.6"/>
+<img src="https://img.shields.io/badge/JDA%20Version-757de9b-important" alt="JDA Version db92d7d"/> <img src="https://img.shields.io/badge/Version-1.4.6-informational" alt="Version 1.4.6"/>
 
 # BotCommands
 This library aims at simplifying Discord bots creation with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
