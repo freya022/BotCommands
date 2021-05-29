@@ -6,7 +6,6 @@ import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import com.freya02.botcommands.slash.impl.SlashEventImpl;
-import com.freya02.botcommands.slash.parameters.SlashCommandParameter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash.parameters;
+package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.parameters.ParameterResolver;
 
