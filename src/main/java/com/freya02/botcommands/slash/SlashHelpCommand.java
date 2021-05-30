@@ -78,6 +78,8 @@ public final class SlashHelpCommand extends SlashCommand {
 	}
 
 	private void sendEmbed(SlashCommandEvent event, MessageEmbed embed) {
+		event.deferReply(event.isFromGuild()).queue();
+
 		final InputStream iconStream = context.getDefaultFooterIconSupplier().get();
 		if (iconStream != null) {
 			final SimpleStream stream = SimpleStream.of(iconStream, Throwable::printStackTrace);
