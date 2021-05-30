@@ -160,7 +160,11 @@ public class SlashCommandInfo extends Cooldownable {
 
 				if (optionData == null) {
 					if (parameter.isOptional()) {
-						objects.add(null);
+						if (parameter.getType().isPrimitive()) {
+							objects.add(0);
+						} else {
+							objects.add(null);
+						}
 
 						continue;
 					} else {
