@@ -170,7 +170,7 @@ public class SlashCommandInfo extends Cooldownable {
 
 				final Object obj = parameter.getResolver().resolve(event, optionData);
 				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
-					event.reply(String.format("The parameter '%s' is not a valid type (expected a %s)", parameter.getEffectiveName(), parameter.getType().getSimpleName()))
+					event.replyFormat("The parameter '%s' is not a valid type (expected a %s)", parameter.getEffectiveName(), parameter.getType().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 
