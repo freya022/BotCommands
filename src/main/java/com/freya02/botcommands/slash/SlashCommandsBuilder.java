@@ -8,6 +8,7 @@ import com.freya02.botcommands.slash.annotations.Choices;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -111,7 +112,16 @@ public final class SlashCommandsBuilder {
 			}
 		});
 
-		context.getJDA().updateCommands().addCommands(globalMap.values()).queue();
+		context.getJDA().updateCommands()
+				.addCommands(globalMap.values())
+				.queue(commands -> {
+					if (!LOGGER.isTraceEnabled()) return;
+
+					final StringBuilder sb = new StringBuilder("Updated global commands:\n");
+					appendCommands(commands, sb);
+
+					LOGGER.trace(sb.toString().trim());
+				});
 
 		final List<Guild> guilds = new ArrayList<>(context.getJDA().getGuilds());
 		if (slashGuildIds != null) {
@@ -121,7 +131,26 @@ public final class SlashCommandsBuilder {
 		for (Guild guild : guilds) {
 			guild.updateCommands()
 					.addCommands(guildMap.values())
-					.queue(v -> LOGGER.trace("Updated commands for {}", guild.getName()));
+					.queue(commands -> {
+						if (!LOGGER.isTraceEnabled()) return;
+
+						final StringBuilder sb = new StringBuilder("Updated commands for ");
+						sb.append(guild.getName()).append(" :\n");
+						appendCommands(commands, sb);
+
+						LOGGER.trace(sb.toString().trim());
+					});
+		}
+	}
+
+	private static void appendCommands(List<Command> commands, StringBuilder sb) {
+		for (Command command : commands) {
+			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
+			for (Command.Option option : command.getOptions()) {
+				joiner.add(option.getType().name());
+			}
+
+			sb.append(" - ").append(command.getName()).append(" ").append(joiner).append("\n");
 		}
 	}
 
