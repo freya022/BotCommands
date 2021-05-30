@@ -113,7 +113,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 				if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing slash command '" + command + "'", e);
-				event.getHook().sendMessage("An uncaught exception occurred").queue();
+				event.reply("An uncaught exception occurred").setEphemeral(true).queue();
 
 				context.dispatchException("Exception in slash command '" + command + "'", e);
 			}
@@ -135,7 +135,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 	}
 
 	private void reply(SlashCommandEvent event, String msg) {
-		event.getHook().sendMessage(msg).queue(null,
+		event.reply(msg).setEphemeral(true).queue(null,
 				e -> {
 					if (e.getCause() != null) e = e.getCause();
 					LOGGER.error("Could not send reply message from command listener because of {} : {}", e.getClass().getName(), e.getLocalizedMessage());
