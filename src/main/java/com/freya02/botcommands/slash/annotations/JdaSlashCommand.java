@@ -3,6 +3,7 @@ package com.freya02.botcommands.slash.annotations;
 import com.freya02.botcommands.CooldownScope;
 import com.freya02.botcommands.Emoji;
 import com.freya02.botcommands.EmojiOrEmote;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 
@@ -59,6 +60,8 @@ import java.lang.annotation.Target;
  *     <li>{@linkplain Member}</li>
  *     <li>{@linkplain TextChannel}</li>
  * </ul>
+ *
+ * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h21>
  *
  * @see <a href="https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups">Discord docs</a>
  * @see Choices
