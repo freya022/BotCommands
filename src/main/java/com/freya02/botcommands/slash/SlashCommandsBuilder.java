@@ -65,50 +65,54 @@ public final class SlashCommandsBuilder {
 		final Map<String, SubcommandGroupData> globalGroupMap = new HashMap<>();
 
 		context.getSlashCommands().stream().sorted(Comparator.comparingInt(SlashCommandInfo::getPathComponents)).forEachOrdered(info -> {
-			final Map<String, CommandData> map = info.isGuildOnly() ? guildMap : globalMap;
-			final Map<String, SubcommandGroupData> groupMap = info.isGuildOnly() ? guildGroupMap : globalGroupMap;
+			try {
+				final Map<String, CommandData> map = info.isGuildOnly() ? guildMap : globalMap;
+				final Map<String, SubcommandGroupData> groupMap = info.isGuildOnly() ? guildGroupMap : globalGroupMap;
 
-			final String path = info.getPath();
-			if (info.getPathComponents() == 1) {
-				//Standard command
-				final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
-				map.put(path, rightCommand);
+				final String path = info.getPath();
+				if (info.getPathComponents() == 1) {
+					//Standard command
+					final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
+					map.put(path, rightCommand);
 
-				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOptions(option);
+					for (OptionData option : getMethodOptions(info)) {
+						rightCommand.addOptions(option);
+					}
+				} else if (info.getPathComponents() == 2) {
+					//Subcommand of a command
+					final String parent = getParent(path);
+					final CommandData commandData = map.computeIfAbsent(parent, s -> new CommandData(getName(parent), "we can't see this rite ?"));
+
+					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
+					commandData.addSubcommands(rightCommand);
+
+					for (OptionData option : getMethodOptions(info)) {
+						rightCommand.addOptions(option);
+					}
+				} else if (info.getPathComponents() == 3) {
+					final String namePath = getParent(getParent(path));
+					final String parentPath = getParent(path);
+					final SubcommandGroupData groupData = groupMap.computeIfAbsent(parentPath, gp -> {
+						final CommandData nameData = new CommandData(getName(namePath), "we can't see r-right ?");
+						map.put(getName(namePath), nameData);
+
+						final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), "we can't see r-right ?");
+						nameData.addSubcommandGroups(groupDataTmp);
+
+						return groupDataTmp;
+					});
+
+					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
+					groupData.addSubcommands(rightCommand);
+
+					for (OptionData option : getMethodOptions(info)) {
+						rightCommand.addOptions(option);
+					}
+				} else {
+					throw new IllegalStateException("A slash command with more than 4 names got registered");
 				}
-			} else if (info.getPathComponents() == 2) {
-				//Subcommand of a command
-				final String parent = getParent(path);
-				final CommandData commandData = map.computeIfAbsent(parent, s -> new CommandData(getName(parent), "we can't see this rite ?"));
-
-				final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-				commandData.addSubcommands(rightCommand);
-
-				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOptions(option);
-				}
-			} else if (info.getPathComponents() == 3) {
-				final String namePath = getParent(getParent(path));
-				final String parentPath = getParent(path);
-				final SubcommandGroupData groupData = groupMap.computeIfAbsent(parentPath, gp -> {
-					final CommandData nameData = new CommandData(getName(namePath), "we can't see r-right ?");
-					map.put(getName(namePath), nameData);
-
-					final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), "we can't see r-right ?");
-					nameData.addSubcommandGroups(groupDataTmp);
-
-					return groupDataTmp;
-				});
-
-				final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-				groupData.addSubcommands(rightCommand);
-
-				for (OptionData option : getMethodOptions(info)) {
-					rightCommand.addOptions(option);
-				}
-			} else {
-				throw new IllegalStateException("A slash command with more than 4 names got registered");
+			} catch (Exception e) {
+				throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
 			}
 		});
 
@@ -234,7 +238,7 @@ public final class SlashCommandsBuilder {
 		final int i = path.indexOf('/');
 		if (i == -1) return path;
 
-		return path.substring(i);
+		return path.substring(i + 1);
 	}
 
 	@Nonnull
