@@ -3,6 +3,7 @@ package com.freya02.botcommands;
 import com.freya02.botcommands.annotation.ConditionalUse;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -109,5 +110,22 @@ public final class Utils {
 
 	public static boolean hasFirstParameter(Method method, Class<?> type) {
 		return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].isAssignableFrom(type);
+	}
+
+	@Nonnull
+	public static Exception getException(Exception e) {
+		while (e.getCause() != null) {
+			e = (Exception) e.getCause();
+		}
+
+		return e;
+	}
+
+	public static Throwable getException(Throwable e) {
+		while (e.getCause() != null) {
+			e = e.getCause();
+		}
+
+		return e;
 	}
 }

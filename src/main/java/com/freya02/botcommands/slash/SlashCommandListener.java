@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -110,7 +109,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 			} catch (Exception e) {
 				final String command = reconstructCommand(event);
 
-				if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
+				e = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing slash command '" + command + "'", e);
 				event.reply("An uncaught exception occurred").setEphemeral(true).queue();
@@ -137,7 +136,8 @@ public final class SlashCommandListener extends ListenerAdapter {
 	private void reply(SlashCommandEvent event, String msg) {
 		event.reply(msg).setEphemeral(true).queue(null,
 				e -> {
-					if (e.getCause() != null) e = e.getCause();
+					e = Utils.getException(e);
+
 					LOGGER.error("Could not send reply message from command listener because of {} : {}", e.getClass().getName(), e.getLocalizedMessage());
 				}
 		);

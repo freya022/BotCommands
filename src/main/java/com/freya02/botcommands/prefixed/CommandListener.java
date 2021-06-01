@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -253,7 +252,8 @@ public final class CommandListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Exception e) {
-				if (e instanceof InvocationTargetException) e = (Exception) e.getCause();
+				e = Utils.getException(e);
+
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", e);
 
 				message.addReaction(BaseCommandEventImpl.ERROR).queue();
@@ -269,7 +269,8 @@ public final class CommandListener extends ListenerAdapter {
 	private void reply(GuildMessageReceivedEvent event, String msg) {
 		event.getChannel().sendMessage(msg).queue(null,
 				e -> {
-					if (e.getCause() != null) e = e.getCause();
+					e = Utils.getException(e);
+
 					LOGGER.error("Could not send reply message from command listener because of {} : {}", e.getClass().getName(), e.getLocalizedMessage());
 				}
 		);
