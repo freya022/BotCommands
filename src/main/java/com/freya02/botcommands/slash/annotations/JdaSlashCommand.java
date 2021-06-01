@@ -61,7 +61,7 @@ import java.lang.annotation.Target;
  *     <li>{@linkplain TextChannel}</li>
  * </ul>
  *
- * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h21>
+ * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>
  *
  * @see <a href="https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups">Discord docs</a>
  * @see Choices
