@@ -47,7 +47,7 @@ public class ButtonListener extends ListenerAdapter {
 		final String id = event.getComponentId();
 
 		try {
-			final Cipher decryptCipher = Cipher.getInstance("AES/CTR/PKCS5Padding");
+			final Cipher decryptCipher = Cipher.getInstance("AES/CTR/NoPadding");
 
 			decryptCipher.init(Cipher.DECRYPT_MODE, key.getKey(), key.getIv());
 
