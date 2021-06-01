@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>0feb089</version>
+            <version>3def451</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
