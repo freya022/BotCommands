@@ -105,21 +105,21 @@ public class ButtonId {
 		final ButtonDescriptor descriptor = buttonsMap.get(handlerName);
 		if (descriptor == null) throw new IllegalStateException("Button listener with name '" + handlerName + "' doesn't exist");
 
-		Class<?>[] parameterTypes = descriptor.getMethod().getParameterTypes();
-		for (int i = 1, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
-			final Class<?> parameterType = parameterTypes[i];
-			final Class<?> argType = args[i - 1].getClass();
-
-			if (parameterType.isPrimitive()) {
-				if (argType == Boolean.class && parameterType != boolean.class
-						|| argType == Double.class && parameterType != double.class
-						|| argType == Long.class && parameterType != long.class) {
-					throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
-				}
-			} else if (!parameterType.isAssignableFrom(argType)) {
-				throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
-			}
-		}
+//		Class<?>[] parameterTypes = descriptor.getMethod().getParameterTypes();
+//		for (int i = 1, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
+//			final Class<?> parameterType = parameterTypes[i];
+//			final Class<?> argType = args[i - 1].getClass();
+//
+//			if (parameterType.isPrimitive()) {
+//				if (argType == Boolean.class && parameterType != boolean.class
+//						|| argType == Double.class && parameterType != double.class
+//						|| argType == Long.class && parameterType != long.class) {
+//					throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
+//				}
+//			} else if (!parameterType.isAssignableFrom(argType)) {
+//				throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
+//			}
+//		}
 
 		final String constructedId = constructId(handlerName, args);
 
