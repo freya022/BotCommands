@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/JDA%20Version-3def451-important)
+![](https://img.shields.io/badge/JDA%20Version-05d58f1-important)
 ![](https://img.shields.io/badge/Version-1.4.6-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 
