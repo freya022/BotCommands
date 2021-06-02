@@ -130,7 +130,7 @@ public class ButtonId {
 
 			final String encodedId = new String(Base64.getEncoder().encode(encryptCipher.doFinal(idBytes.getBytes(StandardCharsets.UTF_8))));
 			if (encodedId.length() > 100)
-				throw new IllegalArgumentException("Encrypted id should not be larger than 100 bytes, consider having less info in your arguments");
+				throw new IllegalArgumentException("Encrypted id should not be larger than 100 bytes, consider having less info in your arguments, tried to send '" + encodedId + "'");
 
 			LOGGER.trace("Sent button id {} for handle {}", idBytes, handlerName);
 
