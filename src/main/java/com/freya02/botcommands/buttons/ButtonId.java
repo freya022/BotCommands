@@ -121,18 +121,18 @@ public class ButtonId {
 			}
 		}
 
-		final String idBytes = constructId(handlerName, args);
+		final String constructedId = constructId(handlerName, args);
 
 		try {
 			final Cipher encryptCipher = Cipher.getInstance("AES/CTR/NoPadding");
 
 			encryptCipher.init(Cipher.ENCRYPT_MODE, key.getKey(), key.getIv());
 
-			final String encodedId = new String(Base64.getEncoder().encode(encryptCipher.doFinal(idBytes.getBytes(StandardCharsets.UTF_8))));
+			final String encodedId = new String(Base64.getEncoder().encode(encryptCipher.doFinal(constructedId.getBytes(StandardCharsets.UTF_8))));
 			if (encodedId.length() > 100)
-				throw new IllegalArgumentException("Encrypted id should not be larger than 100 bytes, consider having less info in your arguments, tried to send '" + encodedId + "'");
+				throw new IllegalArgumentException("Encrypted id should not be larger than 100 bytes, consider having less info in your arguments, tried to send '" + constructedId + "'");
 
-			LOGGER.trace("Sent button id {} for handle {}", idBytes, handlerName);
+			LOGGER.trace("Sent button id {} for handle {}", constructedId, handlerName);
 
 			return encodedId;
 		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException e) {
