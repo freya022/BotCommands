@@ -1,6 +1,7 @@
 package com.freya02.botcommands.utils;
 
 import com.vdurmont.emoji.EmojiParser;
+import net.dv8tion.jda.api.entities.Emoji;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.NoSuchElementException;
@@ -25,5 +26,9 @@ public class EmojiUtils extends EmojiParser {
 		if (candidate != null) return candidate.getEmoji().getUnicode() + candidate.getFitzpatrickUnicode();
 
 		throw new NoSuchElementException("No emoji for input: " + input);
+	}
+
+	public static Emoji resolveJdaEmoji(String input) {
+		return Emoji.fromUnicode(resolveEmojis(input));
 	}
 }
