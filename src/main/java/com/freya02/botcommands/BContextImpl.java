@@ -55,6 +55,11 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
+	public void addPrefix(String prefix) {
+		prefixes.add(prefix);
+	}
+
+	@Override
 	@NotNull
 	public List<Long> getOwnerIds() {
 		return ownerIds;

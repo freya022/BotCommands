@@ -38,6 +38,8 @@ public final class CommandsBuilder {
 	private boolean disableSlashHelpCommand;
 	private List<Long> slashGuildIds = null;
 
+	private boolean usePing;
+
 	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
 		Utils.requireNonBlank(prefix, "Prefix");
 		context.setPrefixes(List.of(prefix));
@@ -46,6 +48,8 @@ public final class CommandsBuilder {
 
 	private CommandsBuilder(long topOwnerId) {
 		context.addOwner(topOwnerId);
+
+		usePing = true;
 	}
 
 	/**
@@ -174,6 +178,18 @@ public final class CommandsBuilder {
 		for (long ownerId : ownerIds) {
 			context.addOwner(ownerId);
 		}
+
+		return this;
+	}
+
+	/**
+	 * Adds a prefix to choose from the list of prefixes
+	 *
+	 * @param prefix The prefix to add
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder addPrefix(String prefix) {
+		context.addPrefix(prefix);
 
 		return this;
 	}
@@ -324,8 +340,9 @@ public final class CommandsBuilder {
 
 	private void setupContext(JDA jda) {
 		context.setJda(jda);
-		if (context.getPrefixes().isEmpty()) {
-			context.setPrefixes(List.of("<@" + jda.getSelfUser().getId() + "> ", "<@!" + jda.getSelfUser().getId() + "> "));
+		if (usePing) {
+			context.addPrefix("<@" + jda.getSelfUser().getId() + "> ");
+			context.addPrefix("<@!" + jda.getSelfUser().getId() + "> ");
 		}
 	}
 

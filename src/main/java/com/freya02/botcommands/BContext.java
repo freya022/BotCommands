@@ -43,6 +43,13 @@ public interface BContext {
 	}
 
 	/**
+	 * Adds a prefix to choose from
+	 *
+	 * @param prefix The prefix to add
+	 */
+	void addPrefix(String prefix);
+
+	/**
 	 * Returns a list of IDs of the bot owners
 	 *
 	 * @return a list of IDs of the bot owners
