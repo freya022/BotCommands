@@ -58,6 +58,11 @@ public class ButtonListener extends ListenerAdapter {
 			String[] args = decryptedId.split("²");
 			final ButtonDescriptor descriptor = buttonsMap.get(args[0]);
 
+			if (descriptor == null) {
+				LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[0], buttonsMap.keySet());
+				return;
+			}
+
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
 			final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
