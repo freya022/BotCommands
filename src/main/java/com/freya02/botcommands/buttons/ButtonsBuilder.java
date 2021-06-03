@@ -69,7 +69,10 @@ public class ButtonsBuilder {
 					resolvers.add(resolver);
 				}
 
-				buttonsMap.put(annotation.name(), new ButtonDescriptor(obj, method, resolvers));
+				final ButtonDescriptor oldVal = buttonsMap.put(annotation.name(), new ButtonDescriptor(obj, method, resolvers));
+				if (oldVal != null) {
+					throw new IllegalStateException("Button listener with name " + annotation.name() + " in " + method + " was already registered as " + oldVal.getMethod());
+				}
 			}
 		}
 	}
