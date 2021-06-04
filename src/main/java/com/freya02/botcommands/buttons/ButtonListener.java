@@ -19,11 +19,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import static com.freya02.botcommands.buttons.ButtonId.unescape;
 import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 
 public class ButtonListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final Pattern SPLIT_PATTERN = Pattern.compile("(?<!\\\\)\\|");
 	private static BContextImpl context;
 
 	static void init(BContextImpl context) {
@@ -55,8 +58,8 @@ public class ButtonListener extends ListenerAdapter {
 			final String decryptedId = new String(decryptCipher.doFinal(Base64.getDecoder().decode(bytes)));
 			LOGGER.trace("Received button ID {}", decryptedId);
 
-			String[] args = decryptedId.split("²");
-			final ButtonDescriptor descriptor = buttonsMap.get(args[0]);
+			String[] args = SPLIT_PATTERN.split(decryptedId);
+			final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[0]));
 
 			if (descriptor == null) {
 				LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[0], buttonsMap.keySet());
@@ -69,7 +72,7 @@ public class ButtonListener extends ListenerAdapter {
 
 			methodArgs.add(event);
 			for (int i = 1, splitLength = args.length; i < splitLength; i++) {
-				String arg = args[i];
+				String arg = unescape(args[i]);
 
 				final Object obj = descriptor.getResolvers().get(i - 1).resolve(event, arg);
 				if (obj == null) {

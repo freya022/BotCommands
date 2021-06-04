@@ -142,18 +142,22 @@ public class ButtonId {
 
 	@Nonnull
 	private static String constructId(String handlerName, Object[] args) {
-		StringJoiner idBuilder = new StringJoiner("²").add(handlerName);
-		for (int i = 0, argsLength = args.length; i < argsLength; i++) {
-			Object arg = args[i];
-
-			final String s = arg.toString();
-
-			if (s.contains("²")) throw new IllegalArgumentException("Argument #" + i + " cannot have a ² inside");
+		StringJoiner idBuilder = new StringJoiner("|").add(escape(handlerName));
+		for (Object arg : args) {
+			final String s = escape(arg.toString());
 
 			idBuilder.add(s);
 		}
 
 		return idBuilder.toString();
+	}
+
+	static String escape(String str) {
+		return str.replace("|", "\\|");
+	}
+
+	static String unescape(String str) {
+		return str.replace("\\|", "|");
 	}
 
 	static void setContext(BContextImpl context) {
