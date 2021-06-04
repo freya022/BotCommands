@@ -50,7 +50,7 @@ public class ButtonListener extends ListenerAdapter {
 		final String id = event.getComponentId();
 
 		try {
-			final Cipher decryptCipher = Cipher.getInstance("AES/CTR/NoPadding");
+			final Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
 			decryptCipher.init(Cipher.DECRYPT_MODE, key.getKey(), key.getIv());
 
@@ -85,12 +85,23 @@ public class ButtonListener extends ListenerAdapter {
 			}
 
 			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | IllegalAccessException | InvocationTargetException e) {
+		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | IllegalAccessException | InvocationTargetException e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An exception occurred while decrypting a button id", e);
+				LOGGER.error("An exception occurred while decrypting a button ID", e);
 			} else {
 				e.printStackTrace();
 			}
+
+			context.dispatchException("An exception occurred while decrypting a button ID", e);
+		} catch (BadPaddingException e) {
+			var exception = new RuntimeException(String.format("Received a BadPaddingException while decrypting a button id from %s (%s) in channel %s (%s)", event.getUser().getAsTag(), event.getUser().getId(), event.getChannel().getName(), event.getChannel().getId()));
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error("An exception occurred while decrypting a button ID", exception);
+			} else {
+				e.printStackTrace();
+			}
+
+			context.dispatchException("An exception occurred while decrypting a button ID", exception);
 		}
 	}
 }

@@ -124,7 +124,7 @@ public class ButtonId {
 		final String constructedId = constructId(handlerName, args);
 
 		try {
-			final Cipher encryptCipher = Cipher.getInstance("AES/CTR/NoPadding");
+			final Cipher encryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
 			encryptCipher.init(Cipher.ENCRYPT_MODE, key.getKey(), key.getIv());
 
