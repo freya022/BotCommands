@@ -95,9 +95,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>05d58f1</version>
+            <version>4.2.1_269</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
