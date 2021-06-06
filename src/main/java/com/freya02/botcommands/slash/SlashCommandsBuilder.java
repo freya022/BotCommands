@@ -75,9 +75,7 @@ public final class SlashCommandsBuilder {
 					final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
 					map.put(path, rightCommand);
 
-					for (OptionData option : getMethodOptions(info)) {
-						rightCommand.addOptions(option);
-					}
+					rightCommand.addOptions(getMethodOptions(info));
 				} else if (info.getPathComponents() == 2) {
 					//Subcommand of a command
 					final String parent = getParent(path);
@@ -86,9 +84,7 @@ public final class SlashCommandsBuilder {
 					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
 					commandData.addSubcommands(rightCommand);
 
-					for (OptionData option : getMethodOptions(info)) {
-						rightCommand.addOptions(option);
-					}
+					rightCommand.addOptions(getMethodOptions(info));
 				} else if (info.getPathComponents() == 3) {
 					final String namePath = getParent(getParent(path));
 					final String parentPath = getParent(path);
@@ -105,9 +101,7 @@ public final class SlashCommandsBuilder {
 					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
 					groupData.addSubcommands(rightCommand);
 
-					for (OptionData option : getMethodOptions(info)) {
-						rightCommand.addOptions(option);
-					}
+					rightCommand.addOptions(getMethodOptions(info));
 				} else {
 					throw new IllegalStateException("A slash command with more than 4 names got registered");
 				}
