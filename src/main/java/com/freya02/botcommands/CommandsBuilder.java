@@ -2,7 +2,8 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.buttons.ButtonsBuilder;
-import com.freya02.botcommands.buttons.KeyProvider;
+import com.freya02.botcommands.buttons.DefaultIdManager;
+import com.freya02.botcommands.buttons.IdManager;
 import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
@@ -143,13 +144,14 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Sets the key provider, used to encrypt Discord buttons IDs
+	 * Sets the ID manager, used to generate Discord buttons IDs and store component data
 	 *
-	 * @param provider The {@link KeyProvider}
+	 * @param idManager The {@link IdManager}
 	 * @return This builder for chaining convenience
+	 * @see DefaultIdManager
 	 */
-	public CommandsBuilder setKeyProvider(KeyProvider provider) {
-		context.setKeyProvider(Objects.requireNonNull(provider, "Key provider cannot be null"));
+	public CommandsBuilder setIdManager(IdManager idManager) {
+		context.setIdManager(Objects.requireNonNull(idManager, "Key provider cannot be null"));
 
 		return this;
 	}

@@ -7,17 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -38,27 +28,24 @@ public class ButtonListener extends ListenerAdapter {
 
 	@Override
 	public void onButtonClick(@Nonnull ButtonClickEvent event) {
-		if (context.getKeyProvider() == null) return;
-
-		final Key key;
-		if (event.isFromGuild()) {
-			key = context.getKeyProvider().getKey(event.getGuild());
-		} else {
-			key = context.getKeyProvider().getKey(event.getUser());
-		}
-
 		final String id = event.getComponentId();
 
 		try {
-			final Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			final IdManager idManager = context.getIdManager();
+			if (idManager == null) {
+				if (LOGGER.isErrorEnabled()) {
+					LOGGER.error("ID Manager should be set to use Discord components");
+				} else {
+					System.err.println("ID Manager should be set to use Discord components");
+				}
 
-			decryptCipher.init(Cipher.DECRYPT_MODE, key.getKey(), key.getIv());
+				return;
+			}
 
-			final byte[] bytes = id.getBytes(StandardCharsets.UTF_8);
-			final String decryptedId = new String(decryptCipher.doFinal(Base64.getDecoder().decode(bytes)));
-			LOGGER.trace("Received button ID {}", decryptedId);
+			final String componentId = idManager.getContent(id);
+			LOGGER.trace("Received button ID {}", componentId);
 
-			String[] args = SPLIT_PATTERN.split(decryptedId);
+			String[] args = SPLIT_PATTERN.split(componentId);
 			final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[0]));
 
 			if (descriptor == null) {
@@ -76,7 +63,7 @@ public class ButtonListener extends ListenerAdapter {
 
 				final Object obj = descriptor.getResolvers().get(i - 1).resolve(event, arg);
 				if (obj == null) {
-					LOGGER.warn("Invalid button id '{}', tried to resolve '{}' but result is null", decryptedId, arg);
+					LOGGER.warn("Invalid button id '{}', tried to resolve '{}' but result is null", componentId, arg);
 
 					return;
 				}
@@ -85,23 +72,14 @@ public class ButtonListener extends ListenerAdapter {
 			}
 
 			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | NoSuchAlgorithmException | IllegalBlockSizeException | IllegalAccessException | InvocationTargetException e) {
+		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An exception occurred while decrypting a button ID", e);
+				LOGGER.error("An exception occurred while processing a button ID", e);
 			} else {
 				e.printStackTrace();
 			}
 
-			context.dispatchException("An exception occurred while decrypting a button ID", e);
-		} catch (BadPaddingException e) {
-			var exception = new RuntimeException(String.format("Received a BadPaddingException while decrypting a button id from %s (%s) in channel %s (%s)", event.getUser().getAsTag(), event.getUser().getId(), event.getChannel().getName(), event.getChannel().getId()));
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An exception occurred while decrypting a button ID", exception);
-			} else {
-				e.printStackTrace();
-			}
-
-			context.dispatchException("An exception occurred while decrypting a button ID", exception);
+			context.dispatchException("An exception occurred while processing a button ID", e);
 		}
 	}
 }
