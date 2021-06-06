@@ -2,6 +2,7 @@ package com.freya02.botcommands.buttons;
 
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.buttons.annotation.JdaButtonListener;
+import net.dv8tion.jda.api.entities.ISnowflake;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -48,7 +49,12 @@ public class ButtonId {
 	private static String constructId(String handlerName, Object[] args) {
 		StringJoiner idBuilder = new StringJoiner("|").add(escape(handlerName));
 		for (Object arg : args) {
-			final String s = escape(arg.toString());
+			final String s;
+			if (arg instanceof ISnowflake) {
+				s = ((ISnowflake) arg).getId();
+			} else {
+				s = escape(arg.toString());
+			}
 
 			idBuilder.add(s);
 		}
