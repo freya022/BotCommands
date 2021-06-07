@@ -109,7 +109,7 @@ public final class Utils {
 	}
 
 	public static boolean hasFirstParameter(Method method, Class<?> type) {
-		return method.getParameterTypes().length > 0 && method.getParameterTypes()[0].isAssignableFrom(type);
+		return method.getParameterCount() > 0 && type.isAssignableFrom(method.getParameterTypes()[0]);
 	}
 
 	@Nonnull
