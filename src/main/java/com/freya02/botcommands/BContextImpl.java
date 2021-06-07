@@ -227,4 +227,12 @@ public class BContextImpl implements BContext {
 	public Map<Class<?>, Object> getClassToObjMap() {
 		return classToObjMap;
 	}
+
+	public void addEventListeners(Object... listeners) {
+		if (jda.getShardManager() != null) {
+			jda.getShardManager().addEventListener(listeners);
+		} else {
+			jda.addEventListener(listeners);
+		}
+	}
 }

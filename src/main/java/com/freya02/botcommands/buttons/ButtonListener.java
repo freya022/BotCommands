@@ -35,7 +35,7 @@ public class ButtonListener extends ListenerAdapter {
 		ButtonListener.context = context;
 		ButtonId.setContext(context);
 
-		context.getJDA().addEventListener(new ButtonListener());
+		context.addEventListeners(new ButtonListener());
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class EventWaiter extends ListenerAdapter {
 	}
 
 	static void createWaiter(BContextImpl context) {
-		context.getJDA().addEventListener(new EventWaiter(context));
+		context.addEventListeners(new EventWaiter(context));
 	}
 
 	@Override
