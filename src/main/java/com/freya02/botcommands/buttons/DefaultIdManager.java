@@ -17,6 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * <i>Uses Xodus as a server-less database</i>
  */
 public class DefaultIdManager implements IdManager {
+	@SuppressWarnings("SpellCheckingInspection")
+	private static final char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?_^[]{}|".toCharArray();
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final Environment env;
@@ -40,22 +42,12 @@ public class DefaultIdManager implements IdManager {
 		env.executeInTransaction(txn -> idStore = env.openStore("ComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn));
 	}
 
-	private String random() {
+	private static String random() {
 		final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		final StringBuilder sb = new StringBuilder(64);
 		for (int i = 0; i < 64; i++) {
-			switch (random.nextInt(0, 3)) {
-				case 0:
-					sb.append((char) random.nextInt('a', 'z'));
-					break;
-				case 1:
-					sb.append((char) random.nextInt('A', 'Z'));
-					break;
-				case 2:
-					sb.append((char) random.nextInt('1', '2'));
-					break;
-			}
+			sb.append(chars[random.nextInt(0, chars.length)]);
 		}
 
 		return sb.toString();
