@@ -105,6 +105,8 @@ public final class SlashCommandsBuilder {
 				} else {
 					throw new IllegalStateException("A slash command with more than 4 names got registered");
 				}
+
+				context.getRegistrationListeners().forEach(l -> l.onSlashCommandRegistered(info));
 			} catch (Exception e) {
 				throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
 			}

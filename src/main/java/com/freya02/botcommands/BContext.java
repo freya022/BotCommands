@@ -124,4 +124,25 @@ public interface BContext {
 	 * @return Consumer which should output help
 	 */
 	Consumer<BaseCommandEvent> getHelpConsumer();
+
+	/**
+	 * Returns an immutable list of the registration listeners
+	 *
+	 * @return Immutable list of the registration listeners
+	 */
+	List<RegistrationListener> getRegistrationListeners();
+
+	/**
+	 * Adds registration listeners
+	 *
+	 * @param listeners Registration listeners to add
+	 */
+	void addRegistrationListener(RegistrationListener... listeners);
+
+	/**
+	 * Removes registration listeners
+	 *
+	 * @param listeners Registration listeners to remove
+	 */
+	void removeRegistrationListeners(RegistrationListener... listeners);
 }

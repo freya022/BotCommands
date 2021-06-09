@@ -38,6 +38,8 @@ public class BContextImpl implements BContext {
 	private Consumer<BaseCommandEvent> helpConsumer;
 	private IdManager idManager;
 
+	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
+
 	@Override
 	@NotNull
 	public JDA getJDA() {
@@ -213,6 +215,23 @@ public class BContextImpl implements BContext {
 	@Override
 	public Consumer<BaseCommandEvent> getHelpConsumer() {
 		return helpConsumer;
+	}
+
+	@Override
+	public List<RegistrationListener> getRegistrationListeners() {
+		return Collections.unmodifiableList(registrationListeners);
+	}
+
+	@Override
+	public void addRegistrationListener(RegistrationListener... listeners) {
+		Collections.addAll(registrationListeners, listeners);
+	}
+
+	@Override
+	public void removeRegistrationListeners(RegistrationListener... listeners) {
+		for (RegistrationListener listener : listeners) {
+			registrationListeners.remove(listener);
+		}
 	}
 
 	@Nullable
