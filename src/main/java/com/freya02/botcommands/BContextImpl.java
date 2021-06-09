@@ -171,7 +171,7 @@ public class BContextImpl implements BContext {
 
 			owner.openPrivateChannel().queue(
 					channel -> channel.sendMessage(message + ", exception : \r\n" + e.toString()).queue(null, t -> LOGGER.error("Could not send message to owner : {}", message)),
-					ignored -> {});
+					t -> LOGGER.warn("Couldn't send the exception DM to {} ({})", owner.getAsTag(), owner.getId()));
 		}
 	}
 
