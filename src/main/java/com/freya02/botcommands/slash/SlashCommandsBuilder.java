@@ -105,8 +105,6 @@ public final class SlashCommandsBuilder {
 				} else {
 					throw new IllegalStateException("A slash command with more than 4 names got registered");
 				}
-
-				context.getRegistrationListeners().forEach(l -> l.onSlashCommandRegistered(info));
 			} catch (Exception e) {
 				throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
 			}
@@ -115,6 +113,10 @@ public final class SlashCommandsBuilder {
 		context.getJDA().updateCommands()
 				.addCommands(globalMap.values())
 				.queue(commands -> {
+					for (Command command : commands) {
+						context.getRegistrationListeners().forEach(l -> l.onSlashCommandRegistered(command));
+					}
+
 					if (!LOGGER.isTraceEnabled()) return;
 
 					final StringBuilder sb = new StringBuilder("Updated global commands:\n");
@@ -132,6 +134,10 @@ public final class SlashCommandsBuilder {
 			guild.updateCommands()
 					.addCommands(guildMap.values())
 					.queue(commands -> {
+						for (Command command : commands) {
+							context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(command));
+						}
+
 						if (!LOGGER.isTraceEnabled()) return;
 
 						final StringBuilder sb = new StringBuilder("Updated commands for ");
