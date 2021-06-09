@@ -1,7 +1,6 @@
 package com.freya02.botcommands.buttons;
 
 import com.freya02.botcommands.Logging;
-import jetbrains.exodus.ArrayByteIterable;
 import jetbrains.exodus.ByteIterable;
 import jetbrains.exodus.bindings.StringBinding;
 import jetbrains.exodus.env.*;
@@ -9,14 +8,13 @@ import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Provides a default implementation for a persistent component ID manager
  * <br>
  * <i>Uses Xodus as a server-less database</i>
  */
-public class DefaultIdManager implements IdManager {
+public class OldDefaultIdManager implements IdManager {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final Environment env;
@@ -27,7 +25,7 @@ public class DefaultIdManager implements IdManager {
 	 *
 	 * @param dbPath Path of the database folder, must exist
 	 */
-	public DefaultIdManager(Path dbPath) {
+	public OldDefaultIdManager(Path dbPath) {
 		if (Files.notExists(dbPath))
 			throw new IllegalStateException("Path " + dbPath.toAbsolutePath() + " does not exist");
 
@@ -40,25 +38,24 @@ public class DefaultIdManager implements IdManager {
 		env.executeInTransaction(txn -> idStore = env.openStore("ComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn));
 	}
 
-	private String random() {
-		final ThreadLocalRandom random = ThreadLocalRandom.current();
+	/**
+	 * Returns a unique value from a number
+	 *
+	 * @see <a href="https://wiki.postgresql.org/wiki/Pseudo_encrypt">PostgreSQL pseudo_encrypt</a>
+	 */
+	private static long pseudo_encrypt(long value) {
+		long l1 = (value >> 16) & 0xffff;
+		long r1 = value & 0xffff;
 
-		final StringBuilder sb = new StringBuilder(64);
-		for (int i = 0; i < 64; i++) {
-			switch (random.nextInt(0, 3)) {
-				case 0:
-					sb.append((char) random.nextInt('a', 'z'));
-					break;
-				case 1:
-					sb.append((char) random.nextInt('A', 'Z'));
-					break;
-				case 2:
-					sb.append((char) random.nextInt('1', '2'));
-					break;
-			}
+		long l2, r2;
+		for (int i = 0; i < 3; i++) {
+			l2 = r1;
+			r2 = l1 ^ Math.round((((1366 * r1 + 150889) % 714025) / 714025.0) * 32767);
+			l1 = l2;
+			r1 = r2;
 		}
 
-		return sb.toString();
+		return (r1 << 16) + l1;
 	}
 
 	@Override
@@ -82,13 +79,9 @@ public class DefaultIdManager implements IdManager {
 	public String newId(String content) {
 		final String[] buttonId = new String[1];
 		env.executeInTransaction(txn -> {
-			ArrayByteIterable entry;
-
-			do {
-				buttonId[0] = random();
-			} while (idStore.get(txn, (entry = StringBinding.stringToEntry(buttonId[0]))) != null);
-
-			idStore.put(txn, entry, StringBinding.stringToEntry(content));
+			final long count = idStore.count(txn);
+			buttonId[0] = String.valueOf(pseudo_encrypt(count));
+			idStore.put(txn, StringBinding.stringToEntry(buttonId[0]), StringBinding.stringToEntry(content));
 		});
 
 		return buttonId[0];
