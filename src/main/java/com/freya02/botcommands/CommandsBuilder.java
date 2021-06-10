@@ -110,7 +110,6 @@ public final class CommandsBuilder {
 	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected
 	 *
 	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid
-	 *
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder disableHelpCommand(Consumer<BaseCommandEvent> helpConsumer) {
@@ -237,9 +236,9 @@ public final class CommandsBuilder {
 			LOGGER.info("Finished registering all commands");
 		} catch (Throwable e) {
 			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An error occured while loading the commands, the commands will not work");
+				LOGGER.error("An error occurred while loading the commands, the commands will not work");
 			} else { //Dont want this error hidden by the lack of logging framework
-				System.err.println("An error occured while loading the commands, the commands will not work");
+				System.err.println("An error occurred while loading the commands, the commands will not work");
 			}
 
 			throw new RuntimeException(e);

@@ -102,18 +102,21 @@ public interface BContext {
 
 	/**
 	 * Adds a filter for the command listener to check on each command
+	 *
 	 * @param filter The filter to add
 	 */
 	void addFilter(Predicate<MessageInfo> filter);
 
 	/**
 	 * Removes a previously set filter
+	 *
 	 * @param filter The filter to remove
 	 */
 	void removeFilter(Predicate<MessageInfo> filter);
 
 	/**
 	 * Overrides the default help given in {@linkplain Command#showHelp(BaseCommandEvent)}
+	 *
 	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
 	 */
 	void overrideHelp(Consumer<BaseCommandEvent> helpConsumer);
