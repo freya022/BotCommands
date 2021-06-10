@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -21,6 +22,7 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class SlashCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -114,7 +116,7 @@ public final class SlashCommandsBuilder {
 				.addCommands(globalMap.values())
 				.queue(commands -> {
 					for (Command command : commands) {
-						context.getRegistrationListeners().forEach(l -> l.onSlashCommandRegistered(command));
+						context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered(command));
 					}
 
 					if (!LOGGER.isTraceEnabled()) return;
@@ -131,12 +133,38 @@ public final class SlashCommandsBuilder {
 		}
 
 		for (Guild guild : guilds) {
+			final PermissionProvider permissionProvider = context.getPermissionProvider();
+			final Collection<String> commandNames = permissionProvider.getGuildCommands(guild.getId());
+
+			final Collection<CommandData> commandData;
+			if (commandNames.isEmpty()) {
+				commandData = guildMap.values();
+			} else {
+				commandData = guildMap
+						.values()
+						.stream()
+						.filter(c -> commandNames.contains(c.getName()))
+						.collect(Collectors.toList());
+			}
+
 			guild.updateCommands()
-					.addCommands(guildMap.values())
+					.addCommands(commandData)
 					.queue(commands -> {
 						for (Command command : commands) {
-							context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(command));
+							context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(guild, command));
 						}
+
+						Map<String, Collection<? extends CommandPrivilege>> privileges = new HashMap<>();
+						for (Command command : commands) {
+							final Collection<CommandPrivilege> commandPrivileges = permissionProvider.getPermissions(command.getName(), guild.getId());
+							if (commandPrivileges.size() > 10)
+								throw new IllegalArgumentException("There are more than 10 command privileges for command " + command.getName() + " in guild " + guild.getId());
+							if (commandPrivileges.isEmpty()) continue;
+
+							privileges.put(command.getId(), commandPrivileges);
+						}
+
+						guild.updateCommandPrivileges(privileges).queue();
 
 						if (!LOGGER.isTraceEnabled()) return;
 

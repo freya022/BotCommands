@@ -150,7 +150,19 @@ public final class CommandsBuilder {
 	 * @see DefaultIdManager
 	 */
 	public CommandsBuilder setIdManager(IdManager idManager) {
-		context.setIdManager(Objects.requireNonNull(idManager, "Key provider cannot be null"));
+		context.setIdManager(Objects.requireNonNull(idManager, "ID manager cannot be null"));
+
+		return this;
+	}
+
+	/**
+	 * Sets the {@linkplain PermissionProvider}
+	 *
+	 * @param provider The {@linkplain PermissionProvider}, for command privileges and slash command whitelist
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder setPermissionProvider(PermissionProvider provider) {
+		context.setPermissionProvider(Objects.requireNonNull(provider, "Permission provider cannot be null"));
 
 		return this;
 	}
@@ -232,6 +244,8 @@ public final class CommandsBuilder {
 			slashCommandsBuilder.postProcess(slashGuildIds);
 
 			buttonsBuilder.postProcess();
+
+			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
 			LOGGER.info("Finished registering all commands");
 		} catch (Throwable e) {

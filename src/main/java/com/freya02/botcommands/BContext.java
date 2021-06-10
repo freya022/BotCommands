@@ -148,4 +148,11 @@ public interface BContext {
 	 * @param listeners Registration listeners to remove
 	 */
 	void removeRegistrationListeners(RegistrationListener... listeners);
+
+	/**
+	 * Returns the {@linkplain PermissionProvider} for this context
+	 *
+	 * @return The {@linkplain PermissionProvider} for this context
+	 */
+	PermissionProvider getPermissionProvider();
 }
