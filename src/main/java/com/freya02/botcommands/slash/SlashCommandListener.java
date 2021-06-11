@@ -82,7 +82,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 
 			if (isNotOwner) {
 				final int cooldown = slashCommand.getCooldown(event);
-				if (cooldown != 0) {
+				if (cooldown > 0) {
 					if (slashCommand.getCooldownScope() == CooldownScope.USER) {
 						reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
 					} else if (slashCommand.getCooldownScope() == CooldownScope.GUILD) {

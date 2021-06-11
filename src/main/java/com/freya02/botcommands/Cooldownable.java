@@ -63,11 +63,11 @@ public abstract class Cooldownable {
 	public int getCooldown(GuildMessageReceivedEvent event) {
 		switch (cooldownScope) {
 			case USER:
-				return (int) (userCooldowns.get(event.getAuthor().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, userCooldowns.getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
-				return (int) (guildCooldowns.get(event.getGuild().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
 			case CHANNEL:
-				return (int) (channelCooldowns.get(event.getChannel().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
 				throw new IllegalStateException("Unexpected value: " + cooldownScope);
 		}
@@ -76,7 +76,7 @@ public abstract class Cooldownable {
 	public int getCooldown(SlashCommandEvent event) {
 		switch (cooldownScope) {
 			case USER:
-				return (int) (userCooldowns.get(event.getUser().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, userCooldowns.getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
 				if (event.getGuild() == null) {
 					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", SlashCommandListener.reconstructCommand(event));
@@ -84,9 +84,9 @@ public abstract class Cooldownable {
 					return 0;
 				}
 
-				return (int) (guildCooldowns.get(event.getGuild().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
 			case CHANNEL:
-				return (int) (channelCooldowns.get(event.getChannel().getIdLong()) - System.currentTimeMillis());
+				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
 				throw new IllegalStateException("Unexpected value: " + cooldownScope);
 		}
