@@ -10,26 +10,28 @@ import com.freya02.botcommands.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.concurrent.CompletableFuture;
 
 public final class SlashCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
+	private final CachedSlashCommands cachedSlashCommands;
 
 	public SlashCommandsBuilder(@NotNull BContextImpl context) {
 		this.context = context;
+		this.cachedSlashCommands = new CachedSlashCommands(context);
 	}
 
 	public void processSlashCommand(SlashCommand slashCommand) {
@@ -59,125 +61,53 @@ public final class SlashCommandsBuilder {
 		}
 	}
 
-	public void postProcess(List<Long> slashGuildIds) {
-		final Map<String, CommandData> guildMap = new HashMap<>();
-		final Map<String, SubcommandGroupData> guildGroupMap = new HashMap<>();
-
-		final Map<String, CommandData> globalMap = new HashMap<>();
-		final Map<String, SubcommandGroupData> globalGroupMap = new HashMap<>();
-
-		context.getSlashCommands().stream().sorted(Comparator.comparingInt(SlashCommandInfo::getPathComponents)).forEachOrdered(info -> {
-			try {
-				final Map<String, CommandData> map = info.isGuildOnly() ? guildMap : globalMap;
-				final Map<String, SubcommandGroupData> groupMap = info.isGuildOnly() ? guildGroupMap : globalGroupMap;
-
-				final String path = info.getPath();
-				if (info.getPathComponents() == 1) {
-					//Standard command
-					final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
-					map.put(path, rightCommand);
-
-					rightCommand.addOptions(getMethodOptions(info));
-				} else if (info.getPathComponents() == 2) {
-					//Subcommand of a command
-					final String parent = getParent(path);
-					final CommandData commandData = map.computeIfAbsent(parent, s -> new CommandData(getName(parent), "we can't see this rite ?"));
-
-					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-					commandData.addSubcommands(rightCommand);
-
-					rightCommand.addOptions(getMethodOptions(info));
-				} else if (info.getPathComponents() == 3) {
-					final String namePath = getParent(getParent(path));
-					final String parentPath = getParent(path);
-					final SubcommandGroupData groupData = groupMap.computeIfAbsent(parentPath, gp -> {
-						final CommandData nameData = new CommandData(getName(namePath), "we can't see r-right ?");
-						map.put(getName(namePath), nameData);
-
-						final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), "we can't see r-right ?");
-						nameData.addSubcommandGroups(groupDataTmp);
-
-						return groupDataTmp;
-					});
-
-					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
-					groupData.addSubcommands(rightCommand);
-
-					rightCommand.addOptions(getMethodOptions(info));
-				} else {
-					throw new IllegalStateException("A slash command with more than 4 names got registered");
-				}
-			} catch (Exception e) {
-				throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
-			}
-		});
-
-		context.getJDA().updateCommands()
-				.addCommands(globalMap.values())
-				.queue(commands -> {
-					for (Command command : commands) {
-						context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered(command));
-					}
-
-					if (!LOGGER.isTraceEnabled()) return;
-
-					final StringBuilder sb = new StringBuilder("Updated global commands:\n");
-					appendCommands(commands, sb);
-
-					LOGGER.trace(sb.toString().trim());
-				});
-
-		final List<Guild> guilds = new ArrayList<>(context.getJDA().getGuilds());
-		if (slashGuildIds != null) {
-			guilds.removeIf(g -> !slashGuildIds.contains(g.getIdLong()));
+	public void postProcess(List<Long> slashGuildIds) throws IOException {
+		cachedSlashCommands.computeCommands();
+		if (cachedSlashCommands.shouldUpdateGlobalCommands()) {
+			cachedSlashCommands.updateGlobalCommands();
+			LOGGER.debug("Global commands were updated");
+		} else {
+			LOGGER.debug("Global commands does not have to be updated");
 		}
 
-		for (Guild guild : guilds) {
-			final PermissionProvider permissionProvider = context.getPermissionProvider();
-			final Collection<String> commandNames = permissionProvider.getGuildCommands(guild.getId());
+		final SnowflakeCacheView<Guild> guildCache;
+		if (context.getJDA().getShardManager() != null) {
+			guildCache = context.getJDA().getShardManager().getGuildCache();
+		} else {
+			guildCache = context.getJDA().getGuildCache();
+		}
 
-			final Collection<CommandData> commandData;
-			if (commandNames.isEmpty()) {
-				commandData = guildMap.values();
+		List<CompletableFuture<?>> commandUpdateFutures = new ArrayList<>();
+		for (Guild guild : guildCache) {
+			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+
+			cachedSlashCommands.computeGuildCommands(guild);
+			if (cachedSlashCommands.shouldUpdateGuildCommands(guild)) {
+				commandUpdateFutures.add(cachedSlashCommands.updateGuildCommands(guild));
+				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
 			} else {
-				commandData = guildMap
-						.values()
-						.stream()
-						.filter(c -> commandNames.contains(c.getName()))
-						.collect(Collectors.toList());
+				LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
 			}
+		}
 
-			guild.updateCommands()
-					.addCommands(commandData)
-					.queue(commands -> {
-						for (Command command : commands) {
-							context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(guild, command));
-						}
+		for (CompletableFuture<?> commandUpdateFuture : commandUpdateFutures) {
+			commandUpdateFuture.join();
+		}
 
-						Map<String, Collection<? extends CommandPrivilege>> privileges = new HashMap<>();
-						for (Command command : commands) {
-							final Collection<CommandPrivilege> commandPrivileges = permissionProvider.getPermissions(command.getName(), guild.getId());
-							if (commandPrivileges.size() > 10)
-								throw new IllegalArgumentException("There are more than 10 command privileges for command " + command.getName() + " in guild " + guild.getId());
-							if (commandPrivileges.isEmpty()) continue;
+		for (Guild guild : guildCache) {
+			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 
-							privileges.put(command.getId(), commandPrivileges);
-						}
-
-						guild.updateCommandPrivileges(privileges).queue();
-
-						if (!LOGGER.isTraceEnabled()) return;
-
-						final StringBuilder sb = new StringBuilder("Updated commands for ");
-						sb.append(guild.getName()).append(" :\n");
-						appendCommands(commands, sb);
-
-						LOGGER.trace(sb.toString().trim());
-					});
+			cachedSlashCommands.computeGuildPrivileges(guild);
+			if (cachedSlashCommands.shouldUpdateGuildPrivileges(guild)) {
+				cachedSlashCommands.updateGuildPrivileges(guild);
+				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
+			} else {
+				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
+			}
 		}
 	}
 
-	private static void appendCommands(List<Command> commands, StringBuilder sb) {
+	static void appendCommands(List<Command> commands, StringBuilder sb) {
 		for (Command command : commands) {
 			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
 			for (Command.Option option : command.getOptions()) {
@@ -188,7 +118,7 @@ public final class SlashCommandsBuilder {
 		}
 	}
 
-	private static List<OptionData> getMethodOptions(SlashCommandInfo info) {
+	static List<OptionData> getMethodOptions(SlashCommandInfo info) {
 		final List<OptionData> list = new ArrayList<>();
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
@@ -264,7 +194,7 @@ public final class SlashCommandsBuilder {
 		return list;
 	}
 
-	private static String getName(String path) {
+	static String getName(String path) {
 		final int i = path.indexOf('/');
 		if (i == -1) return path;
 
@@ -272,7 +202,7 @@ public final class SlashCommandsBuilder {
 	}
 
 	@Nonnull
-	private static String getParent(String path) {
+	static String getParent(String path) {
 		return path.substring(0, path.lastIndexOf('/'));
 	}
 }

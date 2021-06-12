@@ -37,7 +37,7 @@ public final class CommandsBuilder {
 
 	private boolean disableHelpCommand;
 	private boolean disableSlashHelpCommand;
-	private List<Long> slashGuildIds = null;
+	private List<Long> slashGuildIds = List.of();
 
 	private boolean usePing;
 
