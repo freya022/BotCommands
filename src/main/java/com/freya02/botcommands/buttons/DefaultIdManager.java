@@ -22,7 +22,7 @@ public class DefaultIdManager implements IdManager {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final Environment env;
-	private Store idStore;
+	private final Store idStore;
 
 	/**
 	 * Creates a default ID manager for Discord components
@@ -39,7 +39,7 @@ public class DefaultIdManager implements IdManager {
 		env = Environments.newInstance(dbPath.toFile(), new EnvironmentConfig().setEnvCloseForcedly(true));
 		Runtime.getRuntime().addShutdownHook(new Thread(env::close));
 
-		env.executeInTransaction(txn -> idStore = env.openStore("ComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn));
+		idStore = env.computeInTransaction(txn -> env.openStore("ComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn));
 	}
 
 	private static String random() {
@@ -55,34 +55,39 @@ public class DefaultIdManager implements IdManager {
 
 	@Override
 	public String getContent(String buttonId) {
-		final String[] content = new String[1];
-
-		env.executeInReadonlyTransaction(txn -> {
+		return env.computeInReadonlyTransaction(txn -> {
 			final ByteIterable entry = idStore.get(txn, StringBinding.stringToEntry(buttonId));
 			if (entry == null) {
 				LOGGER.error("Button ID {} not found in database", buttonId);
-				content[0] = null;
+				return null;
 			} else {
-				content[0] = StringBinding.entryToString(entry);
+				return StringBinding.entryToString(entry);
 			}
 		});
-
-		return content[0];
 	}
 
 	@Override
 	public String newId(String content) {
-		final String[] buttonId = new String[1];
-		env.executeInTransaction(txn -> {
+		return env.computeInTransaction(txn -> {
 			ArrayByteIterable entry;
+			String buttonId;
 
 			do {
-				buttonId[0] = random();
-			} while (idStore.get(txn, (entry = StringBinding.stringToEntry(buttonId[0]))) != null);
+				buttonId = random();
+			} while (idStore.get(txn, (entry = StringBinding.stringToEntry(buttonId))) != null);
 
 			idStore.put(txn, entry, StringBinding.stringToEntry(content));
-		});
 
-		return buttonId[0];
+			return buttonId;
+		});
+	}
+
+	@Override
+	public void removeId(String buttonId) {
+		env.executeInTransaction(txn -> {
+			if (!idStore.delete(txn, StringBinding.stringToEntry(buttonId))) {
+				LOGGER.warn("Tried to delete key '{}' but it was not in the Store", buttonId);
+			}
+		});
 	}
 }

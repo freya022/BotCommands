@@ -16,4 +16,11 @@ public interface IdManager {
 	 * @return A new <b>unique</b> component ID
 	 */
 	String newId(String content);
+
+	/**
+	 * Removes the given component ID from storage
+	 *
+	 * @param buttonId ID of the component to remove from the storage
+	 */
+	void removeId(String buttonId);
 }

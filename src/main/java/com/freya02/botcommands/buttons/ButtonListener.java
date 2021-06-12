@@ -34,6 +34,7 @@ public class ButtonListener extends ListenerAdapter {
 	static void init(BContextImpl context) {
 		ButtonListener.context = context;
 		ButtonId.setContext(context);
+		ButtonIdFactory.setContext(context);
 
 		context.addEventListeners(new ButtonListener());
 	}
@@ -56,6 +57,14 @@ public class ButtonListener extends ListenerAdapter {
 				}
 
 				final String componentId = idManager.getContent(id);
+				if (componentId == null) {
+					event.reply("This button is not associated with an action (anymore)")
+							.setEphemeral(true)
+							.queue();
+
+					return;
+				}
+
 				LOGGER.trace("Received button ID {}", componentId);
 
 				String[] args = SPLIT_PATTERN.split(componentId);
@@ -66,15 +75,35 @@ public class ButtonListener extends ListenerAdapter {
 					return;
 				}
 
+				final String callerId = args[2];
+				if (!callerId.equals("0")) {
+					if (!event.getUser().getId().equals(callerId)) {
+						return;
+					}
+				}
+
+				final String oneUse = args[1];
+				if (oneUse.equals("1")) {
+					idManager.removeId(id);
+				}
+
+				if (descriptor.getResolvers().size() != args.length - 3) {
+					event.reply("This button has invalid content")
+							.setEphemeral(true)
+							.queue();
+
+					return;
+				}
+
 				//For some reason using an array list instead of a regular array
 				// magically unboxes primitives when passed to Method#invoke
 				final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
 
 				methodArgs.add(event);
-				for (int i = 1, splitLength = args.length; i < splitLength; i++) {
+				for (int i = 3, splitLength = args.length; i < splitLength; i++) {
 					String arg = unescape(args[i]);
 
-					final Object obj = descriptor.getResolvers().get(i - 1).resolve(event, arg);
+					final Object obj = descriptor.getResolvers().get(i - 3).resolve(event, arg);
 					if (obj == null) {
 						LOGGER.warn("Invalid button id '{}', tried to resolve '{}' but result is null", componentId, arg);
 

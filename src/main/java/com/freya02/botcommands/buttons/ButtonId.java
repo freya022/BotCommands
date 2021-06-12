@@ -21,33 +21,36 @@ public class ButtonId {
 	 * @return The encrypted button ID containing the provided arguments
 	 */
 	public static String of(String handlerName, Object... args) {
-		final ButtonDescriptor descriptor = buttonsMap.get(handlerName);
-		if (descriptor == null) throw new IllegalStateException("Button listener with name '" + handlerName + "' doesn't exist");
+		return create(handlerName, false, 0L, args);
+	}
 
-//		Class<?>[] parameterTypes = descriptor.getMethod().getParameterTypes();
-//		for (int i = 1, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
-//			final Class<?> parameterType = parameterTypes[i];
-//			final Class<?> argType = args[i - 1].getClass();
-//
-//			if (parameterType.isPrimitive()) {
-//				if (argType == Boolean.class && parameterType != boolean.class
-//						|| argType == Double.class && parameterType != double.class
-//						|| argType == Long.class && parameterType != long.class) {
-//					throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
-//				}
-//			} else if (!parameterType.isAssignableFrom(argType)) {
-//				throw new IllegalStateException("Button handler's parameter " + parameterType.getName() + " is not compatible with " + argType.getName());
-//			}
-//		}
+	public static String uniqueOf(String handlerName, Object... args) {
+		return create(handlerName, true, 0L, args);
+	}
 
-		final String constructedId = constructId(handlerName, args);
+	public static String ofUser(String handlerName, long callerId, Object... args) {
+		return create(handlerName, false, callerId, args);
+	}
 
-		return Objects.requireNonNull(context.getIdManager(), "ID Manager should be set to use Discord components").newId(constructedId);
+	public static String uniqueOfUser(String handlerName, long callerId, Object... args) {
+		return create(handlerName, true, callerId, args);
+	}
+
+	private static String create(String handlerName, boolean oneUse, long callerId, Object... args) {
+		if (!buttonsMap.containsKey(handlerName))
+			throw new IllegalStateException("Button listener with name '" + handlerName + "' doesn't exist");
+
+		final String constructedId = constructId(handlerName, oneUse, callerId, args);
+
+		return Objects.requireNonNull(context.getIdManager(), "ID Manager should be set in order to use Discord components").newId(constructedId);
 	}
 
 	@Nonnull
-	private static String constructId(String handlerName, Object[] args) {
-		StringJoiner idBuilder = new StringJoiner("|").add(escape(handlerName));
+	static String constructId(String handlerName, boolean oneUse, long callerId, Object[] args) {
+		StringJoiner idBuilder = new StringJoiner("|")
+				.add(escape(handlerName))
+				.add(oneUse ? "1" : "0")
+				.add(String.valueOf(callerId));
 		for (Object arg : args) {
 			final String s;
 			if (arg instanceof ISnowflake) {
