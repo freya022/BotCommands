@@ -17,7 +17,7 @@ The framework mainly automates these:
 It also helps in:
 * [Waiting for events](src/main/java/com/freya02/botcommands/EventWaiter.java)
 * [Resolving Discord entities](src/main/java/com/freya02/botcommands/utils/RichTextFinder.java) and [emojis](src/main/java/com/freya02/botcommands/utils/EmojiUtils.java)
-* [Exception-free and garbage collectible InputStream](src/main/java/com/freya02/botcommands/utils/SimpleStream.java)
+* Having (secure) button ids with persistent data
 
 Note that commands are run in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
 

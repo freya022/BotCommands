@@ -5,7 +5,6 @@ import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.utils.EmojiUtils;
-import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -103,8 +102,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@CheckReturnValue
 	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		if (iconStream != null) {
-			final SimpleStream stream = SimpleStream.of(iconStream, onException);
-			return channel.sendTyping().flatMap(v -> channel.sendFile(stream, "icon.jpg").embed(embed));
+			return channel.sendTyping().flatMap(v -> channel.sendFile(iconStream, "icon.jpg").embed(embed));
 		} else {
 			return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
 		}

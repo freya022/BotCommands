@@ -4,7 +4,6 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Usability;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
-import com.freya02.botcommands.utils.SimpleStream;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -82,8 +81,7 @@ public final class SlashHelpCommand extends SlashCommand {
 
 		final InputStream iconStream = context.getDefaultFooterIconSupplier().get();
 		if (iconStream != null) {
-			final SimpleStream stream = SimpleStream.of(iconStream, Throwable::printStackTrace);
-			event.getHook().sendFile(stream, "icon.jpg").addEmbeds(embed).queue();
+			event.getHook().sendFile(iconStream, "icon.jpg").addEmbeds(embed).queue();
 		} else {
 			event.getHook().sendMessageEmbeds(embed).queue();
 		}
