@@ -17,7 +17,7 @@ public interface PermissionProvider {
 	Collection<String> getGuildCommands(String guildId);
 
 	/**
-	 * Returns the list of {@linkplain CommandPrivilege command privileges} for the given command name <b>()</b>
+	 * Returns the list of {@linkplain CommandPrivilege command privileges} for the given command name <b>(only base command name, no group, no subcommand)</b>
 	 *
 	 * @param commandName Name of the command to get the permissions of
 	 * @param guildId     ID of the guild of the command
