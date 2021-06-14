@@ -32,6 +32,8 @@ public class CachedSlashCommands {
 	private final Map<String, CommandData> guildMap = new HashMap<>();
 	private final Map<String, CommandData> globalMap = new HashMap<>();
 
+	private final List<String> ownerOnlyCommands = new ArrayList<>();
+
 	private final Map<Long, Collection<CommandData>> guildToCommandsDataMap = Collections.synchronizedMap(new HashMap<>());
 	private final Map<Long, List<Command>> guildToCommandsMap = Collections.synchronizedMap(new HashMap<>());
 	private final Map<Long, Map<String, Collection<? extends CommandPrivilege>>> guildToPrivilegesMap = Collections.synchronizedMap(new HashMap<>());
@@ -60,10 +62,21 @@ public class CachedSlashCommands {
 					map.put(path, rightCommand);
 
 					rightCommand.addOptions(getMethodOptions(info));
+
+					if (info.isOwnerOnly()) {
+						rightCommand.setDefaultEnabled(false);
+					}
 				} else if (info.getPathComponents() == 2) {
 					//Subcommand of a command
 					final String parent = getParent(path);
-					final CommandData commandData = map.computeIfAbsent(parent, s -> new CommandData(getName(parent), "we can't see this rite ?"));
+					final CommandData commandData = map.computeIfAbsent(parent, s -> {
+						final CommandData tmpData = new CommandData(getName(parent), "we can't see this rite ?");
+						if (info.isOwnerOnly()) {
+							tmpData.setDefaultEnabled(false);
+						}
+
+						return tmpData;
+					});
 
 					final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
 					commandData.addSubcommands(rightCommand);
@@ -75,6 +88,10 @@ public class CachedSlashCommands {
 					final SubcommandGroupData groupData = groupMap.computeIfAbsent(parentPath, gp -> {
 						final CommandData nameData = new CommandData(getName(namePath), "we can't see r-right ?");
 						map.put(getName(namePath), nameData);
+
+						if (info.isOwnerOnly()) {
+							nameData.setDefaultEnabled(false);
+						}
 
 						final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), "we can't see r-right ?");
 						nameData.addSubcommandGroups(groupDataTmp);
@@ -88,6 +105,16 @@ public class CachedSlashCommands {
 					rightCommand.addOptions(getMethodOptions(info));
 				} else {
 					throw new IllegalStateException("A slash command with more than 4 names got registered");
+				}
+
+				if (!info.isOwnerOnly()) {
+					if (ownerOnlyCommands.contains(info.getBaseName())) {
+						LOGGER.warn("Non owner-only command '{}' is registered as a owner-only command because of another command with the same base name '{}'", info.getPath(), info.getBaseName());
+					}
+				}
+
+				if (info.isOwnerOnly() && info.isGuildOnly()) {
+					ownerOnlyCommands.add(info.getBaseName());
 				}
 			} catch (Exception e) {
 				throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
@@ -217,9 +244,19 @@ public class CachedSlashCommands {
 	public void computeGuildPrivileges(Guild guild) {
 		Map<String, Collection<? extends CommandPrivilege>> privileges = new HashMap<>();
 		for (Command command : getGuildCommands(guild)) {
-			final Collection<CommandPrivilege> commandPrivileges = context.getPermissionProvider().getPermissions(command.getName(), guild.getId());
+			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(context.getPermissionProvider().getPermissions(command.getName(), guild.getId()));
 			if (commandPrivileges.size() > 10)
-				throw new IllegalArgumentException("There are more than 10 command privileges for command " + command.getName() + " in guild " + guild.getId());
+				throw new IllegalArgumentException(String.format("There are more than 10 command privileges for command %s in guild %s (%s)", command.getName(), guild.getName(), guild.getId()));
+
+			if (ownerOnlyCommands.contains(command.getName())) {
+				if (commandPrivileges.size() + context.getOwnerIds().size() > 10)
+					throw new IllegalStateException("There should not be more than 10 command privileges (in total) for an owner-only command " + command.getName());
+
+				for (Long ownerId : context.getOwnerIds()) {
+					commandPrivileges.add(CommandPrivilege.enableUser(ownerId));
+				}
+			}
+
 			if (commandPrivileges.isEmpty()) continue;
 
 			privileges.put(command.getId(), commandPrivileges);

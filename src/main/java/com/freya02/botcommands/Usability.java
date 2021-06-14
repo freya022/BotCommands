@@ -58,6 +58,10 @@ public class Usability {
 			unusableReasons.add(BOT_PERMISSIONS);
 		}
 
+		if (isNotOwner && cmdInfo.isOwnerOnly()) {
+			unusableReasons.add(OWNER_ONLY);
+		}
+
 		if (isNotOwner && !member.hasPermission(channel, cmdInfo.getUserPermissions())) {
 			unusableReasons.add(USER_PERMISSIONS);
 		}

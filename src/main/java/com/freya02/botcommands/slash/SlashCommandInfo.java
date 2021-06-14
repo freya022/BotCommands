@@ -3,6 +3,7 @@ package com.freya02.botcommands.slash;
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import com.freya02.botcommands.slash.impl.SlashEventImpl;
@@ -22,11 +23,12 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class SlashCommandInfo extends Cooldownable {
-	private final String name, description, category;
+	private final String baseName, name, description, category;
 	private final boolean guildOnly;
 
 	private final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
 	private final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
+	private final boolean ownerOnly;
 
 	private final SlashCommand instance;
 	private final Method commandMethod;
@@ -85,6 +87,7 @@ public class SlashCommandInfo extends Cooldownable {
 			pathComponents++;
 		}
 
+		this.baseName = annotation.name();
 		this.path = pathBuilder.toString();
 
 		if (annotation.subcommand().isEmpty()) {
@@ -103,6 +106,8 @@ public class SlashCommandInfo extends Cooldownable {
 
 		Collections.addAll(userPermissions, annotation.userPermissions());
 		Collections.addAll(botPermissions, annotation.botPermissions());
+
+		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
 	}
 
 	public int getPathComponents() {
@@ -192,5 +197,13 @@ public class SlashCommandInfo extends Cooldownable {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public boolean isOwnerOnly() {
+		return ownerOnly;
+	}
+
+	public String getBaseName() {
+		return baseName;
 	}
 }
