@@ -42,8 +42,8 @@ public class CachedSlashCommands {
 		this.context = context;
 	}
 
-	private static Path getTempPath(String filename) {
-		return Path.of(System.getProperty("java.io.tmpdir") + filename);
+	private Path getTempPath(String filename) {
+		return Path.of(System.getProperty("java.io.tmpdir") + context.getJDA().getSelfUser().getId() + filename);
 	}
 
 	public void computeCommands() {
@@ -189,7 +189,7 @@ public class CachedSlashCommands {
 	}
 
 	public boolean shouldUpdateGuildCommands(Guild guild) throws IOException {
-		final Path path = getTempPath(guild.getId() + "Commands.json");
+		final Path path = getTempPath("Commands" + guild.getId() + ".json");
 
 		if (Files.notExists(path)) return true;
 
@@ -219,7 +219,7 @@ public class CachedSlashCommands {
 
 					guildToCommandsMap.put(guild.getIdLong(), commands);
 
-					final Path path = getTempPath(guild.getId() + "Commands.json");
+					final Path path = getTempPath("Commands" + guild.getId() + ".json");
 					try {
 						Files.write(path, getGuildCommandsBytes(guild), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 					} catch (IOException e) {
@@ -266,7 +266,7 @@ public class CachedSlashCommands {
 	}
 
 	public boolean shouldUpdateGuildPrivileges(Guild guild) throws IOException {
-		final Path path = getTempPath(guild.getId() + "Privileges.json");
+		final Path path = getTempPath("Privileges" + guild.getId() + ".json");
 
 		if (Files.notExists(path)) return true;
 
@@ -294,7 +294,7 @@ public class CachedSlashCommands {
 		final Map<String, Collection<? extends CommandPrivilege>> privileges = guildToPrivilegesMap.get(guild.getIdLong());
 
 		guild.updateCommandPrivileges(privileges).queue(x -> {
-			final Path path = getTempPath(guild.getId() + "Privileges.json");
+			final Path path = getTempPath("Privileges" + guild.getId() + ".json");
 			try {
 				Files.write(path, getGuildCommandPrivilegesBytes(guild), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
