@@ -134,12 +134,14 @@ public final class SlashCommandListener extends ListenerAdapter {
 	}
 
 	private void reply(SlashCommandEvent event, String msg) {
-		event.reply(msg).setEphemeral(true).queue(null,
-				e -> {
-					e = Utils.getException(e);
+		event.reply(msg)
+				.setEphemeral(true)
+				.queue(null,
+						e -> {
+							Utils.printExceptionString("Could not send reply message from slash command listener", e);
 
-					LOGGER.error("Could not send reply message from command listener because of {} : {}", e.getClass().getName(), e.getLocalizedMessage());
-				}
-		);
+							context.dispatchException("Could not send reply message from slash command listener", e);
+						}
+				);
 	}
 }

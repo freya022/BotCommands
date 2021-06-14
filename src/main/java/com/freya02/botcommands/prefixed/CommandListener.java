@@ -11,9 +11,14 @@ import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -268,12 +273,23 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	private void reply(GuildMessageReceivedEvent event, String msg) {
-		event.getChannel().sendMessage(msg).queue(null,
-				e -> {
-					e = Utils.getException(e);
+		final RestAction<? extends MessageChannel> channelAction;
 
-					LOGGER.error("Could not send reply message from command listener because of {} : {}", e.getClass().getName(), e.getLocalizedMessage());
-				}
-		);
+		if (event.getChannel().canTalk()) {
+			channelAction = new CompletedRestAction<>(event.getJDA(), event.getChannel());
+		} else {
+			channelAction = event.getAuthor().openPrivateChannel();
+		}
+
+		channelAction.queue(channel -> channel.sendMessage(msg)
+				.queue(null,
+						new ErrorHandler()
+								.ignore(ErrorResponse.CANNOT_SEND_TO_USER)
+								.handle(Exception.class, e -> {
+									Utils.printExceptionString("Could not send reply message from command listener", e);
+
+									context.dispatchException("Could not send reply message from command listener", e);
+								})
+				));
 	}
 }

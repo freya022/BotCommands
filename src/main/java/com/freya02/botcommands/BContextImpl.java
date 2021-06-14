@@ -7,7 +7,8 @@ import com.freya02.botcommands.prefixed.MessageInfo;
 import com.freya02.botcommands.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -165,16 +166,11 @@ public class BContextImpl implements BContext {
 
 	public void dispatchException(String message, Throwable e) {
 		for (Long ownerId : getOwnerIds()) {
-			final User owner = getJDA().retrieveUserById(ownerId, false).complete();
-
-			if (owner == null) {
-				LOGGER.error("Top owner ID {} does not exist !", ownerId);
-				return;
-			}
-
-			owner.openPrivateChannel().queue(
-					channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e).toString()).queue(null, t -> LOGGER.warn("Could not send an exception DM to {} ({})", owner.getAsTag(), owner.getId())),
-					t -> LOGGER.warn("Could not send an exception DM to {} ({})", owner.getAsTag(), owner.getId()));
+			getJDA().openPrivateChannelById(ownerId)
+					.queue(channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e).toString())
+							.queue(null, new ErrorHandler()
+									.handle(ErrorResponse.CANNOT_SEND_TO_USER,
+											t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId))));
 		}
 	}
 
