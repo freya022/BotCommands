@@ -2,6 +2,7 @@ package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.Cooldownable;
+import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.slf4j.Logger;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +25,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class SlashCommandInfo extends Cooldownable {
+	private static final Logger LOGGER = Logging.getLogger();
 	private final String baseName, name, description, category;
 	private final boolean guildOnly;
 
@@ -178,10 +181,22 @@ public class SlashCommandInfo extends Cooldownable {
 				}
 
 				final Object obj = parameter.getResolver().resolve(event, optionData);
+				if (obj == null) {
+					event.replyFormat("The parameter '%s' could not be resolved into a %s", parameter.getEffectiveName(), parameter.getType().getSimpleName())
+							.setEphemeral(true)
+							.queue();
+
+					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", parameter.getEffectiveName(), optionData.getAsString(), parameter.getType().getSimpleName());
+
+					return false;
+				}
+
 				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
 					event.replyFormat("The parameter '%s' is not a valid type (expected a %s)", parameter.getEffectiveName(), parameter.getType().getSimpleName())
 							.setEphemeral(true)
 							.queue();
+
+					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", parameter.getEffectiveName(), optionData.getAsString(), parameter.getType().getSimpleName());
 
 					return false;
 				}
