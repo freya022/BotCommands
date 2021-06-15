@@ -46,13 +46,15 @@ public final class SlashHelpCommand extends SlashCommand {
 			if (shouldAddFunc.apply(info)) {
 				categoryBuilderMap
 						.computeIfAbsent(info.getCategory(), s -> new StringJoiner("\n"))
-						.add("**" + info.getName() + "** : " + info.getDescription());
+						.add("**/" + info.getPath().replace('/', ' ') + "** : " + info.getDescription());
 			}
 		}
 
 		for (Map.Entry<String, StringJoiner> entry : categoryBuilderMap.entrySet()) {
 			builder.addField(entry.getKey(), entry.getValue().toString(), false);
 		}
+
+		builder.setFooter("For a list of regular commands, use " + context.getPrefix() + "help");
 	}
 
 	@JdaSlashCommand(
