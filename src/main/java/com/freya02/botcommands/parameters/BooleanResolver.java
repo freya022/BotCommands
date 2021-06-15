@@ -7,10 +7,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nullable;
 
-public class BooleanResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class BooleanResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public BooleanResolver() {
+		super(boolean.class);
 	}
 
 	@Override
@@ -19,18 +18,8 @@ public class BooleanResolver extends ParameterResolver {
 	}
 
 	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
-	}
-
-	@Override
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsBoolean();
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

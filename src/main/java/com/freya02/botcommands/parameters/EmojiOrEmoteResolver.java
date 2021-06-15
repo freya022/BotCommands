@@ -1,5 +1,6 @@
 package com.freya02.botcommands.parameters;
 
+import com.freya02.botcommands.EmojiOrEmote;
 import com.freya02.botcommands.impl.EmojiOrEmoteImpl;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.Message;
@@ -12,20 +13,14 @@ import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 
-public class EmojiOrEmoteResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class EmojiOrEmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public EmojiOrEmoteResolver() {
+		super(EmojiOrEmote.class);
 	}
 
 	@Override
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmojiOrEmote(args[0]);
-	}
-
-	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
 	}
 
 	@Override
@@ -36,11 +31,6 @@ public class EmojiOrEmoteResolver extends ParameterResolver {
 		} else {
 			return EmojiUtils.resolveEmojis(optionData.getAsString());
 		}
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

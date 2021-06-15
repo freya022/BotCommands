@@ -1,6 +1,7 @@
 package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -9,10 +10,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nullable;
 
-public class UserResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public UserResolver() {
+		super(User.class);
 	}
 
 	@Override
@@ -21,18 +21,8 @@ public class UserResolver extends ParameterResolver {
 	}
 
 	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
-	}
-
-	@Override
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsUser();
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

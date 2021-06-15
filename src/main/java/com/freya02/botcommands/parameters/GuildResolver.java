@@ -9,10 +9,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nullable;
 
-public class GuildResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class GuildResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public GuildResolver() {
+		super(Guild.class);
 	}
 
 	@Override
@@ -21,18 +20,8 @@ public class GuildResolver extends ParameterResolver {
 	}
 
 	@Override
-	public boolean isSlashCommandSupported() {
-		return false;
-	}
-
-	@Override
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

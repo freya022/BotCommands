@@ -3,7 +3,9 @@ package com.freya02.botcommands.buttons;
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.buttons.annotation.JdaButtonListener;
+import com.freya02.botcommands.parameters.ButtonParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolver;
+import com.freya02.botcommands.parameters.ParameterResolvers;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 
 import java.lang.reflect.*;
@@ -55,18 +57,18 @@ public class ButtonsBuilder {
 				if (!method.canAccess(obj))
 					throw new IllegalStateException("Button listener " + method + " is not public");
 
-				final List<ParameterResolver> resolvers = new ArrayList<>();
+				final List<ButtonParameterResolver> resolvers = new ArrayList<>();
 				Parameter[] parameters = method.getParameters();
 				for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
 					Parameter parameter = parameters[i];
 					final Class<?> type = parameter.getType();
 
-					final ParameterResolver resolver = ParameterResolver.of(type);
+					final ParameterResolver resolver = ParameterResolvers.of(type);
 
-					if (resolver == null || !resolver.isButtonSupported())
+					if (!(resolver instanceof ButtonParameterResolver))
 						throw new IllegalArgumentException("Unknown button value type: " + type.getName());
 
-					resolvers.add(resolver);
+					resolvers.add((ButtonParameterResolver) resolver);
 				}
 
 				final ButtonDescriptor newDescriptor = new ButtonDescriptor(obj, method, resolvers);

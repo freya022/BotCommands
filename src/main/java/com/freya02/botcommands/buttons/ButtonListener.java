@@ -3,7 +3,7 @@ package com.freya02.botcommands.buttons;
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.Utils;
-import com.freya02.botcommands.parameters.ParameterResolver;
+import com.freya02.botcommands.parameters.ButtonParameterResolver;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.slf4j.Logger;
@@ -106,7 +106,7 @@ public class ButtonListener extends ListenerAdapter {
 				for (int i = 3, splitLength = args.length; i < splitLength; i++) {
 					String arg = unescape(args[i]);
 
-					final ParameterResolver resolver = descriptor.getResolvers().get(i - 3);
+					final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 3);
 					final Object obj = resolver.resolve(event, arg);
 					if (obj == null) {
 						LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName()); //TODO change when resolver rework is done

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.parameters;
 
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
@@ -9,20 +10,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nullable;
 
-public class EmoteResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public EmoteResolver() {
+		super(Emote.class);
 	}
 
 	@Override
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmoteInGuild(args[1], event.getGuild());
-	}
-
-	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
 	}
 
 	@Override
@@ -34,11 +29,6 @@ public class EmoteResolver extends ParameterResolver {
 		} else {
 			return event.getJDA().getEmoteById(optionData.getAsString());
 		}
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

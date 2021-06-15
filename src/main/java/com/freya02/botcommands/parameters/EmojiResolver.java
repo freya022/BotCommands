@@ -1,5 +1,6 @@
 package com.freya02.botcommands.parameters;
 
+import com.freya02.botcommands.Emoji;
 import com.freya02.botcommands.impl.EmojiImpl;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -9,10 +10,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nonnull;
 
-public class EmojiResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public EmojiResolver() {
+		super(Emoji.class);
 	}
 
 	@Override
@@ -21,18 +21,8 @@ public class EmojiResolver extends ParameterResolver {
 	}
 
 	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
-	}
-
-	@Override
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return getEmoji(optionData.getAsString());
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override

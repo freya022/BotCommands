@@ -1,24 +1,28 @@
 package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.parameters.ParameterResolver;
+import com.freya02.botcommands.parameters.ParameterResolvers;
+import com.freya02.botcommands.parameters.SlashParameterResolver;
 
 public class SlashCommandParameter {
 	private final boolean optional;
 	private final String effectiveName;
-	private final ParameterResolver resolver;
+	private final SlashParameterResolver resolver;
 	private final Class<?> type;
 
 	public SlashCommandParameter(boolean optional, String effectiveName, Class<?> type) {
 		this.optional = optional;
 		this.effectiveName = effectiveName;
 
-		this.resolver = ParameterResolver.of(type);
+		ParameterResolver resolver = ParameterResolvers.of(type);
 		this.type = type;
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unknown slash command option type: " + type.getName());
-		} else if (!resolver.isSlashCommandSupported()) {
+		} else if (!(resolver instanceof SlashParameterResolver)) {
 			throw new IllegalArgumentException("Unsupported slash command option type: " + type.getName());
 		}
+
+		this.resolver = (SlashParameterResolver) resolver;
 	}
 
 	public Class<?> getType() {
@@ -33,7 +37,7 @@ public class SlashCommandParameter {
 		return effectiveName;
 	}
 
-	public ParameterResolver getResolver() {
+	public SlashParameterResolver getResolver() {
 		return resolver;
 	}
 }

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.parameters;
 
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
@@ -7,10 +8,9 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.Objects;
 
-public class TextChannelResolver extends ParameterResolver {
-	@Override
-	public boolean isRegexCommandSupported() {
-		return true;
+public class TextChannelResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+	public TextChannelResolver() {
+		super(TextChannel.class);
 	}
 
 	@Override
@@ -19,18 +19,8 @@ public class TextChannelResolver extends ParameterResolver {
 	}
 
 	@Override
-	public boolean isSlashCommandSupported() {
-		return true;
-	}
-
-	@Override
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsGuildChannel();
-	}
-
-	@Override
-	public boolean isButtonSupported() {
-		return true;
 	}
 
 	@Override
