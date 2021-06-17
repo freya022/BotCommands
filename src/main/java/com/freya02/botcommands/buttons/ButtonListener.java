@@ -69,55 +69,66 @@ public class ButtonListener extends ListenerAdapter {
 				LOGGER.trace("Received button ID {}", componentId);
 
 				String[] args = SPLIT_PATTERN.split(componentId);
-				final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[0]));
-
-				if (descriptor == null) {
-					LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[0], buttonsMap.keySet());
-					return;
-				}
 
 				final String callerId = args[2];
 				if (!callerId.equals("0")) {
 					if (!event.getUser().getId().equals(callerId)) {
+						event.deferEdit().queue();
+
 						return;
 					}
+				}
+
+				if (args[0].equals("0")) {
+					final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[0]));
+
+					if (descriptor == null) {
+						LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[0], buttonsMap.keySet());
+						return;
+					}
+
+					if (descriptor.getResolvers().size() != args.length - 3) {
+						event.reply("This button has invalid content")
+								.setEphemeral(true)
+								.queue();
+
+						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", componentId, descriptor.getResolvers().size(), args.length - 3);
+
+						return;
+					}
+
+					//For some reason using an array list instead of a regular array
+					// magically unboxes primitives when passed to Method#invoke
+					final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
+
+					methodArgs.add(event);
+					for (int i = 3, splitLength = args.length; i < splitLength; i++) {
+						String arg = unescape(args[i]);
+
+						final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 3);
+						final Object obj = resolver.resolve(event, arg);
+						if (obj == null) {
+							LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName());
+
+							return;
+						}
+
+						methodArgs.add(obj);
+					}
+
+					descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
+				} else if (args[0].equals("1")) {
+					final int handlerId = Integer.parseInt(args[3]);
+
+					idManager.getAction(handlerId).accept(event);
+				} else {
+					throw new IllegalArgumentException("Unexpected ID type: '" + args[0] + "'");
 				}
 
 				final String oneUse = args[1];
 				if (oneUse.equals("1")) {
-					idManager.removeId(id);
+					idManager.removeId(id, args[0].equals("1"));
 				}
-
-				if (descriptor.getResolvers().size() != args.length - 3) {
-					event.reply("This button has invalid content")
-							.setEphemeral(true)
-							.queue();
-
-					LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", componentId, descriptor.getResolvers().size(), args.length - 3);
-
-					return;
-				}
-
-				//For some reason using an array list instead of a regular array
-				// magically unboxes primitives when passed to Method#invoke
-				final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
-
-				methodArgs.add(event);
-				for (int i = 3, splitLength = args.length; i < splitLength; i++) {
-					String arg = unescape(args[i]);
-
-					final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 3);
-					final Object obj = resolver.resolve(event, arg);
-					if (obj == null) {
-						LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName()); //TODO change when resolver rework is done
-
-						return;
-					}
-
-					methodArgs.add(obj);
-				}
-
-				descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
 					LOGGER.error("An exception occurred while processing a button ID from {}", event.getUser().getAsTag(), e);

@@ -5,11 +5,16 @@ import jetbrains.exodus.ArrayByteIterable;
 import jetbrains.exodus.ByteIterable;
 import jetbrains.exodus.bindings.StringBinding;
 import jetbrains.exodus.env.*;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 
 /**
  * Provides a default implementation for a persistent component ID manager
@@ -22,7 +27,9 @@ public class DefaultIdManager implements IdManager {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final Environment env;
-	private final Store idStore;
+	private final Store idStore, tempIdStore;
+
+	private final List<Consumer<ButtonClickEvent>> actionMap = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 * Creates a default ID manager for Discord components
@@ -40,13 +47,20 @@ public class DefaultIdManager implements IdManager {
 		Runtime.getRuntime().addShutdownHook(new Thread(env::close));
 
 		idStore = env.computeInTransaction(txn -> env.openStore("ComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn));
+		tempIdStore = env.computeInTransaction(txn -> {
+			if (env.storeExists("TempComponentIDs", txn)) {
+				env.truncateStore("TempComponentIDs", txn);
+			}
+
+			return env.openStore("TempComponentIDs", StoreConfig.WITHOUT_DUPLICATES, txn);
+		});
 	}
 
-	private static String random() {
+	private static String random(int n) {
 		final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		final StringBuilder sb = new StringBuilder(64);
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < n; i++) {
 			sb.append(chars[random.nextInt(0, chars.length)]);
 		}
 
@@ -56,9 +70,22 @@ public class DefaultIdManager implements IdManager {
 	@Override
 	public String getContent(String buttonId) {
 		return env.computeInReadonlyTransaction(txn -> {
-			final ByteIterable entry = idStore.get(txn, StringBinding.stringToEntry(buttonId));
+			final ArrayByteIterable idEntry = StringBinding.stringToEntry(buttonId);
+
+			final ByteIterable entry;
+			final boolean isTemporary = buttonId.length() == 64;
+			if (isTemporary) { //Temporary ID
+				entry = tempIdStore.get(txn, idEntry);
+			} else { //Normal handler ID
+				entry = idStore.get(txn, idEntry);
+			}
+
 			if (entry == null) {
-				LOGGER.error("Button ID {} not found in database", buttonId);
+				if (isTemporary) {
+					LOGGER.debug("Temporary button ID {} not found in database", buttonId);
+				} else {
+					LOGGER.info("Button ID {} not found in database", buttonId);
+				}
 				return null;
 			} else {
 				return StringBinding.entryToString(entry);
@@ -67,27 +94,61 @@ public class DefaultIdManager implements IdManager {
 	}
 
 	@Override
-	public String newId(String content) {
+	public String newId(String content, boolean temporary) {
 		return env.computeInTransaction(txn -> {
+			final Store store = temporary ? tempIdStore : idStore;
 			ArrayByteIterable entry;
 			String buttonId;
 
 			do {
-				buttonId = random();
-			} while (idStore.get(txn, (entry = StringBinding.stringToEntry(buttonId))) != null);
+				buttonId = random(temporary ? 64 : 96);
+			} while (store.get(txn, (entry = StringBinding.stringToEntry(buttonId))) != null);
 
-			idStore.put(txn, entry, StringBinding.stringToEntry(content));
+			store.put(txn, entry, StringBinding.stringToEntry(content));
 
 			return buttonId;
 		});
 	}
 
 	@Override
-	public void removeId(String buttonId) {
+	public void removeId(String buttonId, boolean isTemporary) {
 		env.executeInTransaction(txn -> {
-			if (!idStore.delete(txn, StringBinding.stringToEntry(buttonId))) {
+			final Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn);
+			final ByteIterable value = cursor.getSearchKey(StringBinding.stringToEntry(buttonId));
+
+			if (value == null) {
 				LOGGER.warn("Tried to delete key '{}' but it was not in the Store", buttonId);
+				return;
+			}
+
+			final String content = StringBinding.entryToString(value);
+
+			//Removing a temporary button's ID is not really the priority
+			// Most important is removing the Consumer reference, so you can also free up memory claimed by the lambda's fields
+			if (isTemporary) { //Temporary button
+				actionMap.remove(Integer.parseInt(content.substring(content.lastIndexOf('|') + 1)));
 			}
 		});
+	}
+
+	@Override
+	public Consumer<ButtonClickEvent> getAction(int handlerId) {
+		return actionMap.get(handlerId);
+	}
+
+	@Override
+	public int newHandlerId(Consumer<ButtonClickEvent> action) {
+		final int handlerId = getNextHandlerId();
+
+		actionMap.add(action);
+
+		return handlerId;
+	}
+
+	/**
+	 * I doubt you'll hit the 2^31-1 button id limit
+	 */
+	public int getNextHandlerId() {
+		return actionMap.size();
 	}
 }
