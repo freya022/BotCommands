@@ -80,19 +80,19 @@ public class ButtonListener extends ListenerAdapter {
 				}
 
 				if (args[0].equals("0")) {
-					final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[0]));
+					final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[3]));
 
 					if (descriptor == null) {
-						LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[0], buttonsMap.keySet());
+						LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[3], buttonsMap.keySet());
 						return;
 					}
 
-					if (descriptor.getResolvers().size() != args.length - 3) {
+					if (descriptor.getResolvers().size() != args.length - 4) {
 						event.reply("This button has invalid content")
 								.setEphemeral(true)
 								.queue();
 
-						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", componentId, descriptor.getResolvers().size(), args.length - 3);
+						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", componentId, descriptor.getResolvers().size(), args.length - 4);
 
 						return;
 					}
@@ -102,10 +102,10 @@ public class ButtonListener extends ListenerAdapter {
 					final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
 
 					methodArgs.add(event);
-					for (int i = 3, splitLength = args.length; i < splitLength; i++) {
+					for (int i = 4, splitLength = args.length; i < splitLength; i++) {
 						String arg = unescape(args[i]);
 
-						final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 3);
+						final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 4);
 						final Object obj = resolver.resolve(event, arg);
 						if (obj == null) {
 							LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName());

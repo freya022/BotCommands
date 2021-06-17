@@ -155,9 +155,10 @@ public class ButtonId {
 	@Nonnull
 	static String constructId(String handlerName, boolean oneUse, long callerId, Object[] args) {
 		StringJoiner idBuilder = new StringJoiner("|")
-				.add(escape(handlerName))
+				.add("0")
 				.add(oneUse ? "1" : "0")
-				.add(String.valueOf(callerId));
+				.add(String.valueOf(callerId))
+				.add(escape(handlerName));
 		for (Object arg : args) {
 			final String s;
 			if (arg instanceof ISnowflake) {
@@ -169,7 +170,7 @@ public class ButtonId {
 			idBuilder.add(s);
 		}
 
-		return "0" + idBuilder;
+		return idBuilder.toString();
 	}
 
 	@Nonnull
