@@ -155,4 +155,26 @@ public interface BContext {
 	 * @return The {@linkplain PermissionProvider} for this context
 	 */
 	PermissionProvider getPermissionProvider();
+
+	/**
+	 * Returns the {@linkplain SettingsProvider} for this context
+	 *
+	 * @return The current {@linkplain SettingsProvider}
+	 */
+	@Nullable
+	SettingsProvider getSettingsProvider();
+
+	/**
+	 * Returns the {@linkplain BGuildSettings Guild settings} for the given Guild ID
+	 *
+	 * @param guildId The Guild ID to get the settings from
+	 * @return This guild-specific settings
+	 */
+	@Nullable
+	default BGuildSettings getGuildSettings(long guildId) {
+		final SettingsProvider settingsProvider = getSettingsProvider();
+		if (settingsProvider == null) return null;
+
+		return settingsProvider.getSettings(guildId);
+	}
 }

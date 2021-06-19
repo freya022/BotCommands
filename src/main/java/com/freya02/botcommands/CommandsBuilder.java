@@ -169,6 +169,18 @@ public final class CommandsBuilder {
 	}
 
 	/**
+	 * Sets the {@linkplain SettingsProvider}, used to take guild-specific settings such as prefixes
+	 *
+	 * @param provider The {@linkplain SettingsProvider}
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder setSettingsProvider(SettingsProvider provider) {
+		context.setSettingsProvider(Objects.requireNonNull(provider, "Settings provider cannot be null"));
+
+		return this;
+	}
+
+	/**
 	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
 	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *

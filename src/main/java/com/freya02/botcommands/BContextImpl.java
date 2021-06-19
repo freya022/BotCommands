@@ -38,7 +38,8 @@ public class BContextImpl implements BContext {
 	private boolean addSubcommandHelpByDefault, addExecutableHelpByDefault;
 	private Consumer<BaseCommandEvent> helpConsumer;
 	private IdManager idManager;
-	private PermissionProvider provider = new DefaultPermissionProvider();
+	private PermissionProvider permissionProvider = new DefaultPermissionProvider();
+	private SettingsProvider settingProvider;
 
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
 
@@ -252,12 +253,21 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void setPermissionProvider(PermissionProvider provider) {
-		this.provider = provider;
+	public void setPermissionProvider(PermissionProvider permissionProvider) {
+		this.permissionProvider = permissionProvider;
 	}
 
 	@Override
 	public PermissionProvider getPermissionProvider() {
-		return provider;
+		return permissionProvider;
+	}
+
+	public void setSettingsProvider(SettingsProvider settingsProvider) {
+		this.settingProvider = settingsProvider;
+	}
+
+	@Override
+	public @Nullable SettingsProvider getSettingsProvider() {
+		return settingProvider;
 	}
 }

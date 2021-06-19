@@ -59,12 +59,12 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
-	private Cmd getCmdFast(String msg) {
+	private Cmd getCmdFast(String msg, long guildId) {
 		final String msgNoPrefix;
 		final String commandName;
 
 		int prefixLength = -1;
-		for (String prefix : context.getPrefixes()) {
+		for (String prefix : getPrefixes(guildId)) {
 			if (msg.startsWith(prefix)) {
 				prefixLength = prefix.length();
 				break;
@@ -84,6 +84,19 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
+	private List<String> getPrefixes(long guildId) {
+		final BGuildSettings guildSettings = context.getGuildSettings(guildId);
+
+		if (guildSettings != null) {
+			final List<String> prefixes = guildSettings.getPrefixes();
+			if (prefixes == null || prefixes.isEmpty()) return context.getPrefixes();
+
+			return prefixes;
+		} else {
+			return context.getPrefixes();
+		}
+	}
+
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		if (event.getAuthor().isBot() || event.isWebhookMessage())
@@ -98,7 +111,7 @@ public final class CommandListener extends ListenerAdapter {
 
 		final String msg = event.getMessage().getContentRaw();
 		runCommand(() -> {
-			final Cmd cmdFast = getCmdFast(msg);
+			final Cmd cmdFast = getCmdFast(msg, event.getGuild().getIdLong());
 
 			if (cmdFast == null)
 				return;
