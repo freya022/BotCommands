@@ -111,8 +111,12 @@ public final class SlashCommandsBuilder {
 						context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
 
 						missedGuilds.add(guild.getIdLong());
+
+						continue;
 					}
 				}
+
+				throw e;
 			}
 		}
 
