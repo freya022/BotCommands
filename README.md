@@ -147,4 +147,4 @@ You can disable the prefixed help command and/or the `/help` command, these meth
 
 ## Examples
 
-You can find example bots in the [examples](examples) folder **(outdated examples, waiting for slash commands to be finished)**
+You can find example bots in the [examples](examples) folder

@@ -1,9 +1,13 @@
 package com.freya02.bot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BaseCommandEvent;
-import com.freya02.botcommands.Command;
-import com.freya02.botcommands.annotation.*;
+import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.prefixed.Command;
+import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
+import com.freya02.botcommands.prefixed.annotation.ArgExample;
+import com.freya02.botcommands.prefixed.annotation.Executable;
+import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -16,7 +20,7 @@ import net.dv8tion.jda.api.entities.Member;
 		userPermissions = Permission.KICK_MEMBERS //The user need those permissions to use this command
 )
 public class Kick extends Command {
-	protected Kick(BContext context) {
+	public Kick(BContext context) {
 		super(context);
 	}
 

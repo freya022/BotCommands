@@ -1,9 +1,9 @@
 package com.freya02.bot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Command;
-import com.freya02.botcommands.CommandEvent;
-import com.freya02.botcommands.annotation.JdaCommand;
+import com.freya02.botcommands.prefixed.Command;
+import com.freya02.botcommands.prefixed.CommandEvent;
+import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 
 @JdaCommand(
 		name = "ping",
@@ -11,20 +11,17 @@ import com.freya02.botcommands.annotation.JdaCommand;
 		description = "Pong !"
 )
 public class Ping extends Command {
-	protected Ping(BContext context) {
+	public Ping(BContext context) {
 		super(context);
 	}
 
 	@Override
 	protected void execute(CommandEvent event) {
-		long sent = System.nanoTime();
-		event.reply("Pong !").queue(m -> {
-			long received = System.nanoTime();
+		final long gatewayPing = event.getJDA().getGatewayPing();
 
-			long pingNs = (received - sent) / 2;
-			double pingMs = pingNs / 1000000.0;
-
-			m.editMessage(String.format("Pong ! in %.2f ms", pingMs)).queue();
-		});
+		event.getJDA().getRestPing()
+				.queue(restPing -> {
+					event.respondFormat("Gateway ping: **%d ms**\nRest ping: **%d ms**", gatewayPing, restPing).queue();
+				});
 	}
 }

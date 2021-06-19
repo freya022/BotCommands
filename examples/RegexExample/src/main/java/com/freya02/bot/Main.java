@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
@@ -34,11 +33,8 @@ public class Main {
 			// Prefix: ;
 			// Owner: User with the ID 222046562543468545
 			// Commands package: com.freya02.bot.commands
-			final CommandsBuilder builder = CommandsBuilder.withPrefix(";", 222046562543468545L);
-			final ListenerAdapter listener = builder.build(jda, "com.freya02.bot.commands");
-
-			//Do not forget to add the framework listener on JDA
-			jda.addEventListener(listener);
+			CommandsBuilder.withPrefix("!", 222046562543468545L)
+					.build(jda, "com.freya02.bot.commands"); //Registering listener is taken care of by the lib
 		} catch (IOException | InterruptedException | LoginException e) {
 			e.printStackTrace();
 			System.exit(-1);

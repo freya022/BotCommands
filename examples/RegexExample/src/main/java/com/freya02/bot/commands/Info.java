@@ -1,11 +1,11 @@
 package com.freya02.bot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BaseCommandEvent;
-import com.freya02.botcommands.Command;
-import com.freya02.botcommands.annotation.AddExecutableHelp;
-import com.freya02.botcommands.annotation.Executable;
-import com.freya02.botcommands.annotation.JdaCommand;
+import com.freya02.botcommands.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.prefixed.Command;
+import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
+import com.freya02.botcommands.prefixed.annotation.Executable;
+import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import net.dv8tion.jda.api.entities.*;
 
 @AddExecutableHelp
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.*;
 		description = "Gives information about an entity"
 )
 public class Info extends Command {
-	protected Info(BContext context) {
+	public Info(BContext context) {
 		super(context);
 	}
 
