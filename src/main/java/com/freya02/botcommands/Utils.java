@@ -21,11 +21,12 @@ import java.util.stream.Collectors;
 public final class Utils {
 	private static final Logger LOGGER = Logging.getLogger();
 
+	@SuppressWarnings("RedundantCast")
 	static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
 		if (isJar) {
-			final FileSystem zfs = FileSystems.newFileSystem(jarPath, null);
+			final FileSystem zfs = FileSystems.newFileSystem(jarPath, (ClassLoader) null);
 			walkRoot = zfs.getPath("");
 		}
 
