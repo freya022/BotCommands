@@ -8,10 +8,13 @@ import com.freya02.botcommands.slash.annotations.Choices;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 public final class SlashCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -62,6 +66,8 @@ public final class SlashCommandsBuilder {
 	}
 
 	public void postProcess(List<Long> slashGuildIds) throws IOException {
+		context.getJDA().setRequiredScopes("applications.commands");
+
 		cachedSlashCommands.computeCommands();
 		if (cachedSlashCommands.shouldUpdateGlobalCommands()) {
 			cachedSlashCommands.updateGlobalCommands();
@@ -77,25 +83,42 @@ public final class SlashCommandsBuilder {
 			guildCache = context.getJDA().getGuildCache();
 		}
 
-		List<CompletableFuture<?>> commandUpdateFutures = new ArrayList<>();
+		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>();
 		for (Guild guild : guildCache) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 
 			cachedSlashCommands.computeGuildCommands(guild);
 			if (cachedSlashCommands.shouldUpdateGuildCommands(guild)) {
-				commandUpdateFutures.add(cachedSlashCommands.updateGuildCommands(guild));
+				commandUpdatePairs.add(new ImmutablePair<>(guild, cachedSlashCommands.updateGuildCommands(guild)));
 				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
 			} else {
 				LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
 			}
 		}
 
-		for (CompletableFuture<?> commandUpdateFuture : commandUpdateFutures) {
-			commandUpdateFuture.join();
+		final List<Long> missedGuilds = new ArrayList<>();
+		for (ImmutablePair<Guild, CompletableFuture<?>> commandUpdatePair : commandUpdatePairs) {
+			try {
+				commandUpdatePair.getRight().join();
+			} catch (CompletionException e) { // Check missing access exceptions
+				if (e.getCause() instanceof ErrorResponseException) {
+					if (((ErrorResponseException) e.getCause()).getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
+						final Guild guild = commandUpdatePair.getLeft();
+
+						final String inviteUrl = context.getJDA().getInviteUrl() + "&guild_id=" + guild.getId();
+
+						LOGGER.warn("Could not register guild commands for guild '{}' ({}) as it appears the OAuth2 grants misses applications.commands, you can re-invite the bot in this guild with its already existing permission with this link: {}", guild.getName(), guild.getId(), inviteUrl);
+						context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
+
+						missedGuilds.add(guild.getIdLong());
+					}
+				}
+			}
 		}
 
 		for (Guild guild : guildCache) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
 
 			cachedSlashCommands.computeGuildPrivileges(guild);
 			if (cachedSlashCommands.shouldUpdateGuildPrivileges(guild)) {

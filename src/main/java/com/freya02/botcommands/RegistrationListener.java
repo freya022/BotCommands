@@ -35,6 +35,14 @@ public abstract class RegistrationListener {
 	public abstract void onGuildSlashCommandRegistered(Guild guild, net.dv8tion.jda.api.interactions.commands.Command command);
 
 	/**
+	 * Fired when the bot doesn't have the applications.commands scope in a Guild, thus is unable to register the slash commands
+	 *
+	 * @param guild Guild in which the slash commands couldn't be registered
+	 * @param inviteUrl The invite URL to invite back the bot in the same Guild, with the same permissions, with the correct scopes (bot + applications.commands)
+	 */
+	public abstract void onGuildSlashCommandMissingAccess(Guild guild, String inviteUrl);
+
+	/**
 	 * Fired when a button listener is registered
 	 *
 	 * @param descriptor {@linkplain ButtonDescriptor} of the registered button
