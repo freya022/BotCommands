@@ -12,6 +12,7 @@ import com.freya02.botcommands.slash.*;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -342,6 +343,13 @@ public final class CommandsBuilder {
 	 */
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		Utils.requireNonBlank(commandPackageName, "Command package");
+
+		final List<GatewayIntent> intents = List.of(
+				GatewayIntent.GUILD_MESSAGES
+		);
+		if (!jda.getGatewayIntents().containsAll(intents)) {
+			throw new IllegalStateException("JDA must have these intents enabled: " + intents.stream().map(Enum::name).collect(Collectors.joining(", ")));
+		}
 
 		setupContext(jda);
 
