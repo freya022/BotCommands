@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public final class SlashHelpCommand extends SlashCommand {
@@ -55,6 +56,9 @@ public final class SlashHelpCommand extends SlashCommand {
 		}
 
 		builder.setFooter("For a list of regular commands, use " + context.getPrefix() + "help");
+
+		final Consumer<EmbedBuilder> helpBuilderConsumer = context.getHelpBuilderConsumer();
+		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder);
 	}
 
 	@JdaSlashCommand(

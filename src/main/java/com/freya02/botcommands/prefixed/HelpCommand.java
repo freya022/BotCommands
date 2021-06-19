@@ -53,6 +53,9 @@ public final class HelpCommand extends Command {
 		for (Map.Entry<String, StringJoiner> entry : categoryBuilderMap.entrySet()) {
 			builder.addField(entry.getKey(), entry.getValue().toString(), false);
 		}
+
+		final Consumer<EmbedBuilder> helpBuilderConsumer = context.getHelpBuilderConsumer();
+		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder);
 	}
 
 	@Override

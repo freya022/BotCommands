@@ -181,6 +181,18 @@ public final class CommandsBuilder {
 	}
 
 	/**
+	 * Sets the help builder consumer, it allows you to add stuff in the help embeds when they are created.
+	 *
+	 * @param builderConsumer The help builder consumer, modifies the EmbedBuilder
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder setHelpBuilderConsumer(Consumer<EmbedBuilder> builderConsumer) {
+		context.setHelpBuilderConsumer(builderConsumer);
+
+		return this;
+	}
+
+	/**
 	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
 	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *

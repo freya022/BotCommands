@@ -177,4 +177,11 @@ public interface BContext {
 
 		return settingsProvider.getSettings(guildId);
 	}
+
+	/**
+	 * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it
+	 *
+	 * @return The help builder consumer
+	 */
+	Consumer<EmbedBuilder> getHelpBuilderConsumer();
 }

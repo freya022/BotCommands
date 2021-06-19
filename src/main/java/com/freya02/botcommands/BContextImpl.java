@@ -42,6 +42,7 @@ public class BContextImpl implements BContext {
 	private SettingsProvider settingProvider;
 
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
+	private Consumer<EmbedBuilder> helpBuilderConsumer;
 
 	@Override
 	@NotNull
@@ -269,5 +270,13 @@ public class BContextImpl implements BContext {
 	@Override
 	public @Nullable SettingsProvider getSettingsProvider() {
 		return settingProvider;
+	}
+
+	public void setHelpBuilderConsumer(Consumer<EmbedBuilder> builderConsumer) {
+		this.helpBuilderConsumer = builderConsumer;
+	}
+
+	public Consumer<EmbedBuilder> getHelpBuilderConsumer() {
+		return helpBuilderConsumer;
 	}
 }

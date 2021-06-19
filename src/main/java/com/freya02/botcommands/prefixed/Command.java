@@ -224,6 +224,9 @@ public abstract class Command {
 
 		if (helpBuilder == null) {
 			helpBuilder = generateHelp(event);
+
+			final Consumer<EmbedBuilder> helpBuilderConsumer = event.getContext().getHelpBuilderConsumer();
+			if (helpBuilderConsumer != null) helpBuilderConsumer.accept(helpBuilder);
 		}
 
 		helpBuilder.setTimestamp(Instant.now());
