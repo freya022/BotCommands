@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -31,14 +32,15 @@ import java.util.stream.Collectors;
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 
+	private final List<Long> slashGuildIds = new ArrayList<>();
+
 	private final BContextImpl context = new BContextImpl();
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
-	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context);
+	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context, slashGuildIds);
 	private final ButtonsBuilder buttonsBuilder = new ButtonsBuilder(context);
 
 	private boolean disableHelpCommand;
 	private boolean disableSlashHelpCommand;
-	private List<Long> slashGuildIds = List.of();
 
 	private boolean usePing;
 
@@ -138,7 +140,8 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
-		this.slashGuildIds = slashGuildIds;
+		this.slashGuildIds.clear();
+		this.slashGuildIds.addAll(slashGuildIds);
 
 		return this;
 	}
@@ -266,7 +269,7 @@ public final class CommandsBuilder {
 			LOGGER.info("Loaded {} slash commands", context.getSlashCommands().size());
 			printSlashCommands(context.getSlashCommands());
 
-			slashCommandsBuilder.postProcess(slashGuildIds);
+			slashCommandsBuilder.postProcess();
 
 			buttonsBuilder.postProcess();
 

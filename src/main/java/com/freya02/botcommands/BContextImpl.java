@@ -5,14 +5,17 @@ import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
 import com.freya02.botcommands.slash.SlashCommandInfo;
+import com.freya02.botcommands.slash.SlashCommandsBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
@@ -43,6 +46,8 @@ public class BContextImpl implements BContext {
 
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
 	private Consumer<EmbedBuilder> helpBuilderConsumer;
+
+	private SlashCommandsBuilder slashCommandsBuilder;
 
 	@Override
 	@NotNull
@@ -278,5 +283,14 @@ public class BContextImpl implements BContext {
 
 	public Consumer<EmbedBuilder> getHelpBuilderConsumer() {
 		return helpBuilderConsumer;
+	}
+
+	public void setSlashCommandsBuilder(SlashCommandsBuilder slashCommandsBuilder) {
+		this.slashCommandsBuilder = slashCommandsBuilder;
+	}
+
+	@Override
+	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
+		return slashCommandsBuilder.tryUpdateGuildCommands(guilds);
 	}
 }

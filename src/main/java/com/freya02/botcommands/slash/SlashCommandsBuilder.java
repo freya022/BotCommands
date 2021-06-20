@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -32,9 +31,12 @@ public final class SlashCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
 	private final CachedSlashCommands cachedSlashCommands;
+	private final List<Long> slashGuildIds;
 
-	public SlashCommandsBuilder(@NotNull BContextImpl context) {
+	public SlashCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
+		this.context.setSlashCommandsBuilder(this);
+		this.slashGuildIds = slashGuildIds;
 		this.cachedSlashCommands = new CachedSlashCommands(context);
 	}
 
@@ -65,7 +67,7 @@ public final class SlashCommandsBuilder {
 		}
 	}
 
-	public void postProcess(List<Long> slashGuildIds) throws IOException {
+	public void postProcess() throws IOException {
 		context.getJDA().setRequiredScopes("applications.commands");
 
 		cachedSlashCommands.computeCommands();
@@ -76,19 +78,27 @@ public final class SlashCommandsBuilder {
 			LOGGER.debug("Global commands does not have to be updated");
 		}
 
-		final SnowflakeCacheView<Guild> guildCache;
+		final List<Guild> guildCache;
 		if (context.getJDA().getShardManager() != null) {
-			guildCache = context.getJDA().getShardManager().getGuildCache();
+			guildCache = context.getJDA().getShardManager().getGuilds();
 		} else {
-			guildCache = context.getJDA().getGuildCache();
+			guildCache = context.getJDA().getGuilds();
 		}
 
+		tryUpdateGuildCommands(guildCache);
+	}
+
+	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
+		boolean changed = false;
+
 		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>();
-		for (Guild guild : guildCache) {
+		for (Guild guild : guilds) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 
 			cachedSlashCommands.computeGuildCommands(guild);
 			if (cachedSlashCommands.shouldUpdateGuildCommands(guild)) {
+				changed = true;
+
 				commandUpdatePairs.add(new ImmutablePair<>(guild, cachedSlashCommands.updateGuildCommands(guild)));
 				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
 			} else {
@@ -120,18 +130,22 @@ public final class SlashCommandsBuilder {
 			}
 		}
 
-		for (Guild guild : guildCache) {
+		for (Guild guild : guilds) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
 
 			cachedSlashCommands.computeGuildPrivileges(guild);
 			if (cachedSlashCommands.shouldUpdateGuildPrivileges(guild)) {
+				changed = true;
+
 				cachedSlashCommands.updateGuildPrivileges(guild);
 				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
 			} else {
 				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
 			}
 		}
+
+		return changed;
 	}
 
 	static void appendCommands(List<Command> commands, StringBuilder sb) {

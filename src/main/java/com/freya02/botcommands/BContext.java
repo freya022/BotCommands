@@ -6,9 +6,11 @@ import com.freya02.botcommands.prefixed.MessageInfo;
 import com.freya02.botcommands.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
@@ -184,4 +186,22 @@ public interface BContext {
 	 * @return The help builder consumer
 	 */
 	Consumer<EmbedBuilder> getHelpBuilderConsumer();
+
+	/**
+	 * Updates the slash commands and their permissions in the specified guilds <br><br>
+	 * Examples:
+	 * <ul>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it
+	 *          <ul><li>You need to update the commands with this</li></ul>
+	 *     </li>
+	 *     <li>An admin changes the permissions of a guild slash-command in your bot
+	 *          <ul><li>You need to update the permissions with this</li></ul>
+	 *     </li>
+	 * </ul>
+	 *
+	 * @param guilds Iterable collection of the guilds to update
+	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
+	 * @throws IOException If unable to write the cache data
+	 */
+	boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException;
 }
