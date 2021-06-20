@@ -4,15 +4,13 @@ import com.freya02.botcommands.Logging;
 import jetbrains.exodus.ArrayByteIterable;
 import jetbrains.exodus.ByteIterable;
 import jetbrains.exodus.bindings.StringBinding;
+import jetbrains.exodus.core.dataStructures.hash.IntHashMap;
 import jetbrains.exodus.env.*;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
@@ -29,7 +27,7 @@ public class DefaultIdManager implements IdManager {
 	private final Environment env;
 	private final Store idStore, tempIdStore;
 
-	private final List<Consumer<ButtonClickEvent>> actionMap = Collections.synchronizedList(new ArrayList<>());
+	private final IntHashMap<Consumer<ButtonClickEvent>> actionMap = new IntHashMap<>();
 
 	/**
 	 * Creates a default ID manager for Discord components
@@ -140,7 +138,7 @@ public class DefaultIdManager implements IdManager {
 	public int newHandlerId(Consumer<ButtonClickEvent> action) {
 		final int handlerId = getNextHandlerId();
 
-		actionMap.add(action);
+		actionMap.put(handlerId, action);
 
 		return handlerId;
 	}
