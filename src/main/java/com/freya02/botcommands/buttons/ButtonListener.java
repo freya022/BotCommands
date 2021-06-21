@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import static com.freya02.botcommands.buttons.ButtonId.unescape;
@@ -121,7 +120,7 @@ public class ButtonListener extends ListenerAdapter {
 				} else if (args[0].equals("1")) {
 					final int handlerId = Integer.parseInt(args[3]);
 
-					final Consumer<ButtonClickEvent> action = idManager.getAction(handlerId);
+					final ButtonConsumer action = idManager.getAction(handlerId);
 					if (action == null) {
 						//This is rare and should only signal a wrong implementation of IdManager
 						LOGGER.warn("Received invalid handler ID {} in button ID {}", handlerId, componentId);
@@ -129,7 +128,7 @@ public class ButtonListener extends ListenerAdapter {
 						return;
 					}
 
-					action.accept(event);
+					action.accept(context, event);
 				} else {
 					throw new IllegalArgumentException("Unexpected ID type: '" + args[0] + "'");
 				}

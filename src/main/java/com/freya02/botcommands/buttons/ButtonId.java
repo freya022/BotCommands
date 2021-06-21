@@ -4,7 +4,6 @@ import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.buttons.annotation.JdaButtonListener;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -12,7 +11,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
 
 import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 
@@ -46,7 +44,7 @@ public class ButtonId {
 	 * @param action Consumer used when the button is clicked
 	 * @return The encrypted button ID containing the provided arguments
 	 */
-	public static String of(Consumer<ButtonClickEvent> action) {
+	public static String of(ButtonConsumer action) {
 		return create(false, 0L, action);
 	}
 
@@ -69,7 +67,7 @@ public class ButtonId {
 	 * @param action Consumer used when the button is clicked
 	 * @return The encrypted button ID containing the provided arguments
 	 */
-	public static String uniqueOf(Consumer<ButtonClickEvent> action) {
+	public static String uniqueOf(ButtonConsumer action) {
 		return create(true, 0L, action);
 	}
 
@@ -94,7 +92,7 @@ public class ButtonId {
 	 * @param action   Consumer used when the button is clicked
 	 * @return The encrypted button ID containing the provided arguments
 	 */
-	public static String ofUser(long callerId, Consumer<ButtonClickEvent> action) {
+	public static String ofUser(long callerId, ButtonConsumer action) {
 		return create(false, callerId, action);
 	}
 
@@ -121,7 +119,7 @@ public class ButtonId {
 	 * @param action   Consumer used when the button is clicked
 	 * @return The encrypted button ID containing the provided arguments
 	 */
-	public static String uniqueOfUser(long callerId, Consumer<ButtonClickEvent> action) {
+	public static String uniqueOfUser(long callerId, ButtonConsumer action) {
 		return create(true, callerId, action);
 	}
 
@@ -134,7 +132,7 @@ public class ButtonId {
 		return Objects.requireNonNull(context.getIdManager(), "ID Manager should be set in order to use Discord components").newId(constructedId, false);
 	}
 
-	private static String create(boolean oneUse, long callerId, Consumer<ButtonClickEvent> action) {
+	private static String create(boolean oneUse, long callerId, ButtonConsumer action) {
 		final IdManager idManager = Objects.requireNonNull(context.getIdManager(), "ID Manager should be set in order to use Discord components");
 
 		for (Field field : action.getClass().getDeclaredFields()) {

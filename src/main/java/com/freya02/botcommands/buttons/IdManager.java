@@ -1,8 +1,6 @@
 package com.freya02.botcommands.buttons;
 
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-
-import java.util.function.Consumer;
+import java.util.Collection;
 
 public interface IdManager {
 	/**
@@ -26,8 +24,21 @@ public interface IdManager {
 	 * Removes the given component ID from storage
 	 *
 	 * @param buttonId ID of the component to remove from the storage
+	 * @param isTemporary If the component IDs are temporary (deleted on startup)
 	 */
 	void removeId(String buttonId, boolean isTemporary);
+
+	/**
+	 * Removes the given components IDs from storage
+	 *
+	 * @param buttonIds ID of the components to remove from the storage
+	 * @param isTemporary If the component IDs are temporary (deleted on startup)
+	 */
+	default void removeIds(Collection<String> buttonIds, boolean isTemporary) {
+		for (String buttonId : buttonIds) {
+			removeId(buttonId, isTemporary);
+		}
+	}
 
 	/**
 	 * Returns the ButtonClickEvent consumer for this handler ID
@@ -35,7 +46,7 @@ public interface IdManager {
 	 * @param handlerId Handler ID of the consumer
 	 * @return A ButtonClickEvent consumer
 	 */
-	Consumer<ButtonClickEvent> getAction(int handlerId);
+	ButtonConsumer getAction(int handlerId);
 
 	/**
 	 * Returns a new handler ID for the specified ButtonClickEvent consumer
@@ -43,5 +54,5 @@ public interface IdManager {
 	 * @param action The ButtonClickEvent consumer to be registered
 	 * @return A new handler ID for this action
 	 */
-	int newHandlerId(Consumer<ButtonClickEvent> action);
+	int newHandlerId(ButtonConsumer action);
 }

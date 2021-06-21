@@ -6,13 +6,12 @@ import jetbrains.exodus.ByteIterable;
 import jetbrains.exodus.bindings.StringBinding;
 import jetbrains.exodus.core.dataStructures.hash.IntHashMap;
 import jetbrains.exodus.env.*;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import org.slf4j.Logger;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Consumer;
 
 /**
  * Provides a default implementation for a persistent component ID manager
@@ -27,7 +26,7 @@ public class DefaultIdManager implements IdManager {
 	private final Environment env;
 	private final Store idStore, tempIdStore;
 
-	private final IntHashMap<Consumer<ButtonClickEvent>> actionMap = new IntHashMap<>();
+	private final IntHashMap<ButtonConsumer> actionMap = new IntHashMap<>();
 
 	/**
 	 * Creates a default ID manager for Discord components
@@ -112,30 +111,46 @@ public class DefaultIdManager implements IdManager {
 	public void removeId(String buttonId, boolean isTemporary) {
 		env.executeInTransaction(txn -> {
 			final Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn);
-			final ByteIterable value = cursor.getSearchKey(StringBinding.stringToEntry(buttonId));
 
-			if (value == null) {
-				LOGGER.warn("Tried to delete key '{}' but it was not in the Store", buttonId);
-				return;
-			}
-
-			final String content = StringBinding.entryToString(value);
-
-			//Removing a temporary button's ID is not really the priority
-			// Most important is removing the Consumer reference, so you can also free up memory claimed by the lambda's fields
-			if (isTemporary) { //Temporary button
-				actionMap.remove(Integer.parseInt(content.substring(content.lastIndexOf('|') + 1)));
-			}
+			deleteId(isTemporary, cursor, buttonId);
 		});
 	}
 
 	@Override
-	public Consumer<ButtonClickEvent> getAction(int handlerId) {
+	public void removeIds(Collection<String> buttonIds, boolean isTemporary) {
+		env.executeInTransaction(txn -> {
+			final Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn);
+
+			for (String buttonId : buttonIds) {
+				deleteId(isTemporary, cursor, buttonId);
+			}
+		});
+	}
+
+	private void deleteId(boolean isTemporary, Cursor cursor, String buttonId) {
+		final ByteIterable value = cursor.getSearchKey(StringBinding.stringToEntry(buttonId));
+
+		if (value == null) {
+			LOGGER.warn("Tried to delete key '{}' but it was not in the Store", buttonId);
+			return;
+		}
+
+		final String content = StringBinding.entryToString(value);
+
+		//Removing a temporary button's ID is not really the priority
+		// Most important is removing the Consumer reference, so you can also free up memory claimed by the lambda's fields
+		if (isTemporary) { //Temporary button
+			actionMap.remove(Integer.parseInt(content.substring(content.lastIndexOf('|') + 1)));
+		}
+	}
+
+	@Override
+	public ButtonConsumer getAction(int handlerId) {
 		return actionMap.get(handlerId);
 	}
 
 	@Override
-	public int newHandlerId(Consumer<ButtonClickEvent> action) {
+	public int newHandlerId(ButtonConsumer action) {
 		final int handlerId = getNextHandlerId();
 
 		actionMap.put(handlerId, action);
