@@ -238,6 +238,7 @@ public class BContextImpl implements BContext {
 		}
 	}
 
+	@Override
 	@Nullable
 	public IdManager getIdManager() {
 		return idManager;

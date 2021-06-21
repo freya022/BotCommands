@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.buttons.IdManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
@@ -150,6 +151,13 @@ public interface BContext {
 	 * @param listeners Registration listeners to remove
 	 */
 	void removeRegistrationListeners(RegistrationListener... listeners);
+
+	/**
+	 * Returns the ID manager of this instance
+	 *
+	 * @return The ID manager
+	 */
+	@Nullable IdManager getIdManager();
 
 	/**
 	 * Returns the {@linkplain PermissionProvider} for this context
