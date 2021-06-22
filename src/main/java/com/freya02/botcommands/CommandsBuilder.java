@@ -362,7 +362,25 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Builds the command listener and automatically registers all listener to the JDA instance
+	 * Builds the command listener and automatically registers all listener to the JDA instance<br>
+	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
+	 * <ul>
+	 *     <li>com.freya02.bot.commands
+	 *     <ul>
+	 *         <li>slash
+	 *         <ul>
+	 *             <li>fun
+	 *             <ul>
+	 *                 <li>Meme</li>
+	 *                 <li>Fish</li>
+	 *                 <li>...</li>
+	 *             </ul>
+	 *             </li>
+	 *         </ul>
+	 *         </li>
+	 *     </ul>
+	 *     </li>
+	 * </ul>
 	 *
 	 * @param jda                The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
