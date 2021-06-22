@@ -27,6 +27,7 @@ public class DefaultIdManager implements IdManager {
 	private final Store idStore, tempIdStore;
 
 	private final IntHashMap<ButtonConsumer> actionMap = new IntHashMap<>();
+	private int handlerId = 0;
 
 	/**
 	 * Creates a default ID manager for Discord components
@@ -110,37 +111,61 @@ public class DefaultIdManager implements IdManager {
 	@Override
 	public void removeId(String buttonId, boolean isTemporary) {
 		env.executeInTransaction(txn -> {
-			final Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn);
+			try (Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn)) {
+				final ByteIterable value = cursor.getSearchKey(StringBinding.stringToEntry(buttonId));
 
-			deleteId(isTemporary, cursor, buttonId);
-		});
-	}
+				if (value == null) {
+					LOGGER.warn("Tried to delete key '{}' but it was not found in the {} Store", buttonId, isTemporary ? "temporary" : "persistent");
+					return;
+				}
 
-	@Override
-	public void removeIds(Collection<String> buttonIds, boolean isTemporary) {
-		env.executeInTransaction(txn -> {
-			final Cursor cursor = isTemporary ? tempIdStore.openCursor(txn) : idStore.openCursor(txn);
-
-			for (String buttonId : buttonIds) {
-				deleteId(isTemporary, cursor, buttonId);
+				deleteId(isTemporary, cursor);
 			}
 		});
 	}
 
-	private void deleteId(boolean isTemporary, Cursor cursor, String buttonId) {
-		final ByteIterable value = cursor.getSearchKey(StringBinding.stringToEntry(buttonId));
+	@Override
+	public void removeIds(Collection<String> buttonIds) {
+		env.executeInTransaction(txn -> {
+			boolean temp = true;
 
-		if (value == null) {
-			LOGGER.warn("Tried to delete key '{}' but it was not in the Store", buttonId);
-			return;
-		}
+			for (String buttonId : buttonIds) {
+				final ArrayByteIterable key = StringBinding.stringToEntry(buttonId);
 
-		final String content = StringBinding.entryToString(value);
+				Cursor cursor = tempIdStore.openCursor(txn);
+				ByteIterable value = cursor.getSearchKey(key);
+				if (value == null) {
+					temp = false;
+					cursor.close();
+					cursor = idStore.openCursor(txn);
 
+					value = cursor.getSearchKey(key);
+				}
+
+				if (value == null) {
+					LOGGER.warn("Tried to delete key '{}' but it was not found in both Stores", buttonId);
+					return;
+				}
+
+				deleteId(temp, cursor);
+
+				cursor.close();
+			}
+		});
+	}
+
+	private void deleteId(boolean isTemporary, Cursor cursor) {
 		//Removing a temporary button's ID is not really the priority
 		// Most important is removing the Consumer reference, so you can also free up memory claimed by the lambda's fields
 		if (isTemporary) { //Temporary button
+			final ByteIterable value = cursor.getValue();
+			final String content = StringBinding.entryToString(value);
+
 			actionMap.remove(Integer.parseInt(content.substring(content.lastIndexOf('|') + 1)));
+		}
+
+		if (!cursor.deleteCurrent()) {
+			LOGGER.warn("Unable to delete current cursor value, key: '{}', value: '{}', please report to the devs", StringBinding.entryToString(cursor.getKey()), StringBinding.entryToString(cursor.getValue()));
 		}
 	}
 
@@ -153,7 +178,9 @@ public class DefaultIdManager implements IdManager {
 	public int newHandlerId(ButtonConsumer action) {
 		final int handlerId = getNextHandlerId();
 
-		actionMap.put(handlerId, action);
+		if (actionMap.put(handlerId, action) != null) {
+			LOGGER.warn("Overwrote handler {}, please report to the devs", handlerId);
+		}
 
 		return handlerId;
 	}
@@ -161,7 +188,7 @@ public class DefaultIdManager implements IdManager {
 	/**
 	 * I doubt you'll hit the 2^31-1 button id limit
 	 */
-	public int getNextHandlerId() {
-		return actionMap.size();
+	public synchronized int getNextHandlerId() {
+		return handlerId++;
 	}
 }

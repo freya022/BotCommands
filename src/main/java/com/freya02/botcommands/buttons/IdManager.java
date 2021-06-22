@@ -29,16 +29,13 @@ public interface IdManager {
 	void removeId(String buttonId, boolean isTemporary);
 
 	/**
-	 * Removes the given components IDs from storage
+	 * Removes the given components IDs from storage<br>
+	 * <b>Button IDs could be temporary or not (temporary = tied to a ButtonConsumer)</b><br>
+	 * <b>Also removes ButtonConsumer if temporary</b>
 	 *
 	 * @param buttonIds ID of the components to remove from the storage
-	 * @param isTemporary If the component IDs are temporary (deleted on startup)
 	 */
-	default void removeIds(Collection<String> buttonIds, boolean isTemporary) {
-		for (String buttonId : buttonIds) {
-			removeId(buttonId, isTemporary);
-		}
-	}
+	void removeIds(Collection<String> buttonIds);
 
 	/**
 	 * Returns the ButtonClickEvent consumer for this handler ID
