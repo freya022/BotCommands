@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.*;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -40,9 +41,19 @@ public class CommandTransformer {
 		List<MethodPattern> list = new ArrayList<>();
 
 		final List<Method> candidates = new ArrayList<>();
-		final Method[] methods = command.getClass().getMethods();
+		final Method[] methods = command.getClass().getDeclaredMethods();
 		for (Method method : methods) {
 			if (!method.isAnnotationPresent(Executable.class)) continue;
+			if (Modifier.isStatic(method.getModifiers())) {
+				LOGGER.warn("Regex commands cannot be static, at {}", method.toGenericString());
+
+				continue;
+			} else if (!method.canAccess(command)) {
+				LOGGER.warn("Regex commands must be public, at {}", method.toGenericString());
+
+				continue;
+			}
+
 			final List<Class<?>> parameterTypes = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
 
 			if (!Utils.hasFirstParameter(method, BaseCommandEvent.class)) {
