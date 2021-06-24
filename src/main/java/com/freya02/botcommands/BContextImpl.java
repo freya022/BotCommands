@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -213,6 +214,8 @@ public class BContextImpl implements BContext {
 
 	@Override
 	public void overrideHelp(Consumer<BaseCommandEvent> helpConsumer) {
+		Checks.notNull(helpConsumer, "Help replacement consumer");
+
 		this.helpConsumer = helpConsumer;
 	}
 
