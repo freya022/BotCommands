@@ -20,6 +20,7 @@ import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 public class ButtonListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Pattern SPLIT_PATTERN = Pattern.compile("(?<!\\\\)\\|");
+	private final Object ID_LOCK = new Object();
 	private static BContextImpl context;
 
 	private int buttonThreadNumber = 0;
@@ -27,7 +28,7 @@ public class ButtonListener extends ListenerAdapter {
 		final Thread thread = new Thread(r);
 		thread.setDaemon(false);
 		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in a button listener thread '" + t.getName() + "':", e));
-		thread.setName("Button lister thread #" + buttonThreadNumber++);
+		thread.setName("Button listener thread #" + buttonThreadNumber++);
 
 		return thread;
 	});
@@ -57,25 +58,34 @@ public class ButtonListener extends ListenerAdapter {
 					return;
 				}
 
-				final String componentId = idManager.getContent(id);
-				if (componentId == null) {
-					event.reply("This button is not associated with an action (anymore)")
-							.setEphemeral(true)
-							.queue();
-
-					return;
-				}
-
-				LOGGER.trace("Received button ID {}", componentId);
-
-				String[] args = SPLIT_PATTERN.split(componentId);
-
-				final String callerId = args[2];
-				if (!callerId.equals("0")) {
-					if (!event.getUser().getId().equals(callerId)) {
-						event.deferEdit().queue();
+				final String componentId;
+				final String[] args;
+				synchronized (ID_LOCK) {
+					componentId = idManager.getContent(id);
+					if (componentId == null) {
+						event.reply("This button is not associated with an action (anymore)")
+								.setEphemeral(true)
+								.queue();
 
 						return;
+					}
+
+					LOGGER.trace("Received button ID {}", componentId);
+
+					args = SPLIT_PATTERN.split(componentId);
+
+					final String callerId = args[2];
+					if (!callerId.equals("0")) {
+						if (!event.getUser().getId().equals(callerId)) {
+							event.deferEdit().queue();
+
+							return;
+						}
+					}
+
+					final String oneUse = args[1];
+					if (oneUse.equals("1")) {
+						idManager.removeId(id, args[0].equals("1"));
 					}
 				}
 
@@ -131,11 +141,6 @@ public class ButtonListener extends ListenerAdapter {
 					action.accept(context, event);
 				} else {
 					throw new IllegalArgumentException("Unexpected ID type: '" + args[0] + "'");
-				}
-
-				final String oneUse = args[1];
-				if (oneUse.equals("1")) {
-					idManager.removeId(id, args[0].equals("1"));
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
