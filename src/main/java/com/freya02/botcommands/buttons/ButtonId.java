@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -21,6 +22,9 @@ import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 
 /**
  * Class for creating button IDs for Discord, when clicked they are handled by {@linkplain ButtonListener}
+ * <br><br>
+ * <b>For advanced users:</b><br>
+ * You can delete the buttons yourself if you don't need them anymore by using {@link IdManager#removeId(String, boolean)} or {@link IdManager#removeIds(Collection)}
  */
 public class ButtonId {
 	private static final Logger LOGGER = Logging.getLogger();
