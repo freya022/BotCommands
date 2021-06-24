@@ -401,7 +401,7 @@ public final class CommandsBuilder {
 		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
 		buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
 
-		EventWaiter.createWaiter(context);
+		context.addEventListeners(new com.freya02.botcommands.waiter.EventWaiter());
 
 		context.addEventListeners(new CommandListener(context), new SlashCommandListener(context));
 	}
