@@ -104,7 +104,15 @@ public interface BContext {
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**
-	 * Adds a filter for the command listener to check on each command
+	 * Adds a filter for the command listener to check on each <b>regular / regex</b> command<br>
+	 * If one of the filters returns false, then the command is skipped, not executed
+	 *
+	 * <h2>Example</h2>
+	 * <h3>Restricting the bot to a certain TextChannel</h3>
+	 * <pre><code>
+final CommandsBuilder builder = CommandsBuilder.withPrefix(":", 222046562543468545L);
+builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L);
+	 * </code></pre>
 	 *
 	 * @param filter The filter to add
 	 */
@@ -114,6 +122,7 @@ public interface BContext {
 	 * Removes a previously set filter
 	 *
 	 * @param filter The filter to remove
+	 * @see #addFilter(Predicate)
 	 */
 	void removeFilter(Predicate<MessageInfo> filter);
 
