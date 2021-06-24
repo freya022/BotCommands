@@ -1,11 +1,13 @@
 package com.freya02.botcommands.waiter;
 
+import com.freya02.botcommands.Utils;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -40,6 +42,16 @@ import java.util.function.Predicate;
 public class EventWaiter extends ListenerAdapter {
 	private static final Map<Class<? extends GenericEvent>, List<WaitingEvent<? extends GenericEvent>>> waitingMap = new HashMap<>();
 
+	private static int commandThreadNumber = 0;
+	private static final ExecutorService waiterCompleteService = Utils.createCommandPool(r -> {
+		final Thread thread = new Thread(r);
+		thread.setDaemon(false);
+		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in an event waiter thread '" + t.getName() + "':", e));
+		thread.setName("Event waiter thread #" + commandThreadNumber++);
+
+		return thread;
+	});
+
 	/**
 	 * Creates a new event waiter builder, waiting for the specified event to occur
 	 *
@@ -59,7 +71,7 @@ public class EventWaiter extends ListenerAdapter {
 			future.orTimeout(waitingEvent.getTimeout(), waitingEvent.getTimeoutUnit());
 		}
 
-		future.whenComplete((t, throwable) -> {
+		future.whenCompleteAsync((t, throwable) -> {
 			final CompletedFutureEvent<T> onComplete = waitingEvent.getOnComplete();
 			if (onComplete != null) onComplete.accept(future, t, throwable);
 
@@ -75,7 +87,7 @@ public class EventWaiter extends ListenerAdapter {
 			} else {
 				System.out.println("wut");
 			}
-		});
+		}, waiterCompleteService);
 
 		waitingEvents.add(waitingEvent);
 
