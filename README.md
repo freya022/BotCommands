@@ -15,14 +15,15 @@ The framework mainly automates these:
 * Message parsing (and mapping message to command)
 
 It also helps in:
-* [Waiting for events](src/main/java/com/freya02/botcommands/EventWaiter.java)
+* [Waiting for events with EventWaiter](src/main/java/com/freya02/botcommands/waiter/EventWaiter.java)
 * [Resolving Discord entities](src/main/java/com/freya02/botcommands/utils/RichTextFinder.java) and [emojis](src/main/java/com/freya02/botcommands/utils/EmojiUtils.java)
-* Having (secure) button ids with persistent data
+* Having (secure) button ids with persistent data or non-persistent consumers
+* Having pagination (using buttons) and menus in [Paginator](https://github.com/freya022/BotCommands/blob/master/src/main/java/com/freya02/botcommands/menu/Paginator.java) and [Menu](https://github.com/freya022/BotCommands/blob/master/src/main/java/com/freya02/botcommands/menu/Menu.java)
 
-Note that commands are run in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
+Note that commands are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
 
 ## Getting Started
-It is recommended that you have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
+You are recommended to have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
 [OpenJDK 11+](https://adoptopenjdk.net/) <br>
@@ -144,6 +145,8 @@ See the [wiki](https://github.com/freya022/BotCommands/wiki), you got a page for
 ## Replacing help content
 
 You can disable the prefixed help command and/or the `/help` command, these methods are in CommandsBuilder, if you do disable prefixed help commands you need to supply your own implementation when commands are detected, but their syntax is invalid
+
+The provided implementation could just do nothing (such as `e -> {}`) if you want to just remove any form of help message
 
 ## Examples
 
