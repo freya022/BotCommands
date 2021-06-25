@@ -102,9 +102,9 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@CheckReturnValue
 	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		if (iconStream != null) {
-			return channel.sendTyping().flatMap(v -> channel.sendFile(iconStream, "icon.jpg").embed(embed));
+			return channel.sendTyping().flatMap(v -> channel.sendFile(iconStream, "icon.jpg").setEmbeds(embed));
 		} else {
-			return channel.sendTyping().flatMap(v -> channel.sendMessage(embed));
+			return channel.sendTyping().flatMap(v -> channel.sendMessageEmbeds(embed));
 		}
 	}
 
@@ -135,7 +135,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@Nonnull
 	@Override
 	public RestAction<Message> respond(@NotNull MessageEmbed embed) {
-		return channel.sendMessage(embed);
+		return channel.sendMessageEmbeds(embed);
 	}
 
 	@Nonnull
@@ -168,7 +168,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@CheckReturnValue
 	@Nonnull
 	public RestAction<Message> reply(@NotNull MessageEmbed embed) {
-		return getMessage().reply(embed);
+		return getMessage().replyEmbeds(embed);
 	}
 
 	@Override
@@ -209,9 +209,9 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@Override
 	public RestAction<Message> indicateError(@NotNull MessageEmbed embed) {
 		if (getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
-			return reactError().flatMap(v -> channel.sendMessage(embed));
+			return reactError().flatMap(v -> channel.sendMessageEmbeds(embed));
 		} else {
-			return channel.sendMessage(embed);
+			return channel.sendMessageEmbeds(embed);
 		}
 	}
 }

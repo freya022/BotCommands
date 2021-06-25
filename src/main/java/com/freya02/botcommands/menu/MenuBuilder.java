@@ -200,7 +200,7 @@ public class MenuBuilder<T> {
 					.setTitle(menu.getTitle())
 					.setDescription("You choosed: " + transformer.toString(choice));
 
-			messageBuilder.setEmbed(resultBuilder.build());
+			messageBuilder.setEmbeds(resultBuilder.build());
 
 			e.editMessage(messageBuilder.build()).queue();
 		} else { //If not ephemeral just delete and use callback

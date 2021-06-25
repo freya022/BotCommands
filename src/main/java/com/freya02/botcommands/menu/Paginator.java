@@ -209,7 +209,7 @@ public class Paginator {
 
 		paginationSupplier.accept(builder, paginatorComponents, page);
 
-		messageBuilder.setEmbed(builder.build());
+		messageBuilder.setEmbeds(builder.build());
 
 		final List<ActionRow> rows = paginatorComponents.getActionRows();
 		messageBuilder.setActionRows(rows);
