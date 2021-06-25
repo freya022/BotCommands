@@ -44,4 +44,8 @@ public class ParameterResolvers {
 	public static ParameterResolver of(Class<?> type) {
 		return map.get(type);
 	}
+
+	public static boolean exists(Class<?> type) {
+		return map.containsKey(type);
+	}
 }

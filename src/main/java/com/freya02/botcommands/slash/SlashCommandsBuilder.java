@@ -1,8 +1,10 @@
 package com.freya02.botcommands.slash;
 
-import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.*;
+import com.freya02.botcommands.BContextImpl;
+import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.slash.annotations.Choice;
 import com.freya02.botcommands.slash.annotations.Choices;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
@@ -214,7 +216,7 @@ public final class SlashCommandsBuilder {
 						data.addChoice(choice.name(), choice.intValue());
 					}
 				}
-			} else if (type == String.class || type == Emote.class || type == Emoji.class || type == EmojiOrEmote.class) {
+			} else if (ParameterResolvers.exists(type)) {
 				data = new OptionData(OptionType.STRING, name, description);
 
 				final Choices choices = parameter.getAnnotation(Choices.class);
