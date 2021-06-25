@@ -102,7 +102,7 @@ public class ButtonListener extends ListenerAdapter {
 								.setEphemeral(true)
 								.queue();
 
-						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", componentId, descriptor.getResolvers().size(), args.length - 4);
+						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", descriptor.getResolvers().size(), componentId, args.length - 4);
 
 						return;
 					}
