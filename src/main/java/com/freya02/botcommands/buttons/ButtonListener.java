@@ -20,7 +20,6 @@ import static com.freya02.botcommands.buttons.ButtonsBuilder.buttonsMap;
 public class ButtonListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Pattern SPLIT_PATTERN = Pattern.compile("(?<!\\\\)\\|");
-	private final Object ID_LOCK = new Object();
 	private static BContextImpl context;
 
 	private int buttonThreadNumber = 0;
@@ -32,6 +31,8 @@ public class ButtonListener extends ListenerAdapter {
 
 		return thread;
 	});
+	
+	private final Object ID_LOCK = new Object();
 
 	static void init(BContextImpl context) {
 		ButtonListener.context = context;
@@ -60,7 +61,7 @@ public class ButtonListener extends ListenerAdapter {
 
 				final String componentId;
 				final String[] args;
-				synchronized (ID_LOCK) {
+				synchronized (ID_LOCK) { //TODO seriously need a way to use multiple threads while not allowing multiple button presses from multiple users
 					componentId = idManager.getContent(id);
 					if (componentId == null) {
 						event.reply("This button is not associated with an action (anymore)")
@@ -83,64 +84,64 @@ public class ButtonListener extends ListenerAdapter {
 						}
 					}
 
-					final String oneUse = args[1];
-					if (oneUse.equals("1")) {
-						idManager.removeId(id, args[0].equals("1"));
-					}
-				}
+					if (args[0].equals("0")) {
+						final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[3]));
 
-				if (args[0].equals("0")) {
-					final ButtonDescriptor descriptor = buttonsMap.get(unescape(args[3]));
+						if (descriptor == null) {
+							LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[3], buttonsMap.keySet());
+							return;
+						}
 
-					if (descriptor == null) {
-						LOGGER.error("Received a button listener named {} but is not present in the map, listener names: {}", args[3], buttonsMap.keySet());
-						return;
-					}
+						if (descriptor.getResolvers().size() != args.length - 4) {
+							event.reply("This button has invalid content")
+									.setEphemeral(true)
+									.queue();
 
-					if (descriptor.getResolvers().size() != args.length - 4) {
-						event.reply("This button has invalid content")
-								.setEphemeral(true)
-								.queue();
-
-						LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", descriptor.getResolvers().size(), componentId, args.length - 4);
-
-						return;
-					}
-
-					//For some reason using an array list instead of a regular array
-					// magically unboxes primitives when passed to Method#invoke
-					final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
-
-					methodArgs.add(event);
-					for (int i = 4, splitLength = args.length; i < splitLength; i++) {
-						String arg = unescape(args[i]);
-
-						final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 4);
-						final Object obj = resolver.resolve(event, arg);
-						if (obj == null) {
-							LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName());
+							LOGGER.warn("Expected {} arguments, but button with ID '{}' had {} arguments.", descriptor.getResolvers().size(), componentId, args.length - 4);
 
 							return;
 						}
 
-						methodArgs.add(obj);
+						//For some reason using an array list instead of a regular array
+						// magically unboxes primitives when passed to Method#invoke
+						final List<Object> methodArgs = new ArrayList<>(descriptor.getResolvers().size() + 1);
+
+						methodArgs.add(event);
+						for (int i = 4, splitLength = args.length; i < splitLength; i++) {
+							String arg = unescape(args[i]);
+
+							final ButtonParameterResolver resolver = descriptor.getResolvers().get(i - 4);
+							final Object obj = resolver.resolve(event, arg);
+							if (obj == null) {
+								LOGGER.warn("Invalid button id '{}', tried to resolve '{}' with a {} but result is null", componentId, arg, resolver.getClass().getSimpleName());
+
+								return;
+							}
+
+							methodArgs.add(obj);
+						}
+
+						descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
+					} else if (args[0].equals("1")) {
+						final int handlerId = Integer.parseInt(args[3]);
+
+						final ButtonConsumer action = idManager.getAction(handlerId);
+						if (action == null) {
+							//This is rare and should only signal a wrong implementation of IdManager
+							LOGGER.warn("Received invalid handler ID {} in button ID {}", handlerId, componentId);
+
+							return;
+						}
+
+						action.accept(context, event);
+					} else {
+						throw new IllegalArgumentException("Unexpected ID type: '" + args[0] + "'");
 					}
 
-					descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
-				} else if (args[0].equals("1")) {
-					final int handlerId = Integer.parseInt(args[3]);
-
-					final ButtonConsumer action = idManager.getAction(handlerId);
-					if (action == null) {
-						//This is rare and should only signal a wrong implementation of IdManager
-						LOGGER.warn("Received invalid handler ID {} in button ID {}", handlerId, componentId);
-
-						return;
+					final String oneUse = args[1];
+					if (oneUse.equals("1")) {
+						idManager.removeId(id, args[0].equals("1"));
 					}
-
-					action.accept(context, event);
-				} else {
-					throw new IllegalArgumentException("Unexpected ID type: '" + args[0] + "'");
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
