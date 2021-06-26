@@ -151,3 +151,7 @@ The provided implementation could just do nothing (such as `e -> {}`) if you wan
 ## Examples
 
 You can find example bots in the [examples](examples) folder
+
+## Support
+
+The [JDA guild](https://discord.gg/jda) is not a place where you should ask for support on this framework, if you need support please join [this guild instead (link)](https://discord.gg/frpCcQfvTz)
