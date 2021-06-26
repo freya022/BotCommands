@@ -11,10 +11,7 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,9 +22,13 @@ import java.util.stream.IntStream;
  * @param <T> Type of the entries
  */
 public class MenuBuilder<T> {
-	private static final List<Emoji> emojis = IntStream.rangeClosed(1, 10)
+	private static final List<Emoji> emojis = IntStream.range(1, 10) //exclude 10 as its a special emoji
 			.mapToObj(i -> Emoji.fromUnicode(i + "\u20E3"))
-			.collect(Collectors.toList());
+			.collect(Collectors.toCollection(() -> new ArrayList<>(10)));
+
+	static {
+		emojis.add(Emoji.fromUnicode("\uD83D\uDD1F"));
+	}
 
 	private final long userId;
 	private final boolean deleteButton;
