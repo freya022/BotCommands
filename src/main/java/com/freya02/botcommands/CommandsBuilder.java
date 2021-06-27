@@ -110,12 +110,13 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected
+	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected<br>
+	 * <b>You can provide an empty implementation if you wish to just disable all the help stuff completely</b>
 	 *
-	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid
+	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid, can do nothing
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder disableHelpCommand(Consumer<BaseCommandEvent> helpConsumer) {
+	public CommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
 		this.disableHelpCommand = true;
 		this.context.overrideHelp(helpConsumer);
 
