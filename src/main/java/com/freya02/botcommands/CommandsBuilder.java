@@ -21,11 +21,9 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -236,6 +234,48 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in it's constructor, and it will be injected during instantiation
+	 *
+	 * @param parameterType     The type of the parameter inside your constructor
+	 * @param parameterSupplier The supplier for this parameter
+	 * @param <T>               Type of the parameter
+	 * @return This builder for chaining convenience
+	 */
+	public <T> CommandsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
+		context.registerConstructorParameter(parameterType, parameterSupplier);
+
+		return this;
+	}
+
+	/**
+	 * Registers a instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
+	 * Instead of resolving the parameters manually with {@link #registerConstructorParameter(Class, ConstructorParameterSupplier)} you can use this to give directly the command's instance
+	 *
+	 * @param classType        Type of the command's class
+	 * @param instanceSupplier Instance supplier for this command
+	 * @param <T>              Type of the command's class
+	 * @return This builder for chaining convenience
+	 */
+	public <T> CommandsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
+		context.registerInstanceSupplier(classType, instanceSupplier);
+
+		return this;
+	}
+
+	/**
+	 * Adds a filter for received messages (could prevent regular commands from runnings), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
+	 *
+	 * @param filter The filter to add, should return <code>false</code> if the message has to be ignored
+	 * @return This builder for chaining convenience
+	 * @see BContext#addFilter(Predicate)
+	 */
+	public CommandsBuilder addFilter(Predicate<MessageInfo> filter) {
+		context.addFilter(filter);
+
+		return this;
+	}
+
 	private void buildClasses(List<Class<?>> classes) {
 		try {
 			for (Class<?> aClass : classes) {
@@ -317,26 +357,48 @@ public final class CommandsBuilder {
 			if (isInstantiable) {
 				Object someCommand;
 
-				if (Command.class.isAssignableFrom(aClass)) {
-					final Constructor<?> constructor = aClass.getDeclaredConstructor(BContext.class);
-					if (!constructor.canAccess(null))
-						throw new IllegalStateException("Constructor " + constructor + " is not public");
+				if (!Command.class.isAssignableFrom(aClass) && !SlashCommand.class.isAssignableFrom(aClass))
+					throw new IllegalArgumentException("Class " + aClass + " should extend Command or SlashCommand");
 
-					someCommand = constructor.newInstance(context);
-				} else { //Slash command
-					try {
-						final Constructor<?> constructor = aClass.getDeclaredConstructor();
-						if (!constructor.canAccess(null))
-							throw new IllegalStateException("Constructor " + constructor + " is not public");
+				//The command object has to be created either by the instance supplier
+				// or by the **only** constructor a class has
+				// It must resolve all parameters types with the registered parameter suppliers
+				final InstanceSupplier<?> instanceSupplier = context.getInstanceSupplier(aClass);
+				if (instanceSupplier != null) {
+					someCommand = instanceSupplier.get(context);
+				} else {
+					final Constructor<?>[] constructors = aClass.getConstructors();
+					if (constructors.length == 0)
+						throw new IllegalArgumentException("Class " + aClass.getName() + " must have an accessible constructor");
 
-						someCommand = constructor.newInstance();
-					} catch (NoSuchMethodException ignored) {
-						final Constructor<?> constructor = aClass.getDeclaredConstructor(BContext.class);
-						if (!constructor.canAccess(null))
-							throw new IllegalStateException("Constructor " + constructor + " is not public");
+					if (constructors.length > 1)
+						throw new IllegalArgumentException("Class " + aClass.getName() + " must have exactly one constructor");
 
-						someCommand = constructor.newInstance(context);
+					final Constructor<?> constructor = constructors[0];
+
+					if (Command.class.isAssignableFrom(aClass)) { //Obligatory arg
+						if (Arrays.stream(constructor.getParameterTypes()).noneMatch(BContext.class::isAssignableFrom))
+							throw new IllegalArgumentException("Class " + aClass.getName() + " should have a BContext in its constructor arguments");
 					}
+
+					List<Object> parameterObjs = new ArrayList<>();
+
+					Class<?>[] parameterTypes = constructor.getParameterTypes();
+					for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
+						Class<?> parameterType = parameterTypes[i];
+
+						if (BContext.class.isAssignableFrom(parameterType)) {
+							parameterObjs.add(context);
+						} else {
+							final ConstructorParameterSupplier<?> supplier = context.getParameterSupplier(parameterType);
+							if (supplier == null)
+								throw new IllegalArgumentException(String.format("Found no constructor parameter supplier for parameter #%d of type %s in class %s", i, parameterType.getSimpleName(), aClass.getSimpleName()));
+
+							parameterObjs.add(supplier.get(aClass));
+						}
+					}
+
+					someCommand = constructor.newInstance(parameterObjs.toArray());
 				}
 
 				context.getClassToObjMap().put(aClass, someCommand);
@@ -346,7 +408,7 @@ public final class CommandsBuilder {
 				} else if (someCommand instanceof SlashCommand) {
 					slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand);
 				} else {
-					throw new IllegalArgumentException("How is that a command " + someCommand.getClass().getName() + " ???");
+					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
 				}
 			}
 		}

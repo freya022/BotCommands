@@ -17,6 +17,7 @@ import java.lang.reflect.Parameter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -32,6 +33,8 @@ public abstract class Command {
 	private final CommandInfo info;
 
 	public Command(BContext context) {
+		Objects.requireNonNull(context, "The passed BContext to this Command (at " + this.getClass().getName() + ") cannot not be null");
+
 		info = new CommandInfo(this, context);
 	}
 

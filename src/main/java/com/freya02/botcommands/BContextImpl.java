@@ -29,6 +29,9 @@ public class BContextImpl implements BContext {
 	private final List<String> prefixes = new ArrayList<>();
 	private final DefaultMessages defaultMessages = new DefaultMessages();
 
+	private final Map<Class<?>, ConstructorParameterSupplier<?>> parameterSupplierMap = new HashMap<>();
+	private final Map<Class<?>, InstanceSupplier<?>> instanceSupplierMap = new HashMap<>();
+
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
 	private final Map<String, SlashCommandInfo> slashCommandMap = new HashMap<>();
@@ -296,5 +299,21 @@ public class BContextImpl implements BContext {
 	@Override
 	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
 		return slashCommandsBuilder.tryUpdateGuildCommands(guilds);
+	}
+
+	public <T> void registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
+		parameterSupplierMap.put(parameterType, parameterSupplier);
+	}
+
+	public <T> void registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
+		instanceSupplierMap.put(classType, instanceSupplier);
+	}
+
+	public ConstructorParameterSupplier<?> getParameterSupplier(Class<?> parameterType) {
+		return parameterSupplierMap.get(parameterType);
+	}
+
+	public InstanceSupplier<?> getInstanceSupplier(Class<?> classType) {
+		return instanceSupplierMap.get(classType);
 	}
 }
