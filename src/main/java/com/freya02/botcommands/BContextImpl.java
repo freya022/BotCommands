@@ -56,7 +56,7 @@ public class BContextImpl implements BContext {
 		return jda;
 	}
 
-	public void setJda(JDA jda) {
+	public void setJDA(JDA jda) {
 		this.jda = jda;
 	}
 

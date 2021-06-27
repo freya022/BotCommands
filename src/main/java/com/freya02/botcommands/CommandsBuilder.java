@@ -407,7 +407,7 @@ public final class CommandsBuilder {
 	}
 
 	private void setupContext(JDA jda) {
-		context.setJda(jda);
+		context.setJDA(jda);
 		if (usePing) {
 			context.addPrefix("<@" + jda.getSelfUser().getId() + "> ");
 			context.addPrefix("<@!" + jda.getSelfUser().getId() + "> ");
