@@ -238,13 +238,6 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public void removeRegistrationListeners(RegistrationListener... listeners) {
-		for (RegistrationListener listener : listeners) {
-			registrationListeners.remove(listener);
-		}
-	}
-
-	@Override
 	@Nullable
 	public IdManager getIdManager() {
 		return idManager;
