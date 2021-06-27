@@ -152,7 +152,7 @@ builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().g
 	 *
 	 * @param listeners Registration listeners to add
 	 */
-	void addRegistrationListener(RegistrationListener... listeners);
+	void addRegistrationListeners(RegistrationListener... listeners);
 
 	/**
 	 * Returns the ID manager of this instance

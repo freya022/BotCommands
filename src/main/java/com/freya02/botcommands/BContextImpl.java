@@ -233,7 +233,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public void addRegistrationListener(RegistrationListener... listeners) {
+	public void addRegistrationListeners(RegistrationListener... listeners) {
 		Collections.addAll(registrationListeners, listeners);
 	}
 

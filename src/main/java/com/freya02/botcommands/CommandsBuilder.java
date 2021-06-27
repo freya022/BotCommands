@@ -263,6 +263,19 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+
+	/**
+	 * Adds a {@link RegistrationListener} to this command builder, giving you various event of what is getting loaded
+	 *
+	 * @param listeners The {@link RegistrationListener RegistrationListeners} to register
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder addRegistrationListeners(RegistrationListener... listeners) {
+		context.addRegistrationListeners(listeners);
+
+		return this;
+	}
+
 	/**
 	 * Adds a filter for received messages (could prevent regular commands from runnings), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
 	 *
