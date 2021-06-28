@@ -199,15 +199,14 @@ builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().g
 
 	/**
 	 * Updates the slash commands and their permissions in the specified guilds <br><br>
-	 * Examples:
+	 * Why you could call this method:
 	 * <ul>
-	 *     <li>Your bot joins a server and you wish to add a guild command to it
-	 *          <ul><li>You need to update the commands with this</li></ul>
-	 *     </li>
-	 *     <li>An admin changes the permissions of a guild slash-command in your bot
-	 *          <ul><li>You need to update the permissions with this</li></ul>
-	 *     </li>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>An admin changes the permissions of a guild slash-command in your bot</li>
+	 *     <li>You decide to remove a command from a guild while the bot is running</li>
 	 * </ul>
+	 *
+	 * <i>This method is called by the slash commands builder on startup</i>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
 	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
