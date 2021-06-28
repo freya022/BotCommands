@@ -1,6 +1,7 @@
 package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.BContextImpl;
+import com.freya02.botcommands.CommandList;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.PermissionProvider;
 import net.dv8tion.jda.api.entities.Guild;
@@ -20,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.slash.SlashCommandsBuilder.*;
 
@@ -172,20 +172,11 @@ public class CachedSlashCommands {
 
 	public void computeGuildCommands(Guild guild) {
 		final PermissionProvider permissionProvider = context.getPermissionProvider();
-		final Collection<String> commandNames = permissionProvider.getGuildCommands(guild.getId());
+		final CommandList commandList = permissionProvider.getGuildCommands(guild.getId());
 
-		final Collection<CommandData> commandData;
-		if (commandNames.isEmpty()) {
-			commandData = guildMap.values();
-		} else {
-			commandData = guildMap
-					.values()
-					.stream()
-					.filter(c -> commandNames.contains(c.getName()))
-					.collect(Collectors.toList());
-		}
+		final Collection<CommandData> commandDataList = commandList.getFiltered(guildMap.values());
 
-		guildToCommandsDataMap.put(guild.getIdLong(), commandData);
+		guildToCommandsDataMap.put(guild.getIdLong(), commandDataList);
 	}
 
 	public boolean shouldUpdateGuildCommands(Guild guild) throws IOException {

@@ -1,20 +1,25 @@
 package com.freya02.botcommands;
 
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Provides a default permission provider for slash commands, also tells what commands are to be included in what guild.
+ * <br>
+ * This enables all guild commands and does not provide permissions
  */
 public class DefaultPermissionProvider implements PermissionProvider {
 	@Override
-	public Collection<String> getGuildCommands(String guildId) {
-		return Collections.emptyList();
+	@NotNull
+	public CommandList getGuildCommands(String guildId) {
+		return CommandList.all();
 	}
 
 	@Override
+	@NotNull
 	public Collection<CommandPrivilege> getPermissions(String commandName, String guildId) {
 		return Collections.emptyList();
 	}
