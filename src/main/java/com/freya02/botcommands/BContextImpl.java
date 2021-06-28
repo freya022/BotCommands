@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -95,6 +96,18 @@ public class BContextImpl implements BContext {
 	@Override
 	public SlashCommandInfo findSlashCommand(@NotNull String name) {
 		return slashCommandMap.get(name);
+	}
+
+	@Override
+	public List<String> getSlashCommandsBaseNames() {
+		return slashCommandMap.keySet()
+				.stream()
+				.map(s -> {
+					if (s.indexOf('/') != -1) return s.substring(0, s.indexOf('/'));
+
+					return s;
+				}).distinct()
+				.collect(Collectors.toList());
 	}
 
 	@Override

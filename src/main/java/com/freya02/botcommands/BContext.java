@@ -82,8 +82,21 @@ public interface BContext {
 	@Nullable
 	Command findCommand(@NotNull String name);
 
+	/**
+	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
+	 *
+	 * @param name Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 * @return The {@link SlashCommandInfo} object of the slash command
+	 */
 	@Nullable
 	SlashCommandInfo findSlashCommand(@NotNull String name);
+
+	/**
+	 * Returns a list of the slash commands base names, names such as <code>ban/user/perm</code> will be transformed into <code>ban</code>
+	 *
+	 * @return A list of the the slash commands base names
+	 */
+	List<String> getSlashCommandsBaseNames();
 
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier
@@ -110,8 +123,8 @@ public interface BContext {
 	 * <h2>Example</h2>
 	 * <h3>Restricting the bot to a certain TextChannel</h3>
 	 * <pre><code>
-final CommandsBuilder builder = CommandsBuilder.withPrefix(":", 222046562543468545L);
-builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L);
+	 * final CommandsBuilder builder = CommandsBuilder.withPrefix(":", 222046562543468545L);
+	 * builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L);
 	 * </code></pre>
 	 *
 	 * @param filter The filter to add
