@@ -37,6 +37,8 @@ public final class CommandsBuilder {
 	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context, slashGuildIds);
 	private final ButtonsBuilder buttonsBuilder = new ButtonsBuilder(context);
 
+	private final List<Class<?>> additionalCommands = new ArrayList<>();
+
 	private boolean disableHelpCommand;
 	private boolean disableSlashHelpCommand;
 
@@ -289,10 +291,31 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers a command / slash command's class so it can be instantiated later in {@link #build(JDA, String)}<br>
+	 *
+	 * @param clazz The command's class to register
+	 * @return This builder for chaining convenience
+	 * @throws IllegalArgumentException If the class is not a {@link Command} nor a {@link SlashCommand}
+	 */
+	public CommandsBuilder registerCommand(Class<?> clazz) {
+		if (!Command.class.isAssignableFrom(clazz) && !SlashCommand.class.isAssignableFrom(clazz)) {
+			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
+		}
+
+		additionalCommands.add(clazz);
+
+		return this;
+	}
+
 	private void buildClasses(List<Class<?>> classes) {
 		try {
 			for (Class<?> aClass : classes) {
 				processClass(aClass);
+			}
+
+			for (Class<?> additionalCommand : additionalCommands) {
+				processClass(additionalCommand);
 			}
 
 			if (!disableHelpCommand) {
