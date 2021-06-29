@@ -21,6 +21,11 @@ import org.slf4j.Logger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Provides a paginator - You provide the pages, it displays them one by one.<br>
@@ -34,6 +39,7 @@ import java.util.Set;
  */
 public class Paginator {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
 	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJdaEmoji(":rewind:");
 	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJdaEmoji(":fast_forward:");
@@ -46,6 +52,11 @@ public class Paginator {
 	private final String nextButtonId, previousButtonId, deleteButtonId;
 
 	private final Set<String> usedIds = new HashSet<>();
+
+	private long timeout;
+	private TimeUnit timeoutUnit;
+	private Future<?> timeoutFuture;
+	private Consumer<Paginator> onTimeout;
 
 	private String title, titleUrl;
 	private int page = 0;
@@ -148,6 +159,26 @@ public class Paginator {
 		return this;
 	}
 
+	/**
+	 * Sets the timeout for this {@link Paginator}
+	 * <b>On timeout, only the consumer is called, no message are deleted and it is up to you to clean up buttons with {@link #cleanup(BContext)}</b>
+	 *
+	 * @param timeout     Amount of time before the timeout occurs
+	 * @param timeoutUnit Unit of time for the supplied timeout
+	 * @param onTimeout   The consumer fired on timeout
+	 * @return This {@link Paginator} for chaining convenience
+	 */
+	public Paginator setTimeout(long timeout, TimeUnit timeoutUnit, Consumer<Paginator> onTimeout) {
+		Checks.notNull(onTimeout, "Timeout consumer");
+		Checks.notNull(timeoutUnit, "Timeout TimeUnit");
+
+		this.timeout = timeout;
+		this.timeoutUnit = timeoutUnit;
+		this.onTimeout = onTimeout;
+
+		return this;
+	}
+
 	private void onDeleteClicked(BContext context, ButtonClickEvent e) {
 		if (e.getMessage() != null) {
 			e.deferEdit().queue();
@@ -161,6 +192,11 @@ public class Paginator {
 		cleanup(context);
 	}
 
+	/**
+	 * Cleans up the button IDs used in this paginator
+	 *
+	 * @param context The BContext of this bot
+	 */
 	public void cleanup(BContext context) {
 		final IdManager manager = context.getIdManager();
 		if (manager == null)
@@ -180,6 +216,18 @@ public class Paginator {
 	 * @return The {@link Message} for this Paginator
 	 */
 	public Message get() {
+		if (timeout > 0 && onTimeout != null) {
+			if (timeoutFuture != null) {
+				timeoutFuture.cancel(false);
+			}
+
+			timeoutFuture = TIMEOUT_SERVICE.schedule(() -> {
+				if (onTimeout != null) {
+					onTimeout.accept(this);
+				}
+			}, timeout, timeoutUnit);
+		}
+
 		messageBuilder.clear();
 
 		final EmbedBuilder builder = new EmbedBuilder();
