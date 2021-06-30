@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,13 +15,13 @@ import java.util.Collections;
 public class DefaultPermissionProvider implements PermissionProvider {
 	@Override
 	@NotNull
-	public CommandList getGuildCommands(String guildId) {
+	public CommandList getGuildCommands(Guild guild) {
 		return CommandList.all();
 	}
 
 	@Override
 	@NotNull
-	public Collection<CommandPrivilege> getPermissions(String commandName, String guildId) {
+	public Collection<CommandPrivilege> getPermissions(String commandName, Guild guild) {
 		return Collections.emptyList();
 	}
 }

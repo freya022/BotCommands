@@ -172,7 +172,7 @@ public class CachedSlashCommands {
 
 	public void computeGuildCommands(Guild guild) {
 		final PermissionProvider permissionProvider = context.getPermissionProvider();
-		final CommandList commandList = permissionProvider.getGuildCommands(guild.getId());
+		final CommandList commandList = permissionProvider.getGuildCommands(guild);
 
 		final Collection<CommandData> commandDataList = commandList.getFiltered(guildMap.values());
 
@@ -235,7 +235,7 @@ public class CachedSlashCommands {
 	public void computeGuildPrivileges(Guild guild) {
 		Map<String, Collection<? extends CommandPrivilege>> privileges = new HashMap<>();
 		for (Command command : getGuildCommands(guild)) {
-			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(context.getPermissionProvider().getPermissions(command.getName(), guild.getId()));
+			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(context.getPermissionProvider().getPermissions(command.getName(), guild));
 			if (commandPrivileges.size() > 10)
 				throw new IllegalArgumentException(String.format("There are more than 10 command privileges for command %s in guild %s (%s)", command.getName(), guild.getName(), guild.getId()));
 

@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +13,7 @@ public interface PermissionProvider {
 	/**
 	 * Returns the list of guild commands usable in that Guild, <i>you can have a list of command names if needed in {@link BContext#getSlashCommandsBaseNames()}</i>
 	 *
-	 * @param guildId Guild ID from which the commands should be
+	 * @param guild Guild from which the commands should be
 	 * @return A CommandList of this guild's commands
 	 * @see CommandList#all()
 	 * @see CommandList#none()
@@ -20,15 +21,15 @@ public interface PermissionProvider {
 	 * @see CommandList#notOf(Collection)
 	 */
 	@NotNull
-	CommandList getGuildCommands(String guildId);
+	CommandList getGuildCommands(Guild guild);
 
 	/**
 	 * Returns the list of {@linkplain CommandPrivilege command privileges} for the given <b>base command name (most left name), no group, no subcommand</b>
 	 *
 	 * @param commandName Name of the command to get the permissions of
-	 * @param guildId     ID of the guild of the command
+	 * @param guild       The guild of the command
 	 * @return An empty Collection if the permissions should be cleared, or the privileges to apply to it.
 	 */
 	@NotNull
-	Collection<CommandPrivilege> getPermissions(String commandName, String guildId);
+	Collection<CommandPrivilege> getPermissions(String commandName, Guild guild);
 }
