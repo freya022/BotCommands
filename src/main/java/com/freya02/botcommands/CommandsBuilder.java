@@ -10,6 +10,7 @@ import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import com.freya02.botcommands.slash.*;
+import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -564,7 +565,7 @@ public final class CommandsBuilder {
 
 		buildClasses();
 
-		context.addEventListeners(new com.freya02.botcommands.waiter.EventWaiter());
+		context.addEventListeners(new EventWaiter(jda));
 
 		context.addEventListeners(new CommandListener(context), new SlashCommandListener(context));
 	}
