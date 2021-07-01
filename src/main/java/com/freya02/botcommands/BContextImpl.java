@@ -32,6 +32,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, ConstructorParameterSupplier<?>> parameterSupplierMap = new HashMap<>();
 	private final Map<Class<?>, InstanceSupplier<?>> instanceSupplierMap = new HashMap<>();
+	private final Map<Class<?>, Supplier<?>> commandDependencyMap = new HashMap<>();
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
@@ -321,5 +322,13 @@ public class BContextImpl implements BContext {
 
 	public InstanceSupplier<?> getInstanceSupplier(Class<?> classType) {
 		return instanceSupplierMap.get(classType);
+	}
+
+	public <T> void registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
+		commandDependencyMap.put(fieldType, supplier);
+	}
+
+	public Supplier<?> getCommandDependency(Class<?> fieldType) {
+		return commandDependencyMap.get(fieldType);
 	}
 }

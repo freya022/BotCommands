@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.buttons.ButtonsBuilder;
 import com.freya02.botcommands.buttons.DefaultIdManager;
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -265,6 +267,19 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**
+	 * Registers a command dependency supplier, the supplier will be used on every field of the same type in a command if annotated with {@link Dependency @Dependency}
+	 *
+	 * @param fieldType Type of the field's object
+	 * @param supplier  Field supplier for this type
+	 * @param <T>       Type of the field's object
+	 * @return This builder for chaining convenience
+	 */
+	public <T> CommandsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
+		context.registerCommandDependency(fieldType, supplier);
+
+		return this;
+	}
 
 	/**
 	 * Adds a {@link RegistrationListener} to this command builder, giving you various event of what is getting loaded
@@ -474,6 +489,8 @@ public final class CommandsBuilder {
 					someCommand = constructor.newInstance(parameterObjs.toArray());
 				}
 
+				injectDependencies(someCommand);
+
 				context.getClassToObjMap().put(aClass, someCommand);
 
 				if (someCommand instanceof Command) {
@@ -484,6 +501,25 @@ public final class CommandsBuilder {
 					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
 				}
 			}
+		}
+	}
+
+	private void injectDependencies(Object someCommand) throws IllegalAccessException {
+		for (Field field : someCommand.getClass().getDeclaredFields()) {
+			if (!field.isAnnotationPresent(Dependency.class)) continue;
+
+			if (!field.canAccess(someCommand)) {
+				if (!field.trySetAccessible()) {
+					throw new IllegalArgumentException("Dependency field " + field + " is not accessible (make it public ?)");
+				}
+			}
+
+			final Supplier<?> dependencySupplier = context.getCommandDependency(field.getType());
+			if (dependencySupplier == null) {
+				throw new IllegalArgumentException("Dependency supplier for field " + field + " was not set");
+			}
+
+			field.set(someCommand, dependencySupplier.get());
 		}
 	}
 
