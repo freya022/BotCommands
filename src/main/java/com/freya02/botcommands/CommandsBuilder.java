@@ -37,7 +37,7 @@ public final class CommandsBuilder {
 	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context, slashGuildIds);
 	private final ButtonsBuilder buttonsBuilder = new ButtonsBuilder(context);
 
-	private final List<Class<?>> additionalCommands = new ArrayList<>();
+	private final Set<Class<?>> classes = new HashSet<>();
 
 	private boolean disableHelpCommand;
 	private boolean disableSlashHelpCommand;
@@ -303,19 +303,56 @@ public final class CommandsBuilder {
 			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
 		}
 
-		additionalCommands.add(clazz);
+		classes.add(clazz);
 
 		return this;
 	}
 
-	private void buildClasses(List<Class<?>> classes) {
+	/**
+	 * Adds the commands of this packages in this builder, all the classes which extends {@link Command} or {@link SlashCommand} will be registered<br>
+	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
+	 *
+	 * <pre><code>
+	 * |
+	 * |__slash
+	 * |  |
+	 * |  |__fun
+	 * |     |
+	 * |     |__Meme.java
+	 * |        Fish.java
+	 * |        ...
+	 * |
+	 * |__regular
+	 *   |
+	 *   |__moderation
+	 *      |
+	 *      |__Ban.java
+	 *         Mute.java
+	 *         ...
+	 * </code></pre>
+	 *
+	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
+		addSearchPath(commandPackageName, 2);
+
+		return this;
+	}
+
+	//skip can be inlined by 2 but inlining would conflit with the above overload and also remove 1 stack frame, reintroducing the parameter need
+	@SuppressWarnings("SameParameterValue")
+	private void addSearchPath(String commandPackageName, int skip) throws IOException {
+		Utils.requireNonBlank(commandPackageName, "Command package");
+
+		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(skip).findFirst().orElseThrow().getDeclaringClass());
+		classes.addAll(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
+	}
+
+	private void buildClasses() {
 		try {
 			for (Class<?> aClass : classes) {
 				processClass(aClass);
-			}
-
-			for (Class<?> additionalCommand : additionalCommands) {
-				processClass(additionalCommand);
 			}
 
 			if (!disableHelpCommand) {
@@ -461,33 +498,25 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Builds the command listener and automatically registers all listener to the JDA instance<br>
-	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
-	 * <ul>
-	 *     <li>com.freya02.bot.commands
-	 *     <ul>
-	 *         <li>slash
-	 *         <ul>
-	 *             <li>fun
-	 *             <ul>
-	 *                 <li>Meme</li>
-	 *                 <li>Fish</li>
-	 *                 <li>...</li>
-	 *             </ul>
-	 *             </li>
-	 *         </ul>
-	 *         </li>
-	 *     </ul>
-	 *     </li>
-	 * </ul>
+	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda                The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
+	 * @see #addSearchPath(String)
 	 */
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		Utils.requireNonBlank(commandPackageName, "Command package");
+		addSearchPath(commandPackageName, 2);
 
+		build(jda);
+	}
+
+	/**
+	 * Builds the command listener and automatically registers all listener to the JDA instance
+	 *
+	 * @param jda The JDA instance of your bot
+	 */
+	public void build(JDA jda) {
 		final List<GatewayIntent> intents = List.of(
 				GatewayIntent.GUILD_MESSAGES
 		);
@@ -497,8 +526,7 @@ public final class CommandsBuilder {
 
 		setupContext(jda);
 
-		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
-		buildClasses(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
+		buildClasses();
 
 		context.addEventListeners(new com.freya02.botcommands.waiter.EventWaiter());
 
