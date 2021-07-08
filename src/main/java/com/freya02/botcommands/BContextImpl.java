@@ -261,8 +261,12 @@ public class BContextImpl implements BContext {
 		this.idManager = idManager;
 	}
 
-	public Map<Class<?>, Object> getClassToObjMap() {
-		return classToObjMap;
+	public Object getClassInstance(Class<?> clazz) {
+		return classToObjMap.get(clazz);
+	}
+
+	public void putClassInstance(Class<?> clazz, Object obj) {
+		classToObjMap.put(clazz, obj);
 	}
 
 	public void addEventListeners(Object... listeners) {

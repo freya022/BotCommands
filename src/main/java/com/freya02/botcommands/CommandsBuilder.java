@@ -368,6 +368,16 @@ public final class CommandsBuilder {
 
 	private void buildClasses() {
 		try {
+			classes.removeIf(c -> {
+				try {
+					return !Utils.isInstantiable(c);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
+
+					throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
+				}
+			});
+
 			for (Class<?> aClass : classes) {
 				processClass(aClass);
 			}
@@ -445,55 +455,10 @@ public final class CommandsBuilder {
 			boolean isInstantiable = Utils.isInstantiable(aClass);
 
 			if (isInstantiable) {
-				Object someCommand;
-
 				if (!Command.class.isAssignableFrom(aClass) && !SlashCommand.class.isAssignableFrom(aClass))
 					throw new IllegalArgumentException("Class " + aClass + " should extend Command or SlashCommand");
 
-				//The command object has to be created either by the instance supplier
-				// or by the **only** constructor a class has
-				// It must resolve all parameters types with the registered parameter suppliers
-				final InstanceSupplier<?> instanceSupplier = context.getInstanceSupplier(aClass);
-				if (instanceSupplier != null) {
-					someCommand = instanceSupplier.get(context);
-				} else {
-					final Constructor<?>[] constructors = aClass.getConstructors();
-					if (constructors.length == 0)
-						throw new IllegalArgumentException("Class " + aClass.getName() + " must have an accessible constructor");
-
-					if (constructors.length > 1)
-						throw new IllegalArgumentException("Class " + aClass.getName() + " must have exactly one constructor");
-
-					final Constructor<?> constructor = constructors[0];
-
-					if (Command.class.isAssignableFrom(aClass)) { //Obligatory arg
-						if (Arrays.stream(constructor.getParameterTypes()).noneMatch(BContext.class::isAssignableFrom))
-							throw new IllegalArgumentException("Class " + aClass.getName() + " should have a BContext in its constructor arguments");
-					}
-
-					List<Object> parameterObjs = new ArrayList<>();
-
-					Class<?>[] parameterTypes = constructor.getParameterTypes();
-					for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
-						Class<?> parameterType = parameterTypes[i];
-
-						if (BContext.class.isAssignableFrom(parameterType)) {
-							parameterObjs.add(context);
-						} else {
-							final ConstructorParameterSupplier<?> supplier = context.getParameterSupplier(parameterType);
-							if (supplier == null)
-								throw new IllegalArgumentException(String.format("Found no constructor parameter supplier for parameter #%d of type %s in class %s", i, parameterType.getSimpleName(), aClass.getSimpleName()));
-
-							parameterObjs.add(supplier.get(aClass));
-						}
-					}
-
-					someCommand = constructor.newInstance(parameterObjs.toArray());
-				}
-
-				injectDependencies(someCommand);
-
-				context.getClassToObjMap().put(aClass, someCommand);
+				final Object someCommand = ClassInstancer.instantiate(context, aClass);
 
 				if (someCommand instanceof Command) {
 					prefixedCommandsBuilder.processPrefixedCommand((Command) someCommand);
@@ -502,26 +467,9 @@ public final class CommandsBuilder {
 				} else {
 					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
 				}
+			} else {
+				LOGGER.error("A non-instantiable class tried to get processed, this should have been filtered by #buildClasses, please report to the devs"); //TODO might remove later
 			}
-		}
-	}
-
-	private void injectDependencies(Object someCommand) throws IllegalAccessException {
-		for (Field field : someCommand.getClass().getDeclaredFields()) {
-			if (!field.isAnnotationPresent(Dependency.class)) continue;
-
-			if (!field.canAccess(someCommand)) {
-				if (!field.trySetAccessible()) {
-					throw new IllegalArgumentException("Dependency field " + field + " is not accessible (make it public ?)");
-				}
-			}
-
-			final Supplier<?> dependencySupplier = context.getCommandDependency(field.getType());
-			if (dependencySupplier == null) {
-				throw new IllegalArgumentException("Dependency supplier for field " + field + " was not set");
-			}
-
-			field.set(someCommand, dependencySupplier.get());
 		}
 	}
 
