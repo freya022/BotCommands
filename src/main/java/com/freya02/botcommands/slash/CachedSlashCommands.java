@@ -43,7 +43,7 @@ public class CachedSlashCommands {
 	}
 
 	private Path getTempPath(String filename) {
-		return Path.of(System.getProperty("java.io.tmpdir") + context.getJDA().getSelfUser().getId() + filename);
+		return Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + filename);
 	}
 
 	public void computeCommands() {
