@@ -514,9 +514,11 @@ public final class CommandsBuilder {
 
 		buildClasses();
 
-		context.addEventListeners(new EventWaiter(jda));
-
-		context.addEventListeners(new CommandListener(context), new SlashCommandListener(context));
+		context.addEventListeners(
+				new EventWaiter(jda),
+				new CommandListener(context),
+				new SlashCommandListener(context)
+		);
 	}
 
 	private void setupContext(JDA jda) {
