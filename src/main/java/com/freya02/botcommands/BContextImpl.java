@@ -1,6 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.buttons.IdManager;
+import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
@@ -46,7 +46,7 @@ public class BContextImpl implements BContext {
 
 	private boolean addSubcommandHelpByDefault, addExecutableHelpByDefault;
 	private Consumer<BaseCommandEvent> helpConsumer;
-	private IdManager idManager;
+	private ComponentManager componentManager;
 	private PermissionProvider permissionProvider = new DefaultPermissionProvider();
 	private SettingsProvider settingProvider;
 
@@ -253,12 +253,12 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@Nullable
-	public IdManager getIdManager() {
-		return idManager;
+	public ComponentManager getComponentManager() {
+		return componentManager;
 	}
 
-	public void setIdManager(IdManager idManager) {
-		this.idManager = idManager;
+	public void setComponentManager(ComponentManager componentManager) {
+		this.componentManager = componentManager;
 	}
 
 	public Object getClassInstance(Class<?> clazz) {

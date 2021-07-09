@@ -1,7 +1,7 @@
 package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.Objects;
 
-public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public MemberResolver() {
 		super(Member.class);
 	}
@@ -30,7 +30,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a member from DMs");
 
 		try {

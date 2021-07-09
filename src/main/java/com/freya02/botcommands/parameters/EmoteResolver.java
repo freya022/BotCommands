@@ -2,7 +2,7 @@ package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nullable;
 
-public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmoteResolver() {
 		super(Emote.class);
 	}
@@ -32,7 +32,7 @@ public class EmoteResolver extends ParameterResolver implements RegexParameterRe
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		final Guild guild = event.getGuild();
 
 		if (guild != null) {

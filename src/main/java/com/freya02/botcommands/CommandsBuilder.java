@@ -2,9 +2,9 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.annotation.RequireOwner;
-import com.freya02.botcommands.buttons.ButtonsBuilder;
-import com.freya02.botcommands.buttons.DefaultIdManager;
-import com.freya02.botcommands.buttons.IdManager;
+import com.freya02.botcommands.components.ComponentManager;
+import com.freya02.botcommands.components.DefaultComponentManager;
+import com.freya02.botcommands.components.internal.ComponentsBuilder;
 import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
@@ -20,8 +20,6 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -39,7 +37,7 @@ public final class CommandsBuilder {
 	private final BContextImpl context = new BContextImpl();
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
 	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context, slashGuildIds);
-	private final ButtonsBuilder buttonsBuilder = new ButtonsBuilder(context);
+	private final ComponentsBuilder componentsBuilder = new ComponentsBuilder(context);
 
 	private final Set<Class<?>> classes = new HashSet<>();
 
@@ -152,14 +150,14 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Sets the ID manager, used to generate Discord buttons IDs and store component data
+	 * Sets the component manager, used to handle storing/retrieving persistent/lambda components handlers
 	 *
-	 * @param idManager The {@link IdManager}
+	 * @param componentManager The {@link ComponentManager}
 	 * @return This builder for chaining convenience
-	 * @see DefaultIdManager
+	 * @see DefaultComponentManager
 	 */
-	public CommandsBuilder setIdManager(IdManager idManager) {
-		context.setIdManager(Objects.requireNonNull(idManager, "ID manager cannot be null"));
+	public CommandsBuilder setComponentManager(ComponentManager componentManager) {
+		context.setComponentManager(Objects.requireNonNull(componentManager, "Component manager cannot be null"));
 
 		return this;
 	}
@@ -399,9 +397,13 @@ public final class CommandsBuilder {
 				((SlashHelpCommand) info.getInstance()).generate();
 			}
 
-			//Load button listeners
-			for (Class<?> aClass : classes) {
-				buttonsBuilder.processButtonListener(aClass);
+			if (context.getComponentManager() != null) {
+				//Load button listeners
+				for (Class<?> aClass : classes) {
+					componentsBuilder.processClass(aClass);
+				}
+			} else {
+				LOGGER.info("IdManager is not set, buttons from this framework won't be usable");
 			}
 
 			LOGGER.info("Loaded {} commands", context.getCommands().size());
@@ -412,7 +414,9 @@ public final class CommandsBuilder {
 
 			slashCommandsBuilder.postProcess();
 
-			buttonsBuilder.postProcess();
+			if (context.getComponentManager() != null) {
+				componentsBuilder.postProcess();
+			}
 
 			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 

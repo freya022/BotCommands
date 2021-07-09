@@ -2,14 +2,15 @@ package com.freya02.botcommands.menu;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.buttons.ButtonId;
-import com.freya02.botcommands.buttons.IdManager;
+import com.freya02.botcommands.Utils;
+import com.freya02.botcommands.components.ComponentManager;
+import com.freya02.botcommands.components.Components;
+import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
@@ -49,7 +50,8 @@ public class Paginator {
 	private final int maxPages;
 
 	private final MessageBuilder messageBuilder = new MessageBuilder();
-	private final String nextButtonId, previousButtonId, deleteButtonId;
+	private final Button deleteButton;
+	private Button previousButton, nextButton;
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -86,24 +88,24 @@ public class Paginator {
 	public Paginator(long userId, int maxPages, boolean deleteButton) {
 		this.maxPages = maxPages;
 
-		previousButtonId = ButtonId.ofUser(userId, (c, e) -> {
+		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		});
+		}).ownerId(userId).build(PREVIOUS_EMOJI);
 
-		nextButtonId = ButtonId.ofUser(userId, (c, e) -> {
+		nextButton = Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		});
+		}).ownerId(userId).build(NEXT_EMOJI);
 
 		if (deleteButton) {
 			//Unique use in the case the message isn't ephemeral
 			// Do not use ButtonId#uniqueOfUser as button ids are deleted by Paginator#cleanup
-			deleteButtonId = ButtonId.ofUser(userId, this::onDeleteClicked);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).build(DELETE_EMOJI);
 		} else {
-			deleteButtonId = null;
+			this.deleteButton = null;
 		}
 	}
 
@@ -179,7 +181,7 @@ public class Paginator {
 		return this;
 	}
 
-	private void onDeleteClicked(BContext context, ButtonClickEvent e) {
+	private void onDeleteClicked(ButtonEvent e) {
 		if (e.getMessage() != null) {
 			e.deferEdit().queue();
 			e.getMessage().delete().queue();
@@ -189,7 +191,7 @@ public class Paginator {
 			LOGGER.warn("Attempted to delete a ephemeral message using a Paginator delete button, consider disabling the delete button in the constructor or making your message not ephemeral, pagination supplier comes from {}", paginationSupplier.getClass().getName());
 		}
 
-		cleanup(context);
+		cleanup(e.getContext());
 	}
 
 	/**
@@ -198,13 +200,11 @@ public class Paginator {
 	 * @param context The BContext of this bot
 	 */
 	public void cleanup(BContext context) {
-		final IdManager manager = context.getIdManager();
-		if (manager == null)
-			throw new IllegalStateException("Cannot clean used button IDs as ID manager doesn't exist");
+		final ComponentManager manager = Utils.getComponentManager(context);
 
-		manager.removeIds(usedIds);
+		final int deletedIds = manager.deleteIds(usedIds);
 
-		LOGGER.trace("Cleaned up {} button IDs", usedIds.size());
+		LOGGER.trace("Cleaned up {} button IDs out of {}", deletedIds, usedIds.size());
 
 		usedIds.clear();
 	}
@@ -233,17 +233,17 @@ public class Paginator {
 		final EmbedBuilder builder = new EmbedBuilder();
 		final PaginatorComponents paginatorComponents = new PaginatorComponents();
 
-		Button previousButton = Button.primary(previousButtonId, PREVIOUS_EMOJI);
 		if (page == 0) previousButton = previousButton.asDisabled();
+		else previousButton = previousButton.asEnabled();
 
-		Button nextButton = Button.primary(nextButtonId, NEXT_EMOJI);
 		if (page >= maxPages - 1) nextButton = nextButton.asDisabled();
+		else nextButton = nextButton.asEnabled();
 
-		if (deleteButtonId != null) {
+		if (deleteButton != null) {
 			paginatorComponents.addComponents(0,
 					previousButton,
 					nextButton,
-					Button.danger(deleteButtonId, DELETE_EMOJI)
+					deleteButton
 			);
 		} else {
 			paginatorComponents.addComponents(0,

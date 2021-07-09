@@ -1,11 +1,11 @@
 package com.freya02.botcommands.parameters;
 
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
-public class StringResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class StringResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public StringResolver() {
 		super(String.class);
 	}
@@ -21,7 +21,7 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return arg;
 	}
 }

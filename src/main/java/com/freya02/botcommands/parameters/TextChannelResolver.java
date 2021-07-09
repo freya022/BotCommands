@@ -1,14 +1,14 @@
 package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.Objects;
 
-public class TextChannelResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class TextChannelResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public TextChannelResolver() {
 		super(TextChannel.class);
 	}
@@ -24,7 +24,7 @@ public class TextChannelResolver extends ParameterResolver implements RegexParam
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a guild from DMs");
 
 		return event.getGuild().getTextChannelById(arg);

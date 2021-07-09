@@ -1,6 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.buttons.IdManager;
+import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
@@ -168,11 +168,11 @@ public interface BContext {
 	void addRegistrationListeners(RegistrationListener... listeners);
 
 	/**
-	 * Returns the ID manager of this instance
+	 * Returns the component manager of this instance
 	 *
-	 * @return The ID manager
+	 * @return The component manager
 	 */
-	@Nullable IdManager getIdManager();
+	@Nullable ComponentManager getComponentManager();
 
 	/**
 	 * Returns the {@linkplain PermissionProvider} for this context

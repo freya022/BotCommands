@@ -3,14 +3,14 @@ package com.freya02.botcommands.parameters;
 import com.freya02.botcommands.Emoji;
 import com.freya02.botcommands.impl.EmojiImpl;
 import com.freya02.botcommands.utils.EmojiUtils;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import javax.annotation.Nonnull;
 
-public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiResolver() {
 		super(Emoji.class);
 	}
@@ -26,7 +26,7 @@ public class EmojiResolver extends ParameterResolver implements RegexParameterRe
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return getEmoji(arg);
 	}
 

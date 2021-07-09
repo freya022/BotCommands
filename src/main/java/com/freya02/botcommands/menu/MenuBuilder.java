@@ -1,6 +1,7 @@
 package com.freya02.botcommands.menu;
 
-import com.freya02.botcommands.buttons.ButtonId;
+//import com.freya02.botcommands.buttons.ButtonId;
+import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.menu.transformer.EntryTransformer;
 import com.freya02.botcommands.menu.transformer.StringTransformer;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -177,11 +178,14 @@ public class MenuBuilder<T> {
 
 			for (int i = 0; i < menuPage.getChoices().size(); i++) {
 				final int choiceNumber = i;
-				components.addComponents(1 + (i / 5), Button.primary(ButtonId.ofUser(userId, (context, e) -> {
-					menu.cleanup(context);
 
-					onChoiceClicked(menu, menuPage, choiceNumber, e);
-				}), MenuBuilder.emojis.get(i)));
+				final Button choiceButton = Components.primaryButton(event -> {
+					menu.cleanup(event.getContext());
+
+					onChoiceClicked(menu, menuPage, choiceNumber, event);
+				}).ownerId(userId).build(MenuBuilder.emojis.get(i));
+
+				components.addComponents(1 + (i / 5), choiceButton);
 			}
 
 			if (paginationSupplier != null) {

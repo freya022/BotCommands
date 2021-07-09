@@ -8,7 +8,7 @@ import org.slf4j.Logger;
  *
  * @see RegexParameterResolver
  * @see SlashParameterResolver
- * @see ButtonParameterResolver
+ * @see ComponentParameterResolver
  */
 public abstract class ParameterResolver {
 	protected static final Logger LOGGER = Logging.getLogger();

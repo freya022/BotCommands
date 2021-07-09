@@ -1,6 +1,7 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.ConditionalUse;
+import com.freya02.botcommands.components.ComponentManager;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -19,6 +20,9 @@ import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public final class Utils {
+	@SuppressWarnings("SpellCheckingInspection")
+	private static final char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?_^[]{}|".toCharArray();
+
 	private static final Logger LOGGER = Logging.getLogger();
 
 	@SuppressWarnings("RedundantCast")
@@ -128,5 +132,25 @@ public final class Utils {
 		}
 
 		return e;
+	}
+
+	public static String randomId(int n) {
+		final ThreadLocalRandom random = ThreadLocalRandom.current();
+
+		final StringBuilder sb = new StringBuilder(64);
+		for (int i = 0; i < n; i++) {
+			sb.append(chars[random.nextInt(0, chars.length)]);
+		}
+
+		return sb.toString();
+	}
+
+	@Nonnull
+	public static ComponentManager getComponentManager(BContext context) {
+		final ComponentManager idManager = context.getComponentManager();
+		if (idManager == null)
+			throw new IllegalStateException("The IdManager must be set in CommandsBuilder in order to use components");
+
+		return idManager;
 	}
 }

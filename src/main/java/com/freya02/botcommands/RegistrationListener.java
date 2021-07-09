@@ -1,6 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.buttons.ButtonDescriptor;
+import com.freya02.botcommands.components.internal.ComponentDescriptor;
 import com.freya02.botcommands.prefixed.Command;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -43,11 +43,11 @@ public abstract class RegistrationListener {
 	public abstract void onGuildSlashCommandMissingAccess(Guild guild, String inviteUrl);
 
 	/**
-	 * Fired when a button listener is registered
+	 * Fired when a component listener is registered
 	 *
-	 * @param descriptor {@linkplain ButtonDescriptor} of the registered button
+	 * @param descriptor {@linkplain ComponentDescriptor} of the registered component
 	 */
-	public abstract void onButtonRegistered(ButtonDescriptor descriptor);
+	public abstract void onComponentRegistered(ComponentDescriptor descriptor);
 
 	/**
 	 * Fired when {@linkplain CommandsBuilder} has finished building

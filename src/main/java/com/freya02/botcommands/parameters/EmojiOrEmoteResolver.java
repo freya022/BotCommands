@@ -4,7 +4,7 @@ import com.freya02.botcommands.EmojiOrEmote;
 import com.freya02.botcommands.impl.EmojiOrEmoteImpl;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 
-public class EmojiOrEmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ButtonParameterResolver {
+public class EmojiOrEmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiOrEmoteResolver() {
 		super(EmojiOrEmote.class);
 	}
@@ -34,7 +34,7 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 	}
 
 	@Override
-	public Object resolve(ButtonClickEvent event, String arg) {
+	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return getEmojiOrEmote(arg);
 	}
 
