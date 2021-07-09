@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -36,9 +37,29 @@ public class Components {
 		return components;
 	}
 
-	public static ActionRow[] group(ActionRow... rows) {
+	public static <T extends Collection<Component>> T group(T components) {
+		Utils.getComponentManager(context).registerGroup(
+				components.stream()
+						.map(Component::getId)
+						.collect(Collectors.toList())
+		);
+
+		return components;
+	}
+
+	public static ActionRow[] groupRows(ActionRow... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
+						.flatMap(row -> row.getComponents().stream())
+						.map(Component::getId)
+						.collect(Collectors.toList()));
+
+		return rows;
+	}
+
+	public static <T extends Collection<ActionRow>> T groupRows(T rows) {
+		Utils.getComponentManager(context).registerGroup(
+				rows.stream()
 						.flatMap(row -> row.getComponents().stream())
 						.map(Component::getId)
 						.collect(Collectors.toList()));
