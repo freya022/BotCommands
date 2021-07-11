@@ -134,8 +134,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respond(@NotNull MessageEmbed embed) {
-		return channel.sendMessageEmbeds(embed);
+	public RestAction<Message> respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
+		return channel.sendMessageEmbeds(embed, other);
 	}
 
 	@Nonnull
@@ -167,8 +167,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> reply(@NotNull MessageEmbed embed) {
-		return getMessage().replyEmbeds(embed);
+	public RestAction<Message> reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
+		return getMessage().replyEmbeds(embed, other);
 	}
 
 	@Override
@@ -207,11 +207,11 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@Nonnull
 	@Override
-	public RestAction<Message> indicateError(@NotNull MessageEmbed embed) {
+	public RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
 		if (getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
-			return reactError().flatMap(v -> channel.sendMessageEmbeds(embed));
+			return reactError().flatMap(v -> channel.sendMessageEmbeds(embed, other));
 		} else {
-			return channel.sendMessageEmbeds(embed);
+			return channel.sendMessageEmbeds(embed, other);
 		}
 	}
 }

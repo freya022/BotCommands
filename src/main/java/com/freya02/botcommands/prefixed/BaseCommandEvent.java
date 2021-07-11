@@ -178,12 +178,13 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * Sends a response in the event's channel
 	 *
 	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @param other Additional {@linkplain MessageEmbed embeds} to send
 	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
 	@Nonnull
-	public abstract RestAction<Message> respond(@NotNull MessageEmbed embed);
+	public abstract RestAction<Message> respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a response in the event's channel
@@ -238,12 +239,13 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * Sends a reply in the event's channel
 	 *
 	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @param other Additional {@linkplain MessageEmbed embeds} to send
 	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
 	@Nonnull
-	public abstract RestAction<Message> reply(@NotNull MessageEmbed embed);
+	public abstract RestAction<Message> reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a reply in the event's channel
@@ -298,10 +300,11 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * Sends an error reply in the event's channel
 	 *
 	 * @param embed {@linkplain MessageEmbed} to send to the event channel
+	 * @param other Additional {@linkplain MessageEmbed embeds} to send
 	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendMessage(MessageEmbed)
+	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
 	@Nonnull
-	public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed);
+	public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 }
