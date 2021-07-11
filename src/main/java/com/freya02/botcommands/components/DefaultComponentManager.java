@@ -285,12 +285,10 @@ public class DefaultComponentManager implements ComponentManager {
 	public int deleteIds(Collection<String> ids) {
 		if (ids.isEmpty()) return 0;
 
-		int deleted = 0;
 		try (Connection connection = getConnection()) {
 			final Object[] idArray = ids.toArray();
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(
-					//should be a cascade delete, see table declaration
 					"delete from lambdacomponentdata where componentid = any(?) returning handlerid;"
 			)) {
 				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
@@ -304,25 +302,22 @@ public class DefaultComponentManager implements ComponentManager {
 					if (buttonLambdaMap.remove(handlerId) == null) {
 						selectionMenuLambdaMap.remove(handlerId);
 					}
-
-					deleted++;
 				}
 			}
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(
-					"delete from persistentcomponentdata where componentid = any(?);"
+					//should be a cascade delete, see table declaration
+					"delete from componentdata where componentid = any(?);"
 			)) {
 				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
 
-				deleted += preparedStatement.executeUpdate();
+				return preparedStatement.executeUpdate();
 			}
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while deleting components", e);
 
 			throw new RuntimeException("An exception occurred while deleting components", e);
 		}
-
-		return deleted;
 	}
 
 	@NotNull
