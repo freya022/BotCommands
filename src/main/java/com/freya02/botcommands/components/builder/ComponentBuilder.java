@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 public interface ComponentBuilder<T extends ComponentBuilder<T>> {
-	void oneUse();
+	T oneUse();
 
 	T ownerId(long ownerId);
 

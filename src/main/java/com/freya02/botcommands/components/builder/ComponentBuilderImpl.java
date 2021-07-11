@@ -12,8 +12,10 @@ public abstract class ComponentBuilderImpl<T extends ComponentBuilderImpl<T>> im
 	private long expirationTimestamp;
 
 	@Override
-	public void oneUse() {
+	public T oneUse() {
 		this.oneUse = true;
+
+		return (T) this;
 	}
 
 	@Override

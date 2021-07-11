@@ -42,8 +42,10 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	}
 
 	@Override
-	public void oneUse() {
+	public LambdaSelectionMenuBuilder oneUse() {
 		this.oneUse = true;
+
+		return this;
 	}
 
 	@Override

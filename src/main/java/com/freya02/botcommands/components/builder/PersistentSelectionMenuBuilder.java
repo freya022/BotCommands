@@ -48,8 +48,10 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	}
 
 	@Override
-	public void oneUse() {
+	public PersistentSelectionMenuBuilder oneUse() {
 		this.oneUse = true;
+
+		return this;
 	}
 
 	@Override
