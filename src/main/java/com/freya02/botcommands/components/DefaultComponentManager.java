@@ -1,7 +1,6 @@
 package com.freya02.botcommands.components;
 
 import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.builder.*;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
@@ -10,399 +9,378 @@ import com.freya02.botcommands.components.internal.data.LambdaButtonData;
 import com.freya02.botcommands.components.internal.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.components.internal.data.PersistentButtonData;
 import com.freya02.botcommands.components.internal.data.PersistentSelectionMenuData;
-import com.freya02.botcommands.components.internal.xodus.XodusComponentData;
-import com.freya02.botcommands.components.internal.xodus.XodusLambdaComponentData;
-import com.freya02.botcommands.components.internal.xodus.XodusObject;
-import com.freya02.botcommands.components.internal.xodus.XodusPersistentComponentData;
-import jetbrains.exodus.ByteIterable;
-import jetbrains.exodus.bindings.IntegerBinding;
-import jetbrains.exodus.bindings.StringBinding;
-import jetbrains.exodus.entitystore.*;
-import jetbrains.exodus.env.*;
+import com.freya02.botcommands.components.internal.sql.SqlComponentData;
+import com.freya02.botcommands.components.internal.sql.SqlLambdaComponentData;
+import com.freya02.botcommands.components.internal.sql.SqlLambdaCreateResult;
+import com.freya02.botcommands.components.internal.sql.SqlPersistentComponentData;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DefaultComponentManager implements ComponentManager {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private static final String LAMBDA_SELECTION_MENU_DATA_NAME = "LambdaSelectionMenuData";
-	private static final String LAMBDA_BUTTON_DATA_NAME = "LambdaButtonData";
-
-	private static final String PERSISTENT_BUTTON_DATA_NAME = "PersistentButtonData";
-	private static final String PERSISTENT_SELECTION_MENU_DATA_NAME = "PersistentSelectionMenuData";
-
-	private static final String LAMBDA_BUTTON_SEQUENCE_NAME = "lambdaButtonSequence";
-	private static final String LAMBDA_SELECTION_MENU_SEQUENCE_NAME = "lambdaSelectionMenuSequence";
-
-	private static final Map<ComponentType, String> typeToEntityName = Map.of(
-			ComponentType.PERSISTENT_BUTTON, PERSISTENT_BUTTON_DATA_NAME,
-			ComponentType.LAMBDA_BUTTON, LAMBDA_BUTTON_DATA_NAME,
-			ComponentType.PERSISTENT_SELECTION_MENU, PERSISTENT_SELECTION_MENU_DATA_NAME,
-			ComponentType.LAMBDA_SELECTION_MENU, LAMBDA_SELECTION_MENU_DATA_NAME
-	);
-
-	private final Store idStore;
-	private final PersistentEntityStore entityStore;
-	private final Environment environment;
+	private final Supplier<Connection> connectionSupplier;
 
 	private final Map<Long, Consumer<ButtonEvent>> buttonLambdaMap = new HashMap<>();
 	private final Map<Long, Consumer<SelectionEvent>> selectionMenuLambdaMap = new HashMap<>();
 
-	public DefaultComponentManager(Path path) {
-		environment = Environments.newInstance(path.toFile());
+	public DefaultComponentManager(@NotNull Supplier<@NotNull Connection> connectionSupplier) {
+		this.connectionSupplier = connectionSupplier;
 
-		idStore = environment.computeInTransaction(txn -> environment.openStore("IdTypeStore", StoreConfig.WITHOUT_DUPLICATES, txn));
+		try {
+			setupTables();
 
-		entityStore = PersistentEntityStores.newInstance(environment);
+			deleteTemporaryEntities();
+		} catch (SQLException e) {
+			LOGGER.error("Unable to create DefaultComponentManager", e);
 
-		//Delete lambda IDs from environment
-		environment.executeInTransaction(txn -> {
-			final Cursor cursor = idStore.openCursor(txn);
-
-			while (cursor.getNext()) {
-				final int key = IntegerBinding.entryToInt(cursor.getValue());
-				final ComponentType componentType = ComponentType.fromKey(key);
-
-				if (componentType == ComponentType.LAMBDA_BUTTON || componentType == ComponentType.LAMBDA_SELECTION_MENU) {
-					cursor.deleteCurrent();
-				}
-			}
-		});
-
-		//Delete lambda button data from entity store
-		deleteTemporaryEntities(LAMBDA_BUTTON_DATA_NAME, LAMBDA_SELECTION_MENU_DATA_NAME);
-
-		resetTemporarySequences(LAMBDA_BUTTON_SEQUENCE_NAME, LAMBDA_SELECTION_MENU_SEQUENCE_NAME);
+			throw new RuntimeException("Unable to create DefaultComponentManager", e);
+		}
 	}
 
 	@Override
 	@Nullable
 	public ComponentType getIdType(String id) {
-		final ComponentType idType = getIdTypeInternal(id);
+		try (Connection connection = getConnection();
+		     PreparedStatement preparedStatement = connection.prepareStatement(
+				     "select type from componentdata where componentid = ? limit 1;"
+		     )) {
+			preparedStatement.setString(1, id);
 
-		if (idType == null) {
-			LOGGER.warn("Couldn't find a component with id {}", id);
-		}
-
-		return idType;
-	}
-
-	@Nullable
-	private ComponentType getIdTypeInternal(String id) {
-		return environment.computeInReadonlyTransaction(txn -> {
-			final ByteIterable keyIterable = idStore.get(txn, StringBinding.stringToEntry(id));
-
-			if (keyIterable == null) {
-				return null;
+			try (ResultSet resultSet = preparedStatement.executeQuery()) {
+				if (resultSet.next()) {
+					return ComponentType.fromKey(resultSet.getInt("type"));
+				} else {
+					return null;
+				}
 			}
+		} catch (SQLException e) {
+			LOGGER.error("Unable to get the ID type of '{}'", id);
 
-			return ComponentType.fromKey(IntegerBinding.entryToInt(keyIterable));
-		});
+			return null;
+		}
 	}
 
 	@Override
 	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
-		entityStore.executeInTransaction(txn -> {
-			final Entity lambdaButtonDataEntity = getComponentDataEntity(txn, LAMBDA_BUTTON_DATA_NAME, "lambda button data", event.getComponentId());
-			if (lambdaButtonDataEntity == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
-
-				return;
-			}
-
-			final XodusLambdaComponentData xodusLambdaButtonData = XodusObject.read(XodusLambdaComponentData.class, lambdaButtonDataEntity);
-
-			HandleComponentResult handleComponentResult = handleComponentData(event, lambdaButtonDataEntity, xodusLambdaButtonData);
-
-			if (handleComponentResult.getErrorReason() != null) {
-				onError.accept(handleComponentResult.getErrorReason());
-
-				return;
-			}
-
-			final long handlerId = xodusLambdaButtonData.getHandlerId();
-
-			final Consumer<ButtonEvent> consumer;
-			if (handleComponentResult.shouldDelete()) {
-				consumer = buttonLambdaMap.remove(handlerId);
-			} else {
-				consumer = buttonLambdaMap.get(handlerId);
-			}
-
-			dataConsumer.accept(new LambdaButtonData(consumer));
-		});
+		handleLambdaComponent(event,
+				onError,
+				dataConsumer,
+				buttonLambdaMap,
+				LambdaButtonData::new);
 	}
 
 	@Override
 	public void handleLambdaSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
-		entityStore.executeInTransaction(txn -> {
-			final Entity lambdaSelectionMenuDataEntity = getComponentDataEntity(txn, LAMBDA_SELECTION_MENU_DATA_NAME, "lambda selection menu data", event.getComponentId());
-			if (lambdaSelectionMenuDataEntity == null) {
+		handleLambdaComponent(event,
+				onError,
+				dataConsumer,
+				selectionMenuLambdaMap,
+				LambdaSelectionMenuData::new);
+	}
+
+	@SuppressWarnings("DuplicatedCode")
+	private <EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
+	                                                                                                Consumer<ComponentErrorReason> onError,
+	                                                                                                Consumer<DATA> dataConsumer,
+	                                                                                                Map<Long, Consumer<EVENT>> map,
+	                                                                                                Function<Consumer<EVENT>, DATA> eventFunc) {
+		try (Connection connection = getConnection()) {
+			final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, event.getComponentId());
+
+			if (data == null) {
 				onError.accept(ComponentErrorReason.DONT_EXIST);
 
 				return;
 			}
 
-			final XodusLambdaComponentData xodusLambdaComponentData = XodusObject.read(XodusLambdaComponentData.class, lambdaSelectionMenuDataEntity);
+			final HandleComponentResult result = handleComponentData(event, data);
 
-			HandleComponentResult handleComponentResult = handleComponentData(event, lambdaSelectionMenuDataEntity, xodusLambdaComponentData);
-
-			if (handleComponentResult.getErrorReason() != null) {
-				onError.accept(handleComponentResult.getErrorReason());
+			if (result.getErrorReason() != null) {
+				onError.accept(result.getErrorReason());
 
 				return;
 			}
 
-			final long handlerId = xodusLambdaComponentData.getHandlerId();
+			final long handlerId = data.getHandlerId();
 
-			final Consumer<SelectionEvent> consumer;
-			if (handleComponentResult.shouldDelete()) {
-				consumer = selectionMenuLambdaMap.remove(handlerId);
+			final Consumer<EVENT> consumer;
+			if (result.shouldDelete()) {
+				data.delete(connection);
+
+				consumer = map.remove(handlerId);
 			} else {
-				consumer = selectionMenuLambdaMap.get(handlerId);
+				consumer = map.get(handlerId);
 			}
 
-			dataConsumer.accept(new LambdaSelectionMenuData(consumer));
-		});
+			if (consumer == null) {
+				onError.accept(ComponentErrorReason.DONT_EXIST);
+
+				LOGGER.warn("Could not find a consumer for handler id {} on component {}", handlerId, event.getComponentId());
+
+				return;
+			}
+
+			dataConsumer.accept(eventFunc.apply(consumer));
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while handling a lambda component", e);
+
+			throw new RuntimeException("An exception occurred while handling a lambda component", e);
+		}
 	}
 
 	@Override
 	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
-		entityStore.executeInTransaction(txn -> {
-			final Entity persistentButtonDataEntity = getComponentDataEntity(txn, PERSISTENT_BUTTON_DATA_NAME, "persistent button data", event.getComponentId());
-			if (persistentButtonDataEntity == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
-
-				return;
-			}
-
-			final XodusPersistentComponentData xodusPersistentComponentData = XodusObject.read(XodusPersistentComponentData.class, persistentButtonDataEntity);
-
-			HandleComponentResult handleComponentResult = handleComponentData(event, persistentButtonDataEntity, xodusPersistentComponentData);
-
-			if (handleComponentResult.getErrorReason() != null) {
-				onError.accept(handleComponentResult.getErrorReason());
-
-				return;
-			}
-
-			final String handlerName = xodusPersistentComponentData.getHandlerName();
-			final List<String> args = xodusPersistentComponentData.getArgs();
-
-			dataConsumer.accept(new PersistentButtonData(handlerName, args));
-		});
+		handlePersistentComponent(event,
+				onError,
+				dataConsumer,
+				PersistentButtonData::new);
 	}
 
 	@Override
 	public void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
-		entityStore.executeInTransaction(txn -> {
-			final Entity persistentSelectionMenuDataEntity = getComponentDataEntity(txn, PERSISTENT_SELECTION_MENU_DATA_NAME, "persistent selection menu data", event.getComponentId());
-			if (persistentSelectionMenuDataEntity == null) {
+		handlePersistentComponent(event,
+				onError,
+				dataConsumer,
+				PersistentSelectionMenuData::new);
+	}
+
+	@SuppressWarnings("DuplicatedCode")
+	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
+		try (Connection connection = getConnection()) {
+			final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, event.getComponentId());
+
+			if (data == null) {
 				onError.accept(ComponentErrorReason.DONT_EXIST);
 
 				return;
 			}
 
-			final XodusPersistentComponentData xodusPersistentComponentData = XodusObject.read(XodusPersistentComponentData.class, persistentSelectionMenuDataEntity);
+			final HandleComponentResult result = handleComponentData(event, data);
 
-			HandleComponentResult handleComponentResult = handleComponentData(event, persistentSelectionMenuDataEntity, xodusPersistentComponentData);
-
-			if (handleComponentResult.getErrorReason() != null) {
-				onError.accept(handleComponentResult.getErrorReason());
+			if (result.getErrorReason() != null) {
+				onError.accept(result.getErrorReason());
 
 				return;
 			}
 
-			final String handlerName = xodusPersistentComponentData.getHandlerName();
-			final List<String> args = xodusPersistentComponentData.getArgs();
+			final String handlerName = data.getHandlerName();
+			final String[] args = data.getArgs();
 
-			dataConsumer.accept(new PersistentSelectionMenuData(handlerName, args));
-		});
+			if (result.shouldDelete()) {
+				data.delete(connection);
+			}
+
+			dataConsumer.accept(dataFunction.apply(handlerName, args));
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while handling a persistent component", e);
+
+			throw new RuntimeException("An exception occurred while handling a persistent component", e);
+		}
 	}
 
 	@Override
 	@NotNull
 	public String putLambdaButton(LambdaButtonBuilder builder) {
-		final String id = entityStore.computeInTransaction(txn -> {
-			final long handlerId = txn.getSequence(LAMBDA_BUTTON_SEQUENCE_NAME).increment();
-			buttonLambdaMap.put(handlerId, builder.getConsumer());
+		try (Connection connection = getConnection()) {
+			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+					ComponentType.LAMBDA_BUTTON,
+					builder.isOneUse(),
+					builder.getOwnerId(),
+					builder.getExpirationTimestamp());
 
-			final String componentId = generateId();
-			final XodusLambdaComponentData lambdaComponentData = new XodusLambdaComponentData(componentId, builder.isOneUse(), builder.getExpirationTimestamp(), builder.getOwnerId(), handlerId);
+			buttonLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
-			XodusObject.write(txn, LAMBDA_BUTTON_DATA_NAME, lambdaComponentData);
+			return result.getComponentId();
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while registering a lambda component", e);
 
-			return componentId;
-		});
-
-		environment.executeInTransaction(txn -> idStore.put(txn, StringBinding.stringToEntry(id), IntegerBinding.intToEntry(ComponentType.LAMBDA_BUTTON.getKey())));
-
-		return id;
+			throw new RuntimeException("An exception occurred while registering a lambda component", e);
+		}
 	}
 
 	@Override
 	@NotNull
 	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
-		final String id = entityStore.computeInTransaction(txn -> {
-			final long handlerId = txn.getSequence(LAMBDA_SELECTION_MENU_SEQUENCE_NAME).increment();
-			selectionMenuLambdaMap.put(handlerId, builder.getConsumer());
+		//TODO refactor
+		try (Connection connection = getConnection()) {
+			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+					ComponentType.LAMBDA_SELECTION_MENU,
+					builder.isOneUse(),
+					builder.getOwnerId(),
+					builder.getExpirationTimestamp());
 
-			final String componentId = generateId();
-			final XodusLambdaComponentData lambdaComponentData = new XodusLambdaComponentData(componentId, builder.isOneUse(), builder.getExpirationTimestamp(), builder.getOwnerId(), handlerId);
+			selectionMenuLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
-			XodusObject.write(txn, LAMBDA_SELECTION_MENU_DATA_NAME, lambdaComponentData);
+			return result.getComponentId();
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while registering a lambda component", e);
 
-			return componentId;
-		});
-
-		environment.executeInTransaction(txn -> idStore.put(txn, StringBinding.stringToEntry(id), IntegerBinding.intToEntry(ComponentType.LAMBDA_SELECTION_MENU.getKey())));
-
-		return id;
+			throw new RuntimeException("An exception occurred while registering a lambda component", e);
+		}
 	}
 
-	private <T extends ComponentBuilder<T> & PersistentComponentBuilder> String putPersistentComponent(T builder, String persistentButtonDataName, ComponentType type) {
-		final String id = entityStore.computeInTransaction(txn -> {
-			final String componentId = generateId();
-			final XodusPersistentComponentData persistentComponentData = new XodusPersistentComponentData(componentId,
+	private <T extends ComponentBuilder<T> & PersistentComponentBuilder> String putPersistentComponent(T builder, ComponentType type) {
+		try (Connection connection = getConnection()) {
+			return SqlPersistentComponentData.create(connection,
+					type,
 					builder.isOneUse(),
-					builder.getExpirationTimestamp(),
 					builder.getOwnerId(),
+					builder.getExpirationTimestamp(),
 					builder.getHandlerName(),
 					builder.getArgs());
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while registering a persistent component", e);
 
-			XodusObject.write(txn, persistentButtonDataName, persistentComponentData);
-
-			return componentId;
-		});
-
-		environment.executeInTransaction(txn -> idStore.put(txn, StringBinding.stringToEntry(id), IntegerBinding.intToEntry(type.getKey())));
-
-		return id;
+			throw new RuntimeException("An exception occurred while registering a persistent component", e);
+		}
 	}
 
 	@Override
 	@NotNull
 	public String putPersistentButton(PersistentButtonBuilder builder) {
-		return putPersistentComponent(builder, PERSISTENT_BUTTON_DATA_NAME, ComponentType.PERSISTENT_BUTTON);
+		return putPersistentComponent(builder, ComponentType.PERSISTENT_BUTTON);
 	}
 
 	@Override
 	@NotNull
 	public String putPersistentSelectionMenu(PersistentSelectionMenuBuilder builder) {
-		return putPersistentComponent(builder, PERSISTENT_SELECTION_MENU_DATA_NAME, ComponentType.PERSISTENT_SELECTION_MENU);
+		return putPersistentComponent(builder, ComponentType.PERSISTENT_SELECTION_MENU);
 	}
 
 	@Override
 	public void registerGroup(Collection<String> ids) {
-		entityStore.executeInTransaction(txn -> {
-			final long groupId = txn.getSequence("groupIdSequence").increment();
+		try (Connection connection = getConnection();
+		     PreparedStatement updateGroupsStatement = connection.prepareStatement(
+				     "select nextval('group_seq');\n" +
+						     "update componentdata set groupid = currval('group_seq') where componentid = any(?);"
+		     )) {
+			updateGroupsStatement.setArray(1, connection.createArrayOf("text", ids.toArray()));
 
-			for (String id : ids) {
-				final ComponentType idType = getIdTypeInternal(id);
+			updateGroupsStatement.execute();
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while handling a lambda component", e);
 
-				if (idType == null) {
-					LOGGER.trace("No component for id {} while grouping, may not bad if you use your own IDs", id);
-
-					continue;
-				}
-
-				final String type = typeToEntityName.get(idType);
-				if (type == null) {
-					throw new IllegalArgumentException("Unknown ID type: " + idType);
-				}
-
-				final Entity entity = getComponentDataEntity(txn, type, "Type '" + type + "'", id);
-				if (entity.getRawProperty("groupId") != null) {
-					entity.setProperty("groupId", groupId);
-				} else {
-					LOGGER.error("Found no groupId on entity of type {}", entity.getType());
-				}
-			}
-		});
-	}
-
-	private Entity getComponentDataEntity(StoreTransaction txn, String entityType, String name, String id) {
-		final EntityIterable entities = txn.find(entityType, "componentId", id);
-
-		if (entities.getRoughCount() > 1) {
-			LOGGER.warn("Got more than one {} entity with ID {}", name, id);
+			throw new RuntimeException("An exception occurred while handling a lambda component", e);
 		}
-
-		return entities.getFirst();
 	}
 
-	private void deleteTemporaryEntities(String... entityTypes) {
-		List<String> deletedIds = entityStore.computeInTransaction(txn -> {
-			final List<String> ids = new ArrayList<>();
+	@Override
+	public int deleteIds(Collection<String> ids) {
+		if (ids.isEmpty()) return 0;
 
-			for (String entityType : entityTypes) {
-				int count = 0;
+		int deleted = 0;
+		try (Connection connection = getConnection()) {
+			final Object[] idArray = ids.toArray();
 
-				for (Entity entity : txn.getAll(entityType)) {
-					final String componentId = (String) entity.getProperty("componentId");
-					if (componentId == null) {
-						LOGGER.error("Entity of type {} does not have a component id !", entityType);
+			try (PreparedStatement preparedStatement = connection.prepareStatement(
+					//should be a cascade delete, see table declaration
+					"delete from lambdacomponentdata where componentid = any(?) returning handlerid;"
+			)) {
+				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
 
-						continue;
+				final ResultSet resultSet = preparedStatement.executeQuery();
+
+				while (resultSet.next()) {
+					final long handlerId = resultSet.getLong("handlerId");
+
+					//handler id is actually a shared sequence so there can't be duplicates even if we merged both maps
+					if (buttonLambdaMap.remove(handlerId) == null) {
+						selectionMenuLambdaMap.remove(handlerId);
 					}
 
-					XodusObject.deleteRecursively(entity);
-
-					ids.add(componentId);
-
-					count++;
+					deleted++;
 				}
-
-				LOGGER.trace("Deleted {} temporary entities of type {}", count, entityType);
 			}
 
-			return ids;
-		});
+			try (PreparedStatement preparedStatement = connection.prepareStatement(
+					"delete from persistentcomponentdata where componentid = any(?);"
+			)) {
+				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
 
-		environment.executeInTransaction(txn -> {
-			for (String deletedId : deletedIds) {
-				idStore.delete(txn, StringBinding.stringToEntry(deletedId));
+				deleted += preparedStatement.executeUpdate();
 			}
-		});
+		} catch (Exception e) {
+			LOGGER.error("An exception occurred while deleting components", e);
 
-		environment.gc();
-	}
+			throw new RuntimeException("An exception occurred while deleting components", e);
+		}
 
-	private void resetTemporarySequences(String... sequences) {
-		entityStore.executeInTransaction(txn -> {
-			for (String sequence : sequences) {
-				txn.getSequence(sequence).set(0);
-
-				LOGGER.trace("Sequence {} has been reset", sequence);
-			}
-		});
-	}
-
-	private String generateId() {
-		return environment.computeInTransaction(txn -> {
-			String randomId;
-
-			do {
-				randomId = Utils.randomId(64);
-			} while (idStore.get(txn, StringBinding.stringToEntry(randomId)) != null);
-
-			return randomId;
-		});
+		return deleted;
 	}
 
 	@NotNull
-	private HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event, Entity complexEntity, @NotNull XodusComponentData xodusComponentData) {
-		boolean oneUse = xodusComponentData.isOneUse();
-		final long ownerId = xodusComponentData.getOwnerId();
-		final long expirationTimestamp = xodusComponentData.getExpirationTimestamp();
+	private Connection getConnection() {
+		return connectionSupplier.get();
+	}
+
+	private void deleteTemporaryEntities() throws SQLException {
+		try (Connection connection = getConnection();
+		     PreparedStatement preparedStatement = connection.prepareStatement(
+				     "delete from componentdata where type = ? or type = ?"
+		     )) {
+			preparedStatement.setInt(1, ComponentType.LAMBDA_BUTTON.getKey());
+			preparedStatement.setInt(2, ComponentType.LAMBDA_SELECTION_MENU.getKey());
+
+			preparedStatement.execute();
+		}
+	}
+
+	private void setupTables() throws SQLException {
+		try (Connection connection = getConnection();
+		     PreparedStatement preparedStatement = connection.prepareStatement(
+				     "drop table if exists LambdaComponentData;\n" +
+						     "\n" +
+						     "create sequence if not exists group_seq as bigint;\n" +
+						     "\n" +
+						     "create table if not exists ComponentData\n" +
+						     "(\n" +
+						     "    componentId         text not null primary key,\n" +
+						     "    type                int  not null,\n" +
+						     "    groupId             bigint,\n" +
+						     "    oneUse              bool not null,\n" +
+						     "    ownerId             bigint,\n" +
+						     "    expirationTimestamp bigint\n" +
+						     ");\n" +
+						     "\n" +
+						     "create table LambdaComponentData\n" +
+						     "(\n" +
+						     "    componentId text   not null references ComponentData on delete cascade,\n" +
+						     "    handlerId   serial8 not null\n" +
+						     ");\n" +
+						     "\n" +
+						     "create table if not exists PersistentComponentData\n" +
+						     "(\n" +
+						     "    componentId text not null references ComponentData on delete cascade,\n" +
+						     "    handlerName text not null,\n" +
+						     "    args        text not null\n" +
+						     ");"
+		     )) {
+			preparedStatement.execute();
+		}
+	}
+
+	@NotNull
+	private HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event, SqlComponentData data) {
+		final boolean oneUse = data.isOneUse() || data.getGroupId() > 0;
+		final long ownerId = data.getOwnerId();
+		final long expirationTimestamp = data.getExpirationTimestamp();
 
 		if (expirationTimestamp > 0 && LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) > expirationTimestamp) {
 			return new HandleComponentResult(ComponentErrorReason.EXPIRED, true);
@@ -412,94 +390,6 @@ public class DefaultComponentManager implements ComponentManager {
 			return new HandleComponentResult(ComponentErrorReason.NOT_OWNER, false);
 		}
 
-		deleteComponent(complexEntity);
-
 		return new HandleComponentResult(null, oneUse);
-	}
-
-	@Override
-	public int deleteIds(Collection<String> ids) {
-		List<ComponentType> types = environment.computeInTransaction(envTxn -> {
-			final ArrayList<ComponentType> list = new ArrayList<>();
-
-			final Cursor cursor = idStore.openCursor(envTxn);
-			for (String id : ids) {
-				//probably more efficient than doing find on every component type
-				final ByteIterable entry = cursor.getSearchKey(StringBinding.stringToEntry(id));
-				if (entry == null) {
-					list.add(null);
-
-					continue;
-				}
-
-				list.add(ComponentType.fromKey(IntegerBinding.entryToInt(entry)));
-
-				cursor.deleteCurrent();
-			}
-
-			return list;
-		});
-
-		return entityStore.computeInTransaction(txn -> {
-			int i = 0;
-			int deleted = 0;
-			for (String id : ids) {
-				final ComponentType componentType = types.get(i++);
-
-				if (componentType != null) {
-					final String dataName = typeToEntityName.get(componentType);
-
-					for (Entity entity : txn.find(dataName, "componentId", id)) {
-						if (entity.delete()) {
-							deleted++;
-						}
-					}
-				}
-			}
-
-			return deleted;
-		});
-	}
-
-	private void deleteComponent(Entity complexEntity) {
-		final long groupId = getNotNullProperty(complexEntity, "groupId");
-		if (groupId >= 0) {
-			final StoreTransaction transaction = entityStore.getCurrentTransaction();
-			if (transaction != null) {
-				environment.executeInTransaction(txn -> {
-					for (String entityType : transaction.getEntityTypes()) {
-						for (Entity entity : transaction.find(entityType, "groupId", groupId)) {
-							entity.delete();
-
-							final ByteIterable componentId = entity.getRawProperty("componentId");
-							if (componentId != null) {
-								idStore.delete(txn, componentId);
-							}
-						}
-					}
-				});
-			} else {
-				LOGGER.error("StoreTransaction == null");
-			}
-		} else if ((boolean) getNotNullProperty(complexEntity, "oneUse")) {
-			complexEntity.delete();
-
-			final ByteIterable componentId = complexEntity.getRawProperty("componentId");
-			if (componentId != null) {
-				environment.executeInTransaction(txn -> idStore.delete(txn, componentId));
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@NotNull
-	private <T> T getNotNullProperty(Entity entity, String propertyName) {
-		final Object property = entity.getProperty(propertyName);
-
-		if (property == null) {
-			throw new IllegalArgumentException("Expected a property '" + propertyName + "' in entity " + entity.getType());
-		}
-
-		return (T) property;
 	}
 }

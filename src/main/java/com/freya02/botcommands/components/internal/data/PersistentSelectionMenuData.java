@@ -1,12 +1,10 @@
 package com.freya02.botcommands.components.internal.data;
 
-import java.util.List;
-
 public class PersistentSelectionMenuData {
 	private final String handlerName;
-	private final List<String> args;
+	private final String[] args;
 
-	public PersistentSelectionMenuData(String handlerName, List<String> args) {
+	public PersistentSelectionMenuData(String handlerName, String[] args) {
 		this.handlerName = handlerName;
 		this.args = args;
 	}
@@ -15,7 +13,7 @@ public class PersistentSelectionMenuData {
 		return handlerName;
 	}
 
-	public List<String> getArgs() {
+	public String[] getArgs() {
 		return args;
 	}
 }

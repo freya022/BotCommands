@@ -8,19 +8,18 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder {
 	private final BContext context;
 	private final String handlerName;
-	private final List<String> args;
+	private final String[] args;
 
 	private boolean oneUse;
 	private long ownerId;
 	private long expirationTimestamp;
 
-	public PersistentSelectionMenuBuilder(BContext context, String handlerName, List<String> args) {
+	public PersistentSelectionMenuBuilder(BContext context, String handlerName, String[] args) {
 		super("fake");
 
 		this.context = context;
@@ -34,7 +33,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	}
 
 	@Override
-	public List<String> getArgs() {
+	public String[] getArgs() {
 		return args;
 	}
 

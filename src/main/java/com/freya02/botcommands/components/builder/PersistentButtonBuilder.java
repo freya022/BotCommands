@@ -8,15 +8,13 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 
-import java.util.List;
-
 public class PersistentButtonBuilder extends ComponentBuilderImpl<PersistentButtonBuilder> implements PersistentComponentBuilder {
 	private final BContext context;
 	private final String handlerName;
-	private final List<String> args;
+	private final String[] args;
 	private final ButtonStyle buttonStyle;
 
-	public PersistentButtonBuilder(BContext context, String handlerName, List<String> args, ButtonStyle buttonStyle) {
+	public PersistentButtonBuilder(BContext context, String handlerName, String[] args, ButtonStyle buttonStyle) {
 		this.context = context;
 		this.handlerName = handlerName;
 		this.args = args;
@@ -29,7 +27,7 @@ public class PersistentButtonBuilder extends ComponentBuilderImpl<PersistentButt
 	}
 
 	@Override
-	public List<String> getArgs() {
+	public String[] getArgs() {
 		return args;
 	}
 
