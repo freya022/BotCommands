@@ -204,7 +204,7 @@ public class Paginator {
 
 		final int deletedIds = manager.deleteIds(usedIds);
 
-		LOGGER.trace("Cleaned up {} button IDs out of {}", deletedIds, usedIds.size());
+		LOGGER.trace("Cleaned up {} component IDs out of {}", deletedIds, usedIds.size());
 
 		usedIds.clear();
 	}
