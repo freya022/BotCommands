@@ -103,7 +103,7 @@ public class Paginator {
 		if (deleteButton) {
 			//Unique use in the case the message isn't ephemeral
 			// Do not use ButtonId#uniqueOfUser as button ids are deleted by Paginator#cleanup
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).build(DELETE_EMOJI);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(DELETE_EMOJI);
 		} else {
 			this.deleteButton = null;
 		}
