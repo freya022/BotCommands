@@ -5,7 +5,9 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -13,9 +15,9 @@ public abstract class Cooldownable {
 	private final int cooldown;
 
 	//The values is the time on which the cooldown expires
-	private final HashMap<Long, Long> userCooldowns = new HashMap<>();
-	private final HashMap<Long, Long> channelCooldowns = new HashMap<>();
-	private final HashMap<Long, Long> guildCooldowns = new HashMap<>();
+	private final Map<Long, Long> userCooldowns = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Long, Long> channelCooldowns = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Long, Long> guildCooldowns = Collections.synchronizedMap(new HashMap<>());
 
 	protected Cooldownable(CooldownScope cooldownScope, int cooldown) {
 		this.cooldownScope = cooldownScope;
