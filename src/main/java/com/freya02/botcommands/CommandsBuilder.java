@@ -531,6 +531,9 @@ public final class CommandsBuilder {
 			context.addPrefix("<@" + jda.getSelfUser().getId() + "> ");
 			context.addPrefix("<@!" + jda.getSelfUser().getId() + "> ");
 		}
+
+		registerConstructorParameter(BContext.class, ignored -> context);
+		registerCommandDependency(BContext.class, () -> context);
 	}
 
 	public BContext getContext() {
