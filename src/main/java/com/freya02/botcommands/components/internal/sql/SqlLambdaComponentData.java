@@ -39,7 +39,7 @@ public class SqlLambdaComponentData extends SqlComponentData {
 		}
 	}
 
-	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, long expirationTimestamp) throws SQLException {
+	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis) throws SQLException {
 		String randomId = getRandomId(con);
 
 		try (PreparedStatement preparedStatement = con.prepareStatement(
@@ -49,7 +49,7 @@ public class SqlLambdaComponentData extends SqlComponentData {
 			preparedStatement.setString(2, randomId);
 			preparedStatement.setBoolean(3, oneUse);
 			preparedStatement.setLong(4, ownerId);
-			preparedStatement.setLong(5, expirationTimestamp);
+			preparedStatement.setLong(5, System.currentTimeMillis() + timeoutMillis);
 
 			preparedStatement.execute();
 

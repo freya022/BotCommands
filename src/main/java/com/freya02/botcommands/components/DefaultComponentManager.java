@@ -203,7 +203,7 @@ public class DefaultComponentManager implements ComponentManager {
 					ComponentType.LAMBDA_BUTTON,
 					builder.isOneUse(),
 					builder.getOwnerId(),
-					builder.getExpirationTimestamp());
+					builder.getTimeout());
 
 			buttonLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
@@ -218,13 +218,12 @@ public class DefaultComponentManager implements ComponentManager {
 	@Override
 	@NotNull
 	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
-		//TODO refactor
 		try (Connection connection = getConnection()) {
 			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_SELECTION_MENU,
 					builder.isOneUse(),
 					builder.getOwnerId(),
-					builder.getExpirationTimestamp());
+					builder.getTimeout());
 
 			selectionMenuLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
@@ -377,7 +376,7 @@ public class DefaultComponentManager implements ComponentManager {
 		final long ownerId = data.getOwnerId();
 		final long expirationTimestamp = data.getExpirationTimestamp();
 
-		if (expirationTimestamp > 0 && LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) > expirationTimestamp) {
+		if (expirationTimestamp > 0 && System.currentTimeMillis() > expirationTimestamp) {
 			return new HandleComponentResult(ComponentErrorReason.EXPIRED, true);
 		}
 

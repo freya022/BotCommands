@@ -1,7 +1,5 @@
 package com.freya02.botcommands.components.builder;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unchecked")
@@ -9,7 +7,7 @@ public abstract class ComponentBuilderImpl<T extends ComponentBuilderImpl<T>> im
 	private boolean oneUse;
 	private long ownerId;
 
-	private long expirationTimestamp;
+	private long timeout;
 
 	@Override
 	public T oneUse() {
@@ -27,14 +25,7 @@ public abstract class ComponentBuilderImpl<T extends ComponentBuilderImpl<T>> im
 
 	@Override
 	public T timeout(long timeout, TimeUnit timeoutUnit) {
-		this.expirationTimestamp = timeoutUnit.toSeconds(timeout);
-
-		return (T) this;
-	}
-
-	@Override
-	public T expireOn(LocalDateTime time) {
-		this.expirationTimestamp = time.toEpochSecond(ZoneOffset.UTC);
+		this.timeout = timeoutUnit.toMillis(timeout);
 
 		return (T) this;
 	}
@@ -50,7 +41,7 @@ public abstract class ComponentBuilderImpl<T extends ComponentBuilderImpl<T>> im
 	}
 
 	@Override
-	public long getExpirationTimestamp() {
-		return expirationTimestamp;
+	public long getTimeout() {
+		return timeout;
 	}
 }

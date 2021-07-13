@@ -1,6 +1,5 @@
 package com.freya02.botcommands.components.builder;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 public interface ComponentBuilder<T extends ComponentBuilder<T>> {
@@ -10,11 +9,9 @@ public interface ComponentBuilder<T extends ComponentBuilder<T>> {
 
 	T timeout(long timeout, TimeUnit timeoutUnit);
 
-	T expireOn(LocalDateTime time);
-
 	boolean isOneUse();
 
 	long getOwnerId();
 
-	long getExpirationTimestamp();
+	long getTimeout();
 }

@@ -7,8 +7,6 @@ import com.freya02.botcommands.components.event.SelectionEvent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 
 import javax.annotation.Nonnull;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -57,14 +55,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 
 	@Override
 	public LambdaSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit) {
-		this.expirationTimestamp = timeoutUnit.toSeconds(timeout);
-
-		return this;
-	}
-
-	@Override
-	public LambdaSelectionMenuBuilder expireOn(LocalDateTime time) {
-		this.expirationTimestamp = time.toEpochSecond(ZoneOffset.UTC);
+		this.expirationTimestamp = timeoutUnit.toMillis(timeout);
 
 		return this;
 	}
@@ -80,7 +71,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	}
 
 	@Override
-	public long getExpirationTimestamp() {
+	public long getTimeout() {
 		return expirationTimestamp;
 	}
 }

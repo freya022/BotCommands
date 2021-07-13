@@ -6,8 +6,6 @@ import com.freya02.botcommands.components.ComponentManager;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 
 import javax.annotation.Nonnull;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder {
@@ -63,14 +61,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 
 	@Override
 	public PersistentSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit) {
-		this.expirationTimestamp = timeoutUnit.toSeconds(timeout);
-
-		return this;
-	}
-
-	@Override
-	public PersistentSelectionMenuBuilder expireOn(LocalDateTime time) {
-		this.expirationTimestamp = time.toEpochSecond(ZoneOffset.UTC);
+		this.expirationTimestamp = timeoutUnit.toMillis(timeout);
 
 		return this;
 	}
@@ -86,7 +77,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	}
 
 	@Override
-	public long getExpirationTimestamp() {
+	public long getTimeout() {
 		return expirationTimestamp;
 	}
 }

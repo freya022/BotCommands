@@ -46,7 +46,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 		}
 	}
 
-	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, long expirationTimestamp, String handlerName, String[] args) throws SQLException {
+	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis, String handlerName, String[] args) throws SQLException {
 		String randomId = getRandomId(con);
 
 		try (PreparedStatement preparedStatement = con.prepareStatement(
@@ -57,7 +57,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 			preparedStatement.setString(2, randomId);
 			preparedStatement.setBoolean(3, oneUse);
 			preparedStatement.setLong(4, ownerId);
-			preparedStatement.setLong(5, expirationTimestamp);
+			preparedStatement.setLong(5, System.currentTimeMillis() + timeoutMillis);
 
 			preparedStatement.setString(6, randomId);
 			preparedStatement.setString(7, handlerName);
