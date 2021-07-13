@@ -2,6 +2,8 @@ package com.freya02.botcommands.components;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.Utils;
+import com.freya02.botcommands.components.annotation.JdaButtonListener;
+import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
 import com.freya02.botcommands.components.builder.LambdaButtonBuilder;
 import com.freya02.botcommands.components.builder.LambdaSelectionMenuBuilder;
 import com.freya02.botcommands.components.builder.PersistentButtonBuilder;
@@ -10,8 +12,10 @@ import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,6 +25,31 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * The only class you will have to use to create smart components such as {@link Button buttons} and {@link SelectionMenu selection menus}<br>
+ * This class lets you create every type of buttons as well as have builder patterns, while benefiting from the persistent / lambda IDs such as:
+ * <ul>
+ *     <li>Unlimited argument storage (no more 100 chars limit !)</li>
+ *     <li>One-use components</li>
+ *     <li>Timeouts</li>
+ *     <li>Allowing one user to interact with them</li>
+ * </ul>
+ * A typical usage could look like this:
+ *
+ * <pre><code>
+ * event.reply("Are you sure to ban " + user.getAsMention() + " ?")
+ * 	.setEphemeral(true)
+ * 	.addActionRow(Components.group(
+ * 			Components.dangerButton(BAN_BUTTON_NAME, //Name of the button listener, must be the same as the one given in JdaButtonListener
+ * 					callerMember.getIdLong(), //Arguments to pass, they must be mappable to the types of the method "ban" below
+ * 					targetMember.getId(),
+ * 					delDays,
+ * 					"Banned by " + event.getUser().getAsTag() + " : '" + reason + "'").build("Confirm"),
+ * 			Components.secondaryButton(CANCEL_BUTTON_NAME, event.getUser().getIdLong()).build("Cancel")
+ * 	))
+ * 	.queue();
+ * </code></pre>
+ */
 public class Components {
 	private static BContext context;
 
@@ -28,6 +57,13 @@ public class Components {
 		Components.context = context;
 	}
 
+	/**
+	 * Registers the IDs of these components as one group.<br>
+	 * If one of these components is used, the component and the others from that group will also get deleted.
+	 *
+	 * @param components The components to group
+	 * @return The exact same components for chaining purposes
+	 */
 	@Nonnull
 	public static Component[] group(@NotNull Component... components) {
 		Utils.getComponentManager(context).registerGroup(
@@ -39,6 +75,13 @@ public class Components {
 		return components;
 	}
 
+	/**
+	 * Registers the IDs of these components as one group.<br>
+	 * If one of these components is used, the component and the others from that group will also get deleted.
+	 *
+	 * @param components The components to group
+	 * @return The exact same components for chaining purposes
+	 */
 	@Nonnull
 	public static <T extends Collection<Component>> T group(@NotNull T components) {
 		Utils.getComponentManager(context).registerGroup(
@@ -50,6 +93,13 @@ public class Components {
 		return components;
 	}
 
+	/**
+	 * Registers the IDs of these ActionRow's components as one group.<br>
+	 * If one of these components is used, the component and the others from that group will also get deleted.
+	 *
+	 * @param rows The ActionRow's components to group
+	 * @return The exact same components for chaining purposes
+	 */
 	@Nonnull
 	public static ActionRow[] groupRows(@NotNull ActionRow... rows) {
 		Utils.getComponentManager(context).registerGroup(
@@ -61,6 +111,13 @@ public class Components {
 		return rows;
 	}
 
+	/**
+	 * Registers the IDs of these ActionRow's components as one group.<br>
+	 * If one of these components is used, the component and the others from that group will also get deleted.
+	 *
+	 * @param rows The ActionRow's components to group
+	 * @return The exact same components for chaining purposes
+	 */
 	@Nonnull
 	public static <T extends Collection<@NotNull ActionRow>> T groupRows(@NotNull T rows) {
 		Utils.getComponentManager(context).registerGroup(
@@ -72,30 +129,60 @@ public class Components {
 		return rows;
 	}
 
+	/**
+	 * Creates a new primary button with a lambda {@link ButtonEvent} handler
+	 *
+	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder primaryButton(@NotNull Consumer<ButtonEvent> consumer) {
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.PRIMARY);
 	}
 
+	/**
+	 * Creates a new secondary button with a lambda {@link ButtonEvent} handler
+	 *
+	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder secondaryButton(@NotNull Consumer<ButtonEvent> consumer) {
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SECONDARY);
 	}
 
+	/**
+	 * Creates a new danger button with a lambda {@link ButtonEvent} handler
+	 *
+	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder dangerButton(@NotNull Consumer<ButtonEvent> consumer) {
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.DANGER);
 	}
 
+	/**
+	 * Creates a new success button with a lambda {@link ButtonEvent} handler
+	 *
+	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder successButton(@NotNull Consumer<ButtonEvent> consumer) {
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SUCCESS);
 	}
 
+	/**
+	 * Creates a new button of the given style, with a lambda {@link ButtonEvent} handler
+	 *
+	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull Consumer<ButtonEvent> consumer) {
@@ -119,42 +206,90 @@ public class Components {
 		return strings;
 	}
 
+	/**
+	 * Creates a new primary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.PRIMARY);
 	}
 
+	/**
+	 * Creates a new secondary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SECONDARY);
 	}
 
+	/**
+	 * Creates a new danger button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.DANGER);
 	}
 
+	/**
+	 * Creates a new success button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static PersistentButtonBuilder successButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SUCCESS);
 	}
 
+	/**
+	 * Creates a new button of the given style with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A button builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _, _ -> new")
 	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), style);
 	}
 
+	/**
+	 * Creates a new selection menu with a lambda {@link SelectionEvent} handler
+	 *
+	 * @param consumer The {@link SelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @return A selection menu builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull Consumer<SelectionEvent> consumer) {
 		return new LambdaSelectionMenuBuilder(context, consumer);
 	}
 
+	/**
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JdaSelectionMenuListener}, and the given arguments
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A selection menu builder to configure behavior
+	 */
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, Object... args) {
