@@ -31,7 +31,7 @@ public abstract class SqlComponentData {
 	static String getRandomId(Connection con) throws SQLException {
 		String randomId = null;
 		int i;
-		for (i = 0; i < 10; i++) {
+		for (i = 0; i < 100; i++) {
 			randomId = Utils.randomId(64);
 
 			synchronized (ID_CREATE_LOCK) {
@@ -45,8 +45,8 @@ public abstract class SqlComponentData {
 			}
 		}
 
-		if (i > 10) {
-			LOGGER.warn("");
+		if (i > 100) {
+			throw new IllegalStateException("Took more than 100 iterations to find a random ID, please clean up the ComponentData table");
 		}
 
 		return randomId;
