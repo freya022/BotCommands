@@ -1,6 +1,7 @@
 package com.freya02.botcommands.components;
 
 import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.annotation.JdaButtonListener;
 import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
@@ -10,7 +11,7 @@ import com.freya02.botcommands.components.builder.PersistentButtonBuilder;
 import com.freya02.botcommands.components.builder.PersistentSelectionMenuBuilder;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
-import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
@@ -18,10 +19,13 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -51,6 +55,9 @@ import java.util.stream.Collectors;
  * </code></pre>
  */
 public class Components {
+	private static final List<Class<? extends ISnowflake>> RESTRICTED_CLASSES = List.of(Role.class, AbstractChannel.class, Guild.class, Emote.class, User.class, Message.class);
+	private static final Logger LOGGER = Logging.getLogger();
+
 	private static BContext context;
 
 	static void setContext(BContext context) {
@@ -138,6 +145,8 @@ public class Components {
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder primaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.PRIMARY);
 	}
 
@@ -150,6 +159,8 @@ public class Components {
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder secondaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SECONDARY);
 	}
 
@@ -162,6 +173,8 @@ public class Components {
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder dangerButton(@NotNull Consumer<ButtonEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.DANGER);
 	}
 
@@ -174,6 +187,8 @@ public class Components {
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaButtonBuilder successButton(@NotNull Consumer<ButtonEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SUCCESS);
 	}
 
@@ -186,7 +201,19 @@ public class Components {
 	@Nonnull
 	@Contract("_, _ -> new")
 	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull Consumer<ButtonEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaButtonBuilder(context, consumer, style);
+	}
+
+	private static void checkCapturedVars(Consumer<?> consumer) {
+		for (Field field : consumer.getClass().getDeclaredFields()) {
+			for (Class<?> aClass : RESTRICTED_CLASSES) {
+				if (aClass.isAssignableFrom(field.getType())) {
+					LOGGER.warn("A component consumer has a field of type {}, these objects could be invalid when the action is called. Consider having IDs of the objects you need, refer to https://github.com/DV8FromTheWorld/JDA/wiki/19%29-Troubleshooting#cannot-get-reference-as-it-has-already-been-garbage-collected", aClass.getSimpleName());
+				}
+			}
+		}
 	}
 
 	@Nonnull
@@ -280,6 +307,8 @@ public class Components {
 	@Nonnull
 	@Contract("_ -> new")
 	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull Consumer<SelectionEvent> consumer) {
+		checkCapturedVars(consumer);
+
 		return new LambdaSelectionMenuBuilder(context, consumer);
 	}
 
