@@ -57,7 +57,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 			preparedStatement.setString(2, randomId);
 			preparedStatement.setBoolean(3, oneUse);
 			preparedStatement.setLong(4, ownerId);
-			preparedStatement.setLong(5, System.currentTimeMillis() + timeoutMillis);
+			preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
 
 			preparedStatement.setString(6, randomId);
 			preparedStatement.setString(7, handlerName);
