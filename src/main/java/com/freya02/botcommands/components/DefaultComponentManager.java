@@ -199,22 +199,24 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	private void scheduleLambdaTimeout(long timeout, long handlerId, String componentId) {
-		timeoutService.schedule(() -> {
-			try (Connection connection = getConnection()) {
-				final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, componentId);
-				if (data != null) {
-					buttonLambdaMap.remove(handlerId);
+		if (timeout > 0) {
+			timeoutService.schedule(() -> {
+				try (Connection connection = getConnection()) {
+					final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, componentId);
+					if (data != null) {
+						buttonLambdaMap.remove(handlerId);
 
-					data.delete(connection);
+						data.delete(connection);
+					}
+				} catch (SQLException e) {
+					if (LOGGER.isErrorEnabled()) {
+						LOGGER.error("An error occurred while deleting a lambda component after a timeout", e);
+					} else {
+						e.printStackTrace();
+					}
 				}
-			} catch (SQLException e) {
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("An error occurred while deleting a lambda component after a timeout", e);
-				} else {
-					e.printStackTrace();
-				}
-			}
-		}, timeout, TimeUnit.MILLISECONDS);
+			}, timeout, TimeUnit.MILLISECONDS);
+		}
 	}
 
 	@Override
@@ -266,20 +268,22 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	private void schedulePersistentTimeout(long timeout, String componentId) {
-		timeoutService.schedule(() -> {
-			try (Connection connection = getConnection()) {
-				final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, componentId);
-				if (data != null) {
-					data.delete(connection);
+		if (timeout > 0) {
+			timeoutService.schedule(() -> {
+				try (Connection connection = getConnection()) {
+					final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, componentId);
+					if (data != null) {
+						data.delete(connection);
+					}
+				} catch (SQLException e) {
+					if (LOGGER.isErrorEnabled()) {
+						LOGGER.error("An error occurred while deleting a persistent component after a timeout", e);
+					} else {
+						e.printStackTrace();
+					}
 				}
-			} catch (SQLException e) {
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error("An error occurred while deleting a persistent component after a timeout", e);
-				} else {
-					e.printStackTrace();
-				}
-			}
-		}, timeout, TimeUnit.MILLISECONDS);
+			}, timeout, TimeUnit.MILLISECONDS);
+		}
 	}
 
 	private <T extends ComponentBuilder<T> & PersistentComponentBuilder> String putPersistentComponent(T builder, ComponentType type) {
