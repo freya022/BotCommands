@@ -1,10 +1,8 @@
 package com.freya02.botcommands.components.internal.sql;
 
 import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -25,31 +23,6 @@ public abstract class SqlComponentData {
 		this.oneUse = oneUse;
 		this.ownerId = ownerId;
 		this.expirationTimestamp = expirationTimestamp;
-	}
-
-	@Nonnull
-	static String getRandomId(Connection con) throws SQLException {
-		String randomId = null;
-		int i;
-		for (i = 0; i < 100; i++) {
-			randomId = Utils.randomId(64);
-
-			synchronized (ID_CREATE_LOCK) {
-				try (PreparedStatement preparedStatement = con.prepareStatement("select componentid from componentdata where componentid = ? limit 1;")) {
-					preparedStatement.setString(1, randomId);
-
-					if (!preparedStatement.executeQuery().next()) { //if id is unique
-						break;
-					}
-				}
-			}
-		}
-
-		if (i > 100) {
-			throw new IllegalStateException("Took more than 100 iterations to find a random ID, please clean up the ComponentData table");
-		}
-
-		return randomId;
 	}
 
 	public void delete(Connection con) throws SQLException {

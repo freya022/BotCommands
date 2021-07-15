@@ -1,5 +1,6 @@
 package com.freya02.botcommands.components.internal.sql;
 
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentType;
 
 import java.sql.Connection;
@@ -40,29 +41,33 @@ public class SqlLambdaComponentData extends SqlComponentData {
 	}
 
 	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis) throws SQLException {
-		String randomId = getRandomId(con);
+		while (true) {
+			String randomId = Utils.randomId(64);
 
-		try (PreparedStatement preparedStatement = con.prepareStatement(
-				"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);"
-		)) {
-			preparedStatement.setInt(1, type.getKey());
-			preparedStatement.setString(2, randomId);
-			preparedStatement.setBoolean(3, oneUse);
-			preparedStatement.setLong(4, ownerId);
-			preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
+			try (PreparedStatement preparedStatement = con.prepareStatement(
+					"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);"
+			)) {
+				preparedStatement.setInt(1, type.getKey());
+				preparedStatement.setString(2, randomId);
+				preparedStatement.setBoolean(3, oneUse);
+				preparedStatement.setLong(4, ownerId);
+				preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
 
-			preparedStatement.execute();
+				preparedStatement.execute();
 
-			try (PreparedStatement preparedStatement1 = con.prepareStatement("insert into lambdacomponentdata (componentid) values (?) returning handlerid;")) {
-				preparedStatement1.setString(1, randomId);
+				try (PreparedStatement preparedStatement1 = con.prepareStatement("insert into lambdacomponentdata (componentid) values (?) returning handlerid;")) {
+					preparedStatement1.setString(1, randomId);
 
-				try (ResultSet resultSet = preparedStatement1.executeQuery()) {
-					if (resultSet.next()) {
-						return new SqlLambdaCreateResult(randomId, resultSet.getLong("handlerId"));
-					} else {
-						throw new IllegalStateException("Lambda component insert into didn't return the handler id");
+					try (ResultSet resultSet = preparedStatement1.executeQuery()) {
+						if (resultSet.next()) {
+							return new SqlLambdaCreateResult(randomId, resultSet.getLong("handlerId"));
+						} else {
+							throw new IllegalStateException("Lambda component insert into didn't return the handler id");
+						}
 					}
 				}
+			} catch (SQLException ignored) {
+				//ID already exists
 			}
 		}
 	}

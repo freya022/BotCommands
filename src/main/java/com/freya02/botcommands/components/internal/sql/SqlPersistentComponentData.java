@@ -1,5 +1,6 @@
 package com.freya02.botcommands.components.internal.sql;
 
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentType;
 import com.google.gson.Gson;
 
@@ -47,26 +48,30 @@ public class SqlPersistentComponentData extends SqlComponentData {
 	}
 
 	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis, String handlerName, String[] args) throws SQLException {
-		String randomId = getRandomId(con);
+		while (true) {
+			String randomId = Utils.randomId(64);
 
-		try (PreparedStatement preparedStatement = con.prepareStatement(
-				"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);\n" +
-						"insert into persistentcomponentdata (componentid, handlername, args) values (?, ?, ?);"
-		)) {
-			preparedStatement.setInt(1, type.getKey());
-			preparedStatement.setString(2, randomId);
-			preparedStatement.setBoolean(3, oneUse);
-			preparedStatement.setLong(4, ownerId);
-			preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
+			try (PreparedStatement preparedStatement = con.prepareStatement(
+					"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);\n" +
+							"insert into persistentcomponentdata (componentid, handlername, args) values (?, ?, ?);"
+			)) {
+				preparedStatement.setInt(1, type.getKey());
+				preparedStatement.setString(2, randomId);
+				preparedStatement.setBoolean(3, oneUse);
+				preparedStatement.setLong(4, ownerId);
+				preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
 
-			preparedStatement.setString(6, randomId);
-			preparedStatement.setString(7, handlerName);
-			preparedStatement.setString(8, GSON.toJson(args));
+				preparedStatement.setString(6, randomId);
+				preparedStatement.setString(7, handlerName);
+				preparedStatement.setString(8, GSON.toJson(args));
 
-			preparedStatement.execute();
+				preparedStatement.execute();
+
+				return randomId;
+			} catch (SQLException ignored) {
+				//ID already exists
+			}
 		}
-
-		return randomId;
 	}
 
 	public String getHandlerName() {
