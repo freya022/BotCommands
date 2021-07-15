@@ -18,10 +18,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class ComponentListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
+
+	private final ExecutorService idHandlingExecutor = Executors.newSingleThreadExecutor(r -> {
+		final Thread thread = new Thread(r);
+		thread.setDaemon(false);
+		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in a component ID handler thread '" + t.getName() + "':", e));
+		thread.setName("Component ID handling thread");
+
+		return thread;
+	});
+
+	private int callbackThreadNumber;
+	private final ExecutorService callbackExecutor = Utils.createCommandPool(r -> {
+		final Thread thread = new Thread(r);
+		thread.setDaemon(false);
+		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in a component callback thread '" + t.getName() + "':", e));
+		thread.setName("Component callback thread #" + callbackThreadNumber++);
+
+		return thread;
+	});
 
 	private final BContext context;
 	private final ComponentManager idManager;
@@ -41,6 +62,10 @@ public class ComponentListener extends ListenerAdapter {
 	public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {
 		if (!(event instanceof ButtonClickEvent) && !(event instanceof SelectionMenuEvent)) return;
 
+		idHandlingExecutor.submit(() -> handleComponentInteraction(event));
+	}
+
+	private void handleComponentInteraction(@Nonnull GenericComponentInteractionCreateEvent event) {
 		final ComponentType idType = idManager.getIdType(event.getComponentId());
 
 		if (idType == null) {
@@ -67,34 +92,34 @@ public class ComponentListener extends ListenerAdapter {
 			case PERSISTENT_BUTTON:
 				idManager.handlePersistentButton(event,
 						e -> onError(event, e.getReason()),
-						data -> handlePersistentComponent(event,
+						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
 								buttonsMap,
 								data.getHandlerName(),
 								data.getArgs(),
-								() -> new ButtonEvent(context, (ButtonClickEvent) event)));
+								() -> new ButtonEvent(context, (ButtonClickEvent) event))));
 
 				break;
 			case LAMBDA_BUTTON:
 				idManager.handleLambdaButton(event,
 						e -> onError(event, e.getReason()),
-						data -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event))
+						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)))
 				);
 
 				break;
 			case PERSISTENT_SELECTION_MENU:
 				idManager.handlePersistentSelectionMenu(event,
 						e -> onError(event, e.getReason()),
-						data -> handlePersistentComponent(event,
+						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
 								selectionMenuMap,
 								data.getHandlerName(),
 								data.getArgs(),
-								() -> new SelectionEvent(context, (SelectionMenuEvent) event)));
+								() -> new SelectionEvent(context, (SelectionMenuEvent) event))));
 
 				break;
 			case LAMBDA_SELECTION_MENU:
 				idManager.handleLambdaSelectionMenu(event,
 						e -> onError(event, e.getReason()),
-						data -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)));
+						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event))));
 
 				break;
 			default:
