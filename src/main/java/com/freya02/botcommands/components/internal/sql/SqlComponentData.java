@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class SqlComponentData {
-	private static final Object ID_CREATE_LOCK = new Object();
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final String componentId;
