@@ -137,7 +137,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new primary button with a lambda {@link ButtonEvent} handler
+	 * Creates a new primary button with a lambda {@link ButtonEvent} handler<br>
+	 * <b>These buttons are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
@@ -151,7 +152,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new secondary button with a lambda {@link ButtonEvent} handler
+	 * Creates a new secondary button with a lambda {@link ButtonEvent} handler<br>
+	 * <b>These buttons are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
@@ -165,7 +167,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new danger button with a lambda {@link ButtonEvent} handler
+	 * Creates a new danger button with a lambda {@link ButtonEvent} handler<br>
+	 * <b>These buttons are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
@@ -179,7 +182,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new success button with a lambda {@link ButtonEvent} handler
+	 * Creates a new success button with a lambda {@link ButtonEvent} handler<br>
+	 * <b>These buttons are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
@@ -193,7 +197,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new button of the given style, with a lambda {@link ButtonEvent} handler
+	 * Creates a new button of the given style, with a lambda {@link ButtonEvent} handler<br>
+	 * <b>These buttons are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
@@ -234,7 +239,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new primary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 * Creates a new primary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
@@ -247,7 +253,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new secondary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 * Creates a new secondary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
@@ -260,7 +267,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new danger button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 * Creates a new danger button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
@@ -273,7 +281,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new success button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 * Creates a new success button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
@@ -286,7 +295,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new button of the given style with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments
+	 * Creates a new button of the given style with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
@@ -299,7 +309,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with a lambda {@link SelectionEvent} handler
+	 * Creates a new selection menu with a lambda {@link SelectionEvent} handler<br>
+	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link SelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
 	 * @return A selection menu builder to configure behavior
@@ -313,7 +324,8 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JdaSelectionMenuListener}, and the given arguments
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JdaSelectionMenuListener}, and the given arguments<br>
+	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
