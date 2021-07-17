@@ -35,8 +35,8 @@ public class LambdaButtonBuilder extends ComponentBuilderImpl<LambdaButtonBuilde
 	}
 
 	public String buildId() {
-		final ComponentManager idManager = Utils.getComponentManager(context);
+		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		return idManager.putLambdaButton(this);
+		return componentManager.putLambdaButton(this);
 	}
 }

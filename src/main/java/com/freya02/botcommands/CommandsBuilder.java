@@ -403,7 +403,7 @@ public final class CommandsBuilder {
 					componentsBuilder.processClass(aClass);
 				}
 			} else {
-				LOGGER.info("IdManager is not set, buttons from this framework won't be usable");
+				LOGGER.info("ComponentManager is not set, the Components API won't be usable");
 			}
 
 			LOGGER.info("Loaded {} commands", context.getCommands().size());

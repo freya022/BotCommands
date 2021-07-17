@@ -147,10 +147,10 @@ public final class Utils {
 
 	@Nonnull
 	public static ComponentManager getComponentManager(BContext context) {
-		final ComponentManager idManager = context.getComponentManager();
-		if (idManager == null)
-			throw new IllegalStateException("The IdManager must be set in CommandsBuilder in order to use components");
+		final ComponentManager componentManager = context.getComponentManager();
+		if (componentManager == null)
+			throw new IllegalStateException("The ComponentManager must be set in CommandsBuilder in order to use components");
 
-		return idManager;
+		return componentManager;
 	}
 }

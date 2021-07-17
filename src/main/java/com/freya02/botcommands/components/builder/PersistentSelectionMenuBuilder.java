@@ -38,9 +38,9 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	@Nonnull
 	@Override
 	public SelectionMenu build() {
-		final ComponentManager idManager = Utils.getComponentManager(context);
+		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		setId(idManager.putPersistentSelectionMenu(this));
+		setId(componentManager.putPersistentSelectionMenu(this));
 
 		return super.build();
 	}

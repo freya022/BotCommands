@@ -45,13 +45,13 @@ public class ComponentListener extends ListenerAdapter {
 	});
 
 	private final BContext context;
-	private final ComponentManager idManager;
+	private final ComponentManager componentManager;
 	private final Map<String, ComponentDescriptor> buttonsMap;
 	private final Map<String, ComponentDescriptor> selectionMenuMap;
 
 	public ComponentListener(BContext context, Map<String, ComponentDescriptor> buttonsMap, Map<String, ComponentDescriptor> selectionMenuMap) {
 		this.context = context;
-		this.idManager = Utils.getComponentManager(context);
+		this.componentManager = Utils.getComponentManager(context);
 		this.buttonsMap = buttonsMap;
 		this.selectionMenuMap = selectionMenuMap;
 
@@ -66,7 +66,7 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void handleComponentInteraction(@Nonnull GenericComponentInteractionCreateEvent event) {
-		final ComponentType idType = idManager.getIdType(event.getComponentId());
+		final ComponentType idType = componentManager.getIdType(event.getComponentId());
 
 		if (idType == null) {
 			event.reply("This component is not usable anymore")
@@ -90,7 +90,7 @@ public class ComponentListener extends ListenerAdapter {
 
 		switch (idType) {
 			case PERSISTENT_BUTTON:
-				idManager.handlePersistentButton(event,
+				componentManager.handlePersistentButton(event,
 						e -> onError(event, e.getReason()),
 						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
 								buttonsMap,
@@ -100,14 +100,14 @@ public class ComponentListener extends ListenerAdapter {
 
 				break;
 			case LAMBDA_BUTTON:
-				idManager.handleLambdaButton(event,
+				componentManager.handleLambdaButton(event,
 						e -> onError(event, e.getReason()),
 						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)))
 				);
 
 				break;
 			case PERSISTENT_SELECTION_MENU:
-				idManager.handlePersistentSelectionMenu(event,
+				componentManager.handlePersistentSelectionMenu(event,
 						e -> onError(event, e.getReason()),
 						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
 								selectionMenuMap,
@@ -117,7 +117,7 @@ public class ComponentListener extends ListenerAdapter {
 
 				break;
 			case LAMBDA_SELECTION_MENU:
-				idManager.handleLambdaSelectionMenu(event,
+				componentManager.handleLambdaSelectionMenu(event,
 						e -> onError(event, e.getReason()),
 						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event))));
 

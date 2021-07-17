@@ -32,9 +32,9 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	@Nonnull
 	@Override
 	public SelectionMenu build() {
-		final ComponentManager idManager = Utils.getComponentManager(context);
+		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		setId(idManager.putLambdaSelectionMenu(this));
+		setId(componentManager.putLambdaSelectionMenu(this));
 
 		return super.build();
 	}

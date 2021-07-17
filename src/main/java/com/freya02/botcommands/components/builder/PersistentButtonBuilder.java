@@ -40,8 +40,8 @@ public class PersistentButtonBuilder extends ComponentBuilderImpl<PersistentButt
 	}
 
 	public String buildId() {
-		final ComponentManager idManager = Utils.getComponentManager(context);
+		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		return idManager.putPersistentButton(this);
+		return componentManager.putPersistentButton(this);
 	}
 }
