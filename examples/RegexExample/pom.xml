@@ -29,7 +29,7 @@
         <dependency> <!-- The Java Discord API-->
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_277</version>
+            <version>4.3.0_296</version>
         </dependency>
         <dependency> <!-- Needed for JDA and BotCommands logging -->
             <groupId>ch.qos.logback</groupId>
@@ -39,7 +39,7 @@
         <dependency> <!-- This library -->
             <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>c42ec77</version>
+            <version>d460590</version>
         </dependency>
     </dependencies>
 </project>

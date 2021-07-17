@@ -25,9 +25,9 @@ public class Kick extends Command {
 	}
 
 	//This method gets executed if the command looks either like
-	// ;kick @freya02
+	// !kick @freya02
 	// or
-	// ;kick @freya02 get nae nae'd
+	// !kick @freya02 get nae nae'd
 	@Executable
 	public void exec(BaseCommandEvent event,
 	                 Member member,
