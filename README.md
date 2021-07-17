@@ -3,24 +3,25 @@
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 
 # BotCommands
-This library aims at simplifying Discord bots creation with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
+This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
 
-## Nice to have
+## Features
 
-The framework mainly automates these:
-* Help content
-* Command registration
-* Permission checks
-* Cooldown
-* Message parsing (and mapping message to command)
+* Automatic command registration
+* Text based commands, with 2 ways of working:
+  * More manual parsing, you have a tokenized message and you choose how to process the token
+  * Automatic parsing of the arguments, your method signature is translated into a command syntax, such as:
+    * Suppose the prefix is `!` and the command is `ban`
+    * `@Executable public void run(BaseCommandEvent event, User user, int delDays, String reason)` `->` `!ban @someone 42 Foobar` should be valid
+* Slash commands with automatic registration & argument parsing
+  * They are passed to Discord on startup if any changes are detected
+* A JDA event waiter with preconditions, timeouts and multiple checks
+* Secure (as in random 64 char length ID from 81 chars) component (buttons/selection menus) IDs with persistent and non-persistent storage, also capable of received additional arguments the same way as slash commands do
+* Message parsers (see RichTextParser) and emoji resolvers (can turn :joy: into 😂)
+* Paginators and menus (using buttons !)
+* Flexible constructors for your commands and injectable fields
 
-It also helps in:
-* [Waiting for events with EventWaiter](src/main/java/com/freya02/botcommands/waiter/EventWaiter.java)
-* [Resolving Discord entities](src/main/java/com/freya02/botcommands/utils/RichTextFinder.java) and [emojis](src/main/java/com/freya02/botcommands/utils/EmojiUtils.java)
-* Having (secure) button ids with persistent data or non-persistent consumers
-* Having pagination (using buttons) and menus in [Paginator](https://github.com/freya022/BotCommands/blob/master/src/main/java/com/freya02/botcommands/menu/Paginator.java) and [Menu](https://github.com/freya022/BotCommands/blob/master/src/main/java/com/freya02/botcommands/menu/Menu.java)
-
-Note that commands are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
+Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
 
 ## Getting Started
 You are recommended to have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
@@ -33,53 +34,21 @@ An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://
 ## Getting the library
 ### Installing with Jitpack
 
-<details>
-<summary>Maven XML - How to add the library using JitPack</summary>
-
+You can add the following to your pom.xml
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<repository>
+    <id>jitpack</id>
+    <url>https://jitpack.io</url>
+</repository>
 
-    <groupId>com.me</groupId>
-    <artifactId>TestBot</artifactId>
-    <version>1.0-SNAPSHOT</version>
+...
 
-    <build>
-        <!-- Possible build properties -->
-    </build>
-    <repositories>
-        <repository> <!-- JDA repository -->
-            <id>dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
-        </repository>
-        <repository> <!-- for BotCommands and other libs perhaps -->
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <!-- Your other project's dependencies here -->
-        
-        <dependency> <!-- Add JDA to your project -->
-            <!-- Uncomment this and comment the groupId below it if you use JDA snapshots -->
-            <!-- <groupId>com.github.DV8FromTheWorld</groupId> -->
-            <groupId>com.github.DV8FromTheWorld</groupId>
-            <artifactId>JDA</artifactId>
-            <version>JDA-Version</version>
-        </dependency>
-        <dependency> <!-- Add BotCommands to your project -->
-            <groupId>com.github.freya022</groupId> <!-- Different if you choose to build from source -->
-            <artifactId>BotCommands</artifactId>
-            <version>VERSION</version>
-        </dependency>
-    </dependencies>
-</project>
+<dependency>
+    <groupId>com.github.freya022</groupId>
+    <artifactId>BotCommands</artifactId>
+    <version>VERSION</version>
+</dependency>
 ```
-</details>
 
 ### Building / Installing manually
 
@@ -139,7 +108,7 @@ See the [wiki](https://github.com/freya022/BotCommands/wiki), you got a page for
 
 ## Some debugging tools
 
-- Enable the debug logs in your logback.xml file, for a logging tutorial you can look at [JDA's FAQ take at logging](https://github.com/DV8FromTheWorld/JDA/wiki/Logging-Setup#how-to-enable-debug-logs)
+- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://github.com/freya022/BotCommands/wiki/Logging)
 - [CommandsBuilder#updateCommandsOnGuildIds](src/main/java/com/freya02/botcommands/CommandsBuilder.java) - Updates the slash commands only in these guild IDs, useful for testing things without using another token
 
 ## Replacing help content
