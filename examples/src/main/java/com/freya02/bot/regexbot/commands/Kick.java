@@ -1,4 +1,4 @@
-package com.freya02.bot.commands;
+package com.freya02.bot.regexbot.commands;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.annotation.Optional;

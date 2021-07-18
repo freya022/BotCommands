@@ -1,4 +1,4 @@
-package com.freya02.bot.commands;
+package com.freya02.bot.pingbot.commands;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.prefixed.Command;
@@ -20,8 +20,6 @@ public class Ping extends Command {
 		final long gatewayPing = event.getJDA().getGatewayPing();
 
 		event.getJDA().getRestPing()
-				.queue(restPing -> {
-					event.respondFormat("Gateway ping: **%d ms**\nRest ping: **%d ms**", gatewayPing, restPing).queue();
-				});
+				.queue(restPing -> event.respondFormat("Gateway ping: **%d ms**\nRest ping: **%d ms**", gatewayPing, restPing).queue());
 	}
 }
