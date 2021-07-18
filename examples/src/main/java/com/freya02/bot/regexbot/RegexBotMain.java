@@ -6,9 +6,6 @@ import com.freya02.botcommands.Logging;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
-
 public class RegexBotMain {
 	private static final Logger LOGGER = Logging.getLogger();
 
@@ -22,7 +19,7 @@ public class RegexBotMain {
 			// Commands package: com.freya02.bot.regexbot.commands
 			CommandsBuilder.withPrefix("!", 222046562543468545L)
 					.build(jda, "com.freya02.bot.regexbot.commands"); //Registering listeners is taken care of by the lib
-		} catch (IOException | InterruptedException | LoginException e) {
+		} catch (Exception e) {
 			LOGGER.error("Unable to start the bot", e);
 			System.exit(-1);
 		}
