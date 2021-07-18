@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 public class LongResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public LongResolver() {
-		super(long.class);
+		super(Long.class);
 	}
 
 	@Override

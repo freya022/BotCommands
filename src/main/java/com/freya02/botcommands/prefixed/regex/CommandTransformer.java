@@ -25,9 +25,9 @@ public class CommandTransformer {
 		put(Emoji.class, new ArgumentFunction("(\"[^\"]+\")", 1, Emoji.class));
 		put(EmojiOrEmote.class, new ArgumentFunction("(\"[^\"]+\")", 1, EmojiOrEmote.class));
 
-		put(boolean.class, new ArgumentFunction("[a-zA-Z]{4,5}", 1, boolean.class));
-		put(long.class, new ArgumentFunction("(\\d+)", 1, long.class));
-		put(double.class, new ArgumentFunction("(-?[0-9]*[.]?[0-9]+)", 1, double.class));
+		put(Boolean.class, new ArgumentFunction("[a-zA-Z]{4,5}", 1, Boolean.class));
+		put(Long.class, new ArgumentFunction("(\\d+)", 1, Long.class));
+		put(Double.class, new ArgumentFunction("(-?[0-9]*[.]?[0-9]+)", 1, Double.class));
 
 		put(Emote.class, new ArgumentFunction("(?><a?:([a-zA-Z0-9_]+):)?([0-9]+)>?", 2, Emote.class));
 		put(Guild.class, new ArgumentFunction("(\\d+)", 1, Guild.class));
@@ -63,9 +63,9 @@ public class CommandTransformer {
 			}
 
 			parameterTypes.remove(0);
-			if (parameterTypes.stream().anyMatch(key -> !map.containsKey(key))) {
-				LOGGER.error("Error: unsupported parameter types in {}", method);
-				LOGGER.error("Unsupported types : {}", parameterTypes.stream().filter(c -> !map.containsKey(c)).map(Class::getSimpleName).collect(Collectors.joining(", ")));
+			if (parameterTypes.stream().anyMatch(key -> !map.containsKey(Utils.getBoxedType(key)))) {
+				LOGGER.error("Unsupported parameter types in {}", method);
+				LOGGER.error("Unsupported types : {}", parameterTypes.stream().filter(c -> !map.containsKey(Utils.getBoxedType(c))).map(Class::getSimpleName).collect(Collectors.joining(", ")));
 
 				continue;
 			}
@@ -89,7 +89,7 @@ public class CommandTransformer {
 			List<ArgumentFunction> groupsList = new ArrayList<>();
 			StringBuilder patternBuilder = new StringBuilder(128);
 			for (int i = 0, parameterTypesSize = parameterTypes.size(); i < parameterTypesSize; i++) {
-				Class<?> parameterType = parameterTypes.get(i);
+				Class<?> parameterType = Utils.getBoxedType(parameterTypes.get(i));
 
 				ArgumentFunction argumentFunction = map.get(parameterType);
 				if (i + 1 != parameterTypesSize) { //Replace greedy quantifier by a lazy one in situations where parsing shouldn't change, to save steps

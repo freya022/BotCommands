@@ -1,5 +1,6 @@
 package com.freya02.botcommands.slash;
 
+import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.parameters.ParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.parameters.SlashParameterResolver;
@@ -14,8 +15,8 @@ public class SlashCommandParameter {
 		this.optional = optional;
 		this.effectiveName = effectiveName;
 
-		ParameterResolver resolver = ParameterResolvers.of(type);
-		this.type = type;
+		this.type = Utils.getBoxedType(type);
+		ParameterResolver resolver = ParameterResolvers.of(this.type);
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unknown slash command option type: " + type.getName());
 		} else if (!(resolver instanceof SlashParameterResolver)) {

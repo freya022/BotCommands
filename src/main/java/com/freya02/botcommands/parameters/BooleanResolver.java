@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 public class BooleanResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public BooleanResolver() {
-		super(boolean.class);
+		super(Boolean.class);
 	}
 
 	@Override

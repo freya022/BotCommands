@@ -153,4 +153,30 @@ public final class Utils {
 
 		return componentManager;
 	}
+
+	public static Class<?> getBoxedType(Class<?> type) {
+		if (type.isPrimitive()) {
+			if (type == boolean.class) {
+				return Boolean.class;
+			} else if (type == double.class) {
+				return Double.class;
+			} else if (type == long.class) {
+				return Long.class;
+			} else if (type == int.class) {
+				return Integer.class;
+			} else if (type == float.class) {
+				return Float.class;
+			} else if (type == byte.class) {
+				return Byte.class;
+			} else if (type == char.class) {
+				return Character.class;
+			} else {
+				LOGGER.error("Cannot box type {}", type.getName());
+
+				return type;
+			}
+		} else {
+			return type;
+		}
+	}
 }

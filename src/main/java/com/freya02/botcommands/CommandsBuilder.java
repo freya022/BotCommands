@@ -454,7 +454,7 @@ public final class CommandsBuilder {
 		}
 	}
 
-	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
+	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
 		if (isCommand(aClass) && aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
 			boolean isInstantiable = Utils.isInstantiable(aClass);
 
