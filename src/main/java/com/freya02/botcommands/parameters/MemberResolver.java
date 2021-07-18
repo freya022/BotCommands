@@ -19,7 +19,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 		try {
 			return event.getGuild().retrieveMemberById(args[0]).complete();
 		} catch (ErrorResponseException e) {
-			LOGGER.error("Could not resolve member in {} ({}): {}", event.getGuild().getName(), event.getGuild().getIdLong(), e.getMeaning());
+			LOGGER.debug("Could not resolve member in {} ({}): {} (regex command, may not be an error)", event.getGuild().getName(), event.getGuild().getIdLong(), e.getMeaning());
 			return null;
 		}
 	}
