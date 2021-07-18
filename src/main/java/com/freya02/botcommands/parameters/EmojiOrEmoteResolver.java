@@ -19,11 +19,13 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmojiOrEmote(args[0]);
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(optionData.getAsString());
 		if (emoteMatcher.find()) {
@@ -34,6 +36,7 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return getEmojiOrEmote(arg);
 	}

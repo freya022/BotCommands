@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
@@ -15,6 +16,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		try {
 			return event.getGuild().retrieveMemberById(args[0]).complete();
@@ -25,11 +27,13 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsMember();
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a member from DMs");
 

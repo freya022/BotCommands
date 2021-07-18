@@ -15,16 +15,19 @@ public class GuildResolver extends ParameterResolver implements RegexParameterRe
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return resolveGuild(event.getJDA(), args[0]);
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return resolveGuild(event.getJDA(), arg);
 	}

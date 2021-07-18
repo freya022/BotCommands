@@ -7,12 +7,15 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import javax.annotation.Nullable;
+
 public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public UserResolver() {
 		super(User.class);
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		try {
 			return event.getJDA().retrieveUserById(args[0]).complete();
@@ -22,11 +25,13 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsUser();
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		try {
 			return event.getJDA().retrieveUserById(arg).complete();

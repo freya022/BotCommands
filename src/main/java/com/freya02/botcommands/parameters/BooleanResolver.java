@@ -13,16 +13,19 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return parseBoolean(args[0]);
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		return optionData.getAsBoolean();
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		return parseBoolean(arg);
 	}

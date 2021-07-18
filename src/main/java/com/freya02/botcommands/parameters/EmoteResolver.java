@@ -16,11 +16,13 @@ public class EmoteResolver extends ParameterResolver implements RegexParameterRe
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmoteInGuild(args[1], event.getGuild());
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
 		final Guild guild = event.getGuild();
 
@@ -32,6 +34,7 @@ public class EmoteResolver extends ParameterResolver implements RegexParameterRe
 	}
 
 	@Override
+	@Nullable
 	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
 		final Guild guild = event.getGuild();
 
