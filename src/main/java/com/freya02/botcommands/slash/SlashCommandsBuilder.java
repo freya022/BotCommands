@@ -44,27 +44,31 @@ public final class SlashCommandsBuilder {
 
 	public void processSlashCommand(SlashCommand slashCommand) {
 		for (Method method : slashCommand.getClass().getDeclaredMethods()) {
-			if (method.isAnnotationPresent(JdaSlashCommand.class)) {
-				if (!method.canAccess(slashCommand))
-					throw new IllegalStateException("Slash command " + method + " is not public");
+			try {
+				if (method.isAnnotationPresent(JdaSlashCommand.class)) {
+					if (!method.canAccess(slashCommand))
+						throw new IllegalStateException("Slash command " + method + " is not public");
 
-				if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
-					if (!Utils.hasFirstParameter(method, SlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
-						throw new IllegalArgumentException("Slash command at " + method + " must have a GuildSlashEvent or SlashEvent as first parameter");
+					if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
+						if (!Utils.hasFirstParameter(method, SlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
+							throw new IllegalArgumentException("Slash command at " + method + " must have a GuildSlashEvent or SlashEvent as first parameter");
 
-					if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
-						//If type is correct but guild specialization isn't used
-						LOGGER.warn("Guild-only command {} uses SlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", method);
+						if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
+							//If type is correct but guild specialization isn't used
+							LOGGER.warn("Guild-only command {} uses SlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", method);
+						}
+					} else {
+						if (!Utils.hasFirstParameter(method, SlashEvent.class))
+							throw new IllegalArgumentException("Slash command at " + method + " must have a SlashEvent as first parameter");
 					}
-				} else {
-					if (!Utils.hasFirstParameter(method, SlashEvent.class))
-						throw new IllegalArgumentException("Slash command at " + method + " must have a SlashEvent as first parameter");
+
+					final SlashCommandInfo info = new SlashCommandInfo(slashCommand, method);
+
+					LOGGER.debug("Adding command path {} for method {}", info.getPath(), method);
+					context.addSlashCommand(info.getPath(), info);
 				}
-
-				final SlashCommandInfo info = new SlashCommandInfo(slashCommand, method);
-
-				LOGGER.debug("Adding command path {} for method {}", info.getPath(), method);
-				context.addSlashCommand(info.getPath(), info);
+			} catch (Exception e) {
+				throw new RuntimeException("An exception occurred while processing slash command at " + method, e);
 			}
 		}
 	}

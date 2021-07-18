@@ -18,20 +18,24 @@ public class PrefixedCommandsBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void processPrefixedCommand(Command command) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-		context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
+	public void processPrefixedCommand(Command command) {
+		try {
+			context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
 
-		context.getRegistrationListeners().forEach(l -> l.onCommandRegistered(command));
-		for (Class<?> subcommandClazz : command.getClass().getClasses()) {
-			if (isSubcommand(subcommandClazz)) {
-				final Command subcommand = getSubcommand((Class<? extends Command>) subcommandClazz, command);
+			context.getRegistrationListeners().forEach(l -> l.onCommandRegistered(command));
+			for (Class<?> subcommandClazz : command.getClass().getClasses()) {
+				if (isSubcommand(subcommandClazz)) {
+					final Command subcommand = getSubcommand((Class<? extends Command>) subcommandClazz, command);
 
-				if (subcommand != null) {
-					command.getInfo().addSubcommand(subcommand);
+					if (subcommand != null) {
+						command.getInfo().addSubcommand(subcommand);
 
-					context.getRegistrationListeners().forEach(l -> l.onSubcommandRegistered(command));
+						context.getRegistrationListeners().forEach(l -> l.onSubcommandRegistered(command));
+					}
 				}
 			}
+		} catch (Exception e) {
+			throw new RuntimeException("An exception occurred while processing text-based command at " + command, e);
 		}
 	}
 
