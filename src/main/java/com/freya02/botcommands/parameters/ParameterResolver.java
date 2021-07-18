@@ -11,7 +11,7 @@ import org.slf4j.Logger;
  * @see ComponentParameterResolver
  */
 public abstract class ParameterResolver {
-	protected static final Logger LOGGER = Logging.getLogger();
+	protected final Logger LOGGER = Logging.getLogger(this);
 
 	private final Class<?> type;
 

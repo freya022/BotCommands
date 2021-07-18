@@ -9,4 +9,8 @@ public class Logging {
 	public static Logger getLogger() {
 		return LoggerFactory.getLogger(WALKER.getCallerClass());
 	}
+
+	public static Logger getLogger(Object obj) {
+		return LoggerFactory.getLogger(obj.getClass());
+	}
 }
