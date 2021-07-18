@@ -52,9 +52,9 @@
             <version>1.2.3</version>
         </dependency>
         <dependency> <!-- This library -->
-            <groupId>com.github.freya022</groupId>
+            <groupId>com.freya02</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>d460590</version>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
