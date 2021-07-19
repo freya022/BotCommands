@@ -11,7 +11,7 @@ public class PingBotMain {
 
 	public static void main(String[] args) {
 		try {
-			final JDA jda = CommonMain.start();
+			final JDA jda = CommonMain.start().getJda();
 
 			//Build the command framework:
 			// Prefix: !

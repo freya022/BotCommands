@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 //You will need a valid Config.json in the package com.freya02.bot for this to work
 public class Config {
 	@SuppressWarnings("unused") private String token;
+	@SuppressWarnings("unused") private DBConfig dbConfig;
 
 	/**
 	 * Returns the configuration object for this bot
@@ -34,5 +35,34 @@ public class Config {
 
 	public String getToken() {
 		return token;
+	}
+
+	public DBConfig getDbConfig() {
+		return dbConfig;
+	}
+
+	public static class DBConfig {
+		@SuppressWarnings("unused") private String serverName, user, password, dbName;
+		@SuppressWarnings("unused") private int portNumber;
+
+		public String getServerName() {
+			return serverName;
+		}
+
+		public String getUser() {
+			return user;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public String getDbName() {
+			return dbName;
+		}
+
+		public int getPortNumber() {
+			return portNumber;
+		}
 	}
 }

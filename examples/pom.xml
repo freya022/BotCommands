@@ -56,5 +56,15 @@
             <artifactId>BotCommands</artifactId>
             <version>1.5.0-SNAPSHOT</version>
         </dependency>
+        <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.23.jre7</version>
+        </dependency>
+        <dependency> <!-- Needed to pool SQL connections, optional if you don't use components -->
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.0</version>
+        </dependency>
     </dependencies>
 </project>

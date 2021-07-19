@@ -11,7 +11,7 @@ public class SlashBotMain {
 
 	public static void main(String[] args) {
 		try {
-			final JDA jda = CommonMain.start();
+			final JDA jda = CommonMain.start().getJda();
 
 			//Build the command framework:
 			// Prefix: ! (only used by help command since well, there's no text based commands here)

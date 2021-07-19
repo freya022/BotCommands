@@ -13,7 +13,25 @@ import java.io.IOException;
 public class CommonMain {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	public static JDA start() throws IOException, LoginException, InterruptedException {
+	public static class CommonStuff {
+		private final JDA jda;
+		private final Config config;
+
+		private CommonStuff(JDA jda, Config config) {
+			this.jda = jda;
+			this.config = config;
+		}
+
+		public JDA getJda() {
+			return jda;
+		}
+
+		public Config getConfig() {
+			return config;
+		}
+	}
+
+	public static CommonStuff start() throws IOException, LoginException, InterruptedException {
 		//Make sure that the file Config.json exists under src/main/java/resources/com/freya02/bot/Config.json and has a valid token inside
 		final Config config = Config.readConfig();
 
@@ -30,6 +48,6 @@ public class CommonMain {
 			LOGGER.info("\t- {} ({})", guild.getName(), guild.getId());
 		}
 
-		return jda;
+		return new CommonStuff(jda, config);
 	}
 }
