@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@CommandMarker
+@CommandMarker //Just so the class isn't marked as unused
 public class SlashButtons extends SlashCommand {
 	private static final String PRIMARY_HANDLER_NAME = "primaryHandler";
 

@@ -8,7 +8,7 @@ import com.freya02.botcommands.slash.SlashCommand;
 import com.freya02.botcommands.slash.SlashEvent;
 import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 
-@CommandMarker
+@CommandMarker //Just so the class isn't marked as unused
 public class SlashMenus extends SlashCommand {
 	private static final String SELECTION_HANDLER_NAME = "selectionHandler";
 
