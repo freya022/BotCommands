@@ -5,6 +5,7 @@ import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.DefaultComponentManager;
 import com.freya02.botcommands.components.internal.ComponentsBuilder;
+import com.freya02.botcommands.parameters.*;
 import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
@@ -351,6 +352,18 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
 		addSearchPath(commandPackageName, 2);
+
+		return this;
+	}
+
+	/**
+	 * Registers a parameter resolver, must have one or more of the 3 interfaces, {@link RegexParameterResolver}, {@link SlashParameterResolver} and {@link ComponentParameterResolver}
+	 *
+	 * @param resolver Your own ParameterResolver to register
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder registerParameterResolver(ParameterResolver resolver) {
+		ParameterResolvers.register(resolver);
 
 		return this;
 	}

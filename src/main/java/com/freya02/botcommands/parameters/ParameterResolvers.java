@@ -49,11 +49,6 @@ public class ParameterResolvers {
 		register(new UserResolver());
 	}
 
-	/**
-	 * Registers a parameter resolver, must have one or more of the 3 interfaces
-	 *
-	 * @param resolver Your own ParameterResolver to register
-	 */
 	public static void register(@NotNull ParameterResolver resolver) {
 		if (!(resolver instanceof RegexParameterResolver) && !(resolver instanceof SlashParameterResolver) && !(resolver instanceof ComponentParameterResolver))
 			throw new IllegalArgumentException("The resolver should work at least for a regex parameter, a slash parameter or a button parameter");
