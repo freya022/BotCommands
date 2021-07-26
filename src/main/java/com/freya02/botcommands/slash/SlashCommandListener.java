@@ -138,7 +138,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 		commandService.execute(() -> {
 			try {
 				code.run();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				final String command = reconstructCommand(event);
 
 				e = Utils.getException(e);

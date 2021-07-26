@@ -270,7 +270,7 @@ public final class CommandListener extends ListenerAdapter {
 		commandService.execute(() -> {
 			try {
 				code.run();
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				e = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", e);
