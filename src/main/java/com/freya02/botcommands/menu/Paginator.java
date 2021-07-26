@@ -42,8 +42,10 @@ public class Paginator {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
-	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJdaEmoji(":rewind:");
-	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJdaEmoji(":fast_forward:");
+	private static final Emoji FIRST_EMOJI = EmojiUtils.resolveJdaEmoji(":rewind:");
+	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJdaEmoji(":arrow_backward:");
+	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJdaEmoji(":arrow_forward:");
+	private static final Emoji LAST_EMOJI = EmojiUtils.resolveJdaEmoji(":fast_forward:");
 	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJdaEmoji(":wastebasket:");
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
 
@@ -51,7 +53,7 @@ public class Paginator {
 
 	private final MessageBuilder messageBuilder = new MessageBuilder();
 	private final Button deleteButton;
-	private Button previousButton, nextButton;
+	private Button firstButton, previousButton, nextButton, lastButton;
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -88,6 +90,12 @@ public class Paginator {
 	public Paginator(long userId, int maxPages, boolean deleteButton) {
 		this.maxPages = maxPages;
 
+		firstButton = Components.primaryButton(e -> {
+			page = 0;
+
+			e.editMessage(get()).queue();
+		}).ownerId(userId).build(FIRST_EMOJI);
+
 		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
@@ -100,9 +108,14 @@ public class Paginator {
 			e.editMessage(get()).queue();
 		}).ownerId(userId).build(NEXT_EMOJI);
 
+		lastButton = Components.primaryButton(e -> {
+			page = maxPages - 1;
+
+			e.editMessage(get()).queue();
+		}).ownerId(userId).build(LAST_EMOJI);
+
 		if (deleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			// Do not use ButtonId#uniqueOfUser as button ids are deleted by Paginator#cleanup
 			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(DELETE_EMOJI);
 		} else {
 			this.deleteButton = null;
@@ -233,22 +246,36 @@ public class Paginator {
 		final EmbedBuilder builder = new EmbedBuilder();
 		final PaginatorComponents paginatorComponents = new PaginatorComponents();
 
-		if (page == 0) previousButton = previousButton.asDisabled();
-		else previousButton = previousButton.asEnabled();
+		if (page == 0) {
+			previousButton = previousButton.asDisabled();
+			firstButton = firstButton.asDisabled();
+		} else {
+			previousButton = previousButton.asEnabled();
+			firstButton = firstButton.asEnabled();
+		}
 
-		if (page >= maxPages - 1) nextButton = nextButton.asDisabled();
-		else nextButton = nextButton.asEnabled();
+		if (page >= maxPages - 1) {
+			nextButton = nextButton.asDisabled();
+			lastButton = lastButton.asDisabled();
+		} else {
+			nextButton = nextButton.asEnabled();
+			lastButton = lastButton.asEnabled();
+		}
 
 		if (deleteButton != null) {
 			paginatorComponents.addComponents(0,
+					firstButton,
 					previousButton,
 					nextButton,
+					lastButton,
 					deleteButton
 			);
 		} else {
 			paginatorComponents.addComponents(0,
+					firstButton,
 					previousButton,
-					nextButton
+					nextButton,
+					lastButton
 			);
 		}
 
