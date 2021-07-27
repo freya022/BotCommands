@@ -6,5 +6,5 @@
 target
 /src/test
 
-logs-*
+logs
 TestDB
