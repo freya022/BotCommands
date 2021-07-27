@@ -59,7 +59,7 @@ public class ComponentsBuilder {
 			Parameter[] parameters = method.getParameters();
 			for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
 				Parameter parameter = parameters[i];
-				final Class<?> type = parameter.getType();
+				final Class<?> type = Utils.getBoxedType(parameter.getType());
 
 				final ParameterResolver resolver = ParameterResolvers.of(type);
 
