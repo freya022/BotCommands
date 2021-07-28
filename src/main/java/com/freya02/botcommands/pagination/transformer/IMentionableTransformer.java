@@ -1,4 +1,4 @@
-package com.freya02.botcommands.menu.transformer;
+package com.freya02.botcommands.pagination.transformer;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 

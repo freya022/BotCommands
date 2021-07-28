@@ -1,8 +1,8 @@
-package com.freya02.botcommands.menu;
+package com.freya02.botcommands.pagination.menu;
 
 import java.util.List;
 
-public class MenuPage<T> {
+class MenuPage<T> {
 	private final String description;
 	private final List<T> choices;
 

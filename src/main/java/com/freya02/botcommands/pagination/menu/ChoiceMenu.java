@@ -1,4 +1,7 @@
-package com.freya02.botcommands.menu;
+package com.freya02.botcommands.pagination.menu;
+
+import com.freya02.botcommands.pagination.PaginationSupplier;
+import com.freya02.botcommands.pagination.Paginator;
 
 /**
  * An extension of Paginator, this takes a list of entries and generates the pages for you, which each entry taking a new line<br>
@@ -6,14 +9,15 @@ package com.freya02.botcommands.menu;
  *
  * @see Paginator
  */
-public class Menu extends Paginator {
-	Menu(long userId, int size, boolean deleteButton) {
+public class ChoiceMenu extends Paginator {
+	ChoiceMenu(long userId, int size, boolean deleteButton) {
 		super(userId, size, deleteButton);
 	}
 
 	/**
 	 * {@inheritDoc} <br>
-	 * <b>Throws <code>UnsupportedOperationException</code> as this pagination supplier is managed by the menu.</b>
+	 * <b>Throws <code>UnsupportedOperationException</code> as this pagination supplier is managed by the pagination.</b>
+	 *
 	 * @return
 	 */
 	@Override

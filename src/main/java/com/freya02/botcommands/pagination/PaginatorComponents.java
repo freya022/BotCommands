@@ -1,4 +1,4 @@
-package com.freya02.botcommands.menu;
+package com.freya02.botcommands.pagination;
 
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;

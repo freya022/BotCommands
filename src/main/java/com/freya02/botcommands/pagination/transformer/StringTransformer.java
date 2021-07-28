@@ -1,4 +1,4 @@
-package com.freya02.botcommands.menu.transformer;
+package com.freya02.botcommands.pagination.transformer;
 
 public class StringTransformer implements EntryTransformer<Object> {
 	@Override

@@ -1,28 +1,27 @@
-package com.freya02.botcommands.menu;
+package com.freya02.botcommands.pagination.menu;
 
-//import com.freya02.botcommands.buttons.ButtonId;
 import com.freya02.botcommands.components.Components;
-import com.freya02.botcommands.menu.transformer.EntryTransformer;
-import com.freya02.botcommands.menu.transformer.StringTransformer;
+import com.freya02.botcommands.pagination.Paginator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * Provides a builder for {@link Menu}s
+ * Provides a builder for {@link ChoiceMenu}s
  *
  * @param <T> Type of the entries
  */
-public class MenuBuilder<T> {
+public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	private static final List<Emoji> emojis = IntStream.range(1, 10) //exclude 10 as its a special emoji
 			.mapToObj(i -> Emoji.fromUnicode(i + "\u20E3"))
 			.collect(Collectors.toCollection(() -> new ArrayList<>(10)));
@@ -31,31 +30,20 @@ public class MenuBuilder<T> {
 		emojis.add(Emoji.fromUnicode("\uD83D\uDD1F"));
 	}
 
-	private final long userId;
-	private final boolean deleteButton;
-
-	private final List<T> entries;
-	private final Map<Integer, MenuPage<T>> pages = new HashMap<>();
-	private int maxEntriesPerPage = 5;
-	private EntryTransformer<? super T> transformer = new StringTransformer();
-
-	private PaginationSupplier paginationSupplier;
 	private Consumer<T> callback;
 
 	private Thread waitingThread;
 	private T choice;
 
 	/**
-	 * Creates a new {@link Menu} builder
+	 * Creates a new {@link ChoiceMenu} builder
 	 *
 	 * @param userId       The ID of the only User who should be able to use this menu
 	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
 	 * @param entries      The entries which should be displayed to the user
 	 */
-	public MenuBuilder(long userId, boolean deleteButton, List<T> entries) {
-		this.userId = userId;
-		this.deleteButton = deleteButton;
-		this.entries = entries;
+	public ChoiceMenuBuilder(long userId, boolean deleteButton, List<T> entries) {
+		super(userId, deleteButton, entries);
 	}
 
 	/**
@@ -66,49 +54,7 @@ public class MenuBuilder<T> {
 	 * @param emojis The {@link Emoji} to insert
 	 */
 	public static void addIndexEmojis(Emoji... emojis) {
-		Collections.addAll(MenuBuilder.emojis, emojis);
-	}
-
-	/**
-	 * Sets the maximum number of entries per page<br>
-	 * <b>This does not mean there will be X entries per page</b> but rather it will try to fit 5 entries maximum per page, if some text is too long it'll cut down the number of entries
-	 *
-	 * @param maxEntriesPerPage The maximum amount of entries per page
-	 * @return This builder for chaining convenience
-	 */
-	public MenuBuilder<T> setMaxEntriesPerPage(int maxEntriesPerPage) {
-		this.maxEntriesPerPage = maxEntriesPerPage;
-
-		return this;
-	}
-
-	/**
-	 * Here the pagination supplier is more about adding further more stuff in the embed, or more components<br>
-	 * <b>The embed should be almost full so be aware that it might not fit into Discord limits</b>
-	 *
-	 * @param paginationSupplier The optional {@linkplain PaginationSupplier}
-	 * @return This builder for chaining convenience
-	 */
-	public MenuBuilder<T> setPaginationSupplier(PaginationSupplier paginationSupplier) {
-		Checks.notNull(paginationSupplier, "Pagination supplier");
-
-		this.paginationSupplier = paginationSupplier;
-
-		return this;
-	}
-
-	/**
-	 * Sets the entry transformer for this menu
-	 *
-	 * @param transformer The {@link EntryTransformer} to use to stringify the entries
-	 * @return This builder for chaining convenience
-	 */
-	public MenuBuilder<T> setTransformer(EntryTransformer<? super T> transformer) {
-		Checks.notNull(transformer, "Entry transformer");
-
-		this.transformer = transformer;
-
-		return this;
+		Collections.addAll(ChoiceMenuBuilder.emojis, emojis);
 	}
 
 	/**
@@ -117,7 +63,7 @@ public class MenuBuilder<T> {
 	 * @param callback The {@link Consumer} to call when the user makes their choice
 	 * @return This builder for chaining convenience
 	 */
-	public MenuBuilder<T> setCallback(Consumer<T> callback) {
+	public ChoiceMenuBuilder<T> setCallback(Consumer<T> callback) {
 		Checks.notNull(callback, "Menu callback");
 
 		this.callback = callback;
@@ -140,36 +86,10 @@ public class MenuBuilder<T> {
 		return choice;
 	}
 
-	private void makePages() {
-		int page = 0;
-		int oldEntry = 0;
-		StringBuilder builder = new StringBuilder();
-
-		for (int i = 0, entriesSize = entries.size(); i < entriesSize; i++) {
-			T entry = entries.get(i);
-
-			final String s = transformer.toString(entry);
-			Checks.notLonger(s, MessageEmbed.TEXT_MAX_LENGTH - 8, "Entry #" + i + " string");
-
-			if (i - oldEntry >= maxEntriesPerPage || builder.length() + s.length() > MessageEmbed.TEXT_MAX_LENGTH - 8) {
-				pages.put(page, new MenuPage<>(builder.toString(), entries.subList(oldEntry, i)));
-
-				page++;
-				oldEntry = i;
-
-				builder.setLength(0);
-			}
-
-			builder.append(emojis.get(i - oldEntry).getName()).append(" : ").append(s).append('\n');
-		}
-
-		pages.put(page, new MenuPage<>(builder.toString(), entries.subList(oldEntry, entries.size())));
-	}
-
-	public Menu build() {
+	public ChoiceMenu build() {
 		makePages();
 
-		final Menu menu = new Menu(userId, pages.size(), deleteButton);
+		final ChoiceMenu menu = new ChoiceMenu(userId, pages.size(), deleteButton);
 
 		menu.setMenuSupplier((builder, components, page) -> {
 			final MenuPage<T> menuPage = pages.get(page);
@@ -183,7 +103,7 @@ public class MenuBuilder<T> {
 					menu.cleanup(event.getContext());
 
 					onChoiceClicked(menu, menuPage, choiceNumber, event);
-				}).ownerId(userId).build(MenuBuilder.emojis.get(i));
+				}).ownerId(userId).build(ChoiceMenuBuilder.emojis.get(i));
 
 				components.addComponents(1 + (i / 5), choiceButton);
 			}
