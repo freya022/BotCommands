@@ -220,6 +220,15 @@ public final class SlashCommandsBuilder {
 						data.addChoice(choice.name(), choice.intValue());
 					}
 				}
+			} else if (type == double.class) {
+				data = new OptionData(OptionType.NUMBER, name, description);
+
+				final Choices choices = parameter.getAnnotation(Choices.class);
+				if (choices != null) {
+					for (Choice choice : choices.value()) {
+						data.addChoice(choice.name(), choice.doubleValue());
+					}
+				}
 			} else if (ParameterResolvers.exists(type)) {
 				data = new OptionData(OptionType.STRING, name, description);
 
