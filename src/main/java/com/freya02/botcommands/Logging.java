@@ -1,16 +1,16 @@
 package com.freya02.botcommands;
 
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Logging {
 	private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
 	public static Logger getLogger() {
-		return LoggerFactory.getLogger(WALKER.getCallerClass());
+		return JDALogger.getLog(WALKER.getCallerClass());
 	}
 
 	public static Logger getLogger(Object obj) {
-		return LoggerFactory.getLogger(obj.getClass());
+		return JDALogger.getLog(obj.getClass());
 	}
 }
