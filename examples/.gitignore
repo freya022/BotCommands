@@ -7,7 +7,7 @@ target
 /src/test
 
 #Ignore tests log files
-logs-*
+logs/
 
 # Ignore the bot's token, you don't want it to figure in your repository
 /src/main/resources/com/freya02/bot/Config.json
