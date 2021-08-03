@@ -209,11 +209,7 @@ public class DefaultComponentManager implements ComponentManager {
 						data.delete(connection);
 					}
 				} catch (SQLException e) {
-					if (LOGGER.isErrorEnabled()) {
-						LOGGER.error("An error occurred while deleting a lambda component after a timeout", e);
-					} else {
-						e.printStackTrace();
-					}
+					LOGGER.error("An error occurred while deleting a lambda component after a timeout", e);
 				}
 			}, timeout, TimeUnit.MILLISECONDS);
 		}
@@ -276,11 +272,7 @@ public class DefaultComponentManager implements ComponentManager {
 						data.delete(connection);
 					}
 				} catch (SQLException e) {
-					if (LOGGER.isErrorEnabled()) {
-						LOGGER.error("An error occurred while deleting a persistent component after a timeout", e);
-					} else {
-						e.printStackTrace();
-					}
+					LOGGER.error("An error occurred while deleting a persistent component after a timeout", e);
 				}
 			}, timeout, TimeUnit.MILLISECONDS);
 		}

@@ -84,11 +84,7 @@ public final class Utils {
 		final PrintWriter printWriter = new PrintWriter(out);
 		e.printStackTrace(printWriter);
 
-		if (LOGGER.isErrorEnabled()) {
-			LOGGER.error(out.toString());
-		} else {
-			System.err.println(out);
-		}
+		LOGGER.error(out.toString());
 	}
 
 	public static boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {

@@ -435,11 +435,7 @@ public final class CommandsBuilder {
 
 			LOGGER.info("Finished registering all commands");
 		} catch (Throwable e) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An error occurred while loading the commands, the commands will not work");
-			} else { //Dont want this error hidden by the lack of logging framework
-				System.err.println("An error occurred while loading the commands, the commands will not work");
-			}
+			LOGGER.error("An error occurred while loading the commands, the commands will not work");
 
 			throw new RuntimeException(e);
 		}

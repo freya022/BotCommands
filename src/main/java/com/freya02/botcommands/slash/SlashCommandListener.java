@@ -58,11 +58,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 		try {
 			context.tryUpdateGuildCommands(Collections.singleton(guild));
 		} catch (IOException e) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An error occurred while updating guild '{}' ({}) commands (on guild join / on unavailable guild join but became available later)", guild.getName(), guild.getIdLong(), e);
-			} else {
-				e.printStackTrace();
-			}
+			LOGGER.error("An error occurred while updating guild '{}' ({}) commands (on guild join / on unavailable guild join but became available later)", guild.getName(), guild.getIdLong(), e);
 		}
 	}
 

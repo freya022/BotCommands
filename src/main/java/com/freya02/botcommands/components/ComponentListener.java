@@ -170,13 +170,7 @@ public class ComponentListener extends ListenerAdapter {
 
 			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
 		} catch (Exception e) {
-			if (LOGGER.isErrorEnabled()) {
-				LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
-			} else {
-				System.err.printf("An exception occurred while handling a persistent component '%s' with args %s%n", handlerName, Arrays.toString(args));
-
-				e.printStackTrace();
-			}
+			LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
 		}
 	}
 
