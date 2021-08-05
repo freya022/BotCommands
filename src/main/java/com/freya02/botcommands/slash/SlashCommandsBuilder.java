@@ -178,17 +178,11 @@ public final class SlashCommandsBuilder {
 			final String name;
 			final String description;
 			if (option == null) {
-				if (!parameter.isNamePresent())
-					throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
-
-				name = parameter.getName();
+				name = getOptionName(parameter);
 				description = "No description";
 			} else {
 				if (option.name().isBlank()) {
-					if (!parameter.isNamePresent())
-						throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
-
-					name = parameter.getName();
+					name = getOptionName(parameter);
 				} else {
 					name = option.name();
 				}
@@ -248,6 +242,27 @@ public final class SlashCommandsBuilder {
 		}
 
 		return list;
+	}
+
+	private static String getOptionName(Parameter parameter) {
+		if (!parameter.isNamePresent())
+			throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
+
+		final String name = parameter.getName();
+		final int nameLength = name.length();
+		
+		final StringBuilder optionNameBuilder = new StringBuilder(nameLength + 10); //I doubt you'd have a parameter long enough to have more than 10 underscores
+		for (int i = 0; i < nameLength; i++) {
+			final char c = name.charAt(i);
+
+			if (Character.isUpperCase(c)) {
+				optionNameBuilder.append('_').append(Character.toLowerCase(c));
+			} else {
+				optionNameBuilder.append(c);
+			}
+		}
+
+		return optionNameBuilder.toString();
 	}
 
 	static String getName(String path) {
