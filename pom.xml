@@ -95,9 +95,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.Andre601</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_DEV</version>
+            <version>59bd966</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
