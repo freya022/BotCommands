@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.github.Andre601</groupId>
             <artifactId>JDA</artifactId>
-            <version>59bd966</version>
+            <version>083c757</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
