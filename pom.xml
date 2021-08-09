@@ -113,9 +113,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.freya02</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>JEmojis</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>7a26443</version>
         </dependency>
         <dependency>
             <groupId>me.xdrop</groupId>
