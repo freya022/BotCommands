@@ -37,7 +37,8 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
-	private final Map<String, SlashCommandInfo> slashCommandMap = new HashMap<>();
+	private final Map<Long, Map<String, SlashCommandInfo>> guildSlashCommandMap = new HashMap<>();
+	private final Map<String, SlashCommandInfo> globalSlashCommandMap = new HashMap<>();
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
@@ -97,13 +98,13 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public SlashCommandInfo findSlashCommand(@NotNull String name) {
-		return slashCommandMap.get(name);
+	public SlashCommandInfo findSlashCommand(@Nullable Guild guild, @NotNull String name) {
+		return getSlashCommandMap(guild).get(name);
 	}
 
 	@Override
-	public List<String> getSlashCommandsPaths() {
-		return slashCommandMap.values()
+	public List<String> getSlashCommandsPaths(Guild guild) {
+		return getSlashCommandMap(guild).values()
 				.stream()
 				.map(SlashCommandInfo::getPath)
 				.collect(Collectors.toList());
@@ -156,7 +157,9 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addSlashCommand(String path, SlashCommandInfo commandInfo) {
+	public void addSlashCommand(@Nullable Guild guild, String path, SlashCommandInfo commandInfo) {
+		final Map<String, SlashCommandInfo> slashCommandMap = getSlashCommandMap(guild);
+
 		String path2 = path;
 		int index;
 		while ((index = path2.lastIndexOf('/')) != -1) {
@@ -183,8 +186,8 @@ public class BContextImpl implements BContext {
 		return Collections.unmodifiableCollection(commandMap.values());
 	}
 
-	public Collection<SlashCommandInfo> getSlashCommands() {
-		return Collections.unmodifiableCollection(slashCommandMap.values());
+	public Collection<SlashCommandInfo> getSlashCommands(@Nullable Guild guild) {
+		return Collections.unmodifiableCollection(getSlashCommandMap(guild).values());
 	}
 
 	public void dispatchException(String message, Throwable e) {
@@ -340,5 +343,9 @@ public class BContextImpl implements BContext {
 
 	public void setSlashCommandsCache(SlashCommandsCache cachedSlashCommands) {
 		this.slashCommandsCache = cachedSlashCommands;
+	}
+	
+	Map<String, SlashCommandInfo> getSlashCommandMap(Guild guild) {
+		return guild == null ? globalSlashCommandMap : guildSlashCommandMap.computeIfAbsent(guild.getIdLong(), x -> new HashMap<>());
 	}
 }

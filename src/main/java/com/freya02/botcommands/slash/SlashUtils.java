@@ -9,14 +9,11 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 class SlashUtils {
 	static void appendCommands(List<Command> commands, StringBuilder sb) {
@@ -43,11 +40,11 @@ class SlashUtils {
 			final String name;
 			final String description;
 			if (option == null) {
-				name = getOptionName(parameter);
+				name = getOptionName(parameter, context, guild, info, i);
 				description = "No description";
 			} else {
 				if (option.name().isBlank()) {
-					name = getOptionName(parameter);
+					name = getOptionName(parameter, context, guild, info, i);
 				} else {
 					name = option.name();
 				}
@@ -81,17 +78,7 @@ class SlashUtils {
 			}
 
 			if (data.getType().canSupportChoices()) {
-				Collection<Command.Choice> choices = info.getInstance().getCommandChoices(guild, info.getPath(), name, i);
-				Checks.notNull(choices, "choices");
-				
-				if (choices.isEmpty()) {
-					final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-					if (settingsProvider != null) {
-						choices = settingsProvider.getCommandChoices(guild, info.getPath(), name, i);
-						Checks.notNull(choices, "choices");
-					}
-				}
+				final Collection<Command.Choice> choices = getChoices(context, guild, info, i, name);
 				
 				//might just be empty
 				data.addChoices(choices);
@@ -105,9 +92,73 @@ class SlashUtils {
 		return list;
 	}
 
-	private static String getOptionName(Parameter parameter) {
+	@Nonnull
+	private static Collection<Command.Choice> getChoices(BContext context, Guild guild, SlashCommandInfo info, int optionIndex, String name) {
+		Collection<Command.Choice> choices = info.getInstance().getCommandChoices(guild, info.getPath(), name, optionIndex);
+
+		if (choices == null || choices.isEmpty()) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				choices = settingsProvider.getCommandChoices(guild, info.getPath(), name, optionIndex);
+			}
+		}
+		
+		return choices == null ? Collections.emptyList() : choices;
+	}
+
+	@Nullable
+	private static String getOptionName(BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
+		String name = info.getInstance().getOptionName(guild, info.getPath(), optionIndex);
+
+		if (name == null || name.isBlank()) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				name = settingsProvider.getOptionName(guild, info.getPath(), optionIndex);
+			}
+		}
+
+		return name;
+	}
+
+	static String getDescription(BContext context, Guild guild, SlashCommandInfo info) {
+		String name = info.getInstance().getCommandDescription(guild, info.getPath());
+
+		if (name == null || name.isBlank()) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				name = settingsProvider.getCommandDescription(guild, info.getPath());
+			}
+		}
+
+		return name;
+	}
+
+	static String getName(BContext context, Guild guild, SlashCommandInfo info) {
+		String name = info.getInstance().getCommandName(guild, info.getPath());
+
+		if (name == null || name.isBlank()) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				name = settingsProvider.getCommandName(guild, info.getPath());
+			}
+		}
+
+		return name;
+	}
+
+	private static String getOptionName(Parameter parameter, BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
 		if (!parameter.isNamePresent())
 			throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
+
+		final String optionName = getOptionName(context, guild, info, optionIndex);
+		
+		if (optionName != null && !optionName.isBlank()) {
+			return optionName;
+		}
 
 		final String name = parameter.getName();
 		final int nameLength = name.length();

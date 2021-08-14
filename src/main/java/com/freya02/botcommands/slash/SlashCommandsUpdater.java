@@ -121,7 +121,7 @@ public class SlashCommandsUpdater {
 	}
 
 	private void computeCommands(@NotNull BContextImpl context, @Nullable Guild guild) {
-		context.getSlashCommands().stream()
+		context.getSlashCommands(guild).stream()
 				.filter(info -> {
 					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
 						return false;
@@ -144,7 +144,7 @@ public class SlashCommandsUpdater {
 							final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
 							map.put(path, rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(info));
+							rightCommand.addOptions(getMethodOptions(context, guild, info));
 
 							if (info.isOwnerOnly()) {
 								rightCommand.setDefaultEnabled(false);
@@ -164,7 +164,7 @@ public class SlashCommandsUpdater {
 							final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
 							commandData.addSubcommands(rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(info));
+							rightCommand.addOptions(getMethodOptions(context, guild, info));
 						} else if (info.getPathComponents() == 3) {
 							final String namePath = getParent(getParent(path));
 							final String parentPath = getParent(path);
@@ -185,7 +185,7 @@ public class SlashCommandsUpdater {
 							final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
 							groupData.addSubcommands(rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(info));
+							rightCommand.addOptions(getMethodOptions(context, guild, info));
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 names got registered");
 						}

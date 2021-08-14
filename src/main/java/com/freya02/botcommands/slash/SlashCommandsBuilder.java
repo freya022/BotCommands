@@ -11,6 +11,7 @@ import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public final class SlashCommandsBuilder {
 		this.slashGuildIds = slashGuildIds;
 	}
 
-	public void processSlashCommand(SlashCommand slashCommand) {
+	public void processSlashCommand(SlashCommand slashCommand, @Nullable Guild guild) {
 		for (Method method : slashCommand.getClass().getDeclaredMethods()) {
 			try {
 				if (method.isAnnotationPresent(JdaSlashCommand.class)) {
@@ -49,10 +50,10 @@ public final class SlashCommandsBuilder {
 							throw new IllegalArgumentException("Slash command at " + method + " must have a SlashEvent as first parameter");
 					}
 
-					final SlashCommandInfo info = new SlashCommandInfo(slashCommand, method);
+					final SlashCommandInfo info = new SlashCommandInfo(context, guild, slashCommand, method);
 
 					LOGGER.debug("Adding command path {} for method {}", info.getPath(), method);
-					context.addSlashCommand(info.getPath(), info);
+					context.addSlashCommand(guild, info.getPath(), info);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException("An exception occurred while processing slash command at " + method, e);

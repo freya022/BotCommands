@@ -70,7 +70,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 
 		runCommand(() -> {
 			final InteractionHook hook = event.getHook();
-			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
+			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getGuild(), event.getCommandPath());
 
 			if (slashCommand == null) {
 				hook.sendMessage("Unknown slash command").queue();

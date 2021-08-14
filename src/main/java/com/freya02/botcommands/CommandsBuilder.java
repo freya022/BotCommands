@@ -10,11 +10,15 @@ import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import com.freya02.botcommands.slash.*;
+import com.freya02.botcommands.slash.SlashCommand;
+import com.freya02.botcommands.slash.SlashCommandInfo;
+import com.freya02.botcommands.slash.SlashCommandListener;
+import com.freya02.botcommands.slash.SlashCommandsBuilder;
 import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -401,9 +405,6 @@ public final class CommandsBuilder {
 			LOGGER.info("Loaded {} commands", context.getCommands().size());
 			printCommands(context.getCommands(), 0);
 
-			LOGGER.info("Loaded {} slash commands", context.getSlashCommands().size());
-			printSlashCommands(context.getSlashCommands());
-
 			slashCommandsBuilder.postProcess();
 
 			if (context.getComponentManager() != null) {
@@ -455,7 +456,9 @@ public final class CommandsBuilder {
 				if (someCommand instanceof Command) {
 					prefixedCommandsBuilder.processPrefixedCommand((Command) someCommand);
 				} else if (someCommand instanceof SlashCommand) {
-					slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand);
+					for (Guild guild : context.getJDA().getGuildCache()) {
+						slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand, guild);
+					}
 				} else {
 					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
 				}

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.annotation.Optional;
@@ -9,6 +10,7 @@ import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.slash.annotations.Option;
 import com.freya02.botcommands.slash.impl.SlashEventImpl;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -16,6 +18,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -41,7 +44,7 @@ public class SlashCommandInfo extends Cooldownable {
 
 	private int pathComponents = 1;
 
-	public SlashCommandInfo(SlashCommand slashCommand, Method commandMethod) {
+	public SlashCommandInfo(BContextImpl context, @Nullable Guild guild, SlashCommand slashCommand, Method commandMethod) {
 		super(commandMethod.getAnnotation(JdaSlashCommand.class).cooldownScope(), commandMethod.getAnnotation(JdaSlashCommand.class).cooldown());
 
 		final JdaSlashCommand annotation = commandMethod.getAnnotation(JdaSlashCommand.class);
@@ -93,13 +96,19 @@ public class SlashCommandInfo extends Cooldownable {
 		this.baseName = annotation.name();
 		this.path = pathBuilder.toString();
 
-		if (annotation.subcommand().isEmpty()) {
-			this.name = annotation.name();
+		final String localizedName = SlashUtils.getName(context, guild, this);
+		if (localizedName == null) {
+			if (annotation.subcommand().isEmpty()) {
+				this.name = annotation.name();
+			} else {
+				this.name = annotation.subcommand();
+			}
 		} else {
-			this.name = annotation.subcommand();
+			this.name = localizedName;
 		}
 
-		this.description = annotation.description();
+		final String localizedDescription = SlashUtils.getDescription(context, guild, this);
+		this.description = localizedDescription == null ? annotation.description() : localizedDescription;
 		this.category = annotation.category();
 
 		this.guildOnly = annotation.guildOnly();
@@ -163,8 +172,10 @@ public class SlashCommandInfo extends Cooldownable {
 				}
 			}};
 
-			for (SlashCommandParameter parameter : commandParameters) {
-				final OptionMapping optionData = event.getOption(parameter.getEffectiveName());
+			for (int i = 0, commandParametersLength = commandParameters.length; i < commandParametersLength; i++) {
+				SlashCommandParameter parameter = commandParameters[i];
+				
+				final OptionMapping optionData = event.getOptions().get(i);
 
 				if (optionData == null) {
 					if (parameter.isOptional()) {
