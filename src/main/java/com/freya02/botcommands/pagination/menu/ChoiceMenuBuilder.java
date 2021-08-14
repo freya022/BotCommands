@@ -1,23 +1,26 @@
 package com.freya02.botcommands.pagination.menu;
 
 import com.freya02.botcommands.components.Components;
+import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.pagination.Paginator;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Provides a builder for {@link ChoiceMenu}s
+ * <br>If a callback is <b>not</b> set, the menu will close itself after an item has been chosen, or get it's result displayed if the message is ephemeral
+ * <br>You should use the callback to do something when a user chooses an entry. 
  *
  * @param <T> Type of the entries
  */
@@ -30,7 +33,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 		emojis.add(Emoji.fromUnicode("\uD83D\uDD1F"));
 	}
 
-	private Consumer<T> callback;
+	private BiConsumer<ButtonEvent, T> callback;
 
 	private Thread waitingThread;
 	private T choice;
@@ -63,7 +66,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	 * @param callback The {@link Consumer} to call when the user makes their choice
 	 * @return This builder for chaining convenience
 	 */
-	public ChoiceMenuBuilder<T> setCallback(Consumer<T> callback) {
+	public ChoiceMenuBuilder<T> setCallback(BiConsumer<ButtonEvent, T> callback) {
 		Checks.notNull(callback, "Menu callback");
 
 		this.callback = callback;
@@ -116,24 +119,24 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 		return menu;
 	}
 
-	private void onChoiceClicked(Paginator menu, MenuPage<T> menuPage, int choiceNumber, ButtonClickEvent e) {
+	private void onChoiceClicked(Paginator menu, MenuPage<T> menuPage, int choiceNumber, ButtonEvent e) {
 		this.choice = menuPage.getChoices().get(choiceNumber);
 
-		if (e.getMessage() == null) { //Send a validation message for ephemeral replies
-			final MessageBuilder messageBuilder = new MessageBuilder();
-			final EmbedBuilder resultBuilder = new EmbedBuilder()
-					.setTitle(menu.getTitle())
-					.setDescription("You choosed: " + transformer.toString(choice));
-
-			messageBuilder.setEmbeds(resultBuilder.build());
-
-			e.editMessage(messageBuilder.build()).queue();
-		} else { //If not ephemeral just delete and use callback
-			e.getMessage().delete().queue();
-		}
-
 		if (callback != null) {
-			callback.accept(choice);
+			callback.accept(e, choice);
+		} else {
+			if (e.getMessage() == null) { //Send a validation message for ephemeral replies
+				final MessageBuilder messageBuilder = new MessageBuilder();
+				final EmbedBuilder resultBuilder = new EmbedBuilder()
+						.setTitle(menu.getTitle())
+						.setDescription("You choosed: " + transformer.toString(choice));
+
+				messageBuilder.setEmbeds(resultBuilder.build());
+
+				e.editMessage(messageBuilder.build()).queue();
+			} else { //If not ephemeral just delete and use callback
+				e.getMessage().delete().queue();
+			}
 		}
 
 		if (waitingThread != null) {
