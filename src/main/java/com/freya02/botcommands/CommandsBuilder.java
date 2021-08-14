@@ -43,7 +43,6 @@ public final class CommandsBuilder {
 	private final Set<Class<?>> classes = new HashSet<>();
 
 	private boolean disableHelpCommand;
-	private boolean disableSlashHelpCommand;
 
 	private boolean usePing;
 
@@ -122,17 +121,6 @@ public final class CommandsBuilder {
 	public CommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
 		this.disableHelpCommand = true;
 		this.context.overrideHelp(helpConsumer);
-
-		return this;
-	}
-
-	/**
-	 * Disables the /help command for slash commands
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder disableSlashHelpCommand() {
-		this.disableSlashHelpCommand = true;
 
 		return this;
 	}
@@ -399,15 +387,6 @@ public final class CommandsBuilder {
 				final HelpCommand help = (HelpCommand) context.findCommand("help");
 				if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
 				help.generate();
-			}
-
-			if (!disableSlashHelpCommand) {
-				processClass(SlashHelpCommand.class);
-
-				final SlashCommandInfo info = context.findSlashCommand("help");
-				if (info == null) throw new IllegalStateException("SlashHelpCommand did not build properly");
-
-				((SlashHelpCommand) info.getInstance()).generate();
 			}
 
 			if (context.getComponentManager() != null) {
