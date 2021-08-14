@@ -20,7 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static com.freya02.botcommands.slash.SlashCommandsBuilder.*;
+import static com.freya02.botcommands.slash.SlashUtils.*;
 
 public class SlashCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
