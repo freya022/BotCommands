@@ -6,6 +6,7 @@ import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
 import com.freya02.botcommands.slash.SlashCommandInfo;
 import com.freya02.botcommands.slash.SlashCommandsBuilder;
+import com.freya02.botcommands.slash.SlashCommandsCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -54,6 +55,7 @@ public class BContextImpl implements BContext {
 	private Consumer<EmbedBuilder> helpBuilderConsumer;
 
 	private SlashCommandsBuilder slashCommandsBuilder;
+	private SlashCommandsCache slashCommandsCache;
 
 	@Override
 	@NotNull
@@ -100,14 +102,10 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public List<String> getSlashCommandsBaseNames() {
-		return slashCommandMap.keySet()
+	public List<String> getSlashCommandsPaths() {
+		return slashCommandMap.values()
 				.stream()
-				.map(s -> {
-					if (s.indexOf('/') != -1) return s.substring(0, s.indexOf('/'));
-
-					return s;
-				}).distinct()
+				.map(SlashCommandInfo::getPath)
 				.collect(Collectors.toList());
 	}
 
@@ -334,5 +332,13 @@ public class BContextImpl implements BContext {
 
 	public Supplier<?> getCommandDependency(Class<?> fieldType) {
 		return commandDependencyMap.get(fieldType);
+	}
+
+	public SlashCommandsCache getSlashCommandsCache() {
+		return slashCommandsCache;
+	}
+
+	public void setSlashCommandsCache(SlashCommandsCache cachedSlashCommands) {
+		this.slashCommandsCache = cachedSlashCommands;
 	}
 }

@@ -1,10 +1,6 @@
 package com.freya02.botcommands;
 
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -19,10 +15,12 @@ public class CommandList {
 	}
 
 	/**
-	 * Makes a list of <b>usable</b> commands (in a Guild context), <b>insert only base command name (most left name), no group, no subcommand</b><br>
-	 * <b>Keep in mind you cannot disable global commands on a per-guild basis</b>
+	 * Makes a list of <b>usable</b> commands (in a Guild context),
+	 * <br><b>You have to insert full commands paths such as <code>name/group/subcommand</code>, which comes from the Discord representation of <code>/name group subcommand</code></b>
+	 * <br>This is constructed by joining each path component with a <code>/</code>
+	 * <br><b>Keep in mind you cannot enable global commands on a per-guild basis</b>
 	 *
-	 * @param enabledCommands A collection of enabled command base names
+	 * @param enabledCommands A collection of enabled command paths
 	 * @return A {@link CommandList} of enabled command
 	 */
 	public static CommandList of(Collection<String> enabledCommands) {
@@ -30,10 +28,12 @@ public class CommandList {
 	}
 
 	/**
-	 * Makes a list of <b>unusable</b> commands (in a Guild context), <b>insert only base command name (most left name), no group, no subcommand</b><br>
-	 * <b>Keep in mind you cannot disable global commands on a per-guild basis</b>
+	 * Makes a list of <b>unusable</b> commands (in a Guild context),
+	 * <br><b>You have to insert full commands paths such as <code>name/group/subcommand</code>, which comes from the Discord representation of <code>/name group subcommand</code></b>
+	 * <br>This is constructed by joining each path component with a <code>/</code>
+	 * <br><b>Keep in mind you cannot disable global commands on a per-guild basis</b>
 	 *
-	 * @param disabledCommands A collection of disabled command base names
+	 * @param disabledCommands A collection of disabled command paths
 	 * @return A {@link CommandList} of disabled command
 	 */
 	public static CommandList notOf(Collection<String> disabledCommands) {
@@ -58,15 +58,12 @@ public class CommandList {
 		return new CommandList(s -> true);
 	}
 
-	public List<CommandData> getFiltered(Collection<CommandData> commandList) {
-		List<CommandData> newCommandList = new ArrayList<>();
-
-		for (CommandData commandData : commandList) {
-			if (filter.test(commandData.getName())) {
-				newCommandList.add(commandData);
-			}
-		}
-
-		return newCommandList;
+	/**
+	 * Return a predicate that returns true if the command can be used
+	 *
+	 * @return The filter predicate
+	 */
+	public Predicate<String> getFilter() {
+		return filter;
 	}
 }

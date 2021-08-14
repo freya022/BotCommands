@@ -32,14 +32,12 @@ import java.util.concurrent.CompletionException;
 public final class SlashCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
-	private final CachedSlashCommands cachedSlashCommands;
 	private final List<Long> slashGuildIds;
 
 	public SlashCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
 		this.context.setSlashCommandsBuilder(this);
 		this.slashGuildIds = slashGuildIds;
-		this.cachedSlashCommands = new CachedSlashCommands(context);
 	}
 
 	public void processSlashCommand(SlashCommand slashCommand) {
@@ -76,9 +74,11 @@ public final class SlashCommandsBuilder {
 	public void postProcess() throws IOException {
 		context.getJDA().setRequiredScopes("applications.commands");
 
-		cachedSlashCommands.computeCommands();
-		if (cachedSlashCommands.shouldUpdateGlobalCommands()) {
-			cachedSlashCommands.updateGlobalCommands();
+		context.setSlashCommandsCache(new SlashCommandsCache(context));
+
+		final SlashCommandsUpdater globalUpdater = SlashCommandsUpdater.ofGlobal(context);
+		if (globalUpdater.shouldUpdateCommands()) {
+			globalUpdater.updateCommands();
 			LOGGER.debug("Global commands were updated");
 		} else {
 			LOGGER.debug("Global commands does not have to be updated");
@@ -97,15 +97,21 @@ public final class SlashCommandsBuilder {
 	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
 		boolean changed = false;
 
-		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>();
+		List<SlashCommandsUpdater> updaters = new ArrayList<>();
 		for (Guild guild : guilds) {
-			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+			if (slashGuildIds.isEmpty() || slashGuildIds.contains(guild.getIdLong())) {
+				updaters.add(SlashCommandsUpdater.ofGuild(context, guild));
+			}
+		}
 
-			cachedSlashCommands.computeGuildCommands(guild);
-			if (cachedSlashCommands.shouldUpdateGuildCommands(guild)) {
+		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>();
+		for (SlashCommandsUpdater updater : updaters) {
+			final Guild guild = updater.getGuild();
+
+			if (updater.shouldUpdateCommands()) {
 				changed = true;
 
-				commandUpdatePairs.add(new ImmutablePair<>(guild, cachedSlashCommands.updateGuildCommands(guild)));
+				commandUpdatePairs.add(new ImmutablePair<>(guild, updater.updateCommands()));
 				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
 			} else {
 				LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
@@ -136,15 +142,15 @@ public final class SlashCommandsBuilder {
 			}
 		}
 
-		for (Guild guild : guilds) {
-			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+		for (SlashCommandsUpdater updater : updaters) {
+			final Guild guild = updater.getGuild();
+
 			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
 
-			cachedSlashCommands.computeGuildPrivileges(guild);
-			if (cachedSlashCommands.shouldUpdateGuildPrivileges(guild)) {
+			if (updater.shouldUpdatePrivileges()) {
 				changed = true;
 
-				cachedSlashCommands.updateGuildPrivileges(guild);
+				updater.updatePrivileges();
 				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
 			} else {
 				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
