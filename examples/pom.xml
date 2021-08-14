@@ -42,9 +42,15 @@
     </repositories>
     <dependencies>
         <dependency> <!-- The Java Discord API-->
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.Andre601</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_296</version>
+            <version>bd8be63</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>club.minnced</groupId>
+                    <artifactId>opus-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency> <!-- Needed for JDA and BotCommands logging -->
             <groupId>ch.qos.logback</groupId>
