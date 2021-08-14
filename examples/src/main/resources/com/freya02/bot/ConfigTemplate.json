@@ -1,0 +1,10 @@
+{
+  "token": "",
+  "dbConfig": {
+    "serverName": "",
+    "portNumber": 0,
+    "user": "",
+    "password": "",
+    "dbName": ""
+  }
+}
