@@ -58,9 +58,9 @@
             <version>1.2.3</version>
         </dependency>
         <dependency> <!-- This library -->
-            <groupId>com.freya02</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
+            <version>422d93c</version>
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>
