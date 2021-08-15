@@ -78,7 +78,7 @@ class SlashUtils {
 			}
 
 			if (data.getType().canSupportChoices()) {
-				final Collection<Command.Choice> choices = getChoices(context, guild, info, i, name);
+				final Collection<Command.Choice> choices = getLocalizedChoices(context, guild, info, i, name);
 				
 				//might just be empty
 				data.addChoices(choices);
@@ -93,7 +93,7 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	private static Collection<Command.Choice> getChoices(BContext context, Guild guild, SlashCommandInfo info, int optionIndex, String name) {
+	private static Collection<Command.Choice> getLocalizedChoices(BContext context, Guild guild, SlashCommandInfo info, int optionIndex, String name) {
 		Collection<Command.Choice> choices = info.getInstance().getCommandChoices(guild, info.getPath(), name, optionIndex);
 
 		if (choices == null || choices.isEmpty()) {
@@ -108,7 +108,7 @@ class SlashUtils {
 	}
 
 	@Nullable
-	private static String getOptionName(BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
+	private static String getLocalizedOptionName(BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
 		String name = info.getInstance().getOptionName(guild, info.getPath(), optionIndex);
 
 		if (name == null || name.isBlank()) {
@@ -122,7 +122,7 @@ class SlashUtils {
 		return name;
 	}
 
-	static String getDescription(BContext context, Guild guild, SlashCommandInfo info) {
+	static String getLocalizedDescription(BContext context, Guild guild, SlashCommandInfo info) {
 		String name = info.getInstance().getCommandDescription(guild, info.getPath());
 
 		if (name == null || name.isBlank()) {
@@ -136,7 +136,7 @@ class SlashUtils {
 		return name;
 	}
 
-	static String getName(BContext context, Guild guild, SlashCommandInfo info) {
+	static String getLocalizedPath(BContext context, Guild guild, SlashCommandInfo info) {
 		String name = info.getInstance().getCommandName(guild, info.getPath());
 
 		if (name == null || name.isBlank()) {
@@ -154,7 +154,7 @@ class SlashUtils {
 		if (!parameter.isNamePresent())
 			throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
 
-		final String optionName = getOptionName(context, guild, info, optionIndex);
+		final String optionName = getLocalizedOptionName(context, guild, info, optionIndex);
 		
 		if (optionName != null && !optionName.isBlank()) {
 			return optionName;
@@ -177,7 +177,7 @@ class SlashUtils {
 		return optionNameBuilder.toString();
 	}
 
-	static String getName(String path) {
+	static String getPathName(String path) {
 		final int i = path.indexOf('/');
 		if (i == -1) return path;
 
@@ -185,7 +185,7 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	static String getParent(String path) {
+	static String getPathParent(String path) {
 		return path.substring(0, path.lastIndexOf('/'));
 	}
 }

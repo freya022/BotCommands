@@ -11,14 +11,12 @@ import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.SlashCommandInfo;
 import com.freya02.botcommands.slash.SlashCommandListener;
 import com.freya02.botcommands.slash.SlashCommandsBuilder;
 import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -287,7 +285,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds a filter for received messages (could prevent regular commands from runnings), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
+	 * Adds a filter for received messages (could prevent regular commands from running), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
 	 *
 	 * @param filter The filter to add, should return <code>false</code> if the message has to be ignored
 	 * @return This builder for chaining convenience
@@ -360,7 +358,7 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	//skip can be inlined by 2 but inlining would conflit with the above overload and also remove 1 stack frame, reintroducing the parameter need
+	//skip can be inlined by 2 but inlining would conflict with the above overload and also remove 1 stack frame, reintroducing the parameter need
 	@SuppressWarnings("SameParameterValue")
 	private void addSearchPath(String commandPackageName, int skip) throws IOException {
 		Utils.requireNonBlank(commandPackageName, "Command package");
@@ -433,16 +431,6 @@ public final class CommandsBuilder {
 		}
 	}
 
-	private void printSlashCommands(Collection<SlashCommandInfo> commands) {
-		for (SlashCommandInfo command : commands) {
-			LOGGER.debug("{} - '{}' Bot permission=[{}] User permissions=[{}]",
-					command.isGuildOnly() ? "Guild    " : "Guild+DMs",
-					command.getPath(),
-					command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
-					command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
-		}
-	}
-
 	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
 		if (isCommand(aClass) && aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
 			boolean isInstantiable = Utils.isInstantiable(aClass);
@@ -456,9 +444,7 @@ public final class CommandsBuilder {
 				if (someCommand instanceof Command) {
 					prefixedCommandsBuilder.processPrefixedCommand((Command) someCommand);
 				} else if (someCommand instanceof SlashCommand) {
-					for (Guild guild : context.getJDA().getGuildCache()) {
-						slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand, guild);
-					}
+					slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand);
 				} else {
 					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
 				}

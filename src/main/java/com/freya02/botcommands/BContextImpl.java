@@ -37,8 +37,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
-	private final Map<Long, Map<String, SlashCommandInfo>> guildSlashCommandMap = new HashMap<>();
-	private final Map<String, SlashCommandInfo> globalSlashCommandMap = new HashMap<>();
+	private final Map<String, SlashCommandInfo> slashCommandMap = new HashMap<>();
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
@@ -98,13 +97,13 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public SlashCommandInfo findSlashCommand(@Nullable Guild guild, @NotNull String name) {
-		return getSlashCommandMap(guild).get(name);
+	public SlashCommandInfo findSlashCommand(@NotNull String name) {
+		return slashCommandMap.get(name);
 	}
 
 	@Override
-	public List<String> getSlashCommandsPaths(Guild guild) {
-		return getSlashCommandMap(guild).values()
+	public List<String> getSlashCommandsPaths() {
+		return slashCommandMap.values()
 				.stream()
 				.map(SlashCommandInfo::getPath)
 				.collect(Collectors.toList());
@@ -157,8 +156,8 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addSlashCommand(@Nullable Guild guild, String path, SlashCommandInfo commandInfo) {
-		final Map<String, SlashCommandInfo> slashCommandMap = getSlashCommandMap(guild);
+	public void addSlashCommand(String path, SlashCommandInfo commandInfo) {
+		final Map<String, SlashCommandInfo> slashCommandMap = this.slashCommandMap;
 
 		String path2 = path;
 		int index;
@@ -181,13 +180,25 @@ public class BContextImpl implements BContext {
 					commandInfo.getCommandMethod()));
 		}
 	}
+	
+	public void addSlashCommandAlternative(String path, SlashCommandInfo commandInfo) {
+		//it's pretty much possible that the path already exist if two guilds use the same language for example
+		//Still, check that the alternative path points to the same path if it exists
+		final SlashCommandInfo oldVal = slashCommandMap.put(path, commandInfo);
+		if (oldVal != commandInfo && oldVal != null) {
+			throw new IllegalStateException(String.format("Tried to add a localized slash command path but one already exists and isn't from the same command: %s and %s, path: %s",
+					oldVal.getCommandMethod(),
+					commandInfo.getCommandMethod(),
+					path));
+		}
+	}
 
 	public Collection<Command> getCommands() {
 		return Collections.unmodifiableCollection(commandMap.values());
 	}
 
-	public Collection<SlashCommandInfo> getSlashCommands(@Nullable Guild guild) {
-		return Collections.unmodifiableCollection(getSlashCommandMap(guild).values());
+	public Collection<SlashCommandInfo> getSlashCommands() {
+		return Collections.unmodifiableCollection(slashCommandMap.values());
 	}
 
 	public void dispatchException(String message, Throwable e) {
@@ -343,9 +354,5 @@ public class BContextImpl implements BContext {
 
 	public void setSlashCommandsCache(SlashCommandsCache cachedSlashCommands) {
 		this.slashCommandsCache = cachedSlashCommands;
-	}
-	
-	Map<String, SlashCommandInfo> getSlashCommandMap(Guild guild) {
-		return guild == null ? globalSlashCommandMap : guildSlashCommandMap.computeIfAbsent(guild.getIdLong(), x -> new HashMap<>());
 	}
 }

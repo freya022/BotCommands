@@ -89,14 +89,14 @@ public interface BContext {
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	SlashCommandInfo findSlashCommand(@Nullable Guild guild, @NotNull String name);
+	SlashCommandInfo findSlashCommand(@NotNull String name);
 
 	/**
 	 * Returns a list of the slash commands paths, names such as <code>ban/user/perm</code>
 	 *
 	 * @return A list of the the slash commands paths
 	 */
-	List<String> getSlashCommandsPaths(@Nullable Guild guild);
+	List<String> getSlashCommandsPaths();
 
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier

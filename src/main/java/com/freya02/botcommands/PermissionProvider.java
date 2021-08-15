@@ -12,7 +12,7 @@ import java.util.Collection;
 public interface PermissionProvider {
 	/**
 	 * Returns the list of guild commands usable in that Guild
-	 * <br><i>You can have a list of command names if needed in {@link BContext#getSlashCommandsPaths(Guild)} ()}</i>
+	 * <br><i>You can have a list of command names if needed in {@link BContext#getSlashCommandsPaths()} ()}</i>
 	 *
 	 * @param guild Guild from which the commands should be
 	 * @return A CommandList of this guild's commands

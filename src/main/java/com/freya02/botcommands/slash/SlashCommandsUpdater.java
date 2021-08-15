@@ -93,10 +93,11 @@ public class SlashCommandsUpdater {
 		return guild != null ? thenAcceptGuild(commandData, future) : thenAcceptGlobal(commandData, future);
 	}
 
+	//TODO if commands haven't changed but privileges did, we must retrieve the commands and associate them back
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
-		computePrivileges();
+		computePrivileges(); //has to run after the commands updated
 
 		if (Files.notExists(privilegesCachePath)) return true;
 
@@ -121,7 +122,7 @@ public class SlashCommandsUpdater {
 	}
 
 	private void computeCommands(@NotNull BContextImpl context, @Nullable Guild guild) {
-		context.getSlashCommands(guild).stream()
+		context.getSlashCommands().stream()
 				.filter(info -> {
 					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
 						return false;
@@ -137,11 +138,11 @@ public class SlashCommandsUpdater {
 				.sorted(Comparator.comparingInt(SlashCommandInfo::getPathComponents))
 				.forEachOrdered(info -> {
 					try {
-						final String path = info.getPath();
+						final String path = getCommandPath(info);
 
 						if (info.getPathComponents() == 1) {
 							//Standard command
-							final CommandData rightCommand = new CommandData(info.getName(), info.getDescription());
+							final CommandData rightCommand = new CommandData(path, getDescription(info));
 							map.put(path, rightCommand);
 
 							rightCommand.addOptions(getMethodOptions(context, guild, info));
@@ -151,9 +152,9 @@ public class SlashCommandsUpdater {
 							}
 						} else if (info.getPathComponents() == 2) {
 							//Subcommand of a command
-							final String parent = getParent(path);
+							final String parent = getPathParent(path);
 							final CommandData commandData = map.computeIfAbsent(parent, s -> {
-								final CommandData tmpData = new CommandData(getName(parent), ".");
+								final CommandData tmpData = new CommandData(getPathName(parent), ".");
 								if (info.isOwnerOnly()) {
 									tmpData.setDefaultEnabled(false);
 								}
@@ -161,34 +162,36 @@ public class SlashCommandsUpdater {
 								return tmpData;
 							});
 
-							final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
+							final SubcommandData rightCommand = new SubcommandData(getPathName(path), getDescription(info));
 							commandData.addSubcommands(rightCommand);
 
 							rightCommand.addOptions(getMethodOptions(context, guild, info));
 						} else if (info.getPathComponents() == 3) {
-							final String namePath = getParent(getParent(path));
-							final String parentPath = getParent(path);
+							final String namePath = getPathParent(getPathParent(path));
+							final String parentPath = getPathParent(path);
 							final SubcommandGroupData groupData = groupMap.computeIfAbsent(parentPath, gp -> {
-								final CommandData nameData = new CommandData(getName(namePath), ".");
-								map.put(getName(namePath), nameData);
+								final CommandData nameData = new CommandData(getPathName(namePath), ".");
+								map.put(getPathName(namePath), nameData);
 
 								if (info.isOwnerOnly()) {
 									nameData.setDefaultEnabled(false);
 								}
 
-								final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getName(parentPath), ".");
+								final SubcommandGroupData groupDataTmp = new SubcommandGroupData(getPathName(parentPath), ".");
 								nameData.addSubcommandGroups(groupDataTmp);
 
 								return groupDataTmp;
 							});
 
-							final SubcommandData rightCommand = new SubcommandData(info.getName(), info.getDescription());
+							final SubcommandData rightCommand = new SubcommandData(getPathName(path), getDescription(info));
 							groupData.addSubcommands(rightCommand);
 
 							rightCommand.addOptions(getMethodOptions(context, guild, info));
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 names got registered");
 						}
+
+						context.addSlashCommandAlternative(path, info);
 
 						if (!info.isOwnerOnly()) {
 							if (ownerOnlyCommands.contains(info.getBaseName())) {
@@ -207,6 +210,18 @@ public class SlashCommandsUpdater {
 						throw new RuntimeException("An exception occurred while processing command " + info.getPath(), e);
 					}
 				});
+	}
+
+	private String getDescription(SlashCommandInfo info) {
+		final String desc = getLocalizedDescription(context, guild, info);
+		
+		return desc == null ? info.getDescription() : desc;
+	}
+
+	private String getCommandPath(SlashCommandInfo info) {
+		final String path = getLocalizedPath(context, guild, info);
+
+		return path == null ? info.getPath() : path;
 	}
 
 	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {
