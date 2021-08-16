@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
@@ -69,11 +68,10 @@ public final class SlashCommandListener extends ListenerAdapter {
 		}
 
 		runCommand(() -> {
-			final InteractionHook hook = event.getHook();
 			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
 
 			if (slashCommand == null) {
-				hook.sendMessage("Unknown slash command").queue();
+				event.reply("Unknown slash command").queue();
 				return;
 			}
 
@@ -123,7 +121,6 @@ public final class SlashCommandListener extends ListenerAdapter {
 				}
 			}
 
-			hook.setEphemeral(true);
 			if (slashCommand.execute(context, event)) {
 				slashCommand.applyCooldown(event);
 			}

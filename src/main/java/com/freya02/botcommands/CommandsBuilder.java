@@ -10,7 +10,9 @@ import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import com.freya02.botcommands.slash.*;
+import com.freya02.botcommands.slash.SlashCommand;
+import com.freya02.botcommands.slash.SlashCommandListener;
+import com.freya02.botcommands.slash.SlashCommandsBuilder;
 import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -43,7 +45,6 @@ public final class CommandsBuilder {
 	private final Set<Class<?>> classes = new HashSet<>();
 
 	private boolean disableHelpCommand;
-	private boolean disableSlashHelpCommand;
 
 	private boolean usePing;
 
@@ -122,17 +123,6 @@ public final class CommandsBuilder {
 	public CommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
 		this.disableHelpCommand = true;
 		this.context.overrideHelp(helpConsumer);
-
-		return this;
-	}
-
-	/**
-	 * Disables the /help command for slash commands
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder disableSlashHelpCommand() {
-		this.disableSlashHelpCommand = true;
 
 		return this;
 	}
@@ -295,7 +285,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds a filter for received messages (could prevent regular commands from runnings), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
+	 * Adds a filter for received messages (could prevent regular commands from running), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
 	 *
 	 * @param filter The filter to add, should return <code>false</code> if the message has to be ignored
 	 * @return This builder for chaining convenience
@@ -368,7 +358,7 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	//skip can be inlined by 2 but inlining would conflit with the above overload and also remove 1 stack frame, reintroducing the parameter need
+	//skip can be inlined by 2 but inlining would conflict with the above overload and also remove 1 stack frame, reintroducing the parameter need
 	@SuppressWarnings("SameParameterValue")
 	private void addSearchPath(String commandPackageName, int skip) throws IOException {
 		Utils.requireNonBlank(commandPackageName, "Command package");
@@ -401,15 +391,6 @@ public final class CommandsBuilder {
 				help.generate();
 			}
 
-			if (!disableSlashHelpCommand) {
-				processClass(SlashHelpCommand.class);
-
-				final SlashCommandInfo info = context.findSlashCommand("help");
-				if (info == null) throw new IllegalStateException("SlashHelpCommand did not build properly");
-
-				((SlashHelpCommand) info.getInstance()).generate();
-			}
-
 			if (context.getComponentManager() != null) {
 				//Load button listeners
 				for (Class<?> aClass : classes) {
@@ -421,9 +402,6 @@ public final class CommandsBuilder {
 
 			LOGGER.info("Loaded {} commands", context.getCommands().size());
 			printCommands(context.getCommands(), 0);
-
-			LOGGER.info("Loaded {} slash commands", context.getSlashCommands().size());
-			printSlashCommands(context.getSlashCommands());
 
 			slashCommandsBuilder.postProcess();
 
@@ -450,16 +428,6 @@ public final class CommandsBuilder {
 					command.getInfo().getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
 
 			printCommands(command.getInfo().getSubcommands(), indent + 1);
-		}
-	}
-
-	private void printSlashCommands(Collection<SlashCommandInfo> commands) {
-		for (SlashCommandInfo command : commands) {
-			LOGGER.debug("{} - '{}' Bot permission=[{}] User permissions=[{}]",
-					command.isGuildOnly() ? "Guild    " : "Guild+DMs",
-					command.getPath(),
-					command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
-					command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
 		}
 	}
 

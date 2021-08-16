@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface BGuildSettings {
@@ -9,5 +10,6 @@ public interface BGuildSettings {
 	 *
 	 * @return The list of prefixes
 	 */
+	@Nullable
 	List<String> getPrefixes();
 }

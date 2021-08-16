@@ -64,7 +64,6 @@ import java.lang.annotation.Target;
  * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>
  *
  * @see <a href="https://discord.com/developers/docs/interactions/slash-commands#subcommands-and-subcommand-groups">Discord docs</a>
- * @see Choices
  * @see Option
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -104,13 +103,6 @@ public @interface JdaSlashCommand {
 	 * @return Short description of the command
 	 */
 	String description() default "No description";
-
-	/**
-	 * Name of the category the command should be in
-	 *
-	 * @return Name of the category
-	 */
-	String category() default "No category";
 
 	/**
 	 * Required {@linkplain Permission permissions} of the bot

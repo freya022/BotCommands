@@ -26,7 +26,9 @@ import java.util.List;
 
 public class SlashCommandInfo extends Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
-	private final String baseName, name, description, category;
+	/** This is NOT localized */
+	private final String name, description;
+	private final String baseName;
 	private final boolean guildOnly;
 
 	private final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
@@ -37,6 +39,7 @@ public class SlashCommandInfo extends Cooldownable {
 	private final Method commandMethod;
 	private final SlashCommandParameter[] commandParameters;
 
+	/** This is NOT localized */
 	private final String path;
 
 	private int pathComponents = 1;
@@ -92,7 +95,7 @@ public class SlashCommandInfo extends Cooldownable {
 
 		this.baseName = annotation.name();
 		this.path = pathBuilder.toString();
-
+		
 		if (annotation.subcommand().isEmpty()) {
 			this.name = annotation.name();
 		} else {
@@ -100,7 +103,6 @@ public class SlashCommandInfo extends Cooldownable {
 		}
 
 		this.description = annotation.description();
-		this.category = annotation.category();
 
 		this.guildOnly = annotation.guildOnly();
 
@@ -125,18 +127,16 @@ public class SlashCommandInfo extends Cooldownable {
 		return commandMethod;
 	}
 
+	/** This is NOT localized */
 	public String getName() {
 		return name;
-	}
-
-	public String getCategory() {
-		return category;
 	}
 
 	public boolean isGuildOnly() {
 		return guildOnly;
 	}
 
+	/** This is NOT localized */
 	public String getDescription() {
 		return description;
 	}
@@ -149,6 +149,7 @@ public class SlashCommandInfo extends Cooldownable {
 		return botPermissions;
 	}
 
+	/** This is NOT localized */
 	public String getPath() {
 		return path;
 	}
@@ -163,8 +164,10 @@ public class SlashCommandInfo extends Cooldownable {
 				}
 			}};
 
-			for (SlashCommandParameter parameter : commandParameters) {
-				final OptionMapping optionData = event.getOption(parameter.getEffectiveName());
+			for (int i = 0, commandParametersLength = commandParameters.length; i < commandParametersLength; i++) {
+				SlashCommandParameter parameter = commandParameters[i];
+				
+				final OptionMapping optionData = event.getOptions().get(i);
 
 				if (optionData == null) {
 					if (parameter.isOptional()) {

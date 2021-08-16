@@ -92,11 +92,11 @@ public interface BContext {
 	SlashCommandInfo findSlashCommand(@NotNull String name);
 
 	/**
-	 * Returns a list of the slash commands base names, names such as <code>ban/user/perm</code> will be transformed into <code>ban</code>
+	 * Returns a list of the slash commands paths, names such as <code>ban/user/perm</code>
 	 *
-	 * @return A list of the the slash commands base names
+	 * @return A list of the the slash commands paths
 	 */
-	List<String> getSlashCommandsBaseNames();
+	List<String> getSlashCommandsPaths();
 
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier
