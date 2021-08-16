@@ -105,13 +105,6 @@ public @interface JdaSlashCommand {
 	String description() default "No description";
 
 	/**
-	 * Name of the category the command should be in
-	 *
-	 * @return Name of the category
-	 */
-	String category() default "No category";
-
-	/**
 	 * Required {@linkplain Permission permissions} of the bot
 	 *
 	 * @return Required {@linkplain Permission permissions} of the bot

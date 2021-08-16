@@ -28,7 +28,7 @@ public class SlashCommandInfo extends Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
 	/** This is NOT localized */
 	private final String name, description;
-	private final String baseName, category;
+	private final String baseName;
 	private final boolean guildOnly;
 
 	private final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
@@ -103,7 +103,6 @@ public class SlashCommandInfo extends Cooldownable {
 		}
 
 		this.description = annotation.description();
-		this.category = annotation.category();
 
 		this.guildOnly = annotation.guildOnly();
 
@@ -131,10 +130,6 @@ public class SlashCommandInfo extends Cooldownable {
 	/** This is NOT localized */
 	public String getName() {
 		return name;
-	}
-
-	public String getCategory() {
-		return category;
 	}
 
 	public boolean isGuildOnly() {
