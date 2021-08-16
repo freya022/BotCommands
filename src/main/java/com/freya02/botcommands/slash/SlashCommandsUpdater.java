@@ -2,9 +2,11 @@ package com.freya02.botcommands.slash;
 
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.SettingsProvider;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -138,14 +140,20 @@ public class SlashCommandsUpdater {
 				.sorted(Comparator.comparingInt(SlashCommandInfo::getPathComponents))
 				.forEachOrdered(info -> {
 					try {
-						final String path = getCommandPath(info);
+						final List<String> optionNames = getMethodOptionNames(info);
+						final LocalizedSlashCommandData localizedCommandData = getLocalizedCommandData(guild, info, optionNames);
 
+						final List<OptionData> methodOptions = getMethodOptions(info, localizedCommandData);
+
+						final String path = getLocalizedPath(info, localizedCommandData);
+						final String description = getLocalizedDescription(info, localizedCommandData);
+						
 						if (info.getPathComponents() == 1) {
 							//Standard command
-							final CommandData rightCommand = new CommandData(path, getDescription(info));
+							final CommandData rightCommand = new CommandData(path, description);
 							map.put(path, rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(context, guild, info));
+							rightCommand.addOptions(methodOptions);
 
 							if (info.isOwnerOnly()) {
 								rightCommand.setDefaultEnabled(false);
@@ -162,10 +170,10 @@ public class SlashCommandsUpdater {
 								return tmpData;
 							});
 
-							final SubcommandData rightCommand = new SubcommandData(getPathName(path), getDescription(info));
+							final SubcommandData rightCommand = new SubcommandData(getPathName(path), description);
 							commandData.addSubcommands(rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(context, guild, info));
+							rightCommand.addOptions(methodOptions);
 						} else if (info.getPathComponents() == 3) {
 							final String namePath = getPathParent(getPathParent(path));
 							final String parentPath = getPathParent(path);
@@ -183,10 +191,10 @@ public class SlashCommandsUpdater {
 								return groupDataTmp;
 							});
 
-							final SubcommandData rightCommand = new SubcommandData(getPathName(path), getDescription(info));
+							final SubcommandData rightCommand = new SubcommandData(getPathName(path), description);
 							groupData.addSubcommands(rightCommand);
 
-							rightCommand.addOptions(getMethodOptions(context, guild, info));
+							rightCommand.addOptions(methodOptions);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 names got registered");
 						}
@@ -212,16 +220,19 @@ public class SlashCommandsUpdater {
 				});
 	}
 
-	private String getDescription(SlashCommandInfo info) {
-		final String desc = getLocalizedDescription(context, guild, info);
+	@Nullable
+	private LocalizedSlashCommandData getLocalizedCommandData(@Nullable Guild guild, SlashCommandInfo info, List<String> optionNames) {
+		final LocalizedSlashCommandData localizedCommandData = info.getInstance().getLocalizedCommandData(guild, info.getPath(), optionNames);
 		
-		return desc == null ? info.getDescription() : desc;
-	}
-
-	private String getCommandPath(SlashCommandInfo info) {
-		final String path = getLocalizedPath(context, guild, info);
-
-		return path == null ? info.getPath() : path;
+		if (localizedCommandData == null) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+			
+			if (settingsProvider != null) {
+				return settingsProvider.getLocalizedCommandData(guild, info.getPath(), optionNames);
+			}
+		}
+		
+		return localizedCommandData;
 	}
 
 	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {

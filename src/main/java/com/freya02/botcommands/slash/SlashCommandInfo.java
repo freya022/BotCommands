@@ -39,6 +39,7 @@ public class SlashCommandInfo extends Cooldownable {
 	private final Method commandMethod;
 	private final SlashCommandParameter[] commandParameters;
 
+	/** This is NOT localized */
 	private final String path;
 
 	private int pathComponents = 1;
@@ -127,6 +128,7 @@ public class SlashCommandInfo extends Cooldownable {
 		return commandMethod;
 	}
 
+	/** This is NOT localized */
 	public String getName() {
 		return name;
 	}
@@ -139,6 +141,7 @@ public class SlashCommandInfo extends Cooldownable {
 		return guildOnly;
 	}
 
+	/** This is NOT localized */
 	public String getDescription() {
 		return description;
 	}
@@ -151,6 +154,7 @@ public class SlashCommandInfo extends Cooldownable {
 		return botPermissions;
 	}
 
+	/** This is NOT localized */
 	public String getPath() {
 		return path;
 	}

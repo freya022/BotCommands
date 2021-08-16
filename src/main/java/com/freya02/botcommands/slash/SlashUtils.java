@@ -1,7 +1,5 @@
 package com.freya02.botcommands.slash;
 
-import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.slash.annotations.Option;
@@ -9,6 +7,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,28 +26,52 @@ class SlashUtils {
 		}
 	}
 
-	static List<OptionData> getMethodOptions(BContext context, Guild guild, SlashCommandInfo info) {
-		final List<OptionData> list = new ArrayList<>();
+	static List<String> getMethodOptionNames(SlashCommandInfo info) {
+		final List<String> list = new ArrayList<>();
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
+		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
+			Parameter parameter = parameters[i];
+
+			final Option option = parameter.getAnnotation(Option.class);
+
+			final String name;
+			if (option == null) {
+				name = getOptionName(parameter);
+			} else {
+				if (option.name().isBlank()) {
+					name = getOptionName(parameter);
+				} else {
+					name = option.name();
+				}
+			}
+
+			list.add(name);
+		}
+		
+		return list;
+	}
+
+	static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedSlashCommandData localizedCommandData) {
+		final List<OptionData> list = new ArrayList<>();
+		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
+		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
+
+		Parameter[] parameters = info.getCommandMethod().getParameters();
+
+		Checks.check(optionNames.size() == parameters.length - 1, String.format("Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, info.getCommandMethod()));
+		
 		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
 			Parameter parameter = parameters[i];
 
 			final Class<?> type = parameter.getType();
 			final Option option = parameter.getAnnotation(Option.class);
 
-			final String name;
+			final String name = optionNames.get(i - 1);
 			final String description;
 			if (option == null) {
-				name = getOptionName(parameter, context, guild, info, i);
 				description = "No description";
 			} else {
-				if (option.name().isBlank()) {
-					name = getOptionName(parameter, context, guild, info, i);
-				} else {
-					name = option.name();
-				}
-
 				if (option.description().isBlank()) {
 					description = "No description";
 				} else {
@@ -78,10 +101,10 @@ class SlashUtils {
 			}
 
 			if (data.getType().canSupportChoices()) {
-				final Collection<Command.Choice> choices = getLocalizedChoices(context, guild, info, i, name);
-				
-				//might just be empty
-				data.addChoices(choices);
+				//choices might just be empty
+				if (optionsChoices.size() >= i) {
+					data.addChoices(optionsChoices.get(i - 1));
+				}
 			}
 
 			list.add(data);
@@ -93,72 +116,36 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	private static Collection<Command.Choice> getLocalizedChoices(BContext context, Guild guild, SlashCommandInfo info, int optionIndex, String name) {
-		Collection<Command.Choice> choices = info.getInstance().getCommandChoices(guild, info.getPath(), name, optionIndex);
-
-		if (choices == null || choices.isEmpty()) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				choices = settingsProvider.getCommandChoices(guild, info.getPath(), name, optionIndex);
-			}
-		}
-		
-		return choices == null ? Collections.emptyList() : choices;
+	static String getLocalizedPath(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+		return localizedCommandData == null
+				? info.getPath()
+				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
 	}
 
-	@Nullable
-	private static String getLocalizedOptionName(BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
-		String name = info.getInstance().getOptionName(guild, info.getPath(), optionIndex);
-
-		if (name == null || name.isBlank()) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				name = settingsProvider.getOptionName(guild, info.getPath(), optionIndex);
-			}
-		}
-
-		return name;
+	@Nonnull
+	static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+		return localizedCommandData == null
+				? info.getDescription()
+				: Objects.requireNonNullElse(localizedCommandData.getLocalizedDescription(), info.getDescription());
 	}
 
-	static String getLocalizedDescription(BContext context, Guild guild, SlashCommandInfo info) {
-		String name = info.getInstance().getCommandDescription(guild, info.getPath());
-
-		if (name == null || name.isBlank()) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				name = settingsProvider.getCommandDescription(guild, info.getPath());
-			}
-		}
-
-		return name;
+	@Nonnull
+	private static List<String> getLocalizedOptionNames(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+		return localizedCommandData == null
+				? getMethodOptionNames(info)
+				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getMethodOptionNames(info));
+	}
+	
+	@Nonnull
+	private static List<List<Command.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedSlashCommandData localizedCommandData) {
+		return localizedCommandData == null
+				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
+				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);
 	}
 
-	static String getLocalizedPath(BContext context, Guild guild, SlashCommandInfo info) {
-		String name = info.getInstance().getCommandName(guild, info.getPath());
-
-		if (name == null || name.isBlank()) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				name = settingsProvider.getCommandName(guild, info.getPath());
-			}
-		}
-
-		return name;
-	}
-
-	private static String getOptionName(Parameter parameter, BContext context, Guild guild, SlashCommandInfo info, int optionIndex) {
+	private static String getOptionName(Parameter parameter) {
 		if (!parameter.isNamePresent())
 			throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
-
-		final String optionName = getLocalizedOptionName(context, guild, info, optionIndex);
-		
-		if (optionName != null && !optionName.isBlank()) {
-			return optionName;
-		}
 
 		final String name = parameter.getName();
 		final int nameLength = name.length();
@@ -177,6 +164,7 @@ class SlashUtils {
 		return optionNameBuilder.toString();
 	}
 
+	@Nonnull
 	static String getPathName(String path) {
 		final int i = path.indexOf('/');
 		if (i == -1) return path;
