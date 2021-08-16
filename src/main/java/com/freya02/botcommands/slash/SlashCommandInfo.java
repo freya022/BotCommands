@@ -185,7 +185,7 @@ public class SlashCommandInfo extends Cooldownable {
 
 				final Object obj = parameter.getResolver().resolve(event, optionData);
 				if (obj == null) {
-					event.replyFormat("The parameter '%s' could not be resolved into a %s", parameter.getEffectiveName(), parameter.getType().getSimpleName())
+					event.replyFormat(context.getDefaultMessages().getSlashCommandUnresolvableParameterMsg(), parameter.getEffectiveName(), parameter.getType().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 
@@ -195,7 +195,7 @@ public class SlashCommandInfo extends Cooldownable {
 				}
 
 				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
-					event.replyFormat("The parameter '%s' is not a valid type (expected a %s, got a %s)", parameter.getEffectiveName(), parameter.getType().getSimpleName(), obj.getClass().getSimpleName())
+					event.replyFormat(context.getDefaultMessages().getSlashCommandInvalidParameterTypeMsg(), parameter.getEffectiveName(), parameter.getType().getSimpleName(), obj.getClass().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 

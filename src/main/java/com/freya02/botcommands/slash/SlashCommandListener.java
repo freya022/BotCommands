@@ -71,7 +71,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
 
 			if (slashCommand == null) {
-				event.reply("Unknown slash command").queue();
+				event.reply(context.getDefaultMessages().getSlashCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -140,7 +140,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 				if (event.isAcknowledged()) {
 					event.getHook().sendMessage("An uncaught exception occurred").setEphemeral(true).queue();
 				} else {
-					event.reply("An uncaught exception occurred").setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages().getSlashCommandErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in slash command '" + command + "'", e);

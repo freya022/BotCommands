@@ -69,7 +69,7 @@ public class ComponentListener extends ListenerAdapter {
 		final ComponentType idType = componentManager.getIdType(event.getComponentId());
 
 		if (idType == null) {
-			event.reply("This component is not usable anymore")
+			event.reply(context.getDefaultMessages().getNullComponentTypeErrorMsg())
 					.setEphemeral(true)
 					.queue();
 
