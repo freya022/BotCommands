@@ -238,6 +238,9 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public <T> CommandsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
+		if (context.getParameterSupplier(parameterType) != null)
+			throw new IllegalStateException("Parameter supplier already exists for parameter of type " + parameterType.getName());
+		
 		context.registerConstructorParameter(parameterType, parameterSupplier);
 
 		return this;
@@ -253,6 +256,9 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public <T> CommandsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
+		if (context.getInstanceSupplier(classType) != null)
+			throw new IllegalStateException("Instance supplier already exists for class " + classType.getName());
+		
 		context.registerInstanceSupplier(classType, instanceSupplier);
 
 		return this;
@@ -267,6 +273,9 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public <T> CommandsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
+		if (context.getCommandDependency(fieldType) != null)
+			throw new IllegalStateException("Command dependency already exists for fields of type " + fieldType.getName());
+		
 		context.registerCommandDependency(fieldType, supplier);
 
 		return this;
