@@ -1,20 +1,21 @@
 package com.freya02.botcommands;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 final class IOUtils {
-	static Path getJarPath(Class<?> classs) {
+	static Path getJarPath(Class<?> classs) throws IOException {
 		try {
 			return Paths.get(classs.getProtectionDomain().getCodeSource().getLocation().toURI());
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			throw new IOException("Could not get the location of " + classs, e);
 		}
-		return null;
 	}
 
 	static String getFileExtension(Path path) {
-		return path.toString().substring(path.toString().lastIndexOf(".")+1);
+		final String pathStr = path.toString();
+		return pathStr.substring(pathStr.lastIndexOf('.') + 1);
 	}
 }
