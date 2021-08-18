@@ -42,9 +42,9 @@
     </repositories>
     <dependencies>
         <dependency> <!-- The Java Discord API-->
-            <groupId>com.github.Andre601</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>bd8be63</version>
+            <version>4.3.0_310</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

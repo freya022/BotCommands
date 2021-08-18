@@ -1,10 +1,6 @@
-![](https://img.shields.io/badge/JDA%20Version-Invalid-important)
+![](https://img.shields.io/badge/JDA%20Version-4.3.0__310-important)
 ![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-
-## Notice
-
-Please use group id `com.github.Andre601` and version `bd8be63` for the JDA library as it contains the NUMBER slash command option type, until JDA has merged it
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
