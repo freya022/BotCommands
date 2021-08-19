@@ -5,6 +5,7 @@ import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.SettingsProvider;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -238,7 +239,9 @@ public class SlashCommandsUpdater {
 	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {
 		return future.thenAccept(commands -> {
 			for (Command command : commands) {
-				context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(guild, command));
+				if (command instanceof SlashCommand) {
+					context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(guild, (SlashCommand) command));
+				}
 			}
 
 			this.commands.addAll(commands);
@@ -262,7 +265,9 @@ public class SlashCommandsUpdater {
 	private CompletableFuture<?> thenAcceptGlobal(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {
 		return future.thenAccept(commands -> {
 			for (Command command : commands) {
-				context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered(command));
+				if (command instanceof SlashCommand) {
+					context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered((SlashCommand) command));
+				}
 			}
 
 			try {

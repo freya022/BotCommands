@@ -1,6 +1,6 @@
 package com.freya02.botcommands.slash;
 
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -8,7 +8,7 @@ import java.util.List;
 public class LocalizedSlashCommandData {
 	@Nullable private final String localizedPath, localizedDescription;
 	@Nullable private final List<String> localizedOptionNames;
-	@Nullable private final List<List<Command.Choice>> localizedOptionChoices;
+	@Nullable private final List<List<SlashCommand.Choice>> localizedOptionChoices;
 
 	/**
 	 * Constructs new localized slash command data for a specific Guild
@@ -22,7 +22,7 @@ public class LocalizedSlashCommandData {
 	public LocalizedSlashCommandData(@Nullable String localizedPath,
 	                                 @Nullable String localizedDescription,
 	                                 @Nullable List<String> localizedOptionNames,
-	                                 @Nullable List<List<Command.Choice>> localizedOptionChoices) {
+	                                 @Nullable List<List<SlashCommand.Choice>> localizedOptionChoices) {
 		this.localizedPath = localizedPath;
 		this.localizedDescription = localizedDescription;
 		this.localizedOptionNames = localizedOptionNames;
@@ -45,7 +45,7 @@ public class LocalizedSlashCommandData {
 	}
 
 	@Nullable
-	public List<List<Command.Choice>> getLocalizedOptionChoices() {
+	public List<List<SlashCommand.Choice>> getLocalizedOptionChoices() {
 		return localizedOptionChoices;
 	}
 }

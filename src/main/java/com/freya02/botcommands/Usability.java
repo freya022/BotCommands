@@ -5,7 +5,7 @@ import com.freya02.botcommands.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 
 import java.util.EnumSet;
 import java.util.Objects;

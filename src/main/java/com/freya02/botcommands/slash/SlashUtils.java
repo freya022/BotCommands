@@ -6,6 +6,7 @@ import com.freya02.botcommands.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -18,8 +19,10 @@ class SlashUtils {
 	static void appendCommands(List<Command> commands, StringBuilder sb) {
 		for (Command command : commands) {
 			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
-			for (Command.Option option : command.getOptions()) {
-				joiner.add(option.getType().name());
+			if (command instanceof SlashCommand) {
+				for (SlashCommand.Option option : ((SlashCommand) command).getOptions()) {
+					joiner.add(option.getType().name());
+				}
 			}
 
 			sb.append(" - ").append(command.getName()).append(" ").append(joiner).append("\n");
@@ -55,7 +58,7 @@ class SlashUtils {
 	static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedSlashCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
-		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
+		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
 
@@ -137,7 +140,7 @@ class SlashUtils {
 	}
 	
 	@Nonnull
-	private static List<List<Command.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedSlashCommandData localizedCommandData) {
+	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedSlashCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);

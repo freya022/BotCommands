@@ -4,7 +4,7 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.slash.impl.SlashEventImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildSlashEvent extends SlashEventImpl {

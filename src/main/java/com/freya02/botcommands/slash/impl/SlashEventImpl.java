@@ -2,14 +2,14 @@ package com.freya02.botcommands.slash.impl;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.slash.SlashEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
 
 public class SlashEventImpl extends SlashEvent {
 	private final BContext context;
 
 	public SlashEventImpl(BContext context, SlashCommandEvent event) {
-		super(event.getJDA(), event.getResponseNumber(), (CommandInteractionImpl) event.getInteraction());
+		super(event.getJDA(), event.getResponseNumber(), (SlashCommandInteractionImpl) event.getInteraction());
 		this.context = context;
 	}
 
