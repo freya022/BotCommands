@@ -1,8 +1,10 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.SettingsProvider;
+import com.freya02.botcommands.application.slash.LocalizedSlashCommandData;
+import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
@@ -23,7 +25,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static com.freya02.botcommands.slash.SlashUtils.*;
+import static com.freya02.botcommands.application.slash.SlashUtils.*;
 
 public class SlashCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();

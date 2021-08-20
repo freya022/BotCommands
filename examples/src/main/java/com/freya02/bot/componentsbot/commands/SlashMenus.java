@@ -4,9 +4,9 @@ import com.freya02.botcommands.annotation.CommandMarker;
 import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
 import com.freya02.botcommands.components.event.SelectionEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.SlashEvent;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.application.SlashCommand;
+import com.freya02.botcommands.application.SlashEvent;
+import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 
 @CommandMarker //Just so the class isn't marked as unused
 public class SlashMenus extends SlashCommand {

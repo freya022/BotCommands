@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash.annotations;
+package com.freya02.botcommands.application.slash.annotations;
 
 import com.freya02.botcommands.annotation.Optional;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to set name and description of {@linkplain JdaSlashCommand slash commands}
+ * Annotation to set name and description of {@linkplain JdaSlashCommand application commands}
  * <p>
  * {@linkplain #name()} is optional if parameter name is available (add -parameters to your java compiler)
  *

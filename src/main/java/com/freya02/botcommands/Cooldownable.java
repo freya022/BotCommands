@@ -1,6 +1,6 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.slash.SlashCommandListener;
+import com.freya02.botcommands.application.SlashCommandListener;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

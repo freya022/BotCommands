@@ -1,10 +1,10 @@
 package com.freya02.botcommands.components.annotation;
 
+import com.freya02.botcommands.application.slash.SlashCommand;
 import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.slash.SlashCommand;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 
 import java.lang.annotation.ElementType;

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.SettingsProvider;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,12 +18,12 @@ import java.util.List;
 public interface GuildSlashSettings {
 	/**
 	 * Retrieves the localized command data for a command
-	 * <br>A command path is the complete name, a slash command displayed as <code>/name group subcommand</code> on Discord would be translated into <code>name/group/subcommand</code>
+	 * <br>A command path is the complete name, a application command displayed as <code>/name group subcommand</code> on Discord would be translated into <code>name/group/subcommand</code>
 	 *
 	 * @param guild       The Guild in which the command is, each guild will have their own command name, <code>null</code> for a global command
 	 * @param cmdPath     The path <b>(Not localized)</b> of the command such as <code>name/group/subcommand</code>
 	 * @param optionNames The option <b>(Not localized)</b> names that this command has, uppercase in method parameters are transformed into <code>_ + lowercase equivalent</code>
-	 * @return A custom slash command data for the specified command path in the specified {@link Guild}, this can be null
+	 * @return A custom application command data for the specified command path in the specified {@link Guild}, this can be null
 	 * @see GuildSlashSettings GuildSlashSettings for implementation notes
 	 */
 	@Nullable

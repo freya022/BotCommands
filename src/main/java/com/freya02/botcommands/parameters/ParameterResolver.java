@@ -4,7 +4,7 @@ import com.freya02.botcommands.Logging;
 import org.slf4j.Logger;
 
 /**
- * Base class for parameter resolvers used in regex commands, slash commands and buttons callbacks
+ * Base class for parameter resolvers used in regex commands, application commands and buttons callbacks
  *
  * @see RegexParameterResolver
  * @see SlashParameterResolver

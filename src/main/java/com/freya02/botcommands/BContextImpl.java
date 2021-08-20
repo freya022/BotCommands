@@ -1,12 +1,12 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.application.SlashCommandsBuilder;
+import com.freya02.botcommands.application.SlashCommandsCache;
+import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
-import com.freya02.botcommands.slash.SlashCommandInfo;
-import com.freya02.botcommands.slash.SlashCommandsBuilder;
-import com.freya02.botcommands.slash.SlashCommandsCache;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;

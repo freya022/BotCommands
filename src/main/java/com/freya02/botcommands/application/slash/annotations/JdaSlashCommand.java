@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash.annotations;
+package com.freya02.botcommands.application.slash.annotations;
 
 import com.freya02.botcommands.CooldownScope;
 import com.freya02.botcommands.Emoji;
@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Required annotation for slash commands, see all possible options
+ * Required annotation for application commands, see all possible options
  *
  * <p>
  * Discord requires you to either have:
@@ -70,9 +70,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface JdaSlashCommand {
 	/**
-	 * Whether this slash command should only work in a {@linkplain Guild}
+	 * Whether this application command should only work in a {@linkplain Guild}
 	 *
-	 * @return <code>true</code> if the slash command only works in a {@linkplain Guild}
+	 * @return <code>true</code> if the application command only works in a {@linkplain Guild}
 	 */
 	boolean guildOnly() default true;
 

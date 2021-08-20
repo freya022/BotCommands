@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application.slash;
 
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
@@ -11,7 +11,7 @@ public class LocalizedSlashCommandData {
 	@Nullable private final List<List<SlashCommand.Choice>> localizedOptionChoices;
 
 	/**
-	 * Constructs new localized slash command data for a specific Guild
+	 * Constructs new localized application command data for a specific Guild
 	 *
 	 * @param localizedPath          The path of the command, this should look like this <code>name/subgroup/subcommand</code>
 	 * @param localizedDescription   The description of the command

@@ -19,7 +19,7 @@ public class ExtensionsBotMain {
 			// Owner: User with the ID 222046562543468545
 			// Commands package: com.freya02.bot.extensionsbot.commands
 			CommandsBuilder.withPrefix("!", 222046562543468545L)
-					.registerParameterResolver(new TimestampResolver()) //Support JDA's Timestamp in slash commands and components
+					.registerParameterResolver(new TimestampResolver()) //Support JDA's Timestamp in application commands and components
 					.setSettingsProvider(new MySettingsProvider()) //Add our settings provider for the guilds
 					.build(jda, "com.freya02.bot.extensionsbot.commands"); //Registering listeners is taken care of by the lib
 		} catch (Exception e) {

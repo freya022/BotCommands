@@ -1,8 +1,8 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.application.slash.annotations.Option;
 import com.freya02.botcommands.parameters.ParameterResolvers;
-import com.freya02.botcommands.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Parameter;
 import java.util.*;
 
-class SlashUtils {
-	static void appendCommands(List<Command> commands, StringBuilder sb) {
+public class SlashUtils {
+	public static void appendCommands(List<Command> commands, StringBuilder sb) {
 		for (Command command : commands) {
 			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
 			if (command instanceof SlashCommand) {
@@ -29,7 +29,7 @@ class SlashUtils {
 		}
 	}
 
-	static List<String> getMethodOptionNames(SlashCommandInfo info) {
+	public static List<String> getMethodOptionNames(SlashCommandInfo info) {
 		final List<String> list = new ArrayList<>();
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
@@ -55,7 +55,7 @@ class SlashUtils {
 		return list;
 	}
 
-	static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedSlashCommandData localizedCommandData) {
+	public static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedSlashCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
@@ -119,14 +119,14 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	static String getLocalizedPath(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+	public static String getLocalizedPath(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getPath()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
 	}
 
 	@Nonnull
-	static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getDescription()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedDescription(), info.getDescription());
@@ -168,7 +168,7 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	static String getPathName(String path) {
+	public static String getPathName(String path) {
 		final int i = path.indexOf('/');
 		if (i == -1) return path;
 
@@ -176,7 +176,7 @@ class SlashUtils {
 	}
 
 	@Nonnull
-	static String getPathParent(String path) {
+	public static String getPathParent(String path) {
 		return path.substring(0, path.lastIndexOf('/'));
 	}
 }

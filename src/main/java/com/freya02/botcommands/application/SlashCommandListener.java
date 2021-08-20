@@ -1,7 +1,8 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.*;
 import com.freya02.botcommands.Usability.UnusableReason;
+import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;

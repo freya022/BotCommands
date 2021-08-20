@@ -1,7 +1,7 @@
-package com.freya02.botcommands.slash.impl;
+package com.freya02.botcommands.application.slash.impl;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.slash.SlashEvent;
+import com.freya02.botcommands.application.slash.SlashEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
 

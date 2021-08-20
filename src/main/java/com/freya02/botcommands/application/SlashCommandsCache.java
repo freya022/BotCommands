@@ -1,4 +1,4 @@
-package com.freya02.botcommands.slash;
+package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;

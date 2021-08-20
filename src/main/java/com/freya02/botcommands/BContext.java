@@ -1,10 +1,10 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
-import com.freya02.botcommands.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -83,18 +83,18 @@ public interface BContext {
 	Command findCommand(@NotNull String name);
 
 	/**
-	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
+	 * Returns the {@link SlashCommandInfo} object of the specified full application command name
 	 *
-	 * @param name Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
-	 * @return The {@link SlashCommandInfo} object of the slash command
+	 * @param name Full name of the application command (Examples: ban ; info/user ; ban/user/perm)
+	 * @return The {@link SlashCommandInfo} object of the application command
 	 */
 	@Nullable
 	SlashCommandInfo findSlashCommand(@NotNull String name);
 
 	/**
-	 * Returns a list of the slash commands paths, names such as <code>ban/user/perm</code>
+	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
 	 *
-	 * @return A list of the the slash commands paths
+	 * @return A list of the the application commands paths
 	 */
 	List<String> getSlashCommandsPaths();
 
@@ -211,15 +211,15 @@ public interface BContext {
 	Consumer<EmbedBuilder> getHelpBuilderConsumer();
 
 	/**
-	 * Updates the slash commands and their permissions in the specified guilds <br><br>
+	 * Updates the application commands and their permissions in the specified guilds <br><br>
 	 * Why you could call this method:
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>An admin changes the permissions of a guild slash-command in your bot</li>
+	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running</li>
 	 * </ul>
 	 *
-	 * <i>This method is called by the slash commands builder on startup</i>
+	 * <i>This method is called by the application commands builder on startup</i>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
 	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed

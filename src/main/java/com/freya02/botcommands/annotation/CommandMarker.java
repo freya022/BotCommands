@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Enables you to suppress unused warnings for reflectively accessed classes, such as (slash) commands
+ * Enables you to suppress unused warnings for reflectively accessed classes, such as (application) commands
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.METHOD, ElementType.TYPE})

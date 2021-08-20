@@ -2,6 +2,9 @@ package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.application.SlashCommandListener;
+import com.freya02.botcommands.application.SlashCommandsBuilder;
+import com.freya02.botcommands.application.slash.SlashCommand;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.DefaultComponentManager;
 import com.freya02.botcommands.components.internal.ComponentsBuilder;
@@ -10,9 +13,6 @@ import com.freya02.botcommands.prefixed.*;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.SlashCommandListener;
-import com.freya02.botcommands.slash.SlashCommandsBuilder;
 import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -128,7 +128,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Debug feature - Makes it so slash commands are only updated on these guilds
+	 * Debug feature - Makes it so application commands are only updated on these guilds
 	 *
 	 * @param slashGuildIds IDs of the guilds
 	 * @return This builder for chaining convenience
@@ -156,7 +156,7 @@ public final class CommandsBuilder {
 	/**
 	 * Sets the {@linkplain PermissionProvider}
 	 *
-	 * @param providerFunction The function which gives {@linkplain PermissionProvider} from a BContext <b>(I highlight suggest you pass the BContext to the provider so you can easily update the commands when something changes)</b>, for command privileges and slash command whitelist
+	 * @param providerFunction The function which gives {@linkplain PermissionProvider} from a BContext <b>(I highlight suggest you pass the BContext to the provider so you can easily update the commands when something changes)</b>, for command privileges and application command whitelist
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder setPermissionProvider(Function<BContext, PermissionProvider> providerFunction) {
@@ -307,7 +307,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Registers a command / slash command's class so it can be instantiated later in {@link #build(JDA, String)}<br>
+	 * Registers a command / application command's class so it can be instantiated later in {@link #build(JDA, String)}<br>
 	 *
 	 * @param clazz The command's class to register
 	 * @return This builder for chaining convenience

@@ -3,9 +3,9 @@ package com.freya02.bot.registeredclasses.commands;
 import com.freya02.bot.registeredclasses.SomeObject;
 import com.freya02.botcommands.annotation.CommandMarker;
 import com.freya02.botcommands.annotation.Dependency;
-import com.freya02.botcommands.slash.GuildSlashEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.application.GuildSlashEvent;
+import com.freya02.botcommands.application.SlashCommand;
+import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.JDA;
 
 @CommandMarker //Just so the class isn't marked as unused

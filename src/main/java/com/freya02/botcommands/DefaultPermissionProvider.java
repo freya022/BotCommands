@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Provides a default permission provider for slash commands, also tells what commands are to be included in what guild.
+ * Provides a default permission provider for application commands, also tells what commands are to be included in what guild.
  * <br>
  * This enables all guild commands and does not provide permissions
  */

@@ -206,10 +206,10 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * <p>Sets the displayed message when a slash command is not found, which should be impossible in theory</p>
+	 * <p>Sets the displayed message when a application command is not found, which should be impossible in theory</p>
 	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_NOT_FOUND_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandNotFoundMsg Message to display when a slash command is not found
+	 * @param slashCommandNotFoundMsg Message to display when a application command is not found
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setSlashCommandNotFoundMsg(String slashCommandNotFoundMsg) {
@@ -223,10 +223,10 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * <p>Sets the displayed message when an exception occurs in a slash command</p>
+	 * <p>Sets the displayed message when an exception occurs in a application command</p>
 	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_ERROR_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandErrorMsg Message to display when an exception occurs in a slash command
+	 * @param slashCommandErrorMsg Message to display when an exception occurs in a application command
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setSlashCommandErrorMsg(String slashCommandErrorMsg) {
@@ -240,11 +240,11 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * <p>Sets the displayed message when a slash command parameter is unresolvable</p>
+	 * <p>Sets the displayed message when a application command parameter is unresolvable</p>
 	 * <b>The message must have <b>two</b> %s format specifier to insert the unresolved parameter</b>
 	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandUnresolvableParameterMsg Message to display when a slash command parameter is unresolvable
+	 * @param slashCommandUnresolvableParameterMsg Message to display when a application command parameter is unresolvable
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setSlashCommandUnresolvableParameterMsg(String slashCommandUnresolvableParameterMsg) {
@@ -259,11 +259,11 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * <p>Sets the displayed message when a slash command parameter is resolved into an invalid type</p>
+	 * <p>Sets the displayed message when a application command parameter is resolved into an invalid type</p>
 	 * <b>The message must have <b>three</b> %s format specifier to insert the needed parameter types </b>
 	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandInvalidParameterTypeMsg Message to display when a slash command parameter is resolved into an invalid type
+	 * @param slashCommandInvalidParameterTypeMsg Message to display when a application command parameter is resolved into an invalid type
 	 * @return This object for chaining convenience
 	 */
 	public DefaultMessages setSlashCommandInvalidParameterTypeMsg(String slashCommandInvalidParameterTypeMsg) {

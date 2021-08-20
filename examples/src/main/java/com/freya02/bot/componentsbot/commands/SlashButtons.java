@@ -4,9 +4,9 @@ import com.freya02.botcommands.annotation.CommandMarker;
 import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.components.annotation.JdaButtonListener;
 import com.freya02.botcommands.components.event.ButtonEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.SlashEvent;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.application.SlashCommand;
+import com.freya02.botcommands.application.SlashEvent;
+import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;

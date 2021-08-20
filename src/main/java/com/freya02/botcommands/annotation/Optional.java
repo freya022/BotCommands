@@ -1,7 +1,7 @@
 package com.freya02.botcommands.annotation;
 
+import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.prefixed.annotation.Executable;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <b>The behavior of {@linkplain Executable} commands is pretty unsafe if you combine strings and numbers in the same command</b>
  * </p>
  *
- * <h2>For slash commands:</h2>
+ * <h2>For application commands:</h2>
  * <p>
  * <b>This works perfectly as it's just a hint for discord</b>
  * </p>

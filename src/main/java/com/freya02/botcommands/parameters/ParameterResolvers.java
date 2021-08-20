@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Has all the parameter resolvers registered here, they help in resolving method parameters for regex commands, slash commands and button callbacks<br><br>
+ * Has all the parameter resolvers registered here, they help in resolving method parameters for regex commands, application commands and button callbacks<br><br>
  *
  * Supported parameters:
  * <ul>

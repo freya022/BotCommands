@@ -32,7 +32,7 @@ public class TimestampResolver extends ParameterResolver implements SlashParamet
 		try {
 			return TimeFormat.parse(str);
 		} catch (Exception e) {
-			//probably not an error, could be someone who sent an erroneous timestamp, will get reported by the slash commands and components handlers
+			//probably not an error, could be someone who sent an erroneous timestamp, will get reported by the application commands and components handlers
 			LOGGER.trace("Cannot resolve timestamp '{}'", str);
 
 			return null;

@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import javax.annotation.Nullable;
 
 /**
- * Interface which indicates this class can resolve parameters for slash commands
+ * Interface which indicates this class can resolve parameters for application commands
  */
 public interface SlashParameterResolver {
 	@Nullable
