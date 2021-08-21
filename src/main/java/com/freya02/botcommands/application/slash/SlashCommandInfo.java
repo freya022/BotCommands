@@ -1,14 +1,12 @@
 package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.annotation.Optional;
-import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.application.slash.annotations.Option;
 import com.freya02.botcommands.application.slash.impl.SlashEventImpl;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -20,21 +18,18 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class SlashCommandInfo extends Cooldownable {
+public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
 	/** This is NOT localized */
-	private final String name, description;
+	private final String description;
 	private final String baseName;
-	private final boolean guildOnly;
-
-	private final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
-	private final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
-	private final boolean ownerOnly;
 
 	private final SlashCommand instance;
-	private final Method commandMethod;
 	private final SlashCommandParameter[] commandParameters;
 
 	/** This is NOT localized */
@@ -46,12 +41,15 @@ public class SlashCommandInfo extends Cooldownable {
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(SlashCommand slashCommand, Method commandMethod) {
-		super(commandMethod.getAnnotation(JdaSlashCommand.class).cooldownScope(), commandMethod.getAnnotation(JdaSlashCommand.class).cooldown());
+		super(commandMethod.getAnnotation(JdaSlashCommand.class),
+				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand().isEmpty() 
+						? commandMethod.getAnnotation(JdaSlashCommand.class).name() 
+						: commandMethod.getAnnotation(JdaSlashCommand.class).subcommand(),
+				commandMethod);
 
 		final JdaSlashCommand annotation = commandMethod.getAnnotation(JdaSlashCommand.class);
 
 		this.instance = slashCommand;
-		this.commandMethod = commandMethod;
 		this.commandParameters = new SlashCommandParameter[commandMethod.getParameterCount() - 1];
 
 		for (int i = 1, parametersLength = commandMethod.getParameterCount(); i < parametersLength; i++) {
@@ -96,24 +94,8 @@ public class SlashCommandInfo extends Cooldownable {
 
 		this.baseName = annotation.name();
 		this.path = pathBuilder.toString();
-		
-		if (annotation.subcommand().isEmpty()) {
-			this.name = annotation.name();
-		} else {
-			this.name = annotation.subcommand();
-		}
 
 		this.description = annotation.description();
-
-		this.guildOnly = annotation.guildOnly();
-
-		if ((annotation.userPermissions().length != 0 || annotation.botPermissions().length != 0) && !annotation.guildOnly())
-			throw new IllegalArgumentException(commandMethod + " : slash command with permissions should be guild-only");
-
-		Collections.addAll(userPermissions, annotation.userPermissions());
-		Collections.addAll(botPermissions, annotation.botPermissions());
-
-		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
 	}
 	
 	public void putLocalizedOptions(long guildId, @Nonnull List<String> optionNames) {
@@ -128,30 +110,9 @@ public class SlashCommandInfo extends Cooldownable {
 		return instance;
 	}
 
-	public Method getCommandMethod() {
-		return commandMethod;
-	}
-
-	/** This is NOT localized */
-	public String getName() {
-		return name;
-	}
-
-	public boolean isGuildOnly() {
-		return guildOnly;
-	}
-
 	/** This is NOT localized */
 	public String getDescription() {
 		return description;
-	}
-
-	public EnumSet<Permission> getUserPermissions() {
-		return userPermissions;
-	}
-
-	public EnumSet<Permission> getBotPermissions() {
-		return botPermissions;
 	}
 
 	/** This is NOT localized */
@@ -226,10 +187,6 @@ public class SlashCommandInfo extends Cooldownable {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public boolean isOwnerOnly() {
-		return ownerOnly;
 	}
 
 	public String getBaseName() {
