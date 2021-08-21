@@ -142,6 +142,11 @@ public class SlashCommandsUpdater {
 					try {
 						final List<String> optionNames = getMethodOptionNames(info);
 						final LocalizedSlashCommandData localizedCommandData = getLocalizedCommandData(guild, info, optionNames);
+						
+						//Put localized option names in order to resolve them when called
+						if (guild != null) {
+							info.putLocalizedOptions(guild.getIdLong(), optionNames);
+						}
 
 						final List<OptionData> methodOptions = getMethodOptions(info, localizedCommandData);
 
