@@ -6,7 +6,7 @@ import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.parameters.SlashParameterResolver;
 
 public class SlashCommandParameter {
-	private final boolean optional;
+	private final boolean optional, primitive;
 	private final String effectiveName;
 	private final SlashParameterResolver resolver;
 	private final Class<?> type;
@@ -15,6 +15,7 @@ public class SlashCommandParameter {
 		this.optional = optional;
 		this.effectiveName = effectiveName;
 
+		this.primitive = type.isPrimitive();
 		this.type = Utils.getBoxedType(type);
 		ParameterResolver resolver = ParameterResolvers.of(this.type);
 		if (resolver == null) {
@@ -24,6 +25,10 @@ public class SlashCommandParameter {
 		}
 
 		this.resolver = (SlashParameterResolver) resolver;
+	}
+
+	public boolean isPrimitive() {
+		return primitive;
 	}
 
 	public Class<?> getType() {

@@ -16,13 +16,11 @@ import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 
 public class SlashCommandInfo extends Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -43,6 +41,9 @@ public class SlashCommandInfo extends Cooldownable {
 	private final String path;
 
 	private int pathComponents = 1;
+	
+	/** guild id => localized option names */
+	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(SlashCommand slashCommand, Method commandMethod) {
 		super(commandMethod.getAnnotation(JdaSlashCommand.class).cooldownScope(), commandMethod.getAnnotation(JdaSlashCommand.class).cooldown());
@@ -114,6 +115,10 @@ public class SlashCommandInfo extends Cooldownable {
 
 		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
 	}
+	
+	public void putLocalizedOptions(long guildId, @Nonnull List<String> optionNames) {
+		localizedOptionMap.put(guildId, optionNames);
+	}
 
 	public int getPathComponents() {
 		return pathComponents;
@@ -164,14 +169,20 @@ public class SlashCommandInfo extends Cooldownable {
 				}
 			}};
 
+			final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
 			for (int i = 0, commandParametersLength = commandParameters.length; i < commandParametersLength; i++) {
 				SlashCommandParameter parameter = commandParameters[i];
 				
-				final OptionMapping optionData = event.getOptions().get(i);
+				String optionName = optionNames == null ? parameter.getEffectiveName() : optionNames.get(i);
+				if (optionName == null) {
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", i, parameter.getEffectiveName(), getCommandMethod()));
+				}
+				
+				final OptionMapping optionData = event.getOption(optionName);
 
 				if (optionData == null) {
 					if (parameter.isOptional()) {
-						if (parameter.getType().isPrimitive()) {
+						if (parameter.isPrimitive()) {
 							objects.add(0);
 						} else {
 							objects.add(null);
