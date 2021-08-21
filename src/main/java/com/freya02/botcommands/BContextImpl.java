@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.SlashCommandsBuilder;
 import com.freya02.botcommands.application.SlashCommandsCache;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
@@ -11,12 +12,14 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -37,7 +40,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
-	private final Map<String, SlashCommandInfo> slashCommandMap = new HashMap<>();
+	private final EnumMap<CommandType, Map<String, ? extends ApplicationCommandInfo>> applicationCommandMap = new EnumMap<>(CommandType.class);
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
@@ -98,12 +101,18 @@ public class BContextImpl implements BContext {
 
 	@Override
 	public SlashCommandInfo findSlashCommand(@NotNull String name) {
-		return slashCommandMap.get(name);
+		return getSlashCommandsMap().get(name);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Map<String, SlashCommandInfo> getSlashCommandsMap() {
+		return (Map<String, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<String, SlashCommandInfo>()));
 	}
 
 	@Override
 	public List<String> getSlashCommandsPaths() {
-		return slashCommandMap.values()
+		return getSlashCommandsMap().values()
 				.stream()
 				.map(SlashCommandInfo::getPath)
 				.collect(Collectors.toList());
@@ -157,7 +166,7 @@ public class BContextImpl implements BContext {
 	}
 
 	public void addSlashCommand(String path, SlashCommandInfo commandInfo) {
-		final Map<String, SlashCommandInfo> slashCommandMap = this.slashCommandMap;
+		final Map<String, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
 		String path2 = path;
 		int index;
@@ -184,7 +193,7 @@ public class BContextImpl implements BContext {
 	public void addSlashCommandAlternative(String path, SlashCommandInfo commandInfo) {
 		//it's pretty much possible that the path already exist if two guilds use the same language for example
 		//Still, check that the alternative path points to the same path if it exists
-		final SlashCommandInfo oldVal = slashCommandMap.put(path, commandInfo);
+		final SlashCommandInfo oldVal = getSlashCommandsMap().put(path, commandInfo);
 		if (oldVal != commandInfo && oldVal != null) {
 			throw new IllegalStateException(String.format("Tried to add a localized slash command path but one already exists and isn't from the same command: %s and %s, path: %s",
 					oldVal.getCommandMethod(),
@@ -197,8 +206,15 @@ public class BContextImpl implements BContext {
 		return Collections.unmodifiableCollection(commandMap.values());
 	}
 
+	public Collection<ApplicationCommandInfo> getApplicationCommands() {
+		return applicationCommandMap.values()
+				.stream()
+				.flatMap(commandMap -> commandMap.values().stream())
+				.collect(Collectors.toUnmodifiableList());
+	}
+	
 	public Collection<SlashCommandInfo> getSlashCommands() {
-		return Collections.unmodifiableCollection(slashCommandMap.values());
+		return Collections.unmodifiableCollection(getSlashCommandsMap().values());
 	}
 
 	public void dispatchException(String message, Throwable e) {
