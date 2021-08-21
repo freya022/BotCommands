@@ -13,7 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Required annotation for application commands, see all possible options
+ * Required annotation for slash commands, see all possible options
  *
  * <p>
  * Discord requires you to either have:
