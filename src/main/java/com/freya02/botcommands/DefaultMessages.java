@@ -12,8 +12,8 @@ public final class DefaultMessages {
 	public static final String DEFAULT_COMMAND_NOT_FOUND_MESSAGE = "Unknown command, maybe you meant: %s";
 	public static final String DEFAULT_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "This component is not usable anymore";
-	public static final String DEFAULT_SLASH_COMMAND_NOT_FOUND_MESSAGE = "Unknown slash command";
-	public static final String DEFAULT_SLASH_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
+	public static final String DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE = "Unknown application command";
+	public static final String DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE = "The parameter '%s' could not be resolved into a %s";
 	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
 	public static final String DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE = "This component is not usable anymore";
@@ -29,8 +29,8 @@ public final class DefaultMessages {
 	private String commandNotFoundMsg = DEFAULT_COMMAND_NOT_FOUND_MESSAGE;
 	private String commandErrorMsg = DEFAULT_COMMAND_ERROR_MESSAGE;
 	private String closedDMErrorMsg = DEFAULT_CLOSED_DM_ERROR_MESSAGE;
-	private String slashCommandNotFoundMsg = DEFAULT_SLASH_COMMAND_NOT_FOUND_MESSAGE;
-	private String slashCommandErrorMsg = DEFAULT_SLASH_COMMAND_ERROR_MESSAGE;
+	private String applicationCommandNotFoundMsg = DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE;
+	private String applicationCommandErrorMsg = DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE;
 	private String slashCommandUnresolvableParameterMsg = DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE;
 	private String slashCommandInvalidParameterTypeMsg = DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE;
 	private String nullComponentTypeErrorMsg = DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE;
@@ -201,36 +201,36 @@ public final class DefaultMessages {
 		return this;
 	}
 
-	public String getSlashCommandNotFoundMsg() {
-		return slashCommandNotFoundMsg;
+	public String getApplicationCommandNotFoundMsg() {
+		return applicationCommandNotFoundMsg;
 	}
 
 	/**
 	 * <p>Sets the displayed message when a application command is not found, which should be impossible in theory</p>
-	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_NOT_FOUND_MESSAGE}</i></p>
+	 * <p><i>Default message : {@value #DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandNotFoundMsg Message to display when a application command is not found
+	 * @param applicationCommandNotFoundMsg Message to display when a application command is not found
 	 * @return This object for chaining convenience
 	 */
-	public DefaultMessages setSlashCommandNotFoundMsg(String slashCommandNotFoundMsg) {
-		this.slashCommandNotFoundMsg = Utils.requireNonBlank(slashCommandNotFoundMsg, "'Slash command not found' error message");
+	public DefaultMessages setApplicationCommandNotFoundMsg(String applicationCommandNotFoundMsg) {
+		this.applicationCommandNotFoundMsg = Utils.requireNonBlank(applicationCommandNotFoundMsg, "'Slash command not found' error message");
 
 		return this;
 	}
 
-	public String getSlashCommandErrorMsg() {
-		return slashCommandErrorMsg;
+	public String getApplicationCommandErrorMsg() {
+		return applicationCommandErrorMsg;
 	}
 
 	/**
 	 * <p>Sets the displayed message when an exception occurs in a application command</p>
-	 * <p><i>Default message : {@value #DEFAULT_SLASH_COMMAND_ERROR_MESSAGE}</i></p>
+	 * <p><i>Default message : {@value #DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE}</i></p>
 	 *
-	 * @param slashCommandErrorMsg Message to display when an exception occurs in a application command
+	 * @param applicationCommandErrorMsg Message to display when an exception occurs in a application command
 	 * @return This object for chaining convenience
 	 */
-	public DefaultMessages setSlashCommandErrorMsg(String slashCommandErrorMsg) {
-		this.slashCommandErrorMsg = Utils.requireNonBlank(slashCommandErrorMsg, "Slash command error message");
+	public DefaultMessages setApplicationCommandErrorMsg(String applicationCommandErrorMsg) {
+		this.applicationCommandErrorMsg = Utils.requireNonBlank(applicationCommandErrorMsg, "Slash command error message");
 
 		return this;
 	}
