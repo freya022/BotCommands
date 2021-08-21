@@ -111,7 +111,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing slash command '" + command + "'", e);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage("An uncaught exception occurred").setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages().getSlashCommandErrorMsg()).setEphemeral(true).queue();
 				} else {
 					event.reply(context.getDefaultMessages().getSlashCommandErrorMsg()).setEphemeral(true).queue();
 				}
