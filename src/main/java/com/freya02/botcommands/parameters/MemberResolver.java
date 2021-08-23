@@ -3,6 +3,7 @@ package com.freya02.botcommands.parameters;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
 	public MemberResolver() {
 		super(Member.class);
 	}
@@ -43,5 +44,11 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 			LOGGER.error("Could not resolve member in {} ({}): {}", event.getGuild().getName(), event.getGuild().getIdLong(), e.getMeaning());
 			return null;
 		}
+	}
+
+	@Nullable
+	@Override
+	public Object resolve(UserContextCommandEvent event) {
+		return event.getTargetMember();
 	}
 }

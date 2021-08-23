@@ -1,19 +1,24 @@
 package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.application.slash.impl.SlashEventImpl;
+import com.freya02.botcommands.application.slash.impl.GlobalSlashEventImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class GuildSlashEvent extends SlashEventImpl {
+public class GuildSlashEvent extends GlobalSlashEventImpl {
 	public GuildSlashEvent(BContext context, SlashCommandEvent event) {
 		super(context, event);
 
 		if (!event.isFromGuild()) throw new IllegalArgumentException("Event is not from a guild");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <br><b>This is always true for this guild-only event</b>
+	 */
 	@Override
 	public boolean isFromGuild() {
 		return true;

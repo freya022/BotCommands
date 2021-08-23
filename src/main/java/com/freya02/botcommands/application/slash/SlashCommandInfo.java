@@ -6,7 +6,7 @@ import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.application.slash.annotations.Option;
-import com.freya02.botcommands.application.slash.impl.SlashEventImpl;
+import com.freya02.botcommands.application.slash.impl.GlobalSlashEventImpl;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -29,7 +29,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	private final String description;
 	private final String baseName;
 
-	private final SlashCommand instance;
+	private final Object instance;
 	private final SlashCommandParameter[] commandParameters;
 
 	/** This is NOT localized */
@@ -40,8 +40,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	/** guild id => localized option names */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
-	public SlashCommandInfo(SlashCommand slashCommand, Method commandMethod) {
-		super(commandMethod.getAnnotation(JdaSlashCommand.class),
+	public SlashCommandInfo(Object instance, Method commandMethod) {
+		super(instance, commandMethod.getAnnotation(JdaSlashCommand.class),
 				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand().isEmpty() 
 						? commandMethod.getAnnotation(JdaSlashCommand.class).name() 
 						: commandMethod.getAnnotation(JdaSlashCommand.class).subcommand(),
@@ -49,7 +49,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JdaSlashCommand annotation = commandMethod.getAnnotation(JdaSlashCommand.class);
 
-		this.instance = slashCommand;
+		this.instance = instance;
 		this.commandParameters = new SlashCommandParameter[commandMethod.getParameterCount() - 1];
 
 		for (int i = 1, parametersLength = commandMethod.getParameterCount(); i < parametersLength; i++) {
@@ -102,31 +102,29 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		localizedOptionMap.put(guildId, optionNames);
 	}
 
+	@Override
 	public int getPathComponents() {
 		return pathComponents;
-	}
-
-	public SlashCommand getInstance() {
-		return instance;
 	}
 
 	/** This is NOT localized */
 	public String getDescription() {
 		return description;
 	}
-
+	
 	/** This is NOT localized */
+	@Override
 	public String getPath() {
 		return path;
 	}
 
 	public boolean execute(BContext context, SlashCommandEvent event) {
 		try {
-			List<Object> objects = new ArrayList<>(commandParameters.length) {{
+			List<Object> objects = new ArrayList<>(commandParameters.length + 1) {{
 				if (guildOnly) {
 					add(new GuildSlashEvent(context, event));
 				} else {
-					add(new SlashEventImpl(context, event));
+					add(new GlobalSlashEventImpl(context, event));
 				}
 			}};
 

@@ -13,10 +13,10 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
 
-public class SlashCommandsCache {
+public class ApplicationCommandsCache {
 	private final Path cachePath;
 
-	SlashCommandsCache(BContextImpl context) {
+	ApplicationCommandsCache(BContextImpl context) {
 		try {
 			cachePath = Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + "slashcommands");
 

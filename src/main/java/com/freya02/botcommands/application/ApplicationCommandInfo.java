@@ -11,7 +11,8 @@ import java.util.EnumSet;
 
 import static com.freya02.botcommands.internal.utils.AnnotationUtils.getAnnotationValue;
 
-public class ApplicationCommandInfo extends Cooldownable {
+public abstract class ApplicationCommandInfo extends Cooldownable {
+	private final Object instance;
 	/** This is NOT localized */
 	protected final String name;
 	protected final boolean guildOnly, ownerOnly;
@@ -20,10 +21,11 @@ public class ApplicationCommandInfo extends Cooldownable {
 	protected final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
 	protected final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
 
-	protected <A extends Annotation> ApplicationCommandInfo(A annotation, String name, Method commandMethod) {
+	protected <A extends Annotation> ApplicationCommandInfo(Object instance, A annotation, String name, Method commandMethod) {
 		super(getAnnotationValue(annotation, "cooldownScope"),
 				getAnnotationValue(annotation, "cooldown"));
-		
+		this.instance = instance;
+
 		this.name = name;
 		this.guildOnly = getAnnotationValue(annotation, "guildOnly");
 		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
@@ -39,10 +41,18 @@ public class ApplicationCommandInfo extends Cooldownable {
 		Collections.addAll(this.botPermissions, botPermissions);
 	}
 
+	public Object getInstance() {
+		return instance;
+	}
+
 	/** This is NOT localized */
 	public String getName() {
 		return name;
 	}
+
+	public abstract String getPath();
+
+	public abstract int getPathComponents();
 
 	public boolean isGuildOnly() {
 		return guildOnly;

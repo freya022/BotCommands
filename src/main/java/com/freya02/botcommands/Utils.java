@@ -113,15 +113,8 @@ public final class Utils {
 		return method.getParameterCount() > 0 && type.isAssignableFrom(method.getParameterTypes()[0]);
 	}
 
+	/** Returns the deepest cause of this throwable */
 	@Nonnull
-	public static Exception getException(Exception e) {
-		while (e.getCause() != null) {
-			e = (Exception) e.getCause();
-		}
-
-		return e;
-	}
-
 	public static Throwable getException(Throwable e) {
 		while (e.getCause() != null) {
 			e = e.getCause();

@@ -3,9 +3,13 @@ package com.freya02.botcommands;
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.application.ApplicationCommandListener;
-import com.freya02.botcommands.application.SlashCommandListener;
-import com.freya02.botcommands.application.SlashCommandsBuilder;
+import com.freya02.botcommands.application.ApplicationCommandsBuilder;
+import com.freya02.botcommands.application.context.ContextCommandListener;
+import com.freya02.botcommands.application.context.annotations.JdaMessageCommand;
+import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.application.slash.SlashCommand;
+import com.freya02.botcommands.application.slash.SlashCommandListener;
+import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.DefaultComponentManager;
 import com.freya02.botcommands.components.internal.ComponentsBuilder;
@@ -24,7 +28,9 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
@@ -35,12 +41,13 @@ import java.util.stream.Collectors;
 
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final List<Class<? extends Annotation>> methodAnnotations = List.of(JdaSlashCommand.class, JdaMessageCommand.class, JdaUserCommand.class);
 
 	private final List<Long> slashGuildIds = new ArrayList<>();
 
 	private final BContextImpl context = new BContextImpl();
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
-	private final SlashCommandsBuilder slashCommandsBuilder = new SlashCommandsBuilder(context, slashGuildIds);
+	private final ApplicationCommandsBuilder applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 	private final ComponentsBuilder componentsBuilder = new ComponentsBuilder(context);
 
 	private final Set<Class<?>> classes = new HashSet<>();
@@ -413,7 +420,7 @@ public final class CommandsBuilder {
 			LOGGER.info("Loaded {} commands", context.getCommands().size());
 			printCommands(context.getCommands(), 0);
 
-			slashCommandsBuilder.postProcess();
+			applicationCommandsBuilder.postProcess();
 
 			if (context.getComponentManager() != null) {
 				componentsBuilder.postProcess();
@@ -446,20 +453,27 @@ public final class CommandsBuilder {
 			boolean isInstantiable = Utils.isInstantiable(aClass);
 
 			if (isInstantiable) {
-				if (!Command.class.isAssignableFrom(aClass) && !SlashCommand.class.isAssignableFrom(aClass))
-					throw new IllegalArgumentException("Class " + aClass + " should extend Command or SlashCommand");
+				if (!Command.class.isAssignableFrom(aClass))
+					throw new IllegalArgumentException("Class " + aClass + " should extend Command");
 
-				final Object someCommand = ClassInstancer.instantiate(context, aClass);
+				final Command someCommand = (Command) ClassInstancer.instantiate(context, aClass);
 
-				if (someCommand instanceof Command) {
-					prefixedCommandsBuilder.processPrefixedCommand((Command) someCommand);
-				} else if (someCommand instanceof SlashCommand) {
-					slashCommandsBuilder.processSlashCommand((SlashCommand) someCommand);
-				} else {
-					throw new IllegalArgumentException("How did you even give a command that doesn't extend Command or SlashCommand ??? at " + someCommand.getClass().getName());
-				}
+				prefixedCommandsBuilder.processPrefixedCommand(someCommand);
 			} else {
-				LOGGER.error("A non-instantiable class tried to get processed, this should have been filtered by #buildClasses, please report to the devs"); //TODO might remove later
+				LOGGER.error("A non-instantiable class tried to get processed, this should have been filtered by #buildClasses, please report to the devs");
+			}
+		} else {
+			//If not a text command, search for methods annotated with a compatible annotation
+			for (Method method : aClass.getDeclaredMethods()) {
+				for (Class<? extends Annotation> annotation : methodAnnotations) {
+					if (method.isAnnotationPresent(annotation)) {
+						final Object annotatedInstance = ClassInstancer.instantiate(context, aClass);
+						
+						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
+						
+						break;
+					}
+				}
 			}
 		}
 	}
@@ -467,9 +481,6 @@ public final class CommandsBuilder {
 	private boolean isCommand(Class<?> aClass) {
 		if (Modifier.isAbstract(aClass.getModifiers()))
 			return false;
-
-		if (SlashCommand.class.isAssignableFrom(aClass))
-			return true;
 
 		return Command.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(JdaCommand.class);
 	}
@@ -509,7 +520,8 @@ public final class CommandsBuilder {
 				new EventWaiter(jda),
 				new CommandListener(context),
 				new ApplicationCommandListener(context),
-				new SlashCommandListener(context)
+				new SlashCommandListener(context),
+				new ContextCommandListener(context)
 		);
 	}
 

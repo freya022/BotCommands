@@ -1,8 +1,10 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.application.ApplicationCommandInfo;
-import com.freya02.botcommands.application.SlashCommandsBuilder;
-import com.freya02.botcommands.application.SlashCommandsCache;
+import com.freya02.botcommands.application.ApplicationCommandsBuilder;
+import com.freya02.botcommands.application.ApplicationCommandsCache;
+import com.freya02.botcommands.application.context.message.MessageCommandInfo;
+import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
@@ -57,8 +59,8 @@ public class BContextImpl implements BContext {
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
 	private Consumer<EmbedBuilder> helpBuilderConsumer;
 
-	private SlashCommandsBuilder slashCommandsBuilder;
-	private SlashCommandsCache slashCommandsCache;
+	private ApplicationCommandsBuilder slashCommandsBuilder;
+	private ApplicationCommandsCache applicationCommandsCache;
 
 	@Override
 	@NotNull
@@ -100,14 +102,34 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public SlashCommandInfo findSlashCommand(@NotNull String name) {
-		return getSlashCommandsMap().get(name);
+	public SlashCommandInfo findSlashCommand(@NotNull String path) {
+		return getSlashCommandsMap().get(path);
+	}
+	
+	public UserCommandInfo findUserCommand(String name) {
+		return getUserCommandsMap().get(name);
+	}
+
+	public MessageCommandInfo findMessageCommand(String name) {
+		return getMessageCommandsMap().get(name);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Nonnull
 	private Map<String, SlashCommandInfo> getSlashCommandsMap() {
 		return (Map<String, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<String, SlashCommandInfo>()));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Map<String, UserCommandInfo> getUserCommandsMap() {
+		return (Map<String, UserCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.USER_CONTEXT, x -> Collections.synchronizedMap(new HashMap<String, UserCommandInfo>()));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Map<String, MessageCommandInfo> getMessageCommandsMap() {
+		return (Map<String, MessageCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.MESSAGE_CONTEXT, x -> Collections.synchronizedMap(new HashMap<String, MessageCommandInfo>()));
 	}
 
 	@Override
@@ -185,6 +207,32 @@ public class BContextImpl implements BContext {
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two slash commands have the same paths: '%s' from %s and %s",
 					path,
+					oldCmd.getCommandMethod(),
+					commandInfo.getCommandMethod()));
+		}
+	}
+	
+	public void addUserCommand(String name, UserCommandInfo commandInfo) {
+		final Map<String, UserCommandInfo> userCommandMap = getUserCommandsMap();
+
+		UserCommandInfo oldCmd = userCommandMap.put(name, commandInfo);
+
+		if (oldCmd != null) {
+			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
+					name,
+					oldCmd.getCommandMethod(),
+					commandInfo.getCommandMethod()));
+		}
+	}
+
+	public void addMessageCommand(String name, MessageCommandInfo commandInfo) {
+		final Map<String, MessageCommandInfo> messageCommandMap = getMessageCommandsMap();
+
+		MessageCommandInfo oldCmd = messageCommandMap.put(name, commandInfo);
+
+		if (oldCmd != null) {
+			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
+					name,
 					oldCmd.getCommandMethod(),
 					commandInfo.getCommandMethod()));
 		}
@@ -331,7 +379,7 @@ public class BContextImpl implements BContext {
 		return helpBuilderConsumer;
 	}
 
-	public void setSlashCommandsBuilder(SlashCommandsBuilder slashCommandsBuilder) {
+	public void setSlashCommandsBuilder(ApplicationCommandsBuilder slashCommandsBuilder) {
 		this.slashCommandsBuilder = slashCommandsBuilder;
 	}
 
@@ -364,11 +412,11 @@ public class BContextImpl implements BContext {
 		return commandDependencyMap.get(fieldType);
 	}
 
-	public SlashCommandsCache getSlashCommandsCache() {
-		return slashCommandsCache;
+	public ApplicationCommandsCache getApplicationCommandsCache() {
+		return applicationCommandsCache;
 	}
 
-	public void setSlashCommandsCache(SlashCommandsCache cachedSlashCommands) {
-		this.slashCommandsCache = cachedSlashCommands;
+	public void setApplicationCommandsCache(ApplicationCommandsCache cachedSlashCommands) {
+		this.applicationCommandsCache = cachedSlashCommands;
 	}
 }

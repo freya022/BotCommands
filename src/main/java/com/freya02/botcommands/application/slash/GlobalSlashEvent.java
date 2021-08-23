@@ -7,8 +7,8 @@ import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImp
 
 import javax.annotation.Nonnull;
 
-public abstract class SlashEvent extends SlashCommandEvent {
-	public SlashEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction) {
+public abstract class GlobalSlashEvent extends SlashCommandEvent {
+	public GlobalSlashEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction) {
 		super(api, responseNumber, interaction);
 	}
 

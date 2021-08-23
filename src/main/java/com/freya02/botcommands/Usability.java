@@ -1,11 +1,11 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.prefixed.CommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 
 import java.util.EnumSet;
 import java.util.Objects;
@@ -40,7 +40,7 @@ public class Usability {
 		return new Usability(unusableReasons);
 	}
 
-	public static Usability of(SlashCommandEvent event, SlashCommandInfo cmdInfo, boolean isNotOwner) {
+	public static Usability of(Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 
 		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) {

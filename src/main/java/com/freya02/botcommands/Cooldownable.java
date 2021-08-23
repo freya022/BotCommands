@@ -1,15 +1,15 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.application.SlashCommandListener;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public abstract class Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -53,7 +53,7 @@ public abstract class Cooldownable {
 		return userCooldowns.computeIfAbsent(guild.getIdLong(), x -> Collections.synchronizedMap(new HashMap<>()));
 	}
 
-	public void applyCooldown(SlashCommandEvent event) {
+	public void applyCooldown(Interaction event) {
 		switch (cooldownScope) {
 			case USER:
 				if (event.getGuild() == null) break;
@@ -84,11 +84,11 @@ public abstract class Cooldownable {
 		}
 	}
 
-	public int getCooldown(SlashCommandEvent event) {
+	public int getCooldown(Interaction event, Supplier<String> cmdNameSupplier) {
 		switch (cooldownScope) {
 			case USER:
 				if (event.getGuild() == null) {
-					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", SlashCommandListener.reconstructCommand(event));
+					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
@@ -96,7 +96,7 @@ public abstract class Cooldownable {
 				return (int) Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
 				if (event.getGuild() == null) {
-					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", SlashCommandListener.reconstructCommand(event));
+					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}

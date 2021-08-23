@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,10 +29,19 @@ import java.util.Map;
  *     <li>{@linkplain User}</li>
  *     <li>{@linkplain Member}</li>
  *     <li>{@linkplain TextChannel}</li>
+ *     <li>{@linkplain Message} (only message context commands)</li>
  * </ul>
  */
 public class ParameterResolvers {
 	private static final Map<Class<?>, ParameterResolver> map = new HashMap<>();
+	
+	private static final List<Class<?>> possibleInterfaces = List.of(
+			RegexParameterResolver.class,
+			SlashParameterResolver.class,
+			ComponentParameterResolver.class,
+			UserContextParameterResolver.class,
+			MessageContextParameterResolver.class
+	);
 
 	static {
 		register(new BooleanResolver());
@@ -47,11 +57,21 @@ public class ParameterResolvers {
 		register(new StringResolver());
 		register(new TextChannelResolver());
 		register(new UserResolver());
+		register(new MessageResolver());
 	}
 
 	public static void register(@NotNull ParameterResolver resolver) {
-		if (!(resolver instanceof RegexParameterResolver) && !(resolver instanceof SlashParameterResolver) && !(resolver instanceof ComponentParameterResolver))
-			throw new IllegalArgumentException("The resolver should work at least for a regex parameter, a slash parameter or a button parameter");
+		boolean hasInterface = false;
+		for (Class<?> possibleInterface : possibleInterfaces) {
+			if (possibleInterface.isAssignableFrom(resolver.getClass())) {
+				 hasInterface = true;
+				 
+				 break;
+			}
+		}
+
+		if (!hasInterface)
+			throw new IllegalArgumentException("The resolver should work at least for a regex parameter, a slash parameter, a button parameter");
 
 		map.put(resolver.getType(), resolver);
 	}

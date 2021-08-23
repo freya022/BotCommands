@@ -1,12 +1,12 @@
-package com.freya02.botcommands.application;
+package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.*;
 import com.freya02.botcommands.Usability.UnusableReason;
-import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
@@ -44,7 +44,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
 
 			if (slashCommand == null) {
-				event.reply(context.getDefaultMessages().getSlashCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -80,7 +80,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 			}
 
 			if (isNotOwner) {
-				final int cooldown = slashCommand.getCooldown(event);
+				final int cooldown = slashCommand.getCooldown(event, () -> SlashCommandListener.reconstructCommand(event));
 				if (cooldown > 0) {
 					if (slashCommand.getCooldownScope() == CooldownScope.USER) {
 						reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
@@ -111,9 +111,9 @@ public final class SlashCommandListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing slash command '" + command + "'", e);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages().getSlashCommandErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages().getSlashCommandErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in slash command '" + command + "'", e);
@@ -135,7 +135,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 		return sb.toString();
 	}
 
-	private void reply(SlashCommandEvent event, String msg) {
+	private void reply(Interaction event, String msg) {
 		event.reply(msg)
 				.setEphemeral(true)
 				.queue(null,

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.slash.annotations.Option;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import net.dv8tion.jda.api.entities.*;
@@ -29,7 +30,7 @@ public class SlashUtils {
 		}
 	}
 
-	public static List<String> getMethodOptionNames(SlashCommandInfo info) {
+	public static List<String> getMethodOptionNames(ApplicationCommandInfo info) {
 		final List<String> list = new ArrayList<>();
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
@@ -119,7 +120,7 @@ public class SlashUtils {
 	}
 
 	@Nonnull
-	public static String getLocalizedPath(@Nonnull SlashCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
+	public static String getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedSlashCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getPath()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
