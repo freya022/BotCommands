@@ -1,8 +1,11 @@
 package com.freya02.botcommands.application.context.annotations;
 
 import com.freya02.botcommands.CooldownScope;
+import com.freya02.botcommands.application.context.message.GlobalMessageEvent;
+import com.freya02.botcommands.application.context.message.GuildMessageEvent;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,6 +15,10 @@ import java.lang.annotation.Target;
 /**
  * Required annotation for user commands
  *
+ * <p>
+ * <b>The targeted method must have a {@link GlobalMessageEvent} or a {@link GuildMessageEvent} and the only other argument possible is a {@link Message}, which will be the <i>targeted</i> message</b>
+ *
+ * @see GlobalMessageEvent#getTargetMessage()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
