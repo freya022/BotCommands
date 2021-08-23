@@ -534,6 +534,9 @@ public final class CommandsBuilder {
 
 		registerConstructorParameter(BContext.class, ignored -> context);
 		registerCommandDependency(BContext.class, () -> context);
+		
+		registerConstructorParameter(JDA.class, ignored -> jda);
+		registerCommandDependency(JDA.class, () -> jda);
 	}
 
 	public BContext getContext() {
