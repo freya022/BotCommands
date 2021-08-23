@@ -268,7 +268,7 @@ public class BContextImpl implements BContext {
 	public void dispatchException(String message, Throwable e) {
 		for (Long ownerId : getOwnerIds()) {
 			getJDA().openPrivateChannelById(ownerId)
-					.queue(channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e).toString())
+					.queue(channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e))
 							.queue(null, new ErrorHandler()
 									.handle(ErrorResponse.CANNOT_SEND_TO_USER,
 											t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId))));

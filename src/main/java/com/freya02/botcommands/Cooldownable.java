@@ -66,6 +66,8 @@ public abstract class Cooldownable {
 				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + cooldown);
 				break;
 			case CHANNEL:
+				if (event.getChannel() == null) break;
+				
 				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + cooldown);
 				break;
 		}
@@ -80,7 +82,7 @@ public abstract class Cooldownable {
 			case CHANNEL:
 				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
-				throw new IllegalStateException("Unexpected value: " + cooldownScope);
+				throw new IllegalStateException("Unexpected cooldown scope: " + cooldownScope);
 		}
 	}
 
@@ -88,7 +90,7 @@ public abstract class Cooldownable {
 		switch (cooldownScope) {
 			case USER:
 				if (event.getGuild() == null) {
-					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
+					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
@@ -96,13 +98,19 @@ public abstract class Cooldownable {
 				return (int) Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
 				if (event.getGuild() == null) {
-					LOGGER.warn("Slash command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
+					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
 
 				return (int) Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
 			case CHANNEL:
+				if (event.getChannel() == null) {
+					LOGGER.warn("Interaction command '{}' wasn't used in a channel, somehow", cmdNameSupplier.get());
+					
+					return 0;
+				}
+				
 				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
 				throw new IllegalStateException("Unexpected value: " + cooldownScope);
