@@ -175,13 +175,6 @@ public interface BContext {
 	@Nullable ComponentManager getComponentManager();
 
 	/**
-	 * Returns the {@linkplain PermissionProvider} for this context
-	 *
-	 * @return The {@linkplain PermissionProvider} for this context
-	 */
-	PermissionProvider getPermissionProvider();
-
-	/**
 	 * Returns the {@linkplain SettingsProvider} for this context
 	 *
 	 * @return The current {@linkplain SettingsProvider}

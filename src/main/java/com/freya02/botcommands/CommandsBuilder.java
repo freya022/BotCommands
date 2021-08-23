@@ -34,7 +34,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -157,18 +156,6 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder setComponentManager(ComponentManager componentManager) {
 		context.setComponentManager(Objects.requireNonNull(componentManager, "Component manager cannot be null"));
-
-		return this;
-	}
-
-	/**
-	 * Sets the {@linkplain PermissionProvider}
-	 *
-	 * @param providerFunction The function which gives {@linkplain PermissionProvider} from a BContext <b>(I highlight suggest you pass the BContext to the provider so you can easily update the commands when something changes)</b>, for command privileges and application command whitelist
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder setPermissionProvider(Function<BContext, PermissionProvider> providerFunction) {
-		context.setPermissionProvider(Objects.requireNonNull(providerFunction.apply(context), "Permission provider cannot be null"));
 
 		return this;
 	}

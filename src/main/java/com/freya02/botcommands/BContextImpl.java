@@ -53,7 +53,6 @@ public class BContextImpl implements BContext {
 	private boolean addSubcommandHelpByDefault, addExecutableHelpByDefault;
 	private Consumer<BaseCommandEvent> helpConsumer;
 	private ComponentManager componentManager;
-	private PermissionProvider permissionProvider = new DefaultPermissionProvider();
 	private SettingsProvider settingProvider;
 
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
@@ -351,15 +350,6 @@ public class BContextImpl implements BContext {
 		} else {
 			jda.addEventListener(listeners);
 		}
-	}
-
-	public void setPermissionProvider(PermissionProvider permissionProvider) {
-		this.permissionProvider = permissionProvider;
-	}
-
-	@Override
-	public PermissionProvider getPermissionProvider() {
-		return permissionProvider;
 	}
 
 	public void setSettingsProvider(SettingsProvider settingsProvider) {
