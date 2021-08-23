@@ -1,8 +1,8 @@
 package com.freya02.botcommands.application.slash.annotations;
 
 import com.freya02.botcommands.CooldownScope;
-import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.EmojiOrEmote;
+import com.freya02.botcommands.entities.Emoji;
+import com.freya02.botcommands.entities.EmojiOrEmote;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;

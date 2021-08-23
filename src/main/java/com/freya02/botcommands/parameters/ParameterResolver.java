@@ -1,6 +1,6 @@
 package com.freya02.botcommands.parameters;
 
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
 /**

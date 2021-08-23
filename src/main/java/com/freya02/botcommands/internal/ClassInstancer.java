@@ -1,5 +1,8 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.ConstructorParameterSupplier;
+import com.freya02.botcommands.InstanceSupplier;
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.prefixed.Command;
 

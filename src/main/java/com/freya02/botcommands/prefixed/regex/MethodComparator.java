@@ -1,6 +1,6 @@
 package com.freya02.botcommands.prefixed.regex;
 
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.prefixed.annotation.Executable;
 import org.slf4j.Logger;
 

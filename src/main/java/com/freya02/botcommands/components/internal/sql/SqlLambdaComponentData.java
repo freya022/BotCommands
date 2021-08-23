@@ -1,7 +1,7 @@
 package com.freya02.botcommands.components.internal.sql;
 
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentType;
+import com.freya02.botcommands.internal.utils.Utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,9 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.internal.utils;
 
+import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.annotation.ConditionalUse;
 import com.freya02.botcommands.components.ComponentManager;
+import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -26,7 +28,7 @@ public final class Utils {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	@SuppressWarnings("RedundantCast")
-	static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
+	public static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
 		if (isJar) {
@@ -62,7 +64,7 @@ public final class Utils {
 		}).collect(Collectors.toList());
 	}
 
-	static String requireNonBlank(String str, String name) {
+	public static String requireNonBlank(String str, String name) {
 		if (str == null) {
 			throw new IllegalArgumentException(name + " may not be null");
 		} else if (str.isBlank()) {

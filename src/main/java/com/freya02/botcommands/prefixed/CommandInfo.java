@@ -1,10 +1,10 @@
 package com.freya02.botcommands.prefixed;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.DontInheritPermissions;
 import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import com.freya02.botcommands.prefixed.annotation.Hidden;

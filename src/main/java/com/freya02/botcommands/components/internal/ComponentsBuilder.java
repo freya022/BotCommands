@@ -1,13 +1,13 @@
 package com.freya02.botcommands.components.internal;
 
-import com.freya02.botcommands.BContextImpl;
-import com.freya02.botcommands.ClassInstancer;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentListener;
 import com.freya02.botcommands.components.annotation.JdaButtonListener;
 import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.ClassInstancer;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolvers;

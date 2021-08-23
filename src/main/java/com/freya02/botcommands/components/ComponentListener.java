@@ -1,11 +1,11 @@
 package com.freya02.botcommands.components;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
 import com.freya02.botcommands.components.internal.ComponentDescriptor;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.ComponentParameterResolver;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;

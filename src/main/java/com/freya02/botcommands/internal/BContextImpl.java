@@ -1,5 +1,6 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.*;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.application.ApplicationCommandsCache;
@@ -7,6 +8,7 @@ import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.utils;
+package com.freya02.botcommands.internal;
 
 public class ApplicationCommandManager {
 	//TODO

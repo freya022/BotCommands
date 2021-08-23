@@ -1,6 +1,6 @@
 package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.BContextImpl;
+import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;

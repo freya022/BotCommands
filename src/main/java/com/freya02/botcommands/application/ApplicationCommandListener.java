@@ -1,7 +1,7 @@
 package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.BContextImpl;
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;

@@ -1,6 +1,6 @@
-package com.freya02.botcommands.impl;
+package com.freya02.botcommands.entities.impl;
 
-import com.freya02.botcommands.Emoji;
+import com.freya02.botcommands.entities.Emoji;
 import org.jetbrains.annotations.NotNull;
 
 public class EmojiImpl implements Emoji {

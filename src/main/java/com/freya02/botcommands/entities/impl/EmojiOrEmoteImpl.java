@@ -1,6 +1,6 @@
-package com.freya02.botcommands.impl;
+package com.freya02.botcommands.entities.impl;
 
-import com.freya02.botcommands.EmojiOrEmote;
+import com.freya02.botcommands.entities.EmojiOrEmote;
 
 public class EmojiOrEmoteImpl implements EmojiOrEmote {
 	private final String unicode;

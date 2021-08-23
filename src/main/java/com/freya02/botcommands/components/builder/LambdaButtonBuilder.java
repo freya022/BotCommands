@@ -1,9 +1,9 @@
 package com.freya02.botcommands.components.builder;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.event.ButtonEvent;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;

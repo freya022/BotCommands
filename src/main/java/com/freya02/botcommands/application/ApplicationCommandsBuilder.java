@@ -1,8 +1,5 @@
 package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.BContextImpl;
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.application.context.annotations.JdaMessageCommand;
 import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.application.context.message.GlobalMessageEvent;
@@ -16,6 +13,9 @@ import com.freya02.botcommands.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;

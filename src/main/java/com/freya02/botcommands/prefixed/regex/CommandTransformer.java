@@ -1,10 +1,10 @@
 package com.freya02.botcommands.prefixed.regex;
 
-import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.EmojiOrEmote;
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.entities.Emoji;
+import com.freya02.botcommands.entities.EmojiOrEmote;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.annotation.Executable;

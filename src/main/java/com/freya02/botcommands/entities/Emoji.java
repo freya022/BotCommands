@@ -1,4 +1,4 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.entities;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 

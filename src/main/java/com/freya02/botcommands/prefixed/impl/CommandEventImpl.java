@@ -1,8 +1,8 @@
 package com.freya02.botcommands.prefixed.impl;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.impl.EmojiImpl;
+import com.freya02.botcommands.entities.impl.EmojiImpl;
+import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.prefixed.CommandEvent;
 import com.freya02.botcommands.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.prefixed.exceptions.NoIdException;

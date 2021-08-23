@@ -1,8 +1,8 @@
 package com.freya02.botcommands.prefixed;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BContextImpl;
-import com.freya02.botcommands.Utils;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,11 +1,11 @@
 package com.freya02.botcommands.pagination;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.components.event.ButtonEvent;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.pagination.menu.Menu;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;

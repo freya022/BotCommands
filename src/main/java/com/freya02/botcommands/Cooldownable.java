@@ -1,5 +1,6 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.waiter;
 
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.Utils;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;

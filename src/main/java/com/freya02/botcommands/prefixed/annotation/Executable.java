@@ -1,7 +1,7 @@
 package com.freya02.botcommands.prefixed.annotation;
 
-import com.freya02.botcommands.Emoji;
-import com.freya02.botcommands.EmojiOrEmote;
+import com.freya02.botcommands.entities.Emoji;
+import com.freya02.botcommands.entities.EmojiOrEmote;
 import net.dv8tion.jda.api.entities.*;
 
 import java.lang.annotation.ElementType;

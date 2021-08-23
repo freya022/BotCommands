@@ -1,4 +1,4 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.entities;
 
 public interface EmojiOrEmote {
 	boolean isEmote();

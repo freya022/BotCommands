@@ -1,8 +1,8 @@
 package com.freya02.botcommands.prefixed.impl;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BContextImpl;
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;

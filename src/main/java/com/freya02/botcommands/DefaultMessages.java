@@ -1,5 +1,7 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.internal.utils.Utils;
+
 import java.util.StringJoiner;
 
 public final class DefaultMessages {

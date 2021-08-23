@@ -1,7 +1,7 @@
 package com.freya02.botcommands.parameters;
 
-import com.freya02.botcommands.EmojiOrEmote;
-import com.freya02.botcommands.impl.EmojiOrEmoteImpl;
+import com.freya02.botcommands.entities.EmojiOrEmote;
+import com.freya02.botcommands.entities.impl.EmojiOrEmoteImpl;
 import com.freya02.botcommands.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;

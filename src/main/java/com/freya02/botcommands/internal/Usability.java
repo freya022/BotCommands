@@ -1,4 +1,4 @@
-package com.freya02.botcommands;
+package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.prefixed.CommandInfo;
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import java.util.EnumSet;
 import java.util.Objects;
 
-import static com.freya02.botcommands.Usability.UnusableReason.*;
+import static com.freya02.botcommands.internal.Usability.UnusableReason.*;
 
 public class Usability {
 	private final EnumSet<UnusableReason> unusableReasons;

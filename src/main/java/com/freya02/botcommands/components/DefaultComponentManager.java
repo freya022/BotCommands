@@ -1,6 +1,5 @@
 package com.freya02.botcommands.components;
 
-import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.components.builder.*;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.components.event.SelectionEvent;
@@ -13,6 +12,7 @@ import com.freya02.botcommands.components.internal.sql.SqlComponentData;
 import com.freya02.botcommands.components.internal.sql.SqlLambdaComponentData;
 import com.freya02.botcommands.components.internal.sql.SqlLambdaCreateResult;
 import com.freya02.botcommands.components.internal.sql.SqlPersistentComponentData;
+import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

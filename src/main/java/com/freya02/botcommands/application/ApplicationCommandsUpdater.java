@@ -1,14 +1,14 @@
 package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.BContextImpl;
 import com.freya02.botcommands.BGuildSettings;
-import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.GuildApplicationSettings;
 import com.freya02.botcommands.application.slash.LocalizedApplicationCommandData;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
