@@ -1,8 +1,8 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.application.slash.GuildSlashSettings;
+import com.freya02.botcommands.application.slash.GuildApplicationSettings;
 
-public interface SettingsProvider extends GuildSlashSettings {
+public interface SettingsProvider extends GuildApplicationSettings {
 	/**
 	 * Returns the settings of the specified Guild ID
 	 *

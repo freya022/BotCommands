@@ -7,7 +7,7 @@ import com.freya02.botcommands.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.application.context.ContextCommandListener;
 import com.freya02.botcommands.application.context.annotations.JdaMessageCommand;
 import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
-import com.freya02.botcommands.application.slash.SlashCommand;
+import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.application.slash.SlashCommandListener;
 import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.components.ComponentManager;
@@ -319,10 +319,10 @@ public final class CommandsBuilder {
 	 *
 	 * @param clazz The command's class to register
 	 * @return This builder for chaining convenience
-	 * @throws IllegalArgumentException If the class is not a {@link Command} nor a {@link SlashCommand}
+	 * @throws IllegalArgumentException If the class is not a {@link Command} nor a {@link ApplicationCommand}
 	 */
 	public CommandsBuilder registerCommand(Class<?> clazz) {
-		if (!Command.class.isAssignableFrom(clazz) && !SlashCommand.class.isAssignableFrom(clazz)) {
+		if (!Command.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
 			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
 		}
 
@@ -332,7 +332,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link Command} or {@link SlashCommand} will be registered<br>
+	 * Adds the commands of this packages in this builder, all the classes which extends {@link Command} or {@link ApplicationCommand} will be registered<br>
 	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
 	 *
 	 * <pre><code>
@@ -467,7 +467,10 @@ public final class CommandsBuilder {
 			for (Method method : aClass.getDeclaredMethods()) {
 				for (Class<? extends Annotation> annotation : methodAnnotations) {
 					if (method.isAnnotationPresent(annotation)) {
-						final Object annotatedInstance = ClassInstancer.instantiate(context, aClass);
+						if (!ApplicationCommand.class.isAssignableFrom(aClass))
+							throw new IllegalArgumentException("Method " + method + " is annotated with @" + annotation.getSimpleName() + " but it's class does not extend ApplicationCommand");
+						
+						final ApplicationCommand annotatedInstance = (ApplicationCommand) ClassInstancer.instantiate(context, aClass);
 						
 						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
 						

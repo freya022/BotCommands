@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class LocalizedSlashCommandData {
+public class LocalizedApplicationCommandData {
 	@Nullable private final String localizedPath, localizedDescription;
 	@Nullable private final List<String> localizedOptionNames;
 	@Nullable private final List<List<SlashCommand.Choice>> localizedOptionChoices;
@@ -17,12 +17,12 @@ public class LocalizedSlashCommandData {
 	 * @param localizedDescription   The description of the command, <i>not used for context commands</i>
 	 * @param localizedOptionNames   The list of option names (parameters) of the command, <i>not used for context commands</i>
 	 * @param localizedOptionChoices The list of choices for all the command options, each entry of this list is the choices for one parameter, <i>not used for context commands</i>
-	 *                               <br> <i>Choice list n°0 is the choice list for option n°0 and such</i>   
+	 *                               <br> <i>Choice list n°0 is the choice list for option n°0 and such</i>
 	 */
-	public LocalizedSlashCommandData(@Nullable String localizedPath,
-	                                 @Nullable String localizedDescription,
-	                                 @Nullable List<String> localizedOptionNames,
-	                                 @Nullable List<List<SlashCommand.Choice>> localizedOptionChoices) {
+	public LocalizedApplicationCommandData(@Nullable String localizedPath,
+	                                       @Nullable String localizedDescription,
+	                                       @Nullable List<String> localizedOptionNames,
+	                                       @Nullable List<List<SlashCommand.Choice>> localizedOptionChoices) {
 		this.localizedPath = localizedPath;
 		this.localizedDescription = localizedDescription;
 		this.localizedOptionNames = localizedOptionNames;

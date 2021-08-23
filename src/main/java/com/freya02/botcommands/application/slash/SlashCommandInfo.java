@@ -40,7 +40,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	/** guild id => localized option names */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
-	public SlashCommandInfo(Object instance, Method commandMethod) {
+	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
 		super(instance, commandMethod.getAnnotation(JdaSlashCommand.class),
 				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand().isEmpty() 
 						? commandMethod.getAnnotation(JdaSlashCommand.class).name() 
@@ -112,7 +112,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 	
-	/** This is NOT localized */
 	@Override
 	public String getPath() {
 		return path;

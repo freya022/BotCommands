@@ -4,6 +4,7 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.context.ContextCommandParameter;
 import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
+import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.parameters.UserContextParameterResolver;
 import net.dv8tion.jda.api.entities.Member;
@@ -18,7 +19,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	private final ContextCommandParameter<UserContextParameterResolver>[] commandParameters;
 
 	@SuppressWarnings("unchecked")
-	public UserCommandInfo(Object instance, Method method) {
+	public UserCommandInfo(ApplicationCommand instance, Method method) {
 		super(instance, method.getAnnotation(JdaUserCommand.class),
 				AnnotationUtils.getAnnotationValue(method.getAnnotation(JdaUserCommand.class), "name"),
 				method);

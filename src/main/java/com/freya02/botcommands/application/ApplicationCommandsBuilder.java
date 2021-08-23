@@ -11,6 +11,7 @@ import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
@@ -40,7 +41,7 @@ public final class ApplicationCommandsBuilder {
 		this.slashGuildIds = slashGuildIds;
 	}
 
-	public void processApplicationCommand(Object applicationCommand, Method method) {
+	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
 		try {
 			if (!method.canAccess(applicationCommand))
 				throw new IllegalStateException("Application command " + method + " is not public");
@@ -57,7 +58,7 @@ public final class ApplicationCommandsBuilder {
 		}
 	}
 
-	private void processUserCommand(Object applicationCommand, Method method) {
+	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaUserCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class) && !Utils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + method + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
@@ -77,7 +78,7 @@ public final class ApplicationCommandsBuilder {
 		context.addUserCommand(info.getName(), info);
 	}
 
-	private void processMessageCommand(Object applicationCommand, Method method) {
+	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaMessageCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class) && !Utils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + method + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
@@ -97,7 +98,7 @@ public final class ApplicationCommandsBuilder {
 		context.addMessageCommand(info.getName(), info);
 	}
 
-	private void processSlashCommand(Object applicationCommand, Method method) {
+	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + method + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");

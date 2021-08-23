@@ -1,12 +1,13 @@
 package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.BContextImpl;
+import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.Logging;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.application.slash.GuildSlashSettings;
-import com.freya02.botcommands.application.slash.LocalizedSlashCommandData;
+import com.freya02.botcommands.application.slash.GuildApplicationSettings;
+import com.freya02.botcommands.application.slash.LocalizedApplicationCommandData;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -18,7 +19,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -37,7 +37,7 @@ public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final BContextImpl context;
-	private final Guild guild;
+	@Nullable private final Guild guild;
 
 	private final Path commandsCachePath;
 	private final Path privilegesCachePath;
@@ -51,7 +51,7 @@ public class ApplicationCommandsUpdater {
 
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
 
-	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild) throws IOException {
+	private ApplicationCommandsUpdater(@Nonnull BContextImpl context, @Nullable Guild guild) throws IOException {
 		this.context = context;
 		this.guild = guild;
 
@@ -69,17 +69,18 @@ public class ApplicationCommandsUpdater {
 			Files.createDirectories(privilegesCachePath.getParent());
 		}
 
-		computeCommands(context, guild);
+		computeCommands(context);
 	}
 
-	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context) throws IOException {
+	public static ApplicationCommandsUpdater ofGlobal(@Nonnull BContextImpl context) throws IOException {
 		return new ApplicationCommandsUpdater(context, null);
 	}
 
-	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild) throws IOException {
+	public static ApplicationCommandsUpdater ofGuild(@Nonnull BContextImpl context, @Nonnull Guild guild) throws IOException {
 		return new ApplicationCommandsUpdater(context, guild);
 	}
 
+	@Nullable
 	public Guild getGuild() {
 		return guild;
 	}
@@ -102,14 +103,14 @@ public class ApplicationCommandsUpdater {
 				.addCommands(commandData)
 				.submit();
 
-		return guild != null ? thenAcceptGuild(commandData, future) : thenAcceptGlobal(commandData, future);
+		return guild != null ? thenAcceptGuild(commandData, future, guild) : thenAcceptGlobal(commandData, future);
 	}
 
 	//TODO if commands haven't changed but privileges did, we must retrieve the commands and associate them back
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
-		computePrivileges(); //has to run after the commands updated
+		computePrivileges(guild); //has to run after the commands updated
 
 		if (Files.notExists(privilegesCachePath)) return true;
 
@@ -133,7 +134,7 @@ public class ApplicationCommandsUpdater {
 		});
 	}
 
-	private void computeCommands(@NotNull BContextImpl context, @Nullable Guild guild) {
+	private void computeCommands(@Nonnull BContextImpl context) {
 		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommands().stream()
 				.filter(info -> {
 					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
@@ -145,26 +146,29 @@ public class ApplicationCommandsUpdater {
 					//Get the actual usable commands in this context (dm or guild)
 					if (guild == null) return true;
 
-					return context.getPermissionProvider().getGuildCommands(guild).getFilter().test(info.getPath());
+					final BGuildSettings guildSettings = context.getGuildSettings(guild.getIdLong());
+					if (guildSettings == null) return true; //If no specific guild settings, assume it's not filtered
+					
+					return guildSettings.getGuildCommands().getFilter().test(info.getPath());
 				})
 				.sorted(Comparator.comparingInt(ApplicationCommandInfo::getPathComponents))
 				.collect(Collectors.toCollection(ArrayList::new));
 
-		computeSlashCommands(context, guild, guildApplicationCommands);
+		computeSlashCommands(context, guildApplicationCommands);
 
-		computeContextCommands(guild, guildApplicationCommands, UserCommandInfo.class, CommandType.USER_CONTEXT);
+		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, CommandType.USER_CONTEXT);
 
-		computeContextCommands(guild, guildApplicationCommands, MessageCommandInfo.class, CommandType.MESSAGE_CONTEXT);
+		computeContextCommands(guildApplicationCommands, MessageCommandInfo.class, CommandType.MESSAGE_CONTEXT);
 	}
 
-	private void computeSlashCommands(@Nonnull BContextImpl context, @Nullable Guild guild, List<ApplicationCommandInfo> guildApplicationCommands) {
+	private void computeSlashCommands(@Nonnull BContextImpl context, List<ApplicationCommandInfo> guildApplicationCommands) {
 		guildApplicationCommands.stream()
 				.filter(a -> a instanceof SlashCommandInfo)
 				.map(a -> (SlashCommandInfo) a)
 				.forEachOrdered(info -> {
 			try {
 				final List<String> optionNames = getMethodOptionNames(info);
-				final LocalizedSlashCommandData localizedCommandData = getLocalizedCommandData(guild, info, optionNames);
+				final LocalizedApplicationCommandData localizedCommandData = getLocalizedCommandData(info, optionNames);
 				
 				//Put localized option names in order to resolve them when called
 				if (guild != null) {
@@ -277,13 +281,13 @@ public class ApplicationCommandsUpdater {
 //	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends ApplicationCommandInfo> void computeContextCommands(Guild guild, List<ApplicationCommandInfo> guildApplicationCommands, Class<T> targetClazz, CommandType type) {
+	private <T extends ApplicationCommandInfo> void computeContextCommands(List<ApplicationCommandInfo> guildApplicationCommands, Class<T> targetClazz, CommandType type) {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
 				.forEachOrdered(info -> {
 					try {
-						final LocalizedSlashCommandData localizedCommandData = getLocalizedCommandData(guild, info, null);
+						final LocalizedApplicationCommandData localizedCommandData = getLocalizedCommandData(info, null);
 
 						// User command name
 						final String path = getLocalizedPath(info, localizedCommandData);
@@ -306,12 +310,9 @@ public class ApplicationCommandsUpdater {
 	}
 
 	@Nullable
-	private LocalizedSlashCommandData getLocalizedCommandData(@Nullable Guild guild, ApplicationCommandInfo info, @Nullable List<String> optionNames) {
-		final Object instance = info.getInstance();
-		final LocalizedSlashCommandData localizedCommandData;
-		if (instance instanceof GuildSlashSettings) {
-			localizedCommandData = ((GuildSlashSettings) instance).getLocalizedCommandData(guild, info.getPath(), optionNames);
-		} else localizedCommandData = null;
+	private LocalizedApplicationCommandData getLocalizedCommandData(ApplicationCommandInfo info, @Nullable List<String> optionNames) {
+		final GuildApplicationSettings instance = info.getInstance();
+		final LocalizedApplicationCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath(), optionNames);
 
 		if (localizedCommandData == null) {
 			final SettingsProvider settingsProvider = context.getSettingsProvider();
@@ -324,11 +325,11 @@ public class ApplicationCommandsUpdater {
 		return localizedCommandData;
 	}
 
-	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {
+	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future, @Nonnull Guild guild) {
 		return future.thenAccept(commands -> {
 			for (Command command : commands) {
 				if (command instanceof SlashCommand) {
-					context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(guild, (SlashCommand) command));
+					context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, (SlashCommand) command));
 				}
 			}
 
@@ -373,11 +374,19 @@ public class ApplicationCommandsUpdater {
 		});
 	}
 
-	private void computePrivileges() {
+	private void computePrivileges(@Nonnull Guild guild) {
 		for (Command command : commands) {
-			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(context.getPermissionProvider().getPermissions(command.getName(), guild));
-			if (commandPrivileges.size() > 10)
+			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(10);
+			final List<CommandPrivilege> applicationPrivileges = context.getApplicationCommands().stream()
+					.filter(a -> a.getName().equals(command.getName()))
+					.findFirst()
+					.orElseThrow(() -> new IllegalStateException("Could not find any top level command named '" + command.getName() + "'"))
+					.getInstance()
+					.getCommandPrivileges(guild, command.getName());
+			if (applicationPrivileges.size() > 10)
 				throw new IllegalArgumentException(String.format("There are more than 10 command privileges for command %s in guild %s (%s)", command.getName(), guild.getName(), guild.getId()));
+			
+			commandPrivileges.addAll(applicationPrivileges);
 
 			//Add owner-only permissions
 			if (ownerOnlyCommands.contains(command.getName())) {

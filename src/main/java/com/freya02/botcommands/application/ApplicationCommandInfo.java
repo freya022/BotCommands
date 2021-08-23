@@ -2,8 +2,10 @@ package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.application.slash.ApplicationCommand;
 import net.dv8tion.jda.api.Permission;
 
+import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -12,7 +14,7 @@ import java.util.EnumSet;
 import static com.freya02.botcommands.internal.utils.AnnotationUtils.getAnnotationValue;
 
 public abstract class ApplicationCommandInfo extends Cooldownable {
-	private final Object instance;
+	private final ApplicationCommand instance;
 	/** This is NOT localized */
 	protected final String name;
 	protected final boolean guildOnly, ownerOnly;
@@ -21,7 +23,7 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 	protected final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
 	protected final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
 
-	protected <A extends Annotation> ApplicationCommandInfo(Object instance, A annotation, String name, Method commandMethod) {
+	protected <A extends Annotation> ApplicationCommandInfo(@Nonnull ApplicationCommand instance, @Nonnull A annotation, @Nonnull String name, @Nonnull Method commandMethod) {
 		super(getAnnotationValue(annotation, "cooldownScope"),
 				getAnnotationValue(annotation, "cooldown"));
 		this.instance = instance;
@@ -41,7 +43,8 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 		Collections.addAll(this.botPermissions, botPermissions);
 	}
 
-	public Object getInstance() {
+	@Nonnull
+	public ApplicationCommand getInstance() {
 		return instance;
 	}
 
@@ -50,6 +53,7 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 		return name;
 	}
 
+	/** This is NOT localized */
 	public abstract String getPath();
 
 	public abstract int getPathComponents();
