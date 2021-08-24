@@ -257,10 +257,6 @@ public class BContextImpl implements BContext {
 				.flatMap(commandMap -> commandMap.values().stream())
 				.collect(Collectors.toUnmodifiableList());
 	}
-	
-	public Collection<SlashCommandInfo> getSlashCommands() {
-		return Collections.unmodifiableCollection(getSlashCommandsMap().values());
-	}
 
 	public void dispatchException(String message, Throwable e) {
 		for (Long ownerId : getOwnerIds()) {
