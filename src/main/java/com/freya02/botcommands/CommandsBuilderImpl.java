@@ -28,6 +28,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -46,6 +47,8 @@ final class CommandsBuilderImpl {
 	private final Set<Class<?>> classes;
 
 	private final boolean usePing;
+	
+	private final List<Class<?>> ignoredClasses = new ArrayList<>();
 
 	CommandsBuilderImpl(BContextImpl context, List<Long> slashGuildIds, Set<Class<?>> classes) {
 		this.context = context;
@@ -136,6 +139,8 @@ final class CommandsBuilderImpl {
 				LOGGER.error("A non-instantiable class tried to get processed, this should have been filtered by #buildClasses, please report to the devs");
 			}
 		} else {
+			boolean foundSomething = false;
+			
 			//If not a text command, search for methods annotated with a compatible annotation
 			for (Method method : aClass.getDeclaredMethods()) {
 				for (Class<? extends Annotation> annotation : methodAnnotations) {
@@ -147,9 +152,15 @@ final class CommandsBuilderImpl {
 						
 						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
 						
+						foundSomething = true;
+						
 						break;
 					}
 				}
+			}
+
+			if (!foundSomething) {
+				ignoredClasses.add(aClass);
 			}
 		}
 	}
@@ -185,6 +196,13 @@ final class CommandsBuilderImpl {
 				new SlashCommandListener(context),
 				new ContextCommandListener(context)
 		);
+
+		if (!ignoredClasses.isEmpty()) {
+			LOGGER.trace("Ignored classes in search paths:");
+			for (Class<?> ignoredClass : ignoredClasses) {
+				LOGGER.trace("\t{}", ignoredClass.getName());
+			}
+		}
 	}
 
 	private void setupContext(JDA jda) {
