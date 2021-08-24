@@ -180,4 +180,11 @@ public class SlashUtils {
 	public static String getPathParent(String path) {
 		return path.substring(0, path.lastIndexOf('/'));
 	}
+	
+	public static String getPathBase(String path) {
+		final int i = path.indexOf('/');
+		if (i == -1) return path;
+		
+		return path.substring(0, i);
+	}
 }

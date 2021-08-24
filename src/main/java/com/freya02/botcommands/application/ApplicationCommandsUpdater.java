@@ -49,6 +49,7 @@ public class ApplicationCommandsUpdater {
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
 
+	private final Map<String, String> localizedBaseNameToBaseName = new HashMap<>();
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
 
 	private ApplicationCommandsUpdater(@Nonnull BContextImpl context, @Nullable Guild guild) throws IOException {
@@ -175,6 +176,8 @@ public class ApplicationCommandsUpdater {
 					info.putLocalizedOptions(guild.getIdLong(), optionNames);
 				}
 
+				localizedBaseNameToBaseName.put(getPathBase(getLocalizedPath(info, localizedCommandData)), info.getBaseName());
+
 				final List<OptionData> methodOptions = getMethodOptions(info, localizedCommandData);
 
 				final String path = getLocalizedPath(info, localizedCommandData);
@@ -289,6 +292,8 @@ public class ApplicationCommandsUpdater {
 					try {
 						final LocalizedApplicationCommandData localizedCommandData = getLocalizedCommandData(info, null);
 
+						localizedBaseNameToBaseName.put(getPathBase(getLocalizedPath(info, localizedCommandData)), info.getBaseName());
+
 						// User command name
 						final String path = getLocalizedPath(info, localizedCommandData);
 
@@ -300,6 +305,8 @@ public class ApplicationCommandsUpdater {
 							if (info.isOwnerOnly()) {
 								rightCommand.setDefaultEnabled(false);
 							}
+
+							ownerOnlyCommands.add(path);
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
@@ -378,7 +385,7 @@ public class ApplicationCommandsUpdater {
 		for (Command command : commands) {
 			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(10);
 			final List<CommandPrivilege> applicationPrivileges = context.getApplicationCommands().stream()
-					.filter(a -> a.getName().equals(command.getName()))
+					.filter(a -> a.getBaseName().equals(localizedBaseNameToBaseName.get(command.getName())))
 					.findFirst()
 					.orElseThrow(() -> new IllegalStateException("Could not find any top level command named '" + command.getName() + "'"))
 					.getInstance()

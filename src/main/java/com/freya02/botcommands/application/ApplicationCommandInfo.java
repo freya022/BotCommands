@@ -53,6 +53,8 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 		return name;
 	}
 
+	public abstract String getBaseName();
+
 	/** This is NOT localized */
 	public abstract String getPath();
 

@@ -52,6 +52,11 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Override
+	public String getBaseName() {
+		return name;
+	}
+
+	@Override
 	public int getPathComponents() {
 		return 1;
 	}
