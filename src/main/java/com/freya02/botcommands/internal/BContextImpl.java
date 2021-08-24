@@ -155,10 +155,6 @@ public class BContextImpl implements BContext {
 		return defaultFooterIconSupplier;
 	}
 
-	public void setPrefixes(List<String> prefix) {
-		prefixes.addAll(prefix);
-	}
-
 	public void addOwner(long ownerId) {
 		ownerIds.add(ownerId);
 	}
@@ -410,5 +406,9 @@ public class BContextImpl implements BContext {
 
 	public void setApplicationCommandsCache(ApplicationCommandsCache cachedSlashCommands) {
 		this.applicationCommandsCache = cachedSlashCommands;
+	}
+
+	public boolean isHelpDisabled() {
+		return helpConsumer != null;
 	}
 }

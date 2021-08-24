@@ -48,12 +48,10 @@ final class CommandsBuilderImpl {
 
 	private final Set<Class<?>> classes;
 
-	private final boolean disableHelpCommand;
 	private final boolean usePing;
 
-	CommandsBuilderImpl(boolean disableHelpCommand, boolean usePing, List<Long> slashGuildIds, Set<Class<?>> classes) {
-		this.disableHelpCommand = disableHelpCommand;
-		this.usePing = usePing;
+	CommandsBuilderImpl(List<Long> slashGuildIds, Set<Class<?>> classes) {
+		this.usePing = context.getPrefixes().isEmpty();
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 	}
@@ -83,7 +81,7 @@ final class CommandsBuilderImpl {
 				processClass(aClass);
 			}
 
-			if (!disableHelpCommand) {
+			if (!context.isHelpDisabled()) {
 				processClass(HelpCommand.class);
 
 				final HelpCommand help = (HelpCommand) context.findCommand("help");

@@ -1,19 +1,15 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.application.slash.ApplicationCommand;
+import com.freya02.botcommands.builder.ExtensionsBuilder;
+import com.freya02.botcommands.builder.TextCommandsBuilder;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.DefaultComponentManager;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.IOUtils;
 import com.freya02.botcommands.internal.utils.Utils;
-import com.freya02.botcommands.parameters.*;
-import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.MessageInfo;
-import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
-import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public final class CommandsBuilder {
@@ -32,39 +27,34 @@ public final class CommandsBuilder {
 
 	private final Set<Class<?>> classes = new HashSet<>();
 
-	private boolean disableHelpCommand;
-
-	private boolean usePing;
-
-	private CommandsBuilder(@NotNull String prefix, long topOwnerId) {
-		Utils.requireNonBlank(prefix, "Prefix");
-		context.setPrefixes(List.of(prefix));
-		context.addOwner(topOwnerId);
-	}
+	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
+	private final ExtensionsBuilder extensionsBuilder = new ExtensionsBuilder(context);
 
 	private CommandsBuilder(long topOwnerId) {
 		context.addOwner(topOwnerId);
-
-		usePing = true;
 	}
 
 	/**
-	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled
+	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled by default
 	 *
 	 * @param topOwnerId The most owner of the bot
 	 */
-	public static CommandsBuilder withPing(long topOwnerId) {
+	public static CommandsBuilder newBuilder(long topOwnerId) {
 		return new CommandsBuilder(topOwnerId);
 	}
 
 	/**
-	 * Constructs a new instance of {@linkplain CommandsBuilder}
+	 * Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
 	 *
-	 * @param prefix     Prefix of the bot
-	 * @param topOwnerId The most owner of the bot
+	 * @param ownerIds Owners Long IDs to add
+	 * @return This builder
 	 */
-	public static CommandsBuilder withPrefix(@NotNull String prefix, long topOwnerId) {
-		return new CommandsBuilder(prefix, topOwnerId);
+	public CommandsBuilder addOwners(long... ownerIds) {
+		for (long ownerId : ownerIds) {
+			context.addOwner(ownerId);
+		}
+
+		return this;
 	}
 
 	/**
@@ -80,37 +70,27 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Enables {@linkplain AddSubcommandHelp} on all registered commands
+	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
+	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
 	 *
-	 * @return This builder for chaining convenience
+	 * @param defaultEmbedFunction      The default embed builder
+	 * @param defaultFooterIconSupplier The default icon for the footer
+	 * @return This builder
 	 */
-	public CommandsBuilder addSubcommandHelpByDefault() {
-		context.setAddSubcommandHelpByDefault(true);
-
+	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
+		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
+		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
 		return this;
 	}
 
 	/**
-	 * Enables {@linkplain AddExecutableHelp} on all registered commands
+	 * Sets the {@linkplain SettingsProvider}, used to take guild-specific settings such as prefixes
 	 *
+	 * @param provider The {@linkplain SettingsProvider}
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder addExecutableHelpByDefault() {
-		context.setAddExecutableHelpByDefault(true);
-
-		return this;
-	}
-
-	/**
-	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected<br>
-	 * <b>You can provide an empty implementation if you wish to just disable all the help stuff completely</b>
-	 *
-	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid, can do nothing
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
-		this.disableHelpCommand = true;
-		this.context.overrideHelp(helpConsumer);
+	public CommandsBuilder setSettingsProvider(SettingsProvider provider) {
+		context.setSettingsProvider(Objects.requireNonNull(provider, "Settings provider cannot be null"));
 
 		return this;
 	}
@@ -142,122 +122,6 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Sets the {@linkplain SettingsProvider}, used to take guild-specific settings such as prefixes
-	 *
-	 * @param provider The {@linkplain SettingsProvider}
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder setSettingsProvider(SettingsProvider provider) {
-		context.setSettingsProvider(Objects.requireNonNull(provider, "Settings provider cannot be null"));
-
-		return this;
-	}
-
-	/**
-	 * Sets the help builder consumer, it allows you to add stuff in the help embeds when they are created.
-	 *
-	 * @param builderConsumer The help builder consumer, modifies the EmbedBuilder
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder setHelpBuilderConsumer(Consumer<EmbedBuilder> builderConsumer) {
-		context.setHelpBuilderConsumer(builderConsumer);
-
-		return this;
-	}
-
-	/**
-	 * <p>Sets the embed builder and the footer icon that this library will use as base embed builder</p>
-	 * <p><b>Note : The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name</b></p>
-	 *
-	 * @param defaultEmbedFunction      The default embed builder
-	 * @param defaultFooterIconSupplier The default icon for the footer
-	 * @return This builder
-	 */
-	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
-		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
-		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
-		return this;
-	}
-
-	/**
-	 * Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
-	 *
-	 * @param ownerIds Owners Long IDs to add
-	 * @return This builder
-	 */
-	public CommandsBuilder addOwners(long... ownerIds) {
-		for (long ownerId : ownerIds) {
-			context.addOwner(ownerId);
-		}
-
-		return this;
-	}
-
-	/**
-	 * Adds a prefix to choose from the list of prefixes
-	 *
-	 * @param prefix The prefix to add
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder addPrefix(String prefix) {
-		context.addPrefix(prefix);
-
-		return this;
-	}
-
-	/**
-	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in it's constructor, and it will be injected during instantiation
-	 *
-	 * @param parameterType     The type of the parameter inside your constructor
-	 * @param parameterSupplier The supplier for this parameter
-	 * @param <T>               Type of the parameter
-	 * @return This builder for chaining convenience
-	 */
-	public <T> CommandsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
-		if (context.getParameterSupplier(parameterType) != null)
-			throw new IllegalStateException("Parameter supplier already exists for parameter of type " + parameterType.getName());
-
-		context.registerConstructorParameter(parameterType, parameterSupplier);
-
-		return this;
-	}
-
-	/**
-	 * Registers a instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
-	 * Instead of resolving the parameters manually with {@link #registerConstructorParameter(Class, ConstructorParameterSupplier)} you can use this to give directly the command's instance
-	 *
-	 * @param classType        Type of the command's class
-	 * @param instanceSupplier Instance supplier for this command
-	 * @param <T>              Type of the command's class
-	 * @return This builder for chaining convenience
-	 */
-	public <T> CommandsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
-		if (context.getInstanceSupplier(classType) != null)
-			throw new IllegalStateException("Instance supplier already exists for class " + classType.getName());
-
-		context.registerInstanceSupplier(classType, instanceSupplier);
-
-		return this;
-	}
-
-	/**
-	 * Registers a command dependency supplier, the supplier will be used on every field of the same type in a command if annotated with {@link Dependency @Dependency}
-	 *
-	 * @param fieldType Type of the field's object
-	 * @param supplier  Field supplier for this type
-	 * @param <T>       Type of the field's object
-	 * @return This builder for chaining convenience
-	 */
-	public <T> CommandsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
-		if (context.getCommandDependency(fieldType) != null)
-			throw new IllegalStateException("Command dependency already exists for fields of type " + fieldType.getName());
-
-		context.registerCommandDependency(fieldType, supplier);
-
-		return this;
-	}
-
-	/**
 	 * Adds a {@link RegistrationListener} to this command builder, giving you various event of what is getting loaded
 	 *
 	 * @param listeners The {@link RegistrationListener RegistrationListeners} to register
@@ -265,19 +129,6 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder addRegistrationListeners(RegistrationListener... listeners) {
 		context.addRegistrationListeners(listeners);
-
-		return this;
-	}
-
-	/**
-	 * Adds a filter for received messages (could prevent regular commands from running), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
-	 *
-	 * @param filter The filter to add, should return <code>false</code> if the message has to be ignored
-	 * @return This builder for chaining convenience
-	 * @see BContext#addFilter(Predicate)
-	 */
-	public CommandsBuilder addFilter(Predicate<MessageInfo> filter) {
-		context.addFilter(filter);
 
 		return this;
 	}
@@ -331,15 +182,15 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	/**
-	 * Registers a parameter resolver, must have one or more of the 3 interfaces, {@link RegexParameterResolver}, {@link SlashParameterResolver} and {@link ComponentParameterResolver}
-	 *
-	 * @param resolver Your own ParameterResolver to register
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder registerParameterResolver(ParameterResolver resolver) {
-		ParameterResolvers.register(resolver);
+	public CommandsBuilder extensionsBuilder(Consumer<ExtensionsBuilder> consumer) {
+		consumer.accept(extensionsBuilder);
 
+		return this;
+	}
+	
+	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) {
+		consumer.accept(textCommandBuilder);
+		
 		return this;
 	}
 
@@ -361,7 +212,7 @@ public final class CommandsBuilder {
 	 * @see #addSearchPath(String)
 	 */
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		new CommandsBuilderImpl(disableHelpCommand, usePing, slashGuildIds, classes).build(jda, commandPackageName);
+		new CommandsBuilderImpl(slashGuildIds, classes).build(jda, commandPackageName);
 	}
 
 	/**
@@ -370,7 +221,7 @@ public final class CommandsBuilder {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) {
-		new CommandsBuilderImpl(disableHelpCommand, usePing, slashGuildIds, classes).build(jda);
+		new CommandsBuilderImpl(slashGuildIds, classes).build(jda);
 	}
 
 	public BContext getContext() {
