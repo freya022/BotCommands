@@ -212,7 +212,9 @@ public final class CommandsBuilder {
 	 * @see #addSearchPath(String)
 	 */
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		new CommandsBuilderImpl(slashGuildIds, classes).build(jda, commandPackageName);
+		addSearchPath(commandPackageName, 2);
+		
+		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}
 
 	/**
@@ -221,7 +223,7 @@ public final class CommandsBuilder {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) {
-		new CommandsBuilderImpl(slashGuildIds, classes).build(jda);
+		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}
 
 	public BContext getContext() {

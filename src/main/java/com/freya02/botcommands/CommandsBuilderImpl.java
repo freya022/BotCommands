@@ -12,7 +12,6 @@ import com.freya02.botcommands.components.internal.ComponentsBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.ClassInstancer;
 import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.utils.IOUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.CommandListener;
@@ -23,10 +22,8 @@ import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,29 +37,24 @@ final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final List<Class<? extends Annotation>> methodAnnotations = List.of(JdaSlashCommand.class, JdaMessageCommand.class, JdaUserCommand.class);
 
-	private final BContextImpl context = new BContextImpl();
-	private final PrefixedCommandsBuilder prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
+	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 
-	private final ComponentsBuilder componentsBuilder = new ComponentsBuilder(context);
+	private final ComponentsBuilder componentsBuilder;
 
+	private final BContextImpl context;
 	private final Set<Class<?>> classes;
 
 	private final boolean usePing;
 
-	CommandsBuilderImpl(List<Long> slashGuildIds, Set<Class<?>> classes) {
+	CommandsBuilderImpl(BContextImpl context, List<Long> slashGuildIds, Set<Class<?>> classes) {
+		this.context = context;
+		this.prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
+		this.componentsBuilder = new ComponentsBuilder(context);
+		
 		this.usePing = context.getPrefixes().isEmpty();
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
-	}
-
-	//skip can be inlined by 2 but inlining would conflict with the above overload and also remove 1 stack frame, reintroducing the parameter need
-	@SuppressWarnings("SameParameterValue")
-	private void addSearchPath(String commandPackageName, int skip) throws IOException {
-		Utils.requireNonBlank(commandPackageName, "Command package");
-
-		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(skip).findFirst().orElseThrow().getDeclaringClass());
-		classes.addAll(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
 	}
 
 	private void buildClasses() {
@@ -167,12 +159,6 @@ final class CommandsBuilderImpl {
 			return false;
 
 		return Command.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(JdaCommand.class);
-	}
-	
-	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		addSearchPath(commandPackageName, 2);
-
-		build(jda);
 	}
 
 	/**
