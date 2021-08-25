@@ -45,11 +45,13 @@ public class ApplicationCommandsCache {
 		return json.toJson();
 	}
 
-	static byte[] getPrivilegesBytes(Map<String, Collection<? extends CommandPrivilege>> privilegesMap) {
+	static byte[] getPrivilegesBytes(Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap) {
+		//Reference at net.dv8tion.jda.internal.entities.GuildImpl.updateCommandPrivileges
+		//Except this time we bind permissions to base names
 		DataArray array = DataArray.empty();
-		privilegesMap.forEach((commandId, list) -> {
+		cmdBaseNameToPrivilegesMap.forEach((cmdBaseName, list) -> {
 			DataObject entry = DataObject.empty();
-			entry.put("id", commandId);
+			entry.put("cmdBaseName", cmdBaseName);
 			entry.put("permissions", DataArray.fromCollection(list));
 			array.add(entry);
 		});

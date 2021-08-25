@@ -51,6 +51,7 @@ public class ApplicationCommandsUpdater {
 
 	private final Map<String, String> localizedBaseNameToBaseName = new HashMap<>();
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
+	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 
 	private ApplicationCommandsUpdater(@Nonnull BContextImpl context, @Nullable Guild guild) throws IOException {
 		this.context = context;
@@ -107,16 +108,13 @@ public class ApplicationCommandsUpdater {
 		return guild != null ? thenAcceptGuild(commandData, future, guild) : thenAcceptGlobal(commandData, future);
 	}
 
-	//TODO if commands haven't changed but privileges did, we must retrieve the commands and associate them back
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
-
-		computePrivileges(guild); //has to run after the commands updated
 
 		if (Files.notExists(privilegesCachePath)) return true;
 
 		final byte[] oldBytes = Files.readAllBytes(privilegesCachePath);
-		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdIdToPrivilegesMap);
+		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap);
 
 		return !Arrays.equals(oldBytes, newBytes);
 	}
@@ -124,6 +122,24 @@ public class ApplicationCommandsUpdater {
 	public CompletableFuture<?> updatePrivileges() {
 		if (guild == null) {
 			return CompletableFuture.completedFuture(null);
+		}
+
+		if (commands.isEmpty()) {
+			LOGGER.info("Privileges has changed but commands were not updated, retrieving current command list");
+			
+			return guild.retrieveCommands().submit().thenApply(retrievedCommands -> updatePrivileges0(guild, retrievedCommands));
+		} else {
+			return updatePrivileges0(guild, commands);
+		}
+	}
+
+	private CompletableFuture<?> updatePrivileges0(@Nonnull Guild guild, @Nonnull List<Command> commands) {
+		for (Command command : commands) {
+			final Collection<? extends CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
+
+			if (privileges != null) {
+				cmdIdToPrivilegesMap.put(command.getId(), privileges);
+			}
 		}
 
 		return guild.updateCommandPrivileges(cmdIdToPrivilegesMap).submit().thenAccept(privilegesMap -> {
@@ -160,6 +176,10 @@ public class ApplicationCommandsUpdater {
 		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, CommandType.USER_CONTEXT);
 
 		computeContextCommands(guildApplicationCommands, MessageCommandInfo.class, CommandType.MESSAGE_CONTEXT);
+		
+		if (guild != null) {
+			computePrivileges(guildApplicationCommands, guild);
+		}
 	}
 
 	private void computeSlashCommands(@Nonnull BContextImpl context, List<ApplicationCommandInfo> guildApplicationCommands) {
@@ -254,34 +274,6 @@ public class ApplicationCommandsUpdater {
 			}
 		});
 	}
-
-//	private void computeUserCommands(Guild guild, List<ApplicationCommandInfo> guildApplicationCommands) {
-//		guildApplicationCommands.stream()
-//				.filter(a -> a instanceof UserCommandInfo)
-//				.map(a -> (UserCommandInfo) a)
-//				.forEachOrdered(info -> {
-//					try {
-//						final LocalizedSlashCommandData localizedCommandData = getLocalizedCommandData(guild, info, null);
-//
-//						// User command name
-//						final String path = getLocalizedPath(info, localizedCommandData);
-//
-//						if (info.getPathComponents() == 1) {
-//							//Standard command
-//							final CommandData rightCommand = new CommandData(CommandType.USER_CONTEXT, path);
-//							map.put(path, rightCommand);
-//
-//							if (info.isOwnerOnly()) {
-//								rightCommand.setDefaultEnabled(false);
-//							}
-//						} else {
-//							throw new IllegalStateException("A user command with more than 1 path component got registered");
-//						}
-//					} catch (Exception e) {
-//						throw new RuntimeException("An exception occurred while processing a user command " + info.getPath(), e);
-//					}
-//				});
-//	}
 	
 	@SuppressWarnings("unchecked")
 	private <T extends ApplicationCommandInfo> void computeContextCommands(List<ApplicationCommandInfo> guildApplicationCommands, Class<T> targetClazz, CommandType type) {
@@ -306,7 +298,7 @@ public class ApplicationCommandsUpdater {
 								rightCommand.setDefaultEnabled(false);
 							}
 
-							ownerOnlyCommands.add(path);
+							ownerOnlyCommands.add(info.getBaseName()); //Must be non-localized name
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
@@ -330,6 +322,22 @@ public class ApplicationCommandsUpdater {
 		}
 		
 		return localizedCommandData;
+	}
+
+	@Nonnull
+	private List<CommandPrivilege> getCommandPrivileges(@Nonnull Guild guild, @Nonnull ApplicationCommandInfo info) {
+		final List<CommandPrivilege> instancePrivileges = info.getInstance().getCommandPrivileges(guild, info.getBaseName());
+		if (!instancePrivileges.isEmpty()) {
+			return instancePrivileges;
+		} else {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				return settingsProvider.getCommandPrivileges(guild, info.getBaseName());
+			}
+		}
+		
+		return List.of();
 	}
 
 	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future, @Nonnull Guild guild) {
@@ -381,24 +389,21 @@ public class ApplicationCommandsUpdater {
 		});
 	}
 
-	private void computePrivileges(@Nonnull Guild guild) {
-		for (Command command : commands) {
+	//See how to integrate this step on the command build in order to use localized base names instead of resolving the not-localized one
+	//Could do it here but would result in a 2nd localized data call
+	private void computePrivileges(@Nonnull List<ApplicationCommandInfo> guildApplicationCommands, @Nonnull Guild guild) {
+		for (ApplicationCommandInfo info : guildApplicationCommands) {
 			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(10);
-			final List<CommandPrivilege> applicationPrivileges = context.getApplicationCommands().stream()
-					.filter(a -> a.getBaseName().equals(localizedBaseNameToBaseName.get(command.getName())))
-					.findFirst()
-					.orElseThrow(() -> new IllegalStateException("Could not find any top level command named '" + command.getName() + "'"))
-					.getInstance()
-					.getCommandPrivileges(guild, command.getName());
+			final List<CommandPrivilege> applicationPrivileges = getCommandPrivileges(guild, info);
 			if (applicationPrivileges.size() > 10)
-				throw new IllegalArgumentException(String.format("There are more than 10 command privileges for command %s in guild %s (%s)", command.getName(), guild.getName(), guild.getId()));
-			
+				throw new IllegalArgumentException(String.format("There are more than 10 command privileges for command %s in guild %s (%s)", info.getBaseName(), guild.getName(), guild.getId()));
+
 			commandPrivileges.addAll(applicationPrivileges);
 
 			//Add owner-only permissions
-			if (ownerOnlyCommands.contains(command.getName())) {
+			if (ownerOnlyCommands.contains(info.getBaseName())) {
 				if (commandPrivileges.size() + context.getOwnerIds().size() > 10)
-					throw new IllegalStateException("There should not be more than 10 command privileges (in total) for an owner-only command " + command.getName());
+					throw new IllegalStateException("There should not be more than 10 command privileges (in total) for an owner-only command " + info.getBaseName());
 
 				for (Long ownerId : context.getOwnerIds()) {
 					commandPrivileges.add(CommandPrivilege.enableUser(ownerId));
@@ -407,7 +412,7 @@ public class ApplicationCommandsUpdater {
 
 			if (commandPrivileges.isEmpty()) continue;
 
-			cmdIdToPrivilegesMap.put(command.getId(), commandPrivileges);
+			cmdBaseNameToPrivilegesMap.put(info.getBaseName(), commandPrivileges);
 		}
 	}
 }
