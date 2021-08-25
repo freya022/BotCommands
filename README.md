@@ -17,8 +17,12 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
   * Automatic parsing of the arguments, your method signature is translated into a command syntax, such as:
     * Suppose the prefix is `!` and the command is `ban`
     * `@Executable public void run(BaseCommandEvent event, User user, int delDays, String reason)` `->` `!ban @someone 42 Foobar` should be valid
-* Slash commands with automatic registration & argument parsing
-  * They are passed to Discord on startup if any changes are detected
+* Application commands
+  * Slash commands with automatic & customizable argument parsing via `ParameterResolver` in the `parameters` package
+  * Context menu commands (User / Message)
+  * They are automatically registered on Discord on startup if any changes are detected
+    * This also includes command privileges (permissions) 
+  * These commands as well as their options and choices can also be localized (per-guild language)
 * A JDA event waiter with preconditions, timeouts and multiple checks
 * Secure (as in random 64 char length ID from 81 chars) component (buttons/selection menus) IDs with persistent and non-persistent storage, also capable of received additional arguments the same way as slash commands do
 * Message parsers (see RichTextParser) and emoji resolvers (can turn :joy: into 😂)
