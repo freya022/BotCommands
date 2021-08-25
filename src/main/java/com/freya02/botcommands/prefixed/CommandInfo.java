@@ -12,9 +12,9 @@ import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import com.freya02.botcommands.prefixed.regex.CommandTransformer;
 import com.freya02.botcommands.prefixed.regex.MethodPattern;
 import net.dv8tion.jda.api.Permission;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -84,7 +84,7 @@ public final class CommandInfo extends Cooldownable {
 	}
 
 	@Nullable
-	public Command getSubcommand(@NotNull Command parent, @NotNull String name) {
+	public Command getSubcommand(@Nonnull Command parent, @Nonnull String name) {
 		final List<Command> subcommands = parent.getInfo().getSubcommands();
 
 		for (Command subcommand : subcommands) {

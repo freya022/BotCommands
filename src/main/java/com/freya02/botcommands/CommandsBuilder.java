@@ -12,8 +12,8 @@ import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -77,7 +77,7 @@ public final class CommandsBuilder {
 	 * @param defaultFooterIconSupplier The default icon for the footer
 	 * @return This builder
 	 */
-	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
+	public CommandsBuilder setDefaultEmbedFunction(@Nonnull Supplier<EmbedBuilder> defaultEmbedFunction, @Nonnull Supplier<InputStream> defaultFooterIconSupplier) {
 		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
 		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
 		return this;
@@ -211,7 +211,7 @@ public final class CommandsBuilder {
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 * @see #addSearchPath(String)
 	 */
-	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
+	public void build(JDA jda, @Nonnull String commandPackageName) throws IOException {
 		addSearchPath(commandPackageName, 2);
 		
 		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);

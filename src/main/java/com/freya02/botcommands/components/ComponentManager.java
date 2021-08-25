@@ -11,9 +11,9 @@ import com.freya02.botcommands.components.internal.data.PersistentSelectionMenuD
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -33,16 +33,16 @@ public interface ComponentManager {
 
 	void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer);
 
-	@NotNull
+	@Nonnull
 	String putLambdaButton(LambdaButtonBuilder builder);
 
-	@NotNull
+	@Nonnull
 	String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder);
 
-	@NotNull
+	@Nonnull
 	String putPersistentButton(PersistentButtonBuilder builder);
 
-	@NotNull
+	@Nonnull
 	String putPersistentSelectionMenu(PersistentSelectionMenuBuilder builder);
 
 	void registerGroup(Collection<String> builders);

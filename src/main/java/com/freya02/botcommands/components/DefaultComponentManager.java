@@ -14,10 +14,10 @@ import com.freya02.botcommands.components.internal.sql.SqlLambdaCreateResult;
 import com.freya02.botcommands.components.internal.sql.SqlPersistentComponentData;
 import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,7 +43,7 @@ public class DefaultComponentManager implements ComponentManager {
 	private final Map<Long, Consumer<ButtonEvent>> buttonLambdaMap = new HashMap<>();
 	private final Map<Long, Consumer<SelectionEvent>> selectionMenuLambdaMap = new HashMap<>();
 
-	public DefaultComponentManager(@NotNull Supplier<@NotNull Connection> connectionSupplier) {
+	public DefaultComponentManager(@Nonnull Supplier<Connection> connectionSupplier) {
 		this.connectionSupplier = connectionSupplier;
 
 		try {
@@ -216,7 +216,7 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String putLambdaButton(LambdaButtonBuilder builder) {
 		try (Connection connection = getConnection()) {
 			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
@@ -240,7 +240,7 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
 		try (Connection connection = getConnection()) {
 			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
@@ -299,13 +299,13 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String putPersistentButton(PersistentButtonBuilder builder) {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_BUTTON);
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public String putPersistentSelectionMenu(PersistentSelectionMenuBuilder builder) {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_SELECTION_MENU);
 	}
@@ -366,7 +366,7 @@ public class DefaultComponentManager implements ComponentManager {
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	private Connection getConnection() {
 		return connectionSupplier.get();
 	}
@@ -417,7 +417,7 @@ public class DefaultComponentManager implements ComponentManager {
 		}
 	}
 
-	@NotNull
+	@Nonnull
 	private HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event, SqlComponentData data) {
 		final boolean oneUse = data.isOneUse() || data.getGroupId() > 0;
 		final long ownerId = data.getOwnerId();

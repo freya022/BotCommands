@@ -19,11 +19,10 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -64,7 +63,7 @@ public class BContextImpl implements BContext {
 	private ApplicationCommandsCache applicationCommandsCache;
 
 	@Override
-	@NotNull
+	@Nonnull
 	public JDA getJDA() {
 		return jda;
 	}
@@ -74,7 +73,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public List<String> getPrefixes() {
 		return prefixes;
 	}
@@ -85,25 +84,25 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public List<Long> getOwnerIds() {
 		return ownerIds;
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public DefaultMessages getDefaultMessages() {
 		return defaultMessages;
 	}
 
 	@Override
 	@Nullable
-	public Command findCommand(@NotNull String name) {
+	public Command findCommand(@Nonnull String name) {
 		return commandMap.get(name);
 	}
 
 	@Override
-	public SlashCommandInfo findSlashCommand(@NotNull String path) {
+	public SlashCommandInfo findSlashCommand(@Nonnull String path) {
 		return getSlashCommandsMap().get(path);
 	}
 	
@@ -142,7 +141,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @NotNull Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
+	public @Nonnull Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
 		return defaultEmbedSupplier;
 	}
 
@@ -151,7 +150,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @NotNull Supplier<InputStream> getDefaultFooterIconSupplier() {
+	public @Nonnull Supplier<InputStream> getDefaultFooterIconSupplier() {
 		return defaultFooterIconSupplier;
 	}
 

@@ -13,12 +13,11 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -76,7 +75,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	}
 
 	@Override
-	@NotNull
+	@Nonnull
 	public EmbedBuilder getDefaultEmbed() {
 		return context.getDefaultEmbedSupplier().get();
 	}
@@ -122,72 +121,72 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respond(@NotNull CharSequence text) {
+	public RestAction<Message> respond(@Nonnull CharSequence text) {
 		return channel.sendMessage(text);
 	}
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respondFormat(@NotNull String format, @Nonnull @NotNull Object... args) {
+	public RestAction<Message> respondFormat(@Nonnull String format, @Nonnull Object... args) {
 		return channel.sendMessageFormat(format, args);
 	}
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
+	public RestAction<Message> respond(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
 		return channel.sendMessageEmbeds(embed, other);
 	}
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @Nonnull @NotNull AttachmentOption... options) {
+	public RestAction<Message> respondFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
 		return channel.sendFile(data, fileName, options);
 	}
 
 	@Nonnull
 	@Override
-	public RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @Nonnull @NotNull AttachmentOption... options) {
+	public RestAction<Message> respondFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
 		return channel.sendFile(data, fileName, options);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> reply(@NotNull CharSequence text) {
+	public RestAction<Message> reply(@Nonnull CharSequence text) {
 		return getMessage().reply(text);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args) {
+	public RestAction<Message> replyFormat(@Nonnull String format, @Nonnull Object... args) {
 		return getMessage().replyFormat(format, args);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
+	public RestAction<Message> reply(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
 		return getMessage().replyEmbeds(embed, other);
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+	public RestAction<Message> replyFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
 		return channel.sendTyping().flatMap(v -> getMessage().reply(data, fileName, options));
 	}
 
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFile(byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
+	public RestAction<Message> replyFile(byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
 		return channel.sendTyping().flatMap(v -> getMessage().reply(data, fileName, options));
 	}
 
 	@Nonnull
 	@Override
-	public RestAction<Message> indicateError(@NotNull CharSequence text) {
+	public RestAction<Message> indicateError(@Nonnull CharSequence text) {
 		if (getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
 			return reactError().flatMap(v -> channel.sendMessage(text));
 		} else {
@@ -197,7 +196,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@Nonnull
 	@Override
-	public RestAction<Message> indicateErrorFormat(@NotNull String format, @NotNull Object... args) {
+	public RestAction<Message> indicateErrorFormat(@Nonnull String format, @Nonnull Object... args) {
 		if (getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
 			return reactError().flatMap(v -> channel.sendMessageFormat(format, args));
 		} else {
@@ -207,7 +206,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@Nonnull
 	@Override
-	public RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other) {
+	public RestAction<Message> indicateError(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
 		if (getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
 			return reactError().flatMap(v -> channel.sendMessageEmbeds(embed, other));
 		} else {

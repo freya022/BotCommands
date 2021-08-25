@@ -4,8 +4,8 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -13,7 +13,7 @@ import java.lang.reflect.Modifier;
 public class PrefixedCommandsBuilder {
 	private final BContextImpl context;
 
-	public PrefixedCommandsBuilder(@NotNull BContextImpl context) {
+	public PrefixedCommandsBuilder(@Nonnull BContextImpl context) {
 		this.context = context;
 	}
 

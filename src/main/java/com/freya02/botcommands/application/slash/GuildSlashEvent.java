@@ -5,7 +5,8 @@ import com.freya02.botcommands.application.slash.impl.GlobalSlashEventImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class GuildSlashEvent extends GlobalSlashEventImpl {
 	public GuildSlashEvent(BContext context, SlashCommandEvent event) {
@@ -31,7 +32,7 @@ public class GuildSlashEvent extends GlobalSlashEventImpl {
 	 * @return The {@link Guild}
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@NotNull
+	@Nonnull
 	@Override
 	public Guild getGuild() {
 		return super.getGuild();
@@ -44,7 +45,7 @@ public class GuildSlashEvent extends GlobalSlashEventImpl {
 	 * @return The {@link Member}
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@NotNull
+	@Nonnull
 	@Override
 	public Member getMember() {
 		return super.getMember();

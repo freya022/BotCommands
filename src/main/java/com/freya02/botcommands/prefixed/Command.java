@@ -13,9 +13,9 @@ import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import com.freya02.botcommands.prefixed.regex.MethodPattern;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Parameter;
 import java.time.Instant;
 import java.util.Arrays;

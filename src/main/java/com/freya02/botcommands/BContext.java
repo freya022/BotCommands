@@ -8,9 +8,9 @@ import com.freya02.botcommands.prefixed.MessageInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -24,7 +24,7 @@ public interface BContext {
 	 *
 	 * @return the JDA instance of this context
 	 */
-	@NotNull
+	@Nonnull
 	JDA getJDA();
 
 	/**
@@ -32,7 +32,7 @@ public interface BContext {
 	 *
 	 * @return Full list of prefixes
 	 */
-	@NotNull
+	@Nonnull
 	List<String> getPrefixes();
 
 	/**
@@ -40,7 +40,7 @@ public interface BContext {
 	 *
 	 * @return The preferred prefix
 	 */
-	@NotNull
+	@Nonnull
 	default String getPrefix() {
 		return getPrefixes().get(0);
 	}
@@ -57,7 +57,7 @@ public interface BContext {
 	 *
 	 * @return a list of IDs of the bot owners
 	 */
-	@NotNull
+	@Nonnull
 	List<Long> getOwnerIds();
 
 	/**
@@ -70,7 +70,7 @@ public interface BContext {
 		return getOwnerIds().contains(userId);
 	}
 
-	@NotNull
+	@Nonnull
 	DefaultMessages getDefaultMessages();
 
 	/**
@@ -80,7 +80,7 @@ public interface BContext {
 	 * @return The {@linkplain Command} object of the command name
 	 */
 	@Nullable
-	Command findCommand(@NotNull String name);
+	Command findCommand(@Nonnull String name);
 
 	/**
 	 * Returns the {@link SlashCommandInfo} object of the specified full application command name
@@ -89,7 +89,7 @@ public interface BContext {
 	 * @return The {@link SlashCommandInfo} object of the application command
 	 */
 	@Nullable
-	SlashCommandInfo findSlashCommand(@NotNull String name);
+	SlashCommandInfo findSlashCommand(@Nonnull String name);
 
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
@@ -104,7 +104,7 @@ public interface BContext {
 	 * @return The default {@linkplain EmbedBuilder} supplier
 	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
 	 */
-	@NotNull
+	@Nonnull
 	Supplier<EmbedBuilder> getDefaultEmbedSupplier();
 
 	/**
@@ -113,7 +113,7 @@ public interface BContext {
 	 * @return The default icon {@linkplain InputStream} supplier
 	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
 	 */
-	@NotNull
+	@Nonnull
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**

@@ -1,7 +1,6 @@
 package com.freya02.botcommands;
 
-import org.jetbrains.annotations.NotNull;
-
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +27,7 @@ public interface BGuildSettings {
 	 * @see CommandList#of(Collection)
 	 * @see CommandList#notOf(Collection)
 	 */
-	@NotNull
+	@Nonnull
 	default CommandList getGuildCommands() {
 		return CommandList.all();
 	}

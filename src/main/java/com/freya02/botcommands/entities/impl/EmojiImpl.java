@@ -1,7 +1,8 @@
 package com.freya02.botcommands.entities.impl;
 
 import com.freya02.botcommands.entities.Emoji;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 public class EmojiImpl implements Emoji {
 	private final String unicode;
@@ -15,7 +16,7 @@ public class EmojiImpl implements Emoji {
 		throw new RuntimeException("Emojis doesn't have IDs");
 	}
 
-	@NotNull
+	@Nonnull
 	@Override
 	public String getAsMention() {
 		return unicode;
