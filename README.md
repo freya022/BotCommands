@@ -1,6 +1,10 @@
-![](https://img.shields.io/badge/JDA%20Version-4.3.0__310-important)
+![](https://img.shields.io/badge/JDA%20Version-Read_notice-important)
 ![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
+
+## Notice
+
+Please use group id `com.github.aasmart` and version `f723763`, this is the context-menu branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
