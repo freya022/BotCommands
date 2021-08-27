@@ -74,7 +74,7 @@ public interface BContext {
 	}
 
 	@Nonnull
-	DefaultMessages getDefaultMessages();
+	DefaultMessages getDefaultMessages(@Nullable Guild guild);
 
 	/**
 	 * Returns the {@linkplain Command} object of the specified command name, the name can be an alias too

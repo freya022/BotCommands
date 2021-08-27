@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -62,6 +63,7 @@ public class BContextImpl implements BContext {
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
+	private Function<Guild, DefaultMessages> defaultMessageProvider;
 
 	@Override
 	@Nonnull
@@ -92,8 +94,12 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@Nonnull
-	public DefaultMessages getDefaultMessages() {
-		return defaultMessages;
+	public DefaultMessages getDefaultMessages(@Nullable Guild guild) {
+		return defaultMessageProvider.apply(guild);
+	}
+
+	public void setDefaultMessageProvider(@Nonnull Function<Guild, DefaultMessages> defaultMessageProvider) {
+		this.defaultMessageProvider = defaultMessageProvider;
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class ComponentListener extends ListenerAdapter {
 		final ComponentType idType = componentManager.getIdType(event.getComponentId());
 
 		if (idType == null) {
-			event.reply(context.getDefaultMessages().getNullComponentTypeErrorMsg())
+			event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
 					.setEphemeral(true)
 					.queue();
 

@@ -53,7 +53,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
 
 			if (userCommand == null) {
-				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -75,7 +75,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
 
 			if (messageCommand == null) {
-				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -97,7 +97,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
-				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -126,11 +126,11 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			if (usability.isUnusable()) {
 				final var unusableReasons = usability.getUnusableReasons();
 				if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-					reply(event, this.context.getDefaultMessages().getOwnerOnlyErrorMsg());
+					reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
 					
 					return false;
 				} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-					reply(event, this.context.getDefaultMessages().getUserPermErrorMsg());
+					reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
 					
 					return false;
 				} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
@@ -144,7 +144,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 						missingBuilder.add(botPermission.getName());
 					}
 
-					reply(event, String.format(this.context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder));
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
 					
 					return false;
 				}
@@ -155,11 +155,11 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final int cooldown = applicationCommand.getCooldown(event, event::getName);
 			if (cooldown > 0) {
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
 				} else if (applicationCommand.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(this.context.getDefaultMessages().getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
 				} else { //Implicit channel
-					reply(event, String.format(this.context.getDefaultMessages().getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
 				}
 
 				return false;
@@ -178,9 +178,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", e);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", e);

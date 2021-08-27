@@ -79,7 +79,7 @@ public final class HelpCommand extends Command {
 				privateChannel -> event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).queue(
 						m -> event.reactSuccess().queue(),
 						t -> event.reactError().queue()),
-				t -> event.getChannel().sendMessage(context.getDefaultMessages().getClosedDMErrorMsg()).queue());
+				t -> event.getChannel().sendMessage(context.getDefaultMessages(event.getGuild()).getClosedDMErrorMsg()).queue());
 
 	}
 

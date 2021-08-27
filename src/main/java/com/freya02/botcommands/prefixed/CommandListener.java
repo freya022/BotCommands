@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -164,10 +163,10 @@ public final class CommandListener extends ListenerAdapter {
 					onCommandNotFound(event, commandName, true);
 					return;
 				} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-					reply(event, this.context.getDefaultMessages().getOwnerOnlyErrorMsg());
+					reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
 					return;
 				} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-					reply(event, this.context.getDefaultMessages().getUserPermErrorMsg());
+					reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
 					return;
 				} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
 					final StringJoiner missingBuilder = new StringJoiner(", ");
@@ -180,7 +179,7 @@ public final class CommandListener extends ListenerAdapter {
 						missingBuilder.add(botPermission.getName());
 					}
 
-					reply(event, String.format(this.context.getDefaultMessages().getBotPermErrorMsg(), missingBuilder));
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
 					return;
 				}
 			}
@@ -189,13 +188,13 @@ public final class CommandListener extends ListenerAdapter {
 				final int cooldown = command.getInfo().getCooldown(event);
 				if (cooldown > 0) {
 					if (commandInfo.getCooldownScope() == CooldownScope.USER) {
-						reply(event, String.format(this.context.getDefaultMessages().getUserCooldownMsg(), cooldown / 1000.0));
+						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
 						return;
 					} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
-						reply(event, String.format(this.context.getDefaultMessages().getGuildCooldownMsg(), cooldown / 1000.0));
+						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
 						return;
 					} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
-						reply(event, String.format(this.context.getDefaultMessages().getChannelCooldownMsg(), cooldown / 1000.0));
+						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
 						return;
 					//}
 				}
@@ -247,7 +246,7 @@ public final class CommandListener extends ListenerAdapter {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
-			reply(event, String.format(context.getDefaultMessages().getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
+			reply(event, String.format(context.getDefaultMessages(event.getGuild()).getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
 		}
 	}
 
@@ -282,8 +281,8 @@ public final class CommandListener extends ListenerAdapter {
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", e);
 
 				message.addReaction(BaseCommandEventImpl.ERROR).queue();
-				if (((TextChannel) message.getChannel()).canTalk()) {
-					message.getChannel().sendMessage(context.getDefaultMessages().getCommandErrorMsg()).queue();
+				if (message.getTextChannel().canTalk()) {
+					message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
 				}
 
 				context.dispatchException(msg, e);
