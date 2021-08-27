@@ -104,6 +104,10 @@ final class CommandsBuilderImpl {
 			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
 			LOGGER.info("Finished registering all commands");
+		} catch (RuntimeException e) {
+			LOGGER.error("An error occurred while loading the commands, the commands will not work");
+
+			throw e;
 		} catch (Throwable e) {
 			LOGGER.error("An error occurred while loading the commands, the commands will not work");
 
