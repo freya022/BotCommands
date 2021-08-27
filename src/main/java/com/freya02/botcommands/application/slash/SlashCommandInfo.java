@@ -7,6 +7,7 @@ import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.application.slash.annotations.Option;
 import com.freya02.botcommands.application.slash.impl.GlobalSlashEventImpl;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -27,25 +28,19 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
 	/** This is NOT localized */
 	private final String description;
-	private final String baseName;
 
 	private final Object instance;
 	private final SlashCommandParameter[] commandParameters;
-
-	/** This is NOT localized */
-	private final String path;
-
-	private int pathComponents = 1;
 	
 	/** guild id => localized option names */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
 		super(instance, commandMethod.getAnnotation(JdaSlashCommand.class),
-				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand().isEmpty() 
-						? commandMethod.getAnnotation(JdaSlashCommand.class).name() 
-						: commandMethod.getAnnotation(JdaSlashCommand.class).subcommand(),
-				commandMethod);
+				commandMethod,
+				commandMethod.getAnnotation(JdaSlashCommand.class).name(),
+				commandMethod.getAnnotation(JdaSlashCommand.class).group(),
+				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand());
 
 		final JdaSlashCommand annotation = commandMethod.getAnnotation(JdaSlashCommand.class);
 
@@ -73,27 +68,13 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					|| Role.class.isAssignableFrom(type)
 					|| GuildChannel.class.isAssignableFrom(type) ) {
 				if (!annotation.guildOnly())
-					throw new IllegalArgumentException("The slash command " + commandMethod + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
+					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
 			commandParameters[i - 1] = new SlashCommandParameter(optional, name, type);
 		}
 
-		if (annotation.name().isBlank()) throw new IllegalArgumentException("Command name for " + commandMethod + " is blank");
-		if (!annotation.group().isBlank() && annotation.subcommand().isBlank()) throw new IllegalArgumentException("Command group for " + commandMethod + " is present but has no subcommand");
-
-		final StringBuilder pathBuilder = new StringBuilder(annotation.name());
-		if (!annotation.group().isBlank()) {
-			pathBuilder.append('/').append(annotation.group());
-			pathComponents++;
-		}
-		if (!annotation.subcommand().isBlank()) {
-			pathBuilder.append('/').append(annotation.subcommand());
-			pathComponents++;
-		}
-
-		this.baseName = annotation.name();
-		this.path = pathBuilder.toString();
+		if (!annotation.group().isBlank() && annotation.subcommand().isBlank()) throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
 
 		this.description = annotation.description();
 	}
@@ -102,19 +83,9 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		localizedOptionMap.put(guildId, optionNames);
 	}
 
-	@Override
-	public int getPathComponents() {
-		return pathComponents;
-	}
-
 	/** This is NOT localized */
 	public String getDescription() {
 		return description;
-	}
-	
-	@Override
-	public String getPath() {
-		return path;
 	}
 
 	public boolean execute(BContext context, SlashCommandEvent event) {
@@ -133,7 +104,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 				
 				String optionName = optionNames == null ? parameter.getEffectiveName() : optionNames.get(i);
 				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", i, parameter.getEffectiveName(), getCommandMethod()));
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", i, parameter.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
 				}
 				
 				final OptionMapping optionData = event.getOption(optionName);
@@ -148,7 +119,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 						continue;
 					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + commandMethod + " at parameter " + parameter.getEffectiveName());
+						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + parameter.getEffectiveName());
 					}
 				}
 
@@ -184,9 +155,5 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public String getBaseName() {
-		return baseName;
 	}
 }

@@ -2,7 +2,9 @@ package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
+import com.freya02.botcommands.application.CommandPath;
 import com.freya02.botcommands.application.slash.annotations.Option;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -63,7 +65,7 @@ public class SlashUtils {
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
 
-		Checks.check(optionNames.size() == parameters.length - 1, String.format("Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, info.getCommandMethod()));
+		Checks.check(optionNames.size() == parameters.length - 1, String.format("Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, Utils.formatMethodShort(info.getCommandMethod())));
 		
 		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
 			Parameter parameter = parameters[i];
@@ -120,7 +122,7 @@ public class SlashUtils {
 	}
 
 	@Nonnull
-	public static String getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedApplicationCommandData localizedCommandData) {
+	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedApplicationCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getPath()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
@@ -166,25 +168,5 @@ public class SlashUtils {
 		}
 
 		return optionNameBuilder.toString();
-	}
-
-	@Nonnull
-	public static String getPathName(String path) {
-		final int i = path.indexOf('/');
-		if (i == -1) return path;
-
-		return path.substring(i + 1);
-	}
-
-	@Nonnull
-	public static String getPathParent(String path) {
-		return path.substring(0, path.lastIndexOf('/'));
-	}
-	
-	public static String getPathBase(String path) {
-		final int i = path.indexOf('/');
-		if (i == -1) return path;
-		
-		return path.substring(0, i);
 	}
 }

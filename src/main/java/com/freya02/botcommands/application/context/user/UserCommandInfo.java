@@ -5,7 +5,7 @@ import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.context.ContextCommandParameter;
 import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.application.slash.ApplicationCommand;
-import com.freya02.botcommands.internal.utils.AnnotationUtils;
+import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.UserContextParameterResolver;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
@@ -21,8 +21,8 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	@SuppressWarnings("unchecked")
 	public UserCommandInfo(ApplicationCommand instance, Method method) {
 		super(instance, method.getAnnotation(JdaUserCommand.class),
-				AnnotationUtils.getAnnotationValue(method.getAnnotation(JdaUserCommand.class), "name"),
-				method);
+				method,
+				method.getAnnotation(JdaUserCommand.class).name());
 
 		this.instance = instance;
 		this.commandParameters = new ContextCommandParameter[commandMethod.getParameterCount() - 1];
@@ -30,7 +30,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		
 		if (!GlobalUserEvent.class.isAssignableFrom(parameterTypes[0])) {
-			throw new IllegalArgumentException("First argument should be a GlobalUserEvent for method " + method);
+			throw new IllegalArgumentException("First argument should be a GlobalUserEvent for method " + Utils.formatMethodShort(method));
 		}
 
 		for (int i = 1, parametersLength = commandMethod.getParameterCount(); i < parametersLength; i++) {
@@ -39,26 +39,11 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 
 			if (Member.class.isAssignableFrom(type)) {
 				if (!isGuildOnly())
-					throw new IllegalArgumentException("The user command " + commandMethod + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
+					throw new IllegalArgumentException("The user command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
 			commandParameters[i - 1] = new ContextCommandParameter<>(UserContextParameterResolver.class, type);
 		}
-	}
-
-	@Override
-	public String getPath() {
-		return name;
-	}
-
-	@Override
-	public String getBaseName() {
-		return name;
-	}
-
-	@Override
-	public int getPathComponents() {
-		return 1;
 	}
 
 	public boolean execute(BContext context, UserContextCommandEvent event) {

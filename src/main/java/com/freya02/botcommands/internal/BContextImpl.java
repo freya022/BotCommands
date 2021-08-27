@@ -4,6 +4,7 @@ import com.freya02.botcommands.*;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.application.ApplicationCommandsCache;
+import com.freya02.botcommands.application.CommandPath;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
@@ -43,7 +44,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<String, Command> commandMap = new HashMap<>();
-	private final EnumMap<CommandType, Map<String, ? extends ApplicationCommandInfo>> applicationCommandMap = new EnumMap<>(CommandType.class);
+	private final EnumMap<CommandType, Map<CommandPath, ? extends ApplicationCommandInfo>> applicationCommandMap = new EnumMap<>(CommandType.class);
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
@@ -101,39 +102,44 @@ public class BContextImpl implements BContext {
 		return commandMap.get(name);
 	}
 
+	@Nullable
 	@Override
-	public SlashCommandInfo findSlashCommand(@Nonnull String path) {
+	public SlashCommandInfo findSlashCommand(@Nonnull CommandPath path) {
 		return getSlashCommandsMap().get(path);
 	}
+
+	@Nullable
+	@Override
+	public UserCommandInfo findUserCommand(@Nonnull String name) {
+		return getUserCommandsMap().get(CommandPath.ofName(name));
+	}
+
+	@Nullable
+	@Override
+	public MessageCommandInfo findMessageCommand(@Nonnull String name) {
+		return getMessageCommandsMap().get(CommandPath.ofName(name));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Map<CommandPath, SlashCommandInfo> getSlashCommandsMap() {
+		return (Map<CommandPath, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<CommandPath, SlashCommandInfo>()));
+	}
 	
-	public UserCommandInfo findUserCommand(String name) {
-		return getUserCommandsMap().get(name);
-	}
-
-	public MessageCommandInfo findMessageCommand(String name) {
-		return getMessageCommandsMap().get(name);
+	@SuppressWarnings("unchecked")
+	@Nonnull
+	private Map<CommandPath, UserCommandInfo> getUserCommandsMap() {
+		return (Map<CommandPath, UserCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.USER_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, UserCommandInfo>()));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Nonnull
-	private Map<String, SlashCommandInfo> getSlashCommandsMap() {
-		return (Map<String, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<String, SlashCommandInfo>()));
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Nonnull
-	private Map<String, UserCommandInfo> getUserCommandsMap() {
-		return (Map<String, UserCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.USER_CONTEXT, x -> Collections.synchronizedMap(new HashMap<String, UserCommandInfo>()));
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nonnull
-	private Map<String, MessageCommandInfo> getMessageCommandsMap() {
-		return (Map<String, MessageCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.MESSAGE_CONTEXT, x -> Collections.synchronizedMap(new HashMap<String, MessageCommandInfo>()));
+	private Map<CommandPath, MessageCommandInfo> getMessageCommandsMap() {
+		return (Map<CommandPath, MessageCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.MESSAGE_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, MessageCommandInfo>()));
 	}
 
 	@Override
-	public List<String> getSlashCommandsPaths() {
+	public List<CommandPath> getSlashCommandsPaths() {
 		return getSlashCommandsMap().values()
 				.stream()
 				.map(SlashCommandInfo::getPath)
@@ -183,65 +189,59 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addSlashCommand(String path, SlashCommandInfo commandInfo) {
-		final Map<String, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
+	public void addSlashCommand(CommandPath path, SlashCommandInfo commandInfo) {
+		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
-		String path2 = path;
-		int index;
-		while ((index = path2.lastIndexOf('/')) != -1) {
-			for (String p : slashCommandMap.keySet()) {
-				if (p.startsWith(path2)) {
-					throw new IllegalStateException(String.format("Tried to add a command with path %s but a equal/shorter path already exists: %s", path, path2));
-				}
+		CommandPath p = path;
+		do {
+			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
+			
+			if (mapInfo != null) {
+				throw new IllegalStateException(String.format("Tried to add a command with path %s (at %s) but a equal/shorter path already exists: %s (at %s)",
+						path,
+						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						p,
+						Utils.formatMethodShort(mapInfo.getCommandMethod())));
 			}
+		} while ((p = p.getParent()) != null);
 
-			path2 = path2.substring(0, index);
-		}
-
-		SlashCommandInfo oldCmd = slashCommandMap.put(path, commandInfo);
-
-		if (oldCmd != null) {
-			throw new IllegalStateException(String.format("Two slash commands have the same paths: '%s' from %s and %s",
-					path,
-					oldCmd.getCommandMethod(),
-					commandInfo.getCommandMethod()));
-		}
+		slashCommandMap.put(path, commandInfo);
 	}
 	
-	public void addUserCommand(String name, UserCommandInfo commandInfo) {
-		final Map<String, UserCommandInfo> userCommandMap = getUserCommandsMap();
+	public void addUserCommand(CommandPath path, UserCommandInfo commandInfo) {
+		final Map<CommandPath, UserCommandInfo> userCommandMap = getUserCommandsMap();
 
-		UserCommandInfo oldCmd = userCommandMap.put(name, commandInfo);
+		UserCommandInfo oldCmd = userCommandMap.put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
-					name,
-					oldCmd.getCommandMethod(),
-					commandInfo.getCommandMethod()));
+					path,
+					Utils.formatMethodShort(oldCmd.getCommandMethod()),
+					Utils.formatMethodShort(commandInfo.getCommandMethod())));
 		}
 	}
 
-	public void addMessageCommand(String name, MessageCommandInfo commandInfo) {
-		final Map<String, MessageCommandInfo> messageCommandMap = getMessageCommandsMap();
+	public void addMessageCommand(CommandPath path, MessageCommandInfo commandInfo) {
+		final Map<CommandPath, MessageCommandInfo> messageCommandMap = getMessageCommandsMap();
 
-		MessageCommandInfo oldCmd = messageCommandMap.put(name, commandInfo);
+		MessageCommandInfo oldCmd = messageCommandMap.put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
-					name,
-					oldCmd.getCommandMethod(),
-					commandInfo.getCommandMethod()));
+					path,
+					Utils.formatMethodShort(oldCmd.getCommandMethod()),
+					Utils.formatMethodShort(commandInfo.getCommandMethod())));
 		}
 	}
 	
-	public void addSlashCommandAlternative(String path, SlashCommandInfo commandInfo) {
+	public void addSlashCommandAlternative(CommandPath path, SlashCommandInfo commandInfo) {
 		//it's pretty much possible that the path already exist if two guilds use the same language for example
 		//Still, check that the alternative path points to the same path if it exists
 		final SlashCommandInfo oldVal = getSlashCommandsMap().put(path, commandInfo);
 		if (oldVal != commandInfo && oldVal != null) {
 			throw new IllegalStateException(String.format("Tried to add a localized slash command path but one already exists and isn't from the same command: %s and %s, path: %s",
-					oldVal.getCommandMethod(),
-					commandInfo.getCommandMethod(),
+					Utils.formatMethodShort(oldVal.getCommandMethod()),
+					Utils.formatMethodShort(commandInfo.getCommandMethod()),
 					path));
 		}
 	}

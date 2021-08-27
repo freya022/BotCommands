@@ -180,7 +180,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@Override
 	@CheckReturnValue
 	@Nonnull
-	public RestAction<Message> replyFile(byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
+	public RestAction<Message> replyFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
 		return channel.sendTyping().flatMap(v -> getMessage().reply(data, fileName, options));
 	}
 

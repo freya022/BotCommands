@@ -124,7 +124,7 @@ public class CommandTransformer {
 			}
 			list.add(new MethodPattern(method, Pattern.compile(regex), groupsList.toArray(new ArgumentFunction[0])));
 
-			LOGGER.debug("Method: {}, pattern: '{}'", method, regex);
+			LOGGER.debug("Method: {}, pattern: '{}'", Utils.formatMethodShort(method), regex);
 		}
 
 		return list;

@@ -47,13 +47,13 @@ public class ComponentsBuilder {
 
 	private void handleComponentListener(Method method, String handlerName, Map<String, ComponentDescriptor> map, Class<?> firstRequiredArg, String componentType) {
 		if (!Utils.hasFirstParameter(method, firstRequiredArg))
-			throw new IllegalArgumentException("First parameter of method " + method + " should be a " + firstRequiredArg.getSimpleName());
+			throw new IllegalArgumentException("First parameter of method " + Utils.formatMethodShort(method) + " should be a " + firstRequiredArg.getSimpleName());
 
 		try {
 			final Object obj = ClassInstancer.getMethodTarget(context, method);
 
 			if (!method.canAccess(obj))
-				throw new IllegalStateException(componentType + " " + method + " is not public");
+				throw new IllegalStateException(componentType + " " + Utils.formatMethodShort(method) + " is not public");
 
 			final List<ComponentParameterResolver> resolvers = new ArrayList<>();
 			Parameter[] parameters = method.getParameters();
@@ -72,12 +72,12 @@ public class ComponentsBuilder {
 			final ComponentDescriptor newDescriptor = new ComponentDescriptor(obj, method, resolvers);
 			final ComponentDescriptor oldVal = map.put(handlerName, newDescriptor);
 			if (oldVal != null) {
-				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + method + " was already registered as " + oldVal.getMethod());
+				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + Utils.formatMethodShort(method) + " was already registered as " + oldVal.getMethod());
 			}
 
 			context.getRegistrationListeners().forEach(l -> l.onComponentRegistered(newDescriptor));
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("An error occurred while instantiating the class of the " + componentType + "'s method " + method, e);
+			throw new RuntimeException("An error occurred while instantiating the class of the " + componentType + "'s method " + Utils.formatMethodShort(method), e);
 		}
 	}
 

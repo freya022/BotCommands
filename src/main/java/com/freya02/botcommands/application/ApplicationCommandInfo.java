@@ -3,6 +3,7 @@ package com.freya02.botcommands.application;
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.application.slash.ApplicationCommand;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 
 import javax.annotation.Nonnull;
@@ -16,19 +17,25 @@ import static com.freya02.botcommands.internal.utils.AnnotationUtils.getAnnotati
 public abstract class ApplicationCommandInfo extends Cooldownable {
 	private final ApplicationCommand instance;
 	/** This is NOT localized */
-	protected final String name;
+	protected final CommandPath path;
 	protected final boolean guildOnly, ownerOnly;
 	protected final Method commandMethod;
 
 	protected final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
 	protected final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
 
-	protected <A extends Annotation> ApplicationCommandInfo(@Nonnull ApplicationCommand instance, @Nonnull A annotation, @Nonnull String name, @Nonnull Method commandMethod) {
+	protected <A extends Annotation> ApplicationCommandInfo(@Nonnull ApplicationCommand instance, @Nonnull A annotation, @Nonnull Method commandMethod, String... nameComponents) {
 		super(getAnnotationValue(annotation, "cooldownScope"),
 				getAnnotationValue(annotation, "cooldown"));
 		this.instance = instance;
 
-		this.name = name;
+		for (int i = 0; i < nameComponents.length; i++) {
+			if (nameComponents[i].isBlank()) {
+				nameComponents[i] = null; //We need to transform blank strings to null to conform with CommandPath
+			}
+		}
+
+		this.path = CommandPath.of(nameComponents);
 		this.guildOnly = getAnnotationValue(annotation, "guildOnly");
 		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
 		this.commandMethod = commandMethod;
@@ -37,7 +44,7 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 		Permission[] botPermissions = getAnnotationValue(annotation, "botPermissions");
 
 		if ((userPermissions.length != 0 || botPermissions.length != 0) && !guildOnly)
-			throw new IllegalArgumentException(commandMethod + " : application command with permissions should be guild-only");
+			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command with permissions should be guild-only");
 
 		Collections.addAll(this.userPermissions, userPermissions);
 		Collections.addAll(this.botPermissions, botPermissions);
@@ -49,16 +56,9 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 	}
 
 	/** This is NOT localized */
-	public String getName() {
-		return name;
+	public CommandPath getPath() {
+		return path;
 	}
-
-	public abstract String getBaseName();
-
-	/** This is NOT localized */
-	public abstract String getPath();
-
-	public abstract int getPathComponents();
 
 	public boolean isGuildOnly() {
 		return guildOnly;

@@ -1,5 +1,8 @@
 package com.freya02.botcommands;
 
+import com.freya02.botcommands.application.CommandPath;
+import com.freya02.botcommands.application.context.message.MessageCommandInfo;
+import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
@@ -83,20 +86,38 @@ public interface BContext {
 	Command findCommand(@Nonnull String name);
 
 	/**
-	 * Returns the {@link SlashCommandInfo} object of the specified full application command name
+	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
 	 *
-	 * @param name Full name of the application command (Examples: ban ; info/user ; ban/user/perm)
-	 * @return The {@link SlashCommandInfo} object of the application command
+	 * @param name Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	SlashCommandInfo findSlashCommand(@Nonnull String name);
+	SlashCommandInfo findSlashCommand(@Nonnull CommandPath name);
+
+	/**
+	 * Returns the {@link UserCommandInfo} object of the specified user context command name
+	 *
+	 * @param name Name of the user context command
+	 * @return The {@link UserCommandInfo} object of the user context command
+	 */
+	@Nullable
+	UserCommandInfo findUserCommand(@Nonnull String name);
+
+	/**
+	 * Returns the {@link MessageCommandInfo} object of the specified message context command name
+	 *
+	 * @param name Name of the message context command
+	 * @return The {@link MessageCommandInfo} object of the message context command
+	 */
+	@Nullable
+	MessageCommandInfo findMessageCommand(@Nonnull String name);
 
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
 	 *
 	 * @return A list of the the application commands paths
 	 */
-	List<String> getSlashCommandsPaths();
+	List<CommandPath> getSlashCommandsPaths();
 
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier
@@ -172,7 +193,8 @@ public interface BContext {
 	 *
 	 * @return The component manager
 	 */
-	@Nullable ComponentManager getComponentManager();
+	@Nullable
+	ComponentManager getComponentManager();
 
 	/**
 	 * Returns the {@linkplain SettingsProvider} for this context

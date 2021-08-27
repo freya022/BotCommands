@@ -17,6 +17,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -96,7 +97,7 @@ public final class Utils {
 				if (Modifier.isStatic(declaredMethod.getModifiers())) {
 					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
 						if (!declaredMethod.canAccess(null))
-							throw new IllegalStateException("Method " + declaredMethod + " is not public");
+							throw new IllegalStateException("Method " + Utils.formatMethodShort(declaredMethod) + " is not public");
 						canInstantiate = (boolean) declaredMethod.invoke(null);
 					} else {
 						LOGGER.warn("Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)", aClass.getName(), declaredMethod.getName());
@@ -115,7 +116,9 @@ public final class Utils {
 		return method.getParameterCount() > 0 && type.isAssignableFrom(method.getParameterTypes()[0]);
 	}
 
-	/** Returns the deepest cause of this throwable */
+	/**
+	 * Returns the deepest cause of this throwable
+	 */
 	@Nonnull
 	public static Throwable getException(Throwable e) {
 		while (e.getCause() != null) {
@@ -172,5 +175,14 @@ public final class Utils {
 		} else {
 			return type;
 		}
+	}
+
+	public static String formatMethodShort(Method method) {
+		return method.getDeclaringClass().getSimpleName()
+				+ "#"
+				+ method.getName()
+				+ Arrays.stream(method.getParameterTypes())
+				.map(Class::getSimpleName)
+				.collect(Collectors.joining(", ", "(", ")"));
 	}
 }

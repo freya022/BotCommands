@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
 import org.slf4j.Logger;
 
@@ -44,7 +45,7 @@ public final class ApplicationCommandsBuilder {
 	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
 		try {
 			if (!method.canAccess(applicationCommand))
-				throw new IllegalStateException("Application command " + method + " is not public");
+				throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
 			
 			if (method.isAnnotationPresent(JdaSlashCommand.class)) {
 				processSlashCommand(applicationCommand, method);
@@ -54,67 +55,67 @@ public final class ApplicationCommandsBuilder {
 				processMessageCommand(applicationCommand, method);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException("An exception occurred while processing slash command at " + method, e);
+			throw new RuntimeException("An exception occurred while processing application command at " + Utils.formatMethodShort(method), e);
 		}
 	}
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaUserCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class) && !Utils.hasFirstParameter(method, GuildUserEvent.class))
-				throw new IllegalArgumentException("User command at " + method + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
+				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
 			if (!Utils.hasFirstParameter(method, GuildUserEvent.class)) {
 				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only user command {} uses GlobalUserEvent, consider using GuildUserEvent to remove warnings related to guild stuff's nullability", method);
+				LOGGER.warn("Guild-only user command {} uses GlobalUserEvent, consider using GuildUserEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
 			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class))
-				throw new IllegalArgumentException("User command at " + method + " must have a GlobalUserEvent as first parameter");
+				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
 		final UserCommandInfo info = new UserCommandInfo(applicationCommand, method);
 
-		LOGGER.debug("Adding user command {} for method {}", info.getName(), method);
-		context.addUserCommand(info.getName(), info);
+		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
+		context.addUserCommand(info.getPath(), info);
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaMessageCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class) && !Utils.hasFirstParameter(method, GuildMessageEvent.class))
-				throw new IllegalArgumentException("Message command at " + method + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
+				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
 			if (!Utils.hasFirstParameter(method, GuildMessageEvent.class)) {
 				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only message command {} uses GlobalMessageEvent, consider using GuildMessageEvent to remove warnings related to guild stuff's nullability", method);
+				LOGGER.warn("Guild-only message command {} uses GlobalMessageEvent, consider using GuildMessageEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
 			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class))
-				throw new IllegalArgumentException("Message command at " + method + " must have a GlobalMessageEvent as first parameter");
+				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
 		final MessageCommandInfo info = new MessageCommandInfo(applicationCommand, method);
 
-		LOGGER.debug("Adding message command {} for method {}", info.getName(), method);
-		context.addMessageCommand(info.getName(), info);
+		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
+		context.addMessageCommand(info.getPath(), info);
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
-				throw new IllegalArgumentException("Slash command at " + method + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
+				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 
 			if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
 				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only slash command {} uses GlobalSlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", method);
+				LOGGER.warn("Guild-only slash command {} uses GlobalSlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
 			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class))
-				throw new IllegalArgumentException("Slash command at " + method + " must have a GlobalSlashEvent as first parameter");
+				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 
 		final SlashCommandInfo info = new SlashCommandInfo(applicationCommand, method);
 
-		LOGGER.debug("Adding command path {} for method {}", info.getPath(), method);
+		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
 		context.addSlashCommand(info.getPath(), info);
 	}
 
@@ -151,9 +152,11 @@ public final class ApplicationCommandsBuilder {
 			}
 		}
 
-		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>();
+		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>(updaters.size());
 		for (ApplicationCommandsUpdater updater : updaters) {
 			final Guild guild = updater.getGuild();
+
+			Checks.check(guild != null, "Guild should have not been null");
 
 			if (updater.shouldUpdateCommands()) {
 				changed = true;
@@ -189,19 +192,26 @@ public final class ApplicationCommandsBuilder {
 			}
 		}
 
+		List<CompletableFuture<?>> privilegesFutures = new ArrayList<>(updaters.size());
 		for (ApplicationCommandsUpdater updater : updaters) {
 			final Guild guild = updater.getGuild();
+
+			Checks.check(guild != null, "Guild should have not been null");
 
 			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
 
 			if (updater.shouldUpdatePrivileges()) {
 				changed = true;
 
-				updater.updatePrivileges();
+				privilegesFutures.add(updater.updatePrivileges());
 				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
 			} else {
 				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
 			}
+		}
+
+		for (CompletableFuture<?> future : privilegesFutures) {
+			future.join();
 		}
 
 		return changed;

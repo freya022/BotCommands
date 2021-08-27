@@ -1,6 +1,7 @@
 package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.CooldownScope;
+import com.freya02.botcommands.application.CommandPath;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -46,7 +47,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 		}
 
 		runCommand(() -> {
-			final SlashCommandInfo slashCommand = context.findSlashCommand(event.getCommandPath());
+			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
 				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();

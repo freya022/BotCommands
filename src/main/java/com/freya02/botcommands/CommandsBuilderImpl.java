@@ -146,7 +146,7 @@ final class CommandsBuilderImpl {
 				for (Class<? extends Annotation> annotation : methodAnnotations) {
 					if (method.isAnnotationPresent(annotation)) {
 						if (!ApplicationCommand.class.isAssignableFrom(aClass))
-							throw new IllegalArgumentException("Method " + method + " is annotated with @" + annotation.getSimpleName() + " but it's class does not extend ApplicationCommand");
+							throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + annotation.getSimpleName() + " but it's class does not extend ApplicationCommand");
 						
 						final ApplicationCommand annotatedInstance = (ApplicationCommand) ClassInstancer.instantiate(context, aClass);
 						
