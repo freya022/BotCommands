@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface BGuildSettings {
 	/**
@@ -26,6 +27,7 @@ public interface BGuildSettings {
 	 * @see CommandList#none()
 	 * @see CommandList#of(Collection)
 	 * @see CommandList#notOf(Collection)
+	 * @see CommandList#filter(Predicate)
 	 */
 	@Nonnull
 	default CommandList getGuildCommands() {

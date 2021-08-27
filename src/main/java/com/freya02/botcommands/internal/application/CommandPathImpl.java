@@ -103,4 +103,9 @@ public class CommandPathImpl implements CommandPath {
 	public String toString() {
 		return path;
 	}
+
+	@Override
+	public boolean startsWith(CommandPath o) {
+		return getFullPath().startsWith(o.getFullPath());
+	}
 }

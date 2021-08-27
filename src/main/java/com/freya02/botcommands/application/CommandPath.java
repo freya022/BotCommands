@@ -57,5 +57,7 @@ public interface CommandPath {
 	 *
 	 * @return The command path with / in between each component
 	 */
-	String toString(); 
+	String toString();
+
+	boolean startsWith(CommandPath o);
 }

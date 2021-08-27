@@ -165,7 +165,7 @@ public class ApplicationCommandsUpdater {
 					final BGuildSettings guildSettings = context.getGuildSettings(guild.getIdLong());
 					if (guildSettings == null) return true; //If no specific guild settings, assume it's not filtered
 
-					return guildSettings.getGuildCommands().getFilter().test(info.getPath().toString());
+					return guildSettings.getGuildCommands().getFilter().test(info.getPath());
 				})
 				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
 				.collect(Collectors.toCollection(ArrayList::new)); //Ensure spliterator is ORDERED for future Stream usage
