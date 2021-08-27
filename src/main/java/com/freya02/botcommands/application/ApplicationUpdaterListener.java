@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ApplicationCommandListener extends ListenerAdapter {
+public class ApplicationUpdaterListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
 
 	private final List<Long> updatedJoinedGuilds = new ArrayList<>();
 
-	public ApplicationCommandListener(BContextImpl context) {
+	public ApplicationUpdaterListener(BContextImpl context) {
 		this.context = context;
 	}
 

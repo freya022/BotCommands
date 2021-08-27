@@ -1,9 +1,8 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.application.ApplicationCommand;
-import com.freya02.botcommands.application.ApplicationCommandListener;
 import com.freya02.botcommands.application.ApplicationCommandsBuilder;
-import com.freya02.botcommands.application.context.ContextCommandListener;
+import com.freya02.botcommands.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.application.context.annotations.JdaMessageCommand;
 import com.freya02.botcommands.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.application.slash.SlashCommandListener;
@@ -192,7 +191,7 @@ final class CommandsBuilderImpl {
 		context.addEventListeners(
 				new EventWaiter(jda),
 				new CommandListener(context),
-				new ApplicationCommandListener(context),
+				new ApplicationUpdaterListener(context),
 				new SlashCommandListener(context),
 				new ContextCommandListener(context)
 		);
