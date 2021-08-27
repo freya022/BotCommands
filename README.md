@@ -18,13 +18,13 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
     * Suppose the prefix is `!` and the command is `ban`
     * `@Executable public void run(BaseCommandEvent event, User user, int delDays, String reason)` `->` `!ban @someone 42 Foobar` should be valid
 * Application commands
-  * Slash commands with automatic & customizable argument parsing via `ParameterResolver` in the `parameters` package
+  * Slash commands with **automatic & customizable argument parsing** via `ParameterResolver` in the `parameters` package
   * Context menu commands (User / Message)
-  * They are automatically registered on Discord on startup if any changes are detected
+  * They are **automatically registered on Discord on startup** if any changes are detected
     * This also includes command privileges (permissions) 
-  * These commands as well as their options and choices can also be localized (per-guild language)
-* A JDA event waiter with preconditions, timeouts and multiple checks
-* Secure (as in random 64 char length ID from 81 chars) component (buttons/selection menus) IDs with persistent and non-persistent storage, also capable of received additional arguments the same way as slash commands do
+  * These commands as well as their options and choices **can also be localized** (per-guild language)
+* A JDA **event waiter** with (multiple) preconditions, timeouts and consumers for every completion states 
+* Secure (as in random 64 char length ID from 81 chars) component (buttons/selection menus) IDs *with persistent and non-persistent storage*, **also capable of received additional arguments** the same way as slash commands do
 * Message parsers (see RichTextParser) and emoji resolvers (can turn :joy: into 😂)
 * Paginators and menus (using buttons !)
 * Flexible constructors for your commands and injectable fields
@@ -74,18 +74,29 @@ final JDA jda = JDABuilder.create(token, /* GatewayIntents here */)
 jda.awaitReady();
 ```
 Once you have your JDA instance ready, you can use the `CommandsBuilder` class to start using the library.<br>
-There is 2 command triggers:
+There is 2 text-based command triggers:
 * Ping-as-prefix: Triggers commands when your bot is mentioned (e.g: `@YourBot`)
 * Custom-prefix: Triggers commands when any message contains your selected prefix (e.g: `!`)
 
-They can be used respectively by `CommandsBuilder#withPing(...)` and `CommandsBuilder#withPrefix("YourPrefixHere", ...)`
+(Of course you can still use only slash commands if you wish)
 
-Notice these `...` are the `ownerIds` parameters, these are the ids of the Discord users who can use the bot freely and receive messages when an uncaught exception happens
+You can build a CommandsBuilder instance with `CommandsBuilder#newBuilder` and supply it the bot owner id, which should be your user ID
+
+Additionally, the ids of the Discord users are those who can use the bot freely and receive messages when an uncaught exception happens
 
 You should have some code that looks like this now:
 ```java
-final CommandsBuilder commandsBuilder = CommandsBuilder.withPing("!", 222046562543468545L);
+final CommandsBuilder commandsBuilder = CommandsBuilder.newBuilder(222046562543468545L);
 ```
+
+You can also add 
+```java
+commandsBuilder.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
+    .addPrefix(":")
+)
+```
+
+To add a prefix for text based commands, this will also disable ping-as-prefix
 
 <details>
 <summary>Optional - How to set a default embed</summary>
