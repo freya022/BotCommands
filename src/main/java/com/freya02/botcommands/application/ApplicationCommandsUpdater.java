@@ -7,6 +7,7 @@ import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.application.ApplicationCommandMap;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
@@ -42,9 +43,7 @@ public class ApplicationCommandsUpdater {
 	private final Path commandsCachePath;
 	private final Path privilegesCachePath;
 
-	//TODO this might cause issues when a slash command and a context one have the same name
-	//Base name only
-	private final Map<String, CommandData> map = new HashMap<>();
+	private final ApplicationCommandMap map = new ApplicationCommandMap();
 
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
@@ -91,13 +90,13 @@ public class ApplicationCommandsUpdater {
 		if (Files.notExists(commandsCachePath)) return true;
 
 		final byte[] oldBytes = Files.readAllBytes(commandsCachePath);
-		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(map.values());
+		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(map.getAllCommandData());
 
 		return !Arrays.equals(oldBytes, newBytes);
 	}
 
 	public CompletableFuture<?> updateCommands() {
-		final Collection<CommandData> commandData = map.values();
+		final Collection<CommandData> commandData = map.getAllCommandData();
 
 		final CommandListUpdateAction updateAction = guild != null ? guild.updateCommands() : context.getJDA().updateCommands();
 
@@ -209,7 +208,7 @@ public class ApplicationCommandsUpdater {
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
 							final CommandData rightCommand = new CommandData(localizedPath.getName(), description);
-							map.put(localizedPath.getName(), rightCommand);
+							map.put(CommandType.SLASH, localizedPath, rightCommand);
 
 							rightCommand.addOptions(localizedMethodOptions);
 
@@ -219,7 +218,7 @@ public class ApplicationCommandsUpdater {
 						} else if (localizedPath.getNameCount() == 2) {
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
 
-							final CommandData commandData = map.computeIfAbsent(localizedPath.getName(), x -> {
+							final CommandData commandData = map.computeIfAbsent(CommandType.SLASH, localizedPath, x -> {
 								final CommandData tmpData = new CommandData(localizedPath.getName(), "No description (base name)");
 								if (info.isOwnerOnly()) {
 									tmpData.setDefaultEnabled(false);
@@ -237,7 +236,7 @@ public class ApplicationCommandsUpdater {
 							Checks.notNull(localizedPath.getGroup(), "Command group name");
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
 
-							final SubcommandGroupData groupData = getSubcommandGroup(localizedPath, x -> {
+							final SubcommandGroupData groupData = getSubcommandGroup(CommandType.SLASH, localizedPath, x -> {
 								final CommandData commandData = new CommandData(localizedPath.getName(), "No description (base name)");
 
 								if (info.isOwnerOnly()) {
@@ -297,7 +296,7 @@ public class ApplicationCommandsUpdater {
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
 							final CommandData rightCommand = new CommandData(type, localizedPath.getName());
-							map.put(localizedPath.getName(), rightCommand);
+							map.put(type, localizedPath, rightCommand);
 
 							if (info.isOwnerOnly()) {
 								rightCommand.setDefaultEnabled(false);
@@ -421,12 +420,14 @@ public class ApplicationCommandsUpdater {
 		}
 	}
 
+	//I am aware that the type is always CommandType#SLASH, still use a parameter to mimic how ApplicationCommandMap functions and for future proof uses
+	@SuppressWarnings("SameParameterValue")
 	@Nonnull
-	private SubcommandGroupData getSubcommandGroup(CommandPath path, Function<String, CommandData> baseCommandSupplier) {
+	private SubcommandGroupData getSubcommandGroup(CommandType type, CommandPath path, Function<String, CommandData> baseCommandSupplier) {
 		if (path.getGroup() == null)
 			throw new IllegalArgumentException("Group component of command path is null at '" + path + "'");
 
-		final CommandData data = map.computeIfAbsent(path.getName(), baseCommandSupplier);
+		final CommandData data = map.computeIfAbsent(type, path, baseCommandSupplier);
 
 		return data.getSubcommandGroups()
 				.stream()
