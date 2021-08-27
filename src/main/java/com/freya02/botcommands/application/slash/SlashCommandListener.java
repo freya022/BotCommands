@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -129,16 +128,7 @@ public final class SlashCommandListener extends ListenerAdapter {
 
 	@Nonnull
 	public static String reconstructCommand(SlashCommandEvent event) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("/").append(event.getName());
-		if (event.getSubcommandGroup() != null) sb.append(" ").append(event.getSubcommandGroup());
-		if (event.getSubcommandName() != null) sb.append(" ").append(event.getSubcommandName());
-
-		for (OptionMapping option : event.getOptions()) {
-			sb.append(" ").append(option.getAsString());
-		}
-
-		return sb.toString();
+		return event.getCommandString();
 	}
 
 	private void reply(Interaction event, String msg) {
