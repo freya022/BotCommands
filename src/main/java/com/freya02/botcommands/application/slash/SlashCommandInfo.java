@@ -2,6 +2,7 @@ package com.freya02.botcommands.application.slash;
 
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.annotation.Optional;
+import com.freya02.botcommands.application.ApplicationCommand;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.application.slash.annotations.Option;

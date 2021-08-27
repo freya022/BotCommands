@@ -1,4 +1,4 @@
-package com.freya02.botcommands.application.slash;
+package com.freya02.botcommands.application;
 
 /**
  * Every application command has to inherit this class

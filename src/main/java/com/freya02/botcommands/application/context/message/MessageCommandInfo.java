@@ -1,10 +1,10 @@
 package com.freya02.botcommands.application.context.message;
 
 import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.application.ApplicationCommand;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.context.ContextCommandParameter;
 import com.freya02.botcommands.application.context.annotations.JdaMessageCommand;
-import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.MessageContextParameterResolver;
 import net.dv8tion.jda.api.entities.Member;

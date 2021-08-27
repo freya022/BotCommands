@@ -4,8 +4,6 @@ import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.application.slash.GuildApplicationSettings;
-import com.freya02.botcommands.application.slash.LocalizedCommandData;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;

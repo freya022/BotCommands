@@ -1,7 +1,7 @@
 package com.freya02.botcommands;
 
 import com.freya02.botcommands.annotation.RequireOwner;
-import com.freya02.botcommands.application.slash.ApplicationCommand;
+import com.freya02.botcommands.application.ApplicationCommand;
 import com.freya02.botcommands.builder.ExtensionsBuilder;
 import com.freya02.botcommands.builder.TextCommandsBuilder;
 import com.freya02.botcommands.components.ComponentManager;

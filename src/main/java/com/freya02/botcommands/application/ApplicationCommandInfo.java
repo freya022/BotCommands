@@ -2,7 +2,6 @@ package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.RequireOwner;
-import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 

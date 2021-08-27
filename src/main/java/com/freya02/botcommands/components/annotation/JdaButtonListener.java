@@ -1,6 +1,6 @@
 package com.freya02.botcommands.components.annotation;
 
-import com.freya02.botcommands.application.slash.ApplicationCommand;
+import com.freya02.botcommands.application.ApplicationCommand;
 import com.freya02.botcommands.components.Components;
 import com.freya02.botcommands.components.event.ButtonEvent;
 import com.freya02.botcommands.parameters.ParameterResolvers;

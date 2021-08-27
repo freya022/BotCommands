@@ -8,7 +8,6 @@ import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.application.slash.ApplicationCommand;
 import com.freya02.botcommands.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;

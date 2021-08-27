@@ -3,6 +3,7 @@ package com.freya02.botcommands.application.slash;
 import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.CommandPath;
+import com.freya02.botcommands.application.LocalizedCommandData;
 import com.freya02.botcommands.application.slash.annotations.Option;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.ParameterResolvers;

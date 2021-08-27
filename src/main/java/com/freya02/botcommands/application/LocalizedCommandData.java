@@ -1,6 +1,5 @@
-package com.freya02.botcommands.application.slash;
+package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.application.CommandPath;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
 import javax.annotation.Nullable;
