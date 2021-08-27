@@ -5,7 +5,7 @@ import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.GuildApplicationSettings;
-import com.freya02.botcommands.application.slash.LocalizedApplicationCommandData;
+import com.freya02.botcommands.application.slash.LocalizedCommandData;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
@@ -193,7 +193,7 @@ public class ApplicationCommandsUpdater {
 
 					try {
 						final List<String> optionNames = getMethodOptionNames(info);
-						final LocalizedApplicationCommandData localizedCommandData = getLocalizedCommandData(info, optionNames);
+						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info, optionNames);
 
 						//Put localized option names in order to resolve them when called
 						final List<OptionData> localizedMethodOptions = getMethodOptions(info, localizedCommandData);
@@ -287,7 +287,7 @@ public class ApplicationCommandsUpdater {
 					final CommandPath notLocalizedPath = info.getPath();
 
 					try {
-						final LocalizedApplicationCommandData localizedCommandData = getLocalizedCommandData(info, null);
+						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info, null);
 
 						localizedBaseNameToBaseName.put(getLocalizedPath(info, localizedCommandData).getName(), notLocalizedPath.getName());
 
@@ -316,9 +316,9 @@ public class ApplicationCommandsUpdater {
 	}
 
 	@Nullable
-	private LocalizedApplicationCommandData getLocalizedCommandData(ApplicationCommandInfo info, @Nullable List<String> optionNames) {
+	private LocalizedCommandData getLocalizedCommandData(ApplicationCommandInfo info, @Nullable List<String> optionNames) {
 		final GuildApplicationSettings instance = info.getInstance();
-		final LocalizedApplicationCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
+		final LocalizedCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
 
 		if (localizedCommandData == null) {
 			final SettingsProvider settingsProvider = context.getSettingsProvider();

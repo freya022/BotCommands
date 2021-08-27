@@ -58,7 +58,7 @@ public class SlashUtils {
 		return list;
 	}
 
-	public static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedApplicationCommandData localizedCommandData) {
+	public static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
@@ -122,28 +122,28 @@ public class SlashUtils {
 	}
 
 	@Nonnull
-	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedApplicationCommandData localizedCommandData) {
+	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getPath()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
 	}
 
 	@Nonnull
-	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedApplicationCommandData localizedCommandData) {
+	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? info.getDescription()
 				: Objects.requireNonNullElse(localizedCommandData.getLocalizedDescription(), info.getDescription());
 	}
 
 	@Nonnull
-	private static List<String> getLocalizedOptionNames(@Nonnull SlashCommandInfo info, @Nullable LocalizedApplicationCommandData localizedCommandData) {
+	private static List<String> getLocalizedOptionNames(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? getMethodOptionNames(info)
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getMethodOptionNames(info));
 	}
 	
 	@Nonnull
-	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedApplicationCommandData localizedCommandData) {
+	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);

@@ -29,8 +29,8 @@ public interface GuildApplicationSettings {
 	 * @see GuildApplicationSettings GuildSlashSettings for implementation notes
 	 */
 	@Nullable
-	default LocalizedApplicationCommandData getLocalizedCommandData(@Nullable Guild guild, @Nonnull String cmdPath, @Nullable List<String> optionNames) {
-		return new LocalizedApplicationCommandData(null, null, null, Collections.emptyList());
+	default LocalizedCommandData getLocalizedCommandData(@Nullable Guild guild, @Nonnull String cmdPath, @Nullable List<String> optionNames) {
+		return new LocalizedCommandData(null, null, null, Collections.emptyList());
 	}
 
 	/**
