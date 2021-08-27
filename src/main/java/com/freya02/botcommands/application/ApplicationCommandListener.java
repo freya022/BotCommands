@@ -1,9 +1,9 @@
-package com.freya02.botcommands.application.context;
+package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.CooldownScope;
-import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -21,11 +22,10 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 
-public final class ContextCommandListener extends ListenerAdapter {
+public final class ApplicationCommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
 
@@ -39,7 +39,7 @@ public final class ContextCommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public ContextCommandListener(BContextImpl context) {
+	public ApplicationCommandListener(BContextImpl context) {
 		this.context = context;
 	}
 
@@ -87,9 +87,40 @@ public final class ContextCommandListener extends ListenerAdapter {
 		}, event);
 	}
 
+	@Override
+	public void onSlashCommand(@Nonnull SlashCommandEvent event) {
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Received slash command: {}", reconstructCommand(event));
+		}
+
+		runCommand(() -> {
+			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
+
+			if (slashCommand == null) {
+				event.reply(context.getDefaultMessages().getApplicationCommandNotFoundMsg()).queue();
+				return;
+			}
+
+			if (!canRun(event, slashCommand)) return;
+
+			if (slashCommand.execute(context, event)) {
+				slashCommand.applyCooldown(event);
+			}
+		}, event);
+	}
+
+	@Nonnull
+	public static String reconstructCommand(GenericCommandEvent event) {
+		if (event instanceof SlashCommandEvent) {
+			return ((SlashCommandEvent) event).getCommandString();
+		} else {
+			return "/" + event.getName();
+		}
+	}
+
 	private boolean canRun(@Nonnull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
-		if (event.isFromGuild()) {
+		if (event.getGuild() != null) {
 			final Usability usability = Usability.of(event, applicationCommand, isNotOwner);
 
 			if (usability.isUnusable()) {
@@ -107,9 +138,7 @@ public final class ContextCommandListener extends ListenerAdapter {
 
 					//Take needed permissions, extract bot current permissions
 					final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
-					missingPerms.removeAll(
-							Objects.requireNonNull(event.getGuild(), "User command's guild shouldn't be null as it is checked")
-									.getSelfMember().getPermissions((GuildChannel) event.getChannel()));
+					missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions((GuildChannel) event.getChannel()));
 
 					for (Permission botPermission : missingPerms) {
 						missingBuilder.add(botPermission.getName());
@@ -147,14 +176,14 @@ public final class ContextCommandListener extends ListenerAdapter {
 			} catch (Throwable e) {
 				e = Utils.getException(e);
 
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an interaction command '" + event.getName() + "'", e);
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", e);
 				if (event.isAcknowledged()) {
 					event.getHook().sendMessage(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				} else {
 					event.reply(context.getDefaultMessages().getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				}
 
-				context.dispatchException("Exception in interaction command '" + event.getName() + "'", e);
+				context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", e);
 			}
 		});
 	}
@@ -164,9 +193,9 @@ public final class ContextCommandListener extends ListenerAdapter {
 				.setEphemeral(true)
 				.queue(null,
 						e -> {
-							Utils.printExceptionString("Could not send reply message from interaction command listener", e);
+							Utils.printExceptionString("Could not send reply message from application command listener", e);
 
-							context.dispatchException("Could not send reply message from interaction command listener", e);
+							context.dispatchException("Could not send reply message from application command listener", e);
 						}
 				);
 	}
