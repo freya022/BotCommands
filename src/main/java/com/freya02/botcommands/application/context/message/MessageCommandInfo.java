@@ -58,7 +58,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			for (int i = 0, commandParametersLength = commandParameters.length; i < commandParametersLength; i++) {
 				ContextCommandParameter<MessageContextParameterResolver> parameter = commandParameters[i];
 
-				objects[i + 1] = parameter.getResolver().resolve(event);
+				objects[i + 1] = parameter.tryResolve(event, resolver -> resolver.resolve(event));
 			}
 
 			commandMethod.invoke(instance, objects);

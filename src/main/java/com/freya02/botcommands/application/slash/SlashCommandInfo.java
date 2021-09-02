@@ -124,7 +124,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					}
 				}
 
-				final Object obj = parameter.getResolver().resolve(event, optionData);
+				final Object obj = parameter.tryResolve(event, resolver -> resolver.resolve(event, optionData));
+				
 				if (obj == null) {
 					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), parameter.getEffectiveName(), parameter.getType().getSimpleName())
 							.setEphemeral(true)

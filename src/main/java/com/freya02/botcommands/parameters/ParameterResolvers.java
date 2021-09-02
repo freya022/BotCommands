@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Has all the parameter resolvers registered here, 
@@ -41,7 +42,8 @@ public class ParameterResolvers {
 			SlashParameterResolver.class,
 			ComponentParameterResolver.class,
 			UserContextParameterResolver.class,
-			MessageContextParameterResolver.class
+			MessageContextParameterResolver.class,
+			CustomResolver.class
 	);
 
 	static {

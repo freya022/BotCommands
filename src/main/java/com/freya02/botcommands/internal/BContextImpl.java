@@ -10,12 +10,15 @@ import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.internal.utils.Utils;
+import com.freya02.botcommands.parameters.CustomResolver;
+import com.freya02.botcommands.parameters.ParameterResolvers;
 import com.freya02.botcommands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.prefixed.Command;
 import com.freya02.botcommands.prefixed.MessageInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -374,6 +377,11 @@ public class BContextImpl implements BContext {
 	@Override
 	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
 		return slashCommandsBuilder.tryUpdateGuildCommands(guilds);
+	}
+
+	@Override
+	public <T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+		ParameterResolvers.register(new CustomResolver(parameterType, function));
 	}
 
 	public <T> void registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {

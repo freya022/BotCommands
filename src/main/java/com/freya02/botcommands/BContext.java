@@ -11,6 +11,7 @@ import com.freya02.botcommands.prefixed.MessageInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -241,4 +243,13 @@ public interface BContext {
 	 * @throws IOException If unable to write the cache data
 	 */
 	boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException;
+
+	/**
+	 * Register a custom resolver for interaction commands (components / app commands)
+	 *
+	 * @param parameterType Type of the parameter
+	 * @param function      Supplier function, may receive interaction events of any type
+	 * @param <T>           Type of the parameter
+	 */
+	<T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function);
 }

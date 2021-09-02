@@ -216,8 +216,10 @@ final class CommandsBuilderImpl {
 
 		context.registerConstructorParameter(BContext.class, ignored -> context);
 		context.registerCommandDependency(BContext.class, () -> context);
+		context.registerCustomResolver(BContext.class, ignored -> context);
 
 		context.registerConstructorParameter(JDA.class, ignored -> jda);
 		context.registerCommandDependency(JDA.class, () -> jda);
+		context.registerCustomResolver(JDA.class, ignored -> jda);
 	}
 }

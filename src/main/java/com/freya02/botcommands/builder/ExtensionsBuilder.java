@@ -5,7 +5,9 @@ import com.freya02.botcommands.InstanceSupplier;
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.parameters.*;
+import net.dv8tion.jda.api.events.Event;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ExtensionsBuilder {
@@ -75,6 +77,23 @@ public class ExtensionsBuilder {
 			throw new IllegalStateException("Command dependency already exists for fields of type " + fieldType.getName());
 
 		context.registerCommandDependency(fieldType, supplier);
+
+		return this;
+	}
+
+	/**
+	 * Register a custom resolver for interaction commands (components / app commands)
+	 *
+	 * @param parameterType Type of the parameter
+	 * @param function      Supplier function, may receive interaction events of any type
+	 * @param <T>           Type of the parameter
+	 * @return This builder for chaining convenience
+	 */
+	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+		if (ParameterResolvers.exists(parameterType))
+			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
+
+		ParameterResolvers.register(new CustomResolver(parameterType, function));
 
 		return this;
 	}

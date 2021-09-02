@@ -1,49 +1,33 @@
 package com.freya02.botcommands.application.slash;
 
-import com.freya02.botcommands.internal.utils.Utils;
-import com.freya02.botcommands.parameters.ParameterResolver;
-import com.freya02.botcommands.parameters.ParameterResolvers;
+import com.freya02.botcommands.application.ApplicationCommandParameter;
 import com.freya02.botcommands.parameters.SlashParameterResolver;
 
-public class SlashCommandParameter {
+import javax.annotation.Nonnull;
+
+public class SlashCommandParameter extends ApplicationCommandParameter<SlashParameterResolver> {
 	private final boolean optional, primitive;
 	private final String effectiveName;
-	private final SlashParameterResolver resolver;
-	private final Class<?> type;
 
 	public SlashCommandParameter(boolean optional, String effectiveName, Class<?> type) {
+		super(SlashParameterResolver.class, type);
+		
 		this.optional = optional;
 		this.effectiveName = effectiveName;
 
 		this.primitive = type.isPrimitive();
-		this.type = Utils.getBoxedType(type);
-		ParameterResolver resolver = ParameterResolvers.of(this.type);
-		if (resolver == null) {
-			throw new IllegalArgumentException("Unknown slash command option type: " + type.getName());
-		} else if (!(resolver instanceof SlashParameterResolver)) {
-			throw new IllegalArgumentException("Unsupported slash command option type: " + type.getName());
-		}
-
-		this.resolver = (SlashParameterResolver) resolver;
 	}
 
 	public boolean isPrimitive() {
 		return primitive;
 	}
 
-	public Class<?> getType() {
-		return type;
-	}
-
 	public boolean isOptional() {
 		return optional;
 	}
 
+	@Nonnull
 	public String getEffectiveName() {
 		return effectiveName;
-	}
-
-	public SlashParameterResolver getResolver() {
-		return resolver;
 	}
 }
