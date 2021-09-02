@@ -66,7 +66,7 @@ public class SlashUtils {
 
 		Parameter[] parameters = info.getCommandMethod().getParameters();
 
-		Checks.check(optionNames.size() == parameters.length - 1, String.format("Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, Utils.formatMethodShort(info.getCommandMethod())));
+		Checks.check(optionNames.size() == parameters.length - 1, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, Utils.formatMethodShort(info.getCommandMethod()));
 		
 		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
 			Parameter parameter = parameters[i];

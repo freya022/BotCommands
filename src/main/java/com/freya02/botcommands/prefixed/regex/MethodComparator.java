@@ -5,6 +5,7 @@ import com.freya02.botcommands.prefixed.annotation.Executable;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Comparator;
 
 public class MethodComparator implements Comparator<Method> {
@@ -23,12 +24,14 @@ public class MethodComparator implements Comparator<Method> {
 			return Integer.compare(order1, order2);
 		}
 
+		final Parameter[] o2Parameters = o2.getParameters();
+		final Parameter[] o1Parameters = o1.getParameters();
 		for (int i = 0; i < Math.min(o1.getParameterCount(), o2.getParameterCount()); i++) {
-			if (o1.getParameters()[i].getType() == o2.getParameters()[i].getType()) {
+			if (o1Parameters[i].getType() == o2Parameters[i].getType()) {
 				continue;
 			}
 
-			if (o1.getParameters()[i].getType() == String.class) {
+			if (o1Parameters[i].getType() == String.class) {
 				return 1;
 			} else {
 				return -1;

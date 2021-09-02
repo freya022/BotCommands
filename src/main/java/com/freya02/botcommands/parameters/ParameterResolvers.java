@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Has all the parameter resolvers registered here, they help in resolving method parameters for regex commands, application commands and button callbacks<br><br>
+ * Has all the parameter resolvers registered here, 
+ * they help in resolving method parameters for regex commands, application commands and component callbacks<br><br>
  *
  * Supported parameters:
  * <ul>
@@ -71,7 +72,7 @@ public class ParameterResolvers {
 		}
 
 		if (!hasInterface)
-			throw new IllegalArgumentException("The resolver should work at least for a regex parameter, a slash parameter, a button parameter");
+			throw new IllegalArgumentException("The resolver should implement at least one of these interfaces: " + possibleInterfaces.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
 
 		map.put(resolver.getType(), resolver);
 	}

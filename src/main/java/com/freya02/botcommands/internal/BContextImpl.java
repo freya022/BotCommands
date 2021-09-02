@@ -37,7 +37,6 @@ public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final List<Long> ownerIds = new ArrayList<>();
 	private final List<String> prefixes = new ArrayList<>();
-	private final DefaultMessages defaultMessages = new DefaultMessages();
 
 	private final Map<Class<?>, ConstructorParameterSupplier<?>> parameterSupplierMap = new HashMap<>();
 	private final Map<Class<?>, InstanceSupplier<?>> instanceSupplierMap = new HashMap<>();
