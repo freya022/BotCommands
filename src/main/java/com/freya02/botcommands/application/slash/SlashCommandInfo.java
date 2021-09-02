@@ -108,9 +108,9 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", i, parameter.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
 				}
 				
-				final OptionMapping optionData = event.getOption(optionName);
+				final OptionMapping optionMapping = event.getOption(optionName); //TODO rename
 
-				if (optionData == null) {
+				if (optionMapping == null) {
 					if (parameter.isOptional()) {
 						if (parameter.isPrimitive()) {
 							objects.add(0);
@@ -124,14 +124,14 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					}
 				}
 
-				final Object obj = parameter.tryResolve(event, resolver -> resolver.resolve(event, optionData));
+				final Object obj = parameter.tryResolve(event, resolver -> resolver.resolve(event, optionMapping));
 				
 				if (obj == null) {
 					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), parameter.getEffectiveName(), parameter.getType().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 
-					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", parameter.getEffectiveName(), optionData.getAsString(), parameter.getType().getSimpleName());
+					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", parameter.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
 
 					return false;
 				}
@@ -141,7 +141,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 							.setEphemeral(true)
 							.queue();
 
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", parameter.getEffectiveName(), optionData.getAsString(), parameter.getType().getSimpleName());
+					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", parameter.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
 
 					return false;
 				}

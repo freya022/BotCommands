@@ -24,8 +24,8 @@ public class RoleResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsRole();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsRole();
 	}
 
 	@Override

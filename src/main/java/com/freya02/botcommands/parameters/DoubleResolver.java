@@ -20,8 +20,8 @@ public class DoubleResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return Double.valueOf(optionData.getAsString());
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return Double.valueOf(optionMapping.getAsString());
 	}
 
 	@Override

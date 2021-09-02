@@ -10,5 +10,5 @@ import javax.annotation.Nullable;
  */
 public interface SlashParameterResolver {
 	@Nullable
-	Object resolve(SlashCommandEvent event, OptionMapping optionData);
+	Object resolve(SlashCommandEvent event, OptionMapping optionMapping);
 }

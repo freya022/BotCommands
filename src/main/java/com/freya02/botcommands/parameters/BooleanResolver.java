@@ -20,8 +20,8 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsBoolean();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsBoolean();
 	}
 
 	@Override

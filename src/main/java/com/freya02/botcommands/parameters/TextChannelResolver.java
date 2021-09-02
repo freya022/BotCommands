@@ -22,8 +22,8 @@ public class TextChannelResolver extends ParameterResolver implements RegexParam
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsGuildChannel();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsGuildChannel();
 	}
 
 	@Override

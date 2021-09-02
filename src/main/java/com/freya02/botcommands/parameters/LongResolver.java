@@ -20,8 +20,8 @@ public class LongResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsLong();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsLong();
 	}
 
 	@Override

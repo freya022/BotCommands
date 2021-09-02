@@ -26,12 +26,12 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(optionData.getAsString());
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(optionMapping.getAsString());
 		if (emoteMatcher.find()) {
 			return new EmojiOrEmoteImpl(emoteMatcher.group(1), emoteMatcher.group(2));
 		} else {
-			return EmojiUtils.resolveEmojis(optionData.getAsString());
+			return EmojiUtils.resolveEmojis(optionMapping.getAsString());
 		}
 	}
 

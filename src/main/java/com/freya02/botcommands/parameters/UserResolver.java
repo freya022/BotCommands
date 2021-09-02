@@ -27,8 +27,8 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsUser();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsUser();
 	}
 
 	@Override

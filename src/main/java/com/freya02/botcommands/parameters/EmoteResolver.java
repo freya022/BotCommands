@@ -23,13 +23,13 @@ public class EmoteResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
 		final Guild guild = event.getGuild();
 
 		if (guild != null) {
-			return getEmoteInGuild(optionData.getAsString(), guild);
+			return getEmoteInGuild(optionMapping.getAsString(), guild);
 		} else {
-			return event.getJDA().getEmoteById(optionData.getAsString());
+			return event.getJDA().getEmoteById(optionMapping.getAsString());
 		}
 	}
 

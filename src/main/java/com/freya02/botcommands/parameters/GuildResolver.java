@@ -22,7 +22,7 @@ public class GuildResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
 		throw new UnsupportedOperationException();
 	}
 

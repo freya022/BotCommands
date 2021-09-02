@@ -13,7 +13,7 @@ public class MentionableResolver extends ParameterResolver implements SlashParam
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return optionData.getAsMentionable();
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return optionMapping.getAsMentionable();
 	}
 }

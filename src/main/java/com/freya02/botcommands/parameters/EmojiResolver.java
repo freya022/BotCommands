@@ -24,8 +24,8 @@ public class EmojiResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionData) {
-		return getEmoji(optionData.getAsString());
+	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+		return getEmoji(optionMapping.getAsString());
 	}
 
 	@Override
