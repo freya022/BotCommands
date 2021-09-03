@@ -79,7 +79,7 @@ public final class CommandInfo extends Cooldownable {
 			addExecutableHelp = ((BContextImpl) context).shouldAddExecutableHelpByDefault()
 					|| command.getClass().isAnnotationPresent(AddExecutableHelp.class);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Unable to construct command info for " + command, e);
 		}
 	}
 
