@@ -16,14 +16,10 @@ import java.util.Map;
 public class ApplicationCommandsCache {
 	private final Path cachePath;
 
-	ApplicationCommandsCache(BContextImpl context) {
-		try {
-			cachePath = Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + "slashcommands");
+	ApplicationCommandsCache(BContextImpl context) throws IOException {
+		cachePath = Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + "slashcommands");
 
-			Files.createDirectories(cachePath);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		Files.createDirectories(cachePath);
 	}
 
 	Path getGlobalCommandsPath() {
