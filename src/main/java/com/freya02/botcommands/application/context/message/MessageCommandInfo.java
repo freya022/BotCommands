@@ -11,7 +11,6 @@ import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.MessageContextParameterResolver;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class MessageCommandInfo extends ApplicationCommandInfo {
@@ -36,31 +35,27 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, MessageContextCommandEvent event) {
-		try {
-			final Object[] objects = new Object[commandParameters.size() + 1];
-			if (guildOnly) {
-				objects[0] = new GuildMessageEvent(context, event);
-			} else {
-				objects[0] = new GlobalMessageEvent(context, event);
-			}
-			
-			for (int i = 0, commandParametersLength = commandParameters.size(); i < commandParametersLength; i++) {
-				ContextCommandParameter<MessageContextParameterResolver> parameter = commandParameters.get(i);
-
-				if (parameter.isOption()) {
-					objects[i + 1] = parameter.getResolver().resolve(event);
-				} else {
-					objects[i + 1] = parameter.getCustomResolver().resolve(event);
-				}
-			}
-
-			commandMethod.invoke(instance, objects);
-
-			return true;
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+	public boolean execute(BContext context, MessageContextCommandEvent event) throws Exception {
+		final Object[] objects = new Object[commandParameters.size() + 1];
+		if (guildOnly) {
+			objects[0] = new GuildMessageEvent(context, event);
+		} else {
+			objects[0] = new GlobalMessageEvent(context, event);
 		}
+
+		for (int i = 0, commandParametersLength = commandParameters.size(); i < commandParametersLength; i++) {
+			ContextCommandParameter<MessageContextParameterResolver> parameter = commandParameters.get(i);
+
+			if (parameter.isOption()) {
+				objects[i + 1] = parameter.getResolver().resolve(event);
+			} else {
+				objects[i + 1] = parameter.getCustomResolver().resolve(event);
+			}
+		}
+
+		commandMethod.invoke(instance, objects);
+
+		return true;
 	}
 
 	@Override

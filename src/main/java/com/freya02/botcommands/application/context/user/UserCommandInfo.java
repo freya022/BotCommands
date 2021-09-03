@@ -12,7 +12,6 @@ import com.freya02.botcommands.parameters.UserContextParameterResolver;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class UserCommandInfo extends ApplicationCommandInfo {
@@ -44,31 +43,27 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, UserContextCommandEvent event) {
-		try {
-			final Object[] objects = new Object[commandParameters.size() + 1];
-			if (guildOnly) {
-				objects[0] = new GuildUserEvent(context, event);
-			} else {
-				objects[0] = new GlobalUserEvent(context, event);
-			}
-			
-			for (int i = 0, commandParametersLength = commandParameters.size(); i < commandParametersLength; i++) {
-				ContextCommandParameter<UserContextParameterResolver> parameter = commandParameters.get(i);
-
-				if (parameter.isOption()) {
-					objects[i + 1] = parameter.getResolver().resolve(event);
-				} else {
-					objects[i + 1] = parameter.getCustomResolver().resolve(event);
-				}
-			}
-
-			commandMethod.invoke(instance, objects);
-
-			return true;
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+	public boolean execute(BContext context, UserContextCommandEvent event) throws Exception {
+		final Object[] objects = new Object[commandParameters.size() + 1];
+		if (guildOnly) {
+			objects[0] = new GuildUserEvent(context, event);
+		} else {
+			objects[0] = new GlobalUserEvent(context, event);
 		}
+
+		for (int i = 0, commandParametersLength = commandParameters.size(); i < commandParametersLength; i++) {
+			ContextCommandParameter<UserContextParameterResolver> parameter = commandParameters.get(i);
+
+			if (parameter.isOption()) {
+				objects[i + 1] = parameter.getResolver().resolve(event);
+			} else {
+				objects[i + 1] = parameter.getCustomResolver().resolve(event);
+			}
+		}
+
+		commandMethod.invoke(instance, objects);
+
+		return true;
 	}
 
 	@Override

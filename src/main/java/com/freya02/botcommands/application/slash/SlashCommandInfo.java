@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,82 +73,78 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 
-	public boolean execute(BContext context, SlashCommandEvent event) {
-		try {
-			List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
-				if (guildOnly) {
-					add(new GuildSlashEvent(context, event));
-				} else {
-					add(new GlobalSlashEventImpl(context, event));
+	public boolean execute(BContext context, SlashCommandEvent event) throws Exception {
+		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
+			if (guildOnly) {
+				add(new GuildSlashEvent(context, event));
+			} else {
+				add(new GlobalSlashEventImpl(context, event));
+			}
+		}};
+
+		int optionIndex = 0;
+		final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
+		for (final SlashCommandParameter parameter : commandParameters) {
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+
+			final Object obj;
+			if (parameter.isOption()) {
+				String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
+				if (optionName == null) {
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
 				}
-			}};
 
-			int optionIndex = 0;
-			final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
-			for (final SlashCommandParameter parameter : commandParameters) {
-				final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+				optionIndex++;
 
-				final Object obj;
-				if (parameter.isOption()) {
-					String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
-					if (optionName == null) {
-						throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
-					}
+				final OptionMapping optionMapping = event.getOption(optionName);
 
-					optionIndex++;
-
-					final OptionMapping optionMapping = event.getOption(optionName);
-
-					if (optionMapping == null) {
-						if (applicationOptionData.isOptional()) {
-							if (applicationOptionData.isPrimitive()) {
-								objects.add(0);
-							} else {
-								objects.add(null);
-							}
-
-							continue;
+				if (optionMapping == null) {
+					if (applicationOptionData.isOptional()) {
+						if (applicationOptionData.isPrimitive()) {
+							objects.add(0);
 						} else {
-							throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName());
+							objects.add(null);
 						}
+
+						continue;
+					} else {
+						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName());
 					}
-
-					obj = parameter.getResolver().resolve(event, optionMapping);
-
-					if (obj == null) {
-						event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName())
-								.setEphemeral(true)
-								.queue();
-
-						LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
-
-						return false;
-					}
-
-					if (!parameter.getType().isAssignableFrom(obj.getClass())) {
-						event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandInvalidParameterTypeMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName(), obj.getClass().getSimpleName())
-								.setEphemeral(true)
-								.queue();
-
-						LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
-
-						return false;
-					}
-				} else {
-					obj = parameter.getCustomResolver().resolve(event);
 				}
 
-				//For some reason using an array list instead of a regular array
-				// magically unboxes primitives when passed to Method#invoke
-				objects.add(obj);
+				obj = parameter.getResolver().resolve(event, optionMapping);
+
+				if (obj == null) {
+					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName())
+							.setEphemeral(true)
+							.queue();
+
+					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
+
+					return false;
+				}
+
+				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
+					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandInvalidParameterTypeMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName(), obj.getClass().getSimpleName())
+							.setEphemeral(true)
+							.queue();
+
+					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
+
+					return false;
+				}
+			} else {
+				obj = parameter.getCustomResolver().resolve(event);
 			}
 
-			commandMethod.invoke(instance, objects.toArray());
-
-			return true;
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException(e);
+			//For some reason using an array list instead of a regular array
+			// magically unboxes primitives when passed to Method#invoke
+			objects.add(obj);
 		}
+
+		commandMethod.invoke(instance, objects.toArray());
+
+		return true;
 	}
 
 	@Override
