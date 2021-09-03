@@ -6,12 +6,9 @@ import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.CustomResolver;
 import com.freya02.botcommands.parameters.ParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolvers;
-import net.dv8tion.jda.api.events.Event;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.lang.reflect.Parameter;
-import java.util.function.Function;
 
 public abstract class ApplicationCommandParameter<RESOLVER> {
 	private final RESOLVER resolver;
@@ -79,17 +76,5 @@ public abstract class ApplicationCommandParameter<RESOLVER> {
 
 	public RESOLVER getResolver() {
 		return resolver;
-	}
-
-	@Nullable
-	public <E extends Event> Object tryResolve(E event, Function<RESOLVER, Object> function) {
-		if (resolver != null) {
-			return function.apply(resolver);
-		} else {
-			if (customResolver == null)
-				throw new IllegalStateException("Both resolvers are null for type " + getType().getName());
-
-			return customResolver.resolve(event);
-		}
 	}
 }
