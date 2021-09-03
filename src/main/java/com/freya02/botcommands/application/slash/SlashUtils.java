@@ -1,10 +1,10 @@
 package com.freya02.botcommands.application.slash;
 
-import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
+import com.freya02.botcommands.application.ApplicationCommandParameter;
 import com.freya02.botcommands.application.CommandPath;
 import com.freya02.botcommands.application.LocalizedCommandData;
-import com.freya02.botcommands.application.slash.annotations.Option;
+import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.ParameterResolvers;
 import net.dv8tion.jda.api.entities.*;
@@ -16,7 +16,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class SlashUtils {
@@ -36,24 +35,10 @@ public class SlashUtils {
 	public static List<String> getMethodOptionNames(ApplicationCommandInfo info) {
 		final List<String> list = new ArrayList<>();
 
-		Parameter[] parameters = info.getCommandMethod().getParameters();
-		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
-			Parameter parameter = parameters[i];
+		for (ApplicationCommandParameter<?> parameter : info.getParameters()) {
+			if (!parameter.isOption()) continue;
 
-			final Option option = parameter.getAnnotation(Option.class);
-
-			final String name;
-			if (option == null) {
-				name = getOptionName(parameter);
-			} else {
-				if (option.name().isBlank()) {
-					name = getOptionName(parameter);
-				} else {
-					name = option.name();
-				}
-			}
-
-			list.add(name);
+			list.add(parameter.getApplicationOptionData().getEffectiveName());
 		}
 		
 		return list;
@@ -64,27 +49,18 @@ public class SlashUtils {
 		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
-		Parameter[] parameters = info.getCommandMethod().getParameters();
+		final long optionParamCount = info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
+		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
 
-		Checks.check(optionNames.size() == parameters.length - 1, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, parameters.length - 1, Utils.formatMethodShort(info.getCommandMethod()));
-		
-		for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
-			Parameter parameter = parameters[i];
+		int i = 1;
+		for (SlashCommandParameter parameter : info.getParameters()) {
+			if (!parameter.isOption()) continue;
 
 			final Class<?> type = parameter.getType();
-			final Option option = parameter.getAnnotation(Option.class);
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = optionNames.get(i - 1);
-			final String description;
-			if (option == null) {
-				description = "No description";
-			} else {
-				if (option.description().isBlank()) {
-					description = "No description";
-				} else {
-					description = option.description();
-				}
-			}
+			final String description = applicationOptionData.getEffectiveDescription();
 
 			final OptionData data;
 			if (type == User.class || type == Member.class) {
@@ -116,7 +92,9 @@ public class SlashUtils {
 
 			list.add(data);
 
-			data.setRequired(!parameter.isAnnotationPresent(Optional.class));
+			data.setRequired(!applicationOptionData.isOptional());
+
+			i++;
 		}
 
 		return list;
@@ -148,26 +126,5 @@ public class SlashUtils {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);
-	}
-
-	private static String getOptionName(Parameter parameter) {
-		if (!parameter.isNamePresent())
-			throw new RuntimeException("Parameter name cannot be deduced as the slash command option's name is not specified on: " + parameter);
-
-		final String name = parameter.getName();
-		final int nameLength = name.length();
-		
-		final StringBuilder optionNameBuilder = new StringBuilder(nameLength + 10); //I doubt you'd have a parameter long enough to have more than 10 underscores
-		for (int i = 0; i < nameLength; i++) {
-			final char c = name.charAt(i);
-
-			if (Character.isUpperCase(c)) {
-				optionNameBuilder.append('_').append(Character.toLowerCase(c));
-			} else {
-				optionNameBuilder.append(c);
-			}
-		}
-
-		return optionNameBuilder.toString();
 	}
 }

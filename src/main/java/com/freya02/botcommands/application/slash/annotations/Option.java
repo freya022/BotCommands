@@ -14,6 +14,7 @@ import java.lang.annotation.Target;
  * <p>
  * {@linkplain #name()} is optional if parameter name is available (add -parameters to your java compiler)
  *
+ * <br><b>This needs to be used for context parameters too (in case of User or Message)</b>, of course name and description is ignored in that case
  * @see Optional
  */
 @Retention(RetentionPolicy.RUNTIME)

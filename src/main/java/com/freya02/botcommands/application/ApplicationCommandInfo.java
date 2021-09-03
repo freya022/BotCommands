@@ -2,6 +2,7 @@ package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.Cooldownable;
 import com.freya02.botcommands.annotation.RequireOwner;
+import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 
@@ -10,6 +11,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.internal.utils.AnnotationUtils.getAnnotationValue;
 
@@ -77,5 +80,11 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 
 	public boolean isOwnerOnly() {
 		return ownerOnly;
+	}
+	
+	public abstract MethodParameters<? extends ApplicationCommandParameter<?>> getParameters();
+
+	public List<? extends ApplicationCommandParameter<?>> getOptionParameters() {
+		return getParameters().stream().filter(ApplicationCommandParameter::isOption).collect(Collectors.toList());
 	}
 }
