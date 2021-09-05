@@ -143,7 +143,7 @@ public class ApplicationCommandsUpdater {
 
 		return guild.updateCommandPrivileges(cmdIdToPrivilegesMap).submit().thenAccept(privilegesMap -> {
 			try {
-				Files.write(privilegesCachePath, ApplicationCommandsCache.getPrivilegesBytes(cmdIdToPrivilegesMap), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+				Files.write(privilegesCachePath, ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 			} catch (IOException e) {
 				LOGGER.error("An exception occurred while temporarily saving guild ({} ({})) command privileges", guild.getName(), guild.getId(), e);
 			}
