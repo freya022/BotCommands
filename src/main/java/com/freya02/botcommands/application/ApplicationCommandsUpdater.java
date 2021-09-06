@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -33,7 +32,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.freya02.botcommands.application.slash.SlashUtils.*;
+import static com.freya02.botcommands.application.slash.SlashUtils.appendCommands;
+import static com.freya02.botcommands.application.slash.SlashUtils.getMethodOptions;
 
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -192,7 +192,7 @@ public class ApplicationCommandsUpdater {
 					final CommandPath notLocalizedPath = info.getPath();
 
 					try {
-						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info);
+						final LocalizedCommandData localizedCommandData = LocalizedCommandData.of(context, guild, info);
 
 						//Put localized option names in order to resolve them when called
 						final List<OptionData> localizedMethodOptions = getMethodOptions(info, localizedCommandData);
@@ -200,10 +200,10 @@ public class ApplicationCommandsUpdater {
 							info.putLocalizedOptions(guild.getIdLong(), localizedMethodOptions.stream().map(OptionData::getName).collect(Collectors.toList()));
 						}
 
-						localizedBaseNameToBaseName.put(getLocalizedPath(info, localizedCommandData).getName(), notLocalizedPath.getName());
+						localizedBaseNameToBaseName.put(localizedCommandData.getLocalizedPath().getName(), notLocalizedPath.getName());
 
-						final CommandPath localizedPath = getLocalizedPath(info, localizedCommandData);
-						final String description = getLocalizedDescription(info, localizedCommandData);
+						final CommandPath localizedPath = localizedCommandData.getLocalizedPath();
+						final String description = localizedCommandData.getLocalizedDescription();
 
 						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
 
@@ -286,12 +286,12 @@ public class ApplicationCommandsUpdater {
 					final CommandPath notLocalizedPath = info.getPath();
 
 					try {
-						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info);
+						final LocalizedCommandData localizedCommandData = LocalizedCommandData.of(context, guild, info);
 
-						localizedBaseNameToBaseName.put(getLocalizedPath(info, localizedCommandData).getName(), notLocalizedPath.getName());
+						localizedBaseNameToBaseName.put(localizedCommandData.getLocalizedPath().getName(), notLocalizedPath.getName());
 
 						// User command name
-						final CommandPath localizedPath = getLocalizedPath(info, localizedCommandData);
+						final CommandPath localizedPath = localizedCommandData.getLocalizedPath();
 
 						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
 
@@ -312,11 +312,6 @@ public class ApplicationCommandsUpdater {
 						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + notLocalizedPath, e);
 					}
 				});
-	}
-
-	@NotNull
-	private LocalizedCommandData getLocalizedCommandData(ApplicationCommandInfo info) {
-		return LocalizedCommandData.of(context, guild, info);
 	}
 
 	@Nonnull

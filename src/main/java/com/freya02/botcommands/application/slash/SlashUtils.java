@@ -4,7 +4,6 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.ApplicationCommandParameter;
-import com.freya02.botcommands.application.CommandPath;
 import com.freya02.botcommands.application.LocalizedCommandData;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -104,16 +103,6 @@ public class SlashUtils {
 		}
 
 		return list;
-	}
-
-	@Nonnull
-	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
-		return localizedCommandData.getLocalizedPath();
-	}
-
-	@Nonnull
-	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
-		return localizedCommandData.getLocalizedDescription();
 	}
 
 	@Nonnull
