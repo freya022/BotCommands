@@ -1,10 +1,16 @@
 package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.internal.application.CommandPathImpl;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents a path of a command, each path component is delimited with a /, it is the same representation as JDA commands paths given in {@link SlashCommandEvent#getCommandPath()}
+ * <br>The different components are name, group and subcommand.
+ * <br>This is mainly a utility class to avoid manipulating strings
+ */
 public interface CommandPath {
 	static CommandPath of(@Nonnull String name, @Nullable String group, @Nullable String subname) {
 		return new CommandPathImpl(name, group, subname);
