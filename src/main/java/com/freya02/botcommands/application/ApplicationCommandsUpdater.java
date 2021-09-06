@@ -110,6 +110,8 @@ public class ApplicationCommandsUpdater {
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
+		if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
+
 		if (Files.notExists(privilegesCachePath)) return true;
 
 		final byte[] oldBytes = Files.readAllBytes(privilegesCachePath);
