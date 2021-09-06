@@ -314,18 +314,20 @@ public class ApplicationCommandsUpdater {
 
 	@Nullable
 	private LocalizedCommandData getLocalizedCommandData(ApplicationCommandInfo info, @Nullable List<String> optionNames) {
-		final GuildApplicationSettings instance = info.getInstance();
-		final LocalizedCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
+//		final GuildApplicationSettings instance = info.getInstance();
+//		final LocalizedCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
+//
+//		if (localizedCommandData == null) {
+//			final SettingsProvider settingsProvider = context.getSettingsProvider();
+//
+//			if (settingsProvider != null) {
+//				return settingsProvider.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
+//			}
+//		}
+//
+//		return localizedCommandData;
 
-		if (localizedCommandData == null) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				return settingsProvider.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
-			}
-		}
-
-		return localizedCommandData;
+		return Localization.getData(context, guild, info);
 	}
 
 	@Nonnull

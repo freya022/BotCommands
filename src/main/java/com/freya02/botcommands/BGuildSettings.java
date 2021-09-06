@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 public interface BGuildSettings {
@@ -32,5 +33,9 @@ public interface BGuildSettings {
 	@Nonnull
 	default CommandList getGuildCommands() {
 		return CommandList.all();
+	}
+
+	default Locale getLocale() {
+		return Locale.getDefault();
 	}
 }

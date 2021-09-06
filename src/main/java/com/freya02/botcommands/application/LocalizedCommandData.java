@@ -2,13 +2,33 @@ package com.freya02.botcommands.application;
 
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class LocalizedCommandData {
+	public static final class LocalizedOption {
+		private final String name, description;
+
+		public LocalizedOption(@Nonnull String name, @Nonnull String description) {
+			this.name = name;
+			this.description = description;
+		}
+
+		@Nonnull
+		public String getName() {
+			return name;
+		}
+
+		@Nonnull
+		public String getDescription() {
+			return description;
+		}
+	}
+
 	@Nullable private final CommandPath localizedPath;
 	@Nullable private final String localizedDescription;
-	@Nullable private final List<String> localizedOptionNames;
+	@Nullable private final List<LocalizedOption> localizedOptionNames;
 	@Nullable private final List<List<SlashCommand.Choice>> localizedOptionChoices;
 
 	/**
@@ -22,7 +42,7 @@ public class LocalizedCommandData {
 	 */
 	public LocalizedCommandData(@Nullable String localizedPath,
 	                            @Nullable String localizedDescription,
-	                            @Nullable List<String> localizedOptionNames,
+	                            @Nullable List<LocalizedOption> localizedOptionNames,
 	                            @Nullable List<List<SlashCommand.Choice>> localizedOptionChoices) {
 		this.localizedPath = localizedPath == null ? null : CommandPath.of(localizedPath);
 		this.localizedDescription = localizedDescription;
@@ -41,7 +61,7 @@ public class LocalizedCommandData {
 	}
 
 	@Nullable
-	public List<String> getLocalizedOptionNames() {
+	public List<LocalizedOption> getLocalizedOptionNames() {
 		return localizedOptionNames;
 	}
 

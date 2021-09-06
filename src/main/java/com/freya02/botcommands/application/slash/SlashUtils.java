@@ -17,6 +17,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SlashUtils {
 	public static void appendCommands(List<Command> commands, StringBuilder sb) {
@@ -46,7 +47,7 @@ public class SlashUtils {
 
 	public static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
-		final List<String> optionNames = getLocalizedOptionNames(info, localizedCommandData);
+		final List<LocalizedCommandData.LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
@@ -59,8 +60,8 @@ public class SlashUtils {
 			final Class<?> type = parameter.getType();
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
-			final String name = optionNames.get(i - 1);
-			final String description = applicationOptionData.getEffectiveDescription();
+			final String name = optionNames.get(i - 1).getName();
+			final String description = optionNames.get(i - 1).getDescription();
 
 			final OptionData data;
 			if (type == User.class || type == Member.class) {
@@ -115,12 +116,22 @@ public class SlashUtils {
 	}
 
 	@Nonnull
-	private static List<String> getLocalizedOptionNames(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
+	private static List<LocalizedCommandData.LocalizedOption> getLocalizedOptions(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
-				? getMethodOptionNames(info)
-				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getMethodOptionNames(info));
+				? getNotLocalizedMethodOptions(info)
+				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getNotLocalizedMethodOptions(info));
 	}
-	
+
+	@Nonnull
+	private static List<LocalizedCommandData.LocalizedOption> getNotLocalizedMethodOptions(@Nonnull SlashCommandInfo info) {
+		return info.getParameters()
+				.stream()
+				.filter(ApplicationCommandParameter::isOption)
+				.map(ApplicationCommandParameter::getApplicationOptionData)
+				.map(param -> new LocalizedCommandData.LocalizedOption(param.getEffectiveName(), param.getEffectiveDescription()))
+				.collect(Collectors.toList());
+	}
+
 	@Nonnull
 	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null

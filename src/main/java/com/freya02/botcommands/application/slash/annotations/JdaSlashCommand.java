@@ -97,6 +97,16 @@ public @interface JdaSlashCommand {
 	 */
 	String subcommand() default "";
 
+//	/**
+//	 * Name of the resource bundle label that returns a path corresponding to the declared name, group and subcommand
+//	 * <p>
+//	 * This should look like <code>name/group/subcommand</code>
+//	 * <br>This is essentially joining path components with a <code>/</code> delimiter
+//	 *
+//	 * @return The resource bundle label for this command
+//	 */
+//	String localizedPath();
+
 	/**
 	 * Short description of the command, it is displayed in Discord
 	 *
