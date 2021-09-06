@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -191,8 +192,7 @@ public class ApplicationCommandsUpdater {
 					final CommandPath notLocalizedPath = info.getPath();
 
 					try {
-						final List<String> optionNames = getMethodOptionNames(info);
-						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info, optionNames);
+						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info);
 
 						//Put localized option names in order to resolve them when called
 						final List<OptionData> localizedMethodOptions = getMethodOptions(info, localizedCommandData);
@@ -286,7 +286,7 @@ public class ApplicationCommandsUpdater {
 					final CommandPath notLocalizedPath = info.getPath();
 
 					try {
-						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info, null);
+						final LocalizedCommandData localizedCommandData = getLocalizedCommandData(info);
 
 						localizedBaseNameToBaseName.put(getLocalizedPath(info, localizedCommandData).getName(), notLocalizedPath.getName());
 
@@ -314,22 +314,9 @@ public class ApplicationCommandsUpdater {
 				});
 	}
 
-	@Nullable
-	private LocalizedCommandData getLocalizedCommandData(ApplicationCommandInfo info, @Nullable List<String> optionNames) {
-//		final GuildApplicationSettings instance = info.getInstance();
-//		final LocalizedCommandData localizedCommandData = instance.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
-//
-//		if (localizedCommandData == null) {
-//			final SettingsProvider settingsProvider = context.getSettingsProvider();
-//
-//			if (settingsProvider != null) {
-//				return settingsProvider.getLocalizedCommandData(guild, info.getPath().getFullPath(), optionNames);
-//			}
-//		}
-//
-//		return localizedCommandData;
-
-		return Localization.getData(context, guild, info);
+	@NotNull
+	private LocalizedCommandData getLocalizedCommandData(ApplicationCommandInfo info) {
+		return LocalizedCommandData.of(context, guild, info);
 	}
 
 	@Nonnull

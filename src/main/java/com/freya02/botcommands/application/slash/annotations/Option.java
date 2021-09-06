@@ -24,6 +24,7 @@ public @interface Option {
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
 	 * <b>This is optional if parameter name is found</b>
+	 * <br>This can be a localization property
 	 *
 	 * @return Name of the option
 	 */
@@ -33,6 +34,7 @@ public @interface Option {
 	 * Description of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
 	 * <b>This is optional and defaulted with <code>"No Description"</code></b>
+	 * <br>This can be a localization property
 	 *
 	 * @return Description of the option
 	 */

@@ -78,6 +78,7 @@ public @interface JdaSlashCommand {
 
 	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
+	 * <br>This can be a localization property
 	 *
 	 * @return Name of the command
 	 */
@@ -85,6 +86,7 @@ public @interface JdaSlashCommand {
 
 	/**
 	 * Command group of this command, <b>must not contain any spaces and no upper cases</b>
+	 * <br>This can be a localization property
 	 *
 	 * @return Command group of the command
 	 */
@@ -92,23 +94,15 @@ public @interface JdaSlashCommand {
 
 	/**
 	 * Subcommand name of this command, <b>must not contain any spaces and no upper cases</b>
+	 * <br>This can be a localization property
 	 *
 	 * @return The subcommand name of this command
 	 */
 	String subcommand() default "";
 
-//	/**
-//	 * Name of the resource bundle label that returns a path corresponding to the declared name, group and subcommand
-//	 * <p>
-//	 * This should look like <code>name/group/subcommand</code>
-//	 * <br>This is essentially joining path components with a <code>/</code> delimiter
-//	 *
-//	 * @return The resource bundle label for this command
-//	 */
-//	String localizedPath();
-
 	/**
 	 * Short description of the command, it is displayed in Discord
+	 * <br>This can be a localization property
 	 *
 	 * @return Short description of the command
 	 */

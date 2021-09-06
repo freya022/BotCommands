@@ -1,5 +1,7 @@
 package com.freya02.botcommands.application.slash;
 
+import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.ApplicationCommandInfo;
 import com.freya02.botcommands.application.ApplicationCommandParameter;
 import com.freya02.botcommands.application.CommandPath;
@@ -13,11 +15,14 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.freya02.botcommands.application.LocalizedCommandData.LocalizedOption;
 
 public class SlashUtils {
 	public static void appendCommands(List<Command> commands, StringBuilder sb) {
@@ -33,7 +38,7 @@ public class SlashUtils {
 		}
 	}
 
-	public static List<String> getMethodOptionNames(ApplicationCommandInfo info) {
+	public static List<String> getMethodOptionNames(@NotNull ApplicationCommandInfo info) {
 		final List<String> list = new ArrayList<>();
 
 		for (ApplicationCommandParameter<?> parameter : info.getParameters()) {
@@ -45,9 +50,9 @@ public class SlashUtils {
 		return list;
 	}
 
-	public static List<OptionData> getMethodOptions(SlashCommandInfo info, LocalizedCommandData localizedCommandData) {
+	public static List<OptionData> getMethodOptions(@NotNull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
-		final List<LocalizedCommandData.LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
+		final List<LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
@@ -102,33 +107,56 @@ public class SlashUtils {
 	}
 
 	@Nonnull
-	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
-		return localizedCommandData == null
-				? info.getPath()
-				: Objects.requireNonNullElse(localizedCommandData.getLocalizedPath(), info.getPath());
+	public static CommandPath getLocalizedPath(@Nonnull ApplicationCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
+		return localizedCommandData.getLocalizedPath();
 	}
 
 	@Nonnull
-	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
-		return localizedCommandData == null
-				? info.getDescription()
-				: Objects.requireNonNullElse(localizedCommandData.getLocalizedDescription(), info.getDescription());
+	public static String getLocalizedDescription(@Nonnull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
+		return localizedCommandData.getLocalizedDescription();
 	}
 
 	@Nonnull
-	private static List<LocalizedCommandData.LocalizedOption> getLocalizedOptions(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
+	public static List<List<SlashCommand.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
+		List<List<SlashCommand.Choice>> optionsChoices = new ArrayList<>();
+
+		final int count = (int) info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
+		for (int optionIndex = 0; optionIndex < count; optionIndex++) {
+			optionsChoices.add(getNotLocalizedChoicesForCommand(context, guild, info, optionIndex));
+		}
+
+		return optionsChoices;
+	}
+
+	@Nonnull
+	private static List<SlashCommand.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
+		final List<SlashCommand.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
+
+		if (choices.isEmpty()) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				return settingsProvider.getOptionChoices(guild, info.getPath(), optionIndex);
+			}
+		}
+
+		return choices;
+	}
+
+	@Nonnull
+	private static List<LocalizedOption> getLocalizedOptions(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? getNotLocalizedMethodOptions(info)
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getNotLocalizedMethodOptions(info));
 	}
 
 	@Nonnull
-	private static List<LocalizedCommandData.LocalizedOption> getNotLocalizedMethodOptions(@Nonnull SlashCommandInfo info) {
+	private static List<LocalizedOption> getNotLocalizedMethodOptions(@Nonnull SlashCommandInfo info) {
 		return info.getParameters()
 				.stream()
 				.filter(ApplicationCommandParameter::isOption)
 				.map(ApplicationCommandParameter::getApplicationOptionData)
-				.map(param -> new LocalizedCommandData.LocalizedOption(param.getEffectiveName(), param.getEffectiveDescription()))
+				.map(param -> new LocalizedOption(param.getEffectiveName(), param.getEffectiveDescription()))
 				.collect(Collectors.toList());
 	}
 

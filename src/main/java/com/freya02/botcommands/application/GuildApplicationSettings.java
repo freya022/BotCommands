@@ -1,7 +1,9 @@
 package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.SettingsProvider;
+import com.freya02.botcommands.application.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 import javax.annotation.Nonnull;
@@ -18,19 +20,18 @@ import java.util.List;
  */
 public interface GuildApplicationSettings {
 	/**
-	 * Retrieves the localized command data for a command <b>(slash command, context command...)</b>
-	 * <br>A command path is the complete name, a application command displayed as <code>/name group subcommand</code> on Discord would be translated into <code>name/group/subcommand</code>
+	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link Option @Option})
+	 * <p>
+	 * <br><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
 	 *
-	 * @param guild       The Guild in which the command is, each guild will have their own command name, <code>null</code> for a global command
-	 * @param cmdPath     The path <b>(Not localized)</b> of the command such as <code>name/group/subcommand</code>
-	 * @param optionNames The option <b>(Not localized)</b> names that this command has, uppercase in method parameters are transformed into <code>_ + lowercase equivalent</code>
-	 *                    <br><b>This is null outside of slash commands</b>
-	 * @return A custom application command data for the specified command path in the specified {@link Guild}, this can be null
-	 * @see GuildApplicationSettings GuildSlashSettings for implementation notes
+	 * @param guild       The {@link Guild} in which the commands is, might be <code>null</code> for global commands with choices
+	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
+	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link Option @Option} there are, minus 1
+	 * @return The list of choices for this slash command's options
 	 */
-	@Nullable
-	default LocalizedCommandData getLocalizedCommandData(@Nullable Guild guild, @Nonnull String cmdPath, @Nullable List<String> optionNames) {
-		return new LocalizedCommandData(null, null, null, Collections.emptyList());
+	@Nonnull
+	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @Nonnull CommandPath commandPath, int optionIndex) {
+		return Collections.emptyList();
 	}
 
 	/**
