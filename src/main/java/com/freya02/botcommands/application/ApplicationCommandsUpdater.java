@@ -33,7 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.application.slash.SlashUtils.appendCommands;
-import static com.freya02.botcommands.application.slash.SlashUtils.getMethodOptions;
+import static com.freya02.botcommands.application.slash.SlashUtils.getLocalizedMethodOptions;
 
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -195,7 +195,7 @@ public class ApplicationCommandsUpdater {
 						final LocalizedCommandData localizedCommandData = LocalizedCommandData.of(context, guild, info);
 
 						//Put localized option names in order to resolve them when called
-						final List<OptionData> localizedMethodOptions = getMethodOptions(info, localizedCommandData);
+						final List<OptionData> localizedMethodOptions = getLocalizedMethodOptions(info, localizedCommandData);
 						if (guild != null) {
 							info.putLocalizedOptions(guild.getIdLong(), localizedMethodOptions.stream().map(OptionData::getName).collect(Collectors.toList()));
 						}

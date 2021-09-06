@@ -37,19 +37,7 @@ public class SlashUtils {
 		}
 	}
 
-	public static List<String> getMethodOptionNames(@NotNull ApplicationCommandInfo info) {
-		final List<String> list = new ArrayList<>();
-
-		for (ApplicationCommandParameter<?> parameter : info.getParameters()) {
-			if (!parameter.isOption()) continue;
-
-			list.add(parameter.getApplicationOptionData().getEffectiveName());
-		}
-		
-		return list;
-	}
-
-	public static List<OptionData> getMethodOptions(@NotNull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
+	public static List<OptionData> getLocalizedMethodOptions(@NotNull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
