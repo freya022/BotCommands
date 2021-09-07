@@ -20,6 +20,8 @@ import static com.freya02.botcommands.application.LocalizedCommandData.Localized
 
 class LocalizationData {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final Set<Locale> warnedMissingLocales = new HashSet<>();
+	private static boolean warnedMissingBundle;
 
 	private final CommandPath localizedPath;
 	private final String localizedDescription;
@@ -189,13 +191,19 @@ class LocalizationData {
 			final ResourceBundle bundle = ResourceBundle.getBundle("BotCommands", locale);
 			if (bundle.getLocale().toString().isBlank() && !locale.toString().isBlank()) { //Check if the bundle loaded is not a fallback
 				if (Locale.getDefault() != locale) { //No need to warn when the bundle choosed is the default one when the locale asked is the default one
-					LOGGER.warn("Tried to use a BotCommands bundle with locale '{}' but none was found, using default bundle", locale);
+					if (warnedMissingLocales.add(locale)) {
+						LOGGER.warn("Tried to use a BotCommands bundle with locale '{}' but none was found, using default bundle", locale);
+					}
 				}
 			}
 
 			return bundle;
 		} catch (MissingResourceException e) {
-			LOGGER.warn("Can't find resource BotCommands.properties which is used for localized strings, localization won't be used");
+			if (!warnedMissingBundle) {
+				warnedMissingBundle = true;
+
+				LOGGER.warn("Can't find resource BotCommands.properties which is used for localized strings, localization won't be used");
+			}
 
 			return null;
 		}
