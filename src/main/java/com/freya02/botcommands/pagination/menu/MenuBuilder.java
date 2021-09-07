@@ -14,6 +14,7 @@ public class MenuBuilder<T> extends BaseMenu<T, MenuBuilder<T>> {
 	 * Creates a new {@link Menu} builder
 	 *
 	 * @param userId       The ID of the only User who should be able to use this menu
+	 *                     <br>An ID of 0 means this menu will be usable by everyone
 	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
 	 * @param entries      The entries which should be displayed to the user
 	 */

@@ -16,6 +16,7 @@ public interface ComponentBuilder<T extends ComponentBuilder<T>> {
 	 * This means the component an only be interacted with by this user
 	 *
 	 * @param ownerId The ID of only user allowed to interact with this component
+	 *                <br>Passing 0 means everyone can use this component, you can thus skip this call
 	 * @return This component builder for chaining purposes
 	 */
 	T ownerId(long ownerId);

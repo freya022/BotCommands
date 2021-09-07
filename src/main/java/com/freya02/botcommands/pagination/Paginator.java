@@ -65,7 +65,7 @@ public class Paginator {
 
 	private String title, titleUrl;
 	private int page = 0;
-	private PaginationSupplier paginationSupplier = (builder, components, page1) -> { };
+	private PaginationSupplier paginationSupplier = (builder, components, page1) -> {};
 
 	/**
 	 * Creates a new paginator
@@ -85,6 +85,7 @@ public class Paginator {
 	 * Creates a new paginator
 	 *
 	 * @param userId       The ID of the only User who should be able to use this menu
+	 *                     <br>An ID of 0 means this paginator will be usable by everyone
 	 * @param maxPages     Maximum amount of pages in this paginator
 	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
 	 */
