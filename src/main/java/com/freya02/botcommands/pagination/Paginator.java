@@ -196,7 +196,7 @@ public class Paginator {
 	}
 
 	private void onDeleteClicked(ButtonEvent e) {
-		if (e.getMessage() != null) {
+		if (!e.getMessage().isEphemeral()) {
 			e.deferEdit().queue();
 			e.getMessage().delete().queue();
 		} else {

@@ -97,7 +97,7 @@
         <dependency>
             <groupId>com.github.aasmart</groupId>
             <artifactId>JDA</artifactId>
-            <version>f723763</version>
+            <version>ab0cf35</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

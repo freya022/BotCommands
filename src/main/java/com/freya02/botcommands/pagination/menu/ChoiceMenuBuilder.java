@@ -125,7 +125,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 		if (callback != null) {
 			callback.accept(e, choice);
 		} else {
-			if (e.getMessage() == null) { //Send a validation message for ephemeral replies
+			if (e.getMessage().isEphemeral()) { //Send a validation message for ephemeral replies
 				final MessageBuilder messageBuilder = new MessageBuilder();
 				final EmbedBuilder resultBuilder = new EmbedBuilder()
 						.setTitle(menu.getTitle())
