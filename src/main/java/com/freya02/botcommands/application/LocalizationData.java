@@ -3,6 +3,8 @@ package com.freya02.botcommands.application;
 import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.SettingsProvider;
+import com.freya02.botcommands.application.context.message.MessageCommandInfo;
+import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.application.slash.SlashUtils;
 import com.freya02.botcommands.internal.ApplicationOptionData;
@@ -29,9 +31,9 @@ class LocalizationData {
 	private final List<List<SlashCommand.Choice>> localizedChoices;
 
 	private LocalizationData(@Nonnull CommandPath localizedPath,
-	                        @Nullable String localizedDescription,
-	                        @Nullable List<LocalizedOption> localizedOptions,
-	                        @Nullable List<List<SlashCommand.Choice>> localizedChoices) {
+	                         @Nullable String localizedDescription,
+	                         @Nullable List<LocalizedOption> localizedOptions,
+	                         @Nullable List<List<SlashCommand.Choice>> localizedChoices) {
 		this.localizedPath = localizedPath;
 		this.localizedDescription = localizedDescription;
 		this.localizedOptions = localizedOptions;
@@ -52,21 +54,34 @@ class LocalizationData {
 			return null;
 		}
 
+		final String prefix;
+		if (info instanceof SlashCommandInfo) {
+			prefix = "slash";
+		} else if (info instanceof UserCommandInfo) {
+			prefix = "user";
+		} else if (info instanceof MessageCommandInfo) {
+			prefix = "message";
+		} else {
+			throw new IllegalArgumentException("Unknown localization prefix for class: " + info.getClass().getSimpleName());
+		}
+
+		final String qualifier = info.getCommandMethod().getName();
+
 		final StringJoiner pathJoiner = new StringJoiner("/");
-		pathJoiner.add(tryLocalize(bundle, info.getPath().getName()));
+		pathJoiner.add(tryLocalize(bundle, info.getPath().getName(), prefix, qualifier, "name"));
 
 		if (info instanceof SlashCommandInfo) {
 			final String notLocalizedGroup = info.getPath().getGroup();
 			final String notLocalizedSubname = info.getPath().getSubname();
 
-			if (notLocalizedGroup != null) pathJoiner.add(tryLocalize(bundle, notLocalizedGroup));
-			if (notLocalizedSubname != null) pathJoiner.add(tryLocalize(bundle, notLocalizedSubname));
+			if (notLocalizedGroup != null) pathJoiner.add(tryLocalize(bundle, notLocalizedGroup, prefix, qualifier, "group"));
+			if (notLocalizedSubname != null) pathJoiner.add(tryLocalize(bundle, notLocalizedSubname, prefix, qualifier, "subname"));
 		}
 
 		localizedPath = CommandPath.of(pathJoiner.toString());
 
 		if (info instanceof SlashCommandInfo) {
-			localizedDescription = tryLocalize(bundle, ((SlashCommandInfo) info).getDescription());
+			localizedDescription = tryLocalize(bundle, ((SlashCommandInfo) info).getDescription(), prefix, qualifier, "description");
 		} else localizedDescription = null;
 
 		if (info instanceof SlashCommandInfo) {
@@ -79,12 +94,12 @@ class LocalizationData {
 				ApplicationCommandParameter<?> parameter = parameters.get(optionIndex);
 
 				final ApplicationOptionData optionData = parameter.getApplicationOptionData();
-				final String optionName = tryLocalize(bundle, optionData.getEffectiveName());
-				final String optionDescription = tryLocalize(bundle, optionData.getEffectiveDescription());
+				final String optionName = tryLocalize(bundle, optionData.getEffectiveName(), prefix, qualifier, "options", optionIndex, "name");
+				final String optionDescription = tryLocalize(bundle, optionData.getEffectiveDescription(), prefix, qualifier, "options", optionIndex, "description");
 
 				localizedOptions.add(new LocalizedOption(optionName, optionDescription));
 
-				final List<SlashCommand.Choice> choices = getLocalizedChoices(bundle, notLocalizedChoices, optionIndex, parameter);
+				final List<SlashCommand.Choice> choices = getLocalizedChoices(bundle, prefix, qualifier, notLocalizedChoices, optionIndex, parameter);
 
 				localizedChoices.add(choices);
 			}
@@ -98,14 +113,19 @@ class LocalizationData {
 
 	@Nonnull
 	private static List<SlashCommand.Choice> getLocalizedChoices(ResourceBundle bundle,
+	                                                             String prefix,
+	                                                             String qualifier,
 	                                                             List<List<SlashCommand.Choice>> notLocalizedChoices,
 	                                                             int optionIndex,
 	                                                             ApplicationCommandParameter<?> parameter) {
 		final List<SlashCommand.Choice> choices = new ArrayList<>();
 
 		if (optionIndex < notLocalizedChoices.size()) {
-			for (SlashCommand.Choice notLocalizedChoice : notLocalizedChoices.get(optionIndex)) {
-				final String choiceName = tryLocalize(bundle, notLocalizedChoice.getName());
+			List<SlashCommand.Choice> choiceList = notLocalizedChoices.get(optionIndex);
+			for (int i = 0, getSize = choiceList.size(); i < getSize; i++) {
+				SlashCommand.Choice notLocalizedChoice = choiceList.get(i);
+
+				final String choiceName = tryLocalize(bundle, notLocalizedChoice.getName(), prefix, qualifier, "options", optionIndex, "choices", i, "name");
 
 				//Not really a great idea
 				if (parameter.getType() == long.class || parameter.getType() == Long.class) {
@@ -113,7 +133,7 @@ class LocalizationData {
 				} else if (parameter.getType() == double.class || parameter.getType() == Double.class) {
 					choices.add(new SlashCommand.Choice(choiceName, notLocalizedChoice.getAsDouble()));
 				} else {
-					final String choiceValue = tryLocalize(bundle, notLocalizedChoice.getAsString());
+					final String choiceValue = tryLocalize(bundle, notLocalizedChoice.getAsString(), prefix, qualifier, "options", optionIndex, "choices", i, "value");
 
 					choices.add(new SlashCommand.Choice(choiceName, choiceValue));
 				}
@@ -123,38 +143,20 @@ class LocalizationData {
 		return choices;
 	}
 
-	@Nonnull
-	public CommandPath getLocalizedPath() {
-		return localizedPath;
-	}
-
-	@Nullable
-	public String getLocalizedDescription() {
-		return localizedDescription;
-	}
-
-	@Nullable
-	public List<LocalizedOption> getLocalizedOptions() {
-		return localizedOptions;
-	}
-
-	@Nullable
-	public List<List<SlashCommand.Choice>> getLocalizedChoices() {
-		return localizedChoices;
-	}
-
 	@NotNull
-	private static String tryLocalize(ResourceBundle bundle, String propertyKey) {
+	private static String tryLocalize(@NotNull ResourceBundle bundle, @NotNull String propertyKey, Object... otherPath) {
 		final String value = getValue(bundle, propertyKey);
 
-		return Objects.requireNonNullElse(value, propertyKey);
+		if (value != null) return value;
+
+		final String value2 = getValue(bundle, otherPath);
+
+		return Objects.requireNonNullElse(value2, propertyKey);
 	}
 
 	@Nullable
-	private static String getValue(ResourceBundle bundle, Object path, Object... morePath) {
+	private static String getValue(ResourceBundle bundle, Object... morePath) {
 		final StringJoiner joiner = new StringJoiner(".");
-
-		joiner.add(path.toString());
 
 		for (Object s : morePath) {
 			joiner.add(s.toString());
@@ -207,5 +209,25 @@ class LocalizationData {
 
 			return null;
 		}
+	}
+
+	@Nonnull
+	public CommandPath getLocalizedPath() {
+		return localizedPath;
+	}
+
+	@Nullable
+	public String getLocalizedDescription() {
+		return localizedDescription;
+	}
+
+	@Nullable
+	public List<LocalizedOption> getLocalizedOptions() {
+		return localizedOptions;
+	}
+
+	@Nullable
+	public List<List<SlashCommand.Choice>> getLocalizedChoices() {
+		return localizedChoices;
 	}
 }
