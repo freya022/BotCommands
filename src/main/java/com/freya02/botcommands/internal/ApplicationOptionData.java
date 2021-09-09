@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.application.slash.annotations.Option;
+import com.freya02.botcommands.internal.utils.Utils;
 
 import java.lang.reflect.Parameter;
 
@@ -10,7 +10,7 @@ public class ApplicationOptionData {
 	private final boolean optional, isPrimitive;
 
 	public ApplicationOptionData(Parameter parameter) {
-		this.optional = parameter.isAnnotationPresent(Optional.class);
+		this.optional = Utils.isOptional(parameter);
 		this.isPrimitive = parameter.getType().isPrimitive();
 		
 		final Option option = parameter.getAnnotation(Option.class);

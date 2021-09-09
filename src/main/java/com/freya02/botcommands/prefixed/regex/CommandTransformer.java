@@ -1,6 +1,5 @@
 package com.freya02.botcommands.prefixed.regex;
 
-import com.freya02.botcommands.annotation.Optional;
 import com.freya02.botcommands.entities.Emoji;
 import com.freya02.botcommands.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.Logging;
@@ -131,6 +130,6 @@ public class CommandTransformer {
 	}
 
 	public static boolean isOptional(Method method, int paramNumber) {
-		return Arrays.stream(method.getParameterAnnotations()[paramNumber + 1 /* +1 for BaseCommandEvent */]).anyMatch(a -> a.annotationType() == Optional.class);
+		return Utils.isOptional(method.getParameters()[paramNumber + 1 /* +1 for BaseCommandEvent */]);
 	}
 }

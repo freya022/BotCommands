@@ -190,6 +190,8 @@ final class CommandsBuilderImpl {
 
 		setupContext(jda);
 
+		Utils.scanOptionals(classes);
+
 		buildClasses();
 
 		context.addEventListeners(

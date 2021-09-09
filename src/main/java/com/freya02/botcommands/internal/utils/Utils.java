@@ -4,6 +4,7 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.annotation.ConditionalUse;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.internal.Logging;
+import io.github.classgraph.*;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
@@ -13,12 +14,15 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +31,7 @@ public final class Utils {
 	private static final char[] chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?_^[]{}|".toCharArray();
 
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final Set<Parameter> optionalSet = new HashSet<>();
 
 	@SuppressWarnings("RedundantCast")
 	public static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
@@ -184,5 +189,41 @@ public final class Utils {
 				+ Arrays.stream(method.getParameterTypes())
 				.map(Class::getSimpleName)
 				.collect(Collectors.joining(", ", "(", ")"));
+	}
+
+	public static boolean isOptional(Parameter parameter) {
+		return optionalSet.contains(parameter);
+	}
+
+	public static void scanOptionals(Set<Class<?>> classes) {
+		final ScanResult result = new ClassGraph()
+				.acceptClasses(classes.stream().map(Class::getName).toArray(String[]::new))
+				.enableMethodInfo()
+				.enableAnnotationInfo()
+				.scan();
+
+		final ClassInfoList nullableInfos = result.getClassesWithMethodParameterAnnotation("org.jetbrains.annotations.Nullable")
+				.union(result.getClassesWithMethodParameterAnnotation("javax.annotation.Nullable"))
+				.union(result.getClassesWithMethodParameterAnnotation("com.freya02.botcommands.annotation.Optional"));
+
+		for (ClassInfo classInfo : nullableInfos) {
+			for (MethodInfo info : classInfo.getDeclaredMethodInfo()) {
+				final Method method = info.loadClassAndGetMethod();
+
+				for (MethodParameterInfo parameterInfo : info.getParameterInfo()) {
+					if (!parameterInfo.hasAnnotation("org.jetbrains.annotations.Nullable")
+							&& !parameterInfo.hasAnnotation("com.freya02.botcommands.annotation.Optional")
+							&& !parameterInfo.hasAnnotation("javax.annotation.Nullable")) continue;
+
+					for (Parameter parameter : method.getParameters()) {
+						if (parameterInfo.getName().equals(parameter.getName())) {
+							optionalSet.add(parameter);
+
+							break;
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -3,6 +3,7 @@ package com.freya02.botcommands.application.slash.annotations;
 import com.freya02.botcommands.annotation.Optional;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,7 +16,8 @@ import java.lang.annotation.Target;
  * {@linkplain #name()} is optional if parameter name is available (add -parameters to your java compiler)
  *
  * <br><b>This needs to be used for context parameters too (in case of User or Message)</b>, of course name and description is ignored in that case
- * @see Optional
+ * @see Optional Optional (can also see @Nullable)
+ * @see Nullable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
