@@ -7,9 +7,8 @@ import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateE
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiResolver() {
@@ -34,7 +33,7 @@ public class EmojiResolver extends ParameterResolver implements RegexParameterRe
 		return getEmoji(arg);
 	}
 
-	@Nonnull
+	@NotNull
 	private EmojiImpl getEmoji(String arg) {
 		return new EmojiImpl(EmojiUtils.resolveEmojis(arg));
 	}

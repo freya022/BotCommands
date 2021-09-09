@@ -3,8 +3,7 @@ package com.freya02.botcommands.application.context.user;
 import com.freya02.botcommands.BContext;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.internal.interactions.commands.UserCommandInteractionImpl;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class GlobalUserEvent extends UserContextCommandEvent {
 	private final BContext context;
@@ -15,7 +14,7 @@ public class GlobalUserEvent extends UserContextCommandEvent {
 		this.context = context;
 	}
 
-	@Nonnull
+	@NotNull
 	public BContext getContext() {
 		return context;
 	}

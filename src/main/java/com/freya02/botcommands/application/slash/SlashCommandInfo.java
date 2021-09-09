@@ -15,9 +15,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +64,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		this.description = annotation.description();
 	}
 	
-	public void putLocalizedOptions(long guildId, @Nonnull List<String> optionNames) {
+	public void putLocalizedOptions(long guildId, @NotNull List<String> optionNames) {
 		localizedOptionMap.put(guildId, optionNames);
 	}
 

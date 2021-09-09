@@ -4,9 +4,9 @@ import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,7 +49,7 @@ public abstract class Cooldownable {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	private Map<Long, Long> getGuildUserCooldownMap(Guild guild) {
 		return userCooldowns.computeIfAbsent(guild.getIdLong(), x -> Collections.synchronizedMap(new HashMap<>()));
 	}

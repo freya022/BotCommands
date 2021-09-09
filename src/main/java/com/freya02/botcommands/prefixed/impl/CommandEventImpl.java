@@ -13,9 +13,9 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +78,7 @@ public class CommandEventImpl extends CommandEvent {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	@SuppressWarnings("unchecked")
 	public <T> T nextArgument(Class<T> clazz) {
 		if (arguments.isEmpty()) {
@@ -95,7 +95,7 @@ public class CommandEventImpl extends CommandEvent {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	@SuppressWarnings({"unchecked"})
 	public <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException {
 		if (arguments.isEmpty()) {

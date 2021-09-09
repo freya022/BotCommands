@@ -2,8 +2,7 @@ package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class MessageResolver extends ParameterResolver implements MessageContextParameterResolver {
 	public MessageResolver() {

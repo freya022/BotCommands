@@ -5,9 +5,9 @@ import com.freya02.botcommands.annotation.ConditionalUse;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -124,7 +124,7 @@ public final class Utils {
 	/**
 	 * Returns the deepest cause of this throwable
 	 */
-	@Nonnull
+	@NotNull
 	public static Throwable getException(Throwable e) {
 		while (e.getCause() != null) {
 			e = e.getCause();
@@ -144,7 +144,7 @@ public final class Utils {
 		return sb.toString();
 	}
 
-	@Nonnull
+	@NotNull
 	public static ComponentManager getComponentManager(BContext context) {
 		if (context == null)
 			throw new IllegalStateException("The ComponentManager must be set in CommandsBuilder in order to use components (no BContext so assuming it didn't get set)");

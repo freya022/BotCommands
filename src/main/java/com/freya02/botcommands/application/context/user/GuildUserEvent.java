@@ -4,8 +4,7 @@ import com.freya02.botcommands.BContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class GuildUserEvent extends GlobalUserEvent {
 	public GuildUserEvent(BContext context, UserContextCommandEvent event) {
@@ -32,7 +31,7 @@ public class GuildUserEvent extends GlobalUserEvent {
 	 * @return The {@link Member}
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@Nonnull
+	@NotNull
 	@Override
 	public Member getMember() {
 		return super.getMember();
@@ -45,7 +44,7 @@ public class GuildUserEvent extends GlobalUserEvent {
 	 * @return The {@link Guild}
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@Nonnull
+	@NotNull
 	@Override
 	public Guild getGuild() {
 		return super.getGuild();

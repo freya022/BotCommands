@@ -18,9 +18,9 @@ import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,8 +70,8 @@ public class Components {
 	 * @param components The components to group
 	 * @return The exact same components for chaining purposes
 	 */
-	@Nonnull
-	public static Component[] group(@Nonnull Component... components) {
+	@NotNull
+	public static Component[] group(@NotNull Component... components) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(components)
 						.map(Component::getId)
@@ -88,8 +88,8 @@ public class Components {
 	 * @param components The components to group
 	 * @return The exact same components for chaining purposes
 	 */
-	@Nonnull
-	public static <T extends Collection<Component>> T group(@Nonnull T components) {
+	@NotNull
+	public static <T extends Collection<Component>> T group(@NotNull T components) {
 		Utils.getComponentManager(context).registerGroup(
 				components.stream()
 						.map(Component::getId)
@@ -106,8 +106,8 @@ public class Components {
 	 * @param rows The ActionRow's components to group
 	 * @return The exact same components for chaining purposes
 	 */
-	@Nonnull
-	public static ActionRow[] groupRows(@Nonnull ActionRow... rows) {
+	@NotNull
+	public static ActionRow[] groupRows(@NotNull ActionRow... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
 						.flatMap(row -> row.getComponents().stream())
@@ -124,8 +124,8 @@ public class Components {
 	 * @param rows The ActionRow's components to group
 	 * @return The exact same components for chaining purposes
 	 */
-	@Nonnull
-	public static <T extends Collection<ActionRow>> T groupRows(@Nonnull T rows) {
+	@NotNull
+	public static <T extends Collection<ActionRow>> T groupRows(@NotNull T rows) {
 		Utils.getComponentManager(context).registerGroup(
 				rows.stream()
 						.flatMap(row -> row.getComponents().stream())
@@ -142,9 +142,9 @@ public class Components {
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder primaryButton(@Nonnull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder primaryButton(@NotNull Consumer<ButtonEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.PRIMARY);
@@ -157,9 +157,9 @@ public class Components {
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder secondaryButton(@Nonnull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder secondaryButton(@NotNull Consumer<ButtonEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SECONDARY);
@@ -172,9 +172,9 @@ public class Components {
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder dangerButton(@Nonnull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder dangerButton(@NotNull Consumer<ButtonEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.DANGER);
@@ -187,9 +187,9 @@ public class Components {
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder successButton(@Nonnull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder successButton(@NotNull Consumer<ButtonEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SUCCESS);
@@ -202,9 +202,9 @@ public class Components {
 	 * @param consumer The {@link ButtonEvent} handler, fired after all conditions are met (defined when creating the button)
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static LambdaButtonBuilder button(@Nonnull ButtonStyle style, @Nonnull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull Consumer<ButtonEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, style);
@@ -220,7 +220,7 @@ public class Components {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	private static String[] processArgs(Object[] args) {
 		final String[] strings = new String[args.length];
 
@@ -245,9 +245,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder primaryButton(@Nonnull String handlerName, Object... args) {
+	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.PRIMARY);
 	}
 
@@ -259,9 +259,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder secondaryButton(@Nonnull String handlerName, Object... args) {
+	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SECONDARY);
 	}
 
@@ -273,9 +273,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder dangerButton(@Nonnull String handlerName, Object... args) {
+	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.DANGER);
 	}
 
@@ -287,9 +287,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder successButton(@Nonnull String handlerName, Object... args) {
+	public static PersistentButtonBuilder successButton(@NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SUCCESS);
 	}
 
@@ -301,9 +301,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A button builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _, _ -> new")
-	public static PersistentButtonBuilder button(@Nonnull ButtonStyle style, @Nonnull String handlerName, Object... args) {
+	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, Object... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), style);
 	}
 
@@ -314,9 +314,9 @@ public class Components {
 	 * @param consumer The {@link SelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
 	 * @return A selection menu builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_ -> new")
-	public static LambdaSelectionMenuBuilder selectionMenu(@Nonnull Consumer<SelectionEvent> consumer) {
+	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull Consumer<SelectionEvent> consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaSelectionMenuBuilder(context, consumer);
@@ -330,9 +330,9 @@ public class Components {
 	 * @param args        The args to pass to this component's handler method
 	 * @return A selection menu builder to configure behavior
 	 */
-	@Nonnull
+	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@Nonnull String handlerName, Object... args) {
+	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, Object... args) {
 		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }

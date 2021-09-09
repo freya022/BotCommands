@@ -23,10 +23,10 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -68,7 +68,7 @@ public class BContextImpl implements BContext {
 	private Function<Guild, DefaultMessages> defaultMessageProvider;
 
 	@Override
-	@Nonnull
+	@NotNull
 	public JDA getJDA() {
 		return jda;
 	}
@@ -78,7 +78,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public List<String> getPrefixes() {
 		return prefixes;
 	}
@@ -89,59 +89,59 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public List<Long> getOwnerIds() {
 		return ownerIds;
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public DefaultMessages getDefaultMessages(@Nullable Guild guild) {
 		return defaultMessageProvider.apply(guild);
 	}
 
-	public void setDefaultMessageProvider(@Nonnull Function<Guild, DefaultMessages> defaultMessageProvider) {
+	public void setDefaultMessageProvider(@NotNull Function<Guild, DefaultMessages> defaultMessageProvider) {
 		this.defaultMessageProvider = defaultMessageProvider;
 	}
 
 	@Override
 	@Nullable
-	public Command findCommand(@Nonnull String name) {
+	public Command findCommand(@NotNull String name) {
 		return commandMap.get(name);
 	}
 
 	@Nullable
 	@Override
-	public SlashCommandInfo findSlashCommand(@Nonnull CommandPath path) {
+	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
 		return getSlashCommandsMap().get(path);
 	}
 
 	@Nullable
 	@Override
-	public UserCommandInfo findUserCommand(@Nonnull String name) {
+	public UserCommandInfo findUserCommand(@NotNull String name) {
 		return getUserCommandsMap().get(CommandPath.ofName(name));
 	}
 
 	@Nullable
 	@Override
-	public MessageCommandInfo findMessageCommand(@Nonnull String name) {
+	public MessageCommandInfo findMessageCommand(@NotNull String name) {
 		return getMessageCommandsMap().get(CommandPath.ofName(name));
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nonnull
+	@NotNull
 	private Map<CommandPath, SlashCommandInfo> getSlashCommandsMap() {
 		return (Map<CommandPath, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<CommandPath, SlashCommandInfo>()));
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Nonnull
+	@NotNull
 	private Map<CommandPath, UserCommandInfo> getUserCommandsMap() {
 		return (Map<CommandPath, UserCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.USER_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, UserCommandInfo>()));
 	}
 
 	@SuppressWarnings("unchecked")
-	@Nonnull
+	@NotNull
 	private Map<CommandPath, MessageCommandInfo> getMessageCommandsMap() {
 		return (Map<CommandPath, MessageCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.MESSAGE_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, MessageCommandInfo>()));
 	}
@@ -155,7 +155,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @Nonnull Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
+	public @NotNull Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
 		return defaultEmbedSupplier;
 	}
 
@@ -164,7 +164,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @Nonnull Supplier<InputStream> getDefaultFooterIconSupplier() {
+	public @NotNull Supplier<InputStream> getDefaultFooterIconSupplier() {
 		return defaultFooterIconSupplier;
 	}
 

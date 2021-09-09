@@ -12,10 +12,9 @@ import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static com.freya02.botcommands.application.LocalizedCommandData.LocalizedOption;
@@ -30,7 +29,7 @@ class LocalizationData {
 	private final List<LocalizedOption> localizedOptions;
 	private final List<List<SlashCommand.Choice>> localizedChoices;
 
-	private LocalizationData(@Nonnull CommandPath localizedPath,
+	private LocalizationData(@NotNull CommandPath localizedPath,
 	                         @Nullable String localizedDescription,
 	                         @Nullable List<LocalizedOption> localizedOptions,
 	                         @Nullable List<List<SlashCommand.Choice>> localizedChoices) {
@@ -40,7 +39,7 @@ class LocalizationData {
 		this.localizedChoices = localizedChoices;
 	}
 
-	public static LocalizationData getData(BContext context, @Nullable Guild guild, @Nonnull ApplicationCommandInfo info) {
+	public static LocalizationData getData(BContext context, @Nullable Guild guild, @NotNull ApplicationCommandInfo info) {
 		final CommandPath localizedPath;
 		final String localizedDescription;
 		final List<LocalizedOption> localizedOptions;
@@ -111,7 +110,7 @@ class LocalizationData {
 		return new LocalizationData(localizedPath, localizedDescription, localizedOptions, localizedChoices);
 	}
 
-	@Nonnull
+	@NotNull
 	private static List<SlashCommand.Choice> getLocalizedChoices(ResourceBundle bundle,
 	                                                             String prefix,
 	                                                             String qualifier,
@@ -211,7 +210,7 @@ class LocalizationData {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	public CommandPath getLocalizedPath() {
 		return localizedPath;
 	}

@@ -12,9 +12,9 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -29,7 +29,7 @@ public interface BContext {
 	 *
 	 * @return the JDA instance of this context
 	 */
-	@Nonnull
+	@NotNull
 	JDA getJDA();
 
 	/**
@@ -37,7 +37,7 @@ public interface BContext {
 	 *
 	 * @return Full list of prefixes
 	 */
-	@Nonnull
+	@NotNull
 	List<String> getPrefixes();
 
 	/**
@@ -45,7 +45,7 @@ public interface BContext {
 	 *
 	 * @return The preferred prefix
 	 */
-	@Nonnull
+	@NotNull
 	default String getPrefix() {
 		return getPrefixes().get(0);
 	}
@@ -62,7 +62,7 @@ public interface BContext {
 	 *
 	 * @return a list of IDs of the bot owners
 	 */
-	@Nonnull
+	@NotNull
 	List<Long> getOwnerIds();
 
 	/**
@@ -75,7 +75,7 @@ public interface BContext {
 		return getOwnerIds().contains(userId);
 	}
 
-	@Nonnull
+	@NotNull
 	DefaultMessages getDefaultMessages(@Nullable Guild guild);
 
 	/**
@@ -85,7 +85,7 @@ public interface BContext {
 	 * @return The {@linkplain Command} object of the command name
 	 */
 	@Nullable
-	Command findCommand(@Nonnull String name);
+	Command findCommand(@NotNull String name);
 
 	/**
 	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
@@ -94,7 +94,7 @@ public interface BContext {
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	SlashCommandInfo findSlashCommand(@Nonnull CommandPath name);
+	SlashCommandInfo findSlashCommand(@NotNull CommandPath name);
 
 	/**
 	 * Returns the {@link UserCommandInfo} object of the specified user context command name
@@ -103,7 +103,7 @@ public interface BContext {
 	 * @return The {@link UserCommandInfo} object of the user context command
 	 */
 	@Nullable
-	UserCommandInfo findUserCommand(@Nonnull String name);
+	UserCommandInfo findUserCommand(@NotNull String name);
 
 	/**
 	 * Returns the {@link MessageCommandInfo} object of the specified message context command name
@@ -112,7 +112,7 @@ public interface BContext {
 	 * @return The {@link MessageCommandInfo} object of the message context command
 	 */
 	@Nullable
-	MessageCommandInfo findMessageCommand(@Nonnull String name);
+	MessageCommandInfo findMessageCommand(@NotNull String name);
 
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
@@ -127,7 +127,7 @@ public interface BContext {
 	 * @return The default {@linkplain EmbedBuilder} supplier
 	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
 	 */
-	@Nonnull
+	@NotNull
 	Supplier<EmbedBuilder> getDefaultEmbedSupplier();
 
 	/**
@@ -136,7 +136,7 @@ public interface BContext {
 	 * @return The default icon {@linkplain InputStream} supplier
 	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
 	 */
-	@Nonnull
+	@NotNull
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**

@@ -4,8 +4,8 @@ import com.freya02.botcommands.BContext;
 import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 
 public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder {
@@ -35,7 +35,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 		return args;
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public SelectionMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);

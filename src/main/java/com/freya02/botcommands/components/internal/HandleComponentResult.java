@@ -1,8 +1,7 @@
 package com.freya02.botcommands.components.internal;
 
 import com.freya02.botcommands.components.ComponentErrorReason;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class HandleComponentResult {
 	private final ComponentErrorReason errorReason;

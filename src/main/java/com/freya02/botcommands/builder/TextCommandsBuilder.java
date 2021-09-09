@@ -7,8 +7,8 @@ import com.freya02.botcommands.prefixed.MessageInfo;
 import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
 import com.freya02.botcommands.prefixed.annotation.AddSubcommandHelp;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -60,7 +60,7 @@ public final class TextCommandsBuilder {
 	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid, can do nothing
 	 * @return This builder for chaining convenience
 	 */
-	public TextCommandsBuilder disableHelpCommand(@Nonnull Consumer<BaseCommandEvent> helpConsumer) {
+	public TextCommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
 		this.context.overrideHelp(helpConsumer);
 
 		return this;

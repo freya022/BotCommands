@@ -1,8 +1,7 @@
 package com.freya02.botcommands.parameters;
 
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public interface UserContextParameterResolver {
 	@Nullable

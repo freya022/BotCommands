@@ -15,9 +15,8 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -93,7 +92,7 @@ public class SlashUtils {
 		return list;
 	}
 
-	@Nonnull
+	@NotNull
 	public static List<List<SlashCommand.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
 		List<List<SlashCommand.Choice>> optionsChoices = new ArrayList<>();
 
@@ -105,7 +104,7 @@ public class SlashUtils {
 		return optionsChoices;
 	}
 
-	@Nonnull
+	@NotNull
 	private static List<SlashCommand.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
 		final List<SlashCommand.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
 
@@ -120,15 +119,15 @@ public class SlashUtils {
 		return choices;
 	}
 
-	@Nonnull
-	private static List<LocalizedOption> getLocalizedOptions(@Nonnull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
+	@NotNull
+	private static List<LocalizedOption> getLocalizedOptions(@NotNull SlashCommandInfo info, @Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? getNotLocalizedMethodOptions(info)
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionNames(), () -> getNotLocalizedMethodOptions(info));
 	}
 
-	@Nonnull
-	private static List<LocalizedOption> getNotLocalizedMethodOptions(@Nonnull SlashCommandInfo info) {
+	@NotNull
+	private static List<LocalizedOption> getNotLocalizedMethodOptions(@NotNull SlashCommandInfo info) {
 		return info.getParameters()
 				.stream()
 				.filter(ApplicationCommandParameter::isOption)
@@ -137,7 +136,7 @@ public class SlashUtils {
 				.collect(Collectors.toList());
 	}
 
-	@Nonnull
+	@NotNull
 	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.

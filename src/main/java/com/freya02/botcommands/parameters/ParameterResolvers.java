@@ -3,9 +3,9 @@ package com.freya02.botcommands.parameters;
 import com.freya02.botcommands.entities.Emoji;
 import com.freya02.botcommands.entities.EmojiOrEmote;
 import net.dv8tion.jda.api.entities.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class ParameterResolvers {
 		register(new MessageResolver());
 	}
 
-	public static void register(@Nonnull ParameterResolver resolver) {
+	public static void register(@NotNull ParameterResolver resolver) {
 		boolean hasInterface = false;
 		for (Class<?> possibleInterface : possibleInterfaces) {
 			if (possibleInterface.isAssignableFrom(resolver.getClass())) {

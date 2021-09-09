@@ -6,8 +6,8 @@ import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.parameters.CustomResolver;
 import com.freya02.botcommands.parameters.ParameterResolver;
 import com.freya02.botcommands.parameters.ParameterResolvers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Parameter;
 
 public abstract class ApplicationCommandParameter<RESOLVER> {
@@ -49,7 +49,7 @@ public abstract class ApplicationCommandParameter<RESOLVER> {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	public Class<?> getType() {
 		return type;
 	}

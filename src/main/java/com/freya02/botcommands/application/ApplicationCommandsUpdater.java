@@ -19,10 +19,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +53,7 @@ public class ApplicationCommandsUpdater {
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 
-	private ApplicationCommandsUpdater(@Nonnull BContextImpl context, @Nullable Guild guild) throws IOException {
+	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild) throws IOException {
 		this.context = context;
 		this.guild = guild;
 
@@ -74,11 +74,11 @@ public class ApplicationCommandsUpdater {
 		computeCommands();
 	}
 
-	public static ApplicationCommandsUpdater ofGlobal(@Nonnull BContextImpl context) throws IOException {
+	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context) throws IOException {
 		return new ApplicationCommandsUpdater(context, null);
 	}
 
-	public static ApplicationCommandsUpdater ofGuild(@Nonnull BContextImpl context, @Nonnull Guild guild) throws IOException {
+	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild) throws IOException {
 		return new ApplicationCommandsUpdater(context, guild);
 	}
 
@@ -135,7 +135,7 @@ public class ApplicationCommandsUpdater {
 		}
 	}
 
-	private CompletableFuture<?> updatePrivileges0(@Nonnull Guild guild, @Nonnull List<Command> commands) {
+	private CompletableFuture<?> updatePrivileges0(@NotNull Guild guild, @NotNull List<Command> commands) {
 		for (Command command : commands) {
 			final Collection<? extends CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
 
@@ -314,8 +314,8 @@ public class ApplicationCommandsUpdater {
 				});
 	}
 
-	@Nonnull
-	private List<CommandPrivilege> getCommandPrivileges(@Nonnull Guild guild, @Nonnull ApplicationCommandInfo info) {
+	@NotNull
+	private List<CommandPrivilege> getCommandPrivileges(@NotNull Guild guild, @NotNull ApplicationCommandInfo info) {
 		final List<CommandPrivilege> instancePrivileges = info.getInstance().getCommandPrivileges(guild, info.getPath().getName());
 		if (!instancePrivileges.isEmpty()) {
 			return instancePrivileges;
@@ -330,7 +330,7 @@ public class ApplicationCommandsUpdater {
 		return List.of();
 	}
 
-	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future, @Nonnull Guild guild) {
+	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future, @NotNull Guild guild) {
 		return future.thenAccept(commands -> {
 			for (Command command : commands) {
 				if (command instanceof SlashCommand) {
@@ -381,7 +381,7 @@ public class ApplicationCommandsUpdater {
 
 	//See how to integrate this step on the command build in order to use localized base names instead of resolving the not-localized one
 	//Could do it here but would result in a 2nd localized data call
-	private void computePrivileges(@Nonnull List<ApplicationCommandInfo> guildApplicationCommands, @Nonnull Guild guild) {
+	private void computePrivileges(@NotNull List<ApplicationCommandInfo> guildApplicationCommands, @NotNull Guild guild) {
 		for (ApplicationCommandInfo info : guildApplicationCommands) {
 			final List<CommandPrivilege> commandPrivileges = new ArrayList<>(10);
 			final List<CommandPrivilege> applicationPrivileges = getCommandPrivileges(guild, info);
@@ -408,7 +408,7 @@ public class ApplicationCommandsUpdater {
 
 	//I am aware that the type is always CommandType#SLASH, still use a parameter to mimic how ApplicationCommandMap functions and for future proof uses
 	@SuppressWarnings("SameParameterValue")
-	@Nonnull
+	@NotNull
 	private SubcommandGroupData getSubcommandGroup(CommandType type, CommandPath path, Function<String, CommandData> baseCommandSupplier) {
 		if (path.getGroup() == null)
 			throw new IllegalArgumentException("Group component of command path is null at '" + path + "'");

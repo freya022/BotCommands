@@ -1,6 +1,6 @@
 package com.freya02.botcommands.components;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public enum ComponentType {
 	PERSISTENT_BUTTON(0),

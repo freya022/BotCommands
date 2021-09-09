@@ -5,8 +5,8 @@ import com.freya02.botcommands.ConstructorParameterSupplier;
 import com.freya02.botcommands.InstanceSupplier;
 import com.freya02.botcommands.annotation.Dependency;
 import com.freya02.botcommands.prefixed.Command;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -8,10 +8,10 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * </ul>
  */
 public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
-	public BaseCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
+	public BaseCommandEvent(@NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
 	}
 
@@ -79,7 +79,7 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @return The Author of the Message as Member object.
 	 */
 	@SuppressWarnings("ConstantConditions")
-	@Nonnull
+	@NotNull
 	@Override
 	public Member getMember() {
 		return super.getMember();
@@ -90,7 +90,7 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 *
 	 * @return Default embed of the bot
 	 */
-	@Nonnull
+	@NotNull
 	public abstract EmbedBuilder getDefaultEmbed();
 
 	/**
@@ -158,8 +158,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> respond(@Nonnull CharSequence text);
+	@NotNull
+	public abstract RestAction<Message> respond(@NotNull CharSequence text);
 
 	/**
 	 * Sends a response in the event's channel
@@ -170,8 +170,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> respondFormat(@Nonnull String format, @Nonnull Object... args);
+	@NotNull
+	public abstract RestAction<Message> respondFormat(@NotNull String format, @NotNull Object... args);
 
 	/**
 	 * Sends a response in the event's channel
@@ -182,8 +182,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> respond(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other);
+	@NotNull
+	public abstract RestAction<Message> respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a response in the event's channel
@@ -195,8 +195,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> respondFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options);
+	@NotNull
+	public abstract RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
 
 	/**
 	 * Sends a file as a response in the event's channel
@@ -208,8 +208,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> respondFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options);
+	@NotNull
+	public abstract RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -219,8 +219,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> reply(@Nonnull CharSequence text);
+	@NotNull
+	public abstract RestAction<Message> reply(@NotNull CharSequence text);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -231,8 +231,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> replyFormat(@Nonnull String format, @Nonnull Object... args);
+	@NotNull
+	public abstract RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -243,8 +243,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> reply(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other);
+	@NotNull
+	public abstract RestAction<Message> reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a reply in the event's channel
@@ -256,8 +256,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> replyFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options);
+	@NotNull
+	public abstract RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
 
 	/**
 	 * Sends a file as a reply in the event's channel
@@ -269,8 +269,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> replyFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options);
+	@NotNull
+	public abstract RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
 
 	/**
 	 * Sends an error reply in the event's channel
@@ -280,8 +280,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> indicateError(@Nonnull CharSequence text);
+	@NotNull
+	public abstract RestAction<Message> indicateError(@NotNull CharSequence text);
 
 	/**
 	 * Sends an error reply in the event's channel
@@ -292,8 +292,8 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> indicateErrorFormat(@Nonnull String format, @Nonnull Object... args);
+	@NotNull
+	public abstract RestAction<Message> indicateErrorFormat(@NotNull String format, @NotNull Object... args);
 
 	/**
 	 * Sends an error reply in the event's channel
@@ -304,6 +304,6 @@ public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
-	@Nonnull
-	public abstract RestAction<Message> indicateError(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other);
+	@NotNull
+	public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 }

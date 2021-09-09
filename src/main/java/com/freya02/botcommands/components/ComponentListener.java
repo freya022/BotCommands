@@ -11,9 +11,9 @@ import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,13 +59,13 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {
+	public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
 		if (!(event instanceof ButtonClickEvent) && !(event instanceof SelectionMenuEvent)) return;
 
 		idHandlingExecutor.submit(() -> handleComponentInteraction(event));
 	}
 
-	private void handleComponentInteraction(@Nonnull GenericComponentInteractionCreateEvent event) {
+	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) {
 		final ComponentType idType = componentManager.getIdType(event.getComponentId());
 
 		if (idType == null) {

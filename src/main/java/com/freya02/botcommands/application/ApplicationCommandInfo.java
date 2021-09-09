@@ -5,8 +5,8 @@ import com.freya02.botcommands.annotation.RequireOwner;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 	protected final EnumSet<Permission> userPermissions = EnumSet.noneOf(Permission.class);
 	protected final EnumSet<Permission> botPermissions = EnumSet.noneOf(Permission.class);
 
-	protected <A extends Annotation> ApplicationCommandInfo(@Nonnull ApplicationCommand instance, @Nonnull A annotation, @Nonnull Method commandMethod, String... nameComponents) {
+	protected <A extends Annotation> ApplicationCommandInfo(@NotNull ApplicationCommand instance, @NotNull A annotation, @NotNull Method commandMethod, String... nameComponents) {
 		super(getAnnotationValue(annotation, "cooldownScope"),
 				getAnnotationValue(annotation, "cooldown"));
 		this.instance = instance;
@@ -52,7 +52,7 @@ public abstract class ApplicationCommandInfo extends Cooldownable {
 		Collections.addAll(this.botPermissions, botPermissions);
 	}
 
-	@Nonnull
+	@NotNull
 	public ApplicationCommand getInstance() {
 		return instance;
 	}

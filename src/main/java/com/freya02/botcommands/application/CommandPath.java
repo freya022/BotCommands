@@ -2,9 +2,8 @@ package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.internal.application.CommandPathImpl;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a path of a command, each path component is delimited with a /, it is the same representation as JDA commands paths given in {@link SlashCommandEvent#getCommandPath()}
@@ -12,19 +11,19 @@ import javax.annotation.Nullable;
  * <br>This is mainly a utility class to avoid manipulating strings
  */
 public interface CommandPath {
-	static CommandPath of(@Nonnull String name, @Nullable String group, @Nullable String subname) {
+	static CommandPath of(@NotNull String name, @Nullable String group, @Nullable String subname) {
 		return new CommandPathImpl(name, group, subname);
 	}
 
-	static CommandPath of(@Nonnull String name, @Nullable String subname) {
+	static CommandPath of(@NotNull String name, @Nullable String subname) {
 		return new CommandPathImpl(name, null, subname);
 	}
 
-	static CommandPath ofName(@Nonnull String name) {
+	static CommandPath ofName(@NotNull String name) {
 		return new CommandPathImpl(name, null, null);
 	}
 
-	static CommandPath of(@Nonnull String path) {
+	static CommandPath of(@NotNull String path) {
 		final String[] components = path.split("/");
 
 		return of(components);
@@ -42,7 +41,7 @@ public interface CommandPath {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	String getName();
 
 	@Nullable

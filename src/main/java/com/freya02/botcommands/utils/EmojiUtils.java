@@ -2,8 +2,8 @@ package com.freya02.botcommands.utils;
 
 import com.freya02.emojis.Emojis;
 import net.dv8tion.jda.api.entities.Emoji;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
 
 public class EmojiUtils {
@@ -13,7 +13,7 @@ public class EmojiUtils {
 	 * @param input An emoji shortcode
 	 * @return The unicode string of this emoji
 	 */
-	@Nonnull
+	@NotNull
 	public static String resolveEmojis(String input) {
 		final com.freya02.emojis.Emoji emoji = Emojis.ofShortcode(input);
 

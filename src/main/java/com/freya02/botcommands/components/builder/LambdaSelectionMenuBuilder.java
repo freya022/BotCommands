@@ -5,8 +5,8 @@ import com.freya02.botcommands.components.ComponentManager;
 import com.freya02.botcommands.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -29,7 +29,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 		return consumer;
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public SelectionMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);

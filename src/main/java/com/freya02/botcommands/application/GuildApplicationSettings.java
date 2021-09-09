@@ -5,9 +5,9 @@ import com.freya02.botcommands.application.slash.annotations.Option;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,8 +29,8 @@ public interface GuildApplicationSettings {
 	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link Option @Option} there are, minus 1
 	 * @return The list of choices for this slash command's options
 	 */
-	@Nonnull
-	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @Nonnull CommandPath commandPath, int optionIndex) {
+	@NotNull
+	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
 		return Collections.emptyList();
 	}
 
@@ -41,8 +41,8 @@ public interface GuildApplicationSettings {
 	 * @param guild       The guild of the command
 	 * @return An empty Collection if the permissions should be cleared, or the privileges to apply to it.
 	 */
-	@Nonnull
-	default List<CommandPrivilege> getCommandPrivileges(@Nonnull Guild guild, @Nonnull String cmdBaseName) {
+	@NotNull
+	default List<CommandPrivilege> getCommandPrivileges(@NotNull Guild guild, @NotNull String cmdBaseName) {
 		return Collections.emptyList();
 	}
 }

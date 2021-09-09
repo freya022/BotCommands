@@ -6,9 +6,8 @@ import com.freya02.botcommands.application.slash.SlashUtils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +37,7 @@ public class LocalizedCommandData {
 		this.localizedOptionChoices = localizedOptionChoices;
 	}
 
-	public static LocalizedCommandData of(@Nonnull BContext context, @Nullable Guild guild, @NotNull ApplicationCommandInfo info) {
+	public static LocalizedCommandData of(@NotNull BContext context, @Nullable Guild guild, @NotNull ApplicationCommandInfo info) {
 		final LocalizationData data = LocalizationData.getData(context, guild, info);
 
 		final CommandPath localizedPath;

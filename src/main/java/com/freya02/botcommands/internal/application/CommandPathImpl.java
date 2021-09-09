@@ -2,9 +2,9 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.application.CommandPath;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.StringJoiner;
 
 public class CommandPathImpl implements CommandPath {
@@ -14,7 +14,7 @@ public class CommandPathImpl implements CommandPath {
 	private final String path;
 	private final int count;
 
-	public CommandPathImpl(@Nonnull String name, @Nullable String group, @Nullable String subname) {
+	public CommandPathImpl(@NotNull String name, @Nullable String group, @Nullable String subname) {
 		Checks.notBlank(name, "Command base name");
 		if (group != null) Checks.notBlank(group, "Subcommand group name");
 		if (subname != null) Checks.notBlank(subname, "Subcommand name");
@@ -42,7 +42,7 @@ public class CommandPathImpl implements CommandPath {
 		this.count = count;
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public String getName() {
 		return name;

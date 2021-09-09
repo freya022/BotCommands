@@ -6,9 +6,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,12 +25,12 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGuildAvailable(@Nonnull GuildAvailableEvent event) {
+	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
 		tryUpdate(event.getGuild());
 	}
 
 	@Override
-	public void onGuildJoin(@Nonnull GuildJoinEvent event) {
+	public void onGuildJoin(@NotNull GuildJoinEvent event) {
 		tryUpdate(event.getGuild());
 	}
 

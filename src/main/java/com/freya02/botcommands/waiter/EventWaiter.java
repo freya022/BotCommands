@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -144,14 +144,14 @@ public class EventWaiter extends ListenerAdapter {
 		return future;
 	}
 
-	@Nonnull
+	@NotNull
 	private static <T extends GenericEvent> List<WaitingEvent<?>> getWaitingEventsByType(WaitingEvent<T> waitingEvent) {
 		return waitingMap.computeIfAbsent(waitingEvent.getEventType(), x -> Collections.synchronizedList(new ArrayList<>()));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onGenericEvent(@Nonnull GenericEvent event) {
+	public void onGenericEvent(@NotNull GenericEvent event) {
 		final List<WaitingEvent<? extends GenericEvent>> waitingEvents = waitingMap.get(event.getClass());
 
 		if (waitingEvents != null) {

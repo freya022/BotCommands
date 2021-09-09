@@ -9,8 +9,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -51,7 +51,7 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
 	 * @return The argument of type T if it exists
 	 * @throws NoSuchElementException In case there is no more arguments to be read
 	 */
-	@Nonnull
+	@NotNull
 	public abstract <T> T nextArgument(Class<T> clazz);
 
 	/**
@@ -64,6 +64,6 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
 	 * @throws NoIdException          In case there is no ID / IMentionable in the message
 	 * @throws NoSuchElementException In case there is no more arguments to be read, or the type isn't the same
 	 */
-	@Nonnull
+	@NotNull
 	public abstract <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException;
 }

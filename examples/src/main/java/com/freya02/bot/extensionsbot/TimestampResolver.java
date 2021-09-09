@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.api.utils.Timestamp;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TimestampResolver extends ParameterResolver implements SlashParameterResolver, ComponentParameterResolver {
 	public TimestampResolver() {

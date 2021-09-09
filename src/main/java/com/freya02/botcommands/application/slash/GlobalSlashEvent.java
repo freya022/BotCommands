@@ -4,11 +4,10 @@ import com.freya02.botcommands.BContext;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class GlobalSlashEvent extends SlashCommandEvent {
-	public GlobalSlashEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction) {
+	public GlobalSlashEvent(@NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
 		super(api, responseNumber, interaction);
 	}
 

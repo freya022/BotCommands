@@ -2,8 +2,8 @@ package com.freya02.botcommands.parameters;
 
 import com.freya02.botcommands.application.slash.annotations.Option;
 import net.dv8tion.jda.api.events.Event;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Function;
 
 /**

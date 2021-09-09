@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public final class ApplicationCommandsBuilder {
 	private final BContextImpl context;
 	private final List<Long> slashGuildIds;
 
-	public ApplicationCommandsBuilder(@Nonnull BContextImpl context, List<Long> slashGuildIds) {
+	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
 		this.context.setSlashCommandsBuilder(this);
 		this.slashGuildIds = slashGuildIds;

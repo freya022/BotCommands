@@ -18,9 +18,9 @@ import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.Interaction;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +44,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onUserContextCommand(@Nonnull UserContextCommandEvent event) {
+	public void onUserContextCommand(@NotNull UserContextCommandEvent event) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Received user command: {}", event.getName());
 		}
@@ -66,7 +66,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onMessageContextCommand(@Nonnull MessageContextCommandEvent event) {
+	public void onMessageContextCommand(@NotNull MessageContextCommandEvent event) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Received message command: {}", event.getName());
 		}
@@ -88,7 +88,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onSlashCommand(@Nonnull SlashCommandEvent event) {
+	public void onSlashCommand(@NotNull SlashCommandEvent event) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Received slash command: {}", reconstructCommand(event));
 		}
@@ -109,7 +109,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, event);
 	}
 
-	@Nonnull
+	@NotNull
 	public static String reconstructCommand(GenericCommandEvent event) {
 		if (event instanceof SlashCommandEvent) {
 			return ((SlashCommandEvent) event).getCommandString();
@@ -118,7 +118,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}
 	}
 
-	private boolean canRun(@Nonnull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
+	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
 		if (event.getGuild() != null) {
 			final Usability usability = Usability.of(event, applicationCommand, isNotOwner);
