@@ -13,6 +13,7 @@ import com.freya02.botcommands.prefixed.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -214,6 +215,7 @@ public final class CommandsBuilder {
 	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 * @see #addSearchPath(String)
 	 */
+	@Blocking
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		addSearchPath(commandPackageName, 2);
 		
@@ -225,6 +227,7 @@ public final class CommandsBuilder {
 	 *
 	 * @param jda The JDA instance of your bot
 	 */
+	@Blocking
 	public void build(JDA jda) {
 		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}
