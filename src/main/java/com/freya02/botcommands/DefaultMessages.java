@@ -4,6 +4,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 
 import java.util.StringJoiner;
 
+//TODO use guild locale and resource bundle
 public final class DefaultMessages {
 	public static final String DEFAULT_USER_PERM_ERROR_MESSAGE = "You are not allowed to do this";
 	public static final String DEFAULT_BOT_PERM_ERROR_MESSAGE = "I am missing these permissions: %s";

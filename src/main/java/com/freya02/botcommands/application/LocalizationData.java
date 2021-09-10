@@ -1,7 +1,6 @@
 package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
@@ -175,11 +174,7 @@ class LocalizationData {
 			final SettingsProvider provider = context.getSettingsProvider();
 
 			if (provider != null) {
-				final BGuildSettings settings = provider.getSettings(guild.getIdLong());
-
-				if (settings != null) {
-					return settings.getLocale();
-				}
+				return provider.getLocale(guild);
 			}
 		}
 

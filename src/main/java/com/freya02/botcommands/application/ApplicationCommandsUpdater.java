@@ -1,6 +1,5 @@
 package com.freya02.botcommands.application;
 
-import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
@@ -165,10 +164,10 @@ public class ApplicationCommandsUpdater {
 					//Get the actual usable commands in this context (dm or guild)
 					if (guild == null) return true;
 
-					final BGuildSettings guildSettings = context.getGuildSettings(guild.getIdLong());
-					if (guildSettings == null) return true; //If no specific guild settings, assume it's not filtered
+					final SettingsProvider settingsProvider = context.getSettingsProvider();
+					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
 
-					return guildSettings.getGuildCommands().getFilter().test(info.getPath());
+					return settingsProvider.getGuildCommands(guild).getFilter().test(info.getPath());
 				})
 				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
 				.collect(Collectors.toCollection(ArrayList::new)); //Ensure spliterator is ORDERED for future Stream usage

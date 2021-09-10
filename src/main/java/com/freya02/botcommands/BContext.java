@@ -207,20 +207,6 @@ public interface BContext {
 	SettingsProvider getSettingsProvider();
 
 	/**
-	 * Returns the {@linkplain BGuildSettings Guild settings} for the given Guild ID
-	 *
-	 * @param guildId The Guild ID to get the settings from
-	 * @return This guild-specific settings
-	 */
-	@Nullable
-	default BGuildSettings getGuildSettings(long guildId) {
-		final SettingsProvider settingsProvider = getSettingsProvider();
-		if (settingsProvider == null) return null;
-
-		return settingsProvider.getSettings(guildId);
-	}
-
-	/**
 	 * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it
 	 *
 	 * @return The help builder consumer

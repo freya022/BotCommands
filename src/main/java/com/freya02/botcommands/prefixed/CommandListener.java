@@ -1,7 +1,7 @@
 package com.freya02.botcommands.prefixed;
 
-import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.CooldownScope;
+import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -15,6 +15,7 @@ import com.freya02.botcommands.prefixed.regex.MethodPattern;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -64,12 +65,12 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
-	private Cmd getCmdFast(String msg, long guildId) {
+	private Cmd getCmdFast(String msg, Guild guild) {
 		final String msgNoPrefix;
 		final String commandName;
 
 		int prefixLength = -1;
-		for (String prefix : getPrefixes(guildId)) {
+		for (String prefix : getPrefixes(guild)) {
 			if (msg.startsWith(prefix)) {
 				prefixLength = prefix.length();
 				break;
@@ -89,11 +90,11 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
-	private List<String> getPrefixes(long guildId) {
-		final BGuildSettings guildSettings = context.getGuildSettings(guildId);
+	private List<String> getPrefixes(Guild guild) {
+		final SettingsProvider settingsProvider = context.getSettingsProvider();
 
-		if (guildSettings != null) {
-			final List<String> prefixes = guildSettings.getPrefixes();
+		if (settingsProvider != null) {
+			final List<String> prefixes = settingsProvider.getPrefixes(guild);
 			if (prefixes == null || prefixes.isEmpty()) return context.getPrefixes();
 
 			return prefixes;
@@ -116,7 +117,7 @@ public final class CommandListener extends ListenerAdapter {
 
 		final String msg = event.getMessage().getContentRaw();
 		runCommand(() -> {
-			final Cmd cmdFast = getCmdFast(msg, event.getGuild().getIdLong());
+			final Cmd cmdFast = getCmdFast(msg, event.getGuild());
 
 			if (cmdFast == null)
 				return;

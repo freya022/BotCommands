@@ -358,7 +358,8 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @Nullable SettingsProvider getSettingsProvider() {
+	@Nullable
+	public SettingsProvider getSettingsProvider() {
 		return settingProvider;
 	}
 
