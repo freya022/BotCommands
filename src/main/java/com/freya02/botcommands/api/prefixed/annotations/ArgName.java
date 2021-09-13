@@ -1,0 +1,15 @@
+package com.freya02.botcommands.api.prefixed.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * Use this annotation if you want to display a particular argument name on the auto-generated Executable help content
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER})
+public @interface ArgName {
+	String str();
+}

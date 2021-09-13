@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application;
 
-import com.freya02.botcommands.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandPath;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

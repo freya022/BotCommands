@@ -1,10 +1,10 @@
 package com.freya02.bot.extensionsbot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.CommandEvent;
-import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import com.freya02.botcommands.waiter.EventWaiter;
+import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
+import com.freya02.botcommands.api.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;

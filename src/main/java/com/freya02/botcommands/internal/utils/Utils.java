@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.utils;
 
-import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.annotation.ConditionalUse;
-import com.freya02.botcommands.components.ComponentManager;
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.annotations.ConditionalUse;
+import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
 import org.jetbrains.annotations.NotNull;
@@ -207,7 +207,7 @@ public final class Utils {
 
 		final ClassInfoList nullableInfos = result.getClassesWithMethodParameterAnnotation("org.jetbrains.annotations.Nullable")
 				.union(result.getClassesWithMethodParameterAnnotation("javax.annotation.Nullable"))
-				.union(result.getClassesWithMethodParameterAnnotation("com.freya02.botcommands.annotation.Optional"));
+				.union(result.getClassesWithMethodParameterAnnotation("com.freya02.botcommands.api.annotations.Optional"));
 
 		for (ClassInfo classInfo : nullableInfos) {
 			for (MethodInfo info : classInfo.getDeclaredMethodInfo()) {
@@ -221,7 +221,7 @@ public final class Utils {
 					MethodParameterInfo parameterInfo = infoParameterInfo[i];
 
 					if (!parameterInfo.hasAnnotation("org.jetbrains.annotations.Nullable")
-							&& !parameterInfo.hasAnnotation("com.freya02.botcommands.annotation.Optional")
+							&& !parameterInfo.hasAnnotation("com.freya02.botcommands.api.annotations.Optional")
 							&& !parameterInfo.hasAnnotation("javax.annotation.Nullable")) continue;
 
 					optionalSet.add(method.getParameters()[i]);

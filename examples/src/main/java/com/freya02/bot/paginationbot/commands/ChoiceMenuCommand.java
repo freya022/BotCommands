@@ -1,11 +1,11 @@
 package com.freya02.bot.paginationbot.commands;
 
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.pagination.Paginator;
-import com.freya02.botcommands.pagination.menu.ChoiceMenuBuilder;
-import com.freya02.botcommands.application.GuildSlashEvent;
-import com.freya02.botcommands.application.SlashCommand;
-import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.pagination.Paginator;
+import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 

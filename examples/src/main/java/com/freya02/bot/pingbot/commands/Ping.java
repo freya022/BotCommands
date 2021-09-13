@@ -1,9 +1,9 @@
 package com.freya02.bot.pingbot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.CommandEvent;
-import com.freya02.botcommands.prefixed.annotation.JdaCommand;
+import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
 
 @JdaCommand(
 		name = "ping",

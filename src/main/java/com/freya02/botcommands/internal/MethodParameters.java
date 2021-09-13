@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.application.ApplicationCommandParameter;
+import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;

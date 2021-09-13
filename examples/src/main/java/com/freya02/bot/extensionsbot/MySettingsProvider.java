@@ -1,6 +1,5 @@
 package com.freya02.bot.extensionsbot;
 
-import com.freya02.botcommands.BGuildSettings;
 import com.freya02.botcommands.SettingsProvider;
 
 import java.util.ArrayList;

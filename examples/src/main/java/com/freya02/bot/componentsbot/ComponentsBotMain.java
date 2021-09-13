@@ -4,7 +4,7 @@ import com.freya02.bot.CommonMain;
 import com.freya02.bot.ComponentsDB;
 import com.freya02.botcommands.CommandsBuilder;
 import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.components.DefaultComponentManager;
+import com.freya02.botcommands.api.components.DefaultComponentManager;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 

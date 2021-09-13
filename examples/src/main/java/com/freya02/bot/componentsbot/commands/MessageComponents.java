@@ -1,14 +1,14 @@
 package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.components.Components;
-import com.freya02.botcommands.components.annotation.JdaButtonListener;
-import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
-import com.freya02.botcommands.components.event.ButtonEvent;
-import com.freya02.botcommands.components.event.SelectionEvent;
-import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.CommandEvent;
-import com.freya02.botcommands.prefixed.annotation.JdaCommand;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
+import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
+import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 
 @JdaCommand(

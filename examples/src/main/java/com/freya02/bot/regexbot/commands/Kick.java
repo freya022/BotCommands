@@ -1,13 +1,13 @@
 package com.freya02.bot.regexbot.commands;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.annotation.Optional;
-import com.freya02.botcommands.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.annotation.AddExecutableHelp;
-import com.freya02.botcommands.prefixed.annotation.ArgExample;
-import com.freya02.botcommands.prefixed.annotation.Executable;
-import com.freya02.botcommands.prefixed.annotation.JdaCommand;
+import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.annotations.AddExecutableHelp;
+import com.freya02.botcommands.api.prefixed.annotations.ArgExample;
+import com.freya02.botcommands.api.prefixed.annotations.Executable;
+import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 

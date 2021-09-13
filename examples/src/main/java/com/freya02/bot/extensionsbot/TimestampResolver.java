@@ -1,8 +1,8 @@
 package com.freya02.bot.extensionsbot;
 
-import com.freya02.botcommands.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.parameters.ParameterResolver;
-import com.freya02.botcommands.parameters.SlashParameterResolver;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

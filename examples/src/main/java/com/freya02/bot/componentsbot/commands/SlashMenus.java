@@ -1,12 +1,12 @@
 package com.freya02.bot.componentsbot.commands;
 
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.components.Components;
-import com.freya02.botcommands.components.annotation.JdaSelectionMenuListener;
-import com.freya02.botcommands.components.event.SelectionEvent;
-import com.freya02.botcommands.application.SlashCommand;
-import com.freya02.botcommands.application.SlashEvent;
-import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
+import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.application.SlashCommand;
+import com.freya02.botcommands.api.application.SlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 
 @CommandMarker //Just so the class isn't marked as unused
 public class SlashMenus extends SlashCommand {

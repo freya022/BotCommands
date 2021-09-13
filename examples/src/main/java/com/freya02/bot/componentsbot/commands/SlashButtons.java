@@ -1,12 +1,12 @@
 package com.freya02.bot.componentsbot.commands;
 
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.components.Components;
-import com.freya02.botcommands.components.annotation.JdaButtonListener;
-import com.freya02.botcommands.components.event.ButtonEvent;
-import com.freya02.botcommands.application.SlashCommand;
-import com.freya02.botcommands.application.SlashEvent;
-import com.freya02.botcommands.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
+import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.application.SlashCommand;
+import com.freya02.botcommands.api.application.SlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;
