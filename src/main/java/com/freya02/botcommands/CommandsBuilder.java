@@ -12,7 +12,6 @@ import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.prefixed.Command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class CommandsBuilder {
@@ -56,19 +54,6 @@ public final class CommandsBuilder {
 		for (long ownerId : ownerIds) {
 			context.addOwner(ownerId);
 		}
-
-		return this;
-	}
-
-	/**
-	 * Allows to change the framework's default messages
-	 *
-	 * @param provider Function which gives a {@link DefaultMessages} instance for the supplied {@link Guild}
-	 *                 <br>The Guild supplied <b>can be null</b> (for example in global application commands used in DMs)
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder setDefaultMessagesProvider(@NotNull Function<Guild, DefaultMessages> provider) {
-		context.setDefaultMessageProvider(provider);
 
 		return this;
 	}

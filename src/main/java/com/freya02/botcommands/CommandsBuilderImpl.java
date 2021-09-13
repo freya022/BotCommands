@@ -27,10 +27,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 final class CommandsBuilderImpl {
@@ -226,5 +223,7 @@ final class CommandsBuilderImpl {
 		context.registerConstructorParameter(JDA.class, ignored -> jda);
 		context.registerCommandDependency(JDA.class, () -> jda);
 		context.registerCustomResolver(JDA.class, ignored -> jda);
+
+		context.setDefaultMessageProvider(guild -> new DefaultMessages(context.getSettingsProvider() != null ? context.getSettingsProvider().getLocale(guild) : Locale.getDefault()));
 	}
 }
