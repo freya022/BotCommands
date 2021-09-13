@@ -50,6 +50,9 @@ final class CommandsBuilderImpl {
 	private final List<Class<?>> ignoredClasses = new ArrayList<>();
 
 	CommandsBuilderImpl(BContextImpl context, List<Long> slashGuildIds, Set<Class<?>> classes) {
+		if (classes.isEmpty())
+			LOGGER.warn("No classes have been found, make sure you have at least one search path");
+
 		this.context = context;
 		this.prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
 		this.componentsBuilder = new ComponentsBuilder(context);

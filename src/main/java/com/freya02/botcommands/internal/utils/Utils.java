@@ -196,6 +196,9 @@ public final class Utils {
 	}
 
 	public static void scanOptionals(Set<Class<?>> classes) {
+		if (classes.isEmpty())
+			return;
+
 		final ScanResult result = new ClassGraph()
 				.acceptClasses(classes.stream().map(Class::getName).toArray(String[]::new))
 				.enableMethodInfo()
@@ -208,6 +211,9 @@ public final class Utils {
 
 		for (ClassInfo classInfo : nullableInfos) {
 			for (MethodInfo info : classInfo.getDeclaredMethodInfo()) {
+				if (info.isConstructor())
+					continue;
+
 				final Method method = info.loadClassAndGetMethod();
 
 				MethodParameterInfo[] infoParameterInfo = info.getParameterInfo();
