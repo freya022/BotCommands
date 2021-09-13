@@ -38,6 +38,13 @@ public interface SettingsProvider extends GuildApplicationSettings {
 		return CommandList.all();
 	}
 
+	/**
+	 * Returns the {@link Locale} of the given {@link Guild}, will be null for a global context
+	 * <br>This might be used for localization such as in default messages or application commands
+	 *
+	 * @param guild The target {@link Guild} to get the {@link Locale} from
+	 * @return The {@link Locale} of the specified guild
+	 */
 	@NotNull
 	default Locale getLocale(@Nullable Guild guild) {
 		return Locale.getDefault();
