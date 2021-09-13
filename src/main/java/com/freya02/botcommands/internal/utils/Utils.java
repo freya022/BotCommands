@@ -210,18 +210,15 @@ public final class Utils {
 			for (MethodInfo info : classInfo.getDeclaredMethodInfo()) {
 				final Method method = info.loadClassAndGetMethod();
 
-				for (MethodParameterInfo parameterInfo : info.getParameterInfo()) {
+				MethodParameterInfo[] infoParameterInfo = info.getParameterInfo();
+				for (int i = 0, infoParameterInfoLength = infoParameterInfo.length; i < infoParameterInfoLength; i++) {
+					MethodParameterInfo parameterInfo = infoParameterInfo[i];
+
 					if (!parameterInfo.hasAnnotation("org.jetbrains.annotations.Nullable")
 							&& !parameterInfo.hasAnnotation("com.freya02.botcommands.annotation.Optional")
 							&& !parameterInfo.hasAnnotation("javax.annotation.Nullable")) continue;
 
-					for (Parameter parameter : method.getParameters()) {
-						if (parameterInfo.getName().equals(parameter.getName())) {
-							optionalSet.add(parameter);
-
-							break;
-						}
-					}
+					optionalSet.add(method.getParameters()[i]);
 				}
 			}
 		}
