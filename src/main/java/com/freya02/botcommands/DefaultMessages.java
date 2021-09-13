@@ -1,12 +1,12 @@
 package com.freya02.botcommands;
 
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.StringJoiner;
 
 /**
  * Class which holds all the strings the framework may use
@@ -51,10 +51,6 @@ public final class DefaultMessages {
 	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
 	public static final String DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE = "This component is not usable anymore";
 
-	private static final Logger LOGGER = Logging.getLogger();
-	private static final Set<Locale> warnedMissingLocales = new HashSet<>();
-	private static boolean warnedMissingBundle;
-
 	private final String userPermErrorMsg;
 	private final String botPermErrorMsg;
 	private final String ownerOnlyErrorMsg;
@@ -73,7 +69,7 @@ public final class DefaultMessages {
 	private final String nullComponentTypeErrorMsg;
 
 	public DefaultMessages(@NotNull Locale locale) {
-		final ResourceBundle bundle = getBundle(locale);
+		final BResourceBundle bundle = BResourceBundle.getBundle("DefaultMessages", locale);
 
 		userPermErrorMsg = getValue(bundle, "userPermErrorMsg", DEFAULT_USER_PERM_ERROR_MESSAGE);
 		botPermErrorMsg = checkFormatters(getValue(bundle, "botPermErrorMsg", DEFAULT_BOT_PERM_ERROR_MESSAGE), "%s");
@@ -94,38 +90,10 @@ public final class DefaultMessages {
 	}
 
 	@NotNull
-	private static String getValue(@Nullable ResourceBundle bundle, @NotNull String label, @NotNull String defaultVal) {
+	private static String getValue(@Nullable BResourceBundle bundle, @NotNull String label, @NotNull String defaultVal) {
 		if (bundle == null) return defaultVal;
 
-		if (!bundle.containsKey(label)) {
-			return defaultVal;
-		} else {
-			return bundle.getString(label);
-		}
-	}
-
-	@Nullable
-	private static ResourceBundle getBundle(Locale locale) {
-		try {
-			final ResourceBundle bundle = ResourceBundle.getBundle("DefaultMessages", locale);
-			if (bundle.getLocale().toString().isBlank() && !locale.toString().isBlank()) { //Check if the bundle loaded is not a fallback
-				if (Locale.getDefault() != locale) { //No need to warn when the bundle choosed is the default one when the locale asked is the default one
-					if (warnedMissingLocales.add(locale)) {
-						LOGGER.warn("Tried to use a DefaultMessages bundle with locale '{}' but none was found, using default bundle", locale);
-					}
-				}
-			}
-
-			return bundle;
-		} catch (MissingResourceException e) {
-			if (!warnedMissingBundle) {
-				warnedMissingBundle = true;
-
-				LOGGER.warn("Can't find resource DefaultMessages.properties which is used for localized strings, localization won't be used");
-			}
-
-			return null;
-		}
+		return bundle.getValueOrDefault(label, defaultVal);
 	}
 
 	private static String checkFormatters(String str, String... formatters) {

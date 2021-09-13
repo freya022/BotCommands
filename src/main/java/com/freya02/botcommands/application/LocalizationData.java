@@ -1,28 +1,25 @@
 package com.freya02.botcommands.application;
 
 import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.SettingsProvider;
 import com.freya02.botcommands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.application.slash.SlashUtils;
 import com.freya02.botcommands.internal.ApplicationOptionData;
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.StringJoiner;
 
 import static com.freya02.botcommands.application.LocalizedCommandData.LocalizedOption;
 
 class LocalizationData {
-	private static final Logger LOGGER = Logging.getLogger();
-	private static final Set<Locale> warnedMissingLocales = new HashSet<>();
-	private static boolean warnedMissingBundle;
-
 	private final CommandPath localizedPath;
 	private final String localizedDescription;
 	private final List<LocalizedOption> localizedOptions;
@@ -44,9 +41,9 @@ class LocalizationData {
 		final List<LocalizedOption> localizedOptions;
 		final List<List<SlashCommand.Choice>> localizedChoices;
 
-		final Locale locale = getLocale(context, guild);
+		final Locale locale = context.getEffectiveLocale(guild);
 
-		final ResourceBundle bundle = getBundle(locale);
+		final BResourceBundle bundle = BResourceBundle.getBundle("BotCommands", locale);
 
 		if (bundle == null) {
 			return null;
@@ -110,7 +107,7 @@ class LocalizationData {
 	}
 
 	@NotNull
-	private static List<SlashCommand.Choice> getLocalizedChoices(ResourceBundle bundle,
+	private static List<SlashCommand.Choice> getLocalizedChoices(BResourceBundle bundle,
 	                                                             String prefix,
 	                                                             String qualifier,
 	                                                             List<List<SlashCommand.Choice>> notLocalizedChoices,
@@ -142,67 +139,12 @@ class LocalizationData {
 	}
 
 	@NotNull
-	private static String tryLocalize(@NotNull ResourceBundle bundle, @NotNull String propertyKey, Object... otherPath) {
-		final String value = getValue(bundle, propertyKey);
+	private static String tryLocalize(@NotNull BResourceBundle bundle, @NotNull String propertyKey, Object... otherPath) {
+		final String value = bundle.getPathValue(propertyKey);
 
 		if (value != null) return value;
 
-		final String value2 = getValue(bundle, otherPath);
-
-		return Objects.requireNonNullElse(value2, propertyKey);
-	}
-
-	@Nullable
-	private static String getValue(ResourceBundle bundle, Object... morePath) {
-		final StringJoiner joiner = new StringJoiner(".");
-
-		for (Object s : morePath) {
-			joiner.add(s.toString());
-		}
-
-		final String key = joiner.toString();
-
-		if (!bundle.containsKey(key)) {
-			return null;
-		} else {
-			return bundle.getString(key);
-		}
-	}
-
-	private static Locale getLocale(BContext context, @Nullable Guild guild) {
-		if (guild != null) {
-			final SettingsProvider provider = context.getSettingsProvider();
-
-			if (provider != null) {
-				return provider.getLocale(guild);
-			}
-		}
-
-		return Locale.getDefault();
-	}
-
-	@Nullable
-	private static ResourceBundle getBundle(Locale locale) {
-		try {
-			final ResourceBundle bundle = ResourceBundle.getBundle("BotCommands", locale);
-			if (bundle.getLocale().toString().isBlank() && !locale.toString().isBlank()) { //Check if the bundle loaded is not a fallback
-				if (Locale.getDefault() != locale) { //No need to warn when the bundle choosed is the default one when the locale asked is the default one
-					if (warnedMissingLocales.add(locale)) {
-						LOGGER.warn("Tried to use a BotCommands bundle with locale '{}' but none was found, using default bundle", locale);
-					}
-				}
-			}
-
-			return bundle;
-		} catch (MissingResourceException e) {
-			if (!warnedMissingBundle) {
-				warnedMissingBundle = true;
-
-				LOGGER.warn("Can't find resource BotCommands.properties which is used for localized strings, localization won't be used");
-			}
-
-			return null;
-		}
+		return bundle.getPathValueOrDefault(propertyKey, otherPath);
 	}
 
 	@NotNull

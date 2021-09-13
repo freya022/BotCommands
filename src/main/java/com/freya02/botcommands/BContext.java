@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -205,6 +206,20 @@ public interface BContext {
 	 */
 	@Nullable
 	SettingsProvider getSettingsProvider();
+
+	/**
+	 * Returns the {@link Locale} for the specified {@link Guild}
+	 *
+	 * @param guild The {@link Guild} in which to take the {@link Locale} from
+	 * @return The {@link Locale} of the {@link Guild}
+	 */
+	@NotNull
+	default Locale getEffectiveLocale(@Nullable Guild guild) {
+		final SettingsProvider provider = getSettingsProvider();
+		if (provider == null) return Locale.getDefault();
+
+		return provider.getLocale(guild);
+	}
 
 	/**
 	 * Returns the help builder consumer - changes the EmbedBuilder given to add more stuff in it

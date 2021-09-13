@@ -20,6 +20,7 @@ import com.freya02.botcommands.prefixed.annotation.JdaCommand;
 import com.freya02.botcommands.waiter.EventWaiter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 
@@ -28,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 final class CommandsBuilderImpl {
@@ -224,6 +226,15 @@ final class CommandsBuilderImpl {
 		context.registerCommandDependency(JDA.class, () -> jda);
 		context.registerCustomResolver(JDA.class, ignored -> jda);
 
-		context.setDefaultMessageProvider(guild -> new DefaultMessages(context.getSettingsProvider() != null ? context.getSettingsProvider().getLocale(guild) : Locale.getDefault()));
+		context.setDefaultMessageProvider(new Function<>() {
+			private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
+
+			@Override
+			public DefaultMessages apply(Guild guild) {
+				final Locale effectiveLocale = context.getEffectiveLocale(guild);
+
+				return localeDefaultMessagesMap.computeIfAbsent(effectiveLocale, DefaultMessages::new);
+			}
+		});
 	}
 }
