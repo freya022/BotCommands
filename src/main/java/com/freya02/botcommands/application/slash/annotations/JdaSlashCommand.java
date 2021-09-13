@@ -42,7 +42,7 @@ import java.lang.annotation.Target;
  *     </li>
  * </ul>
  *
- * Supported parameters:
+ * Supported parameters, needs to be annotated with {@link Option @Option} :
  * <ul>
  *     <li>{@linkplain String}</li>
  *
