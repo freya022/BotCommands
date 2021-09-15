@@ -44,7 +44,7 @@ public abstract class ApplicationCommandParameter<RESOLVER> {
 			if (resolver instanceof CustomResolver) {
 				this.customResolver = (CustomResolver) resolver;
 			} else {
-				throw new IllegalArgumentException("Unsupported custom parameter: " + type.getName());
+				throw new IllegalArgumentException("Unsupported custom parameter: " + type.getName() + ", did you forget to use @Option on discord options ?");
 			}
 		}
 	}
