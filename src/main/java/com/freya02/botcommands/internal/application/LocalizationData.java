@@ -124,9 +124,9 @@ public class LocalizationData {
 				final String choiceName = tryLocalize(bundle, notLocalizedChoice.getName(), prefix, qualifier, "options", optionIndex, "choices", i, "name");
 
 				//Not really a great idea
-				if (parameter.getType() == long.class || parameter.getType() == Long.class) {
+				if (parameter.getBoxedType() == Long.class) {
 					choices.add(new SlashCommand.Choice(choiceName, notLocalizedChoice.getAsLong()));
-				} else if (parameter.getType() == double.class || parameter.getType() == Double.class) {
+				} else if (parameter.getBoxedType() == Double.class) {
 					choices.add(new SlashCommand.Choice(choiceName, notLocalizedChoice.getAsDouble()));
 				} else {
 					final String choiceValue = tryLocalize(bundle, notLocalizedChoice.getAsString(), prefix, qualifier, "options", optionIndex, "choices", i, "value");

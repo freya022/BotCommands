@@ -115,21 +115,21 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 				obj = parameter.getResolver().resolve(event, optionMapping);
 
 				if (obj == null) {
-					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName())
+					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 
-					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
+					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
 					return false;
 				}
 
-				if (!parameter.getType().isAssignableFrom(obj.getClass())) {
-					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandInvalidParameterTypeMsg(), applicationOptionData.getEffectiveName(), parameter.getType().getSimpleName(), obj.getClass().getSimpleName())
+				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
+					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandInvalidParameterTypeMsg(), applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), obj.getClass().getSimpleName())
 							.setEphemeral(true)
 							.queue();
 
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getType().getSimpleName());
+					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
 					return false;
 				}

@@ -12,7 +12,7 @@ import java.lang.reflect.Parameter;
 
 public abstract class ApplicationCommandParameter<RESOLVER> {
 	private final RESOLVER resolver;
-	private final Class<?> type;
+	private final Class<?> boxedType;
 	private final CustomResolver customResolver;
 	
 	private final Parameter parameter;
@@ -22,17 +22,17 @@ public abstract class ApplicationCommandParameter<RESOLVER> {
 	@SuppressWarnings("unchecked")
 	public ApplicationCommandParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		this.parameter = parameter;
-		this.type = Utils.getBoxedType(parameter.getType());
+		this.boxedType = Utils.getBoxedType(parameter.getType());
 		this.index = index;
 
-		final ParameterResolver resolver = ParameterResolvers.of(this.type);
+		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);
 		if (parameter.isAnnotationPresent(Option.class)) {
 			this.applicationOptionData = new ApplicationOptionData(parameter);
 
 			if (resolver == null) {
-				throw new IllegalArgumentException("Unknown application command option type: " + type.getName() + " for target resolver " + resolverType.getName());
+				throw new IllegalArgumentException("Unknown application command option type: " + boxedType.getName() + " for target resolver " + resolverType.getName());
 			} else if (!(resolverType.isAssignableFrom(resolver.getClass()))) {
-				throw new IllegalArgumentException("Unsupported application command option type: " + type.getName() + " for target resolver " + resolverType.getName());
+				throw new IllegalArgumentException("Unsupported application command option type: " + boxedType.getName() + " for target resolver " + resolverType.getName());
 			}
 
 			this.resolver = (RESOLVER) resolver;
@@ -44,14 +44,14 @@ public abstract class ApplicationCommandParameter<RESOLVER> {
 			if (resolver instanceof CustomResolver) {
 				this.customResolver = (CustomResolver) resolver;
 			} else {
-				throw new IllegalArgumentException("Unsupported custom parameter: " + type.getName() + ", did you forget to use @Option on discord options ?");
+				throw new IllegalArgumentException("Unsupported custom parameter: " + boxedType.getName() + ", did you forget to use @Option on discord options ?");
 			}
 		}
 	}
 
 	@NotNull
-	public Class<?> getType() {
-		return type;
+	public Class<?> getBoxedType() {
+		return boxedType;
 	}
 
 	public Parameter getParameter() {

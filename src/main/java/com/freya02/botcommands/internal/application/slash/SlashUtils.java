@@ -48,7 +48,7 @@ public class SlashUtils {
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
-			final Class<?> boxedType = parameter.getType();
+			final Class<?> boxedType = parameter.getBoxedType();
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = optionNames.get(i - 1).getName();
