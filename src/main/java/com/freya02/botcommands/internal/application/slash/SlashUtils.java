@@ -48,31 +48,31 @@ public class SlashUtils {
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
-			final Class<?> type = parameter.getType();
+			final Class<?> boxedType = parameter.getType();
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = optionNames.get(i - 1).getName();
 			final String description = optionNames.get(i - 1).getDescription();
 
 			final OptionData data;
-			if (type == User.class || type == Member.class) {
+			if (boxedType == User.class || boxedType == Member.class) {
 				data = new OptionData(OptionType.USER, name, description);
-			} else if (type == Role.class) {
+			} else if (boxedType == Role.class) {
 				data = new OptionData(OptionType.ROLE, name, description);
-			} else if (type == TextChannel.class) {
+			} else if (boxedType == TextChannel.class) {
 				data = new OptionData(OptionType.CHANNEL, name, description);
-			} else if (type == IMentionable.class) {
+			} else if (boxedType == IMentionable.class) {
 				data = new OptionData(OptionType.MENTIONABLE, name, description);
-			} else if (type == boolean.class) {
+			} else if (boxedType == Boolean.class) {
 				data = new OptionData(OptionType.BOOLEAN, name, description);
-			} else if (type == long.class) {
+			} else if (boxedType == Long.class) {
 				data = new OptionData(OptionType.INTEGER, name, description);
-			} else if (type == double.class) {
+			} else if (boxedType == Double.class) {
 				data = new OptionData(OptionType.NUMBER, name, description);
-			} else if (ParameterResolvers.exists(type)) {
+			} else if (ParameterResolvers.exists(boxedType)) {
 				data = new OptionData(OptionType.STRING, name, description);
 			} else {
-				throw new IllegalArgumentException("Unknown slash command option: " + type.getName());
+				throw new IllegalArgumentException("Unknown slash command option: " + boxedType.getName());
 			}
 
 			if (data.getType().canSupportChoices()) {
