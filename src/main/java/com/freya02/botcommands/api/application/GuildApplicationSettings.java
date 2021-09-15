@@ -23,11 +23,14 @@ public interface GuildApplicationSettings {
 	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link Option @Option})
 	 * <p>
 	 * <br><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
+	 * <p>
+	 * <br>You can also use the {@link ChoiceList} class in order to create lists of <code>n</code> empty choices (meant to be localized only)
 	 *
 	 * @param guild       The {@link Guild} in which the commands is, might be <code>null</code> for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
 	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link Option @Option} there are, minus 1
 	 * @return The list of choices for this slash command's options
+	 * @see ChoiceList
 	 */
 	@NotNull
 	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
