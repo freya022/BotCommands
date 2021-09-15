@@ -1,11 +1,11 @@
 package com.freya02.bot.paginationbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.api.pagination.Paginator;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandMarker
-public class ChoiceMenuCommand extends SlashCommand {
+public class ChoiceMenuCommand extends ApplicationCommand {
 	@JdaSlashCommand(name = "choicemenu")
 	public void run(GuildSlashEvent event) {
 		final List<Guild> entries = new ArrayList<>(event.getJDA().getGuilds());

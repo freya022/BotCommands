@@ -1,15 +1,15 @@
 package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.api.application.SlashCommand;
-import com.freya02.botcommands.api.application.SlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 
 @CommandMarker //Just so the class isn't marked as unused
-public class SlashMenus extends SlashCommand {
+public class SlashMenus extends ApplicationCommand {
 	private static final String SELECTION_HANDLER_NAME = "selectionHandler";
 
 	@JdaSlashCommand(
@@ -17,7 +17,7 @@ public class SlashMenus extends SlashCommand {
 			name = "menus",
 			description = "Shows how menus works"
 	)
-	public void run(SlashEvent event) {
+	public void run(GlobalSlashEvent event) {
 		event.reply("Selection menus !")
 				//A persistent selection menu, still works after a bot restarts
 				.addActionRow(Components.selectionMenu(SELECTION_HANDLER_NAME)

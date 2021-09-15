@@ -1,6 +1,6 @@
 package com.freya02.bot.regexbot.commands;
 
-import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.api.prefixed.annotations.AddExecutableHelp;

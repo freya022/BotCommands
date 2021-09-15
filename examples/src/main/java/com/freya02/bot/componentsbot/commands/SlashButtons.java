@@ -1,12 +1,12 @@
 package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.application.SlashCommand;
-import com.freya02.botcommands.api.application.SlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 @CommandMarker //Just so the class isn't marked as unused
-public class SlashButtons extends SlashCommand {
+public class SlashButtons extends ApplicationCommand {
 	private static final String PRIMARY_HANDLER_NAME = "primaryHandler";
 
 	@JdaSlashCommand(
@@ -22,7 +22,7 @@ public class SlashButtons extends SlashCommand {
 			name = "buttons",
 			description = "Shows how buttons works"
 	)
-	public void run(SlashEvent event) {
+	public void run(GlobalSlashEvent event) {
 		List<Component> components = new ArrayList<>();
 		Collections.addAll(components, Components.group(
 				//A persistent button, works after a bot restart

@@ -1,14 +1,14 @@
 package com.freya02.bot.registeredclasses.othercommands;
 
-import com.freya02.botcommands.Logging;
-import com.freya02.botcommands.api.application.GuildSlashEvent;
-import com.freya02.botcommands.api.application.SlashCommand;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
 
-public class InstantiatedCommand extends SlashCommand {
+public class InstantiatedCommand extends ApplicationCommand {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	@SuppressWarnings("unused") //Just so the class is not instantiable, but manually instantiated

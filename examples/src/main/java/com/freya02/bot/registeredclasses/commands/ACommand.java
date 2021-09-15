@@ -3,13 +3,13 @@ package com.freya02.bot.registeredclasses.commands;
 import com.freya02.bot.registeredclasses.SomeObject;
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.annotations.Dependency;
-import com.freya02.botcommands.api.application.GuildSlashEvent;
-import com.freya02.botcommands.api.application.SlashCommand;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.JDA;
 
 @CommandMarker //Just so the class isn't marked as unused
-public class ACommand extends SlashCommand {
+public class ACommand extends ApplicationCommand {
 	private final SomeObject object;
 
 	@Dependency

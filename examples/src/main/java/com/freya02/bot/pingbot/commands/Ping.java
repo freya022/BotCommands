@@ -1,6 +1,6 @@
 package com.freya02.bot.pingbot.commands;
 
-import com.freya02.botcommands.BContext;
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
@@ -16,7 +16,7 @@ public class Ping extends Command {
 	}
 
 	@Override
-	protected void execute(CommandEvent event) {
+	public void execute(CommandEvent event) {
 		final long gatewayPing = event.getJDA().getGatewayPing();
 
 		event.getJDA().getRestPing()
