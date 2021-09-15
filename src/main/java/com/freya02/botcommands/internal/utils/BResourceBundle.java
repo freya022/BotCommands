@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BResourceBundle {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -19,7 +20,12 @@ public class BResourceBundle {
 	}
 
 	public static BResourceBundle getBundle(@NotNull String name, @NotNull Locale locale) {
-		final Map<Locale, BResourceBundle> localeBResourceBundleMap = cachedBundles.computeIfAbsent(name, s -> Collections.synchronizedMap(new HashMap<>()));
+		final AtomicBoolean contained = new AtomicBoolean(true);
+		final Map<Locale, BResourceBundle> localeBResourceBundleMap = cachedBundles.computeIfAbsent(name, s -> {
+			contained.set(false);
+
+			return Collections.synchronizedMap(new HashMap<>());
+		});
 
 		return localeBResourceBundleMap.computeIfAbsent(locale, l -> {
 			try {
@@ -33,7 +39,9 @@ public class BResourceBundle {
 
 				return new BResourceBundle(bundle);
 			} catch (MissingResourceException e) {
-				LOGGER.warn("Can't find resource {}.properties which is used for localized strings, localization won't be used", name);
+				if (!contained.get()) { //If the name mapping got created now, only print this warn once
+					LOGGER.warn("Can't find resource {}.properties which is used for localized strings, localization won't be used", name);
+				}
 
 				return null;
 			}
