@@ -41,7 +41,7 @@ public class SlashUtils {
 		final List<LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
 		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
-		final long optionParamCount = info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
+		final long optionParamCount = info.getParameters().getOptionCount();
 		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
 
 		int i = 1;
@@ -96,7 +96,7 @@ public class SlashUtils {
 	public static List<List<SlashCommand.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
 		List<List<SlashCommand.Choice>> optionsChoices = new ArrayList<>();
 
-		final int count = (int) info.getParameters().stream().filter(ApplicationCommandParameter::isOption).count();
+		final int count = info.getParameters().getOptionCount();
 		for (int optionIndex = 0; optionIndex < count; optionIndex++) {
 			optionsChoices.add(getNotLocalizedChoicesForCommand(context, guild, info, optionIndex));
 		}
