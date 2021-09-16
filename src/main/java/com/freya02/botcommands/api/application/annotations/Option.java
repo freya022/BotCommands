@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
  * <p>
  * {@linkplain #name()} is optional if parameter name is available (add -parameters to your java compiler)
  *
- * <br><b>This needs to be used for context parameters too (in case of User or Message)</b>, of course name and description is ignored in that case
+ * <br><b>This needs to be used for context parameters (in case of User or Message) and component parameters too</b>, of course name and description is ignored in that case
  * @see Optional Optional (can also see @Nullable)
  * @see Nullable
  */
@@ -26,7 +26,7 @@ public @interface Option {
 	/**
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
-	 * <b>This is optional if parameter name is found</b>
+	 * <b>This is optional if parameter name is found or the target is not a slash command parameter</b>
 	 * <br>This can be a localization property
 	 *
 	 * @return Name of the option
@@ -36,7 +36,7 @@ public @interface Option {
 	/**
 	 * Description of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
-	 * <b>This is optional and defaulted with <code>"No Description"</code></b>
+	 * <b>This is optional and defaulted with <code>"No Description"</code> or the target is not a slash command parameter</b>
 	 * <br>This can be a localization property
 	 *
 	 * @return Description of the option

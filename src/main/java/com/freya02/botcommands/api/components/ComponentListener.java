@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.application.InteractionParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -140,9 +141,9 @@ public class ComponentListener extends ListenerAdapter {
 			return;
 		}
 
-		final List<ComponentParameterResolver> resolvers = descriptor.getResolvers();
-		if (resolvers.size() != args.length) {
-			LOGGER.warn("Resolver for {} has {} arguments but component had {} data objects", descriptor.getMethod(), resolvers.size(), args);
+		final var parameters = descriptor.getParameters();
+		if (parameters.getOptionCount() != args.length) {
+			LOGGER.warn("Resolver for {} has {} arguments but component had {} data objects", Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args);
 
 			onError(event, "Invalid component data");
 
@@ -152,17 +153,39 @@ public class ComponentListener extends ListenerAdapter {
 		try {
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
-			final List<Object> methodArgs = new ArrayList<>(resolvers.size() + 1);
+			final List<Object> methodArgs = new ArrayList<>(parameters.size() + 1);
 
 			methodArgs.add(eventFunction.get());
-			for (int i = 0, resolversSize = resolvers.size(); i < resolversSize; i++) {
-				ComponentParameterResolver resolver = resolvers.get(i);
 
-				final Object obj = resolver.resolve(event, args[i]);
-				if (obj == null) {
-					LOGGER.warn("Invalid component id '{}', tried to resolve '{}' with a {} but result is null", event.getComponentId(), args[i], resolver.getClass().getSimpleName());
+			int optionIndex = 0;
+			for (final InteractionParameter<ComponentParameterResolver> parameter : parameters) {
+				final Object obj;
+				if (parameter.isOption()) {
+					final String arg = args[optionIndex];
+					optionIndex++;
 
-					return;
+					obj = parameter.getResolver().resolve(event, arg);
+
+					if (obj == null) {
+						LOGGER.warn("Component id '{}', tried to resolve '{}' with an option resolver {} on method {} but result is null",
+								event.getComponentId(),
+								arg,
+								parameter.getCustomResolver().getClass().getSimpleName(),
+								Utils.formatMethodShort(descriptor.getMethod()));
+
+						return;
+					}
+				} else {
+					obj = parameter.getCustomResolver().resolve(event);
+
+					if (obj == null) {
+						LOGGER.warn("Component id '{}', tried to use custom resolver {} on method {} but result is null",
+								event.getComponentId(),
+								parameter.getCustomResolver().getClass().getSimpleName(),
+								Utils.formatMethodShort(descriptor.getMethod()));
+
+						return;
+					}
 				}
 
 				methodArgs.add(obj);

@@ -5,19 +5,13 @@ import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
 import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ComponentsBuilder {
@@ -55,21 +49,7 @@ public class ComponentsBuilder {
 			if (!method.canAccess(obj))
 				throw new IllegalStateException(componentType + " " + Utils.formatMethodShort(method) + " is not public");
 
-			final List<ComponentParameterResolver> resolvers = new ArrayList<>();
-			Parameter[] parameters = method.getParameters();
-			for (int i = 1, parametersLength = parameters.length; i < parametersLength; i++) {
-				Parameter parameter = parameters[i];
-				final Class<?> type = Utils.getBoxedType(parameter.getType());
-
-				final ParameterResolver resolver = ParameterResolvers.of(type);
-
-				if (!(resolver instanceof ComponentParameterResolver))
-					throw new IllegalArgumentException("Unknown component value type: " + type.getName());
-
-				resolvers.add((ComponentParameterResolver) resolver);
-			}
-
-			final ComponentDescriptor newDescriptor = new ComponentDescriptor(obj, method, resolvers);
+			final ComponentDescriptor newDescriptor = new ComponentDescriptor(obj, method);
 			final ComponentDescriptor oldVal = map.put(handlerName, newDescriptor);
 			if (oldVal != null) {
 				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + Utils.formatMethodShort(method) + " was already registered as " + oldVal.getMethod());

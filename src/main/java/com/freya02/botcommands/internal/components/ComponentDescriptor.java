@@ -1,27 +1,31 @@
 package com.freya02.botcommands.internal.components;
 
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.application.InteractionParameter;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class ComponentDescriptor {
 	private final Method method;
-	private final List<ComponentParameterResolver> resolvers;
 	private final Object instance;
+	private final MethodParameters<InteractionParameter<ComponentParameterResolver>> componentParameters;
 
-	public ComponentDescriptor(Object instance, Method method, List<ComponentParameterResolver> resolvers) {
+	public ComponentDescriptor(Object instance, Method method) {
 		this.method = method;
-		this.resolvers = resolvers;
 		this.instance = instance;
+
+		this.componentParameters = MethodParameters.of(method, (parameter, index) -> {
+			return new InteractionParameter<>(ComponentParameterResolver.class, parameter, index);
+		});
 	}
 
 	public Method getMethod() {
 		return method;
 	}
 
-	public List<ComponentParameterResolver> getResolvers() {
-		return resolvers;
+	public MethodParameters<InteractionParameter<ComponentParameterResolver>> getParameters() {
+		return componentParameters;
 	}
 
 	public Object getInstance() {
