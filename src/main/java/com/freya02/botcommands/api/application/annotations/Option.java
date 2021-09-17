@@ -26,7 +26,11 @@ public @interface Option {
 	/**
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
-	 * <b>This is optional if parameter name is found or the target is not a slash command parameter</b>
+	 * <br>This is optional if:
+	 * <ul>
+	 *     <li>The parameter name is found (using -parameters on javac)</li>
+	 *     <li>The parameter is not a slash command parameter</li>
+	 * </ul>
 	 * <br>This can be a localization property
 	 *
 	 * @return Name of the option
@@ -36,7 +40,7 @@ public @interface Option {
 	/**
 	 * Description of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
-	 * <b>This is optional and defaulted with <code>"No Description"</code> or the target is not a slash command parameter</b>
+	 * <br>This is optional if the parameter is not a slash command parameter, <b>otherwise it is defaulted to <code>"No Description"</code></b>
 	 * <br>This can be a localization property
 	 *
 	 * @return Description of the option
