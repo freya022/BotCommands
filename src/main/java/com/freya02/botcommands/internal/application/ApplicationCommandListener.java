@@ -34,8 +34,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	private final ExecutorService commandService = Utils.createCommandPool(r -> {
 		final Thread thread = new Thread(r);
 		thread.setDaemon(false);
-		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in a context command thread '" + t.getName() + "':", e));
-		thread.setName("Context command thread #" + commandThreadNumber++);
+		thread.setUncaughtExceptionHandler((t, e) -> Utils.printExceptionString("An unexpected exception happened in an application command thread '" + t.getName() + "':", e));
+		thread.setName("Application command thread #" + commandThreadNumber++);
 
 		return thread;
 	});
