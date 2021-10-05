@@ -152,7 +152,7 @@ public class Utils {
 			}
 		}
 
-		final String subcommandHelp = event.getContext().findFirstTextSubcommands(commandInfo.getPath())
+		final String subcommandHelp = event.getContext().findTextSubcommands(commandInfo.getPath())
 				.stream()
 				.map(TreeSet::first)
 				.map(info -> "**" + info.getPath().getName() + "** : " + info.getDescription())
