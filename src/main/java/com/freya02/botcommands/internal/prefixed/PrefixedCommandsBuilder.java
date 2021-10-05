@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.application.InteractionParameter;
+import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class PrefixedCommandsBuilder {
 					final List<? extends TextCommandParameter> parameters1 = info.getOptionParameters();
 					final List<? extends TextCommandParameter> parameters2 = commandInfo.getOptionParameters();
 
-					if (parameters1.stream().map(InteractionParameter::getParameter).collect(Collectors.toList()).equals(parameters2.stream().map(InteractionParameter::getParameter).collect(Collectors.toList()))) {
+					if (parameters1.stream().map(CommandParameter::getParameter).collect(Collectors.toList()).equals(parameters2.stream().map(CommandParameter::getParameter).collect(Collectors.toList()))) {
 						throw new IllegalStateException("Method " + Utils.formatMethodShort(commandMethod1) + " has the same parameters as " + Utils.formatMethodShort(commandMethod2));
 					}
 				}

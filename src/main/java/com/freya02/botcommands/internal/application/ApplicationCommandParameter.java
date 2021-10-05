@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 
 import java.lang.reflect.Parameter;
 
-public abstract class ApplicationCommandParameter<RESOLVER> extends InteractionParameter<RESOLVER> {
+public abstract class ApplicationCommandParameter<RESOLVER> extends CommandParameter<RESOLVER> {
 	private final ApplicationOptionData applicationOptionData;
 
 	public ApplicationCommandParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {

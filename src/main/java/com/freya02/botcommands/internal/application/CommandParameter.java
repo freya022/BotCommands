@@ -9,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Parameter;
 
-//TODO rename
-public class InteractionParameter<RESOLVER> {
+public class CommandParameter<RESOLVER> {
 	private final RESOLVER resolver;
 	private final Class<?> boxedType;
 	private final CustomResolver customResolver;
@@ -21,7 +20,7 @@ public class InteractionParameter<RESOLVER> {
 	private final boolean optional, isPrimitive;
 
 	@SuppressWarnings("unchecked")
-	public InteractionParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
+	public CommandParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		this.parameter = parameter;
 		this.boxedType = Utils.getBoxedType(parameter.getType());
 		this.index = index;

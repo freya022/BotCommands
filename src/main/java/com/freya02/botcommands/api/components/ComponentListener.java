@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.application.InteractionParameter;
+import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
@@ -158,7 +158,7 @@ public class ComponentListener extends ListenerAdapter {
 			methodArgs.add(eventFunction.get());
 
 			int optionIndex = 0;
-			for (final InteractionParameter<ComponentParameterResolver> parameter : parameters) {
+			for (final CommandParameter<ComponentParameterResolver> parameter : parameters) {
 				final Object obj;
 				if (parameter.isOption()) {
 					final String arg = args[optionIndex];

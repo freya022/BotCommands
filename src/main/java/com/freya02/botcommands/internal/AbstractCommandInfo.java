@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.application.InteractionParameter;
+import com.freya02.botcommands.internal.application.CommandParameter;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,9 +77,9 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		return ownerOnly;
 	}
 
-	public abstract MethodParameters<? extends InteractionParameter<?>> getParameters();
+	public abstract MethodParameters<? extends CommandParameter<?>> getParameters();
 
-	public List<? extends InteractionParameter<?>> getOptionParameters() {
-		return getParameters().stream().filter(InteractionParameter::isOption).collect(Collectors.toList());
+	public List<? extends CommandParameter<?>> getOptionParameters() {
+		return getParameters().stream().filter(CommandParameter::isOption).collect(Collectors.toList());
 	}
 }
