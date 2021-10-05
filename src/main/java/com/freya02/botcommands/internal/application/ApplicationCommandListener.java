@@ -60,9 +60,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, userCommand)) return;
 
-			if (userCommand.execute(context, event)) {
-				userCommand.applyCooldown(event);
-			}
+			userCommand.applyCooldown(event);
+			userCommand.execute(context, event);
 		}, event);
 	}
 
@@ -82,9 +81,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, messageCommand)) return;
 
-			if (messageCommand.execute(context, event)) {
-				messageCommand.applyCooldown(event);
-			}
+			messageCommand.applyCooldown(event);
+			messageCommand.execute(context, event);
 		}, event);
 	}
 
@@ -104,9 +102,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, slashCommand)) return;
 
-			if (slashCommand.execute(context, event)) {
-				slashCommand.applyCooldown(event);
-			}
+			slashCommand.applyCooldown(event);
+			slashCommand.execute(context, event);
 		}, event);
 	}
 
