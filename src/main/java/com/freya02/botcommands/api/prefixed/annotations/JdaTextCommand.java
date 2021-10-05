@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
  *
  * @see ArgExample
  * @see ArgName
- * @see MethodOrder
  * @see Hidden
  * @see ID
  * @see BotPermissions
