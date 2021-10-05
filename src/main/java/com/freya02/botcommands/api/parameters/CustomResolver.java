@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters;
 
-import com.freya02.botcommands.api.application.annotations.Option;
+import com.freya02.botcommands.api.annotations.Option;
 import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.Nullable;
 

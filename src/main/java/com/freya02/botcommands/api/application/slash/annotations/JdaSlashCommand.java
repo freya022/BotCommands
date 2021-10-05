@@ -2,8 +2,8 @@ package com.freya02.botcommands.api.application.slash.annotations;
 
 import com.freya02.botcommands.api.annotations.BotPermissions;
 import com.freya02.botcommands.api.annotations.Cooldown;
+import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.annotations.UserPermissions;
-import com.freya02.botcommands.api.application.annotations.Option;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import net.dv8tion.jda.api.JDA;

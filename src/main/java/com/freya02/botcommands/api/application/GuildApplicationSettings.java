@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.application.annotations.Option;
+import com.freya02.botcommands.api.annotations.Option;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;

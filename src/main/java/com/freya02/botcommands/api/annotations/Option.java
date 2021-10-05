@@ -1,6 +1,5 @@
-package com.freya02.botcommands.api.application.annotations;
+package com.freya02.botcommands.api.annotations;
 
-import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -12,17 +11,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to set name and description of {@linkplain JdaSlashCommand application commands}
+ * Annotation used to specify a command (text or application commands) parameter is supplied from discord, <i>i.e. it is <b>not</b> a custom parameter</i>
+ * <br>This also can set name and description of {@linkplain JdaSlashCommand slash commands} parameters
  * <p>
- * {@linkplain #name()} is optional if parameter name is available (add -parameters to your java compiler)
+ * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
  *
- * <br><b>This needs to be used for context parameters (in case of User or Message) and component parameters too</b>, of course name and description is ignored in that case
  * @see Optional Optional (can also see @Nullable)
  * @see Nullable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-//TODO move package
 public @interface Option {
 	/**
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details

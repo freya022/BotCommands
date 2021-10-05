@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application;
 
-import com.freya02.botcommands.api.application.annotations.Option;
+import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 
 import java.lang.reflect.Parameter;

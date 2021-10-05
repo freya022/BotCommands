@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.annotations.Option;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
