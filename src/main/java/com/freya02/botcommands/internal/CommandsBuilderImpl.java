@@ -187,6 +187,16 @@ public final class CommandsBuilderImpl {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) {
+		if (jda.getStatus() != JDA.Status.CONNECTED) {
+			try {
+				LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !");
+
+				jda.awaitReady();
+			} catch (InterruptedException e) {
+				throw new RuntimeException("CommandsBuilder got interrupted while waiting for JDA to be ready", e);
+			}
+		}
+
 		final List<GatewayIntent> intents = List.of(
 				GatewayIntent.GUILD_MESSAGES
 		);

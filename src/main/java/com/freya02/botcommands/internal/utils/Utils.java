@@ -46,6 +46,10 @@ public final class Utils {
 			walkRoot = walkRoot.resolve(packageName.replace(".", "\\"));
 		}
 
+		if (Files.notExists(walkRoot)) {
+			throw new IOException("Command package '" + packageName + "' was not found in " + (isJar ? "JAR path" : "directory path") + ": " + jarPath.toAbsolutePath());
+		}
+
 		Path finalWalkRoot = walkRoot;
 		return Files.walk(walkRoot, maxDepth).filter(p -> !Files.isDirectory(p)).filter(p -> IOUtils.getFileExtension(p).equals("class")).map(p -> {
 			String result;
