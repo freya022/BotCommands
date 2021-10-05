@@ -155,6 +155,9 @@ public final class CommandsBuilderImpl {
 
 						final ApplicationCommand annotatedInstance = (ApplicationCommand) ClassInstancer.instantiate(context, aClass);
 
+						if (!method.canAccess(annotatedInstance))
+							throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
+
 						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
 
 						foundSomething = true;
@@ -168,6 +171,9 @@ public final class CommandsBuilderImpl {
 						throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + JdaTextCommand.class.getSimpleName() + " but its class does not extend TextCommand");
 
 					final TextCommand annotatedInstance = (TextCommand) ClassInstancer.instantiate(context, aClass);
+
+					if (!method.canAccess(annotatedInstance))
+						throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
 
 					prefixedCommandsBuilder.processPrefixedCommand(annotatedInstance, method);
 

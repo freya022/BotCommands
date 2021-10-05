@@ -23,9 +23,6 @@ public class PrefixedCommandsBuilder {
 
 	public void processPrefixedCommand(TextCommand command, Method method) {
 		try {
-			if (!method.canAccess(command)) //TODO move canAccess to CommandsBuilderImpl#processClass
-				throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
-
 			if (!Utils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
 				throw new IllegalArgumentException("Prefixed command at " + Utils.formatMethodShort(method) + " must have a BaseCommandEvent or a CommandEvent as first parameter");
 

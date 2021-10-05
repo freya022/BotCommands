@@ -44,9 +44,6 @@ public final class ApplicationCommandsBuilder {
 
 	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
 		try {
-			if (!method.canAccess(applicationCommand))
-				throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
-			
 			if (method.isAnnotationPresent(JdaSlashCommand.class)) {
 				processSlashCommand(applicationCommand, method);
 			} else if (method.isAnnotationPresent(JdaUserCommand.class)) {
