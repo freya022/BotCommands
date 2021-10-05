@@ -73,7 +73,7 @@ public final class ApplicationCommandsBuilder {
 		final UserCommandInfo info = new UserCommandInfo(applicationCommand, method);
 
 		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addUserCommand(info.getPath(), info);
+		context.addUserCommand(info);
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
@@ -93,7 +93,7 @@ public final class ApplicationCommandsBuilder {
 		final MessageCommandInfo info = new MessageCommandInfo(applicationCommand, method);
 
 		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addMessageCommand(info.getPath(), info);
+		context.addMessageCommand(info);
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
@@ -113,7 +113,7 @@ public final class ApplicationCommandsBuilder {
 		final SlashCommandInfo info = new SlashCommandInfo(applicationCommand, method);
 
 		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
-		context.addSlashCommand(info.getPath(), info);
+		context.addSlashCommand(info);
 	}
 
 	public void postProcess() throws IOException {

@@ -227,8 +227,9 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	//TODO inline path (+ in others methods)
-	public void addSlashCommand(CommandPath path, SlashCommandInfo commandInfo) {
+	public void addSlashCommand(SlashCommandInfo commandInfo) {
+		final CommandPath path = commandInfo.getPath();
+
 		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
 		CommandPath p = path;
@@ -247,7 +248,9 @@ public class BContextImpl implements BContext {
 		slashCommandMap.put(path, commandInfo);
 	}
 	
-	public void addUserCommand(CommandPath path, UserCommandInfo commandInfo) {
+	public void addUserCommand(UserCommandInfo commandInfo) {
+		final CommandPath path = commandInfo.getPath();
+
 		final Map<CommandPath, UserCommandInfo> userCommandMap = getUserCommandsMap();
 
 		UserCommandInfo oldCmd = userCommandMap.put(path, commandInfo);
@@ -260,7 +263,9 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addMessageCommand(CommandPath path, MessageCommandInfo commandInfo) {
+	public void addMessageCommand(MessageCommandInfo commandInfo) {
+		final CommandPath path = commandInfo.getPath();
+
 		final Map<CommandPath, MessageCommandInfo> messageCommandMap = getMessageCommandsMap();
 
 		MessageCommandInfo oldCmd = messageCommandMap.put(path, commandInfo);
