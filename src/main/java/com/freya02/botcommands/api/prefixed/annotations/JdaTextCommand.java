@@ -14,8 +14,6 @@ import java.lang.annotation.Target;
  * Required annotation for bot commands, see all possible options
  * <p>First parameter may be {@link CommandEvent} only for fallback commands</p>
  *
- * @see AddExecutableHelp
- * @see AddSubcommandHelp
  * @see ArgExample
  * @see ArgName
  * @see MethodOrder

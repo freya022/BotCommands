@@ -3,7 +3,6 @@ package com.freya02.bot.regexbot.commands;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.annotations.AddExecutableHelp;
 import com.freya02.botcommands.api.prefixed.annotations.Executable;
 import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
 import net.dv8tion.jda.api.entities.*;

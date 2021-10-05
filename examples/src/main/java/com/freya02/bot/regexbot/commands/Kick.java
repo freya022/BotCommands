@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.annotations.AddExecutableHelp;
 import com.freya02.botcommands.api.prefixed.annotations.ArgExample;
 import com.freya02.botcommands.api.prefixed.annotations.Executable;
 import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
