@@ -3,12 +3,14 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.DefaultMessages;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -81,13 +83,39 @@ public interface BContext {
 	DefaultMessages getDefaultMessages(@Nullable Guild guild);
 
 	/**
-	 * Returns the {@linkplain Command} object of the specified command name, the name can be an alias too
+	 * Returns the first occurrence of {@link TextCommandInfo} of the specified command name, the name can be an alias too
 	 *
-	 * @param name Name / alias of the command
-	 * @return The {@linkplain Command} object of the command name
+	 * @param path Name / alias of the command
+	 * @return The {@link TextCommandInfo} object of the command name
 	 */
 	@Nullable
-	Command findCommand(@NotNull String name);
+	TextCommandInfo findFirstCommand(@NotNull CommandPath path);
+
+	/**
+	 * Returns the text commands for the given path
+	 *
+	 * @param path The path of the command
+	 * @return a {@link TextCommandCandidates list of text command info}
+	 */
+	@NotNull
+	TextCommandCandidates findCommands(@NotNull CommandPath path);
+
+	/**
+	 * Returns the first occurrence of a text subcommand for the given path
+	 *
+	 * @param path The path of the command to find subcommands in
+	 * @return a {@link TextCommandCandidates list of text command info}
+	 */
+	@Nullable
+	TextCommandCandidates findFirstTextSubcommands(CommandPath path);
+
+	/**
+	 * Returns a list of text subcommands for the given path
+	 *
+	 * @param path The path of the command to find subcommands in
+	 * @return a {@link List} of {@link TextCommandCandidates subcommand candidates}
+	 */
+	List<TextCommandCandidates> findTextSubcommands(CommandPath path);
 
 	/**
 	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
@@ -165,7 +193,7 @@ public interface BContext {
 	void removeFilter(Predicate<MessageInfo> filter);
 
 	/**
-	 * Overrides the default help given in {@linkplain Command#showHelp(BaseCommandEvent)}
+	 * Overrides the default help given in {@linkplain TextCommand#showHelp(BaseCommandEvent)}
 	 *
 	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
 	 */

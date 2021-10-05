@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.prefixed.regex;
 
-import com.freya02.botcommands.api.prefixed.annotations.Executable;
+import com.freya02.botcommands.api.prefixed.annotations.MethodOrder;
 import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
@@ -15,8 +15,8 @@ public class MethodComparator implements Comparator<Method> {
 	public int compare(Method o1, Method o2) {
 		if (o1 == o2) return 0;
 
-		final int order1 = o1.getAnnotation(Executable.class).order();
-		final int order2 = o2.getAnnotation(Executable.class).order();
+		final int order1 = o1.getAnnotation(MethodOrder.class).value();
+		final int order2 = o2.getAnnotation(MethodOrder.class).value();
 		if (order1 != 0 && order2 != 0) {
 			if (order1 == order2) {
 				LOGGER.warn("Warn: Method {} and {} have the same order ({})", o1, o2, order1);

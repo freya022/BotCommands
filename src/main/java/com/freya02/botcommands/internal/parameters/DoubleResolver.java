@@ -8,7 +8,10 @@ import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateE
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Pattern;
 
 public class DoubleResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public DoubleResolver() {
@@ -19,6 +22,18 @@ public class DoubleResolver extends ParameterResolver implements RegexParameterR
 	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return Double.valueOf(args[0]);
+	}
+
+	@Override
+	@NotNull
+	public Pattern getPattern() {
+		return Pattern.compile("(\\d+)");
+	}
+
+	@Override
+	@NotNull
+	public String getTestExample() {
+		return "1234.42";
 	}
 
 	@Override

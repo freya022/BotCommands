@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 /**
  * <p>Contains all the information about the triggered command</p>
  * <p>Arguments are tokenized and resolved into entities if possible</p>
+ * <p><b>This is only used as a command fallback</b></p>
  *
  * @see BaseCommandEvent
  */

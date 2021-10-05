@@ -1,18 +1,19 @@
 package com.freya02.botcommands.api.prefixed;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class MessageInfo {
 	private final BContext context;
 	private final GuildMessageReceivedEvent event;
-	private final Command command;
+	private final TextCommandInfo commandInfo;
 	private final String args;
 
-	public MessageInfo(BContext context, GuildMessageReceivedEvent event, Command command, String args) {
+	public MessageInfo(BContext context, GuildMessageReceivedEvent event, TextCommandInfo commandInfo, String args) {
 		this.context = context;
 		this.event = event;
-		this.command = command;
+		this.commandInfo = commandInfo;
 		this.args = args;
 	}
 
@@ -24,8 +25,8 @@ public class MessageInfo {
 		return context;
 	}
 
-	public Command getCommand() {
-		return command;
+	public TextCommandInfo getCommandInfo() {
+		return commandInfo;
 	}
 
 	public String getArgs() {

@@ -153,7 +153,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}
 
 		if (isNotOwner) {
-			final int cooldown = applicationCommand.getCooldown(event, event::getName);
+			final long cooldown = applicationCommand.getCooldown(event, event::getName);
 			if (cooldown > 0) {
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
 					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));

@@ -21,7 +21,6 @@ public class MethodParameters<T extends InteractionParameter<?>> extends ArrayLi
 		this.optionCount = (int) stream().filter(InteractionParameter::isOption).count();
 	}
 
-	//TODO check for other Stream#count occurrences
 	public int getOptionCount() {
 		return optionCount;
 	}

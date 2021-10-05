@@ -84,7 +84,7 @@ public class SlashUtils {
 
 			list.add(data);
 
-			data.setRequired(!applicationOptionData.isOptional());
+			data.setRequired(!parameter.isOptional());
 
 			i++;
 		}

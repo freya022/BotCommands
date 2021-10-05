@@ -6,16 +6,17 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.context.annotations.JdaMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
-import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
+import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
 import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
-import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
+import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
@@ -77,13 +78,16 @@ public final class CommandsBuilderImpl {
 				processClass(aClass);
 			}
 
-			if (!context.isHelpDisabled()) {
-				processClass(HelpCommand.class);
-
-				final HelpCommand help = (HelpCommand) context.findCommand("help");
-				if (help == null) throw new IllegalStateException("HelpCommand did not build properly");
-				help.generate();
+			if (!context.isHelpDisabled()) {//TODO enable
+//				processClass(HelpCommand.class);
+//
+//				final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
+//				if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
+//				final HelpCommand help = (HelpCommand) helpInfo.getInstance();
+//				help.generate();
 			}
+
+			prefixedCommandsBuilder.postProcess();
 
 			if (context.getComponentManager() != null) {
 				//Load button listeners
@@ -95,7 +99,7 @@ public final class CommandsBuilderImpl {
 			}
 
 			LOGGER.info("Loaded {} commands", context.getCommands().size());
-			printCommands(context.getCommands(), 0);
+			printCommands(context.getCommands());
 
 			applicationCommandsBuilder.postProcess();
 
@@ -117,50 +121,57 @@ public final class CommandsBuilderImpl {
 		}
 	}
 
-	private void printCommands(Collection<Command> commands, int indent) {
-		for (Command command : commands) {
-			LOGGER.debug("{}- '{}' Bot permission=[{}] User permissions=[{}]",
-					"\t".repeat(indent),
-					command.getInfo().getName(),
-					command.getInfo().getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
-					command.getInfo().getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+	private void printCommands(Collection<TextCommandCandidates> commands) {
+		for (TextCommandCandidates candidates : commands) {
+			final TextCommandInfo command = candidates.findFirst();
 
-			printCommands(command.getInfo().getSubcommands(), indent + 1);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Path: {}", command.getPath());
+				for (TextCommandInfo candidate : candidates) {
+					LOGGER.trace("\t- '{}' Bot permission=[{}] User permissions=[{}]",
+							Utils.formatMethodShort(candidate.getCommandMethod()),
+							candidate.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+							candidate.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+				}
+			} else {
+				LOGGER.debug("\t- '{}' Bot permission=[{}] User permissions=[{}]",
+						command.getPath(),
+						command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+						command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+			}
 		}
 	}
 
 	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
-		if (isCommand(aClass) && aClass.getDeclaringClass() == null) { //Declaring class returns null for anonymous classes, we only need to check if the class is not an inner class
-			boolean isInstantiable = Utils.isInstantiable(aClass);
-
-			if (isInstantiable) {
-				if (!Command.class.isAssignableFrom(aClass))
-					throw new IllegalArgumentException("Class " + aClass + " should extend Command");
-
-				final Command someCommand = (Command) ClassInstancer.instantiate(context, aClass);
-
-				prefixedCommandsBuilder.processPrefixedCommand(someCommand);
-			} else {
-				LOGGER.error("A non-instantiable class tried to get processed, this should have been filtered by #buildClasses, please report to the devs");
-			}
-		} else {
+		if (!Modifier.isAbstract(aClass.getModifiers()) && !Modifier.isInterface(aClass.getModifiers())) {
 			boolean foundSomething = false;
-			
+
 			//If not a text command, search for methods annotated with a compatible annotation
 			for (Method method : aClass.getDeclaredMethods()) {
 				for (Class<? extends Annotation> annotation : methodAnnotations) {
 					if (method.isAnnotationPresent(annotation)) {
 						if (!ApplicationCommand.class.isAssignableFrom(aClass))
-							throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + annotation.getSimpleName() + " but it's class does not extend ApplicationCommand");
-						
+							throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + annotation.getSimpleName() + " but its class does not extend ApplicationCommand");
+
 						final ApplicationCommand annotatedInstance = (ApplicationCommand) ClassInstancer.instantiate(context, aClass);
-						
+
 						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
-						
+
 						foundSomething = true;
-						
+
 						break;
 					}
+				}
+
+				if (method.isAnnotationPresent(JdaTextCommand.class)) {
+					if (!TextCommand.class.isAssignableFrom(aClass))
+						throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + JdaTextCommand.class.getSimpleName() + " but its class does not extend TextCommand");
+
+					final TextCommand annotatedInstance = (TextCommand) ClassInstancer.instantiate(context, aClass);
+
+					prefixedCommandsBuilder.processPrefixedCommand(annotatedInstance, method);
+
+					foundSomething = true;
 				}
 			}
 
@@ -168,13 +179,6 @@ public final class CommandsBuilderImpl {
 				ignoredClasses.add(aClass);
 			}
 		}
-	}
-
-	private boolean isCommand(Class<?> aClass) {
-		if (Modifier.isAbstract(aClass.getModifiers()))
-			return false;
-
-		return Command.class.isAssignableFrom(aClass) && aClass.isAnnotationPresent(JdaCommand.class);
 	}
 
 	/**

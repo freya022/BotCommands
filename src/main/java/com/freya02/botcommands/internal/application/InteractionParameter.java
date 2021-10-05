@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Parameter;
 
+//TODO rename
 public class InteractionParameter<RESOLVER> {
 	private final RESOLVER resolver;
 	private final Class<?> boxedType;
@@ -17,11 +18,16 @@ public class InteractionParameter<RESOLVER> {
 	private final Parameter parameter;
 	private final int index;
 
+	private final boolean optional, isPrimitive;
+
 	@SuppressWarnings("unchecked")
 	public InteractionParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		this.parameter = parameter;
 		this.boxedType = Utils.getBoxedType(parameter.getType());
 		this.index = index;
+
+		this.optional = Utils.isOptional(parameter);
+		this.isPrimitive = parameter.getType().isPrimitive();
 
 		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);
 		if (parameter.isAnnotationPresent(Option.class)) {
@@ -68,5 +74,13 @@ public class InteractionParameter<RESOLVER> {
 
 	public boolean isOption() {
 		return resolver != null;
+	}
+
+	public boolean isPrimitive() {
+		return isPrimitive;
+	}
+
+	public boolean isOptional() {
+		return optional;
 	}
 }

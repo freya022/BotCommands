@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
-import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.utils.IOUtils;
@@ -128,10 +128,10 @@ public final class CommandsBuilder {
 	 *
 	 * @param clazz The command's class to register
 	 * @return This builder for chaining convenience
-	 * @throws IllegalArgumentException If the class is not a {@link Command} nor a {@link ApplicationCommand}
+	 * @throws IllegalArgumentException If the class is not a {@link TextCommand} nor a {@link ApplicationCommand}
 	 */
 	public CommandsBuilder registerCommand(Class<?> clazz) {
-		if (!Command.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
+		if (!TextCommand.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
 			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
 		}
 
@@ -141,7 +141,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link Command} or {@link ApplicationCommand} will be registered<br>
+	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand} or {@link ApplicationCommand} will be registered<br>
 	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
 	 *
 	 * <pre><code>

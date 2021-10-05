@@ -99,6 +99,18 @@ public class CommandPathImpl implements CommandPath {
 		return path;
 	}
 
+	@NotNull
+	@Override
+	public String getLastName() {
+		if (group != null) { //If a group exist, a subname exists, otherwise it's a bug.
+			return subname;
+		} else if (subname != null) {
+			return subname;
+		}
+
+		return name;
+	}
+
 	@Override
 	public String toString() {
 		return path;

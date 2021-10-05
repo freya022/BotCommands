@@ -4,13 +4,11 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
-import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.internal.BContextImpl;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -50,11 +48,6 @@ public class ClassInstancer {
 				throw new IllegalArgumentException("Class " + aClass.getName() + " must have exactly one constructor");
 
 			final Constructor<?> constructor = constructors[0];
-
-			if (Command.class.isAssignableFrom(aClass)) { //Obligatory arg
-				if (Arrays.stream(constructor.getParameterTypes()).noneMatch(BContext.class::isAssignableFrom))
-					throw new IllegalArgumentException("Class " + aClass.getName() + " should have a BContext in its constructor arguments");
-			}
 
 			List<Object> parameterObjs = new ArrayList<>();
 

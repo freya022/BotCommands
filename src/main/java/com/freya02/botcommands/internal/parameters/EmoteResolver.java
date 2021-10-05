@@ -6,12 +6,16 @@ import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.regex.Pattern;
 
 public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmoteResolver() {
@@ -22,6 +26,18 @@ public class EmoteResolver extends ParameterResolver implements RegexParameterRe
 	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmoteInGuild(args[1], event.getGuild());
+	}
+
+	@Override
+	@NotNull
+	public Pattern getPattern() {
+		return Message.MentionType.EMOTE.getPattern();
+	}
+
+	@Override
+	@NotNull
+	public String getTestExample() {
+		return "<:name:1234>";
 	}
 
 	@Override

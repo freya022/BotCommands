@@ -14,37 +14,35 @@ import java.util.function.Supplier;
 
 public abstract class Cooldownable {
 	private static final Logger LOGGER = Logging.getLogger();
-	private final CooldownScope cooldownScope;
-	private final int cooldown;
+	private final CooldownStrategy cooldownStrategy;
 
 	//The values is the time on which the cooldown expires
 	private final Map<Long, Map<Long, Long>> userCooldowns = Collections.synchronizedMap(new HashMap<>());
 	private final Map<Long, Long> channelCooldowns = Collections.synchronizedMap(new HashMap<>());
 	private final Map<Long, Long> guildCooldowns = Collections.synchronizedMap(new HashMap<>());
 
-	protected Cooldownable(CooldownScope cooldownScope, int cooldown) {
-		this.cooldownScope = cooldownScope;
-		this.cooldown = cooldown;
+	protected Cooldownable(CooldownStrategy cooldownStrategy) {
+		this.cooldownStrategy = cooldownStrategy;
+	}
+
+	public long getCooldown() {
+		return cooldownStrategy.getCooldown();
 	}
 
 	public CooldownScope getCooldownScope() {
-		return cooldownScope;
-	}
-
-	public int getCooldown() {
-		return cooldown;
+		return cooldownStrategy.getScope();
 	}
 
 	public void applyCooldown(GuildMessageReceivedEvent event) {
-		switch (cooldownScope) {
+		switch (getCooldownScope()) {
 			case USER:
-				getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + cooldown);
+				getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 			case GUILD:
-				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + cooldown);
+				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 			case CHANNEL:
-				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + cooldown);
+				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 		}
 	}
@@ -55,48 +53,48 @@ public abstract class Cooldownable {
 	}
 
 	public void applyCooldown(Interaction event) {
-		switch (cooldownScope) {
+		switch (getCooldownScope()) {
 			case USER:
 				if (event.getGuild() == null) break;
-				
-				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + cooldown);
+
+				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 			case GUILD:
 				if (event.getGuild() == null) break;
 
-				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + cooldown);
+				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 			case CHANNEL:
 				if (event.getChannel() == null) break;
-				
-				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + cooldown);
+
+				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
 				break;
 		}
 	}
 
-	public int getCooldown(GuildMessageReceivedEvent event) {
-		switch (cooldownScope) {
+	public long getCooldown(GuildMessageReceivedEvent event) {
+		switch (getCooldownScope()) {
 			case USER:
-				return (int) Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
-				return (int) Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
 			case CHANNEL:
-				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
-				throw new IllegalStateException("Unexpected cooldown scope: " + cooldownScope);
+				throw new IllegalStateException("Unexpected cooldown scope: " + getCooldownScope());
 		}
 	}
 
-	public int getCooldown(Interaction event, Supplier<String> cmdNameSupplier) {
-		switch (cooldownScope) {
+	public long getCooldown(Interaction event, Supplier<String> cmdNameSupplier) {
+		switch (getCooldownScope()) {
 			case USER:
 				if (event.getGuild() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
-				
-				return (int) Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
+
+				return  Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
 			case GUILD:
 				if (event.getGuild() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
@@ -104,17 +102,17 @@ public abstract class Cooldownable {
 					return 0;
 				}
 
-				return (int) Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
+				return  Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
 			case CHANNEL:
 				if (event.getChannel() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a channel, somehow", cmdNameSupplier.get());
-					
+
 					return 0;
 				}
-				
-				return (int) Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+
+				return  Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
 			default:
-				throw new IllegalStateException("Unexpected value: " + cooldownScope);
+				throw new IllegalStateException("Unexpected value: " + getCooldownScope());
 		}
 	}
 }

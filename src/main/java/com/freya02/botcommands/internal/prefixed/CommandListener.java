@@ -2,17 +2,13 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.CommandInfo;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.Usability;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
-import com.freya02.botcommands.internal.prefixed.regex.ArgumentFunction;
-import com.freya02.botcommands.internal.prefixed.regex.MethodPattern;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
@@ -28,19 +24,23 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class CommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 	private final BContextImpl context;
 
 	private int commandThreadNumber = 0;
@@ -57,39 +57,20 @@ public final class CommandListener extends ListenerAdapter {
 		this.context = context;
 	}
 
-	private static class Cmd {
-		private final String commandName;
-		private final String args;
-
-		private Cmd(String commandName, String args) {
-			this.commandName = commandName;
-			this.args = args;
-		}
-	}
-
-	private Cmd getCmdFast(String msg, Guild guild) {
-		final String msgNoPrefix;
-		final String commandName;
-
+	@Nullable
+	private String getMsgNoPrefix(String msg, Guild guild) {
 		int prefixLength = -1;
+
 		for (String prefix : getPrefixes(guild)) {
 			if (msg.startsWith(prefix)) {
 				prefixLength = prefix.length();
 				break;
 			}
 		}
+
 		if (prefixLength == -1) return null;
 
-		msgNoPrefix = msg.substring(prefixLength).trim();
-
-		final int endIndex = msgNoPrefix.indexOf(' ');
-
-		if (endIndex > -1) {
-			commandName = msgNoPrefix.substring(0, endIndex);
-			return new Cmd(commandName, msgNoPrefix.substring(commandName.length()).trim());
-		} else {
-			return new Cmd(msgNoPrefix, "");
-		}
+		return msg.substring(prefixLength).trim();
 	}
 
 	private List<String> getPrefixes(Guild guild) {
@@ -119,133 +100,118 @@ public final class CommandListener extends ListenerAdapter {
 
 		final String msg = event.getMessage().getContentRaw();
 		runCommand(() -> {
-			final Cmd cmdFast = getCmdFast(msg, event.getGuild());
+			final String msgNoPrefix = getMsgNoPrefix(msg, event.getGuild());
 
-			if (cmdFast == null)
+			if (msgNoPrefix == null || msgNoPrefix.isBlank())
 				return;
 
-			final String commandName = cmdFast.commandName;
-			String args = cmdFast.args;
+			LOGGER.trace("Received prefixed command: {}", msg);
 
-			Command command = context.findCommand(commandName);
+			final String[] split = SPACE_PATTERN.split(msgNoPrefix, 4);
+			final TextCommandCandidates candidates = getCommandCandidates(Arrays.copyOf(split, 3));
 
-			final List<Long> ownerIds = context.getOwnerIds();
-			final boolean isNotOwner = !ownerIds.contains(member.getIdLong());
-			if (command == null) {
-				onCommandNotFound(event, commandName, isNotOwner);
+			final boolean isNotOwner = !context.isOwner(member.getIdLong());
+			if (candidates == null) {
+				onCommandNotFound(event, CommandPath.of(split[0]), isNotOwner);
 				return;
 			}
 
-			//Check for subcommands
-			final CommandInfo commandInfo = command.getInfo();
-			for (Command subcommand : commandInfo.getSubcommands()) {
-				final String subcommandName = subcommand.getInfo().getName();
-				if (args.startsWith(subcommandName)) {
-					command = subcommand; //Replace command with subcommand
-					args = args.replace(subcommandName, "").trim();
-					break;
-				}
-			}
+			final int count = candidates.findFirst().getPath().getNameCount();
 
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Received prefixed command: {}", msg);
-			}
+			final String args = Arrays.stream(split)
+					.skip(count) //Skip the number of path components as those are split and unneeded
+					.collect(Collectors.joining(" "));
 
-			final MessageInfo messageInfo = new MessageInfo(context, event, command, args);
-			for (Predicate<MessageInfo> filter : context.getFilters()) {
-				if (!filter.test(messageInfo)) {
-					return;
-				}
-			}
+			for (TextCommandInfo candidate : candidates) {
+				final Pattern pattern = candidate.getCompletePattern();
 
-			final Usability usability = Usability.of(command.getInfo(), member, event.getChannel(), isNotOwner);
+				if (pattern != null) { //Non-fallback, uses BaseCommandEvent
+					final Matcher matcher = pattern.matcher(args);
 
-			if (usability.isUnusable()) {
-				final var unusableReasons = usability.getUnusableReasons();
-				if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-					onCommandNotFound(event, commandName, true);
-					return;
-				} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-					reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
-					return;
-				} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-					reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
-					return;
-				} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
-					final StringJoiner missingBuilder = new StringJoiner(", ");
-
-					//Take needed permissions, extract bot current permissions
-					final EnumSet<Permission> missingPerms = command.getInfo().getBotPermissions();
-					missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getChannel()));
-
-					for (Permission botPermission : missingPerms) {
-						missingBuilder.add(botPermission.getName());
-					}
-
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
-					return;
-				}
-			}
-
-			if (isNotOwner) {
-				final int cooldown = command.getInfo().getCooldown(event);
-				if (cooldown > 0) {
-					if (commandInfo.getCooldownScope() == CooldownScope.USER) {
-						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
-						return;
-					} else if (commandInfo.getCooldownScope() == CooldownScope.GUILD) {
-						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
-						return;
-					} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
-						reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
-						return;
-					//}
-				}
-			}
-
-			final Command finalCommand = command;
-			patternsLoop: //mmmmmhhh spaghetti
-			for (MethodPattern m : finalCommand.getInfo().getMethodPatterns()) {
-				try {
-					final Matcher matcher = m.pattern.matcher(args);
 					if (matcher.matches()) {
-						final List<Object> objects = new ArrayList<>(matcher.groupCount() + 1);
-						objects.add(new BaseCommandEventImpl(this.context, event, args));
+						tryExecute(event, member, isNotOwner, args, candidate, matcher);
 
-						int groupIndex = 1;
-						for (ArgumentFunction argumentFunction : m.argumentsArr) {
-							final String[] groups = new String[argumentFunction.groups];
-							for (int j = 0; j < argumentFunction.groups; j++) {
-								groups[j] = matcher.group(groupIndex++);
-							}
-
-							//For some reason using an array list instead of a regular array
-							// magically unboxes primitives when passed to Method#invoke
-							final Object o = argumentFunction.resolver.resolve(event, groups);
-							if (o == null) {
-								continue patternsLoop;
-							}
-							objects.add(o);
-						}
-
-						command.getInfo().applyCooldown(event);
-						m.method.invoke(finalCommand, objects.toArray());
 						return;
 					}
-				} catch (NumberFormatException e) {
-					LOGGER.error("Invalid number");
-				} catch (Exception e) {
-					e.printStackTrace();
+				} else { //Fallback, only CommandEvent
+					tryExecute(event, member, isNotOwner, args, candidate, null);
+
+					return;
 				}
 			}
 
-			final CommandEvent commandEvent = new CommandEventImpl(this.context, event, args);
-			command.getInfo().applyCooldown(event);
-			finalCommand.execute(commandEvent);
+			event.getChannel().sendMessage("help sent").queue();
 		}, msg, event.getMessage());
 	}
 
-	private void onCommandNotFound(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
+	private boolean tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher) throws Exception {
+		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
+		for (Predicate<MessageInfo> filter : context.getFilters()) {
+			if (!filter.test(messageInfo)) {
+				return false;
+			}
+		}
+
+		final Usability usability = Usability.of(candidate, member, event.getChannel(), isNotOwner);
+
+		if (usability.isUnusable()) {
+			final var unusableReasons = usability.getUnusableReasons();
+			if (unusableReasons.contains(UnusableReason.HIDDEN)) {
+				onCommandNotFound(event, candidate.getPath(), true);
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
+				final StringJoiner missingBuilder = new StringJoiner(", ");
+
+				//Take needed permissions, extract bot current permissions
+				final EnumSet<Permission> missingPerms = candidate.getBotPermissions();
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getChannel()));
+
+				for (Permission botPermission : missingPerms) {
+					missingBuilder.add(botPermission.getName());
+				}
+
+				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
+				return false;
+			}
+		}
+
+		if (isNotOwner) {
+			final long cooldown = candidate.getCooldown(event);
+			if (cooldown > 0) {
+				if (candidate.getCooldownScope() == CooldownScope.USER) {
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
+					return false;
+				} else if (candidate.getCooldownScope() == CooldownScope.GUILD) {
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
+					return false;
+				} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
+					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
+				return false;
+				//}
+			}
+		}
+
+		candidate.applyCooldown(event);
+		candidate.execute(context, event, args, matcher);
+
+		return true;
+	}
+
+	@Nullable
+	private TextCommandCandidates getCommandCandidates(String[] split) {
+		final TextCommandCandidates commands = context.findCommands(CommandPath.of(split));
+		if (commands != null) return commands;
+
+		return getCommandCandidates(Arrays.copyOf(split, split.length - 1));
+	}
+
+	private void onCommandNotFound(GuildMessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
@@ -254,19 +220,33 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	private List<String> getSuggestions(GuildMessageReceivedEvent event, String commandName, boolean isNotOwner) {
+	private List<String> getSuggestions(GuildMessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
+		final Function<CommandPath, String> pathToStringFunc;
+
+		switch (triedCommandPath.getNameCount()) {
+			case 1:
+				pathToStringFunc = CommandPath::getName;
+				break;
+			case 2:
+			case 3:
+				pathToStringFunc = CommandPath::getSubname;
+				break;
+			default:
+				throw new IllegalStateException("Path empty or longer than 3 !");
+		}
+
 		final List<String> commandNames = context.getCommands().stream()
-				.filter(c -> Usability.of(c.getInfo(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
-				.map(c -> c.getInfo().getName())
+				.filter(c -> Usability.of(c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
+				.map(c -> pathToStringFunc.apply(c.findFirst().getPath()))
 				.collect(Collectors.toList());
 
-		final List<String> topPartial = FuzzySearch.extractAll(commandName,
+		final List<String> topPartial = FuzzySearch.extractAll(pathToStringFunc.apply(triedCommandPath),
 				commandNames,
 				FuzzySearch::partialRatio,
 				90
 		).stream().map(ExtractedResult::getString).collect(Collectors.toList());
 
-		return FuzzySearch.extractTop(commandName,
+		return FuzzySearch.extractTop(pathToStringFunc.apply(triedCommandPath),
 				topPartial,
 				FuzzySearch::ratio,
 				5,

@@ -12,10 +12,12 @@ import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateE
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EmojiOrEmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiOrEmoteResolver() {
@@ -26,6 +28,18 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmojiOrEmote(args[0]);
+	}
+
+	@Override
+	@NotNull
+	public Pattern getPattern() {
+		return Pattern.compile("(\\S+)");
+	}
+
+	@Override
+	@NotNull
+	public String getTestExample() {
+		return "<:name:1234>";
 	}
 
 	@Override

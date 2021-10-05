@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.prefixed.Command;
+import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
@@ -11,14 +11,14 @@ public abstract class RegistrationListener {
 	 *
 	 * @param command Command which got registered
 	 */
-	public abstract void onCommandRegistered(Command command);
+	public abstract void onCommandRegistered(TextCommand command);
 
 	/**
 	 * Fired when a regular subcommand is registered
 	 *
 	 * @param command Command which got registered
 	 */
-	public abstract void onSubcommandRegistered(Command command);
+	public abstract void onSubcommandRegistered(TextCommand command);
 
 	/**
 	 * Fired when Discord acknowledged the application command globally

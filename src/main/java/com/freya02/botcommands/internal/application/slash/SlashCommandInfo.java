@@ -8,7 +8,6 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -99,8 +97,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 				final OptionMapping optionMapping = event.getOption(optionName);
 
 				if (optionMapping == null) {
-					if (applicationOptionData.isOptional()) {
-						if (applicationOptionData.isPrimitive()) {
+					if (parameter.isOptional()) {
+						if (parameter.isPrimitive()) {
 							objects.add(0);
 						} else {
 							objects.add(null);
@@ -150,10 +148,5 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	@Override
 	public MethodParameters<SlashCommandParameter> getParameters() {
 		return commandParameters;
-	}
-
-	@Override
-	public List<SlashCommandParameter> getOptionParameters() {
-		return getParameters().stream().filter(ApplicationCommandParameter::isOption).collect(Collectors.toList());
 	}
 }

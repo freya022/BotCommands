@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.prefixed.CommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -19,7 +19,7 @@ public class Usability {
 		this.unusableReasons = unusableReasons;
 	}
 
-	public static Usability of(CommandInfo cmdInfo, Member member, TextChannel channel, boolean isNotOwner) {
+	public static Usability of(TextCommandInfo cmdInfo, Member member, TextChannel channel, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 		if (isNotOwner && cmdInfo.isHidden()) {
 			unusableReasons.add(HIDDEN);

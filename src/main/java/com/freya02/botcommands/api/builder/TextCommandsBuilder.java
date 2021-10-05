@@ -3,8 +3,6 @@ package com.freya02.botcommands.api.builder;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.api.prefixed.annotations.AddExecutableHelp;
-import com.freya02.botcommands.api.prefixed.annotations.AddSubcommandHelp;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -27,28 +25,6 @@ public final class TextCommandsBuilder {
 	 */
 	public TextCommandsBuilder addPrefix(String prefix) {
 		context.addPrefix(prefix);
-
-		return this;
-	}
-
-	/**
-	 * Enables {@linkplain AddSubcommandHelp} on all registered commands
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	public TextCommandsBuilder addSubcommandHelpByDefault() {
-		context.setAddSubcommandHelpByDefault(true);
-
-		return this;
-	}
-
-	/**
-	 * Enables {@linkplain AddExecutableHelp} on all registered commands
-	 *
-	 * @return This builder for chaining convenience
-	 */
-	public TextCommandsBuilder addExecutableHelpByDefault() {
-		context.setAddExecutableHelpByDefault(true);
 
 		return this;
 	}

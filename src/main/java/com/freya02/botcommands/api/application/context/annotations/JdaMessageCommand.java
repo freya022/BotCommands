@@ -1,9 +1,10 @@
 package com.freya02.botcommands.api.application.context.annotations;
 
-import com.freya02.botcommands.api.CooldownScope;
+import com.freya02.botcommands.api.annotations.BotPermissions;
+import com.freya02.botcommands.api.annotations.Cooldown;
+import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 
@@ -20,6 +21,9 @@ import java.lang.annotation.Target;
  *
  * @see GlobalMessageEvent#getTargetMessage()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
+ * @see UserPermissions @UserPermissions
+ * @see BotPermissions @BotPermissions
+ * @see Cooldown @Cooldown
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -37,32 +41,4 @@ public @interface JdaMessageCommand {
 	 * @return Name of the command
 	 */
 	String name();
-
-	/**
-	 * Required {@linkplain Permission permissions} of the bot
-	 *
-	 * @return Required {@linkplain Permission permissions} of the bot
-	 */
-	Permission[] botPermissions() default {};
-
-	/**
-	 * Required {@linkplain Permission permissions} of the user
-	 *
-	 * @return Required {@linkplain Permission permissions} of the user
-	 */
-	Permission[] userPermissions() default {};
-
-	/**
-	 * Cooldown time <b>in milliseconds</b> before the command can be used again in the scope specified by {@linkplain #cooldownScope()}
-	 *
-	 * @return Cooldown time
-	 */
-	int cooldown() default 0;
-
-	/**
-	 * Scope of the cooldown, can be either {@linkplain CooldownScope#USER}, {@linkplain CooldownScope#CHANNEL} or {@linkplain CooldownScope#GUILD}
-	 *
-	 * @return Scope of the cooldown
-	 */
-	CooldownScope cooldownScope() default CooldownScope.USER;
 }

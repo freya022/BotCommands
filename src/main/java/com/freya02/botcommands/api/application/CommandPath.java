@@ -57,6 +57,9 @@ public interface CommandPath {
 	
 	String getFullPath();
 
+	@NotNull
+	String getLastName();
+
 	/**
 	 * Returns the JDA path representation of this CommandPath
 	 *

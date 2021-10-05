@@ -66,7 +66,7 @@ public class LocalizedCommandData {
 		} else {
 			localizedOptions = info.getOptionParameters()
 					.stream()
-					.filter(ApplicationCommandParameter::isOption)
+					.filter(InteractionParameter::isOption)
 					.map(ApplicationCommandParameter::getApplicationOptionData)
 					.map(a -> new LocalizedOption(a.getEffectiveName(), a.getEffectiveDescription()))
 					.collect(Collectors.toList());

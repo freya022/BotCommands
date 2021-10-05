@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
+import com.freya02.botcommands.api.annotations.Cooldown;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 /**
  * <p>Provides cooldown scopes for executed commands</p>
- * <p>The cooldown time is specified with {@linkplain JdaCommand#cooldown()}</p>
+ * <p>The cooldown time is specified with {@link Cooldown}</p>
  */
 public enum CooldownScope {
     /** Enables cooldown for the user who called the command */

@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.prefixed.regex;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.annotations.Executable;
+import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.MethodOrder;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
@@ -36,13 +36,13 @@ public class CommandTransformer {
 		put(TextChannel.class, new ArgumentFunction("(?><#)?(\\d+)>?", 1, TextChannel.class));
 	}};
 
-	public static List<MethodPattern> getMethodPatterns(Command command) {
+	public static List<MethodPattern> getMethodPatterns(TextCommand command) {
 		List<MethodPattern> list = new ArrayList<>();
 
 		final List<Method> candidates = new ArrayList<>();
 		final Method[] methods = command.getClass().getDeclaredMethods();
 		for (Method method : methods) {
-			if (!method.isAnnotationPresent(Executable.class)) continue;
+			if (!method.isAnnotationPresent(MethodOrder.class)) continue;
 			if (Modifier.isStatic(method.getModifiers())) {
 				LOGGER.warn("Regex commands cannot be static, at {}", method.toGenericString());
 
@@ -72,11 +72,11 @@ public class CommandTransformer {
 			candidates.add(method);
 		}
 
-		final boolean hasSpecificOrder = candidates.stream().anyMatch(m -> m.getAnnotation(Executable.class).order() != 0);
+		final boolean hasSpecificOrder = candidates.stream().anyMatch(m -> m.getAnnotation(MethodOrder.class).value() != 0);
 		candidates.sort(new MethodComparator());
 		for (Method method : candidates) {
 			if (hasSpecificOrder) {
-				if (method.getAnnotation(Executable.class).order() == 0) {
+				if (method.getAnnotation(MethodOrder.class).value() == 0) {
 					LOGGER.error("Method {} does not have an order specified but this class has at least one specified. Do not forget order cannot be 0", method);
 				}
 			}

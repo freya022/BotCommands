@@ -32,10 +32,12 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Executable {
+public @interface MethodOrder {
 	/**
 	 * Specifies the specific order the executable has to be loaded in
 	 * @return The order to be loaded
 	 */
-	int order() default 0;
+	int value() default 0;
+
+	//TODO remove, merged with JdaTextCommand
 }

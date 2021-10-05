@@ -14,6 +14,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.regex.Pattern;
+
 public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiResolver() {
 		super(Emoji.class);
@@ -23,6 +25,18 @@ public class EmojiResolver extends ParameterResolver implements RegexParameterRe
 	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		return getEmoji(args[0]);
+	}
+
+	@Override
+	@NotNull
+	public Pattern getPattern() {
+		return Pattern.compile("(\\S+)"); //Non whitespace
+	}
+
+	@Override
+	@NotNull
+	public String getTestExample() {
+		return "1️\u0031\u20E3";
 	}
 
 	@Override

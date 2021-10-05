@@ -1,17 +1,14 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.application.annotations.Option;
-import com.freya02.botcommands.internal.utils.Utils;
 
 import java.lang.reflect.Parameter;
 
 public class ApplicationOptionData {
 	private final String effectiveName, effectiveDescription;
-	private final boolean optional, isPrimitive;
 
 	public ApplicationOptionData(Parameter parameter) {
-		this.optional = Utils.isOptional(parameter);
-		this.isPrimitive = parameter.getType().isPrimitive();
+
 		
 		final Option option = parameter.getAnnotation(Option.class);
 
@@ -47,14 +44,6 @@ public class ApplicationOptionData {
 		}
 
 		return optionNameBuilder.toString();
-	}
-
-	public boolean isPrimitive() {
-		return isPrimitive;
-	}
-
-	public boolean isOptional() {
-		return optional;
 	}
 
 	/**

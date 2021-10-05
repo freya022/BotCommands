@@ -1,72 +1,65 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.prefixed.Command;
-import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
+import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.application.InteractionParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PrefixedCommandsBuilder {
+	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
 
 	public PrefixedCommandsBuilder(@NotNull BContextImpl context) {
 		this.context = context;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void processPrefixedCommand(Command command) {
+	public void processPrefixedCommand(TextCommand command, Method method) {
 		try {
-			context.addCommand(command.getInfo().getName(), command.getInfo().getAliases(), command);
+			if (!method.canAccess(command)) //TODO move canAccess to CommandsBuilderImpl#processClass
+				throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
 
-			context.getRegistrationListeners().forEach(l -> l.onCommandRegistered(command));
-			for (Class<?> subcommandClazz : command.getClass().getClasses()) {
-				if (isSubcommand(subcommandClazz)) {
-					final Command subcommand = getSubcommand((Class<? extends Command>) subcommandClazz, command);
+			if (!Utils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
+				throw new IllegalArgumentException("Prefixed command at " + Utils.formatMethodShort(method) + " must have a BaseCommandEvent or a CommandEvent as first parameter");
 
-					if (subcommand != null) {
-						command.getInfo().addSubcommand(subcommand);
+			final TextCommandInfo info = new TextCommandInfo(command, method);
 
-						context.getRegistrationListeners().forEach(l -> l.onSubcommandRegistered(command));
+			context.addTextCommand(info);
+
+			if (info.isRegexCommand()) {
+				LOGGER.debug("Added prefixed command path {} for method {} with pattern {}", info.getPath(), Utils.formatMethodShort(method), info.getCompletePattern());
+			} else {
+				LOGGER.debug("Added prefixed command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("An exception occurred while processing prefixed command at " + Utils.formatMethodShort(method), e);
+		}
+	}
+
+	public void postProcess() {
+		for (TextCommandCandidates command : context.getCommands()) {
+			for (TextCommandInfo info : command) {
+				for (TextCommandInfo commandInfo : command) {
+					if (info == commandInfo) continue;
+
+					final Method commandMethod1 = info.getCommandMethod();
+					final Method commandMethod2 = commandInfo.getCommandMethod();
+
+					final List<? extends TextCommandParameter> parameters1 = info.getOptionParameters();
+					final List<? extends TextCommandParameter> parameters2 = commandInfo.getOptionParameters();
+
+					if (parameters1.stream().map(InteractionParameter::getParameter).collect(Collectors.toList()).equals(parameters2.stream().map(InteractionParameter::getParameter).collect(Collectors.toList()))) {
+						throw new IllegalStateException("Method " + Utils.formatMethodShort(commandMethod1) + " has the same parameters as " + Utils.formatMethodShort(commandMethod2));
 					}
 				}
 			}
-		} catch (Exception e) {
-			throw new RuntimeException("An exception occurred while processing text-based command at " + command, e);
 		}
-	}
-
-	private Command getSubcommand(Class<? extends Command> clazz, Command parent) throws IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException {
-		if (!Modifier.isAbstract(clazz.getModifiers())) {
-			boolean isInstantiable = Utils.isInstantiable(clazz);
-
-			if (isInstantiable) {
-				if (Modifier.isStatic(clazz.getModifiers())) { //Static inner class doesn't need declaring class's instance
-					final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(BContext.class);
-					if (!constructor.canAccess(null))
-						throw new IllegalStateException("Constructor " + constructor + " is not public");
-
-					return constructor.newInstance(context);
-				} else {
-					final Constructor<? extends Command> constructor = clazz.getDeclaredConstructor(parent.getClass(), BContext.class);
-					if (!constructor.canAccess(null))
-						throw new IllegalStateException("Constructor " + constructor + " is not public");
-
-					return constructor.newInstance(parent, context);
-				}
-			}
-		}
-
-		return null;
-	}
-
-	private boolean isSubcommand(Class<?> aClass) {
-		return !Modifier.isAbstract(aClass.getModifiers())
-				&& aClass.isAnnotationPresent(JdaCommand.class)
-				&& Command.class.isAssignableFrom(aClass);
 	}
 }

@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
@@ -14,6 +13,9 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsCache;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -46,7 +48,8 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, Supplier<?>> commandDependencyMap = new HashMap<>();
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
-	private final Map<String, Command> commandMap = new HashMap<>();
+	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
+	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final EnumMap<CommandType, Map<CommandPath, ? extends ApplicationCommandInfo>> applicationCommandMap = new EnumMap<>(CommandType.class);
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
@@ -55,7 +58,6 @@ public class BContextImpl implements BContext {
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = () -> null;
 
-	private boolean addSubcommandHelpByDefault, addExecutableHelpByDefault;
 	private Consumer<BaseCommandEvent> helpConsumer;
 	private ComponentManager componentManager;
 	private SettingsProvider settingProvider;
@@ -106,8 +108,28 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@Nullable
-	public Command findCommand(@NotNull String name) {
-		return commandMap.get(name);
+	public TextCommandInfo findFirstCommand(@NotNull CommandPath path) {
+		return textCommandMap.get(path).findFirst();
+	}
+
+	@NotNull
+	@Override
+	public TextCommandCandidates findCommands(@NotNull CommandPath path) {
+		return textCommandMap.get(path);
+	}
+
+	@Override
+	@Nullable
+	public TextCommandCandidates findFirstTextSubcommands(CommandPath path) {
+		final List<TextCommandCandidates> list = Objects.requireNonNullElseGet(textSubcommandsMap.get(path), Collections::emptyList);
+
+		if (list.isEmpty()) return null;
+		else return list.get(0);
+	}
+
+	@Override
+	public List<TextCommandCandidates> findTextSubcommands(CommandPath path) {
+		return textSubcommandsMap.get(path);
 	}
 
 	@Nullable
@@ -155,7 +177,8 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @NotNull Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
+	@NotNull
+	public  Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
 		return defaultEmbedSupplier;
 	}
 
@@ -164,7 +187,8 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public @NotNull Supplier<InputStream> getDefaultFooterIconSupplier() {
+	@NotNull
+	public  Supplier<InputStream> getDefaultFooterIconSupplier() {
 		return defaultFooterIconSupplier;
 	}
 
@@ -176,27 +200,34 @@ public class BContextImpl implements BContext {
 		this.defaultFooterIconSupplier = Objects.requireNonNull(defaultFooterIconSupplier, "Default footer icon supplier cannot be null");
 	}
 
-	public void addCommand(String name, String[] aliases, Command command) {
-		Command oldCmd = commandMap.put(name, command);
-		if (oldCmd != null) {
-			throw new IllegalStateException(String.format("Two commands have the same name: '%s' from %s and %s",
-					name,
-					command.getClass().getName(),
-					oldCmd.getClass().getName()));
+	public void addTextCommand(TextCommandInfo commandInfo) {
+		final CommandPath path = commandInfo.getPath();
+		final List<CommandPath> aliases = commandInfo.getAliases();
+
+		textCommandMap.compute(path, (k, v) -> {
+			if (v == null) return new TextCommandCandidates(commandInfo);
+			else v.add(commandInfo);
+
+			return v;
+		});
+
+		final CommandPath parentPath = path.getParent();
+		if (parentPath != null) { //Add subcommands to cache
+			// If subcommands candidates exist, append, if not then create
+			textSubcommandsMap.compute(parentPath, (x, candidates) -> (candidates == null) ? new TextSubcommandCandidates(commandInfo) : candidates.addSubcommand(commandInfo));
 		}
 
-		for (String alias : aliases) {
-			oldCmd = commandMap.put(alias, command);
+		for (CommandPath alias : aliases) {
+			textCommandMap.compute(alias, (k, v) -> {
+				if (v == null) return new TextCommandCandidates(commandInfo);
+				else v.add(commandInfo);
 
-			if (oldCmd != null) {
-				throw new IllegalStateException(String.format("Two commands have the same name: '%s' from %s and %s",
-						alias,
-						command.getClass().getName(),
-						oldCmd.getClass().getName()));
-			}
+				return v;
+			});
 		}
 	}
 
+	//TODO inline path (+ in others methods)
 	public void addSlashCommand(CommandPath path, SlashCommandInfo commandInfo) {
 		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
@@ -254,8 +285,8 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public Collection<Command> getCommands() {
-		return Collections.unmodifiableCollection(commandMap.values());
+	public Collection<TextCommandCandidates> getCommands() {
+		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
 
 	public Collection<ApplicationCommandInfo> getApplicationCommands() {
@@ -287,22 +318,6 @@ public class BContextImpl implements BContext {
 
 	public List<Predicate<MessageInfo>> getFilters() {
 		return filters;
-	}
-
-	public boolean shouldAddSubcommandHelpByDefault() {
-		return addSubcommandHelpByDefault;
-	}
-
-	public void setAddSubcommandHelpByDefault(boolean addSubcommandHelpByDefault) {
-		this.addSubcommandHelpByDefault = addSubcommandHelpByDefault;
-	}
-
-	public boolean shouldAddExecutableHelpByDefault() {
-		return addExecutableHelpByDefault;
-	}
-
-	public void setAddExecutableHelpByDefault(boolean addExecutableHelpByDefault) {
-		this.addExecutableHelpByDefault = addExecutableHelpByDefault;
 	}
 
 	@Override
