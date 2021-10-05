@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.DefaultMessages;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -193,7 +192,7 @@ public interface BContext {
 	void removeFilter(Predicate<MessageInfo> filter);
 
 	/**
-	 * Overrides the default help given in {@linkplain TextCommand#showHelp(BaseCommandEvent)}
+	 * Overrides the default help given for text commands
 	 *
 	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
 	 */

@@ -19,11 +19,13 @@ import java.util.StringJoiner;
  *     <li>userPermErrorMsg = {@value #DEFAULT_USER_PERM_ERROR_MESSAGE}</li>
  *     <li>botPermErrorMsg = {@value DEFAULT_BOT_PERM_ERROR_MESSAGE}</li>
  *     <li>ownerOnlyErrorMsg = {@value DEFAULT_OWNER_ONLY_ERROR_MESSAGE}</li>
- * <p>
+ * </ul>
+ * <ul>
  *     <li>userCooldownMsg = {@value DEFAULT_USER_COOLDOWN_MESSAGE}</li>
  *     <li>channelCooldownMsg = {@value DEFAULT_CHANNEL_COOLDOWN_MESSAGE}</li>
  *     <li>guildCooldownMsg = {@value DEFAULT_GUILD_COOLDOWN_MESSAGE}</li>
- * <p>
+ * </ul>
+ * <ul>
  *     <li>commandNotFoundMsg = {@value DEFAULT_COMMAND_NOT_FOUND_MESSAGE}</li>
  *     <li>commandErrorMsg = {@value DEFAULT_COMMAND_ERROR_MESSAGE}</li>
  *     <li>closedDMErrorMsg = {@value DEFAULT_CLOSED_DM_ERROR_MESSAGE}</li>
