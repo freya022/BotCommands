@@ -17,10 +17,9 @@ public class TextCommandComparator implements Comparator<TextCommandInfo> {
 		final Method o1CommandMethod = o1.getCommandMethod();
 		final Method o2CommandMethod = o2.getCommandMethod();
 
-		//TODO verify
 		if (o1CommandMethod.getParameterTypes()[0] == BaseCommandEvent.class
 				&& o2CommandMethod.getParameterTypes()[0] == CommandEvent.class) {
-			return 1;
+			return -1;
 		}
 
 		final int order1 = o1.getOrder();
