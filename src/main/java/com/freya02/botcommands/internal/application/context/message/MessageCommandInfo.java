@@ -55,7 +55,6 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			}
 		}
 
-		//TODO add cooldown to context commands
 		commandMethod.invoke(instance, objects);
 
 		return true;
