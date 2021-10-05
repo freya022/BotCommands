@@ -31,14 +31,29 @@ public @interface JdaTextCommand {
 	/**
 	 * Primary name of the command, <b>must not contain any spaces</b>
 	 *
-	 * @return Name of the command
+	 * @return Name of this command
 	 */
 	String name();
 
+	/**
+	 * Group name of the command, <b>must not contain any spaces</b>
+	 *
+	 * @return Group name of this command
+	 */
 	String group() default "";
 
+	/**
+	 * Subcommand name of the command, <b>must not contain any spaces</b>
+	 *
+	 * @return Subcommand name of this command
+	 */
 	String subcommand() default "";
 
+	/**
+	 * Specifies the specific order the executable has to be loaded in (1 is the most important)
+	 *
+	 * @return The order of the method to be loaded in
+	 */
 	int order() default 0;
 
 	/**
