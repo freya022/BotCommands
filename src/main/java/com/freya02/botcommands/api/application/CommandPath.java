@@ -60,6 +60,9 @@ public interface CommandPath {
 	@NotNull
 	String getLastName();
 
+	@Nullable
+	String getNameAt(int i);
+
 	/**
 	 * Returns the JDA path representation of this CommandPath
 	 *
