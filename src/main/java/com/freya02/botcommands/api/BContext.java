@@ -96,7 +96,7 @@ public interface BContext {
 	 * @param path The path of the command
 	 * @return a {@link TextCommandCandidates list of text command info}
 	 */
-	@NotNull
+	@Nullable
 	TextCommandCandidates findCommands(@NotNull CommandPath path);
 
 	/**
@@ -114,6 +114,7 @@ public interface BContext {
 	 * @param path The path of the command to find subcommands in
 	 * @return a {@link List} of {@link TextCommandCandidates subcommand candidates}
 	 */
+	@Nullable
 	List<TextCommandCandidates> findTextSubcommands(CommandPath path);
 
 	/**

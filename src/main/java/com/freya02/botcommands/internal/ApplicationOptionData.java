@@ -8,8 +8,6 @@ public class ApplicationOptionData {
 	private final String effectiveName, effectiveDescription;
 
 	public ApplicationOptionData(Parameter parameter) {
-
-		
 		final Option option = parameter.getAnnotation(Option.class);
 
 		if (option.name().isBlank()) {

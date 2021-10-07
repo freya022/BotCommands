@@ -112,7 +112,7 @@ public class BContextImpl implements BContext {
 		return textCommandMap.get(path).findFirst();
 	}
 
-	@NotNull
+	@Nullable
 	@Override
 	public TextCommandCandidates findCommands(@NotNull CommandPath path) {
 		return textCommandMap.get(path);
@@ -128,6 +128,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
+	@Nullable
 	public List<TextCommandCandidates> findTextSubcommands(CommandPath path) {
 		return textSubcommandsMap.get(path);
 	}
