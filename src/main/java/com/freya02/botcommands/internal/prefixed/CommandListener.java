@@ -4,10 +4,7 @@ import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.RunnableEx;
-import com.freya02.botcommands.internal.Usability;
+import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -184,14 +181,15 @@ public final class CommandListener extends ListenerAdapter {
 		if (isNotOwner) {
 			final long cooldown = candidate.getCooldown(event);
 			if (cooldown > 0) {
+				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
 				if (candidate.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
 					return false;
 				} else if (candidate.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
 					return false;
 				} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
 				return false;
 				//}
 			}

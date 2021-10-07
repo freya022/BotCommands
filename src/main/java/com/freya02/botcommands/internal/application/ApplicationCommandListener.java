@@ -2,10 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.RunnableEx;
-import com.freya02.botcommands.internal.Usability;
+import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -46,9 +43,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 	@Override
 	public void onUserContextCommand(@NotNull UserContextCommandEvent event) {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Received user command: {}", event.getName());
-		}
+		LOGGER.trace("Received user command: {}", event.getName());
 
 		runCommand(() -> {
 			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
@@ -67,9 +62,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageContextCommand(@NotNull MessageContextCommandEvent event) {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Received message command: {}", event.getName());
-		}
+		LOGGER.trace("Received message command: {}", event.getName());
 
 		runCommand(() -> {
 			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
@@ -88,9 +81,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 	@Override
 	public void onSlashCommand(@NotNull SlashCommandEvent event) {
-		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Received slash command: {}", reconstructCommand(event));
-		}
+		LOGGER.trace("Received slash command: {}", reconstructCommand(event));
 
 		runCommand(() -> {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
@@ -152,12 +143,13 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (isNotOwner) {
 			final long cooldown = applicationCommand.getCooldown(event, event::getName);
 			if (cooldown > 0) {
+				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
 				} else if (applicationCommand.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
 				} else { //Implicit channel
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
 				}
 
 				return false;
