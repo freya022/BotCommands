@@ -66,12 +66,4 @@ public @interface JdaTextCommand {
 	 * @return Short description of the command
 	 */
 	String description() default "No description";
-
-	/**
-	 * Name of the category the command should be in
-	 * <b>This is ignored in a subcommand</b>
-	 *
-	 * @return Name of the category
-	 */
-	String category() default "No category";
 }

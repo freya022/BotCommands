@@ -30,9 +30,6 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 	private final String description;
 
-	//UB on diff category names for same path ?
-	private final String category;
-
 	private final boolean requireOwner;
 	private final boolean hidden;
 
@@ -51,7 +48,6 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 				);
 
 		final JdaTextCommand jdaCommand = commandMethod.getAnnotation(JdaTextCommand.class);
-		category = jdaCommand.category();
 
 		aliases = Arrays.stream(jdaCommand.aliases()).map(CommandPath::of).collect(Collectors.toList());
 		description = jdaCommand.description();
@@ -89,11 +85,6 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 	public String getDescription() {
 		return description;
-	}
-
-	@Nullable
-	public String getCategory() {
-		return category;
 	}
 
 	public int getOrder() {
