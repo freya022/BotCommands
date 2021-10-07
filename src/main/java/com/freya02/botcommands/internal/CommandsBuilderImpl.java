@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.RegistrationListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JdaMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JdaUserCommand;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
@@ -13,10 +14,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
-import com.freya02.botcommands.internal.prefixed.CommandListener;
-import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
-import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.prefixed.*;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
@@ -78,13 +76,14 @@ public final class CommandsBuilderImpl {
 				processClass(aClass);
 			}
 
-			if (!context.isHelpDisabled()) {//TODO enable
-//				processClass(HelpCommand.class);
-//
-//				final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
-//				if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
-//				final HelpCommand help = (HelpCommand) helpInfo.getInstance();
-//				help.generate();
+			if (!context.isHelpDisabled()) {
+				processClass(HelpCommand.class);
+
+				final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
+				if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
+
+				final HelpCommand help = (HelpCommand) helpInfo.getInstance();
+				help.generate();
 			}
 
 			prefixedCommandsBuilder.postProcess();

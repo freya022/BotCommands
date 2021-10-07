@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver;
 import com.freya02.botcommands.internal.utils.Utils;
 
 import java.util.List;
@@ -13,9 +12,7 @@ public class CommandPattern {
 		patternBuilder.append('^');
 
 		List<? extends TextCommandParameter> optionParameters = commandInfo.getOptionParameters();
-		final boolean hasMultipleQuotable = optionParameters.stream()
-				.filter(p -> p.getResolver() instanceof QuotableRegexParameterResolver)
-				.count() > 1;
+		final boolean hasMultipleQuotable = com.freya02.botcommands.internal.prefixed.Utils.hasMultipleQuotable(optionParameters);
 
 		for (int i = 0, optionParametersSize = optionParameters.size(); i < optionParametersSize; i++) {
 			final TextCommandParameter parameter = optionParameters.get(i);
