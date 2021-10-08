@@ -1,29 +1,22 @@
 package com.freya02.bot.componentsbot.commands;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
 import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.api.prefixed.Command;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.annotations.JdaCommand;
+import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.Description;
+import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 
-@JdaCommand(
-		name = "components",
-		description = "Shows how components works"
-)
-public class MessageComponents extends Command {
+@Description("Shows how components works")
+public class MessageComponents extends TextCommand {
 	private static final String BUTTON_HANDLER_NAME = "normalButtonHandler";
 	private static final String SELECTION_HANDLER_NAME = "normalSelectionHandler";
 
-	public MessageComponents(BContext context) {
-		super(context);
-	}
-
-	@Override
+	@JdaTextCommand(name = "components")
 	public void execute(CommandEvent event) {
 		final ActionRow firstRow = ActionRow.of(
 				Components.selectionMenu(SELECTION_HANDLER_NAME)
