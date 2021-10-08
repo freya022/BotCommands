@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  * //future.cancel(true);
  *
- * try {
+ * try { //Use this **only** if you need to block your thread waiting for the event, this is considered bad practise so rather use setOnSuccess / setonComplete
  * 	final GuildMessageReceivedEvent guildMessageReceivedEvent = future.get();
  * } catch (InterruptedException | ExecutionException e) {
  * 	e.printStackTrace();
