@@ -2,8 +2,8 @@ package com.freya02.botcommands.api.application.slash.annotations;
 
 import com.freya02.botcommands.api.annotations.BotPermissions;
 import com.freya02.botcommands.api.annotations.Cooldown;
-import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.annotations.UserPermissions;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import net.dv8tion.jda.api.JDA;
@@ -44,7 +44,7 @@ import java.lang.annotation.Target;
  *     </li>
  * </ul>
  *
- * Supported parameters, needs to be annotated with {@link Option @Option} :
+ * Supported parameters, needs to be annotated with {@link AppOption @AppOption} :
  * <ul>
  *     <li>{@linkplain String}</li>
  *
@@ -66,7 +66,7 @@ import java.lang.annotation.Target;
  * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>
  *
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups">Discord docs</a>
- * @see Option @Option
+ * @see AppOption @AppOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown

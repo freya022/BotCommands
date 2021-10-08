@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.annotations.Category;
-import com.freya02.botcommands.api.prefixed.annotations.*;
+import com.freya02.botcommands.api.prefixed.annotations.Description;
 import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -83,13 +80,12 @@ public class Utils {
 				final boolean needsQuote = hasMultipleQuotable(commandParameters);
 
 				for (TextCommandParameter commandParameter : commandParameters) {
-					final Parameter parameter = commandParameter.getParameter();
 					final Class<?> boxedType = commandParameter.getBoxedType();
 
-					final String argName = getArgName(needsQuote, parameter, boxedType);
-					final String argExample = getArgExample(needsQuote, parameter, boxedType);
+					final String argName = getArgName(needsQuote, commandParameter, boxedType);
+					final String argExample = getArgExample(needsQuote, commandParameter, boxedType);
 
-					final boolean isOptional = com.freya02.botcommands.internal.utils.Utils.isOptional(parameter);
+					final boolean isOptional = commandParameter.isOptional();
 					syntax.append(isOptional ? '[' : '`').append(argName).append(isOptional ? ']' : '`').append(' ');
 					example.append(argExample).append(' ');
 				}
@@ -109,7 +105,7 @@ public class Utils {
 			final String subcommandHelp = textSubcommands
 					.stream()
 					.map(TreeSet::first)
-					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + info.getDescription()) //TODO change name getter
+					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + info.getDescription())
 					.collect(Collectors.joining("\n - "));
 
 			if (!subcommandHelp.isBlank()) {
@@ -125,98 +121,93 @@ public class Utils {
 		return builder;
 	}
 
-	private static String getArgExample(boolean needsQuote, Parameter parameter, Class<?> boxedType) {
-		final String argExample;
-
-		if (parameter.isAnnotationPresent(ArgExample.class)) {
-			final String argExampleStr = parameter.getAnnotation(ArgExample.class).str();
+	private static String getArgExample(boolean needsQuote, TextCommandParameter parameter, Class<?> boxedType) {
+		final Optional<String> optionalExample = parameter.getData().getOptionalExample();
+		if (optionalExample.isPresent()) {
+			final String argExampleStr = optionalExample.get();
 			if (boxedType == String.class) {
-				argExample = needsQuote ? "\"" + argExampleStr + "\"" : argExampleStr;
+				return needsQuote ? "\"" + argExampleStr + "\"" : argExampleStr;
 			} else {
-				argExample = argExampleStr;
+				return argExampleStr;
 			}
 		} else {
 			if (boxedType == String.class) {
-				argExample = needsQuote ? "\"foo bar\"" : "foo bar";
+				return needsQuote ? "\"foo bar\"" : "foo bar";
 			} else if (boxedType == Emoji.class) {
-				argExample = ":joy:";
+				return ":joy:";
 			} else if (boxedType == Integer.class) {
-				argExample = String.valueOf(ThreadLocalRandom.current().nextLong(50));
+				return String.valueOf(ThreadLocalRandom.current().nextLong(50));
 			} else if (boxedType == Long.class) {
-				if (parameter.isAnnotationPresent(ID.class)) {
-					argExample = String.valueOf(ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L));
+				if (parameter.isId()) {
+					return String.valueOf(ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L));
 				} else {
-					argExample = String.valueOf(ThreadLocalRandom.current().nextLong(50));
+					return String.valueOf(ThreadLocalRandom.current().nextLong(50));
 				}
 			} else if (boxedType == Float.class || boxedType == Double.class) {
-				argExample = String.valueOf(ThreadLocalRandom.current().nextDouble(50));
+				return String.valueOf(ThreadLocalRandom.current().nextDouble(50));
 			} else if (boxedType == Emote.class) {
-				argExample = "<:kekw:673277564034482178>";
+				return "<:kekw:673277564034482178>";
 			} else if (boxedType == Guild.class) {
-				argExample = "331718482485837825";
+				return "331718482485837825";
 			} else if (boxedType == Role.class) {
-				argExample = "801161492296499261";
+				return "801161492296499261";
 			} else if (boxedType == User.class) {
-				argExample = "222046562543468545";
+				return "222046562543468545";
 			} else if (boxedType == Member.class) {
-				argExample = "<@222046562543468545>";
+				return "<@222046562543468545>";
 			} else if (boxedType == TextChannel.class) {
-				argExample = "331718482485837825";
+				return "331718482485837825";
 			} else if (boxedType == EmojiOrEmote.class) {
-				argExample = ":flushed:";
+				return ":flushed:";
 			} else {
-				argExample = "?";
+				return "?";
 			}
 		}
-
-		return argExample;
 	}
 
-	private static String getArgName(boolean needsQuote, Parameter parameter, Class<?> boxedType) {
-		final String argName;
-		if (parameter.isAnnotationPresent(ArgName.class)) {
-			final String argNameStr = parameter.getAnnotation(ArgName.class).str();
+	private static String getArgName(boolean needsQuote, TextCommandParameter commandParameter, Class<?> boxedType) {
+		final Optional<String> optionalName = commandParameter.getData().getOptionalName();
+		if (optionalName.isPresent()) {
+			final String argNameStr = optionalName.get();
 			if (boxedType == String.class) {
-				argName = needsQuote ? "\"" + argNameStr + "\"" : argNameStr;
+				return needsQuote ? "\"" + argNameStr + "\"" : argNameStr;
 			} else {
-				argName = argNameStr;
+				return argNameStr;
 			}
 		} else {
 			if (boxedType == String.class) {
-				argName = needsQuote ? "\"" + getParameterName(parameter, "string") + "\"" : getParameterName(parameter, "string");
+				return needsQuote ? "\"" + getParameterName(commandParameter.getParameter(), "string") + "\"" : getParameterName(commandParameter.getParameter(), "string");
 			} else if (boxedType == Emoji.class) {
-				argName = "unicode emoji/shortcode";
+				return "unicode emoji/shortcode";
 			} else if (boxedType == Integer.class) {
-				argName = getParameterName(parameter, "integer");
+				return getParameterName(commandParameter.getParameter(), "integer");
 			} else if (boxedType == Long.class) {
-				if (parameter.isAnnotationPresent(ID.class)) {
-					argName = "Entity ID";
+				if (commandParameter.isId()) {
+					return "Entity ID";
 				} else {
-					argName = getParameterName(parameter, "integer");
+					return getParameterName(commandParameter.getParameter(), "integer");
 				}
 			} else if (boxedType == Float.class || boxedType == Double.class) {
-				argName = getParameterName(parameter, "decimal");
+				return getParameterName(commandParameter.getParameter(), "decimal");
 			} else if (boxedType == Emote.class) {
-				argName = "emote/emote id";
+				return "emote/emote id";
 			} else if (boxedType == Guild.class) {
-				argName = "guild id";
+				return "guild id";
 			} else if (boxedType == Role.class) {
-				argName = "role mention/role id";
+				return "role mention/role id";
 			} else if (boxedType == User.class) {
-				argName = "user mention/user id";
+				return "user mention/user id";
 			} else if (boxedType == Member.class) {
-				argName = "member mention/member id";
+				return "member mention/member id";
 			} else if (boxedType == TextChannel.class) {
-				argName = "text channel mention/text channel id";
+				return "text channel mention/text channel id";
 			} else if (boxedType == EmojiOrEmote.class) {
-				argName = "emoji/emote";
+				return "emoji/emote";
 			} else {
-				argName = "?";
 				LOGGER.warn("Unknown type: {}", boxedType);
+				return "?";
 			}
 		}
-
-		return argName;
 	}
 
 	public static boolean hasMultipleQuotable(List<? extends TextCommandParameter> optionParameters) {

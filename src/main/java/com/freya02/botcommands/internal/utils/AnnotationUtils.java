@@ -2,13 +2,16 @@ package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.annotations.*;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.prefixed.annotations.Hidden;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.CooldownStrategy;
 import net.dv8tion.jda.api.Permission;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
@@ -104,5 +107,9 @@ public class AnnotationUtils {
 		} else {
 			return method.getDeclaringClass().isAnnotationPresent(RequireOwner.class);
 		}
+	}
+
+	public static boolean isOption(Parameter parameter) {
+		return parameter.isAnnotationPresent(TextOption.class) || parameter.isAnnotationPresent(AppOption.class);
 	}
 }

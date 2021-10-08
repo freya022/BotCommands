@@ -1,12 +1,14 @@
 package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.*;
+import com.freya02.botcommands.api.prefixed.annotations.Category;
+import com.freya02.botcommands.api.prefixed.annotations.Description;
+import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -99,7 +101,7 @@ public final class HelpCommand extends TextCommand {
 			name = "help",
 			description = "Gives help about a command"
 	)
-	public void execute(BaseCommandEvent event, @Option @ArgName(str = "command path") @ArgExample(str = "help") String commandStr) {
+	public void execute(BaseCommandEvent event, @TextOption(name = "command path", example = "help") String commandStr) {
 		final String[] split = SPACE_PATTERN.split(commandStr);
 
 		if (split.length > 3) {

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.context.annotations.JdaMessageCom
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
@@ -33,6 +34,9 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 		}
 
 		this.commandParameters = MethodParameters.of(method, (parameter, i) -> {
+			if (parameter.isAnnotationPresent(TextOption.class))
+				throw new IllegalArgumentException(String.format("Message command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
+
 			return new ContextCommandParameter<>(MessageContextParameterResolver.class, parameter, i);
 		});
 	}

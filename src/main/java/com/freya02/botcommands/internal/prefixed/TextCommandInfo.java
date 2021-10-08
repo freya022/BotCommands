@@ -1,11 +1,12 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
@@ -56,9 +57,12 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 		final boolean isRegexMethod = !Utils.hasFirstParameter(commandMethod, CommandEvent.class);
 		parameters = MethodParameters.of(commandMethod, (parameter, index) -> {
+			if (parameter.isAnnotationPresent(AppOption.class))
+				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
+
 			//Fallback doesn't accept options
-			if (parameter.isAnnotationPresent(Option.class) && !isRegexMethod)
-				throw new IllegalArgumentException("Fallback text commands (CommandEvent ones) cannot have parameters annotated with @Option");
+			if (parameter.isAnnotationPresent(TextOption.class) && !isRegexMethod)
+				throw new IllegalArgumentException("Fallback text commands (CommandEvent ones) cannot have parameters annotated with @TextOption");
 
 			return new TextCommandParameter(RegexParameterResolver.class, parameter, index);
 		});

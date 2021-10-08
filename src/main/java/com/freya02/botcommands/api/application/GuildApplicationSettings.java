@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.annotations.Option;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface GuildApplicationSettings {
 	/**
-	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link Option @Option})
+	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
 	 * <p>
 	 * <br><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
 	 * <p>
@@ -28,7 +28,7 @@ public interface GuildApplicationSettings {
 	 *
 	 * @param guild       The {@link Guild} in which the commands is, might be <code>null</code> for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
-	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link Option @Option} there are, minus 1
+	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link AppOption @AppOption} there are, minus 1
 	 * @return The list of choices for this slash command's options
 	 * @see ChoiceList
 	 */

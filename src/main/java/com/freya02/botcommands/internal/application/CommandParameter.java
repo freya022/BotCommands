@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.application;
 
-import com.freya02.botcommands.api.annotations.Option;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
+import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public class CommandParameter<RESOLVER> {
 		this.isPrimitive = parameter.getType().isPrimitive();
 
 		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);
-		if (parameter.isAnnotationPresent(Option.class)) {
+		if (AnnotationUtils.isOption(parameter)) {
 			if (resolver == null) {
 				throw new IllegalArgumentException("Unknown interaction command option type: " + boxedType.getName() + " for target resolver " + resolverType.getName());
 			} else if (!(resolverType.isAssignableFrom(resolver.getClass()))) {
@@ -44,7 +44,7 @@ public class CommandParameter<RESOLVER> {
 			if (resolver instanceof CustomResolver) {
 				this.customResolver = (CustomResolver) resolver;
 			} else {
-				throw new IllegalArgumentException("Unsupported custom parameter: " + boxedType.getName() + ", did you forget to use @Option on non-custom options ?");
+				throw new IllegalArgumentException("Unsupported custom parameter: " + boxedType.getName() + ", did you forget to use @TextOption or @AppOption on non-custom options ?");
 			}
 		}
 	}

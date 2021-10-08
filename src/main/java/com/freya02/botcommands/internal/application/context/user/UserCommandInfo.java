@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.context.annotations.JdaUserComman
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
@@ -34,6 +35,9 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 		}
 
 		this.commandParameters = MethodParameters.of(method, (parameter, i) -> {
+			if (parameter.isAnnotationPresent(TextOption.class))
+				throw new IllegalArgumentException(String.format("User command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
+
 			final Class<?> type = parameter.getType();
 
 			if (Member.class.isAssignableFrom(type)) {

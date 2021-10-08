@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.annotations.Option;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 
 import java.lang.reflect.Parameter;
 
@@ -8,7 +8,7 @@ public class ApplicationOptionData {
 	private final String effectiveName, effectiveDescription;
 
 	public ApplicationOptionData(Parameter parameter) {
-		final Option option = parameter.getAnnotation(Option.class);
+		final AppOption option = parameter.getAnnotation(AppOption.class);
 
 		if (option.name().isBlank()) {
 			effectiveName = getOptionName(parameter);

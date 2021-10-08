@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
@@ -45,6 +46,9 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		this.instance = instance;
 		this.commandParameters = MethodParameters.of(commandMethod, (parameter, i) -> {
+			if (parameter.isAnnotationPresent(TextOption.class))
+				throw new IllegalArgumentException(String.format("Slash command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
+
 			final Class<?> type = parameter.getType();
 
 			if (Member.class.isAssignableFrom(type)
