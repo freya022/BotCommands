@@ -67,6 +67,8 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 			}
 		}
 
+		applyCooldown(event);
+
 		commandMethod.invoke(instance, objects);
 
 		return true;

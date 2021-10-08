@@ -144,6 +144,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			objects.add(obj);
 		}
 
+		applyCooldown(event);
+
 		commandMethod.invoke(instance, objects.toArray());
 
 		return true;

@@ -59,6 +59,8 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			}
 		}
 
+		applyCooldown(event);
+
 		commandMethod.invoke(instance, objects);
 
 		return true;

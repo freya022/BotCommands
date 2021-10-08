@@ -55,7 +55,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, userCommand)) return;
 
-			userCommand.applyCooldown(event);
 			userCommand.execute(context, event);
 		}, event);
 	}
@@ -74,7 +73,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, messageCommand)) return;
 
-			messageCommand.applyCooldown(event);
 			messageCommand.execute(context, event);
 		}, event);
 	}
@@ -93,7 +91,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, slashCommand)) return;
 
-			slashCommand.applyCooldown(event);
 			slashCommand.execute(context, event);
 		}, event);
 	}
