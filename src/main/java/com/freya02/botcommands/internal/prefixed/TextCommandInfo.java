@@ -26,6 +26,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.freya02.botcommands.internal.prefixed.ExecutionResult.CONTINUE;
+import static com.freya02.botcommands.internal.prefixed.ExecutionResult.OK;
+
 public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final List<CommandPath> aliases;
@@ -117,7 +120,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		return (List<? extends TextCommandParameter>) super.getOptionParameters();
 	}
 
-	public void execute(BContextImpl context, GuildMessageReceivedEvent event, String args, Matcher matcher) throws Exception {
+	public ExecutionResult execute(BContextImpl context, GuildMessageReceivedEvent event, String args, Matcher matcher) throws Exception {
 		List<Object> objects = new ArrayList<>(parameters.size() + 1) {{
 			if (isRegexCommand()) {
 				add(new BaseCommandEventImpl(context, event, args));
@@ -141,14 +144,21 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 					}
 
 					if (found == groupCount) { //Found all the groups
-						objects.add(parameter.getResolver().resolve(event, groups));
+						final Object resolved = parameter.getResolver().resolve(event, groups);
+						//Regex matched but could not be resolved
+						// if optional then it's ok
+						if (resolved == null && !parameter.isOptional()) {
+							return CONTINUE;
+						}
+
+						objects.add(resolved);
 					} else if (!parameter.isOptional()) {
 						LOGGER.warn("Could not resolve parameter #{} in {} for input args {}",
 								parameter.getIndex(),
 								Utils.formatMethodShort(commandMethod),
 								args);
 
-						return;
+						return CONTINUE;
 					} else { //Parameter is optional
 						if (parameter.isPrimitive()) {
 							objects.add(0);
@@ -171,6 +181,8 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		//For some reason using an array list instead of a regular array
 		// magically unboxes primitives when passed to Method#invoke
 		commandMethod.invoke(getInstance(), objects.toArray());
+
+		return OK;
 	}
 
 	public boolean isRegexCommand() {

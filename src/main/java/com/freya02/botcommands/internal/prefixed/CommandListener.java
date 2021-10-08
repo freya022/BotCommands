@@ -35,6 +35,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.freya02.botcommands.internal.prefixed.ExecutionResult.CONTINUE;
+import static com.freya02.botcommands.internal.prefixed.ExecutionResult.STOP;
+
 public final class CommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
@@ -126,14 +129,12 @@ public final class CommandListener extends ListenerAdapter {
 					final Matcher matcher = pattern.matcher(args);
 
 					if (matcher.matches()) {
-						tryExecute(event, member, isNotOwner, args, candidate, matcher);
-
-						return;
+						if (tryExecute(event, member, isNotOwner, args, candidate, matcher) != CONTINUE)
+							return;
 					}
 				} else { //Fallback, only CommandEvent
-					tryExecute(event, member, isNotOwner, args, candidate, null);
-
-					return;
+					if (tryExecute(event, member, isNotOwner, args, candidate, null) != CONTINUE)
+						return;
 				}
 			}
 
@@ -141,11 +142,11 @@ public final class CommandListener extends ListenerAdapter {
 		}, msg, event.getMessage());
 	}
 
-	private boolean tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher) throws Exception {
+	private ExecutionResult tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher) throws Exception {
 		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
 		for (Predicate<MessageInfo> filter : context.getFilters()) {
 			if (!filter.test(messageInfo)) {
-				return false;
+				return STOP;
 			}
 		}
 
@@ -155,13 +156,13 @@ public final class CommandListener extends ListenerAdapter {
 			final var unusableReasons = usability.getUnusableReasons();
 			if (unusableReasons.contains(UnusableReason.HIDDEN)) {
 				onCommandNotFound(event, candidate.getPath(), true);
-				return false;
+				return STOP;
 			} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
 				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
-				return false;
+				return STOP;
 			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
 				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
-				return false;
+				return STOP;
 			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
 				final StringJoiner missingBuilder = new StringJoiner(", ");
 
@@ -174,7 +175,7 @@ public final class CommandListener extends ListenerAdapter {
 				}
 
 				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
-				return false;
+				return STOP;
 			}
 		}
 
@@ -184,21 +185,18 @@ public final class CommandListener extends ListenerAdapter {
 				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
 				if (candidate.getCooldownScope() == CooldownScope.USER) {
 					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
-					return false;
+					return STOP;
 				} else if (candidate.getCooldownScope() == CooldownScope.GUILD) {
 					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
-					return false;
+					return STOP;
 				} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
 					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
-				return false;
+					return STOP;
 				//}
 			}
 		}
 
-		candidate.applyCooldown(event);
-		candidate.execute(context, event, args, matcher);
-
-		return true;
+		return candidate.execute(context, event, args, matcher);
 	}
 
 	@Nullable
