@@ -14,6 +14,7 @@ import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -87,6 +88,11 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		return aliases;
 	}
 
+	public boolean hasDescription() {
+		return !description.isBlank();
+	}
+
+	@NotNull
 	public String getDescription() {
 		return description;
 	}

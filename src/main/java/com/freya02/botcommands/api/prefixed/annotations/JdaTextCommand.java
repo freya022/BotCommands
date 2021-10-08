@@ -65,5 +65,5 @@ public @interface JdaTextCommand {
 	 *
 	 * @return Short description of the command
 	 */
-	String description() default "No description";
+	String description() default "";
 }

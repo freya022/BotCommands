@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Parameter;
@@ -28,14 +29,22 @@ public class Utils {
 	}
 
 	//Description either on class or method
+	@Nullable
 	public static String getDescription(@NotNull TextCommandInfo info) {
 		final Description classDescription = info.getCommandMethod().getDeclaringClass().getAnnotation(Description.class);
 
 		if (classDescription != null) {
 			return classDescription.value();
-		} else {
+		} else if (!info.getDescription().isBlank()) {
 			return info.getDescription();
+		} else {
+			return null;
 		}
+	}
+
+	@NotNull
+	public static String getNonBlankDescription(@NotNull TextCommandInfo info) {
+		return Objects.requireNonNullElse(getDescription(info), "No description");
 	}
 
 	//Category only on class
@@ -64,7 +73,10 @@ public class Utils {
 		} else {
 			builder.setAuthor('\'' + name + "' command");
 		}
-		builder.addField("Description", description, false);
+
+		if (description != null) {
+			builder.addField("Description", description, false);
+		}
 
 		final ArrayList<TextCommandInfo> reversedCandidates = new ArrayList<>(candidates);
 		Collections.reverse(reversedCandidates);
@@ -91,10 +103,13 @@ public class Utils {
 				}
 			}
 
+			final String effectiveCandidateDescription = !candidate.hasDescription()
+					? ""
+					: ("**Description**: " + candidate.getDescription() + "\n");
 			if (candidates.size() == 1) {
-				builder.addField("Usage", syntax + "\n" + example, false);
+				builder.addField("Usage", effectiveCandidateDescription + syntax + "\n" + example, false);
 			} else {
-				builder.addField("Overload #" + i, syntax + "\n" + example, false);
+				builder.addField("Overload #" + i, effectiveCandidateDescription + syntax + "\n" + example, false);
 			}
 
 			i++;
@@ -105,7 +120,7 @@ public class Utils {
 			final String subcommandHelp = textSubcommands
 					.stream()
 					.map(TreeSet::first)
-					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + info.getDescription())
+					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + Utils.getNonBlankDescription(info))
 					.collect(Collectors.joining("\n - "));
 
 			if (!subcommandHelp.isBlank()) {

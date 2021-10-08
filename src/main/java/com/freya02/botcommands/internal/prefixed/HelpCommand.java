@@ -76,7 +76,7 @@ public final class HelpCommand extends TextCommand {
 				if (shouldAddFunc.apply(cmd)) {
 					categoryBuilderMap
 							.computeIfAbsent(Utils.getCategory(cmd), s -> new StringJoiner("\n"))
-							.add("**" + cmd.getPath().getName() + "** : " + Utils.getDescription(cmd));
+							.add("**" + cmd.getPath().getName() + "** : " + Utils.getNonBlankDescription(cmd));
 				}
 			}
 		}
