@@ -72,8 +72,13 @@ public class EventWaiter extends ListenerAdapter {
 	});
 
 	private static EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
+	private static boolean initialized;
 
-	public EventWaiter(JDA jda) {
+	public EventWaiter(@NotNull JDA jda) {
+		if (initialized)
+			throw new IllegalStateException("Cannot build an EventWaiter more than once");
+
+		initialized = true;
 		intents = jda.getGatewayIntents();
 	}
 
@@ -81,7 +86,7 @@ public class EventWaiter extends ListenerAdapter {
 		if (expectedBase.isAssignableFrom(eventType)) {
 			for (GatewayIntent intent : intents) {
 				if (!EventWaiter.intents.contains(intent)) {
-					throw new IllegalArgumentException("Cannot listen to a " + eventType.getSimpleName() + " as the intents " + Arrays.stream(intents).map(GatewayIntent::name).collect(Collectors.joining(", ")) + " are disabled, see " + expectedBase.getSimpleName());
+					throw new IllegalArgumentException("Cannot listen to a " + eventType.getSimpleName() + " as the intents " + Arrays.stream(intents).map(GatewayIntent::name).collect(Collectors.joining(", ")) + " are disabled, see " + expectedBase.getSimpleName() + ", currently enabled intents are: " + EventWaiter.intents);
 				}
 			}
 		}
@@ -95,6 +100,9 @@ public class EventWaiter extends ListenerAdapter {
 	 * @return A new event waiter builder
 	 */
 	public static <T extends GenericEvent> EventWaiterBuilder<T> of(Class<T> eventType) {
+		if (!initialized)
+			throw new IllegalStateException("Framework must be constructed before using the EventWaiter");
+
 		checkEvent(eventType, UserTypingEvent.class, GatewayIntent.DIRECT_MESSAGE_TYPING, GatewayIntent.GUILD_MESSAGE_TYPING);
 		checkEvent(eventType, GenericPrivateMessageReactionEvent.class, GatewayIntent.DIRECT_MESSAGE_REACTIONS);
 		checkEvent(eventType, GenericPrivateMessageEvent.class, GatewayIntent.DIRECT_MESSAGES);
