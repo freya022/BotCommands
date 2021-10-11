@@ -231,19 +231,11 @@ public final class CommandListener extends ListenerAdapter {
 
 	@NotNull
 	private List<String> getSuggestions(GuildMessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
-		final Function<CommandPath, String> pathToStringFunc;
-
-		switch (triedCommandPath.getNameCount()) {
-			case 1:
-				pathToStringFunc = CommandPath::getName;
-				break;
-			case 2:
-			case 3:
-				pathToStringFunc = CommandPath::getSubname;
-				break;
-			default:
-				throw new IllegalStateException("Path empty or longer than 3 !");
-		}
+		final Function<CommandPath, String> pathToStringFunc = switch (triedCommandPath.getNameCount()) {
+			case 1 -> CommandPath::getName;
+			case 2, 3 -> CommandPath::getSubname;
+			default -> throw new IllegalStateException("Path empty or longer than 3 !");
+		};
 
 		final List<String> commandNames = context.getCommands().stream()
 				.filter(c -> Usability.of(c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())

@@ -35,6 +35,12 @@ public class ComponentListener extends ListenerAdapter {
 		return thread;
 	});
 
+	private final BContext context;
+	private final ComponentManager componentManager;
+
+	private final Map<String, ComponentDescriptor> buttonsMap;
+	private final Map<String, ComponentDescriptor> selectionMenuMap;
+
 	private int callbackThreadNumber;
 	private final ExecutorService callbackExecutor = Utils.createCommandPool(r -> {
 		final Thread thread = new Thread(r);
@@ -44,11 +50,6 @@ public class ComponentListener extends ListenerAdapter {
 
 		return thread;
 	});
-
-	private final BContext context;
-	private final ComponentManager componentManager;
-	private final Map<String, ComponentDescriptor> buttonsMap;
-	private final Map<String, ComponentDescriptor> selectionMenuMap;
 
 	public ComponentListener(BContext context, Map<String, ComponentDescriptor> buttonsMap, Map<String, ComponentDescriptor> selectionMenuMap) {
 		this.context = context;
@@ -90,41 +91,28 @@ public class ComponentListener extends ListenerAdapter {
 		}
 
 		switch (idType) {
-			case PERSISTENT_BUTTON:
-				componentManager.handlePersistentButton(event,
-						e -> onError(event, e.getReason()),
-						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
-								buttonsMap,
-								data.getHandlerName(),
-								data.getArgs(),
-								() -> new ButtonEvent(context, (ButtonClickEvent) event))));
-
-				break;
-			case LAMBDA_BUTTON:
-				componentManager.handleLambdaButton(event,
-						e -> onError(event, e.getReason()),
-						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)))
-				);
-
-				break;
-			case PERSISTENT_SELECTION_MENU:
-				componentManager.handlePersistentSelectionMenu(event,
-						e -> onError(event, e.getReason()),
-						data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
-								selectionMenuMap,
-								data.getHandlerName(),
-								data.getArgs(),
-								() -> new SelectionEvent(context, (SelectionMenuEvent) event))));
-
-				break;
-			case LAMBDA_SELECTION_MENU:
-				componentManager.handleLambdaSelectionMenu(event,
-						e -> onError(event, e.getReason()),
-						data -> callbackExecutor.submit(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event))));
-
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown id type: " + idType.name());
+			case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
+					e -> onError(event, e.getReason()),
+					data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
+							buttonsMap,
+							data.getHandlerName(),
+							data.getArgs(),
+							() -> new ButtonEvent(context, (ButtonClickEvent) event))));
+			case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
+					e -> onError(event, e.getReason()),
+					data -> callbackExecutor.submit(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)))
+			);
+			case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
+					e -> onError(event, e.getReason()),
+					data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
+							selectionMenuMap,
+							data.getHandlerName(),
+							data.getArgs(),
+							() -> new SelectionEvent(context, (SelectionMenuEvent) event))));
+			case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
+					e -> onError(event, e.getReason()),
+					data -> callbackExecutor.submit(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event))));
+			default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 		}
 	}
 

@@ -33,7 +33,6 @@ public final class Utils {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Set<Parameter> optionalSet = new HashSet<>();
 
-	@SuppressWarnings("RedundantCast")
 	public static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
 		Path walkRoot = jarPath;
 		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");

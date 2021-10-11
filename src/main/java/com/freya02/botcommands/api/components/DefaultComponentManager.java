@@ -386,7 +386,7 @@ public class DefaultComponentManager implements ComponentManager {
 	private void setupTables() throws SQLException {
 		try (Connection connection = getConnection();
 		     PreparedStatement preparedStatement = connection.prepareStatement(
-				     "drop table if exists LambdaComponentData;\n" +
+				     "drop table if exists LambdaComponentData;\n" + //TODO move to sql files
 						     "\n" +
 						     "create sequence if not exists group_seq as bigint;\n" +
 						     "\n" +

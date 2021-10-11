@@ -109,9 +109,8 @@ public class CommandEventImpl extends CommandEvent {
 				return (T) o;
 			}
 		}
-		if (!(o instanceof String)) throw new NoIdException();
+		if (!(o instanceof final String idStr)) throw new NoIdException();
 
-		final String idStr = (String) o;
 		for (Class<?> clazz : classes) {
 			final IMentionable mentionable;
 

@@ -9,7 +9,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class ApplicationCommandMap {
 	//The String is CommandPath's base name
@@ -18,8 +17,7 @@ public class ApplicationCommandMap {
 	public Collection<CommandData> getAllCommandData() {
 		return typeMap.values()
 				.stream()
-				.flatMap(map -> map.values().stream())
-				.collect(Collectors.toUnmodifiableList());
+				.flatMap(map -> map.values().stream()).toList();
 	}
 	
 	public CommandData computeIfAbsent(CommandType type, CommandPath path, Function<String, CommandData> mappingFunction) {

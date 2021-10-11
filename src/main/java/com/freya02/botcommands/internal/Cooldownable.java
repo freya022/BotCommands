@@ -35,15 +35,9 @@ public abstract class Cooldownable {
 
 	public void applyCooldown(GuildMessageReceivedEvent event) {
 		switch (getCooldownScope()) {
-			case USER:
-				getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
-			case GUILD:
-				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
-			case CHANNEL:
-				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
+			case USER -> getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldown());
+			case GUILD -> guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
+			case CHANNEL -> channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
 		}
 	}
 
@@ -54,65 +48,59 @@ public abstract class Cooldownable {
 
 	public void applyCooldown(Interaction event) {
 		switch (getCooldownScope()) {
-			case USER:
+			case USER -> {
 				if (event.getGuild() == null) break;
-
 				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
-			case GUILD:
+			}
+			case GUILD -> {
 				if (event.getGuild() == null) break;
-
 				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
-			case CHANNEL:
+			}
+			case CHANNEL -> {
 				if (event.getChannel() == null) break;
-
 				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
-				break;
+			}
 		}
 	}
 
 	public long getCooldown(GuildMessageReceivedEvent event) {
-		switch (getCooldownScope()) {
-			case USER:
-				return Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
-			case GUILD:
-				return Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
-			case CHANNEL:
-				return Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
-			default:
-				throw new IllegalStateException("Unexpected cooldown scope: " + getCooldownScope());
-		}
+		return switch (getCooldownScope()) {
+			case USER -> Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
+			case GUILD -> Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
+			case CHANNEL -> Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+		};
 	}
 
 	public long getCooldown(Interaction event, Supplier<String> cmdNameSupplier) {
 		switch (getCooldownScope()) {
-			case USER:
+			case USER -> {
 				if (event.getGuild() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
 
-				return  Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
-			case GUILD:
+				return Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
+			}
+			case GUILD -> {
 				if (event.getGuild() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a guild but uses a guild-wide cooldown", cmdNameSupplier.get());
 
 					return 0;
 				}
 
-				return  Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
-			case CHANNEL:
+				return Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
+			}
+			case CHANNEL -> {
 				if (event.getChannel() == null) {
 					LOGGER.warn("Interaction command '{}' wasn't used in a channel, somehow", cmdNameSupplier.get());
 
 					return 0;
 				}
 
-				return  Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
-			default:
-				throw new IllegalStateException("Unexpected value: " + getCooldownScope());
+				return Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+			}
+			default -> throw new IllegalStateException("Unexpected value: " + getCooldownScope());
 		}
 	}
 }

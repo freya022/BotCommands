@@ -295,11 +295,10 @@ public class BContextImpl implements BContext {
 		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
 
-	public Collection<ApplicationCommandInfo> getApplicationCommands() {
+	public Collection<? extends ApplicationCommandInfo> getApplicationCommands() {
 		return applicationCommandMap.values()
 				.stream()
-				.flatMap(commandMap -> commandMap.values().stream())
-				.collect(Collectors.toUnmodifiableList());
+				.flatMap(commandMap -> commandMap.values().stream()).toList();
 	}
 
 	public void dispatchException(String message, Throwable e) {
