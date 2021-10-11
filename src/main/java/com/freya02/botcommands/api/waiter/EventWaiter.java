@@ -144,6 +144,10 @@ public class EventWaiter extends ListenerAdapter {
 				final Consumer<T> onSuccess = waitingEvent.getOnSuccess();
 				if (onSuccess != null) onSuccess.accept(t);
 			} else if (future.isCancelled()) {
+				synchronized (EVENT_LIST_LOCK) {
+					waitingEvents.remove(waitingEvent); //Not removed automatically by Iterator#remove before this method is called
+				}
+
 				final Runnable onCancelled = waitingEvent.getOnCancelled();
 				if (onCancelled != null) onCancelled.run();
 			} else {
