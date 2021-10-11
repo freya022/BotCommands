@@ -110,7 +110,7 @@ public final class HelpCommand extends TextCommand {
 			return;
 		}
 
-		getCommandHelp(event, CommandPath.of(split));
+		sendCommandHelp(event, CommandPath.of(split));
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
@@ -137,7 +137,7 @@ public final class HelpCommand extends TextCommand {
 		return builder;
 	}
 
-	private void getCommandHelp(BaseCommandEvent event, CommandPath cmdPath) {
+	public void sendCommandHelp(BaseCommandEvent event, CommandPath cmdPath) {
 		TextCommandCandidates cmds = event.getContext().findCommands(cmdPath);
 		if (cmds == null) {
 			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));

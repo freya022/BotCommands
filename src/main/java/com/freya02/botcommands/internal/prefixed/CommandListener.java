@@ -53,8 +53,19 @@ public final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
+	private final HelpCommand helpCommand;
+
 	public CommandListener(BContextImpl context) {
 		this.context = context;
+
+		final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
+		if (helpInfo == null) {
+			LOGGER.debug("Help command not loaded");
+
+			this.helpCommand = null;
+		} else {
+			this.helpCommand = (HelpCommand) helpInfo.getInstance();
+		}
 	}
 
 	@Nullable
@@ -138,7 +149,10 @@ public final class CommandListener extends ListenerAdapter {
 				}
 			}
 
-			event.getChannel().sendMessage("help sent").queue();
+			if (helpCommand != null) {
+				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, event, ""),
+						candidates.first().getPath());
+			}
 		}, msg, event.getMessage());
 	}
 
