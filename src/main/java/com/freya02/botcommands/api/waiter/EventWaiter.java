@@ -79,6 +79,9 @@ public class EventWaiter extends ListenerAdapter {
 			throw new IllegalStateException("Cannot build an EventWaiter more than once");
 
 		initialized = true;
+
+		LOGGER.debug("Initialized EventWaiter");
+
 		intents = jda.getGatewayIntents();
 	}
 
