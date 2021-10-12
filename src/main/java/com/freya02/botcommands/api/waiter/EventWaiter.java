@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
+import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
@@ -112,6 +113,7 @@ public class EventWaiter extends ListenerAdapter {
 		checkEvent(eventType, GenericGuildMessageReactionEvent.class, GatewayIntent.GUILD_MESSAGE_REACTIONS);
 		checkEvent(eventType, GenericGuildMessageEvent.class, GatewayIntent.GUILD_MESSAGES);
 		checkEvent(eventType, GenericUserPresenceEvent.class, GatewayIntent.GUILD_PRESENCES);
+		checkEvent(eventType, GenericUserUpdateEvent.class, GatewayIntent.GUILD_MEMBERS);
 		checkEvent(eventType, GenericGuildVoiceEvent.class, GatewayIntent.GUILD_VOICE_STATES);
 		checkEvent(eventType, GenericGuildInviteEvent.class, GatewayIntent.GUILD_INVITES);
 		checkEvent(eventType, GenericEmoteEvent.class, GatewayIntent.GUILD_EMOJIS);
