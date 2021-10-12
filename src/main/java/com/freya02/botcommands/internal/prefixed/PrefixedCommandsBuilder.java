@@ -6,10 +6,12 @@ import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,34 @@ public class PrefixedCommandsBuilder {
 	}
 
 	public void postProcess() {
+		checkMethodDuplicates();
+
+		LOGGER.info("Loaded {} commands", context.getCommands().size());
+		printCommands(context.getCommands());
+	}
+
+	private void printCommands(Collection<TextCommandCandidates> commands) {
+		for (TextCommandCandidates candidates : commands) {
+			final TextCommandInfo command = candidates.findFirst();
+
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Path: {}", command.getPath());
+				for (TextCommandInfo candidate : candidates) {
+					LOGGER.trace("\t- '{}' Bot permission=[{}] User permissions=[{}]",
+							Utils.formatMethodShort(candidate.getCommandMethod()),
+							candidate.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+							candidate.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+				}
+			} else {
+				LOGGER.debug("\t- '{}' Bot permission=[{}] User permissions=[{}]",
+						command.getPath(),
+						command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
+						command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
+			}
+		}
+	}
+
+	private void checkMethodDuplicates() {
 		for (TextCommandCandidates command : context.getCommands()) {
 			for (TextCommandInfo info : command) {
 				for (TextCommandInfo commandInfo : command) {
