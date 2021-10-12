@@ -214,7 +214,7 @@ public final class CommandsBuilder {
 	 * @param jda The JDA instance of your bot
 	 */
 	@Blocking
-	public void build(JDA jda) {
+	public void build(JDA jda) throws IOException {
 		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}
 

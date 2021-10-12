@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -169,7 +170,7 @@ public final class CommandsBuilderImpl {
 	 *
 	 * @param jda The JDA instance of your bot
 	 */
-	public void build(JDA jda) {
+	public void build(JDA jda) throws IOException {
 		if (jda.getStatus() != JDA.Status.CONNECTED) {
 			try {
 				LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !");
@@ -206,6 +207,8 @@ public final class CommandsBuilderImpl {
 				LOGGER.trace("\t{}", ignoredClass.getName());
 			}
 		}
+
+		ConflictDetector.detectConflicts();
 	}
 
 	private void setupContext(JDA jda) {
