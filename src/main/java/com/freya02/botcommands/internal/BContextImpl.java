@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
+import com.freya02.botcommands.internal.application.ApplicationCommandInfoMap;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationCommandsCache;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -50,7 +51,7 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
-	private final EnumMap<CommandType, Map<CommandPath, ? extends ApplicationCommandInfo>> applicationCommandMap = new EnumMap<>(CommandType.class);
+	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 
 	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
 
@@ -151,22 +152,22 @@ public class BContextImpl implements BContext {
 		return getMessageCommandsMap().get(CommandPath.ofName(name));
 	}
 
-	@SuppressWarnings("unchecked")
-	@NotNull
-	private Map<CommandPath, SlashCommandInfo> getSlashCommandsMap() {
-		return (Map<CommandPath, SlashCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.SLASH, x -> Collections.synchronizedMap(new HashMap<CommandPath, SlashCommandInfo>()));
-	}
-	
-	@SuppressWarnings("unchecked")
-	@NotNull
-	private Map<CommandPath, UserCommandInfo> getUserCommandsMap() {
-		return (Map<CommandPath, UserCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.USER_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, UserCommandInfo>()));
+	public ApplicationCommandInfoMap getApplicationCommandInfoMap() {
+		return applicationCommandInfoMap;
 	}
 
-	@SuppressWarnings("unchecked")
+	private ApplicationCommandInfoMap.CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
+		return getApplicationCommandInfoMap().getSlashCommands();
+	}
+	
 	@NotNull
-	private Map<CommandPath, MessageCommandInfo> getMessageCommandsMap() {
-		return (Map<CommandPath, MessageCommandInfo>) applicationCommandMap.computeIfAbsent(CommandType.MESSAGE_CONTEXT, x -> Collections.synchronizedMap(new HashMap<CommandPath, MessageCommandInfo>()));
+	private ApplicationCommandInfoMap.CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
+		return getApplicationCommandInfoMap().getUserCommands();
+	}
+
+	@NotNull
+	private ApplicationCommandInfoMap.CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
+		return getApplicationCommandInfoMap().getMessageCommands();
 	}
 
 	@Override
@@ -252,9 +253,7 @@ public class BContextImpl implements BContext {
 	public void addUserCommand(UserCommandInfo commandInfo) {
 		final CommandPath path = commandInfo.getPath();
 
-		final Map<CommandPath, UserCommandInfo> userCommandMap = getUserCommandsMap();
-
-		UserCommandInfo oldCmd = userCommandMap.put(path, commandInfo);
+		UserCommandInfo oldCmd = getUserCommandsMap().put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
@@ -267,9 +266,7 @@ public class BContextImpl implements BContext {
 	public void addMessageCommand(MessageCommandInfo commandInfo) {
 		final CommandPath path = commandInfo.getPath();
 
-		final Map<CommandPath, MessageCommandInfo> messageCommandMap = getMessageCommandsMap();
-
-		MessageCommandInfo oldCmd = messageCommandMap.put(path, commandInfo);
+		MessageCommandInfo oldCmd = getMessageCommandsMap().put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
@@ -278,13 +275,14 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(commandInfo.getCommandMethod())));
 		}
 	}
-	
-	public void addSlashCommandAlternative(CommandPath path, SlashCommandInfo commandInfo) {
+
+	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, CommandType type, T commandInfo) {
 		//it's pretty much possible that the path already exist if two guilds use the same language for example
 		//Still, check that the alternative path points to the same path if it exists
-		final SlashCommandInfo oldVal = getSlashCommandsMap().put(path, commandInfo);
+
+		final ApplicationCommandInfo oldVal = getApplicationCommandInfoMap().put(type, path, commandInfo);
 		if (oldVal != commandInfo && oldVal != null) {
-			throw new IllegalStateException(String.format("Tried to add a localized slash command path but one already exists and isn't from the same command: %s and %s, path: %s",
+			throw new IllegalStateException(String.format("Tried to add a localized application command path but one already exists and isn't from the same command: %s and %s, path: %s",
 					Utils.formatMethodShort(oldVal.getCommandMethod()),
 					Utils.formatMethodShort(commandInfo.getCommandMethod()),
 					path));
@@ -296,9 +294,7 @@ public class BContextImpl implements BContext {
 	}
 
 	public Collection<? extends ApplicationCommandInfo> getApplicationCommands() {
-		return applicationCommandMap.values()
-				.stream()
-				.flatMap(commandMap -> commandMap.values().stream()).toList();
+		return applicationCommandInfoMap.getAllApplicationCommands();
 	}
 
 	public void dispatchException(String message, Throwable e) {

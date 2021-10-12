@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ApplicationCommandMap {
+public class ApplicationCommandDataMap {
 	//The String is CommandPath's base name
 	private final EnumMap<CommandType, Map<String, CommandData>> typeMap = new EnumMap<>(CommandType.class);
 	

@@ -147,7 +147,7 @@ public interface BContext {
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
 	 *
-	 * @return A list of the the application commands paths
+	 * @return A list of the application commands paths
 	 */
 	List<CommandPath> getSlashCommandsPaths();
 

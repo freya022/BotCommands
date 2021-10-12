@@ -43,7 +43,7 @@ public class ApplicationCommandsUpdater {
 	private final Path commandsCachePath;
 	private final Path privilegesCachePath;
 
-	private final ApplicationCommandMap map = new ApplicationCommandMap();
+	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
 
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
@@ -255,7 +255,7 @@ public class ApplicationCommandsUpdater {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
 
-						context.addSlashCommandAlternative(localizedPath, info);
+						context.addApplicationCommandAlternative(localizedPath, CommandType.SLASH, info);
 
 						if (!info.isOwnerOnly()) {
 							if (ownerOnlyCommands.contains(notLocalizedPath.getName())) {
@@ -307,6 +307,8 @@ public class ApplicationCommandsUpdater {
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
+
+						context.addApplicationCommandAlternative(localizedPath, type, info);
 					} catch (Exception e) {
 						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + notLocalizedPath, e);
 					}
