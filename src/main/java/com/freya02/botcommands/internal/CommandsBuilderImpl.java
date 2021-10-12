@@ -14,11 +14,13 @@ import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
-import com.freya02.botcommands.internal.prefixed.*;
+import com.freya02.botcommands.internal.prefixed.CommandListener;
+import com.freya02.botcommands.internal.prefixed.HelpCommand;
+import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
@@ -97,9 +99,6 @@ public final class CommandsBuilderImpl {
 				LOGGER.info("ComponentManager is not set, the Components API, paginators and menus won't be usable");
 			}
 
-			LOGGER.info("Loaded {} commands", context.getCommands().size());
-			printCommands(context.getCommands());
-
 			applicationCommandsBuilder.postProcess();
 
 			if (context.getComponentManager() != null) {
@@ -117,27 +116,6 @@ public final class CommandsBuilderImpl {
 			LOGGER.error("An error occurred while loading the commands, the commands will not work");
 
 			throw new RuntimeException(e);
-		}
-	}
-
-	private void printCommands(Collection<TextCommandCandidates> commands) {
-		for (TextCommandCandidates candidates : commands) {
-			final TextCommandInfo command = candidates.findFirst();
-
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Path: {}", command.getPath());
-				for (TextCommandInfo candidate : candidates) {
-					LOGGER.trace("\t- '{}' Bot permission=[{}] User permissions=[{}]",
-							Utils.formatMethodShort(candidate.getCommandMethod()),
-							candidate.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
-							candidate.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
-				}
-			} else {
-				LOGGER.debug("\t- '{}' Bot permission=[{}] User permissions=[{}]",
-						command.getPath(),
-						command.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
-						command.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
-			}
 		}
 	}
 
