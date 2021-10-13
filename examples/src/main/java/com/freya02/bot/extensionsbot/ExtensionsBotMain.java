@@ -12,7 +12,7 @@ public class ExtensionsBotMain {
 	public static void main(String[] args) {
 		try {
 			final CommonMain.CommonStuff commonStuff = CommonMain.start();
-			final JDA jda = commonStuff.getJda();
+			final JDA jda = commonStuff.getJDA();
 
 			//Build the command framework:
 			// Prefix: !

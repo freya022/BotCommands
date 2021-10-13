@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.application.context.message;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.context.annotations.JdaMessageCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
@@ -21,9 +21,9 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> commandParameters;
 
 	public MessageCommandInfo(ApplicationCommand instance, Method method) {
-		super(instance, method.getAnnotation(JdaMessageCommand.class),
+		super(instance, method.getAnnotation(JDAMessageCommand.class),
 				method,
-				method.getAnnotation(JdaMessageCommand.class).name());
+				method.getAnnotation(JDAMessageCommand.class).name());
 
 		this.instance = instance;
 

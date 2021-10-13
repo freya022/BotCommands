@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.application.slash;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.Logging;
@@ -36,13 +36,13 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
-		super(instance, commandMethod.getAnnotation(JdaSlashCommand.class),
+		super(instance, commandMethod.getAnnotation(JDASlashCommand.class),
 				commandMethod,
-				commandMethod.getAnnotation(JdaSlashCommand.class).name(),
-				commandMethod.getAnnotation(JdaSlashCommand.class).group(),
-				commandMethod.getAnnotation(JdaSlashCommand.class).subcommand());
+				commandMethod.getAnnotation(JDASlashCommand.class).name(),
+				commandMethod.getAnnotation(JDASlashCommand.class).group(),
+				commandMethod.getAnnotation(JDASlashCommand.class).subcommand());
 
-		final JdaSlashCommand annotation = commandMethod.getAnnotation(JdaSlashCommand.class);
+		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
 		this.instance = instance;
 		this.commandParameters = MethodParameters.of(commandMethod, (parameter, i) -> {

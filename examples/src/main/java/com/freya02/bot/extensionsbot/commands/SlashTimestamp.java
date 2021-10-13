@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.utils.Timestamp;
 
 import java.time.ZoneOffset;
@@ -14,7 +14,7 @@ import java.util.Locale;
 
 @CommandMarker //So it doesn't appear unused
 public class SlashTimestamp extends ApplicationCommand {
-	@JdaSlashCommand(
+	@JDASlashCommand(
 			name = "timestamp",
 			description = "Converts a Discord timestamp into a medium date time"
 	)

@@ -14,7 +14,7 @@ public class PaginationBotMain {
 	public static void main(String[] args) {
 		try {
 			final CommonMain.CommonStuff commonStuff = CommonMain.start();
-			final JDA jda = commonStuff.getJda();
+			final JDA jda = commonStuff.getJDA();
 
 			final ComponentsDB componentsDB = new ComponentsDB(commonStuff.getConfig());
 

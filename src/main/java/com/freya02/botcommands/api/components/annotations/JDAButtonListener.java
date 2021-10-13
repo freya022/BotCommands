@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JdaButtonListener {
+public @interface JDAButtonListener {
 	/**
 	 * Name of the button listener, this is used to find back the handler method after a button has been clicked
 	 *

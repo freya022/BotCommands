@@ -4,12 +4,12 @@ import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Category;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 
 @Category("Misc")
 @Description("Pong !")
 public class Ping extends TextCommand {
-	@JdaTextCommand(name = "ping")
+	@JDATextCommand(name = "ping")
 	public void execute(CommandEvent event) {
 		final long gatewayPing = event.getJDA().getGatewayPing();
 

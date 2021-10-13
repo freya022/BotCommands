@@ -3,9 +3,9 @@ package com.freya02.bot.componentsbot.commands;
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class SlashButtons extends ApplicationCommand {
 	private static final String PRIMARY_HANDLER_NAME = "primaryHandler";
 
-	@JdaSlashCommand(
+	@JDASlashCommand(
 			guildOnly = false,
 			name = "buttons",
 			description = "Shows how buttons works"
@@ -44,7 +44,7 @@ public class SlashButtons extends ApplicationCommand {
 				.queue();
 	}
 
-	@JdaButtonListener(name = PRIMARY_HANDLER_NAME)
+	@JDAButtonListener(name = PRIMARY_HANDLER_NAME)
 	public void run(ButtonEvent event) {
 		event.reply("Primary button clicked ! You should not be able to click it again as it is grouped.")
 				.setEphemeral(true)

@@ -21,7 +21,7 @@ public class EmojiUtils {
 		return emoji.unicode();
 	}
 
-	public static Emoji resolveJdaEmoji(String input) {
+	public static Emoji resolveJDAEmoji(String input) {
 		return Emoji.fromUnicode(resolveEmojis(input));
 	}
 }

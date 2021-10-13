@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Category;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
@@ -23,7 +23,7 @@ public class Kick extends TextCommand {
 	// !kick @freya02
 	// or
 	// !kick @freya02 get nae nae'd
-	@JdaTextCommand(name = "kick")
+	@JDATextCommand(name = "kick")
 	public void exec(BaseCommandEvent event,
 	                 @TextOption Member member,
 	                 @TextOption(example = "Spam") /* In the help content this parameter will have 'Spam' as a reason example */ @Optional String reason) {

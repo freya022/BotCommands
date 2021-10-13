@@ -2,7 +2,7 @@ package com.freya02.bot.registeredclasses.othercommands;
 
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
@@ -16,7 +16,7 @@ public class InstantiatedCommand extends ApplicationCommand {
 		LOGGER.info("Instantiated !");
 	}
 
-	@JdaSlashCommand(name = "instance")
+	@JDASlashCommand(name = "instance")
 	public void run(GuildSlashEvent event) {
 		event.reply("Haha `new` go brr")
 				.setEphemeral(true)

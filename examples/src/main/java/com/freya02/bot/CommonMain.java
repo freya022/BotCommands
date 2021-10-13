@@ -22,7 +22,7 @@ public class CommonMain {
 			this.config = config;
 		}
 
-		public JDA getJda() {
+		public JDA getJDA() {
 			return jda;
 		}
 

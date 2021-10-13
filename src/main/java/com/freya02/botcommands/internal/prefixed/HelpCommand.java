@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Category;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
@@ -89,7 +89,7 @@ public final class HelpCommand extends TextCommand {
 		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder);
 	}
 
-	@JdaTextCommand(
+	@JDATextCommand(
 			name = "help",
 			description = "Gives help for all commands"
 	)
@@ -97,7 +97,7 @@ public final class HelpCommand extends TextCommand {
 		getAllHelp(event);
 	}
 
-	@JdaTextCommand(
+	@JDATextCommand(
 			name = "help",
 			description = "Gives help about a command"
 	)

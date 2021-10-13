@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JdaSelectionMenuListener {
+public @interface JDASelectionMenuListener {
 	/**
 	 * Name of the selection menu listener, this is used to find back the handler method after a button has been clicked
 	 *

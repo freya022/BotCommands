@@ -3,7 +3,7 @@ package com.freya02.bot.extensionsbot.commands;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 @Description("Do what Simon says")
 public class SimonSays extends TextCommand {
-	@JdaTextCommand(name = "simon")
+	@JDATextCommand(name = "simon")
 	public void execute(CommandEvent event) {
 		event.reply("Simon says: say `hi` in less than 5 seconds").queue(m -> {
 			EventWaiter.of(GuildMessageReceivedEvent.class) //Listen to guild messages

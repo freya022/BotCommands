@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
-import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
+import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
 import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * event.reply("Are you sure to ban " + user.getAsMention() + " ?")
  * 	.setEphemeral(true)
  * 	.addActionRow(Components.group(
- * 			Components.dangerButton(BAN_BUTTON_NAME, //Name of the button listener, must be the same as the one given in JdaButtonListener
+ * 			Components.dangerButton(BAN_BUTTON_NAME, //Name of the button listener, must be the same as the one given in JDAButtonListener
  * 					callerMember.getIdLong(), //Arguments to pass, they must be mappable to the types of the method "ban" below
  * 					targetMember.getId(),
  * 					delDays,
@@ -238,7 +238,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new primary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * Creates a new primary button with the given handler name, which must exist as one registered with {@link JDAButtonListener}, and the given arguments<br>
 	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
@@ -252,7 +252,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new secondary button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * Creates a new secondary button with the given handler name, which must exist as one registered with {@link JDAButtonListener}, and the given arguments<br>
 	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
@@ -266,7 +266,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new danger button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * Creates a new danger button with the given handler name, which must exist as one registered with {@link JDAButtonListener}, and the given arguments<br>
 	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
@@ -280,7 +280,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new success button with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * Creates a new success button with the given handler name, which must exist as one registered with {@link JDAButtonListener}, and the given arguments<br>
 	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
@@ -294,7 +294,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new button of the given style with the given handler name, which must exist as one registered with {@link JdaButtonListener}, and the given arguments<br>
+	 * Creates a new button of the given style with the given handler name, which must exist as one registered with {@link JDAButtonListener}, and the given arguments<br>
 	 * <b>These buttons <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler
@@ -323,7 +323,7 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JdaSelectionMenuListener}, and the given arguments<br>
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JDASelectionMenuListener}, and the given arguments<br>
 	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
 	 * @param handlerName The name of this component's handler

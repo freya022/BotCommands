@@ -4,11 +4,11 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.RegistrationListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.context.annotations.JdaMessageCommand;
-import com.freya02.botcommands.api.application.context.annotations.JdaUserCommand;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
 import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 public final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final List<Class<? extends Annotation>> methodAnnotations = List.of(JdaSlashCommand.class, JdaMessageCommand.class, JdaUserCommand.class);
+	private static final List<Class<? extends Annotation>> methodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
 
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
@@ -144,9 +144,9 @@ public final class CommandsBuilderImpl {
 					}
 				}
 
-				if (method.isAnnotationPresent(JdaTextCommand.class)) {
+				if (method.isAnnotationPresent(JDATextCommand.class)) {
 					if (!TextCommand.class.isAssignableFrom(aClass))
-						throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + JdaTextCommand.class.getSimpleName() + " but its class does not extend TextCommand");
+						throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + JDATextCommand.class.getSimpleName() + " but its class does not extend TextCommand");
 
 					final TextCommand annotatedInstance = (TextCommand) ClassInstancer.instantiate(context, aClass);
 

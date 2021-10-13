@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface JdaUserCommand {
+public @interface JDAUserCommand {
 	/**
 	 * Whether this application command should only work in a {@linkplain Guild}
 	 *

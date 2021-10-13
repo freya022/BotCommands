@@ -11,7 +11,7 @@ public class RegexBotMain {
 
 	public static void main(String[] args) {
 		try {
-			final JDA jda = CommonMain.start().getJda();
+			final JDA jda = CommonMain.start().getJDA();
 
 			//Build the command framework:
 			// Prefix: !

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.components;
 
 import com.freya02.botcommands.api.components.ComponentListener;
-import com.freya02.botcommands.api.components.annotations.JdaButtonListener;
-import com.freya02.botcommands.api.components.annotations.JdaSelectionMenuListener;
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
+import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -25,14 +25,14 @@ public class ComponentsBuilder {
 
 	public void processClass(Class<?> clazz) {
 		for (Method method : clazz.getDeclaredMethods()) {
-			JdaButtonListener jdaButtonListener = method.getAnnotation(JdaButtonListener.class);
+			JDAButtonListener jdaButtonListener = method.getAnnotation(JDAButtonListener.class);
 			if (jdaButtonListener != null) {
 				handleComponentListener(method, jdaButtonListener.name(), buttonsMap, ButtonEvent.class, "Button listener");
 
 				continue;
 			}
 
-			JdaSelectionMenuListener jdaSelectionMenuListener = method.getAnnotation(JdaSelectionMenuListener.class);
+			JDASelectionMenuListener jdaSelectionMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
 			if (jdaSelectionMenuListener != null) {
 				handleComponentListener(method, jdaSelectionMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
 			}

@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface JdaTextCommand {
+public @interface JDATextCommand {
 	/**
 	 * Primary name of the command, <b>must not contain any spaces</b>
 	 *

@@ -43,11 +43,11 @@ public class Paginator {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
-	private static final Emoji FIRST_EMOJI = EmojiUtils.resolveJdaEmoji(":rewind:");
-	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJdaEmoji(":arrow_backward:");
-	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJdaEmoji(":arrow_forward:");
-	private static final Emoji LAST_EMOJI = EmojiUtils.resolveJdaEmoji(":fast_forward:");
-	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJdaEmoji(":wastebasket:");
+	private static final Emoji FIRST_EMOJI = EmojiUtils.resolveJDAEmoji(":rewind:");
+	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJDAEmoji(":arrow_backward:");
+	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJDAEmoji(":arrow_forward:");
+	private static final Emoji LAST_EMOJI = EmojiUtils.resolveJDAEmoji(":fast_forward:");
+	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJDAEmoji(":wastebasket:");
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
 
 	private final int maxPages;

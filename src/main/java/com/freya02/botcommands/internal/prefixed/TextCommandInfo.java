@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -45,14 +45,14 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 	public TextCommandInfo(TextCommand command, Method commandMethod) {
 		super(command,
-				commandMethod.getAnnotation(JdaTextCommand.class),
+				commandMethod.getAnnotation(JDATextCommand.class),
 				commandMethod,
-				commandMethod.getAnnotation(JdaTextCommand.class).name(),
-				commandMethod.getAnnotation(JdaTextCommand.class).group(),
-				commandMethod.getAnnotation(JdaTextCommand.class).subcommand()
+				commandMethod.getAnnotation(JDATextCommand.class).name(),
+				commandMethod.getAnnotation(JDATextCommand.class).group(),
+				commandMethod.getAnnotation(JDATextCommand.class).subcommand()
 				);
 
-		final JdaTextCommand jdaCommand = commandMethod.getAnnotation(JdaTextCommand.class);
+		final JDATextCommand jdaCommand = commandMethod.getAnnotation(JDATextCommand.class);
 
 		aliases = Arrays.stream(jdaCommand.aliases()).map(CommandPath::of).collect(Collectors.toList());
 		description = jdaCommand.description();

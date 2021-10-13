@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.User;
 @UserPermissions(Permission.BAN_MEMBERS)
 @CommandMarker //Just so the class isn't marked as unused
 public class SlashBan extends ApplicationCommand { //Must extend SlashCommand
-	@JdaSlashCommand(
+	@JDASlashCommand(
 			//guild-only by default
 			name = "ban",
 			description = "Ban someone"

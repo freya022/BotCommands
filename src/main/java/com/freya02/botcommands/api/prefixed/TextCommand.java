@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.prefixed;
 
 import com.freya02.botcommands.api.CommandsBuilder;
-import com.freya02.botcommands.api.prefixed.annotations.JdaTextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 /**
  * <p>Extend this class on classes that contains any command / subcommand</p>
- * <p>You also need to use the {@linkplain JdaTextCommand @JdaCommand} annotation on methods in order to register a command with {@linkplain CommandsBuilder}</p>
+ * <p>You also need to use the {@linkplain JDATextCommand @JDATextCommand} annotation on methods in order to register a command with {@linkplain CommandsBuilder}</p>
  */
 public abstract class TextCommand {
 	/**

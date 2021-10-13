@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.pagination.Paginator;
 import com.freya02.botcommands.api.pagination.menu.MenuBuilder;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @CommandMarker
 public class MenuCommand extends ApplicationCommand {
-	@JdaSlashCommand(name = "menu")
+	@JDASlashCommand(name = "menu")
 	public void run(GuildSlashEvent event) {
 		final List<Guild> entries = new ArrayList<>(event.getJDA().getGuilds());
 

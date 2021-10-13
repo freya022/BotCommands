@@ -1,15 +1,15 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.context.annotations.JdaMessageCommand;
-import com.freya02.botcommands.api.application.context.annotations.JdaUserCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -44,11 +44,11 @@ public final class ApplicationCommandsBuilder {
 
 	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
 		try {
-			if (method.isAnnotationPresent(JdaSlashCommand.class)) {
+			if (method.isAnnotationPresent(JDASlashCommand.class)) {
 				processSlashCommand(applicationCommand, method);
-			} else if (method.isAnnotationPresent(JdaUserCommand.class)) {
+			} else if (method.isAnnotationPresent(JDAUserCommand.class)) {
 				processUserCommand(applicationCommand, method);
-			} else if (method.isAnnotationPresent(JdaMessageCommand.class)) {
+			} else if (method.isAnnotationPresent(JDAMessageCommand.class)) {
 				processMessageCommand(applicationCommand, method);
 			}
 		} catch (Exception e) {
@@ -57,7 +57,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JdaUserCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAUserCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class) && !Utils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
@@ -77,7 +77,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JdaMessageCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAMessageCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class) && !Utils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
@@ -97,7 +97,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JdaSlashCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDASlashCommand.class).guildOnly()) {
 			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 

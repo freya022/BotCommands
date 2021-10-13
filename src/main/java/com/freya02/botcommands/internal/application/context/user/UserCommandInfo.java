@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.application.context.user;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.context.annotations.JdaUserCommand;
+import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver;
@@ -22,9 +22,9 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<ContextCommandParameter<UserContextParameterResolver>> commandParameters;
 
 	public UserCommandInfo(ApplicationCommand instance, Method method) {
-		super(instance, method.getAnnotation(JdaUserCommand.class),
+		super(instance, method.getAnnotation(JDAUserCommand.class),
 				method,
-				method.getAnnotation(JdaUserCommand.class).name());
+				method.getAnnotation(JDAUserCommand.class).name());
 
 		this.instance = instance;
 

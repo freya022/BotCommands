@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.api.application.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used to specify a application command parameter is supplied from Discord, <i>i.e. it is <b>not</b> a custom parameter</i>
- * <br>This also can set name and description of {@linkplain JdaSlashCommand slash commands} parameters
+ * <br>This also can set name and description of {@linkplain JDASlashCommand slash commands} parameters
  * <p>
  * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
  *
