@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReacti
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
  * An event waiter - if you need to wait for an event to occur while not blocking threads or having listeners everywhere<br>
  * You provide the type of the JDA event you want to get<br>
  * You can then set properties such as preconditions, timeouts and actions to run when the event gets received / has an exception, etc...
+ * <br>This event waiter cannot be constructed and does not need to be registered to the JDA instance, it is already done automatically
  *
  * <h2>Example</h2>
  * <h3>This example uses every actions, has a timeout of 1 second and only triggers if the caller is the same as the user who triggered the previously entered command</h3>
@@ -57,7 +58,7 @@ import java.util.stream.Collectors;
  * }
  * </code></pre>
  */
-public class EventWaiter extends ListenerAdapter {
+public class EventWaiter implements EventListener {
 	private static final Map<Class<? extends GenericEvent>, List<WaitingEvent<? extends GenericEvent>>> waitingMap = new HashMap<>();
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Object EVENT_LIST_LOCK = new Object();
@@ -169,7 +170,7 @@ public class EventWaiter extends ListenerAdapter {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void onGenericEvent(@NotNull GenericEvent event) {
+	public void onEvent(@NotNull GenericEvent event) {
 		final List<WaitingEvent<? extends GenericEvent>> waitingEvents = waitingMap.get(event.getClass());
 
 		if (waitingEvents != null) {
