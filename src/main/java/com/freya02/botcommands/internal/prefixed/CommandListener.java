@@ -215,6 +215,8 @@ public final class CommandListener extends ListenerAdapter {
 
 	@Nullable
 	private TextCommandCandidates getCommandCandidates(String[] split) {
+		if (split.length == 0) return null; //No command names left, command is not found
+
 		final TextCommandCandidates commands = context.findCommands(CommandPath.of(split));
 		if (commands != null) return commands;
 
