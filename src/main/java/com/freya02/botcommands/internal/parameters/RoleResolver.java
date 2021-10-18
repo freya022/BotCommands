@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
@@ -17,6 +16,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class RoleResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+	private static final Pattern PATTERN = Pattern.compile("(?:<@&)?(\\d+)>?");
+
 	public RoleResolver() {
 		super(Role.class);
 	}
@@ -32,7 +33,7 @@ public class RoleResolver extends ParameterResolver implements RegexParameterRes
 	@Override
 	@NotNull
 	public Pattern getPattern() {
-		return Message.MentionType.ROLE.getPattern();
+		return PATTERN;
 	}
 
 	@Override
