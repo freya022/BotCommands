@@ -1,18 +1,18 @@
 package com.freya02.bot.paginationbot.commands;
 
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.pagination.Paginator;
-import com.freya02.botcommands.slash.GuildSlashEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.pagination.Paginator;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @CommandMarker
-public class PaginatorCommand extends SlashCommand {
-	@JdaSlashCommand(name = "paginator")
+public class PaginatorCommand extends ApplicationCommand {
+	@JDASlashCommand(name = "paginator")
 	public void run(GuildSlashEvent event) {
 		final List<EmbedBuilder> embedBuilders = new ArrayList<>();
 

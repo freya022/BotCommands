@@ -19,8 +19,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>16</source>
+                    <target>16</target>
                     <compilerArgs>
                         <compilerArg>-parameters</compilerArg>
                     </compilerArgs>
@@ -42,9 +42,9 @@
     </repositories>
     <dependencies>
         <dependency> <!-- The Java Discord API-->
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.aasmart</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.3.0_310</version>
+            <version>ab0cf35</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -55,12 +55,12 @@
         <dependency> <!-- Needed for JDA and BotCommands logging -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>1.2.5</version>
         </dependency>
         <dependency> <!-- This library -->
             <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>422d93c</version>
+            <version>0e5b863</version>
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>

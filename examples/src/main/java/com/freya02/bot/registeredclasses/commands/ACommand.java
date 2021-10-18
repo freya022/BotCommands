@@ -1,15 +1,15 @@
 package com.freya02.bot.registeredclasses.commands;
 
 import com.freya02.bot.registeredclasses.SomeObject;
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.annotation.Dependency;
-import com.freya02.botcommands.slash.GuildSlashEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.annotations.Dependency;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.JDA;
 
 @CommandMarker //Just so the class isn't marked as unused
-public class ACommand extends SlashCommand {
+public class ACommand extends ApplicationCommand {
 	private final SomeObject object;
 
 	@Dependency
@@ -19,7 +19,7 @@ public class ACommand extends SlashCommand {
 		this.object = object;
 	}
 
-	@JdaSlashCommand(name = "test")
+	@JDASlashCommand(name = "test")
 	public void run(GuildSlashEvent event) {
 		System.out.println("jda = " + jda);
 		System.out.println("object = " + object);

@@ -1,6 +1,6 @@
 package com.freya02.bot;
 
-import com.freya02.botcommands.Logging;
+import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -22,7 +22,7 @@ public class CommonMain {
 			this.config = config;
 		}
 
-		public JDA getJda() {
+		public JDA getJDA() {
 			return jda;
 		}
 

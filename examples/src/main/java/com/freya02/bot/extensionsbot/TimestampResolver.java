@@ -1,10 +1,10 @@
 package com.freya02.bot.extensionsbot;
 
-import com.freya02.botcommands.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.parameters.ParameterResolver;
-import com.freya02.botcommands.parameters.SlashParameterResolver;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.api.utils.Timestamp;
@@ -32,7 +32,7 @@ public class TimestampResolver extends ParameterResolver implements SlashParamet
 		try {
 			return TimeFormat.parse(str);
 		} catch (Exception e) {
-			//probably not an error, could be someone who sent an erroneous timestamp, will get reported by the slash commands and components handlers
+			//probably not an error, could be someone who sent an erroneous timestamp, will get reported by the application commands and components handlers
 			LOGGER.trace("Cannot resolve timestamp '{}'", str);
 
 			return null;

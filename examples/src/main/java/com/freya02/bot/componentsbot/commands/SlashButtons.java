@@ -1,12 +1,12 @@
 package com.freya02.bot.componentsbot.commands;
 
-import com.freya02.botcommands.annotation.CommandMarker;
-import com.freya02.botcommands.components.Components;
-import com.freya02.botcommands.components.annotation.JdaButtonListener;
-import com.freya02.botcommands.components.event.ButtonEvent;
-import com.freya02.botcommands.slash.SlashCommand;
-import com.freya02.botcommands.slash.SlashEvent;
-import com.freya02.botcommands.slash.annotations.JdaSlashCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
+import com.freya02.botcommands.api.components.event.ButtonEvent;
 import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;
@@ -14,15 +14,15 @@ import java.util.Collections;
 import java.util.List;
 
 @CommandMarker //Just so the class isn't marked as unused
-public class SlashButtons extends SlashCommand {
+public class SlashButtons extends ApplicationCommand {
 	private static final String PRIMARY_HANDLER_NAME = "primaryHandler";
 
-	@JdaSlashCommand(
+	@JDASlashCommand(
 			guildOnly = false,
 			name = "buttons",
 			description = "Shows how buttons works"
 	)
-	public void run(SlashEvent event) {
+	public void run(GlobalSlashEvent event) {
 		List<Component> components = new ArrayList<>();
 		Collections.addAll(components, Components.group(
 				//A persistent button, works after a bot restart
@@ -44,7 +44,7 @@ public class SlashButtons extends SlashCommand {
 				.queue();
 	}
 
-	@JdaButtonListener(name = PRIMARY_HANDLER_NAME)
+	@JDAButtonListener(name = PRIMARY_HANDLER_NAME)
 	public void run(ButtonEvent event) {
 		event.reply("Primary button clicked ! You should not be able to click it again as it is grouped.")
 				.setEphemeral(true)

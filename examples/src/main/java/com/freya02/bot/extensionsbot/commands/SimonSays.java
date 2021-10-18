@@ -1,25 +1,18 @@
 package com.freya02.bot.extensionsbot.commands;
 
-import com.freya02.botcommands.BContext;
-import com.freya02.botcommands.prefixed.Command;
-import com.freya02.botcommands.prefixed.CommandEvent;
-import com.freya02.botcommands.prefixed.annotation.JdaCommand;
-import com.freya02.botcommands.waiter.EventWaiter;
+import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.annotations.Description;
+import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.api.waiter.EventWaiter;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
 
-@JdaCommand(
-		name = "simon",
-		description = "Do what Simon says"
-)
-public class SimonSays extends Command {
-	public SimonSays(BContext context) {
-		super(context);
-	}
-
-	@Override
-	protected void execute(CommandEvent event) {
+@Description("Do what Simon says")
+public class SimonSays extends TextCommand {
+	@JDATextCommand(name = "simon")
+	public void execute(CommandEvent event) {
 		event.reply("Simon says: say `hi` in less than 5 seconds").queue(m -> {
 			EventWaiter.of(GuildMessageReceivedEvent.class) //Listen to guild messages
 					//Check for the same channel, same author, with message "hi"
