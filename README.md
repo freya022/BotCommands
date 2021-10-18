@@ -4,7 +4,7 @@
 
 ## Notice
 
-Please use group id `com.github.aasmart` and version `ab0cf35`, this is the context-menu branch of JDA
+Please use group id `com.github.aasmart` and version `dbce817`, this is the context-menu branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
@@ -16,7 +16,16 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
   * More manual parsing, you have a tokenized message and you choose how to process the token
   * Automatic parsing of the arguments, your method signature is translated into a command syntax, such as:
     * Suppose the prefix is `!` and the command is `ban`
-    * `@Executable public void run(BaseCommandEvent event, User user, int delDays, String reason)` `->` `!ban @someone 42 Foobar` should be valid
+      ```java
+      @JDATextCommand(name = "ban")
+      public void runBan(BaseCommandEvent event,
+                         @TextOption User user,
+                         @TextOption int delDays,
+                         @TextOption String reason) {
+          //Ban the user
+      }
+      ```
+    * Which means `!ban @someone 42 Foobar` should be valid
 * Application commands
   * Slash commands with **automatic & customizable argument parsing** via `ParameterResolver` in the `parameters` package
   * Context menu commands (User / Message)
@@ -42,21 +51,51 @@ An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://
 ## Getting the library
 ### Installing with Jitpack
 
+<details>
+<summary>With Maven</summary>
+
 You can add the following to your pom.xml
 ```xml
-<repository>
-    <id>jitpack</id>
-    <url>https://jitpack.io</url>
-</repository>
+<repositories>
+  <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+  </repository>
+</repositories>
 
 ...
 
-<dependency>
+<dependencies>
+  <dependency>
     <groupId>com.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <version>VERSION</version>
-</dependency>
+  </dependency>
+</dependencies>
 ```
+</details>
+
+<details>
+<summary>With Gradle</summary>
+
+You can add the following to your pom.xml
+```gradle
+dependencies {
+    implementation 'com.github.freya022:BotCommands:VERSION'
+    ...
+}
+
+...
+
+repositories {
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io'
+    }
+    ...
+}
+```
+</details>
 
 ### Building / Installing manually
 
