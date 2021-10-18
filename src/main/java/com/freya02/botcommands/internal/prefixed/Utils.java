@@ -17,6 +17,7 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -229,5 +230,16 @@ public class Utils {
 		return optionParameters.stream()
 				.filter(p -> p.getResolver() instanceof QuotableRegexParameterResolver)
 				.count() > 1;
+	}
+
+	@NotNull
+	public static <T extends IMentionable> T findEntity(long id, @NotNull Collection<T> collection, Supplier<@NotNull T> valueSupplier) {
+		for (T user : collection) {
+			if (user.getIdLong() == id) {
+				return user;
+			}
+		}
+
+		return valueSupplier.get();
 	}
 }

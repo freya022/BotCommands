@@ -29,9 +29,12 @@ public class CommandEventImpl extends CommandEvent {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final List<Object> arguments = new ArrayList<>();
+	private final GuildMessageReceivedEvent event;
 
 	public CommandEventImpl(BContext context, GuildMessageReceivedEvent event, String arguments) {
 		super(context, event, arguments);
+
+		this.event = event;
 
 		new RichTextFinder(arguments, true, false, true, false).processResults(this::processText);
 	}
@@ -125,9 +128,17 @@ public class CommandEventImpl extends CommandEvent {
 				if (clazz == Role.class) {
 					mentionable = getGuild().getRoleById(id);
 				} else if (clazz == User.class) {
-					mentionable = getJDA().retrieveUserById(id).complete();
+					//Fastpath for mentioned entities passed in the message
+
+					mentionable = Utils.findEntity(id,
+							event.getMessage().getMentionedUsers(),
+							() -> getJDA().retrieveUserById(id).complete());
 				} else if (clazz == Member.class) {
-					mentionable = getGuild().retrieveMemberById(id).complete();
+					//Fastpath for mentioned entities passed in the message
+
+					mentionable = Utils.findEntity(id,
+							event.getMessage().getMentionedMembers(),
+							() -> getGuild().retrieveMemberById(id).complete());
 				} else if (clazz == TextChannel.class) {
 					mentionable = getGuild().getTextChannelById(id);
 				} else if (clazz == Emote.class) {

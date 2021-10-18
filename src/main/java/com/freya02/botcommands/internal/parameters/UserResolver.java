@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters;
 
 import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.internal.prefixed.Utils;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
-	private static final Pattern PATTERN = Pattern.compile("(?:<@)?(\\d+)>?");
+	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public UserResolver() {
 		super(User.class);
@@ -24,7 +25,12 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 	@Nullable
 	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
 		try {
-			return event.getJDA().retrieveUserById(args[0]).complete();
+			//Fastpath for mentioned entities passed in the message
+			long id = Long.parseLong(args[0]);
+
+			return Utils.findEntity(id,
+					event.getMessage().getMentionedUsers(),
+					() -> event.getJDA().retrieveUserById(id).complete());
 		} catch (ErrorResponseException e) {
 			return null;
 		}
