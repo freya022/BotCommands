@@ -20,7 +20,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
       @JDATextCommand(name = "ban")
       public void runBan(BaseCommandEvent event,
                          @TextOption User user,
-                         @TextOption int delDays,
+                         @TextOption long delDays,
                          @TextOption String reason) {
           //Ban the user
       }
