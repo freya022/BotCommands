@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.prefixed;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.Utils;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -26,7 +27,10 @@ public class TextCommandComparator implements Comparator<TextCommandInfo> {
 		final int order2 = o2.getOrder();
 		if (order1 != 0 && order2 != 0) {
 			if (order1 == order2) {
-				LOGGER.warn("Warn: Method {} and {} have the same order ({})", o1, o2, order1);
+				LOGGER.warn("Warn: Method {} and {} have the same order ({})",
+						Utils.formatMethodShort(o1.getCommandMethod()),
+						Utils.formatMethodShort(o2.getCommandMethod()),
+						order1);
 			}
 
 			return Integer.compare(order1, order2);
