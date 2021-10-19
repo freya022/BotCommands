@@ -44,7 +44,7 @@
         <dependency> <!-- The Java Discord API-->
             <groupId>com.github.aasmart</groupId>
             <artifactId>JDA</artifactId>
-            <version>ab0cf35</version>
+            <version>dbce817</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -60,7 +60,7 @@
         <dependency> <!-- This library -->
             <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>0e5b863</version>
+            <version>8de1c04</version>
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>

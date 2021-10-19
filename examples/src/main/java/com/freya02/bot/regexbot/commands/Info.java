@@ -2,6 +2,7 @@ package com.freya02.bot.regexbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Category;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
@@ -39,5 +40,10 @@ public class Info extends TextCommand {
 	@JDATextCommand(name = "info", order = 5) //Method to be checked last
 	public void exec(BaseCommandEvent event, @TextOption Guild guild) {
 		//Show guild info
+	}
+
+	@JDATextCommand(name = "info")
+	public void fallback(CommandEvent event) {
+		event.reply("You need to supply either a Member / User / TextChannel / Role or a Guild (or any of them but as an ID)").queue();
 	}
 }
