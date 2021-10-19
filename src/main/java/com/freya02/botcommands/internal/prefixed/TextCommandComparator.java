@@ -18,6 +18,8 @@ public class TextCommandComparator implements Comparator<TextCommandInfo> {
 		final Method o1CommandMethod = o1.getCommandMethod();
 		final Method o2CommandMethod = o2.getCommandMethod();
 
+		if (o1CommandMethod == o2CommandMethod) return 0;
+
 		if (o1CommandMethod.getParameterTypes()[0] == BaseCommandEvent.class
 				&& o2CommandMethod.getParameterTypes()[0] == CommandEvent.class) {
 			return -1;
@@ -27,7 +29,7 @@ public class TextCommandComparator implements Comparator<TextCommandInfo> {
 		final int order2 = o2.getOrder();
 		if (order1 != 0 && order2 != 0) {
 			if (order1 == order2) {
-				LOGGER.warn("Warn: Method {} and {} have the same order ({})",
+				LOGGER.warn("Method {} and {} have the same order ({})",
 						Utils.formatMethodShort(o1.getCommandMethod()),
 						Utils.formatMethodShort(o2.getCommandMethod()),
 						order1);
