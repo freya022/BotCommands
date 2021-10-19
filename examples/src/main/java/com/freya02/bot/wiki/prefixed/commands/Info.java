@@ -1,4 +1,4 @@
-package com.freya02.bot.wiki.prefixed;
+package com.freya02.bot.wiki.prefixed.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;

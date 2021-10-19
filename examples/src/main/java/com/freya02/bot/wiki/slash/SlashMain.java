@@ -1,4 +1,4 @@
-package com.freya02.bot.wiki.prefixed;
+package com.freya02.bot.wiki.slash;
 
 import com.freya02.bot.Config;
 import com.freya02.botcommands.api.CommandsBuilder;
@@ -8,14 +8,17 @@ import net.dv8tion.jda.api.JDABuilder;
 import javax.security.auth.login.LoginException;
 import java.io.IOException;
 
-public class PrefixedMain {
+public class SlashMain {
 	public static void main(String[] args) {
 		try {
 			final Config config = Config.readConfig();
 
 			final JDA jda = JDABuilder.createLight(config.getToken()).build().awaitReady();
 
-			CommandsBuilder.newBuilder(0L).build(jda, "com.freya02.bot.wiki.prefixed.commands");
+			final CommandsBuilder builder = CommandsBuilder.newBuilder(0L);
+			builder
+					.setSettingsProvider(new BasicSettingsProvider(builder.getContext()))
+					.build(jda, "com.freya02.bot.wiki.slash.commands");
 		} catch (IOException | LoginException | InterruptedException e) {
 			e.printStackTrace();
 
