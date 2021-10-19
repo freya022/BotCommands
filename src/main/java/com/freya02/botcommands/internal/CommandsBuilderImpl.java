@@ -59,6 +59,8 @@ public final class CommandsBuilderImpl {
 		this.componentsBuilder = new ComponentsBuilder(context);
 		
 		this.usePing = context.getPrefixes().isEmpty();
+		if (usePing) LOGGER.info("No prefix has been set, using bot ping as prefix");
+
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 	}
