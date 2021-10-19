@@ -60,7 +60,7 @@
         <dependency> <!-- This library -->
             <groupId>com.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>8de1c04</version>
+            <version>7a1bf56</version>
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>
