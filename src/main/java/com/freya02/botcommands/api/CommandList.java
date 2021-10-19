@@ -33,9 +33,9 @@ public class CommandList {
 		return new CommandList(path -> containsCommand(enabledCommands, path));
 	}
 
-	private static boolean containsCommand(List<CommandPath> enabledCommands, CommandPath path) {
-		for (CommandPath enabledCommand : enabledCommands) {
-			if (enabledCommand.startsWith(path)) {
+	private static boolean containsCommand(List<CommandPath> commandOrGroupPaths, CommandPath path) {
+		for (CommandPath commandOrGroupPath : commandOrGroupPaths) {
+			if (path.startsWith(commandOrGroupPath)) {
 				return true;
 			}
 		}
