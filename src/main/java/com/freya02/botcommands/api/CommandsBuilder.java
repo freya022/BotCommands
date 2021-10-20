@@ -9,12 +9,15 @@ import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
+import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.IOUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +26,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class CommandsBuilder {
+	private static final Logger LOGGER = Logging.getLogger();
+
 	private final List<Long> slashGuildIds = new ArrayList<>();
 
 	private final BContextImpl context = new BContextImpl();
@@ -36,13 +41,26 @@ public final class CommandsBuilder {
 		context.addOwner(topOwnerId);
 	}
 
+	private CommandsBuilder() {
+		LOGGER.info("No owner ID specified, exceptions won't be sent to owners");
+	}
+
 	/**
 	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled by default
 	 *
 	 * @param topOwnerId The most owner of the bot
 	 */
 	public static CommandsBuilder newBuilder(long topOwnerId) {
+		Checks.positive(topOwnerId, "Owner ID");
+
 		return new CommandsBuilder(topOwnerId);
+	}
+
+	/**
+	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled by default
+	 */
+	public static CommandsBuilder newBuilder() {
+		return new CommandsBuilder();
 	}
 
 	/**
@@ -172,15 +190,27 @@ public final class CommandsBuilder {
 		return this;
 	}
 
+	/**
+	 * Configures some settings related to framework extensions
+	 *
+	 * @param consumer The consumer to run in order to configure extension settings
+	 * @return This builder for chaining convenience
+	 */
 	public CommandsBuilder extensionsBuilder(Consumer<ExtensionsBuilder> consumer) {
 		consumer.accept(extensionsBuilder);
 
 		return this;
 	}
-	
+
+	/**
+	 * Configures some settings related to framework text commands
+	 *
+	 * @param consumer The consumer to run in order to configure text commands settings
+	 * @return This builder for chaining convenience
+	 */
 	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) {
 		consumer.accept(textCommandBuilder);
-		
+
 		return this;
 	}
 
@@ -204,7 +234,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		addSearchPath(commandPackageName, 2);
-		
+
 		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}
 
