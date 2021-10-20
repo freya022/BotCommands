@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.CommandsBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.sql.Connection;
 
@@ -19,7 +18,7 @@ public class CtorInjMain {
 
 			alt1(jda);
 //			alt2(jda);
-		} catch (IOException | LoginException | InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 
 			System.exit(-1);
@@ -28,7 +27,7 @@ public class CtorInjMain {
 
 	private static void alt1(JDA jda) throws IOException {
 		Connection connection = null; //Just a test value
-		CommandsBuilder.newBuilder(0L)
+		CommandsBuilder.newBuilder()
 				.extensionsBuilder(extensionsBuilder ->
 						extensionsBuilder.registerConstructorParameter(Connection.class, ignored -> connection)
 				)
