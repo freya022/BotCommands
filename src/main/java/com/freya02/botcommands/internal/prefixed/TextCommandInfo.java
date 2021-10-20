@@ -152,8 +152,8 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 						}
 
 						objects.add(resolved);
-					} else if (!parameter.isOptional()) {
-						LOGGER.warn("Could not resolve parameter #{} in {} for input args {}",
+					} else if (!parameter.isOptional()) { //Parameter is not found yet the pattern matched and is not optional
+						LOGGER.warn("Could not find parameter #{} in {} for input args {}",
 								parameter.getIndex(),
 								Utils.formatMethodShort(commandMethod),
 								args);

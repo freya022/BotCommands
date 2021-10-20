@@ -121,7 +121,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 							.setEphemeral(true)
 							.queue();
 
-					LOGGER.warn("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
 					return false;
 				}

@@ -62,6 +62,8 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 
 			if (parameter.isOption()) {
 				objects[i + 1] = parameter.getResolver().resolve(event);
+				//no need to check for unresolved parameters,
+				// it is impossible to have other arg types other than User (and custom resolvers)
 			} else {
 				objects[i + 1] = parameter.getCustomResolver().resolve(event);
 			}
