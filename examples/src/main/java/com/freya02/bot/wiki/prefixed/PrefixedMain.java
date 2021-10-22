@@ -12,7 +12,9 @@ public class PrefixedMain {
 
 			final JDA jda = JDABuilder.createLight(config.getToken()).build().awaitReady();
 
-			CommandsBuilder.newBuilder().build(jda, "com.freya02.bot.wiki.prefixed.commands");
+			CommandsBuilder.newBuilder()
+					.setSettingsProvider(new PrefixSettingsProvider())
+					.build(jda, "com.freya02.bot.wiki.prefixed.commands");
 		} catch (Exception e) {
 			e.printStackTrace();
 
