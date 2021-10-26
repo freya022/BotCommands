@@ -1,10 +1,11 @@
 package com.freya02.botcommands.api.components;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -35,7 +36,7 @@ public class ComponentListener extends ListenerAdapter {
 		return thread;
 	});
 
-	private final BContext context;
+	private final BContextImpl context;
 	private final ComponentManager componentManager;
 
 	private final Map<String, ComponentDescriptor> buttonsMap;
@@ -51,7 +52,7 @@ public class ComponentListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public ComponentListener(BContext context, Map<String, ComponentDescriptor> buttonsMap, Map<String, ComponentDescriptor> selectionMenuMap) {
+	public ComponentListener(BContextImpl context, Map<String, ComponentDescriptor> buttonsMap, Map<String, ComponentDescriptor> selectionMenuMap) {
 		this.context = context;
 		this.componentManager = Utils.getComponentManager(context);
 		this.buttonsMap = buttonsMap;
@@ -93,27 +94,48 @@ public class ComponentListener extends ListenerAdapter {
 		switch (idType) {
 			case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
 					e -> onError(event, e.getReason()),
-					data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
-							buttonsMap,
-							data.getHandlerName(),
-							data.getArgs(),
-							() -> new ButtonEvent(context, (ButtonClickEvent) event))));
+					data -> runCallback(() -> handlePersistentComponent(event,
+									buttonsMap,
+									data.getHandlerName(),
+									data.getArgs(),
+									() -> new ButtonEvent(context, (ButtonClickEvent) event)),
+							event));
 			case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
 					e -> onError(event, e.getReason()),
-					data -> callbackExecutor.submit(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)))
+					data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)), event)
 			);
 			case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
 					e -> onError(event, e.getReason()),
-					data -> callbackExecutor.submit(() -> handlePersistentComponent(event,
-							selectionMenuMap,
-							data.getHandlerName(),
-							data.getArgs(),
-							() -> new SelectionEvent(context, (SelectionMenuEvent) event))));
+					data -> runCallback(() -> handlePersistentComponent(event,
+									selectionMenuMap,
+									data.getHandlerName(),
+									data.getArgs(),
+									() -> new SelectionEvent(context, (SelectionMenuEvent) event)),
+							event));
 			case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
 					e -> onError(event, e.getReason()),
-					data -> callbackExecutor.submit(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event))));
+					data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
 			default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 		}
+	}
+
+	private void runCallback(RunnableEx code, @NotNull GenericComponentInteractionCreateEvent event) {
+		callbackExecutor.execute(() -> {
+			try {
+				code.run();
+			} catch (Throwable e) {
+				e = Utils.getException(e);
+
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", e);
+				if (event.isAcknowledged()) {
+					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+				} else {
+					event.reply(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+				}
+
+				context.dispatchException("Exception in component callback", e);
+			}
+		});
 	}
 
 	private void handlePersistentComponent(GenericComponentInteractionCreateEvent event,
