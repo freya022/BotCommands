@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.components;
 
+import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
@@ -124,6 +125,13 @@ public class ComponentListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
+				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+				if (handler != null) {
+					handler.onException(context, event, e);
+
+					return;
+				}
+
 				Throwable baseEx = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", baseEx);
@@ -143,6 +151,13 @@ public class ComponentListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
+				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+				if (handler != null) {
+					handler.onException(context, event, e);
+
+					return;
+				}
+
 				Throwable baseEx = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", baseEx);

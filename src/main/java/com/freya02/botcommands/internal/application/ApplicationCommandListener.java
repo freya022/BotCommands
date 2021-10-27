@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.CooldownScope;
+import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
@@ -161,6 +162,13 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
+				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+				if (handler != null) {
+					handler.onException(context, event, e);
+
+					return;
+				}
+
 				Throwable baseEx = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);

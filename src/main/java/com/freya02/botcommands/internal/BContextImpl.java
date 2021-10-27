@@ -69,6 +69,7 @@ public class BContextImpl implements BContext {
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
 	private Function<Guild, DefaultMessages> defaultMessageProvider;
+	private ExceptionHandler uncaughtExceptionHandler;
 
 	@Override
 	@NotNull
@@ -435,5 +436,15 @@ public class BContextImpl implements BContext {
 
 	public boolean isHelpDisabled() {
 		return helpConsumer != null;
+	}
+
+	public void setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
+		this.uncaughtExceptionHandler = exceptionHandler;
+	}
+
+	@Nullable
+	@Override
+	public ExceptionHandler getUncaughtExceptionHandler() {
+		return uncaughtExceptionHandler;
 	}
 }

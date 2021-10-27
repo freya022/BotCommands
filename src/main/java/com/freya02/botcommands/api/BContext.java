@@ -282,4 +282,13 @@ public interface BContext {
 	 * @param <T>           Type of the parameter
 	 */
 	<T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function);
+
+	/**
+	 * Returns the uncaught exception handler
+	 *
+	 * @return The uncaught exception handler
+	 * @see CommandsBuilder#setUncaughtExceptionHandler(ExceptionHandler)
+	 */
+	@Nullable
+	ExceptionHandler getUncaughtExceptionHandler();
 }

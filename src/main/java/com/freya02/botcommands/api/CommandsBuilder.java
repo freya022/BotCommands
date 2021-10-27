@@ -14,9 +14,11 @@ import com.freya02.botcommands.internal.utils.IOUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -99,6 +101,21 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder setSettingsProvider(SettingsProvider provider) {
 		context.setSettingsProvider(Objects.requireNonNull(provider, "Settings provider cannot be null"));
+
+		return this;
+	}
+
+	/**
+	 * Sets the uncaught exception handler used by the thread pools such of command handlers / components
+	 *
+	 * <br><br>Notes: You will need to handle things such as already acknowledged interactions (in the case of interaction events, where the exception happened after the interaction has been acknowledged), see {@link Interaction#isAcknowledged()}
+	 *
+	 * @param exceptionHandler The handler to call on uncaught exceptions
+	 * @see Utils#getException(Throwable)
+	 * @see ExceptionHandlerAdapter
+	 */
+	public CommandsBuilder setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
+		context.setUncaughtExceptionHandler(exceptionHandler);
 
 		return this;
 	}
