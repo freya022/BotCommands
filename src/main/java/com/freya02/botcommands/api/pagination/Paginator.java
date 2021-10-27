@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.pagination.menu.ButtonContent;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.Logging;
@@ -50,6 +51,12 @@ public class Paginator {
 	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJDAEmoji(":wastebasket:");
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
 
+	private ButtonContent firstContent = ButtonContent.withEmoji(FIRST_EMOJI);
+	private ButtonContent previousContent = ButtonContent.withEmoji(PREVIOUS_EMOJI);
+	private ButtonContent nextContent = ButtonContent.withEmoji(NEXT_EMOJI);
+	private ButtonContent lastContent = ButtonContent.withEmoji(LAST_EMOJI);
+	private ButtonContent deleteContent = ButtonContent.withEmoji(DELETE_EMOJI);
+
 	private final int maxPages;
 
 	private final MessageBuilder messageBuilder = new MessageBuilder();
@@ -92,36 +99,66 @@ public class Paginator {
 	public Paginator(long userId, int maxPages, boolean deleteButton) {
 		this.maxPages = maxPages;
 
-		firstButton = Components.primaryButton(e -> {
+		firstButton = ButtonContent.applyContent(firstContent, Components.primaryButton(e -> {
 			page = 0;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(FIRST_EMOJI);
+		}).ownerId(userId));
 
-		previousButton = Components.primaryButton(e -> {
+		previousButton = ButtonContent.applyContent(previousContent, Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(PREVIOUS_EMOJI);
+		}).ownerId(userId));
 
-		nextButton = Components.primaryButton(e -> {
+		nextButton = ButtonContent.applyContent(nextContent, Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(NEXT_EMOJI);
+		}).ownerId(userId));
 
-		lastButton = Components.primaryButton(e -> {
+		lastButton = ButtonContent.applyContent(lastContent, Components.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(LAST_EMOJI);
+		}).ownerId(userId));
 
 		if (deleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(DELETE_EMOJI);
+			this.deleteButton = ButtonContent.applyContent(deleteContent, Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse());
 		} else {
 			this.deleteButton = null;
 		}
+	}
+
+	public Paginator setFirstContent(ButtonContent firstContent) {
+		this.firstContent = firstContent;
+
+		return this;
+	}
+
+	public Paginator setPreviousContent(ButtonContent previousContent) {
+		this.previousContent = previousContent;
+
+		return this;
+	}
+
+	public Paginator setNextContent(ButtonContent nextContent) {
+		this.nextContent = nextContent;
+
+		return this;
+	}
+
+	public Paginator setLastContent(ButtonContent lastContent) {
+		this.lastContent = lastContent;
+
+		return this;
+	}
+
+	public Paginator setDeleteContent(ButtonContent deleteContent) {
+		this.deleteContent = deleteContent;
+
+		return this;
 	}
 
 	public int getPage() {

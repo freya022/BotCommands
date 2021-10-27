@@ -134,9 +134,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 					onChoiceClicked(menu, menuPage, choiceNumber, event);
 				}).ownerId(userId);
 
-				final Button choiceButton = content.getStr() != null
-						? buttonBuilder.build(content.getStr())
-						: buttonBuilder.build(content.getEmoji());
+				final Button choiceButton = ButtonContent.applyContent(content, buttonBuilder);
 
 				components.addComponents(1 + (i / 5), choiceButton);
 			}

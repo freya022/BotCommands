@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
+import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,12 @@ public class ButtonContent {
 	 */
 	public static ButtonContent withEmoji(@NotNull Emoji emoji) {
 		return new ButtonContent(null, emoji);
+	}
+
+	public static Button applyContent(ButtonContent content, LambdaButtonBuilder buttonBuilder) {
+		return content.getStr() != null
+				? buttonBuilder.build(content.getStr())
+				: buttonBuilder.build(content.getEmoji());
 	}
 
 	@Nullable
