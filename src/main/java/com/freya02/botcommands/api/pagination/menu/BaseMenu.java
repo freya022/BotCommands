@@ -43,9 +43,9 @@ public abstract class BaseMenu<T, R extends BaseMenu<T, R>> {
 	 * @return The number of padding spaces needed
 	 */
 	public static int getPadding(int entryNum, int maxEntry) {
-		final double entryDigits = Math.log10(entryNum) + 1;
-		final double maxEntryDigits = Math.log10(maxEntry) + 1;
-		return (int) Math.ceil(maxEntryDigits - entryDigits);
+		final double entryDigits = Math.floor(Math.log10(entryNum) + 1);
+		final double maxEntryDigits = Math.floor(Math.log10(maxEntry) + 1);
+		return (int) (maxEntryDigits - entryDigits);
 	}
 
 	/**
