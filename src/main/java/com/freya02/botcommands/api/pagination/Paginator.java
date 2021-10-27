@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.menu.ButtonContent;
+import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.Logging;
@@ -28,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 /**
@@ -131,30 +133,65 @@ public class Paginator {
 		}
 	}
 
+	/**
+	 * Sets the content for the button which goes to the first page
+	 *
+	 * @param firstContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(BiFunction)
+	 */
 	public Paginator setFirstContent(ButtonContent firstContent) {
 		this.firstContent = firstContent;
 
 		return this;
 	}
 
+	/**
+	 * Sets the content for the button which goes to the previous page
+	 *
+	 * @param previousContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(BiFunction)
+	 */
 	public Paginator setPreviousContent(ButtonContent previousContent) {
 		this.previousContent = previousContent;
 
 		return this;
 	}
 
+	/**
+	 * Sets the content for the button which goes to the next page
+	 *
+	 * @param nextContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(BiFunction)
+	 */
 	public Paginator setNextContent(ButtonContent nextContent) {
 		this.nextContent = nextContent;
 
 		return this;
 	}
 
+	/**
+	 * Sets the content for the button which goes to the last page
+	 *
+	 * @param lastContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(BiFunction)
+	 */
 	public Paginator setLastContent(ButtonContent lastContent) {
 		this.lastContent = lastContent;
 
 		return this;
 	}
 
+	/**
+	 * Sets the content for the button which deletes this paginator
+	 *
+	 * @param deleteContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(BiFunction)
+	 */
 	public Paginator setDeleteContent(ButtonContent deleteContent) {
 		this.deleteContent = deleteContent;
 
