@@ -65,7 +65,7 @@ public class ComponentListener extends ListenerAdapter {
 	public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
 		if (!(event instanceof ButtonClickEvent) && !(event instanceof SelectionMenuEvent)) return;
 
-		idHandlingExecutor.submit(() -> handleComponentInteraction(event));
+		runHandler(() -> handleComponentInteraction(event), event);
 	}
 
 	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) {
@@ -117,6 +117,25 @@ public class ComponentListener extends ListenerAdapter {
 					data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
 			default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 		}
+	}
+
+	private void runHandler(RunnableEx code, @NotNull GenericComponentInteractionCreateEvent event) {
+		idHandlingExecutor.execute(() -> {
+			try {
+				code.run();
+			} catch (Throwable e) {
+				e = Utils.getException(e);
+
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", e);
+				if (event.isAcknowledged()) {
+					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+				} else {
+					event.reply(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+				}
+
+				context.dispatchException("Exception in component ID handler", e);
+			}
+		});
 	}
 
 	private void runCallback(RunnableEx code, @NotNull GenericComponentInteractionCreateEvent event) {

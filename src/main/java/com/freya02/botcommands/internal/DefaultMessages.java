@@ -31,6 +31,7 @@ import java.util.StringJoiner;
  *     <li>closedDMErrorMsg = {@value DEFAULT_CLOSED_DM_ERROR_MESSAGE}</li>
  *     <li>applicationCommandNotFoundMsg = {@value DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE}</li>
  *     <li>applicationCommandErrorMsg = {@value DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE}</li>
+ *     <li>componentHandlerErrorMsg = {@value DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE}</li>
  *     <li>componentCallbackErrorMsg = {@value DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE}</li>
  *     <li>slashCommandUnresolvableParameterMsg = {@value DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE}</li>
  *     <li>slashCommandInvalidParameterTypeMsg = {@value DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE}</li>
@@ -51,6 +52,7 @@ public final class DefaultMessages {
 	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "This component is not usable anymore";
 	public static final String DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE = "Unknown application command";
 	public static final String DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
+	public static final String DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE = "The parameter '%s' could not be resolved into a %s";
 	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
@@ -69,6 +71,7 @@ public final class DefaultMessages {
 	private final String closedDMErrorMsg;
 	private final String applicationCommandNotFoundMsg;
 	private final String applicationCommandErrorMsg;
+	private final String componentHandlerErrorMsg;
 	private final String componentCallbackErrorMsg;
 	private final String slashCommandUnresolvableParameterMsg;
 	private final String slashCommandInvalidParameterTypeMsg;
@@ -90,6 +93,7 @@ public final class DefaultMessages {
 		closedDMErrorMsg = getValue(bundle, "closedDMErrorMsg", DEFAULT_CLOSED_DM_ERROR_MESSAGE);
 		applicationCommandNotFoundMsg = getValue(bundle, "applicationCommandNotFoundMsg", DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE);
 		applicationCommandErrorMsg = getValue(bundle, "applicationCommandErrorMsg", DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE);
+		componentHandlerErrorMsg = getValue(bundle, "componentHandlerErrorMsg", DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE);
 		componentCallbackErrorMsg = getValue(bundle, "componentCallbackErrorMsg", DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE);
 		slashCommandUnresolvableParameterMsg = checkFormatters(getValue(bundle, "slashCommandUnresolvableParameterMsg", DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE), "%s", "%s");
 		slashCommandInvalidParameterTypeMsg = checkFormatters(getValue(bundle, "slashCommandInvalidParameterTypeMsg", DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE), "%s", "%s", "%s");
@@ -201,6 +205,13 @@ public final class DefaultMessages {
 	 */
 	public String getApplicationCommandErrorMsg() {
 		return applicationCommandErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when an exception occurs in a component ID handler
+	 */
+	public String getComponentHandlerErrorMsg() {
+		return componentHandlerErrorMsg;
 	}
 
 	/**
