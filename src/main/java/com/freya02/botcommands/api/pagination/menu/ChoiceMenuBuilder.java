@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.Paginator;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -128,13 +127,11 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 				final int choiceNumber = i;
 
 				final ButtonContent content = buttonContentSupplier.apply(menuPage.getChoices().get(choiceNumber), choiceNumber);
-				final LambdaButtonBuilder buttonBuilder = Components.primaryButton(event -> {
+				final Button choiceButton = Components.primaryButton(event -> {
 					menu.cleanup(event.getContext());
 
 					onChoiceClicked(menu, menuPage, choiceNumber, event);
-				}).ownerId(userId);
-
-				final Button choiceButton = ButtonContent.applyContent(content, buttonBuilder);
+				}).ownerId(userId).build(content);
 
 				components.addComponents(1 + (i / 5), choiceButton);
 			}

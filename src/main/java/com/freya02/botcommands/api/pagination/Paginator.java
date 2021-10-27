@@ -101,33 +101,33 @@ public class Paginator {
 	public Paginator(long userId, int maxPages, boolean deleteButton) {
 		this.maxPages = maxPages;
 
-		firstButton = ButtonContent.applyContent(firstContent, Components.primaryButton(e -> {
+		firstButton = Components.primaryButton(e -> {
 			page = 0;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId));
+		}).ownerId(userId).build(firstContent);
 
-		previousButton = ButtonContent.applyContent(previousContent, Components.primaryButton(e -> {
+		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId));
+		}).ownerId(userId).build(previousContent);
 
-		nextButton = ButtonContent.applyContent(nextContent, Components.primaryButton(e -> {
+		nextButton = Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId));
+		}).ownerId(userId).build(nextContent);
 
-		lastButton = ButtonContent.applyContent(lastContent, Components.primaryButton(e -> {
+		lastButton = Components.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId));
+		}).ownerId(userId).build(lastContent);
 
 		if (deleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = ButtonContent.applyContent(deleteContent, Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse());
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(deleteContent);
 		} else {
 			this.deleteButton = null;
 		}
