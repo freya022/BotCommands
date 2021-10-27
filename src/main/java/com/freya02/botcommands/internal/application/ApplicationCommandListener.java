@@ -161,16 +161,16 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				e = Utils.getException(e);
+				Throwable baseEx = Utils.getException(e);
 
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", e);
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
 				if (event.isAcknowledged()) {
 					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				} else {
 					event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 				}
 
-				context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", e);
+				context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);
 			}
 		});
 	}

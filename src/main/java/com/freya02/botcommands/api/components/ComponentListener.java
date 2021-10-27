@@ -124,16 +124,16 @@ public class ComponentListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				e = Utils.getException(e);
+				Throwable baseEx = Utils.getException(e);
 
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", e);
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", baseEx);
 				if (event.isAcknowledged()) {
 					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				} else {
 					event.reply(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				}
 
-				context.dispatchException("Exception in component ID handler", e);
+				context.dispatchException("Exception in component ID handler", baseEx);
 			}
 		});
 	}
@@ -143,16 +143,16 @@ public class ComponentListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				e = Utils.getException(e);
+				Throwable baseEx = Utils.getException(e);
 
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", e);
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", baseEx);
 				if (event.isAcknowledged()) {
 					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				} else {
 					event.reply(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				}
 
-				context.dispatchException("Exception in component callback", e);
+				context.dispatchException("Exception in component callback", baseEx);
 			}
 		});
 	}

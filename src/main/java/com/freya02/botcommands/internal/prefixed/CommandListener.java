@@ -263,16 +263,16 @@ public final class CommandListener extends ListenerAdapter {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				e = Utils.getException(e);
+				Throwable baseEx = Utils.getException(e);
 
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", e);
+				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
 
 				message.addReaction(BaseCommandEventImpl.ERROR).queue();
 				if (message.getTextChannel().canTalk()) {
 					message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
 				}
 
-				context.dispatchException(msg, e);
+				context.dispatchException(msg, baseEx);
 			}
 		});
 	}
