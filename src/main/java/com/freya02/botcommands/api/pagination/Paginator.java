@@ -59,11 +59,12 @@ public class Paginator {
 	private ButtonContent lastContent = ButtonContent.withEmoji(LAST_EMOJI);
 	private ButtonContent deleteContent = ButtonContent.withEmoji(DELETE_EMOJI);
 
+	private final long userId;
 	private final int maxPages;
+	private final boolean hasDeleteButton;
 
 	private final MessageBuilder messageBuilder = new MessageBuilder();
-	private final Button deleteButton;
-	private Button firstButton, previousButton, nextButton, lastButton;
+	private Button firstButton, previousButton, nextButton, lastButton, deleteButton;
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -93,14 +94,18 @@ public class Paginator {
 	/**
 	 * Creates a new paginator
 	 *
-	 * @param userId       The ID of the only User who should be able to use this menu
-	 *                     <br>An ID of 0 means this paginator will be usable by everyone
-	 * @param maxPages     Maximum amount of pages in this paginator
-	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
+	 * @param userId          The ID of the only User who should be able to use this menu
+	 *                        <br>An ID of 0 means this paginator will be usable by everyone
+	 * @param maxPages        Maximum amount of pages in this paginator
+	 * @param hasDeleteButton Whether there should be a delete button on the {@link Paginator}
 	 */
-	public Paginator(long userId, int maxPages, boolean deleteButton) {
+	public Paginator(long userId, int maxPages, boolean hasDeleteButton) {
+		this.userId = userId;
 		this.maxPages = maxPages;
+		this.hasDeleteButton = hasDeleteButton;
+	}
 
+	private void setupButtons() {
 		firstButton = Components.primaryButton(e -> {
 			page = 0;
 
@@ -125,7 +130,7 @@ public class Paginator {
 			e.editMessage(get()).queue();
 		}).ownerId(userId).build(lastContent);
 
-		if (deleteButton) {
+		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
 			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(deleteContent);
 		} else {
@@ -305,6 +310,10 @@ public class Paginator {
 	 * @return The {@link Message} for this Paginator
 	 */
 	public Message get() {
+		if (firstButton == null) {
+			setupButtons();
+		}
+
 		if (timeout > 0 && onTimeout != null) {
 			if (timeoutFuture != null) {
 				timeoutFuture.cancel(false);
