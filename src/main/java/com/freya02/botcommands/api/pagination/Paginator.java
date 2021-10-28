@@ -4,6 +4,9 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.pagination.menu.ButtonContent;
+import com.freya02.botcommands.api.pagination.menu.ButtonContentSupplier;
+import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.Logging;
@@ -50,11 +53,18 @@ public class Paginator {
 	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJDAEmoji(":wastebasket:");
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
 
+	private ButtonContent firstContent = ButtonContent.withEmoji(FIRST_EMOJI);
+	private ButtonContent previousContent = ButtonContent.withEmoji(PREVIOUS_EMOJI);
+	private ButtonContent nextContent = ButtonContent.withEmoji(NEXT_EMOJI);
+	private ButtonContent lastContent = ButtonContent.withEmoji(LAST_EMOJI);
+	private ButtonContent deleteContent = ButtonContent.withEmoji(DELETE_EMOJI);
+
+	private final long userId;
 	private final int maxPages;
+	private final boolean hasDeleteButton;
 
 	private final MessageBuilder messageBuilder = new MessageBuilder();
-	private final Button deleteButton;
-	private Button firstButton, previousButton, nextButton, lastButton;
+	private Button firstButton, previousButton, nextButton, lastButton, deleteButton;
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -84,44 +94,113 @@ public class Paginator {
 	/**
 	 * Creates a new paginator
 	 *
-	 * @param userId       The ID of the only User who should be able to use this menu
-	 *                     <br>An ID of 0 means this paginator will be usable by everyone
-	 * @param maxPages     Maximum amount of pages in this paginator
-	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
+	 * @param userId          The ID of the only User who should be able to use this menu
+	 *                        <br>An ID of 0 means this paginator will be usable by everyone
+	 * @param maxPages        Maximum amount of pages in this paginator
+	 * @param hasDeleteButton Whether there should be a delete button on the {@link Paginator}
 	 */
-	public Paginator(long userId, int maxPages, boolean deleteButton) {
+	public Paginator(long userId, int maxPages, boolean hasDeleteButton) {
+		this.userId = userId;
 		this.maxPages = maxPages;
+		this.hasDeleteButton = hasDeleteButton;
+	}
 
+	private void setupButtons() {
 		firstButton = Components.primaryButton(e -> {
 			page = 0;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(FIRST_EMOJI);
+		}).ownerId(userId).build(firstContent);
 
 		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(PREVIOUS_EMOJI);
+		}).ownerId(userId).build(previousContent);
 
 		nextButton = Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(NEXT_EMOJI);
+		}).ownerId(userId).build(nextContent);
 
 		lastButton = Components.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
-		}).ownerId(userId).build(LAST_EMOJI);
+		}).ownerId(userId).build(lastContent);
 
-		if (deleteButton) {
+		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(DELETE_EMOJI);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(userId).oneUse().build(deleteContent);
 		} else {
 			this.deleteButton = null;
 		}
+	}
+
+	/**
+	 * Sets the content for the button which goes to the first page
+	 *
+	 * @param firstContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(ButtonContentSupplier)
+	 */
+	public Paginator setFirstContent(ButtonContent firstContent) {
+		this.firstContent = firstContent;
+
+		return this;
+	}
+
+	/**
+	 * Sets the content for the button which goes to the previous page
+	 *
+	 * @param previousContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(ButtonContentSupplier)
+	 */
+	public Paginator setPreviousContent(ButtonContent previousContent) {
+		this.previousContent = previousContent;
+
+		return this;
+	}
+
+	/**
+	 * Sets the content for the button which goes to the next page
+	 *
+	 * @param nextContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(ButtonContentSupplier)
+	 */
+	public Paginator setNextContent(ButtonContent nextContent) {
+		this.nextContent = nextContent;
+
+		return this;
+	}
+
+	/**
+	 * Sets the content for the button which goes to the last page
+	 *
+	 * @param lastContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(ButtonContentSupplier)
+	 */
+	public Paginator setLastContent(ButtonContent lastContent) {
+		this.lastContent = lastContent;
+
+		return this;
+	}
+
+	/**
+	 * Sets the content for the button which deletes this paginator
+	 *
+	 * @param deleteContent The {@link ButtonContent} for this button
+	 * @return This {@link Paginator} for chaining convenience
+	 * @see ChoiceMenuBuilder#setButtonContentSupplier(ButtonContentSupplier)
+	 */
+	public Paginator setDeleteContent(ButtonContent deleteContent) {
+		this.deleteContent = deleteContent;
+
+		return this;
 	}
 
 	public int getPage() {
@@ -148,7 +227,7 @@ public class Paginator {
 	}
 
 	/**
-	 * Sets the {@link EmbedBuilder#setTitle(String, String)} title} used for the Paginator embed
+	 * Sets the {@link EmbedBuilder#setTitle(String, String) title} used for the Paginator embed
 	 *
 	 * @param title The title of the Paginator embed
 	 * @param url   The title's URL
@@ -231,6 +310,10 @@ public class Paginator {
 	 * @return The {@link Message} for this Paginator
 	 */
 	public Message get() {
+		if (firstButton == null) {
+			setupButtons();
+		}
+
 		if (timeout > 0 && onTimeout != null) {
 			if (timeoutFuture != null) {
 				timeoutFuture.cancel(false);

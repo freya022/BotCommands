@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 /**
  * Provides a builder for {@link ChoiceMenu}s
  * <br>If a callback is <b>not</b> set, the menu will close itself after an item has been chosen, or get it's result displayed if the message is ephemeral
- * <br>You should use the callback to do something when a user chooses an entry. 
+ * <br>You should use the callback to do something when a user chooses an entry.
  *
  * @param <T> Type of the entries
  */
@@ -34,6 +34,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	}
 
 	private BiConsumer<ButtonEvent, T> callback;
+	private ButtonContentSupplier<T> buttonContentSupplier = (b, index) -> ButtonContent.withEmoji(emojis.get(index));
 
 	private Thread waitingThread;
 	private T choice;
@@ -76,6 +77,27 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	}
 
 	/**
+	 * Sets the button content supplier for this menu, allowing you to use custom buttons (text / emoji)
+	 * <br>You get handed the object the button is bound to, as well as the object's index in the current page
+	 * <br>So if you have a maximum of 5 items per page, your index is between 0 (included) and 5 (excluded)
+	 *
+	 * <br>
+	 * <br>See limitations of buttons content at {@link Button#primary(String, String)} and {@link Button#primary(String, Emoji)}
+	 *
+	 * @param buttonContentSupplier The function which accepts an item of type <b>T</b> and an <b>item index</b> (local to the current page), and returns a {@link ButtonContent}
+	 * @return This builder for chaining convenience
+	 * @see ButtonContent#withString(String)
+	 * @see ButtonContent#withEmoji(Emoji)
+	 */
+	public ChoiceMenuBuilder<T> setButtonContentSupplier(ButtonContentSupplier<T> buttonContentSupplier) {
+		Checks.notNull(buttonContentSupplier, "Button builder");
+
+		this.buttonContentSupplier = buttonContentSupplier;
+
+		return this;
+	}
+
+	/**
 	 * Waits for the user to select something and return the chosen item
 	 *
 	 * @return The chosen item
@@ -85,7 +107,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 
 		try {
 			wait();
-		} catch (InterruptedException ignored) { }
+		} catch (InterruptedException ignored) {}
 
 		return choice;
 	}
@@ -103,11 +125,12 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 			for (int i = 0; i < menuPage.getChoices().size(); i++) {
 				final int choiceNumber = i;
 
+				final ButtonContent content = buttonContentSupplier.apply(menuPage.getChoices().get(choiceNumber), choiceNumber);
 				final Button choiceButton = Components.primaryButton(event -> {
 					menu.cleanup(event.getContext());
 
 					onChoiceClicked(menu, menuPage, choiceNumber, event);
-				}).ownerId(userId).build(ChoiceMenuBuilder.emojis.get(i));
+				}).ownerId(userId).build(content);
 
 				components.addComponents(1 + (i / 5), choiceButton);
 			}
