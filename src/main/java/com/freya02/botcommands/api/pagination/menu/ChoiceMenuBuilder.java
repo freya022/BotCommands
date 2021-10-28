@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,7 +34,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	}
 
 	private BiConsumer<ButtonEvent, T> callback;
-	private BiFunction<T, Integer, ButtonContent> buttonContentSupplier = (b, index) -> ButtonContent.withEmoji(emojis.get(index));
+	private ButtonContentSupplier<T> buttonContentSupplier = (b, index) -> ButtonContent.withEmoji(emojis.get(index));
 
 	private Thread waitingThread;
 	private T choice;
@@ -90,7 +89,7 @@ public class ChoiceMenuBuilder<T> extends BaseMenu<T, ChoiceMenuBuilder<T>> {
 	 * @see ButtonContent#withString(String)
 	 * @see ButtonContent#withEmoji(Emoji)
 	 */
-	public ChoiceMenuBuilder<T> setButtonContentSupplier(BiFunction<T, Integer, ButtonContent> buttonContentSupplier) {
+	public ChoiceMenuBuilder<T> setButtonContentSupplier(ButtonContentSupplier<T> buttonContentSupplier) {
 		Checks.notNull(buttonContentSupplier, "Button builder");
 
 		this.buttonContentSupplier = buttonContentSupplier;
