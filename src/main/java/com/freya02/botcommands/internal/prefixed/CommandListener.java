@@ -268,7 +268,7 @@ public final class CommandListener extends ListenerAdapter {
 			} catch (Throwable e) {
 				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 				if (handler != null) {
-					handler.accept(context, event, e);
+					handler.onException(context, event, e);
 
 					return;
 				}
