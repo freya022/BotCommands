@@ -44,6 +44,7 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 *
 	 * @param guild The target {@link Guild} to get the {@link Locale} from
 	 * @return The {@link Locale} of the specified guild
+	 * @see DefaultMessages
 	 */
 	@NotNull
 	default Locale getLocale(@Nullable Guild guild) {
