@@ -1,7 +1,9 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.application.GuildApplicationSettings;
+import com.freya02.botcommands.internal.DefaultMessages;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,5 +51,16 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	@NotNull
 	default Locale getLocale(@Nullable Guild guild) {
 		return Locale.getDefault();
+	}
+
+	/**
+	 * Returns whether the specified {@link User} consents to executing NSFW commands in its DMs
+	 * <br>Note: <b>You</b> may also use this method to know if a user consents to getting NSFW content from other users
+	 *
+	 * @param user The {@link User} which would receive NSFW content
+	 * @return <code>true</code> if the {@link User} is consenting to NSFW content, <code>false</code> otherwise
+	 */
+	default boolean doesUserConsentNSFW(@NotNull User user) {
+		return false;
 	}
 }

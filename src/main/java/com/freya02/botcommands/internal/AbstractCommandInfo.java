@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -28,6 +29,8 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 	protected final EnumSet<Permission> userPermissions;
 	protected final EnumSet<Permission> botPermissions;
 
+	private final NSFWState nsfwState;
+
 	protected <A extends Annotation> AbstractCommandInfo(@NotNull T instance,
 	                                                     @NotNull A annotation,
 	                                                     @NotNull Method commandMethod,
@@ -46,6 +49,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		this.commandMethod = commandMethod;
 
 		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
+		this.nsfwState = NSFWState.ofMethod(commandMethod);
 
 		this.userPermissions = getEffectiveUserPermissions(commandMethod);
 		this.botPermissions = getEffectiveBotPermissions(commandMethod);
@@ -81,5 +85,10 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 
 	public List<? extends CommandParameter<?>> getOptionParameters() {
 		return getParameters().stream().filter(CommandParameter::isOption).collect(Collectors.toList());
+	}
+
+	@Nullable
+	public NSFWState getNSFWState() {
+		return nsfwState;
 	}
 }

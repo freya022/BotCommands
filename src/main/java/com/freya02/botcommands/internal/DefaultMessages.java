@@ -1,8 +1,11 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.annotations.NSFW;
 import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,8 +40,14 @@ import java.util.StringJoiner;
  *     <li>slashCommandInvalidParameterTypeMsg = {@value DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE}</li>
  *     <li>nullComponentTypeErrorMsg = {@value DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE}</li>
  * </ul>
+ * <ul>
+ *     <li>nsfwDisabledErrorMsg = {@value DEFAULT_NSFW_DISABLED_ERROR_MESSAGE}</li>
+ *     <li>nsfwOnlyErrorMsg = {@value DEFAULT_NSFW_ONLY_ERROR_MESSAGE}</li>
+ *     <li>nsfwDMDeniedErrorMsg = {@value DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE}</li>
+ * </ul>
  *
  * @see SettingsProvider#getLocale(Guild)
+ * @see SettingsProvider#doesUserConsentNSFW(User)
  */
 public final class DefaultMessages {
 	public static final String DEFAULT_USER_PERM_ERROR_MESSAGE = "You are not allowed to do this";
@@ -57,6 +66,9 @@ public final class DefaultMessages {
 	public static final String DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE = "The parameter '%s' could not be resolved into a %s";
 	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
 	public static final String DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE = "This component is not usable anymore";
+	public static final String DEFAULT_NSFW_DISABLED_ERROR_MESSAGE = "This NSFW command is disabled in this kind of channel";
+	public static final String DEFAULT_NSFW_ONLY_ERROR_MESSAGE = "This command can only be used in NSFW channels";
+	public static final String DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE = "This command cannot be used in DMs unless you consent";
 
 	private final String userPermErrorMsg;
 	private final String botPermErrorMsg;
@@ -76,6 +88,10 @@ public final class DefaultMessages {
 	private final String slashCommandUnresolvableParameterMsg;
 	private final String slashCommandInvalidParameterTypeMsg;
 	private final String nullComponentTypeErrorMsg;
+
+	private final String nsfwDisabledErrorMsg;
+	private final String nsfwOnlyErrorMsg;
+	private final String nsfwDMDeniedErrorMsg;
 
 	public DefaultMessages(@NotNull Locale locale) {
 		final BResourceBundle bundle = BResourceBundle.getBundle("DefaultMessages", locale);
@@ -98,6 +114,10 @@ public final class DefaultMessages {
 		slashCommandUnresolvableParameterMsg = checkFormatters(getValue(bundle, "slashCommandUnresolvableParameterMsg", DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE), "%s", "%s");
 		slashCommandInvalidParameterTypeMsg = checkFormatters(getValue(bundle, "slashCommandInvalidParameterTypeMsg", DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE), "%s", "%s", "%s");
 		nullComponentTypeErrorMsg = getValue(bundle, "nullComponentTypeErrorMsg", DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE);
+
+		nsfwDisabledErrorMsg = getValue(bundle, "nsfwDisabledErrorMsg", DEFAULT_NSFW_DISABLED_ERROR_MESSAGE);
+		nsfwOnlyErrorMsg = getValue(bundle, "nsfwOnlyErrorMsg", DEFAULT_NSFW_ONLY_ERROR_MESSAGE);
+		nsfwDMDeniedErrorMsg = getValue(bundle, "nsfwDMDeniedErrorMsg", DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE);
 	}
 
 	@NotNull
@@ -251,5 +271,26 @@ public final class DefaultMessages {
 	 */
 	public String getClosedDMErrorMsg() {
 		return this.closedDMErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a command is used in a channel type that was not enabled by {@link NSFW @NSFW}
+	 */
+	public String getNsfwDisabledErrorMsg() {
+		return nsfwDisabledErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a command is used in a non-NSFW {@link TextChannel}
+	 */
+	public String getNSFWOnlyErrorMsg() {
+		return this.nsfwOnlyErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a command is used in DMs and the user has not given consent yet
+	 */
+	public String getNSFWDMDeniedErrorMsg() {
+		return this.nsfwDMDeniedErrorMsg;
 	}
 }
