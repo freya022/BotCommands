@@ -270,7 +270,7 @@ public final class DefaultMessages {
 	 * @return Message to display when a User's DMs are closed (when sending help content for example)
 	 */
 	public String getClosedDMErrorMsg() {
-		return this.closedDMErrorMsg;
+		return closedDMErrorMsg;
 	}
 
 	/**
@@ -284,13 +284,13 @@ public final class DefaultMessages {
 	 * @return Message to display when a command is used in a non-NSFW {@link TextChannel}
 	 */
 	public String getNSFWOnlyErrorMsg() {
-		return this.nsfwOnlyErrorMsg;
+		return nsfwOnlyErrorMsg;
 	}
 
 	/**
 	 * @return Message to display when a command is used in DMs and the user has not given consent yet
 	 */
 	public String getNSFWDMDeniedErrorMsg() {
-		return this.nsfwDMDeniedErrorMsg;
+		return nsfwDMDeniedErrorMsg;
 	}
 }
