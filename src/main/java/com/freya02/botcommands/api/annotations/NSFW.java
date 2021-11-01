@@ -11,6 +11,7 @@ import java.lang.annotation.Target;
 /**
  * Marks the annotated element as being for use in NSFW channels only
  * <br><b>Using it on a method will override the values inherited from the class</b>
+ * <br>NSFW commands will be shown in help content only if called in an NSFW channel, otherwise not shown, DM consent is <b>not</b> checked as text commands are guild-only
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})

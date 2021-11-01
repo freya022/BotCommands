@@ -119,6 +119,7 @@ public final class HelpCommand extends TextCommand {
 		builder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
 		builder.setColor(member.getColorRaw());
+		builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n");
 
 		final MessageEmbed embed = builder.build();
 		event.getAuthor().openPrivateChannel().queue(
