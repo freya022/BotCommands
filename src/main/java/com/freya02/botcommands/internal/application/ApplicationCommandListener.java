@@ -107,34 +107,46 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
-		if (event.getGuild() != null) {
-			final Usability usability = Usability.of(event, applicationCommand, isNotOwner);
+		final Usability usability = Usability.of(context, event, applicationCommand, isNotOwner);
 
-			if (usability.isUnusable()) {
-				final var unusableReasons = usability.getUnusableReasons();
-				if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-					reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
-					
-					return false;
-				} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-					reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
-					
-					return false;
-				} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
-					final StringJoiner missingBuilder = new StringJoiner(", ");
+		if (usability.isUnusable()) {
+			final var unusableReasons = usability.getUnusableReasons();
+			if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
 
-					//Take needed permissions, extract bot current permissions
-					final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
-					missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions((GuildChannel) event.getChannel()));
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNsfwDisabledErrorMsg());
 
-					for (Permission botPermission : missingPerms) {
-						missingBuilder.add(botPermission.getName());
-					}
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWOnlyErrorMsg());
 
-					reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
-					
-					return false;
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWDMDeniedErrorMsg());
+
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
+
+				return false;
+			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
+				if (event.getGuild() == null) throw new IllegalStateException("BOT_PERMISSIONS got checked even if guild is null");
+
+				final StringJoiner missingBuilder = new StringJoiner(", ");
+
+				//Take needed permissions, extract bot current permissions
+				final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions((GuildChannel) event.getChannel()));
+
+				for (Permission botPermission : missingPerms) {
+					missingBuilder.add(botPermission.getName());
 				}
+
+				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
+
+				return false;
 			}
 		}
 

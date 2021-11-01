@@ -165,7 +165,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final Usability usability = Usability.of(candidate, member, event.getChannel(), isNotOwner);
+		final Usability usability = Usability.of(context, candidate, member, event.getChannel(), isNotOwner);
 
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
@@ -174,6 +174,15 @@ public final class CommandListener extends ListenerAdapter {
 				return STOP;
 			} else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
 				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
+				return STOP;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNsfwDisabledErrorMsg());
+				return STOP;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWOnlyErrorMsg());
+				return STOP;
+			} else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWDMDeniedErrorMsg());
 				return STOP;
 			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
 				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
@@ -241,7 +250,7 @@ public final class CommandListener extends ListenerAdapter {
 		};
 
 		final List<String> commandNames = context.getCommands().stream()
-				.filter(c -> Usability.of(c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
+				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
 				.map(c -> pathToStringFunc.apply(c.findFirst().getPath()))
 				.collect(Collectors.toList());
 

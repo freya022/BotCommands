@@ -7,6 +7,8 @@ import com.freya02.botcommands.api.prefixed.annotations.Hidden;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.CooldownStrategy;
 import net.dv8tion.jda.api.Permission;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -111,5 +113,16 @@ public class AnnotationUtils {
 
 	public static boolean isOption(Parameter parameter) {
 		return parameter.isAnnotationPresent(TextOption.class) || parameter.isAnnotationPresent(AppOption.class);
+	}
+
+	@Nullable
+	public static <A extends Annotation> A getEffectiveAnnotation(@NotNull Method method, @NotNull Class<A> annotationType) {
+		final boolean methodAnnot = method.getAnnotation(annotationType) != null;
+
+		if (methodAnnot) {
+			return method.getAnnotation(annotationType);
+		} else {
+			return method.getDeclaringClass().getAnnotation(annotationType);
+		}
 	}
 }
