@@ -104,31 +104,42 @@ public class Usability {
 		return new Usability(unusableReasons);
 	}
 
+	/**
+	 * @return <code>true</code> if the command is <b>not</b> executable
+	 */
 	public boolean isUnusable() {
-		return unusableReasons.contains(HIDDEN) ||
-				unusableReasons.contains(OWNER_ONLY) ||
-				unusableReasons.contains(USER_PERMISSIONS) ||
-				unusableReasons.contains(BOT_PERMISSIONS) ||
-				unusableReasons.contains(GUILD_ONLY) ||
-				unusableReasons.contains(NSFW_DISABLED) ||
-				unusableReasons.contains(NSFW_ONLY) ||
-				unusableReasons.contains(NSFW_DM_DENIED);
+		for (UnusableReason reason : unusableReasons) {
+			if (!reason.isUsable()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
+	/**
+	 * @return <code>true</code> if the command is executable
+	 */
 	public boolean isUsable() {
 		return !isUnusable();
 	}
 
+	/**
+	 * @return <code>true</code> if the command is <b>not</b> showable (in help command for example)
+	 */
 	public boolean isNotShowable() {
-		return unusableReasons.contains(HIDDEN) ||
-				unusableReasons.contains(OWNER_ONLY) ||
-				unusableReasons.contains(USER_PERMISSIONS) ||
-				unusableReasons.contains(GUILD_ONLY) ||
-				unusableReasons.contains(NSFW_DISABLED) ||
-				unusableReasons.contains(NSFW_ONLY) ||
-				unusableReasons.contains(NSFW_DM_DENIED);
+		for (UnusableReason reason : unusableReasons) {
+			if (!reason.isShowable()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
+	/**
+	 * @return <code>true</code> if the command is showable (in help command for example)
+	 */
 	public boolean isShowable() {
 		return !isNotShowable();
 	}
@@ -137,15 +148,40 @@ public class Usability {
 		return unusableReasons;
 	}
 
-	//TODO put showable and usable as enum properties
 	public enum UnusableReason {
-		HIDDEN,
-		OWNER_ONLY,
-		USER_PERMISSIONS,
-		BOT_PERMISSIONS,
-		GUILD_ONLY,
-		NSFW_DISABLED,
-		NSFW_ONLY,
-		NSFW_DM_DENIED
+		HIDDEN(false, false),
+		OWNER_ONLY(false, false),
+		USER_PERMISSIONS(false, false),
+		BOT_PERMISSIONS(true, false),
+		GUILD_ONLY(false, false),
+		NSFW_DISABLED(false, false),
+		NSFW_ONLY(false, false),
+		NSFW_DM_DENIED(false, false);
+
+		private final boolean showable;
+		private final boolean usable;
+
+		/**
+		 * @param showable If <code>true</code>, will not show the command in some contexts <b>if the reason is present</b>
+		 * @param usable If <code>true</code>, will not allow execution of the command <b>if the reason is present</b>
+		 */
+		UnusableReason(boolean showable, boolean usable) {
+			this.showable = showable;
+			this.usable = usable;
+		}
+
+		/**
+		 * @return <code>true</code> if the command is showable (in help command for example)
+		 */
+		public boolean isShowable() {
+			return showable;
+		}
+
+		/**
+		 * @return <code>true</code> if the command is executable
+		 */
+		public boolean isUsable() {
+			return usable;
+		}
 	}
 }
