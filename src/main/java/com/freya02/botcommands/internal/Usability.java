@@ -93,7 +93,7 @@ public class Usability {
 			unusableReasons.add(BOT_PERMISSIONS);
 		}
 
-		if (isNotOwner && cmdInfo.isOwnerOnly()) {
+		if (isNotOwner && cmdInfo.isOwnerRequired()) {
 			unusableReasons.add(OWNER_ONLY);
 		}
 

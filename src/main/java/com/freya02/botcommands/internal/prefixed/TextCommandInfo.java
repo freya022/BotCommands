@@ -35,7 +35,6 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 	private final String description;
 
-	private final boolean requireOwner;
 	private final boolean hidden;
 
 	private final MethodParameters<TextCommandParameter> parameters;
@@ -72,15 +71,10 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		});
 
 		hidden = AnnotationUtils.getEffectiveHiddenState(commandMethod);
-		requireOwner = AnnotationUtils.getEffectiveRequireOwnerState(commandMethod);
 
 		if (parameters.getOptionCount() > 0) {
 			completePattern = CommandPattern.of(this);
 		} else completePattern = null;
-	}
-
-	public boolean isOwnerRequired() {
-		return requireOwner;
 	}
 
 	public boolean isHidden() {

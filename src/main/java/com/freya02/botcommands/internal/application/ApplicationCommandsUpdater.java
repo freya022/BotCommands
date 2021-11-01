@@ -213,7 +213,7 @@ public class ApplicationCommandsUpdater {
 
 							rightCommand.addOptions(localizedMethodOptions);
 
-							if (info.isOwnerOnly()) {
+							if (info.isOwnerRequired()) {
 								rightCommand.setDefaultEnabled(false);
 							}
 						} else if (localizedPath.getNameCount() == 2) {
@@ -221,7 +221,7 @@ public class ApplicationCommandsUpdater {
 
 							final CommandData commandData = map.computeIfAbsent(CommandType.SLASH, localizedPath, x -> {
 								final CommandData tmpData = new CommandData(localizedPath.getName(), "No description (base name)");
-								if (info.isOwnerOnly()) {
+								if (info.isOwnerRequired()) {
 									tmpData.setDefaultEnabled(false);
 								}
 
@@ -240,7 +240,7 @@ public class ApplicationCommandsUpdater {
 							final SubcommandGroupData groupData = getSubcommandGroup(CommandType.SLASH, localizedPath, x -> {
 								final CommandData commandData = new CommandData(localizedPath.getName(), "No description (base name)");
 
-								if (info.isOwnerOnly()) {
+								if (info.isOwnerRequired()) {
 									commandData.setDefaultEnabled(false);
 								}
 
@@ -257,13 +257,13 @@ public class ApplicationCommandsUpdater {
 
 						context.addApplicationCommandAlternative(localizedPath, CommandType.SLASH, info);
 
-						if (!info.isOwnerOnly()) {
+						if (!info.isOwnerRequired()) {
 							if (ownerOnlyCommands.contains(notLocalizedPath.getName())) {
 								LOGGER.warn("Non owner-only command '{}' is registered as a owner-only command because of another command with the same base name '{}'", notLocalizedPath, notLocalizedPath.getName());
 							}
 						}
 
-						if (info.isOwnerOnly()) {
+						if (info.isOwnerRequired()) {
 							if (info.isGuildOnly()) {
 								ownerOnlyCommands.add(notLocalizedPath.getName());
 							} else {
@@ -299,7 +299,7 @@ public class ApplicationCommandsUpdater {
 							final CommandData rightCommand = new CommandData(type, localizedPath.getName());
 							map.put(type, localizedPath, rightCommand);
 
-							if (info.isOwnerOnly()) {
+							if (info.isOwnerRequired()) {
 								rightCommand.setDefaultEnabled(false);
 
 								ownerOnlyCommands.add(notLocalizedPath.getName()); //Must be non-localized name

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.CommandParameter;
+import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 
 	/** This is NOT localized */
 	protected final CommandPath path;
-	protected final boolean ownerOnly;
+	protected final boolean ownerRequired;
 	protected final Method commandMethod;
 
 	protected final EnumSet<Permission> userPermissions;
@@ -48,7 +48,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		this.path = CommandPath.of(nameComponents);
 		this.commandMethod = commandMethod;
 
-		this.ownerOnly = commandMethod.isAnnotationPresent(RequireOwner.class);
+		this.ownerRequired = AnnotationUtils.getEffectiveRequireOwnerState(commandMethod);
 		this.nsfwState = NSFWState.ofMethod(commandMethod);
 
 		this.userPermissions = getEffectiveUserPermissions(commandMethod);
@@ -77,8 +77,8 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		return commandMethod;
 	}
 
-	public boolean isOwnerOnly() {
-		return ownerOnly;
+	public boolean isOwnerRequired() {
+		return ownerRequired;
 	}
 
 	public abstract MethodParameters<? extends CommandParameter<?>> getParameters();
