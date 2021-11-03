@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.pagination.interactive.InteractiveMenu;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -12,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T, R>, R extends BasicPagination<R>> {
 	protected long ownerId;
-	protected TimeoutInfo<InteractiveMenu> timeout;
+	protected TimeoutInfo<R> timeout;
 
 	/**
 	 * Sets the timeout for this pagination instance
@@ -30,7 +29,7 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 	 * @param onTimeout   The consumer fired on timeout, long operations should not run here
 	 * @return This builder for chaining convenience
 	 */
-	public T setTimeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull PaginationTimeoutConsumer<InteractiveMenu> onTimeout) {
+	public T setTimeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull PaginationTimeoutConsumer<R> onTimeout) {
 		Checks.positive(timeout, "Timeout");
 		Checks.notNull(onTimeout, "Timeout consumer");
 		Checks.notNull(timeoutUnit, "Timeout TimeUnit");

@@ -1,5 +1,6 @@
-package com.freya02.botcommands.api.pagination;
+package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.pagination.PaginatorComponents;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @see #get(MessageBuilder, PaginatorComponents)
  */
-public interface PaginationSupplier {
+public interface InteractiveMenuSupplier {
 	/**
 	 * Returns the {@link MessageEmbed} for this interactive menu's page
 	 *

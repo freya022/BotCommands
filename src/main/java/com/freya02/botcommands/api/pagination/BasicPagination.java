@@ -57,6 +57,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	@SuppressWarnings("unchecked")
 	protected void onPreGet() {
+		messageBuilder.clear();
 		components.clear();
 
 		if (timeout != null) {
