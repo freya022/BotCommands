@@ -82,6 +82,11 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 		}
 	}
 
+	/**
+	 * Cleans up the button IDs used in this paginator
+	 *
+	 * @param context The {@link BContext} of this bot
+	 */
 	public void cleanup(BContext context) {
 		final ComponentManager manager = Utils.getComponentManager(context);
 
