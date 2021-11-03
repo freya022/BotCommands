@@ -33,4 +33,8 @@ public class PaginatorComponents {
 	public List<ActionRow> getActionRows() {
 		return actionRows;
 	}
+
+	public void clear() {
+		actionRows.clear();
+	}
 }
