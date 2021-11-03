@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.PaginationSupplier;
+import com.freya02.botcommands.api.pagination.OldPaginationSupplier;
 import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
 import com.freya02.botcommands.api.pagination.transformer.StringTransformer;
 import com.freya02.botcommands.api.utils.BiIntFunction;
@@ -17,7 +17,7 @@ public abstract class BaseMenu<T, R extends BaseMenu<T, R>> {
 	private final List<T> entries;
 
 	protected final Map<Integer, MenuPage<T>> pages = new HashMap<>();
-	protected PaginationSupplier paginationSupplier;
+	protected OldPaginationSupplier paginationSupplier;
 
 	private int maxEntriesPerPage = 5;
 	protected EntryTransformer<? super T> transformer = new StringTransformer();
@@ -80,11 +80,11 @@ public abstract class BaseMenu<T, R extends BaseMenu<T, R>> {
 	 * Here the pagination supplier is more about adding further more stuff in the embed, or more components<br>
 	 * <b>The embed should be almost full so be aware that it might not fit into Discord limits</b>
 	 *
-	 * @param paginationSupplier The optional {@linkplain PaginationSupplier}
+	 * @param paginationSupplier The optional {@linkplain OldPaginationSupplier}
 	 * @return This builder for chaining convenience
 	 */
 	@SuppressWarnings("unchecked")
-	public R setPaginationSupplier(PaginationSupplier paginationSupplier) {
+	public R setPaginationSupplier(OldPaginationSupplier paginationSupplier) {
 		Checks.notNull(paginationSupplier, "Pagination supplier");
 
 		this.paginationSupplier = paginationSupplier;

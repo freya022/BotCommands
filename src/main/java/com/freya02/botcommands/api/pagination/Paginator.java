@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * Initial page is page 0, there is navigation buttons and an optional delete button<br>
  * <b>The delete button cannot be used if the message is ephemeral</b><br><br>
  *
- * <h2>The button IDs used by this paginator and those registered by the {@link PaginatorComponents} in the {@link PaginationSupplier} are cleaned up once the embed is removed with the button</h2>
+ * <h2>The button IDs used by this paginator and those registered by the {@link PaginatorComponents} in the {@link OldPaginationSupplier} are cleaned up once the embed is removed with the button</h2>
  * <h3>Buttons that can delete this embed have to call {@link #cleanup(BContext)}</h3>
  *
  * @see Menu
@@ -75,7 +75,7 @@ public class Paginator {
 
 	private String title, titleUrl;
 	private int page = 0;
-	private PaginationSupplier paginationSupplier = (builder, components, page1) -> {};
+	private OldPaginationSupplier paginationSupplier = (builder, components, page1) -> {};
 
 	/**
 	 * Creates a new paginator
@@ -85,7 +85,7 @@ public class Paginator {
 	 * @param deleteButton       Whether there should be a delete button on the {@link Paginator}
 	 * @param paginationSupplier Supplies the pages for this paginator
 	 */
-	public Paginator(long userId, int maxPages, boolean deleteButton, PaginationSupplier paginationSupplier) {
+	public Paginator(long userId, int maxPages, boolean deleteButton, OldPaginationSupplier paginationSupplier) {
 		this(userId, maxPages, deleteButton);
 
 		setPaginationSupplier(paginationSupplier);
@@ -242,12 +242,12 @@ public class Paginator {
 	}
 
 	/**
-	 * Sets the {@link PaginationSupplier} - Gives the pages to this paginator
+	 * Sets the {@link OldPaginationSupplier} - Gives the pages to this paginator
 	 *
-	 * @param paginationSupplier The {@link PaginationSupplier}
+	 * @param paginationSupplier The {@link OldPaginationSupplier}
 	 * @return This {@link Paginator} for chaining convenience
 	 */
-	public Paginator setPaginationSupplier(PaginationSupplier paginationSupplier) {
+	public Paginator setPaginationSupplier(OldPaginationSupplier paginationSupplier) {
 		Checks.notNull(paginationSupplier, "Pagination supplier");
 
 		this.paginationSupplier = paginationSupplier;

@@ -1,3 +1,5 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
-record InteractiveMenuItem(SelectContent content, InteractiveMenuSupplier supplier) {}
+import com.freya02.botcommands.api.pagination.PaginationSupplier;
+
+record InteractiveMenuItem(SelectContent content, PaginationSupplier supplier) {}

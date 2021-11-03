@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.PaginationSupplier;
+import com.freya02.botcommands.api.pagination.OldPaginationSupplier;
 import com.freya02.botcommands.api.pagination.Paginator;
 
 /**
@@ -21,11 +21,11 @@ public class ChoiceMenu extends Paginator {
 	 * @return
 	 */
 	@Override
-	public Paginator setPaginationSupplier(PaginationSupplier paginationSupplier) {
+	public Paginator setPaginationSupplier(OldPaginationSupplier paginationSupplier) {
 		throw new UnsupportedOperationException();
 	}
 
-	void setMenuSupplier(PaginationSupplier paginationSupplier) {
+	void setMenuSupplier(OldPaginationSupplier paginationSupplier) {
 		super.setPaginationSupplier(paginationSupplier);
 	}
 }

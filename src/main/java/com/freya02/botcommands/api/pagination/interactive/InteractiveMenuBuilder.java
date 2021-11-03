@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
+import com.freya02.botcommands.api.pagination.PaginationSupplier;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public class InteractiveMenuBuilder extends BasicPaginationBuilder<InteractiveMe
 	 * @return This builder for chaining convenience
 	 * @see SelectContent#of(String, String, Emoji)
 	 */
-	public InteractiveMenuBuilder addMenu(@NotNull SelectContent content, @NotNull InteractiveMenuSupplier supplier) {
+	public InteractiveMenuBuilder addMenu(@NotNull SelectContent content, @NotNull PaginationSupplier supplier) {
 		items.add(new InteractiveMenuItem(content, supplier));
 
 		return this;
