@@ -1,8 +1,8 @@
-package com.freya02.botcommands.api.pagination.menu2;
+package com.freya02.botcommands.api.pagination.menu;
 
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.pagination.menu.ButtonContent;
-import com.freya02.botcommands.api.pagination.menu.ButtonContentSupplier;
+import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;

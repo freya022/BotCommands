@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.pagination.menu2;
+package com.freya02.botcommands.api.pagination.menu;
 
 import org.jetbrains.annotations.NotNull;
 

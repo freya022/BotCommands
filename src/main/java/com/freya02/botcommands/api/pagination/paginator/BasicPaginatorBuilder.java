@@ -1,6 +1,9 @@
-package com.freya02.botcommands.api.pagination;
+package com.freya02.botcommands.api.pagination.paginator;
 
-import com.freya02.botcommands.api.pagination.menu.ButtonContent;
+import com.freya02.botcommands.api.pagination.BasicPagination;
+import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
+import com.freya02.botcommands.api.pagination.PaginatorSupplier;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,8 +1,11 @@
-package com.freya02.botcommands.api.pagination;
+package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.pagination.menu.ButtonContent;
+import com.freya02.botcommands.api.pagination.BasicPagination;
+import com.freya02.botcommands.api.pagination.PaginatorSupplier;
+import com.freya02.botcommands.api.pagination.TimeoutInfo;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;

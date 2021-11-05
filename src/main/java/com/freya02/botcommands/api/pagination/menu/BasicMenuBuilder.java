@@ -1,6 +1,6 @@
-package com.freya02.botcommands.api.pagination.menu2;
+package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.BasicPaginatorBuilder;
+import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
 import com.freya02.botcommands.api.pagination.transformer.StringTransformer;
 import net.dv8tion.jda.internal.utils.Checks;

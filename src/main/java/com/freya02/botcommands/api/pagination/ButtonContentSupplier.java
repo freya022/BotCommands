@@ -1,5 +1,6 @@
-package com.freya02.botcommands.api.pagination.menu;
+package com.freya02.botcommands.api.pagination;
 
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 
