@@ -58,6 +58,11 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 		return (T) this;
 	}
 
+	/**
+	 * Builds this pagination instance
+	 *
+	 * @return The newly created pagination instance
+	 */
 	@NotNull
 	public abstract R build();
 }
