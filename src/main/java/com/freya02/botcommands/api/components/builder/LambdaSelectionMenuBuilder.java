@@ -16,7 +16,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 
 	private boolean oneUse;
 	private long ownerId;
-	private LambdaComponentTimeoutInfo timeoutInfo;
+	private LambdaComponentTimeoutInfo timeoutInfo = new LambdaComponentTimeoutInfo(0, TimeUnit.MILLISECONDS, () -> {});
 
 	public LambdaSelectionMenuBuilder(BContext context, Consumer<SelectionEvent> consumer) {
 		super("fake");
@@ -54,7 +54,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	}
 
 	@Override
-	public LambdaSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit, Runnable timeoutCallback) {
+	public LambdaSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull Runnable timeoutCallback) {
 		this.timeoutInfo = new LambdaComponentTimeoutInfo(timeout, timeoutUnit, timeoutCallback);
 
 		return this;

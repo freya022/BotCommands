@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractPersistentComponentBuilder<T extends AbstractPersistentComponentBuilder<T>> extends AbstractComponentBuilder<T> implements PersistentComponentBuilder<T> {
-	private PersistentComponentTimeoutInfo timeoutInfo;
+	private PersistentComponentTimeoutInfo timeoutInfo = new PersistentComponentTimeoutInfo(0, TimeUnit.MILLISECONDS);
 
 	/**
 	 * Makes this component expire after the specified timeout<br>

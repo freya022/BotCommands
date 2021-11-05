@@ -50,7 +50,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 
 	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, PersistentComponentTimeoutInfo timeout, String handlerName, String[] args) throws SQLException {
 		while (true) {
-			long timeoutMillis = timeout.timeoutUnit().toMillis(timeout.timeout());
+			long timeoutMillis = timeout.toMillis();
 
 			String randomId = Utils.randomId(64);
 

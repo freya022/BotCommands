@@ -15,7 +15,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 
 	private boolean oneUse;
 	private long ownerId;
-	private PersistentComponentTimeoutInfo timeoutInfo;
+	private PersistentComponentTimeoutInfo timeoutInfo = new PersistentComponentTimeoutInfo(0, TimeUnit.MILLISECONDS);
 
 	public PersistentSelectionMenuBuilder(BContext context, String handlerName, String[] args) {
 		super("fake");
@@ -66,7 +66,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	 * @return This component builder for chaining purposes
 	 */
 	@Override
-	public PersistentSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit) {
+	public PersistentSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit) {
 		this.timeoutInfo = new PersistentComponentTimeoutInfo(timeout, timeoutUnit);
 
 		return this;
