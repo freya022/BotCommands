@@ -9,6 +9,7 @@ public final class MenuBuilder<E> extends BasicMenuBuilder<E, MenuBuilder<E>, Me
 		super(entries);
 	}
 
+	//TODO check docs, remove consumers and functions to replace them with specialised interfaces
 	@Override
 	@NotNull
 	public Menu<E> build() {

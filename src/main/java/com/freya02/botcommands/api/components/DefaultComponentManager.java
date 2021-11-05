@@ -199,12 +199,12 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	private void scheduleLambdaTimeout(long timeout, long handlerId, String componentId) {
-		if (timeout > 0) {
+		if (timeout > 0) { //TODO add timeout runnable
 			timeoutService.schedule(() -> {
 				try (Connection connection = getConnection()) {
 					final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, componentId);
 					if (data != null) {
-						buttonLambdaMap.remove(handlerId);
+						buttonLambdaMap.remove(handlerId); //TODO fix by providing target map in params
 
 						data.delete(connection);
 					}

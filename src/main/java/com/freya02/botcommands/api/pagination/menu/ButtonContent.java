@@ -28,7 +28,7 @@ public record ButtonContent(String str, Emoji emoji) {
 	public static ButtonContent withEmoji(@NotNull Emoji emoji) {
 		return new ButtonContent(null, emoji);
 	}
-
+//TODO add withEmoji(String) and withShortcode(String)
 	@Nullable
 	public String str() {
 		return str;
