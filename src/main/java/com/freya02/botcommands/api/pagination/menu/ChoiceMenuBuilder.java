@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Emoji;
@@ -8,7 +7,6 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * Builds a {@link ChoiceMenu}
@@ -16,7 +14,7 @@ import java.util.function.BiConsumer;
  * @param <E> Type of the entries
  */
 public final class ChoiceMenuBuilder<E> extends BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>> {
-	private BiConsumer<ButtonEvent, E> callback;
+	private ChoiceCallback<E> callback;
 	private ButtonContentSupplier<E> buttonContentSupplier;
 
 	public ChoiceMenuBuilder(@NotNull List<E> entries) {
@@ -26,10 +24,10 @@ public final class ChoiceMenuBuilder<E> extends BasicMenuBuilder<E, ChoiceMenuBu
 	/**
 	 * Sets the callback for this menu
 	 *
-	 * @param callback The {@link BiConsumer} to call when the user makes their choice
+	 * @param callback The {@link ChoiceCallback} to call when the user makes their choice
 	 * @return This builder for chaining convenience
 	 */
-	public ChoiceMenuBuilder<E> setCallback(@NotNull BiConsumer<ButtonEvent, E> callback) {
+	public ChoiceMenuBuilder<E> setCallback(@NotNull ChoiceCallback<E> callback) {
 		this.callback = callback;
 
 		return this;

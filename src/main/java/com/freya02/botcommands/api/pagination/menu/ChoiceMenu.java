@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
@@ -11,7 +10,6 @@ import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.interactions.components.Button;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * Provides a <b>choice</b> menu
@@ -23,7 +21,7 @@ import java.util.function.BiConsumer;
  */
 public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	private final ButtonContentSupplier<E> buttonContentSupplier;
-	private final BiConsumer<ButtonEvent, E> callback;
+	private final ChoiceCallback<E> callback;
 
 	ChoiceMenu(long ownerId,
 	           TimeoutInfo<ChoiceMenu<E>> timeout,
@@ -39,7 +37,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	           RowPrefixSupplier rowPrefixSupplier,
 	           PaginatorSupplier supplier,
 	           ButtonContentSupplier<E> buttonContentSupplier,
-	           BiConsumer<ButtonEvent, E> callback) {
+	           ChoiceCallback<E> callback) {
 		super(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
 				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
 				supplier);
