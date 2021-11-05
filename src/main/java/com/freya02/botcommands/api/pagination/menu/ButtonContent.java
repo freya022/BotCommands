@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
+import com.freya02.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,15 @@ public record ButtonContent(String str, Emoji emoji) {
 	public static ButtonContent withEmoji(@NotNull Emoji emoji) {
 		return new ButtonContent(null, emoji);
 	}
-//TODO add withEmoji(String) and withShortcode(String)
+
+	public static ButtonContent withEmoji(@NotNull String unicode) {
+		return new ButtonContent(null, Emoji.fromUnicode(unicode));
+	}
+
+	public static ButtonContent withShortcode(@NotNull String shortcode) {
+		return new ButtonContent(null, EmojiUtils.resolveJDAEmoji(shortcode));
+	}
+
 	@Nullable
 	public String str() {
 		return str;

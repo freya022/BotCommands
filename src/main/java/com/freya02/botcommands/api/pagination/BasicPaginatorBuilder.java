@@ -1,25 +1,23 @@
 package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.pagination.menu.ButtonContent;
-import com.freya02.botcommands.api.utils.EmojiUtils;
-import net.dv8tion.jda.api.entities.Emoji;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, R>, R extends BasicPagination<R>> extends BasicPaginationBuilder<T, R> {
-	private static final Emoji FIRST_EMOJI = EmojiUtils.resolveJDAEmoji(":rewind:");
-	private static final Emoji PREVIOUS_EMOJI = EmojiUtils.resolveJDAEmoji(":arrow_backward:");
-	private static final Emoji NEXT_EMOJI = EmojiUtils.resolveJDAEmoji(":arrow_forward:");
-	private static final Emoji LAST_EMOJI = EmojiUtils.resolveJDAEmoji(":fast_forward:");
-	private static final Emoji DELETE_EMOJI = EmojiUtils.resolveJDAEmoji(":wastebasket:");
+	private static final ButtonContent DEFAULT_FIRST_CONTENT = ButtonContent.withShortcode("rewind");
+	private static final ButtonContent DEFAULT_PREVIOUS_CONTENT = ButtonContent.withShortcode("arrow_backward");
+	private static final ButtonContent DEFAULT_NEXT_CONTENT = ButtonContent.withShortcode("arrow_forward");
+	private static final ButtonContent DEFAULT_LAST_CONTENT = ButtonContent.withShortcode("fast_forward");
+	private static final ButtonContent DEFAULT_DELETE_CONTENT = ButtonContent.withShortcode("wastebasket");
 
 	protected PaginatorSupplier paginatorSupplier;
 
-	protected ButtonContent firstContent = ButtonContent.withEmoji(FIRST_EMOJI);
-	protected ButtonContent previousContent = ButtonContent.withEmoji(PREVIOUS_EMOJI);
-	protected ButtonContent nextContent = ButtonContent.withEmoji(NEXT_EMOJI);
-	protected ButtonContent lastContent = ButtonContent.withEmoji(LAST_EMOJI);
-	protected ButtonContent deleteContent = ButtonContent.withEmoji(DELETE_EMOJI);
+	protected ButtonContent firstContent = DEFAULT_FIRST_CONTENT;
+	protected ButtonContent previousContent = DEFAULT_PREVIOUS_CONTENT;
+	protected ButtonContent nextContent = DEFAULT_NEXT_CONTENT;
+	protected ButtonContent lastContent = DEFAULT_LAST_CONTENT;
+	protected ButtonContent deleteContent = DEFAULT_DELETE_CONTENT;
 
 	protected boolean hasDeleteButton;
 
