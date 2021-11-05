@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -198,20 +197,22 @@ public class DefaultComponentManager implements ComponentManager {
 		}
 	}
 
-	private void scheduleLambdaTimeout(long timeout, long handlerId, String componentId) {
-		if (timeout > 0) { //TODO add timeout runnable
+	private void scheduleLambdaTimeout(final Map<Long, ?> map, LambdaComponentTimeoutInfo timeout, long handlerId, String componentId) {
+		if (timeout.timeout() > 0) {
 			timeoutService.schedule(() -> {
 				try (Connection connection = getConnection()) {
 					final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, componentId);
 					if (data != null) {
-						buttonLambdaMap.remove(handlerId); //TODO fix by providing target map in params
+						map.remove(handlerId);
 
 						data.delete(connection);
+
+						timeout.timeoutCallback().run();
 					}
 				} catch (SQLException e) {
 					LOGGER.error("An error occurred while deleting a lambda component after a timeout", e);
 				}
-			}, timeout, TimeUnit.MILLISECONDS);
+			}, timeout.timeout(), timeout.timeoutUnit());
 		}
 	}
 
@@ -227,8 +228,8 @@ public class DefaultComponentManager implements ComponentManager {
 
 			buttonLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
-			if (builder.getTimeout() > 0) {
-				scheduleLambdaTimeout(builder.getTimeout(), result.getHandlerId(), result.getComponentId());
+			if (builder.getTimeout().timeout() > 0) {
+				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.getHandlerId(), result.getComponentId());
 			}
 
 			return result.getComponentId();
@@ -243,16 +244,17 @@ public class DefaultComponentManager implements ComponentManager {
 	@NotNull
 	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
 		try (Connection connection = getConnection()) {
+			final LambdaComponentTimeoutInfo timeout = builder.getTimeout();
 			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_SELECTION_MENU,
 					builder.isOneUse(),
 					builder.getOwnerId(),
-					builder.getTimeout());
+					timeout);
 
 			selectionMenuLambdaMap.put(result.getHandlerId(), builder.getConsumer());
 
-			if (builder.getTimeout() > 0) {
-				scheduleLambdaTimeout(builder.getTimeout(), result.getHandlerId(), result.getComponentId());
+			if (timeout.timeout() > 0) {
+				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.getHandlerId(), result.getComponentId());
 			}
 
 			return result.getComponentId();
@@ -263,8 +265,8 @@ public class DefaultComponentManager implements ComponentManager {
 		}
 	}
 
-	private void schedulePersistentTimeout(long timeout, String componentId) {
-		if (timeout > 0) {
+	private void schedulePersistentTimeout(PersistentComponentTimeoutInfo timeout, String componentId) {
+		if (timeout.timeout() > 0) {
 			timeoutService.schedule(() -> {
 				try (Connection connection = getConnection()) {
 					final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, componentId);
@@ -274,11 +276,11 @@ public class DefaultComponentManager implements ComponentManager {
 				} catch (SQLException e) {
 					LOGGER.error("An error occurred while deleting a persistent component after a timeout", e);
 				}
-			}, timeout, TimeUnit.MILLISECONDS);
+			}, timeout.timeout(), timeout.timeoutUnit());
 		}
 	}
 
-	private <T extends ComponentBuilder<T> & PersistentComponentBuilder> String putPersistentComponent(T builder, ComponentType type) {
+	private <T extends ComponentBuilder<T> & PersistentComponentBuilder<T>> String putPersistentComponent(T builder, ComponentType type) {
 		try (Connection connection = getConnection()) {
 			final String componentId = SqlPersistentComponentData.create(connection,
 					type,

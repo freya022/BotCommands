@@ -1,7 +1,5 @@
 package com.freya02.botcommands.api.components.builder;
 
-import java.util.concurrent.TimeUnit;
-
 public interface ComponentBuilder<T extends ComponentBuilder<T>> {
 	/**
 	 * Makes this component usable only once<br>
@@ -21,17 +19,7 @@ public interface ComponentBuilder<T extends ComponentBuilder<T>> {
 	 */
 	T ownerId(long ownerId);
 
-	/**
-	 * Makes this component expire after the specified timeout<br>
-	 * Once the component expires it should be removed from the component manager
-	 *
-	 * @return This component builder for chaining purposes
-	 */
-	T timeout(long timeout, TimeUnit timeoutUnit);
-
 	boolean isOneUse();
 
 	long getOwnerId();
-
-	long getTimeout();
 }

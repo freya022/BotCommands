@@ -12,7 +12,7 @@ import net.dv8tion.jda.internal.interactions.ButtonImpl;
 
 import java.util.function.Consumer;
 
-public class LambdaButtonBuilder extends AbstractComponentBuilder<LambdaButtonBuilder> {
+public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder> {
 	private final BContext context;
 	private final Consumer<ButtonEvent> consumer;
 	private final ButtonStyle buttonStyle;

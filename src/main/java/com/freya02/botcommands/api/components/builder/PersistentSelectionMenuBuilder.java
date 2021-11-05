@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder {
+public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder<PersistentSelectionMenuBuilder> {
 	private final BContext context;
 	private final String handlerName;
 	private final String[] args;
 
 	private boolean oneUse;
 	private long ownerId;
-	private long expirationTimestamp;
+	private PersistentComponentTimeoutInfo timeoutInfo;
 
 	public PersistentSelectionMenuBuilder(BContext context, String handlerName, String[] args) {
 		super("fake");
@@ -59,9 +59,15 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 		return this;
 	}
 
+	/**
+	 * Makes this component expire after the specified timeout<br>
+	 * Once the component expires it should be removed from the component manager
+	 *
+	 * @return This component builder for chaining purposes
+	 */
 	@Override
 	public PersistentSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit) {
-		this.expirationTimestamp = timeoutUnit.toMillis(timeout);
+		this.timeoutInfo = new PersistentComponentTimeoutInfo(timeout, timeoutUnit);
 
 		return this;
 	}
@@ -77,7 +83,7 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	}
 
 	@Override
-	public long getTimeout() {
-		return expirationTimestamp;
+	public PersistentComponentTimeoutInfo getTimeout() {
+		return timeoutInfo;
 	}
 }

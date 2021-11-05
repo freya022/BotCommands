@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.components.sql;
 
 import com.freya02.botcommands.api.components.ComponentType;
+import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.google.gson.Gson;
 
@@ -47,8 +48,10 @@ public class SqlPersistentComponentData extends SqlComponentData {
 		}
 	}
 
-	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis, String handlerName, String[] args) throws SQLException {
+	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, PersistentComponentTimeoutInfo timeout, String handlerName, String[] args) throws SQLException {
 		while (true) {
+			long timeoutMillis = timeout.timeoutUnit().toMillis(timeout.timeout());
+
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(

@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 
-public class PersistentButtonBuilder extends AbstractComponentBuilder<PersistentButtonBuilder> implements PersistentComponentBuilder {
+public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<PersistentButtonBuilder> {
 	private final BContext context;
 	private final String handlerName;
 	private final String[] args;
