@@ -2,6 +2,9 @@ package com.freya02.botcommands.api.pagination;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Builds a {@link Paginator}
+ */
 public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Paginator> {
 	private int maxPages;
 

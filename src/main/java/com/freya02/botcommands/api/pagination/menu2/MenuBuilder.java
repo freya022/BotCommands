@@ -4,6 +4,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Builds a {@link Menu}
+ *
+ * @param <E> Type of the entries
+ */
 public final class MenuBuilder<E> extends BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>> {
 	public MenuBuilder(List<E> entries) {
 		super(entries);

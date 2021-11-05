@@ -8,6 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Provides base for a pagination builder
+ *
+ * @param <T> Type of the implementor
+ * @param <R> Type of the implementor {@link #build()} return type
+ */
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T, R>, R extends BasicPagination<R>> {
 	protected long ownerId;

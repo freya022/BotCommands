@@ -8,6 +8,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * Provides base for a menu builder
+ *
+ * @param <E> Type of the menu entries
+ * @param <T> Type of the implementor
+ * @param <R> Type of the implementor {@link #build()} return type
+ */
 @SuppressWarnings("unchecked")
 public abstract class BasicMenuBuilder<E, T extends BasicMenuBuilder<E, T, R>, R extends BasicMenu<E, R>> extends BasicPaginatorBuilder<T, R> {
 	protected final List<E> entries;

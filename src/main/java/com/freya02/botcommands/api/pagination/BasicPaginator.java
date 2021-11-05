@@ -1,10 +1,8 @@
 package com.freya02.botcommands.api.pagination;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.menu.ButtonContent;
-import com.freya02.botcommands.api.pagination.menu2.Menu;
 import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,28 +16,17 @@ import org.slf4j.Logger;
 import java.util.List;
 
 /**
- * Provides a paginator - You provide the pages, it displays them one by one.<br>
- * Initial page is page 0, there is navigation buttons and an optional delete button<br>
- * <b>The delete button cannot be used if the message is ephemeral</b><br><br>
- *
- * <h2>The button IDs used by this paginator and those registered by the {@link PaginatorComponents} in the {@link OldPaginationSupplier} are cleaned up once the embed is removed with the button</h2>
- * <h3>Buttons that can delete this embed have to call {@link #cleanup(BContext)}</h3>
- *
  * @param <T> Type of the implementor
- * @see Menu
  */
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
-
-	private final int maxPages;
 	protected final PaginatorSupplier supplier;
-
+	private final int maxPages;
 	private final Button deleteButton;
-	private Button firstButton, previousButton, nextButton, lastButton;
-
 	protected int page = 0;
+	private Button firstButton, previousButton, nextButton, lastButton;
 
 	protected BasicPaginator(long ownerId, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton,
 	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {

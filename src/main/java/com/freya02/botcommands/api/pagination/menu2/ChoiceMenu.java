@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.pagination.menu2;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.pagination.Paginator;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.menu.ButtonContent;
@@ -12,6 +13,14 @@ import net.dv8tion.jda.api.interactions.components.Button;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Provides a <b>choice</b> menu
+ * <br>You provide the entries, it makes the pages for you, and also makes buttons, so you can choose an entry
+ *
+ * @param <E> Type of the entries
+ * @see Paginator
+ * @see Menu
+ */
 public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	private final ButtonContentSupplier<E> buttonContentSupplier;
 	private final BiConsumer<ButtonEvent, E> callback;

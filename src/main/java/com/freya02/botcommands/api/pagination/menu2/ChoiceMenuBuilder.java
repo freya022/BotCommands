@@ -10,6 +10,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Builds a {@link ChoiceMenu}
+ *
+ * @param <E> Type of the entries
+ */
 public final class ChoiceMenuBuilder<E> extends BasicMenuBuilder<E, ChoiceMenuBuilder<E>, ChoiceMenu<E>> {
 	private BiConsumer<ButtonEvent, E> callback;
 	private ButtonContentSupplier<E> buttonContentSupplier;
