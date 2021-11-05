@@ -1,8 +1,9 @@
 package com.freya02.botcommands.api.pagination;
 
-public class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Paginator> {
+import org.jetbrains.annotations.NotNull;
+
+public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Paginator> {
 	private int maxPages;
-	private PaginatorSupplier supplier;
 
 	public PaginatorBuilder setMaxPages(int maxPages) {
 		this.maxPages = maxPages;
@@ -10,14 +11,9 @@ public class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Pa
 		return this;
 	}
 
-	public PaginatorBuilder setSupplier(PaginatorSupplier supplier) {
-		this.supplier = supplier;
-
-		return this;
-	}
-
 	@Override
+	@NotNull
 	public Paginator build() {
-		return new Paginator(ownerId, timeout, maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+		return new Paginator(ownerId, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

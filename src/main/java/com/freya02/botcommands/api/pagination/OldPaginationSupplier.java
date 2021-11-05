@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination;
 
-import com.freya02.botcommands.api.pagination.menu.Menu;
+import com.freya02.botcommands.api.pagination.menu2.Menu;
 import net.dv8tion.jda.api.EmbedBuilder;
 
 /**

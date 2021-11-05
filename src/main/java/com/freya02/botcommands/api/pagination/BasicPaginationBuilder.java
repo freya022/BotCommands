@@ -52,5 +52,6 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 		return (T) this;
 	}
 
+	@NotNull
 	public abstract R build();
 }

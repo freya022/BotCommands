@@ -18,6 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+/**
+ * @param <T> Type of the implementor
+ */
 public abstract class BasicPagination<T extends BasicPagination<T>> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
