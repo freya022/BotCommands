@@ -22,7 +22,7 @@ public class EventListenerImpl implements EventListener {
 		final List<EventConsumer> eventConsumers = eventListeners.get(event.getClass());
 		if (eventConsumers != null) {
 			for (EventConsumer consumer : eventConsumers) {
-				try {
+				try { //TODO use a executor service and use real exception handling
 					consumer.accept(realEvent);
 				} catch (Exception e) {
 					e.printStackTrace();
