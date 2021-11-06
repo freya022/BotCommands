@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.RegistrationListener;
+import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
@@ -14,6 +15,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
+import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
 import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
@@ -23,6 +25,8 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -36,10 +40,11 @@ import java.util.stream.Collectors;
 
 public final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final List<Class<? extends Annotation>> methodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
+	private static final List<Class<? extends Annotation>> applicationMethodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
 
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
+	private final EventListenersBuilder eventListenersBuilder;
 
 	private final ComponentsBuilder componentsBuilder;
 
@@ -63,6 +68,8 @@ public final class CommandsBuilderImpl {
 
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
+
+		this.eventListenersBuilder = new EventListenersBuilder();
 	}
 
 	private void buildClasses() {
@@ -108,6 +115,8 @@ public final class CommandsBuilderImpl {
 				componentsBuilder.postProcess();
 			}
 
+			eventListenersBuilder.postProcess(context);
+
 			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
 			LOGGER.info("Finished registering all commands");
@@ -126,45 +135,66 @@ public final class CommandsBuilderImpl {
 		if (!Modifier.isAbstract(aClass.getModifiers()) && !Modifier.isInterface(aClass.getModifiers())) {
 			boolean foundSomething = false;
 
-			//If not a text command, search for methods annotated with a compatible annotation
+			//Search for methods annotated with a compatible annotation
 			for (Method method : aClass.getDeclaredMethods()) {
-				for (Class<? extends Annotation> annotation : methodAnnotations) {
-					if (method.isAnnotationPresent(annotation)) {
-						if (!ApplicationCommand.class.isAssignableFrom(aClass))
-							throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + annotation.getSimpleName() + " but its class does not extend ApplicationCommand");
-
-						final ApplicationCommand annotatedInstance = (ApplicationCommand) ClassInstancer.instantiate(context, aClass);
-
-						if (!method.canAccess(annotatedInstance))
-							throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
-
-						applicationCommandsBuilder.processApplicationCommand(annotatedInstance, method);
-
-						foundSomething = true;
-
-						break;
-					}
-				}
-
-				if (method.isAnnotationPresent(JDATextCommand.class)) {
-					if (!TextCommand.class.isAssignableFrom(aClass))
-						throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + JDATextCommand.class.getSimpleName() + " but its class does not extend TextCommand");
-
-					final TextCommand annotatedInstance = (TextCommand) ClassInstancer.instantiate(context, aClass);
-
-					if (!method.canAccess(annotatedInstance))
-						throw new IllegalStateException("Application command " + Utils.formatMethodShort(method) + " is not public");
-
-					prefixedCommandsBuilder.processPrefixedCommand(annotatedInstance, method);
-
-					foundSomething = true;
-				}
+				foundSomething = processMethod(method);
 			}
 
 			if (!foundSomething) {
 				ignoredClasses.add(aClass);
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Nullable
+	private <T> T tryInstantiateMethod(@NotNull Class<? extends Annotation> requiredAnnotation,
+	                                   @NotNull Class<T> requiredClass,
+	                                   @NotNull String requiredClassDesc,
+	                                   @NotNull Method method) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+		final Class<?> declaringClass = method.getDeclaringClass();
+
+		if (method.isAnnotationPresent(requiredAnnotation)) {
+			if (!requiredClass.isAssignableFrom(declaringClass))
+				throw new IllegalArgumentException("Method " + Utils.formatMethodShort(method) + " is annotated with @" + requiredAnnotation.getSimpleName() + " but its class does not extend " + requiredClass.getSimpleName());
+
+			final T annotatedInstance = (T) ClassInstancer.instantiate(context, declaringClass);
+
+			if (!method.canAccess(annotatedInstance))
+				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is not public");
+
+			return annotatedInstance;
+		}
+
+		return null;
+	}
+
+	private boolean processMethod(Method method) throws InvocationTargetException, InstantiationException, IllegalAccessException {
+		for (Class<? extends Annotation> annotation : applicationMethodAnnotations) {
+			final ApplicationCommand applicationCommand = tryInstantiateMethod(annotation, ApplicationCommand.class, "Application command", method);
+
+			if (applicationCommand != null) {
+				applicationCommandsBuilder.processApplicationCommand(applicationCommand, method);
+
+				return true;
+			}
+		}
+
+		final TextCommand textCommand = tryInstantiateMethod(JDATextCommand.class, TextCommand.class, "Text command", method);
+		if (textCommand != null) {
+			prefixedCommandsBuilder.processPrefixedCommand(textCommand, method);
+
+			return true;
+		}
+
+		final Object eventListener = tryInstantiateMethod(JDAEventListener.class, Object.class, "JDA event listener", method);
+		if (eventListener != null) {
+			eventListenersBuilder.processEventListener(eventListener, method);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	/**

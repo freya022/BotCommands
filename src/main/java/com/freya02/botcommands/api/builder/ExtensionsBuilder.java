@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.builder;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
+import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.events.Event;
@@ -82,7 +83,7 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Register a custom resolver for interaction commands (components / app commands)
+	 * Register a custom resolver for commands (components / app commands), as well as the {@link JDAEventListener framework's event listeners}
 	 *
 	 * @param parameterType Type of the parameter
 	 * @param function      Supplier function, may receive interaction events of any type
