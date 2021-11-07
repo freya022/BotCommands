@@ -69,7 +69,7 @@ public final class CommandsBuilderImpl {
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 
-		this.eventListenersBuilder = new EventListenersBuilder();
+		this.eventListenersBuilder = new EventListenersBuilder(context);
 	}
 
 	private void buildClasses() {
@@ -115,7 +115,7 @@ public final class CommandsBuilderImpl {
 				componentsBuilder.postProcess();
 			}
 
-			eventListenersBuilder.postProcess(context);
+			eventListenersBuilder.postProcess();
 
 			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 

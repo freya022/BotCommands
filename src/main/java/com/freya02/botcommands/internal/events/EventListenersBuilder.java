@@ -1,10 +1,12 @@
 package com.freya02.botcommands.internal.events;
 
-import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,8 +27,11 @@ public class EventListenersBuilder {
 	// So only the implementors of GenericEvent is the correct count, but we use an Event
 	private final Map<Class<?>, List<Class<?>>> implementors = new HashMap<>();
 	private final Map<Class<?>, List<EventConsumer>> eventListenersMap = new HashMap<>();
+	private final BContextImpl context;
 
-	public EventListenersBuilder() {
+	public EventListenersBuilder(BContextImpl context) {
+		this.context = context;
+
 		implementors.putAll(getAllEventImplementors());
 	}
 
@@ -72,12 +77,16 @@ public class EventListenersBuilder {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void processEventListener(Object eventListener, Method method) {
 		try {
 			if (!Utils.hasFirstParameter(method, Event.class))
 				throw new IllegalArgumentException("Event listener at " + Utils.formatMethodShort(method) + " must have a valid (extends Event) JDA event as first parameter");
 
 			final Class<?> eventType = method.getParameterTypes()[0];
+
+			//Check if the event is listen-able
+			EventUtils.checkEvent(context.getJDA(), context.getJDA().getGatewayIntents(), (Class<? extends GenericEvent>) eventType);
 
 			if (method.getParameterCount() > 1) {
 				final EventConsumer consumer = getParametrizedEventListener(eventListener, method);
@@ -151,7 +160,7 @@ public class EventListenersBuilder {
 		}
 	}
 
-	public void postProcess(BContext context) {
-		context.getJDA().addEventListener(new EventListenerImpl(eventListenersMap));
+	public void postProcess() {
+		context.getJDA().addEventListener(new EventListenerImpl(context, eventListenersMap));
 	}
 }
