@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public class EventListenerImpl implements EventListener {
+class EventListenerImpl implements EventListener {
 	private final Map<Class<?>, List<EventConsumer>> eventListeners;
 
-	public EventListenerImpl(Map<Class<?>, List<EventConsumer>> eventListeners) {
+	EventListenerImpl(Map<Class<?>, List<EventConsumer>> eventListeners) {
 		this.eventListeners = eventListeners;
 	}
 

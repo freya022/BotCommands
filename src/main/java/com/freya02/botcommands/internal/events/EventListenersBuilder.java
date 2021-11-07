@@ -45,14 +45,14 @@ public class EventListenersBuilder {
 
 			if (method.getParameterCount() != 1) continue;
 
-			final Class<?> aClass = method.getParameterTypes()[0];
-			if (aClass.getSimpleName().endsWith("Event")) {
+			final Class<?> eventType = method.getParameterTypes()[0];
+			if (eventType.getSimpleName().endsWith("Event")) {
 				final Set<Class<?>> subtypes = new HashSet<>(); //We then take all the superclasses of the event
 
-				populateEventSubtypes(subtypes, aClass);
+				populateEventSubtypes(subtypes, eventType);
 
 				for (Class<?> subtype : subtypes) { //And bind the superclass to the implementor
-					implementors.computeIfAbsent(subtype, x -> new ArrayList<>()).add(aClass);
+					implementors.computeIfAbsent(subtype, x -> new ArrayList<>()).add(eventType);
 				}
 			}
 		}
