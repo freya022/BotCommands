@@ -137,7 +137,7 @@ public final class CommandsBuilderImpl {
 
 			//Search for methods annotated with a compatible annotation
 			for (Method method : aClass.getDeclaredMethods()) {
-				foundSomething = processMethod(method);
+				foundSomething |= processMethod(method);
 			}
 
 			if (!foundSomething) {
