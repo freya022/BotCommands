@@ -1,31 +1,68 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.PaginationSupplier;
-import com.freya02.botcommands.api.pagination.Paginator;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
+import com.freya02.botcommands.api.pagination.PaginatorSupplier;
+import com.freya02.botcommands.api.pagination.TimeoutInfo;
+import com.freya02.botcommands.api.pagination.paginator.Paginator;
+import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
+import com.freya02.botcommands.api.utils.ButtonContent;
+import net.dv8tion.jda.api.interactions.components.Button;
+
+import java.util.List;
 
 /**
- * An extension of Paginator, this takes a list of entries and generates the pages for you, which each entry taking a new line<br>
- * The user can then select an entry with the buttons, if you provide a callback then it'll be called when an entry is selected
+ * Provides a <b>choice</b> menu
+ * <br>You provide the entries, it makes the pages for you, and also makes buttons, so you can choose an entry
  *
+ * @param <E> Type of the entries
  * @see Paginator
+ * @see Menu
  */
-public class ChoiceMenu extends Paginator {
-	ChoiceMenu(long userId, int size, boolean deleteButton) {
-		super(userId, size, deleteButton);
+public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
+	private final ButtonContentSupplier<E> buttonContentSupplier;
+	private final ChoiceCallback<E> callback;
+
+	ChoiceMenu(long ownerId,
+	           TimeoutInfo<ChoiceMenu<E>> timeout,
+	           boolean hasDeleteButton,
+	           ButtonContent firstContent,
+	           ButtonContent previousContent,
+	           ButtonContent nextContent,
+	           ButtonContent lastContent,
+	           ButtonContent deleteContent,
+	           List<E> entries,
+	           int maxEntriesPerPage,
+	           EntryTransformer<? super E> transformer,
+	           RowPrefixSupplier rowPrefixSupplier,
+	           PaginatorSupplier supplier,
+	           ButtonContentSupplier<E> buttonContentSupplier,
+	           ChoiceCallback<E> callback) {
+		super(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
+				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
+				supplier);
+
+		this.buttonContentSupplier = buttonContentSupplier;
+		this.callback = callback;
 	}
 
-	/**
-	 * {@inheritDoc} <br>
-	 * <b>Throws <code>UnsupportedOperationException</code> as this pagination supplier is managed by the pagination.</b>
-	 *
-	 * @return
-	 */
 	@Override
-	public Paginator setPaginationSupplier(PaginationSupplier paginationSupplier) {
-		throw new UnsupportedOperationException();
-	}
+	protected void putComponents() {
+		super.putComponents();
 
-	void setMenuSupplier(PaginationSupplier paginationSupplier) {
-		super.setPaginationSupplier(paginationSupplier);
+		final MenuPage<E> page = pages.get(this.page);
+		final List<E> entries = page.entries();
+
+		for (int i = 0; i < entries.size(); i++) {
+			final E item = entries.get(i);
+			final ButtonContent content = buttonContentSupplier.apply(item, i);
+			final Button choiceButton = Components.primaryButton(event -> {
+				this.cleanup(event.getContext());
+
+				callback.accept(event, item);
+			}).ownerId(ownerId).build(content);
+
+			components.addComponents(1 + (i / 5), choiceButton);
+		}
 	}
 }

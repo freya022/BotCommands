@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.components.sql;
 
 import com.freya02.botcommands.api.components.ComponentType;
+import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 
 import java.sql.Connection;
@@ -40,8 +41,10 @@ public class SqlLambdaComponentData extends SqlComponentData {
 		}
 	}
 
-	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, long timeoutMillis) throws SQLException {
+	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, LambdaComponentTimeoutInfo timeout) throws SQLException {
 		while (true) {
+			final long timeoutMillis = timeout.toMillis();
+
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(

@@ -10,13 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder> {
+public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder>, LambdaComponentBuilder<LambdaSelectionMenuBuilder> {
 	private final BContext context;
 	private final Consumer<SelectionEvent> consumer;
 
 	private boolean oneUse;
 	private long ownerId;
-	private long expirationTimestamp;
+	private LambdaComponentTimeoutInfo timeoutInfo = new LambdaComponentTimeoutInfo(0, TimeUnit.MILLISECONDS, () -> {});
 
 	public LambdaSelectionMenuBuilder(BContext context, Consumer<SelectionEvent> consumer) {
 		super("fake");
@@ -54,8 +54,8 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	}
 
 	@Override
-	public LambdaSelectionMenuBuilder timeout(long timeout, TimeUnit timeoutUnit) {
-		this.expirationTimestamp = timeoutUnit.toMillis(timeout);
+	public LambdaSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull Runnable timeoutCallback) {
+		this.timeoutInfo = new LambdaComponentTimeoutInfo(timeout, timeoutUnit, timeoutCallback);
 
 		return this;
 	}
@@ -71,7 +71,7 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 	}
 
 	@Override
-	public long getTimeout() {
-		return expirationTimestamp;
+	public LambdaComponentTimeoutInfo getTimeout() {
+		return timeoutInfo;
 	}
 }

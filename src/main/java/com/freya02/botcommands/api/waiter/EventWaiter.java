@@ -1,22 +1,11 @@
 package com.freya02.botcommands.api.waiter;
 
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.internal.waiter.WaitingEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
-import net.dv8tion.jda.api.events.guild.GuildBanEvent;
-import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
-import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
-import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
-import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
-import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
-import net.dv8tion.jda.api.events.user.UserTypingEvent;
-import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
-import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +18,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * An event waiter - if you need to wait for an event to occur while not blocking threads or having listeners everywhere<br>
@@ -73,6 +61,7 @@ public class EventWaiter implements EventListener {
 		return thread;
 	});
 
+	private static JDA jda;
 	private static EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
 	private static boolean initialized;
 
@@ -84,17 +73,8 @@ public class EventWaiter implements EventListener {
 
 		LOGGER.debug("Initialized EventWaiter");
 
-		intents = jda.getGatewayIntents();
-	}
-
-	private static <T, U> void checkEvent(Class<T> eventType, Class<U> expectedBase, GatewayIntent... intents) {
-		if (expectedBase.isAssignableFrom(eventType)) {
-			for (GatewayIntent intent : intents) {
-				if (!EventWaiter.intents.contains(intent)) {
-					throw new IllegalArgumentException("Cannot listen to a " + eventType.getSimpleName() + " as the intents " + Arrays.stream(intents).map(GatewayIntent::name).collect(Collectors.joining(", ")) + " are disabled, see " + expectedBase.getSimpleName() + ", currently enabled intents are: " + EventWaiter.intents);
-				}
-			}
-		}
+		EventWaiter.jda = jda;
+		EventWaiter.intents = jda.getGatewayIntents();
 	}
 
 	/**
@@ -108,18 +88,7 @@ public class EventWaiter implements EventListener {
 		if (!initialized)
 			throw new IllegalStateException("Framework must be constructed before using the EventWaiter");
 
-		checkEvent(eventType, UserTypingEvent.class, GatewayIntent.DIRECT_MESSAGE_TYPING, GatewayIntent.GUILD_MESSAGE_TYPING);
-		checkEvent(eventType, GenericPrivateMessageReactionEvent.class, GatewayIntent.DIRECT_MESSAGE_REACTIONS);
-		checkEvent(eventType, GenericPrivateMessageEvent.class, GatewayIntent.DIRECT_MESSAGES);
-		checkEvent(eventType, GenericGuildMessageReactionEvent.class, GatewayIntent.GUILD_MESSAGE_REACTIONS);
-		checkEvent(eventType, GenericGuildMessageEvent.class, GatewayIntent.GUILD_MESSAGES);
-		checkEvent(eventType, GenericUserPresenceEvent.class, GatewayIntent.GUILD_PRESENCES);
-		checkEvent(eventType, GenericUserUpdateEvent.class, GatewayIntent.GUILD_MEMBERS);
-		checkEvent(eventType, GenericGuildVoiceEvent.class, GatewayIntent.GUILD_VOICE_STATES);
-		checkEvent(eventType, GenericGuildInviteEvent.class, GatewayIntent.GUILD_INVITES);
-		checkEvent(eventType, GenericEmoteEvent.class, GatewayIntent.GUILD_EMOJIS);
-		checkEvent(eventType, GuildBanEvent.class, GatewayIntent.GUILD_BANS);
-		checkEvent(eventType, GenericGuildMemberEvent.class, GatewayIntent.GUILD_MEMBERS);
+		EventUtils.checkEvent(jda, intents, eventType);
 
 		return new EventWaiterBuilder<>(eventType);
 	}

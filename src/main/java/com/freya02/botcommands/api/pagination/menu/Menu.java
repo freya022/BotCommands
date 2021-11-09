@@ -1,30 +1,37 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.PaginationSupplier;
-import com.freya02.botcommands.api.pagination.Paginator;
+import com.freya02.botcommands.api.pagination.PaginatorSupplier;
+import com.freya02.botcommands.api.pagination.TimeoutInfo;
+import com.freya02.botcommands.api.pagination.paginator.Paginator;
+import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
+import com.freya02.botcommands.api.utils.ButtonContent;
+
+import java.util.List;
 
 /**
- * An extension of Paginator, this takes a list of entries and generates the pages for you, which each entry taking a new line<br>
- * The user can then select an entry with the buttons, if you provide a callback then it'll be called when an entry is selected
+ * Provides a menu
+ * <br>You provide the entries, it makes the pages for you
  *
+ * @param <E> Type of the entries
  * @see Paginator
+ * @see ChoiceMenu
  */
-public class Menu extends Paginator {
-	Menu(long userId, int size, boolean deleteButton) {
-		super(userId, size, deleteButton);
-	}
-
-	/**
-	 * {@inheritDoc} <br>
-	 * <b>Throws <code>UnsupportedOperationException</code> as this pagination supplier is managed by the menu.</b>
-	 * @return
-	 */
-	@Override
-	public Paginator setPaginationSupplier(PaginationSupplier paginationSupplier) {
-		throw new UnsupportedOperationException();
-	}
-
-	void setMenuSupplier(PaginationSupplier paginationSupplier) {
-		super.setPaginationSupplier(paginationSupplier);
+public final class Menu<E> extends BasicMenu<E, Menu<E>> {
+	Menu(long ownerId,
+	     TimeoutInfo<Menu<E>> timeout,
+	     boolean hasDeleteButton,
+	     ButtonContent firstContent,
+	     ButtonContent previousContent,
+	     ButtonContent nextContent,
+	     ButtonContent lastContent,
+	     ButtonContent deleteContent,
+	     List<E> entries,
+	     int maxEntriesPerPage,
+	     EntryTransformer<? super E> transformer,
+	     RowPrefixSupplier rowPrefixSupplier,
+	     PaginatorSupplier supplier) {
+		super(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
+				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
+				supplier);
 	}
 }

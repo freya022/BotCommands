@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.pagination.menu;
+package com.freya02.botcommands.api.utils;
 
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -20,13 +20,33 @@ public record ButtonContent(String str, Emoji emoji) {
 	}
 
 	/**
-	 * Constructs a {@link ButtonContent} from a {@link String}
+	 * Constructs a {@link ButtonContent} from an {@link Emoji}
 	 *
 	 * @param emoji The {@link Emoji} to put in the {@link Button}
-	 * @return The {@link ButtonContent} with the string
+	 * @return The {@link ButtonContent} with the emoji
 	 */
 	public static ButtonContent withEmoji(@NotNull Emoji emoji) {
 		return new ButtonContent(null, emoji);
+	}
+
+	/**
+	 * Constructs a {@link ButtonContent} from a unicode emoji
+	 *
+	 * @param unicode The unicode emoji
+	 * @return The {@link ButtonContent} with the unicode emoji
+	 */
+	public static ButtonContent withEmoji(@NotNull String unicode) {
+		return new ButtonContent(null, Emoji.fromUnicode(unicode));
+	}
+
+	/**
+	 * Constructs a {@link ButtonContent} from a shortcode emoji, such as <code>:joy:</code>
+	 *
+	 * @param shortcode The shortcode emoji
+	 * @return The {@link ButtonContent} with the shortcode emoji
+	 */
+	public static ButtonContent withShortcode(@NotNull String shortcode) {
+		return new ButtonContent(null, EmojiUtils.resolveJDAEmoji(shortcode));
 	}
 
 	@Nullable

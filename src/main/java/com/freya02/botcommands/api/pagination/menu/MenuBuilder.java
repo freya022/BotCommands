@@ -1,42 +1,22 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.pagination.Paginator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Provides a builder for {@link Menu}s
+ * Builds a {@link Menu}
  *
- * @param <T> Type of the entries
+ * @param <E> Type of the entries
  */
-public class MenuBuilder<T> extends BaseMenu<T, MenuBuilder<T>> {
-	/**
-	 * Creates a new {@link Menu} builder
-	 *
-	 * @param userId       The ID of the only User who should be able to use this menu
-	 *                     <br>An ID of 0 means this menu will be usable by everyone
-	 * @param deleteButton Whether there should be a delete button on the {@link Paginator}
-	 * @param entries      The entries which should be displayed to the user
-	 */
-	public MenuBuilder(long userId, boolean deleteButton, List<T> entries) {
-		super(userId, deleteButton, entries);
+public final class MenuBuilder<E> extends BasicMenuBuilder<E, MenuBuilder<E>, Menu<E>> {
+	public MenuBuilder(List<E> entries) {
+		super(entries);
 	}
 
-	public Menu build() {
-		makePages();
-
-		final Menu menu = new Menu(userId, pages.size(), deleteButton);
-
-		menu.setMenuSupplier((builder, components, page) -> {
-			final MenuPage<T> menuPage = pages.get(page);
-
-			builder.setDescription(menuPage.getDescription());
-
-			if (paginationSupplier != null) {
-				paginationSupplier.accept(builder, components, page);
-			}
-		});
-
-		return menu;
+	@Override
+	@NotNull
+	public Menu<E> build() {
+		return new Menu<>(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier);
 	}
 }

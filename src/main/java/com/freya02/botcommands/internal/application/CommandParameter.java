@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 
@@ -20,7 +21,7 @@ public class CommandParameter<RESOLVER> {
 	private final boolean optional, isPrimitive;
 
 	@SuppressWarnings("unchecked")
-	public CommandParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
+	public CommandParameter(@Nullable Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		this.parameter = parameter;
 		this.boxedType = Utils.getBoxedType(parameter.getType());
 		this.index = index;
@@ -30,6 +31,10 @@ public class CommandParameter<RESOLVER> {
 
 		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);
 		if (AnnotationUtils.isOption(parameter)) {
+			if (resolverType == null) {
+				throw new IllegalArgumentException("Parameter of type " + boxedType.getName() + " is an annotated as an option but doesn't have a resolver type attached, please report to devs");
+			}
+
 			if (resolver == null) {
 				throw new IllegalArgumentException("Unknown interaction command option type: " + boxedType.getName() + " for target resolver " + resolverType.getName());
 			} else if (!(resolverType.isAssignableFrom(resolver.getClass()))) {

@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.components.builder;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.pagination.menu.ButtonContent;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Button;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.internal.interactions.ButtonImpl;
 
 import java.util.function.Consumer;
 
-public class LambdaButtonBuilder extends AbstractComponentBuilder<LambdaButtonBuilder> {
+public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder> {
 	private final BContext context;
 	private final Consumer<ButtonEvent> consumer;
 	private final ButtonStyle buttonStyle;

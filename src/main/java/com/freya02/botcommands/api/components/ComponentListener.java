@@ -123,7 +123,11 @@ public class ComponentListener extends ListenerAdapter {
 	private void runHandler(RunnableEx code, @NotNull GenericComponentInteractionCreateEvent event) {
 		idHandlingExecutor.execute(() -> {
 			try {
+				long start = System.nanoTime();
 				code.run();
+				long end = System.nanoTime();
+
+				LOGGER.trace("Component handler took {} ms", (end - start) / 1000000.0);
 			} catch (Throwable e) {
 				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 				if (handler != null) {
@@ -149,7 +153,11 @@ public class ComponentListener extends ListenerAdapter {
 	private void runCallback(RunnableEx code, @NotNull GenericComponentInteractionCreateEvent event) {
 		callbackExecutor.execute(() -> {
 			try {
+				long start = System.nanoTime();
 				code.run();
+				long end = System.nanoTime();
+
+				LOGGER.trace("Component callback took {} ms", (end - start) / 1000000.0);
 			} catch (Throwable e) {
 				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 				if (handler != null) {
