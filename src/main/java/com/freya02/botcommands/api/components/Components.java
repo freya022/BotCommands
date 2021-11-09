@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  * </code></pre>
  */
 public class Components {
-	private static final List<Class<? extends ISnowflake>> RESTRICTED_CLASSES = List.of(Role.class, AbstractChannel.class, Guild.class, Emote.class, User.class, Message.class);
+	private static final List<Class<? extends ISnowflake>> RESTRICTED_CLASSES = List.of(Role.class, Channel.class, Guild.class, Emote.class, User.class, Message.class);
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private static BContext context;

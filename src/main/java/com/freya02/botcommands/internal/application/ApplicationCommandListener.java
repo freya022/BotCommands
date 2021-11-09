@@ -10,7 +10,6 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
@@ -138,7 +137,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions((GuildChannel) event.getChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getTextChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());
