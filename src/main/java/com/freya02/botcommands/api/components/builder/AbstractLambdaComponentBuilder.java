@@ -8,12 +8,6 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractLambdaComponentBuilder<T extends AbstractLambdaComponentBuilder<T>> extends AbstractComponentBuilder<T> implements LambdaComponentBuilder<T> {
 	private LambdaComponentTimeoutInfo timeoutInfo = new LambdaComponentTimeoutInfo(0, TimeUnit.MILLISECONDS, () -> {});
 
-	/**
-	 * Makes this component expire after the specified timeout<br>
-	 * Once the component expires it should be removed from the component manager
-	 *
-	 * @return This component builder for chaining purposes
-	 */
 	@Override
 	public T timeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull Runnable timeoutCallback) {
 		this.timeoutInfo = new LambdaComponentTimeoutInfo(timeout, timeoutUnit, timeoutCallback);
