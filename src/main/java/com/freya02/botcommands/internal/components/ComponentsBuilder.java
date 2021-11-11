@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -40,7 +41,7 @@ public class ComponentsBuilder {
 	}
 
 	private void handleComponentListener(Method method, String handlerName, Map<String, ComponentDescriptor> map, Class<?> firstRequiredArg, String componentType) {
-		if (!Utils.hasFirstParameter(method, firstRequiredArg))
+		if (!ReflectionUtils.hasFirstParameter(method, firstRequiredArg))
 			throw new IllegalArgumentException("First parameter of method " + Utils.formatMethodShort(method) + " should be a " + firstRequiredArg.getSimpleName());
 
 		try {

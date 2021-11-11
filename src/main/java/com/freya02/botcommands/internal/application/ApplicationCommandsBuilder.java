@@ -15,6 +15,7 @@ import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -58,15 +59,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDAUserCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class) && !Utils.hasFirstParameter(method, GuildUserEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildUserEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only user command {} uses GlobalUserEvent, consider using GuildUserEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
@@ -78,15 +79,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDAMessageCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class) && !Utils.hasFirstParameter(method, GuildMessageEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildMessageEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only message command {} uses GlobalMessageEvent, consider using GuildMessageEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
@@ -98,15 +99,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDASlashCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only slash command {} uses GlobalSlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 

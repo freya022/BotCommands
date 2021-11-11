@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -221,7 +222,7 @@ public final class CommandsBuilder {
 	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
 		Utils.requireNonBlank(commandPackageName, "Command package");
 
-		classes.addAll(Utils.getPackageClasses(commandPackageName, 3));
+		classes.addAll(ReflectionUtils.getPackageClasses(commandPackageName, 3));
 
 		return this;
 	}

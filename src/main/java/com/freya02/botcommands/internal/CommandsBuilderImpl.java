@@ -23,6 +23,7 @@ import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -80,7 +81,7 @@ public final class CommandsBuilderImpl {
 		try {
 			classes.removeIf(c -> {
 				try {
-					return !Utils.isInstantiable(c);
+					return !ReflectionUtils.isInstantiable(c);
 				} catch (IllegalAccessException | InvocationTargetException e) {
 					LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
 
@@ -235,7 +236,7 @@ public final class CommandsBuilderImpl {
 
 		setupContext(jda);
 
-		Utils.scanOptionals(classes);
+		ReflectionUtils.scanOptionals(classes);
 
 		buildClasses();
 

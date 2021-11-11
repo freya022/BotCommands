@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public class CommandParameter<RESOLVER> {
 		this.boxedType = Utils.getBoxedType(parameter.getType());
 		this.index = index;
 
-		this.optional = Utils.isOptional(parameter);
+		this.optional = ReflectionUtils.isOptional(parameter);
 		this.isPrimitive = parameter.getType().isPrimitive();
 
 		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);

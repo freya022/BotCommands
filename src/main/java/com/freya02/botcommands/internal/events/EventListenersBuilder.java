@@ -4,6 +4,7 @@ import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.EventUtils;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
@@ -80,7 +81,7 @@ public class EventListenersBuilder {
 	@SuppressWarnings("unchecked")
 	public void processEventListener(Object eventListener, Method method) {
 		try {
-			if (!Utils.hasFirstParameter(method, Event.class))
+			if (!ReflectionUtils.hasFirstParameter(method, Event.class))
 				throw new IllegalArgumentException("Event listener at " + Utils.formatMethodShort(method) + " must have a valid (extends Event) JDA event as first parameter");
 
 			final Class<?> eventType = method.getParameterTypes()[0];

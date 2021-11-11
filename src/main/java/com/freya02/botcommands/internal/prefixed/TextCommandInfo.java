@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +59,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 		order = jdaCommand.order();
 
-		final boolean isRegexMethod = !Utils.hasFirstParameter(commandMethod, CommandEvent.class);
+		final boolean isRegexMethod = !ReflectionUtils.hasFirstParameter(commandMethod, CommandEvent.class);
 		parameters = MethodParameters.of(commandMethod, (parameter, index) -> {
 			if (parameter.isAnnotationPresent(AppOption.class))
 				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
