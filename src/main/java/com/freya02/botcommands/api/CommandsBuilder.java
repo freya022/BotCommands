@@ -11,7 +11,6 @@ import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.Logging;
-import com.freya02.botcommands.internal.utils.IOUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -194,7 +193,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand} or {@link ApplicationCommand} will be registered<br>
+	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand}, {@link ApplicationCommand} and other classes which contains annotated methods, will be registered<br>
 	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
 	 *
 	 * <pre><code>
@@ -216,11 +215,13 @@ public final class CommandsBuilder {
 	 *         ...
 	 * </code></pre>
 	 *
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
+	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.bot.commands
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
-		addSearchPath(commandPackageName, 2);
+		Utils.requireNonBlank(commandPackageName, "Command package");
+
+		classes.addAll(Utils.getPackageClasses(commandPackageName, 3));
 
 		return this;
 	}
@@ -249,15 +250,6 @@ public final class CommandsBuilder {
 		return this;
 	}
 
-	//skip can be inlined by 2 but inlining would conflict with the above overload and also remove 1 stack frame, reintroducing the parameter need
-	@SuppressWarnings("SameParameterValue")
-	private void addSearchPath(String commandPackageName, int skip) throws IOException {
-		Utils.requireNonBlank(commandPackageName, "Command package");
-
-		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(s -> s.skip(skip).findFirst().orElseThrow().getDeclaringClass());
-		classes.addAll(Utils.getClasses(IOUtils.getJarPath(callerClass), commandPackageName, 3));
-	}
-
 	/**
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
@@ -268,7 +260,7 @@ public final class CommandsBuilder {
 	 */
 	@Blocking
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		addSearchPath(commandPackageName, 2);
+		addSearchPath(commandPackageName);
 
 		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
 	}

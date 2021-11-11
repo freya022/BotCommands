@@ -5,10 +5,12 @@ import com.freya02.botcommands.api.annotations.ConditionalUse;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.CharArrayWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -33,46 +34,53 @@ public final class Utils {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Set<Parameter> optionalSet = new HashSet<>();
 
-	public static List<Class<?>> getClasses(Path jarPath, String packageName, int maxDepth) throws IOException {
-		Path walkRoot = jarPath;
-		final boolean isJar = IOUtils.getFileExtension(jarPath).equals("jar");
-		if (isJar) {
-			final FileSystem zfs = FileSystems.newFileSystem(jarPath, (ClassLoader) null);
-			walkRoot = zfs.getPath("");
-		}
+	@NotNull
+	public static Set<Class<?>> getPackageClasses(@NotNull String packageName, int maxDepth) throws IOException {
+		final Set<Class<?>> classes = new HashSet<>();
+		final String packagePath = packageName.replace('.', File.separatorChar);
 
-		if (packageName != null) {
-			walkRoot = walkRoot.resolve(packageName.replace(".", "\\"));
-		}
+		final String classPath = System.getProperty("java.class.path");
+		for (String strPath : classPath.split(";")) {
+			final Path jarPath = Path.of(strPath);
 
-		if (Files.notExists(walkRoot)) {
-			throw new IOException("Command package '" + packageName + "' was not found in " + (isJar ? "JAR path" : "directory path") + ": " + jarPath.toAbsolutePath());
-		}
-
-		Path finalWalkRoot = walkRoot;
-		return Files.walk(walkRoot, maxDepth).filter(p -> !Files.isDirectory(p)).filter(p -> IOUtils.getFileExtension(p).equals("class")).map(p -> {
-			String result;
-
+			final Path walkRoot;
+			final boolean isJar = strPath.endsWith("jar");
 			if (isJar) {
-				result = p.toString().replace('/', '.').substring(0, p.toString().length() - 6);
+				final FileSystem zfs = FileSystems.newFileSystem(jarPath, (ClassLoader) null);
+				walkRoot = zfs.getPath(packagePath);
 			} else {
-				String relativePath = p.toString().replace(finalWalkRoot + "\\", "");
-				result = relativePath.replace(".class", "").replace("\\", ".");
-
-				if (packageName != null) {
-					result = packageName + "." + result;
-				}
+				walkRoot = jarPath.resolve(packagePath);
 			}
 
-			try {
-				return Class.forName(result, false, Utils.class.getClassLoader());
-			} catch (ClassNotFoundException e) {
-				LOGGER.error("Class not found: {}, is it in the class path ?", result);
-				return null;
+			if (Files.notExists(walkRoot)) {
+				continue;
 			}
-		}).collect(Collectors.toList());
+
+			Files.walk(walkRoot, maxDepth)
+					.filter(Files::isRegularFile)
+					.filter(p -> IOUtils.getFileExtension(p).equals("class"))
+					.forEach(p -> {
+						// Change from a/b/c/d to c/d
+						final String relativePath = walkRoot.relativize(p).toString().replace('\\',  '.');
+
+						//Remove .class suffix and add package prefix
+						final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
+
+						try {
+							classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
+						} catch (ClassNotFoundException e) {
+							LOGGER.error("Unable to load class {}", result);
+						}
+					});
+
+			break;
+		}
+
+		return classes;
 	}
 
+	@Contract("null, _ -> fail")
+	@NotNull
 	public static String requireNonBlank(String str, String name) {
 		if (str == null) {
 			throw new IllegalArgumentException(name + " may not be null");
