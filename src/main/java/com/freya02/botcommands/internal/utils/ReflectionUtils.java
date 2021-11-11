@@ -3,11 +3,11 @@ package com.freya02.botcommands.internal.utils;
 import com.freya02.botcommands.api.annotations.ConditionalUse;
 import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
+import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -111,11 +111,11 @@ public class ReflectionUtils {
 	}
 
 	@Nullable
-	public static Range getLongRange(Parameter parameter) {
+	public static LongRange getLongRange(Parameter parameter) {
 		final Map<Class<?>, Annotation> map = paramAnnotationsMap.get(parameter);
 		if (map == null) return null;
 
-		return (Range) map.get(Range.class);
+		return (LongRange) map.get(LongRange.class);
 	}
 
 	@Nullable

@@ -67,8 +67,14 @@ public class SlashUtils {
 				data = new OptionData(OptionType.BOOLEAN, name, description);
 			} else if (boxedType == Long.class) {
 				data = new OptionData(OptionType.INTEGER, name, description);
+
+				data.setMinValue(parameter.getMinValue().longValue());
+				data.setMaxValue(parameter.getMaxValue().longValue());
 			} else if (boxedType == Double.class) {
 				data = new OptionData(OptionType.NUMBER, name, description);
+
+				data.setMinValue(parameter.getMinValue().doubleValue());
+				data.setMaxValue(parameter.getMaxValue().doubleValue());
 			} else if (ParameterResolvers.exists(boxedType)) {
 				data = new OptionData(OptionType.STRING, name, description);
 			} else {
