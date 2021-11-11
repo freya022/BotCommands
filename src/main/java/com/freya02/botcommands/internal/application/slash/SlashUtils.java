@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
+import com.freya02.botcommands.internal.parameters.channels.AbstractChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -59,8 +60,16 @@ public class SlashUtils {
 				data = new OptionData(OptionType.USER, name, description);
 			} else if (boxedType == Role.class) {
 				data = new OptionData(OptionType.ROLE, name, description);
-			} else if (boxedType == TextChannel.class) {
+			} else if (GuildChannel.class.isAssignableFrom(boxedType)) {
 				data = new OptionData(OptionType.CHANNEL, name, description);
+
+				if (parameter.getChannelTypes().isEmpty()) {
+					final AbstractChannelResolver<?> resolver = (AbstractChannelResolver<?>) parameter.getResolver();
+
+					data.setChannelTypes(resolver.getChannelType());
+				} else {
+					data.setChannelTypes(parameter.getChannelTypes());
+				}
 			} else if (boxedType == IMentionable.class) {
 				data = new OptionData(OptionType.MENTIONABLE, name, description);
 			} else if (boxedType == Boolean.class) {
