@@ -1,13 +1,18 @@
 package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.api.annotations.ConditionalUse;
+import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -16,13 +21,15 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class ReflectionUtils {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private static final Set<Parameter> optionalSet = new HashSet<>();
+	private static final Map<Parameter, Map<Class<?>, Annotation>> paramAnnotationsMap = new HashMap<>();
 
 	@NotNull
 	public static Set<Class<?>> getPackageClasses(@NotNull String packageName, int maxDepth) throws IOException {
@@ -97,10 +104,29 @@ public class ReflectionUtils {
 	}
 
 	public static boolean isOptional(Parameter parameter) {
-		return optionalSet.contains(parameter);
+		final Map<Class<?>, Annotation> map = paramAnnotationsMap.get(parameter);
+		if (map == null) return false;
+
+		return map.containsKey(Optional.class) || map.containsKey(Nullable.class);
 	}
 
-	public static void scanOptionals(Set<Class<?>> classes) {
+	@Nullable
+	public static Range getLongRange(Parameter parameter) {
+		final Map<Class<?>, Annotation> map = paramAnnotationsMap.get(parameter);
+		if (map == null) return null;
+
+		return (Range) map.get(Range.class);
+	}
+
+	@Nullable
+	public static DoubleRange getDoubleRange(Parameter parameter) {
+		final Map<Class<?>, Annotation> map = paramAnnotationsMap.get(parameter);
+		if (map == null) return null;
+
+		return (DoubleRange) map.get(DoubleRange.class);
+	}
+
+	public static void scanAnnotations(Set<Class<?>> classes) {
 		if (classes.isEmpty())
 			return;
 
@@ -110,26 +136,17 @@ public class ReflectionUtils {
 				.enableAnnotationInfo()
 				.scan();
 
-		final ClassInfoList nullableInfos = result.getClassesWithMethodParameterAnnotation("org.jetbrains.annotations.Nullable")
-				.union(result.getClassesWithMethodParameterAnnotation("javax.annotation.Nullable"))
-				.union(result.getClassesWithMethodParameterAnnotation("com.freya02.botcommands.api.annotations.Optional"));
+		for (ClassInfo classInfo : result.getAllClasses()) {
+			for (MethodInfo methodInfo : classInfo.getDeclaredMethodInfo()) {
+				final Parameter[] parameters = methodInfo.loadClassAndGetMethod().getParameters();
 
-		for (ClassInfo classInfo : nullableInfos) {
-			for (MethodInfo info : classInfo.getDeclaredMethodInfo()) {
-				if (info.isConstructor())
-					continue;
+				int j = 0;
+				for (MethodParameterInfo parameterInfo : methodInfo.getParameterInfo()) {
+					final Parameter parameter = parameters[j++];
 
-				final Method method = info.loadClassAndGetMethod();
-
-				MethodParameterInfo[] infoParameterInfo = info.getParameterInfo();
-				for (int i = 0, infoParameterInfoLength = infoParameterInfo.length; i < infoParameterInfoLength; i++) {
-					MethodParameterInfo parameterInfo = infoParameterInfo[i];
-
-					if (!parameterInfo.hasAnnotation("org.jetbrains.annotations.Nullable")
-							&& !parameterInfo.hasAnnotation("com.freya02.botcommands.api.annotations.Optional")
-							&& !parameterInfo.hasAnnotation("javax.annotation.Nullable")) continue;
-
-					optionalSet.add(method.getParameters()[i]);
+					for (AnnotationInfo annotationInfo : parameterInfo.getAnnotationInfo()) {
+						paramAnnotationsMap.computeIfAbsent(parameter, x -> new HashMap<>()).put(annotationInfo.getClassInfo().loadClass(), annotationInfo.loadClassAndInstantiate());
+					}
 				}
 			}
 		}

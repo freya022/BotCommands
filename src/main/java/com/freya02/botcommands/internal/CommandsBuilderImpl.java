@@ -236,7 +236,7 @@ public final class CommandsBuilderImpl {
 
 		setupContext(jda);
 
-		ReflectionUtils.scanOptionals(classes);
+		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 
