@@ -13,9 +13,11 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -26,13 +28,17 @@ import java.util.Map;
 
 public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
-	/** This is NOT localized */
+	/**
+	 * This is NOT localized
+	 */
 	private final String description;
 
 	private final Object instance;
 	private final MethodParameters<SlashCommandParameter> commandParameters;
 
-	/** guild id => localized option names */
+	/**
+	 * guild id => localized option names
+	 */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
@@ -53,7 +59,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 			if (Member.class.isAssignableFrom(type)
 					|| Role.class.isAssignableFrom(type)
-					|| GuildChannel.class.isAssignableFrom(type) ) {
+					|| GuildChannel.class.isAssignableFrom(type)) {
 				if (!annotation.guildOnly())
 					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
@@ -61,16 +67,19 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			return new SlashCommandParameter(parameter, i);
 		});
 
-		if (!annotation.group().isBlank() && annotation.subcommand().isBlank()) throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
+		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())
+			throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
 
 		this.description = annotation.description();
 	}
-	
+
 	public void putLocalizedOptions(long guildId, @NotNull List<String> optionNames) {
 		localizedOptionMap.put(guildId, optionNames);
 	}
 
-	/** This is NOT localized */
+	/**
+	 * This is NOT localized
+	 */
 	public String getDescription() {
 		return description;
 	}
@@ -110,7 +119,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 						continue;
 					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName());
+						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (localized '" + optionName + "'");
 					}
 				}
 
@@ -150,6 +159,32 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		commandMethod.invoke(instance, objects.toArray());
 
 		return true;
+	}
+
+	@Nullable
+	public String getAutocompletionHandlerName(CommandAutoCompleteEvent event) {
+		final OptionMapping focusedOption = event.getFocusedOptionType();
+
+		int optionIndex = 0;
+		final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
+		for (final SlashCommandParameter parameter : commandParameters) {
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+
+			if (parameter.isOption()) {
+				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
+				if (optionName == null) {
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
+				}
+
+				optionIndex++;
+
+				if (optionName.equals(focusedOption.getName())) {
+					return applicationOptionData.getAutocompletionHandlerName();
+				}
+			}
+		}
+
+		return null;
 	}
 
 	@Override

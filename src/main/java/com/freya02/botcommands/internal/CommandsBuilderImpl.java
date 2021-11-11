@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
+import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
@@ -14,6 +15,7 @@ import com.freya02.botcommands.api.waiter.EventWaiter;
 import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
@@ -45,6 +47,7 @@ public final class CommandsBuilderImpl {
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final EventListenersBuilder eventListenersBuilder;
+	private final AutocompletionHandlersBuilder autocompletionHandlersBuilder;
 
 	private final ComponentsBuilder componentsBuilder;
 
@@ -70,6 +73,7 @@ public final class CommandsBuilderImpl {
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
+		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
 	}
 
 	private void buildClasses() {
@@ -116,6 +120,8 @@ public final class CommandsBuilderImpl {
 			}
 
 			eventListenersBuilder.postProcess();
+
+			autocompletionHandlersBuilder.postProcess();
 
 			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
@@ -190,6 +196,13 @@ public final class CommandsBuilderImpl {
 		final Object eventListener = tryInstantiateMethod(JDAEventListener.class, Object.class, "JDA event listener", method);
 		if (eventListener != null) {
 			eventListenersBuilder.processEventListener(eventListener, method);
+
+			return true;
+		}
+
+		final Object autocompletionHandler = tryInstantiateMethod(AutocompletionHandler.class, Object.class, "Slash command auto completion", method);
+		if (autocompletionHandler != null) {
+			autocompletionHandlersBuilder.processHandler(autocompletionHandler, method);
 
 			return true;
 		}

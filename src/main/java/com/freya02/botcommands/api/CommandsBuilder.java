@@ -2,6 +2,7 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -26,6 +27,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import static net.dv8tion.jda.api.interactions.commands.SlashCommand.Choice;
 
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -129,6 +132,21 @@ public final class CommandsBuilder {
 	public CommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
 		this.slashGuildIds.clear();
 		this.slashGuildIds.addAll(slashGuildIds);
+
+		return this;
+	}
+
+	/**
+	 * Registers an autocompletion transformer
+	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
+	 *
+	 * @param type                      Type of the List generic element type
+	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Choice choice}
+	 * @param <T>                       Type of the List generic element type
+	 * @return This builder for chaining convenience
+	 */
+	public <T> CommandsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+		context.registerAutocompletionTransformer(type, autocompletionTransformer);
 
 		return this;
 	}

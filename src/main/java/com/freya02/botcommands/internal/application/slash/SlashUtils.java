@@ -75,16 +75,30 @@ public class SlashUtils {
 				throw new IllegalArgumentException("Unknown slash command option: " + boxedType.getName());
 			}
 
+			if (applicationOptionData.hasAutocompletion()) {
+				if (!data.getType().canSupportChoices()) {
+					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " does not support autocompletion");
+				}
+
+				data.setAutoComplete(true);
+			}
+
 			if (data.getType().canSupportChoices()) {
-				//choices might just be empty
-				if (optionsChoices.size() >= i) {
+				//optionChoices might just be empty
+				// choices of the option might also be empty as an empty list might be generated
+				// do not add choices if it's empty, to not trigger checks
+				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+					if (applicationOptionData.hasAutocompletion()) {
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
+					}
+
 					data.addChoices(optionsChoices.get(i - 1));
 				}
 			}
 
-			list.add(data);
-
 			data.setRequired(!parameter.isOptional());
+
+			list.add(data);
 
 			i++;
 		}

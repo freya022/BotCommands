@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
@@ -70,6 +71,8 @@ public class BContextImpl implements BContext {
 	private ApplicationCommandsCache applicationCommandsCache;
 	private Function<Guild, DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
+
+	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
 
 	@Override
 	@NotNull
@@ -446,5 +449,13 @@ public class BContextImpl implements BContext {
 	@Override
 	public ExceptionHandler getUncaughtExceptionHandler() {
 		return uncaughtExceptionHandler;
+	}
+
+	public AutocompletionTransformer<?> getAutocompletionTransformer(Class<?> type) {
+		return autocompletionTransformers.get(type);
+	}
+
+	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+		autocompletionTransformers.put(type, autocompletionTransformer);
 	}
 }

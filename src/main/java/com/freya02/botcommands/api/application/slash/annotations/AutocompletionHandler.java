@@ -1,0 +1,50 @@
+package com.freya02.botcommands.api.application.slash.annotations;
+
+import com.freya02.botcommands.api.CommandsBuilder;
+import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.List;
+
+/**
+ * Annotation to mark methods as being autocompletion functions for {@link AppOption slash command options}
+ *
+ * <br>
+ * <br>The annotated method returns a {@link List} of things
+ * <br>These things can be, and are mapped as follows:
+ * <ul>
+ *     <li>String, Long, Double -> Choice(String, String), uses fuzzy matching to give the best choices first</li>
+ *     <li>Choice -> keep the same choice, same order as provided</li>
+ *     <li>Object -> Transformer -> Choice, same order as provided</li>
+ * </ul>
+ * <p>
+ * You can add more parameters with {@link CommandsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
+ *
+ * @see AppOption
+ * @see JDASlashCommand
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface AutocompletionHandler {
+	/**
+	 * Sets the name of the autocompletion handler, <b>it must be the same as what you set in {@link AppOption#autocomplete()}</b>
+	 * <br>The name must be unique, another handler cannot share it
+	 *
+	 * @return Name of the autocompletion handler
+	 */
+	String name();
+
+	/**
+	 * Sets the {@link AutocompletionMode autocompletion mode}
+	 * <br><b>This is only usable on collection return types of String, Double and Long</b>
+	 *
+	 * @return Mode of the autocompletion
+	 * @see AutocompletionMode
+	 */
+	AutocompletionMode mode() default AutocompletionMode.FUZZY;
+}
