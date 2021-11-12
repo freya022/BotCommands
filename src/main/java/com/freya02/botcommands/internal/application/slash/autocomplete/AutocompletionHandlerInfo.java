@@ -122,12 +122,19 @@ public class AutocompletionHandlerInfo {
 					.toList();
 
 			final OptionMapping optionMapping = event.getFocusedOptionType();
-			final List<ExtractedResult> results = FuzzySearch.extractTop(optionMapping.getAsString(),
+			//First sort the results by similarities but by taking into account an incomplete input
+			final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
 					list,
 					FuzzySearch::partialRatio,
 					25);
 
-			return results.stream()
+			//Then sort the results by similarities but don't take length into account
+			final List<ExtractedResult> similarities = FuzzySearch.extractTop(optionMapping.getAsString(),
+					bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
+					FuzzySearch::ratio,
+					25);
+
+			return similarities.stream()
 					.limit(OptionData.MAX_CHOICES)
 					.map(c -> getChoice(optionMapping, c))
 					.toList();
