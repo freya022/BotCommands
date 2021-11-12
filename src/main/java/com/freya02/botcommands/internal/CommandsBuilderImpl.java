@@ -28,6 +28,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -217,6 +218,17 @@ public final class CommandsBuilderImpl {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) throws IOException {
+		if (jda.getShardInfo().getShardId() != 0) {
+			LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...");
+
+			final ShardManager manager = jda.getShardManager();
+			if (manager == null) throw new IllegalArgumentException("Unable to retrieve Shard 0 as shard manager is null");
+
+			jda = manager.getShardById(0);
+
+			if (jda == null) throw new IllegalArgumentException("Unable to retrieve Shard 0");
+		}
+
 		if (jda.getStatus() != JDA.Status.CONNECTED) {
 			try {
 				LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !");
