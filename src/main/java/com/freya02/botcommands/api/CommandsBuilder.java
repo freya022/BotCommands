@@ -263,7 +263,7 @@ public final class CommandsBuilder {
 	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
 		addSearchPath(commandPackageName);
 
-		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
+		build(jda);
 	}
 
 	/**
@@ -273,7 +273,17 @@ public final class CommandsBuilder {
 	 */
 	@Blocking
 	public void build(JDA jda) throws IOException {
-		new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
+		try {
+			new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
+		} catch (RuntimeException e) {
+			LOGGER.error("An error occurred while creating the framework, aborted");
+
+			throw e;
+		} catch (Throwable e) {
+			LOGGER.error("An error occurred while creating the framework, aborted");
+
+			throw new RuntimeException(e);
+		}
 	}
 
 	public BContext getContext() {

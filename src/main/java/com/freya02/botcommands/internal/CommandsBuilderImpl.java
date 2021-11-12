@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -78,65 +77,55 @@ public final class CommandsBuilderImpl {
 		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
 	}
 
-	private void buildClasses() {
-		try {
-			classes.removeIf(c -> {
-				try {
-					return !ReflectionUtils.isInstantiable(c);
-				} catch (IllegalAccessException | InvocationTargetException e) {
-					LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
+	private void buildClasses() throws Exception {
+		classes.removeIf(c -> {
+			try {
+				return !ReflectionUtils.isInstantiable(c);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
 
-					throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
-				}
-			});
-
-			for (Class<?> aClass : classes) {
-				processClass(aClass);
+				throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
 			}
+		});
 
-			if (!context.isHelpDisabled()) {
-				processClass(HelpCommand.class);
-
-				final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
-				if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
-
-				final HelpCommand help = (HelpCommand) helpInfo.getInstance();
-				help.generate();
-			}
-
-			prefixedCommandsBuilder.postProcess();
-
-			if (context.getComponentManager() != null) {
-				//Load button listeners
-				for (Class<?> aClass : classes) {
-					componentsBuilder.processClass(aClass);
-				}
-			} else {
-				LOGGER.info("ComponentManager is not set, the Components API, paginators and menus won't be usable");
-			}
-
-			applicationCommandsBuilder.postProcess();
-
-			if (context.getComponentManager() != null) {
-				componentsBuilder.postProcess();
-			}
-
-			eventListenersBuilder.postProcess();
-
-			autocompletionHandlersBuilder.postProcess();
-
-			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
-
-			LOGGER.info("Finished registering all commands");
-		} catch (RuntimeException e) {
-			LOGGER.error("An error occurred while loading the commands, the commands will not work");
-
-			throw e;
-		} catch (Throwable e) {
-			LOGGER.error("An error occurred while loading the commands, the commands will not work");
-
-			throw new RuntimeException(e);
+		for (Class<?> aClass : classes) {
+			processClass(aClass);
 		}
+
+		if (!context.isHelpDisabled()) {
+			processClass(HelpCommand.class);
+
+			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
+			if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
+
+			final HelpCommand help = (HelpCommand) helpInfo.getInstance();
+			help.generate();
+		}
+
+		prefixedCommandsBuilder.postProcess();
+
+		if (context.getComponentManager() != null) {
+			//Load button listeners
+			for (Class<?> aClass : classes) {
+				componentsBuilder.processClass(aClass);
+			}
+		} else {
+			LOGGER.info("ComponentManager is not set, the Components API, paginators and menus won't be usable");
+		}
+
+		applicationCommandsBuilder.postProcess();
+
+		if (context.getComponentManager() != null) {
+			componentsBuilder.postProcess();
+		}
+
+		eventListenersBuilder.postProcess();
+
+		autocompletionHandlersBuilder.postProcess();
+
+		context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
+
+		LOGGER.info("Finished registering all commands");
 	}
 
 	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -217,7 +206,7 @@ public final class CommandsBuilderImpl {
 	 *
 	 * @param jda The JDA instance of your bot
 	 */
-	public void build(JDA jda) throws IOException {
+	public void build(JDA jda) throws Exception {
 		if (jda.getShardInfo().getShardId() != 0) {
 			LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...");
 
