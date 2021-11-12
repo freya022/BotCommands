@@ -1,8 +1,7 @@
 package com.freya02.botcommands.api.application.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.*;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +19,9 @@ import java.lang.annotation.Target;
  *
  * @see Optional @Optional
  * @see Nullable @Nullable (same as @Optional but better)
+ * @see LongRange @LongRange
+ * @see DoubleRange @DoubleRange
+ * @see ChannelTypes @ChannelTypes
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
