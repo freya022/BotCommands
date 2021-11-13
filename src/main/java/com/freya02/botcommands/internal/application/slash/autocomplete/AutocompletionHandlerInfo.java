@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 //      Object -> Transformer -> Choice
 @SuppressWarnings("unchecked")
 public class AutocompletionHandlerInfo {
+	private static final int MAX_CHOICES = OptionData.MAX_CHOICES - 1; //accommodate for user input
+
 	private final Object autocompletionHandler;
 	private final Method method;
 
@@ -67,7 +69,7 @@ public class AutocompletionHandlerInfo {
 		return event -> {
 			final List<SlashCommand.Choice> choices = (List<SlashCommand.Choice>) method.invoke(autocompletionHandler, event);
 
-			return choices.subList(0, Math.min(OptionData.MAX_CHOICES, choices.size()));
+			return choices.subList(0, Math.min(MAX_CHOICES, choices.size()));
 		};
 	}
 
@@ -76,7 +78,7 @@ public class AutocompletionHandlerInfo {
 			final List<Object> results = (List<Object>) method.invoke(autocompletionHandler, event);
 
 			return results.stream()
-					.limit(OptionData.MAX_CHOICES)
+					.limit(MAX_CHOICES)
 					.map(transformer::apply)
 					.collect(Collectors.toList());
 		};
@@ -92,23 +94,24 @@ public class AutocompletionHandlerInfo {
 
 	private ChoiceSupplier generateContinuitySupplier() {
 		return event -> {
+			final OptionMapping optionMapping = event.getFocusedOptionType();
+
+			final String query = optionMapping.getAsString();
 			final List<String> list = ((List<Object>) method.invoke(autocompletionHandler, event))
 					.stream()
 					.map(Object::toString)
+					.filter(s -> s.startsWith(query))
+					.sorted()
 					.collect(Collectors.toCollection(ArrayList::new));
 
-			final OptionMapping optionMapping = event.getFocusedOptionType();
-
-			list.removeIf(s -> !s.startsWith(optionMapping.getAsString()));
-
-			final List<ExtractedResult> results = FuzzySearch.extractTop(optionMapping.getAsString(),
+			final List<ExtractedResult> results = FuzzySearch.extractTop(query,
 					list,
 					FuzzySearch::ratio,
-					25);
+					MAX_CHOICES);
 
 			return results.stream()
-					.limit(OptionData.MAX_CHOICES)
-					.map(c -> getChoice(optionMapping, c))
+					.limit(MAX_CHOICES)
+					.map(c -> getChoice(optionMapping, c.getString()))
 					.toList();
 		};
 	}
@@ -119,6 +122,7 @@ public class AutocompletionHandlerInfo {
 			final List<String> list = ((List<Object>) method.invoke(autocompletionHandler, event))
 					.stream()
 					.map(Object::toString)
+					.sorted()
 					.toList();
 
 			final OptionMapping optionMapping = event.getFocusedOptionType();
@@ -126,26 +130,26 @@ public class AutocompletionHandlerInfo {
 			final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
 					list,
 					FuzzySearch::partialRatio,
-					25);
+					MAX_CHOICES);
 
 			//Then sort the results by similarities but don't take length into account
 			final List<ExtractedResult> similarities = FuzzySearch.extractTop(optionMapping.getAsString(),
 					bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
 					FuzzySearch::ratio,
-					25);
+					MAX_CHOICES);
 
 			return similarities.stream()
-					.limit(OptionData.MAX_CHOICES)
-					.map(c -> getChoice(optionMapping, c))
+					.limit(MAX_CHOICES)
+					.map(c -> getChoice(optionMapping, c.getString()))
 					.toList();
 		};
 	}
 
-	private SlashCommand.Choice getChoice(OptionMapping optionMapping, ExtractedResult result) {
+	private SlashCommand.Choice getChoice(OptionMapping optionMapping, String string) {
 		return switch (optionMapping.getType()) {
-			case STRING -> new SlashCommand.Choice(result.getString(), result.getString());
-			case INTEGER -> new SlashCommand.Choice(result.getString(), Long.parseLong(result.getString()));
-			case NUMBER -> new SlashCommand.Choice(result.getString(), Double.parseDouble(result.getString()));
+			case STRING -> new SlashCommand.Choice(string, string);
+			case INTEGER -> new SlashCommand.Choice(string, Long.parseLong(string));
+			case NUMBER -> new SlashCommand.Choice(string, Double.parseDouble(string));
 			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
 		};
 	}
@@ -159,13 +163,19 @@ public class AutocompletionHandlerInfo {
 	}
 
 	public List<SlashCommand.Choice> getChoices(CommandAutoCompleteEvent event) throws Exception {
-		final List<SlashCommand.Choice> choices = choiceSupplier.apply(event);
+		final List<SlashCommand.Choice> actualChoices = new ArrayList<>(25);
 
-		if (choices.size() > OptionData.MAX_CHOICES) {
-			return choices.subList(0, OptionData.MAX_CHOICES);
-		} else {
-			return choices;
+		final List<SlashCommand.Choice> suppliedChoices = choiceSupplier.apply(event);
+
+		final OptionMapping optionMapping = event.getFocusedOptionType();
+		if (!optionMapping.getAsString().isBlank())
+			actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
+
+		for (int i = 0; i < MAX_CHOICES && i < suppliedChoices.size(); i++) {
+			actualChoices.add(suppliedChoices.get(i));
 		}
+
+		return actualChoices;
 	}
 
 	public Method getMethod() {
