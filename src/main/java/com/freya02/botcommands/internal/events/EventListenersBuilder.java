@@ -162,6 +162,6 @@ public class EventListenersBuilder {
 	}
 
 	public void postProcess() {
-		context.getJDA().addEventListener(new EventListenerImpl(context, eventListenersMap));
+		context.addEventListeners(new EventListenerImpl(context, eventListenersMap));
 	}
 }

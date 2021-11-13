@@ -66,6 +66,6 @@ public class AutocompletionHandlersBuilder {
 			}
 		}
 
-		context.getJDA().addEventListener(new AutocompletionListener(context, autocompleteHandlersMap));
+		context.addEventListeners(new AutocompletionListener(context, autocompleteHandlersMap));
 	}
 }
