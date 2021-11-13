@@ -5,6 +5,7 @@ import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -34,6 +35,13 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 		tryUpdate(event.getGuild());
 	}
 
+	@Override
+	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
+		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
+			tryUpdate(event.getGuild());
+		}
+	}
+
 	private void tryUpdate(Guild guild) {
 		synchronized (updatedJoinedGuilds) {
 			if (updatedJoinedGuilds.contains(guild.getIdLong())) return;
@@ -42,7 +50,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 		}
 
 		try {
-			context.tryUpdateGuildCommands(Collections.singleton(guild));
+			context.scheduleApplicationCommandsUpdate(Collections.singleton(guild));
 		} catch (IOException e) {
 			LOGGER.error("An error occurred while updating guild '{}' ({}) commands (on guild join / on unavailable guild join but became available later)", guild.getName(), guild.getIdLong(), e);
 		}

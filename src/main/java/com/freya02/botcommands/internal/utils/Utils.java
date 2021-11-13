@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.utils;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.internal.Logging;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -57,6 +58,18 @@ public final class Utils {
 		}
 
 		return e;
+	}
+
+	public static ErrorResponseException getErrorResponseException(Throwable e) {
+		do {
+			if (e instanceof ErrorResponseException ex) {
+				return ex;
+			}
+
+			e = e.getCause();
+		} while (e != null);
+
+		return null;
 	}
 
 	public static String randomId(int n) {

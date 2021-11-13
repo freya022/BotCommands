@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
@@ -21,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -272,7 +275,8 @@ public interface BContext {
 	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
 	 * @throws IOException If unable to write the cache data
 	 */
-	boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException;
+	@NotNull
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds) throws IOException;
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)

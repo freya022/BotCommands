@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -396,8 +398,9 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
-		return slashCommandsBuilder.tryUpdateGuildCommands(guilds);
+	@NotNull
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds) throws IOException {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds);
 	}
 
 	@Override
