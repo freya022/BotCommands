@@ -116,7 +116,10 @@ public class BContextImpl implements BContext {
 	@Override
 	@Nullable
 	public TextCommandInfo findFirstCommand(@NotNull CommandPath path) {
-		return textCommandMap.get(path).findFirst();
+		final TextCommandCandidates candidates = textCommandMap.get(path);
+		if (candidates == null) return null;
+
+		return candidates.findFirst();
 	}
 
 	@Nullable
