@@ -9,10 +9,7 @@ import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfoMap;
-import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
-import com.freya02.botcommands.internal.application.ApplicationCommandsCache;
+import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -30,6 +27,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -161,22 +159,52 @@ public class BContextImpl implements BContext {
 		return getMessageCommandsMap().get(CommandPath.ofName(name));
 	}
 
+	@NotNull
 	public ApplicationCommandInfoMap getApplicationCommandInfoMap() {
 		return applicationCommandInfoMap;
 	}
 
-	private ApplicationCommandInfoMap.CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
-		return getApplicationCommandInfoMap().getSlashCommands();
-	}
-	
+	@Override
 	@NotNull
-	private ApplicationCommandInfoMap.CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
-		return getApplicationCommandInfoMap().getUserCommands();
+	@UnmodifiableView
+	public ApplicationCommandInfoMapView getApplicationCommandInfoMapView() {
+		return applicationCommandInfoMap;
 	}
 
 	@NotNull
-	private ApplicationCommandInfoMap.CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
+	private CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
+		return getApplicationCommandInfoMap().getSlashCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView() {
+		return getApplicationCommandInfoMapView().getSlashCommandsView();
+	}
+
+	@NotNull
+	private CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
+		return getApplicationCommandInfoMap().getUserCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<UserCommandInfo> getUserCommandsMapView() {
+		return getApplicationCommandInfoMapView().getUserCommandsView();
+	}
+
+	@NotNull
+	private CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
 		return getApplicationCommandInfoMap().getMessageCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView() {
+		return getApplicationCommandInfoMapView().getMessageCommandsView();
 	}
 
 	@Override
@@ -302,8 +330,9 @@ public class BContextImpl implements BContext {
 		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
 
-	public Collection<? extends ApplicationCommandInfo> getApplicationCommands() {
-		return applicationCommandInfoMap.getAllApplicationCommands();
+	@UnmodifiableView
+	public Collection<? extends ApplicationCommandInfo> getApplicationCommandsView() {
+		return applicationCommandInfoMap.getAllApplicationCommandsView();
 	}
 
 	public void dispatchException(String message, Throwable e) {

@@ -153,7 +153,7 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommands().stream()
+		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandsView().stream()
 				.filter(info -> {
 					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
 						return false;
