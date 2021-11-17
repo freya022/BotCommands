@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application;
 
+import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;

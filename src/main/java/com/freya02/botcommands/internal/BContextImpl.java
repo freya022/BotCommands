@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
+import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
