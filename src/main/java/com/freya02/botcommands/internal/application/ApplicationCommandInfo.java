@@ -1,10 +1,13 @@
 package com.freya02.botcommands.internal.application;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -34,5 +37,9 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 	@Override
 	public List<? extends ApplicationCommandParameter<?>> getOptionParameters() {
 		return (List<? extends ApplicationCommandParameter<?>>) super.getOptionParameters();
+	}
+
+	public LocalizedCommandData getLocalizedData(@NotNull BContext context, @Nullable Guild guild) {
+		return LocalizedCommandData.of(context, guild, this);
 	}
 }
