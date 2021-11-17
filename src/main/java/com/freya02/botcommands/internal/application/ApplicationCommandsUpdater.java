@@ -153,24 +153,7 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandsView().stream()
-				.filter(info -> {
-					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
-						return false;
-					} else if (!info.isGuildOnly() && guild != null) { //Do not update global commands in guild context
-						return false;
-					}
-
-					//Get the actual usable commands in this context (dm or guild)
-					if (guild == null) return true;
-
-					final SettingsProvider settingsProvider = context.getSettingsProvider();
-					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
-
-					return settingsProvider.getGuildCommands(guild).getFilter().test(info.getPath());
-				})
-				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
-				.collect(Collectors.toCollection(ArrayList::new)); //Ensure spliterator is ORDERED for future Stream usage
+		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandInfoMap().filterByGuild(context, guild);
 
 		computeSlashCommands(guildApplicationCommands);
 
