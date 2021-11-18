@@ -42,9 +42,9 @@
     </repositories>
     <dependencies>
         <dependency> <!-- The Java Discord API-->
-            <groupId>com.github.aasmart</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>dbce817</version>
+            <version>7f6dadee2f</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -55,18 +55,18 @@
         <dependency> <!-- Needed for JDA and BotCommands logging -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.7</version>
         </dependency>
         <dependency> <!-- This library,
         I am using a local build, you can change the group id and version to use the jitpack one -->
             <groupId>com.freya02</groupId> <!-- TODO change here -->
             <artifactId>BotCommands</artifactId>
-            <version>2.0.0-SNAPSHOT</version> <!-- TODO change here -->
+            <version>2.2.0-SNAPSHOT</version> <!-- TODO change here -->
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.23.jre7</version>
+            <version>42.3.1</version>
         </dependency>
         <dependency> <!-- Needed to pool SQL connections, optional if you don't use components -->
             <groupId>com.zaxxer</groupId>
