@@ -4,12 +4,12 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -52,9 +52,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		this.instance = instance;
 		this.commandParameters = MethodParameters.of(commandMethod, (parameter, i) -> {
-			if (parameter.isAnnotationPresent(TextOption.class))
-				throw new IllegalArgumentException(String.format("Slash command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
-
 			final Class<?> type = parameter.getType();
 
 			if (Member.class.isAssignableFrom(type)
@@ -94,7 +91,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		}};
 
 		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
+		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;
 		for (final SlashCommandParameter parameter : commandParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
@@ -161,12 +158,16 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return true;
 	}
 
+	public List<String> getLocalizedOptions(@NotNull Guild guild) {
+		return localizedOptionMap.get(guild.getIdLong());
+	}
+
 	@Nullable
 	public String getAutocompletionHandlerName(CommandAutoCompleteEvent event) {
 		final OptionMapping focusedOption = event.getFocusedOptionType();
 
 		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? localizedOptionMap.get(event.getGuild().getIdLong()) : null;
+		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;
 		for (final SlashCommandParameter parameter : commandParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
@@ -190,5 +191,11 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	@Override
 	public MethodParameters<SlashCommandParameter> getParameters() {
 		return commandParameters;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<? extends SlashCommandParameter> getOptionParameters() {
+		return (List<? extends SlashCommandParameter>) super.getOptionParameters();
 	}
 }

@@ -22,8 +22,30 @@ import java.util.List;
  *     <li>Choice -> keep the same choice, same order as provided</li>
  *     <li>Object -> Transformer -> Choice, same order as provided</li>
  * </ul>
+ * <b>Note that the first choice is always what the user typed</b>
+ *
  * <p>
- * You can add more parameters with {@link CommandsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
+ *
+ * You can add more List element types with {@link CommandsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
+ *
+ * <p>
+ *
+ * <h2>State aware autocompletion</h2>
+ * You can also use "state aware autocompletion", this means you can retrieve parameters the user has already entered and use it to make your autocompletion better
+ *
+ * <br>The requirements are as follows:
+ * <ul>
+ *     <li>The parameters must be annotated with {@link AppOption} if they are on the original slash commands too</li>
+ *     <li>The parameters must be named the same as in the original slash command</li>
+ *     <li>The parameters of the same name must have the same type as the original slash command</li>
+ * </ul>
+ *
+ * However:
+ * <ul>
+ *     <li>The parameters can be in any order</li>
+ *     <li>You are free to put as many or less parameters as the original slash commands</li>
+ *     <li>You can also use custom parameters, like getting a JDA instance, these do not have to be on the original slash commands</li>
+ * </ul>
  *
  * @see AppOption
  * @see JDASlashCommand

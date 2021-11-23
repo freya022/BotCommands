@@ -9,9 +9,9 @@ import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.entities.EmojiOrEmoteImpl;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +44,7 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+	public Object resolve(SlashCommandInteraction event, OptionMapping optionMapping) {
 		final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(optionMapping.getAsString());
 		if (emoteMatcher.find()) {
 			return new EmojiOrEmoteImpl(emoteMatcher.group(1), emoteMatcher.group(2));

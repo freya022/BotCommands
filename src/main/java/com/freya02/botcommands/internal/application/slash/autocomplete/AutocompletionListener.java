@@ -62,7 +62,7 @@ public class AutocompletionListener implements EventListener {
 					return;
 				}
 
-				event.respondChoices(handler.getChoices(event)).queue();
+				event.respondChoices(handler.getChoices(slashCommand, event)).queue();
 			}, event);
 		}
 	}

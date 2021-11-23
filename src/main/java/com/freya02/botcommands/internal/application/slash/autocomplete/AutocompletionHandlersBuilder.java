@@ -62,6 +62,8 @@ public class AutocompletionHandlersBuilder {
 					if (handler == null) {
 						throw new IllegalArgumentException("Slash command parameter #" + i + " at " + Utils.formatMethodShort(info.getCommandMethod()) + " uses autocompletion but has no handler assigned, did you misspell the handler name ? Consider using a constant variable to share with the handler and the option");
 					}
+
+					handler.checkParameters(info);
 				}
 			}
 		}
