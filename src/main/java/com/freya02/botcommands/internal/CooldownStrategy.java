@@ -19,6 +19,10 @@ public class CooldownStrategy {
 		return cooldown;
 	}
 
+	public long getCooldownMillis() {
+		return unit.toMillis(cooldown);
+	}
+
 	public TimeUnit getUnit() {
 		return unit;
 	}

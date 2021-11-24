@@ -25,8 +25,8 @@ public abstract class Cooldownable {
 		this.cooldownStrategy = cooldownStrategy;
 	}
 
-	public long getCooldown() {
-		return cooldownStrategy.getCooldown();
+	public long getCooldownMillis() {
+		return cooldownStrategy.getCooldownMillis();
 	}
 
 	public CooldownScope getCooldownScope() {
@@ -35,9 +35,9 @@ public abstract class Cooldownable {
 
 	public void applyCooldown(GuildMessageReceivedEvent event) {
 		switch (getCooldownScope()) {
-			case USER -> getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldown());
-			case GUILD -> guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
-			case CHANNEL -> channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
+			case USER -> getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
+			case GUILD -> guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
+			case CHANNEL -> channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 		}
 	}
 
@@ -50,15 +50,15 @@ public abstract class Cooldownable {
 		switch (getCooldownScope()) {
 			case USER -> {
 				if (event.getGuild() == null) break;
-				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + getCooldown());
+				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 			}
 			case GUILD -> {
 				if (event.getGuild() == null) break;
-				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldown());
+				guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 			}
 			case CHANNEL -> {
 				if (event.getChannel() == null) break;
-				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldown());
+				channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 			}
 		}
 	}
