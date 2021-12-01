@@ -1,9 +1,10 @@
 package com.freya02.botcommands.internal.components.sql;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freya02.botcommands.api.components.ComponentType;
 import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
-import com.google.gson.Gson;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 public class SqlPersistentComponentData extends SqlComponentData {
-	private static final Gson GSON = new Gson();
+	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	private final String handlerName;
 	private final String[] args;
@@ -22,6 +23,22 @@ public class SqlPersistentComponentData extends SqlComponentData {
 
 		this.handlerName = handlerName;
 		this.args = args;
+	}
+
+	private static String writeStringArray(String[] strings) {
+		try {
+			return MAPPER.writeValueAsString(strings);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Unable to serialize data: " + Arrays.toString(strings), e);
+		}
+	}
+
+	private static String[] readStringArray(String json) {
+		try {
+			return MAPPER.readValue(json, String[].class);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Unable to deserialize data: " + json, e);
+		}
 	}
 
 	public static SqlPersistentComponentData read(Connection con, String componentId) throws SQLException {
@@ -39,7 +56,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 							resultSet.getLong("ownerId"),
 							resultSet.getLong("expirationTimestamp"),
 							resultSet.getString("handlerName"),
-							GSON.fromJson(resultSet.getString("args"), String[].class)
+							readStringArray(resultSet.getString("args"))
 					);
 				} else {
 					return null;
@@ -68,7 +85,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 
 				preparedStatement.setString(6, randomId);
 				preparedStatement.setString(7, handlerName);
-				preparedStatement.setString(8, GSON.toJson(args));
+				preparedStatement.setString(8, writeStringArray(args));
 
 				preparedStatement.execute();
 
