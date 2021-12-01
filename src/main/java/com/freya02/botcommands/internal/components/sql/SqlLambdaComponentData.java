@@ -42,7 +42,9 @@ public class SqlLambdaComponentData extends SqlComponentData {
 	}
 
 	public static SQLLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, LambdaComponentTimeoutInfo timeout) throws SQLException {
-		while (true) {
+		SQLException lastEx = null;
+
+		for (int i = 0; i < 10; i++) {
 			final long timeoutMillis = timeout.toMillis();
 
 			String randomId = Utils.randomId(64);
@@ -69,10 +71,14 @@ public class SqlLambdaComponentData extends SqlComponentData {
 						}
 					}
 				}
-			} catch (SQLException ignored) {
+			} catch (SQLException ex) {
 				//ID already exists
+
+				lastEx = ex;
 			}
 		}
+
+		throw new SQLException("Could not insert a random component ID after 10 tries, maybe the database is full of IDs ?", lastEx);
 	}
 
 	public long getHandlerId() {

@@ -49,7 +49,9 @@ public class SqlPersistentComponentData extends SqlComponentData {
 	}
 
 	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, PersistentComponentTimeoutInfo timeout, String handlerName, String[] args) throws SQLException {
-		while (true) {
+		SQLException lastEx = null;
+
+		for (int i = 0; i < 10; i++) {
 			long timeoutMillis = timeout.toMillis();
 
 			String randomId = Utils.randomId(64);
@@ -71,10 +73,14 @@ public class SqlPersistentComponentData extends SqlComponentData {
 				preparedStatement.execute();
 
 				return randomId;
-			} catch (SQLException ignored) {
+			} catch (SQLException ex) {
 				//ID already exists
+
+				lastEx = ex;
 			}
 		}
+
+		throw new SQLException("Could not insert a random component ID after 10 tries, maybe the database is full of IDs ?", lastEx);
 	}
 
 	public String getHandlerName() {
