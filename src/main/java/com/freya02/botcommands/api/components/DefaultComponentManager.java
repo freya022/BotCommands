@@ -9,9 +9,9 @@ import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
+import com.freya02.botcommands.internal.components.sql.SQLLambdaCreateResult;
 import com.freya02.botcommands.internal.components.sql.SqlComponentData;
 import com.freya02.botcommands.internal.components.sql.SqlLambdaComponentData;
-import com.freya02.botcommands.internal.components.sql.SqlLambdaCreateResult;
 import com.freya02.botcommands.internal.components.sql.SqlPersistentComponentData;
 import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
@@ -220,19 +220,19 @@ public class DefaultComponentManager implements ComponentManager {
 	@NotNull
 	public String putLambdaButton(LambdaButtonBuilder builder) {
 		try (Connection connection = getConnection()) {
-			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+			final SQLLambdaCreateResult result = SqlLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_BUTTON,
 					builder.isOneUse(),
 					builder.getOwnerId(),
 					builder.getTimeout());
 
-			buttonLambdaMap.put(result.getHandlerId(), builder.getConsumer());
+			buttonLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (builder.getTimeout().timeout() > 0) {
-				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.getHandlerId(), result.getComponentId());
+				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.handlerId(), result.componentId());
 			}
 
-			return result.getComponentId();
+			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
 
@@ -245,19 +245,19 @@ public class DefaultComponentManager implements ComponentManager {
 	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
 		try (Connection connection = getConnection()) {
 			final LambdaComponentTimeoutInfo timeout = builder.getTimeout();
-			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+			final SQLLambdaCreateResult result = SqlLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_SELECTION_MENU,
 					builder.isOneUse(),
 					builder.getOwnerId(),
 					timeout);
 
-			selectionMenuLambdaMap.put(result.getHandlerId(), builder.getConsumer());
+			selectionMenuLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (timeout.timeout() > 0) {
-				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.getHandlerId(), result.getComponentId());
+				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.handlerId(), result.componentId());
 			}
 
-			return result.getComponentId();
+			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
 

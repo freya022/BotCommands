@@ -41,7 +41,7 @@ public class SqlLambdaComponentData extends SqlComponentData {
 		}
 	}
 
-	public static SqlLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, LambdaComponentTimeoutInfo timeout) throws SQLException {
+	public static SQLLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, LambdaComponentTimeoutInfo timeout) throws SQLException {
 		while (true) {
 			final long timeoutMillis = timeout.toMillis();
 
@@ -63,7 +63,7 @@ public class SqlLambdaComponentData extends SqlComponentData {
 
 					try (ResultSet resultSet = preparedStatement1.executeQuery()) {
 						if (resultSet.next()) {
-							return new SqlLambdaCreateResult(randomId, resultSet.getLong("handlerId"));
+							return new SQLLambdaCreateResult(randomId, resultSet.getLong("handlerId"));
 						} else {
 							throw new IllegalStateException("Lambda component insert into didn't return the handler id");
 						}
