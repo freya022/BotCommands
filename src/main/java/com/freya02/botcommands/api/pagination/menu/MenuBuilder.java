@@ -17,6 +17,6 @@ public final class MenuBuilder<E> extends BasicMenuBuilder<E, MenuBuilder<E>, Me
 	@Override
 	@NotNull
 	public Menu<E> build() {
-		return new Menu<>(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier);
+		return new Menu<>(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier);
 	}
 }

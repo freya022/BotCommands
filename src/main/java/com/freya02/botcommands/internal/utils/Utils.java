@@ -9,6 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -129,5 +131,16 @@ public final class Utils {
 				+ Arrays.stream(method.getParameterTypes())
 				.map(Class::getSimpleName)
 				.collect(Collectors.joining(", ", "(", ")"));
+	}
+
+	public static String readResource(String url) {
+		final Class<?> callerClass = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass();
+		try (InputStream stream = callerClass.getResourceAsStream(url)) {
+			if (stream == null) throw new RuntimeException("Unable to read resource at " + url + " for class " + callerClass.getName());
+
+			return new String(stream.readAllBytes());
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to read resource at " + url + " for class " + callerClass.getName(), e);
+		}
 	}
 }

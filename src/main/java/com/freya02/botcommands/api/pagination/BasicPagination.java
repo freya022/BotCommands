@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -25,7 +26,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
-	protected final long ownerId;
+	protected final InteractionConstraints constraints;
 	@Nullable protected final TimeoutInfo<T> timeout;
 
 	protected final MessageBuilder messageBuilder = new MessageBuilder();
@@ -36,8 +37,10 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	@Nullable private ScheduledFuture<?> timeoutFuture;
 	@Nullable private Message message;
 
-	protected BasicPagination(long ownerId, @Nullable TimeoutInfo<T> timeout) {
-		this.ownerId = ownerId;
+	private boolean timeoutPassed = false;
+
+	protected BasicPagination(@NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
+		this.constraints = constraints;
 		this.timeout = timeout;
 	}
 
@@ -60,6 +63,10 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	@SuppressWarnings("unchecked")
 	protected void onPreGet() {
+		if (timeoutPassed && timeout != null) {
+			LOGGER.warn("Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: {}", timeout.onTimeout().getClass().getNestHost());
+		}
+
 		messageBuilder.clear();
 		components.clear();
 
@@ -70,7 +77,11 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 			//Can't supply instance on by calling super constructor
 			// Also don't want to do an abstract T getThis()
-			timeoutFuture = TIMEOUT_SERVICE.schedule(() -> timeout.onTimeout().accept((T) this, message), timeout.timeout(), timeout.unit());
+			timeoutFuture = TIMEOUT_SERVICE.schedule(() -> {
+				timeoutPassed = true;
+
+				timeout.onTimeout().accept((T) this, message);
+				}, timeout.timeout(), timeout.unit());
 		}
 	}
 

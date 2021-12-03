@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.menu;
 
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
@@ -23,7 +24,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	private final ButtonContentSupplier<E> buttonContentSupplier;
 	private final ChoiceCallback<E> callback;
 
-	ChoiceMenu(long ownerId,
+	ChoiceMenu(InteractionConstraints constraints,
 	           TimeoutInfo<ChoiceMenu<E>> timeout,
 	           boolean hasDeleteButton,
 	           ButtonContent firstContent,
@@ -38,7 +39,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	           PaginatorSupplier supplier,
 	           ButtonContentSupplier<E> buttonContentSupplier,
 	           ChoiceCallback<E> callback) {
-		super(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
+		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
 				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
 				supplier);
 
@@ -60,7 +61,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 				this.cleanup(event.getContext());
 
 				callback.accept(event, item);
-			}).ownerId(ownerId).build(content);
+			}).setConstraints(constraints).build(content);
 
 			components.addComponents(1 + (i / 5), choiceButton);
 		}

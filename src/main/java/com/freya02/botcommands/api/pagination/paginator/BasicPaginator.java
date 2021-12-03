@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -31,9 +32,9 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
-	protected BasicPaginator(long ownerId, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton,
+	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton,
 	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(ownerId, timeout);
+		super(constraints, timeout);
 
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
@@ -42,29 +43,29 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			page = 0;
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(firstContent);
+		}).setConstraints(constraints).build(firstContent);
 
 		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(previousContent);
+		}).setConstraints(constraints).build(previousContent);
 
 		nextButton = Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(nextContent);
+		}).setConstraints(constraints).build(nextContent);
 
 		lastButton = Components.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(lastContent);
+		}).setConstraints(constraints).build(lastContent);
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(ownerId).oneUse().build(deleteContent);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked).setConstraints(constraints).oneUse().build(deleteContent);
 		} else {
 			this.deleteButton = null;
 		}

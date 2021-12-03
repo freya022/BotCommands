@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.components.sql;
 
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;
 
@@ -7,20 +8,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public abstract class SqlComponentData {
+public abstract class SQLComponentData {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final String componentId;
 	private final long groupId;
 	private final boolean oneUse;
-	private final long ownerId;
+	private final InteractionConstraints interactionConstraints;
 	private final long expirationTimestamp;
 
-	public SqlComponentData(String componentId, long groupId, boolean oneUse, long ownerId, long expirationTimestamp) {
+	public SQLComponentData(String componentId, long groupId, boolean oneUse, InteractionConstraints interactionConstraints, long expirationTimestamp) {
 		this.componentId = componentId;
 		this.groupId = groupId;
 		this.oneUse = oneUse;
-		this.ownerId = ownerId;
+		this.interactionConstraints = interactionConstraints;
 		this.expirationTimestamp = expirationTimestamp;
 	}
 
@@ -35,7 +36,7 @@ public abstract class SqlComponentData {
 
 				LOGGER.trace("Deleted {} components from group {}", i, groupId);
 			}
-		} else if (isOneUse()) {
+		} else {
 			try (PreparedStatement preparedStatement = con.prepareStatement(
 					"delete from componentdata where componentid = ?;"
 			)) {
@@ -56,7 +57,7 @@ public abstract class SqlComponentData {
 				"componentId='" + componentId + '\'' +
 				", groupId=" + groupId +
 				", oneUse=" + oneUse +
-				", ownerId=" + ownerId +
+				", componentConstraints=" + interactionConstraints +
 				", expirationTimestamp=" + expirationTimestamp +
 				'}';
 	}
@@ -73,8 +74,8 @@ public abstract class SqlComponentData {
 		return oneUse;
 	}
 
-	public long getOwnerId() {
-		return ownerId;
+	public InteractionConstraints getInteractionConstraints() {
+		return interactionConstraints;
 	}
 
 	public long getExpirationTimestamp() {

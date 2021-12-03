@@ -17,6 +17,6 @@ public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuild
 	@Override
 	@NotNull
 	public Paginator build() {
-		return new Paginator(ownerId, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+		return new Paginator(constraints, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

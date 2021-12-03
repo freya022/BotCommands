@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
@@ -22,8 +23,8 @@ public class InteractiveMenu extends BasicPagination<InteractiveMenu> {
 
 	private int selectedItem = 0;
 
-	InteractiveMenu(@NotNull List<InteractiveMenuItem> items, long ownerId, @Nullable TimeoutInfo<InteractiveMenu> timeout) {
-		super(ownerId, timeout);
+	InteractiveMenu(@NotNull List<InteractiveMenuItem> items, InteractionConstraints constraints, @Nullable TimeoutInfo<InteractiveMenu> timeout) {
+		super(constraints, timeout);
 
 		if (items.isEmpty()) throw new IllegalStateException("No interactive menu items has been added");
 
@@ -32,7 +33,7 @@ public class InteractiveMenu extends BasicPagination<InteractiveMenu> {
 
 	@NotNull
 	private SelectionMenu buildSelectionMenu() {
-		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().ownerId(ownerId);
+		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
 		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {

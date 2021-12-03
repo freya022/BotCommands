@@ -3,8 +3,10 @@ package com.freya02.botcommands.internal.components.sql;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.freya02.botcommands.api.components.ComponentType;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,14 +14,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-public class SqlPersistentComponentData extends SqlComponentData {
+public class SQLPersistentComponentData extends SQLComponentData {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	private final String handlerName;
 	private final String[] args;
 
-	private SqlPersistentComponentData(String componentId, long groupId, boolean oneUse, long ownerId, long expirationTimestamp, String handlerName, String[] args) {
-		super(componentId, groupId, oneUse, ownerId, expirationTimestamp);
+	private SQLPersistentComponentData(String componentId, long groupId, boolean oneUse, InteractionConstraints interactionConstraints, long expirationTimestamp, String handlerName, String[] args) {
+		super(componentId, groupId, oneUse, interactionConstraints, expirationTimestamp);
 
 		this.handlerName = handlerName;
 		this.args = args;
@@ -41,7 +43,8 @@ public class SqlPersistentComponentData extends SqlComponentData {
 		}
 	}
 
-	public static SqlPersistentComponentData read(Connection con, String componentId) throws SQLException {
+	@Nullable
+	public static SQLPersistentComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
 				"select * from persistentcomponentdata join componentdata using(componentid) where componentid = ?"
 		)) {
@@ -49,11 +52,11 @@ public class SqlPersistentComponentData extends SqlComponentData {
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					return new SqlPersistentComponentData(
+					return new SQLPersistentComponentData(
 							componentId,
 							resultSet.getLong("groupId"),
 							resultSet.getBoolean("oneUse"),
-							resultSet.getLong("ownerId"),
+							InteractionConstraints.fromJson(resultSet.getString("constraints")),
 							resultSet.getLong("expirationTimestamp"),
 							resultSet.getString("handlerName"),
 							readStringArray(resultSet.getString("args"))
@@ -65,7 +68,7 @@ public class SqlPersistentComponentData extends SqlComponentData {
 		}
 	}
 
-	public static String create(Connection con, ComponentType type, boolean oneUse, long ownerId, PersistentComponentTimeoutInfo timeout, String handlerName, String[] args) throws SQLException {
+	public static String create(Connection con, ComponentType type, boolean oneUse, InteractionConstraints constraints, PersistentComponentTimeoutInfo timeout, String handlerName, String[] args) throws SQLException {
 		SQLException lastEx = null;
 
 		for (int i = 0; i < 10; i++) {
@@ -74,13 +77,13 @@ public class SqlPersistentComponentData extends SqlComponentData {
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);\n" +
+					"insert into componentdata (type, componentid, oneuse, constraints, expirationtimestamp) values (?, ?, ?, ?, ?);\n" +
 							"insert into persistentcomponentdata (componentid, handlername, args) values (?, ?, ?);"
 			)) {
 				preparedStatement.setInt(1, type.getKey());
 				preparedStatement.setString(2, randomId);
 				preparedStatement.setBoolean(3, oneUse);
-				preparedStatement.setLong(4, ownerId);
+				preparedStatement.setString(4, constraints.toJson());
 				preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
 
 				preparedStatement.setString(6, randomId);

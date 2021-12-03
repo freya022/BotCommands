@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.components;
 
 public enum ComponentErrorReason {
-	NOT_OWNER(null),
+	NOT_ALLOWED(null),
 	EXPIRED("This component is not usable anymore (expired)"),
 	DONT_EXIST("This component could not be found");
 

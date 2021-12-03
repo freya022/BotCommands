@@ -1,36 +1,39 @@
 package com.freya02.botcommands.internal.components.sql;
 
 import com.freya02.botcommands.api.components.ComponentType;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SqlLambdaComponentData extends SqlComponentData {
+public class SQLLambdaComponentData extends SQLComponentData {
 	private final long handlerId;
 
-	private SqlLambdaComponentData(String componentId, long groupId, boolean oneUse, long ownerId, long expirationTimestamp, long handlerId) {
-		super(componentId, groupId, oneUse, ownerId, expirationTimestamp);
+	private SQLLambdaComponentData(String componentId, long groupId, boolean oneUse, InteractionConstraints interactionConstraints, long expirationTimestamp, long handlerId) {
+		super(componentId, groupId, oneUse, interactionConstraints, expirationTimestamp);
 
 		this.handlerId = handlerId;
 	}
 
-	public static SqlLambdaComponentData read(Connection con, String componentId) throws SQLException {
+	@Nullable
+	public static SQLLambdaComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
-				"select * from lambdacomponentdata join componentdata using(componentid) where componentid = ?"
+				"select * from lambdacomponentdata join componentdata using(componentid) where componentid = ? limit 1;"
 		)) {
 			preparedStatement.setString(1, componentId);
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					return new SqlLambdaComponentData(
+					return new SQLLambdaComponentData(
 							componentId,
 							resultSet.getLong("groupId"),
 							resultSet.getBoolean("oneUse"),
-							resultSet.getLong("ownerId"),
+							InteractionConstraints.fromJson(resultSet.getString("constraints")),
 							resultSet.getLong("expirationTimestamp"),
 							resultSet.getLong("handlerId")
 					);
@@ -41,7 +44,7 @@ public class SqlLambdaComponentData extends SqlComponentData {
 		}
 	}
 
-	public static SQLLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, long ownerId, LambdaComponentTimeoutInfo timeout) throws SQLException {
+	public static SQLLambdaCreateResult create(Connection con, ComponentType type, boolean oneUse, InteractionConstraints constraints, LambdaComponentTimeoutInfo timeout) throws SQLException {
 		SQLException lastEx = null;
 
 		for (int i = 0; i < 10; i++) {
@@ -50,12 +53,12 @@ public class SqlLambdaComponentData extends SqlComponentData {
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"insert into componentdata (type, componentid, oneuse, ownerid, expirationtimestamp) values (?, ?, ?, ?, ?);"
+					"insert into componentdata (type, componentid, oneuse, constraints, expirationtimestamp) values (?, ?, ?, ?, ?);"
 			)) {
 				preparedStatement.setInt(1, type.getKey());
 				preparedStatement.setString(2, randomId);
 				preparedStatement.setBoolean(3, oneUse);
-				preparedStatement.setLong(4, ownerId);
+				preparedStatement.setString(4, constraints.toJson());
 				preparedStatement.setLong(5, timeoutMillis == 0 ? 0 : System.currentTimeMillis() + timeoutMillis);
 
 				preparedStatement.execute();

@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.components.builder;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +15,8 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	private final String[] args;
 
 	private boolean oneUse;
-	private long ownerId;
 	private PersistentComponentTimeoutInfo timeoutInfo = new PersistentComponentTimeoutInfo(0, TimeUnit.MILLISECONDS);
+	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 
 	public PersistentSelectionMenuBuilder(BContext context, String handlerName, String[] args) {
 		super("fake");
@@ -52,13 +53,6 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 		return this;
 	}
 
-	@Override
-	public PersistentSelectionMenuBuilder ownerId(long ownerId) {
-		this.ownerId = ownerId;
-
-		return this;
-	}
-
 	/**
 	 * Makes this component expire after the specified timeout<br>
 	 * Once the component expires it should be removed from the component manager
@@ -78,12 +72,12 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 	}
 
 	@Override
-	public long getOwnerId() {
-		return ownerId;
+	public PersistentComponentTimeoutInfo getTimeout() {
+		return timeoutInfo;
 	}
 
 	@Override
-	public PersistentComponentTimeoutInfo getTimeout() {
-		return timeoutInfo;
+	public InteractionConstraints getInteractionConstraints() {
+		return interactionConstraints;
 	}
 }

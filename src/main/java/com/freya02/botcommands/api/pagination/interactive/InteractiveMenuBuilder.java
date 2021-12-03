@@ -29,6 +29,6 @@ public class InteractiveMenuBuilder extends BasicPaginationBuilder<InteractiveMe
 	@Override
 	@NotNull
 	public InteractiveMenu build() {
-		return new InteractiveMenu(items, ownerId, timeout);
+		return new InteractiveMenu(items, constraints, timeout);
 	}
 }

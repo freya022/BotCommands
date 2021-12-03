@@ -55,6 +55,6 @@ public final class ChoiceMenuBuilder<E> extends BasicMenuBuilder<E, ChoiceMenuBu
 	@Override
 	@NotNull
 	public ChoiceMenu<E> build() {
-		return new ChoiceMenu<>(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier, buttonContentSupplier, callback);
+		return new ChoiceMenu<>(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier, buttonContentSupplier, callback);
 	}
 }
