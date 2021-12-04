@@ -69,54 +69,59 @@ public class ComponentListener extends ListenerAdapter {
 		runHandler(() -> handleComponentInteraction(event), event);
 	}
 
-	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) {
-		final ComponentType idType = componentManager.getIdType(event.getComponentId());
+	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) throws Exception {
+		try (FetchedComponent fetchedComponent = componentManager.fetchComponent(event.getComponentId())) {
+			if (fetchedComponent == null) {
+				event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
+						.setEphemeral(true)
+						.queue();
 
-		if (idType == null) {
-			event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
-					.setEphemeral(true)
-					.queue();
+				return;
+			}
 
-			return;
-		}
+			final ComponentType idType = fetchedComponent.getType();
+			if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonClickEvent)) {
+				LOGGER.error("Received a button id type but event is not a ButtonClickEvent");
 
-		if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonClickEvent)) {
-			LOGGER.error("Received a button id type but event is not a ButtonClickEvent");
+				return;
+			}
 
-			return;
-		}
+			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectionMenuEvent)) {
+				LOGGER.error("Received a selection menu id type but event is not a SelectionMenuEvent");
 
-		if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectionMenuEvent)) {
-			LOGGER.error("Received a selection menu id type but event is not a SelectionMenuEvent");
+				return;
+			}
 
-			return;
-		}
-
-		switch (idType) {
-			case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> handlePersistentComponent(event,
-									buttonsMap,
-									data.getHandlerName(),
-									data.getArgs(),
-									() -> new ButtonEvent(context, (ButtonClickEvent) event)),
-							event));
-			case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)), event)
-			);
-			case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> handlePersistentComponent(event,
-									selectionMenuMap,
-									data.getHandlerName(),
-									data.getArgs(),
-									() -> new SelectionEvent(context, (SelectionMenuEvent) event)),
-							event));
-			case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
-			default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
+			switch (idType) {
+				case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
+						fetchedComponent,
+						e -> onError(event, e.getReason()),
+						data -> runCallback(() -> handlePersistentComponent(event,
+										buttonsMap,
+										data.getHandlerName(),
+										data.getArgs(),
+										() -> new ButtonEvent(context, (ButtonClickEvent) event)),
+								event));
+				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
+						fetchedComponent,
+						e -> onError(event, e.getReason()),
+						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)), event)
+				);
+				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
+						fetchedComponent,
+						e -> onError(event, e.getReason()),
+						data -> runCallback(() -> handlePersistentComponent(event,
+										selectionMenuMap,
+										data.getHandlerName(),
+										data.getArgs(),
+										() -> new SelectionEvent(context, (SelectionMenuEvent) event)),
+								event));
+				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
+						fetchedComponent,
+						e -> onError(event, e.getReason()),
+						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
+				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
+			}
 		}
 	}
 

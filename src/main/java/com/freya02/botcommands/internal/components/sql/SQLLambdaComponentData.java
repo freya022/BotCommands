@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.components.ComponentType;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
@@ -20,6 +21,25 @@ public class SQLLambdaComponentData extends SQLComponentData {
 		this.handlerId = handlerId;
 	}
 
+	@NotNull
+	public static SQLLambdaComponentData fromFetchedComponent(@NotNull SQLFetchedComponent fetchedComponent) throws SQLException {
+		final ResultSet resultSet = fetchedComponent.getResultSet();
+
+		return fromResult(resultSet);
+	}
+
+	@NotNull
+	private static SQLLambdaComponentData fromResult(ResultSet resultSet) throws SQLException {
+		return new SQLLambdaComponentData(
+				resultSet.getString("componentId"),
+				resultSet.getLong("groupId"),
+				resultSet.getBoolean("oneUse"),
+				InteractionConstraints.fromJson(resultSet.getString("constraints")),
+				resultSet.getLong("expirationTimestamp"),
+				resultSet.getLong("handlerId")
+		);
+	}
+
 	@Nullable
 	public static SQLLambdaComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
@@ -29,14 +49,7 @@ public class SQLLambdaComponentData extends SQLComponentData {
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					return new SQLLambdaComponentData(
-							componentId,
-							resultSet.getLong("groupId"),
-							resultSet.getBoolean("oneUse"),
-							InteractionConstraints.fromJson(resultSet.getString("constraints")),
-							resultSet.getLong("expirationTimestamp"),
-							resultSet.getLong("handlerId")
-					);
+					return fromResult(resultSet);
 				} else {
 					return null;
 				}

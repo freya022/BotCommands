@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.components.ComponentType;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
@@ -43,6 +44,26 @@ public class SQLPersistentComponentData extends SQLComponentData {
 		}
 	}
 
+	@NotNull
+	public static SQLPersistentComponentData fromFetchedComponent(@NotNull SQLFetchedComponent fetchedComponent) throws SQLException {
+		final ResultSet resultSet = fetchedComponent.getResultSet();
+
+		return fromResult(resultSet);
+	}
+
+	@NotNull
+	private static SQLPersistentComponentData fromResult(ResultSet resultSet) throws SQLException {
+		return new SQLPersistentComponentData(
+				resultSet.getString("componentId"),
+				resultSet.getLong("groupId"),
+				resultSet.getBoolean("oneUse"),
+				InteractionConstraints.fromJson(resultSet.getString("constraints")),
+				resultSet.getLong("expirationTimestamp"),
+				resultSet.getString("handlerName"),
+				readStringArray(resultSet.getString("args"))
+		);
+	}
+
 	@Nullable
 	public static SQLPersistentComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
@@ -52,15 +73,7 @@ public class SQLPersistentComponentData extends SQLComponentData {
 
 			try (ResultSet resultSet = preparedStatement.executeQuery()) {
 				if (resultSet.next()) {
-					return new SQLPersistentComponentData(
-							componentId,
-							resultSet.getLong("groupId"),
-							resultSet.getBoolean("oneUse"),
-							InteractionConstraints.fromJson(resultSet.getString("constraints")),
-							resultSet.getLong("expirationTimestamp"),
-							resultSet.getString("handlerName"),
-							readStringArray(resultSet.getString("args"))
-					);
+					return fromResult(resultSet);
 				} else {
 					return null;
 				}

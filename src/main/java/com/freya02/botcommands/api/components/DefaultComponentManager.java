@@ -9,10 +9,7 @@ import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
-import com.freya02.botcommands.internal.components.sql.SQLComponentData;
-import com.freya02.botcommands.internal.components.sql.SQLLambdaComponentData;
-import com.freya02.botcommands.internal.components.sql.SQLLambdaCreateResult;
-import com.freya02.botcommands.internal.components.sql.SQLPersistentComponentData;
+import com.freya02.botcommands.internal.components.sql.*;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.Member;
@@ -62,19 +59,24 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	@Nullable
-	public ComponentType getIdType(String id) { //TODO merge into 1 request with handlers
-		try (Connection connection = getConnection();
-		     PreparedStatement preparedStatement = connection.prepareStatement(
-				     "select type from componentdata where componentid = ? limit 1;"
-		     )) {
+	public SQLFetchedComponent fetchComponent(String id) {
+		Connection connection = getConnection();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(
+					"select * " +
+							"from componentdata " +
+							"left join lambdacomponentdata using (componentid) " +
+							"left join persistentcomponentdata using (componentid)" +
+							"where componentid = ? " +
+							"limit 1;"
+			);
 			preparedStatement.setString(1, id);
 
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				if (resultSet.next()) {
-					return ComponentType.fromKey(resultSet.getInt("type"));
-				} else {
-					return null;
-				}
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				return new SQLFetchedComponent(connection, resultSet);
+			} else {
+				return null;
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Unable to get the ID type of '{}'", id);
@@ -84,8 +86,9 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
+	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
 		handleLambdaComponent(event,
+				(SQLFetchedComponent) fetchedComponent,
 				onError,
 				dataConsumer,
 				buttonLambdaMap,
@@ -93,8 +96,9 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
+	public void handleLambdaSelectionMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
 		handleLambdaComponent(event,
+				(SQLFetchedComponent) fetchedComponent,
 				onError,
 				dataConsumer,
 				selectionMenuLambdaMap,
@@ -103,18 +107,13 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@SuppressWarnings("DuplicatedCode")
 	private <EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
+																									SQLFetchedComponent fetchedComponent,
 	                                                                                                Consumer<ComponentErrorReason> onError,
 	                                                                                                Consumer<DATA> dataConsumer,
-	                                                                                                Map<Long, Consumer<EVENT>> map,
-	                                                                                                Function<Consumer<EVENT>, DATA> eventFunc) {
-		try (Connection connection = getConnection()) {
-			final SQLLambdaComponentData data = SQLLambdaComponentData.read(connection, event.getComponentId());
+	                                                                                                Map<Long, Consumer<EVENT>> map, Function<Consumer<EVENT>, DATA> eventFunc) {
 
-			if (data == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
-
-				return;
-			}
+		try {
+			final SQLLambdaComponentData data = SQLLambdaComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
 
@@ -128,7 +127,9 @@ public class DefaultComponentManager implements ComponentManager {
 
 			final Consumer<EVENT> consumer;
 			if (result.shouldDelete()) {
-				data.delete(connection);
+				try (Connection connection = getConnection()) {
+					data.delete(connection);
+				}
 
 				consumer = map.remove(handlerId);
 			} else {
@@ -152,31 +153,27 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
+	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
 		handlePersistentComponent(event,
+				(SQLFetchedComponent) fetchedComponent,
 				onError,
 				dataConsumer,
 				PersistentButtonData::new);
 	}
 
 	@Override
-	public void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
+	public void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
 		handlePersistentComponent(event,
+				(SQLFetchedComponent) fetchedComponent,
 				onError,
 				dataConsumer,
 				PersistentSelectionMenuData::new);
 	}
 
 	@SuppressWarnings("DuplicatedCode")
-	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
-		try (Connection connection = getConnection()) {
-			final SQLPersistentComponentData data = SQLPersistentComponentData.read(connection, event.getComponentId());
-
-			if (data == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
-
-				return;
-			}
+	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, SQLFetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
+		try {
+			final SQLPersistentComponentData data = SQLPersistentComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
 
@@ -190,7 +187,9 @@ public class DefaultComponentManager implements ComponentManager {
 			final String[] args = data.getArgs();
 
 			if (result.shouldDelete()) {
-				data.delete(connection);
+				try (Connection connection = getConnection()) {
+					data.delete(connection);
+				}
 			}
 
 			dataConsumer.accept(dataFunction.apply(handlerName, args));
