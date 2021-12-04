@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.components;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -27,11 +27,6 @@ import java.util.List;
  */
 public class InteractionConstraints {
 	private static final ObjectMapper MAPPER = new ObjectMapper();
-
-	static {
-		//Lmao jackson inserts an invisible "empty" property so it fails to deserialize
-		MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-	}
 
 	private final List<Long> userList = new ArrayList<>();
 	private final List<Long> roleList = new ArrayList<>();
@@ -155,6 +150,7 @@ public class InteractionConstraints {
 		return permissions;
 	}
 
+	@JsonIgnore //Needed otherwise it's translated to a property bruh
 	public boolean isEmpty() {
 		return getUserList().isEmpty() && getRoleList().isEmpty() && getPermissions().isEmpty();
 	}
