@@ -85,6 +85,10 @@
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:-html</additionalJOption>
                     </additionalJOptions>
+                    <links>
+                        <link>https://ci.dv8tion.net/job/JDA/javadoc</link>
+                        <link>https://javadoc.io/doc/org.jetbrains/annotations/latest</link>
+                    </links>
                 </configuration>
                 <executions>
                     <execution>
@@ -159,13 +163,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
-            <scope>compile</scope>
+            <version>23.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.132</version>
+            <version>4.8.137</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
