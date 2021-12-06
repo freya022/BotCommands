@@ -1,17 +1,16 @@
 package com.freya02.botcommands.api.components;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.*;
+import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.EnumSet;
 
 /**
  * Controls who can use interactions such as components (button, selection menu)
@@ -26,11 +25,57 @@ import java.util.List;
  * <b>See the static methods</b>
  */
 public class InteractionConstraints {
-	private static final ObjectMapper MAPPER = new ObjectMapper();
+	private static final Gson GSON = new GsonBuilder()
+			.registerTypeAdapter(TLongArrayList.class, new TLongArrayListAdapter())
+			.registerTypeHierarchyAdapter(EnumSet.class, new EnumSetAdapter())
+			.create();
 
-	private final List<Long> userList = new ArrayList<>();
-	private final List<Long> roleList = new ArrayList<>();
-	private final List<Permission> permissions = new ArrayList<>();
+	private static class TLongArrayListAdapter implements
+			JsonSerializer<TLongArrayList>,
+			JsonDeserializer<TLongArrayList> {
+
+		@Override
+		public TLongArrayList deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			final TLongArrayList list = new TLongArrayList();
+
+			for (JsonElement element : json.getAsJsonArray()) {
+				list.add(element.getAsLong());
+			}
+
+			return list;
+		}
+
+		@Override
+		public JsonElement serialize(TLongArrayList src, Type typeOfSrc, JsonSerializationContext context) {
+			final JsonArray array = new JsonArray();
+
+			src.forEach(value -> {
+				array.add(value);
+
+				return true;
+			});
+
+			return array;
+		}
+	}
+
+	private static class EnumSetAdapter implements
+			JsonSerializer<EnumSet<Permission>>,
+			JsonDeserializer<EnumSet<Permission>> {
+		@Override
+		public JsonElement serialize(EnumSet<Permission> src, Type typeOfSrc, JsonSerializationContext context) {
+			return new JsonPrimitive(Permission.getRaw(src));
+		}
+
+		@Override
+		public EnumSet<Permission> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			return Permission.getPermissions(json.getAsLong());
+		}
+	}
+
+	private final TLongArrayList userList = new TLongArrayList();
+	private final TLongArrayList roleList = new TLongArrayList();
+	private final EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
 
 	public static InteractionConstraints empty() {
 		return new InteractionConstraints();
@@ -73,9 +118,7 @@ public class InteractionConstraints {
 	}
 
 	public InteractionConstraints addUserIds(long @NotNull ... userIds) {
-		for (long userId : userIds) {
-			userList.add(userId);
-		}
+		userList.addAll(userIds);
 
 		return this;
 	}
@@ -103,9 +146,7 @@ public class InteractionConstraints {
 	}
 
 	public InteractionConstraints addRoleIds(long @NotNull ... roleIds) {
-		for (long roleId : roleIds) {
-			roleList.add(roleId);
-		}
+		roleList.addAll(roleIds);
 
 		return this;
 	}
@@ -138,37 +179,28 @@ public class InteractionConstraints {
 		return this;
 	}
 
-	public List<Long> getUserList() {
+	public TLongArrayList getUserList() {
 		return userList;
 	}
 
-	public List<Long> getRoleList() {
+	public TLongArrayList getRoleList() {
 		return roleList;
 	}
 
-	public List<Permission> getPermissions() {
+	public EnumSet<Permission> getPermissions() {
 		return permissions;
 	}
 
-	@JsonIgnore //Needed otherwise it's translated to a property bruh
 	public boolean isEmpty() {
 		return getUserList().isEmpty() && getRoleList().isEmpty() && getPermissions().isEmpty();
 	}
 
 	public static InteractionConstraints fromJson(String json) {
-		try {
-			return MAPPER.readValue(json, InteractionConstraints.class);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Unable to write JSON of ComponentConstraints", e);
-		}
+		return GSON.fromJson(json, InteractionConstraints.class);
 	}
 
 	public String toJson() {
-		try {
-			return MAPPER.writeValueAsString(this);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Unable to write JSON of ComponentConstraints", e);
-		}
+		return GSON.toJson(this);
 	}
 
 	public InteractionConstraints setConstraints(InteractionConstraints otherConstraints) {
