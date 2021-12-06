@@ -61,7 +61,7 @@
         I am using a local build, you can change the group id and version to use the jitpack one -->
             <groupId>com.freya02</groupId> <!-- TODO change here -->
             <artifactId>BotCommands</artifactId>
-            <version>2.2.0-SNAPSHOT</version> <!-- TODO change here -->
+            <version>2.3.0-SNAPSHOT</version> <!-- TODO change here -->
         </dependency>
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>

@@ -2,8 +2,8 @@ package com.freya02.bot.wiki.paramresolver;
 
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.Timestamp;
 
 import java.util.regex.Matcher;
@@ -17,7 +17,7 @@ public class TimestampResolver extends ParameterResolver implements SlashParamet
 	}
 
 	@Override
-	public Object resolve(SlashCommandEvent event, OptionMapping optionMapping) {
+	public Object resolve(SlashCommandInteraction event, OptionMapping optionMapping) {
 		final Matcher timestampMatcher = MARKDOWN.matcher(optionMapping.getAsString());
 		if (!timestampMatcher.find()) return null; //Avoid expensive exceptions from JDA
 
