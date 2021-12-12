@@ -1,11 +1,11 @@
-package com.freya02.botcommands.internal;
+package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.annotations.NSFW;
 import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,6 +93,10 @@ public final class DefaultMessages {
 	private final String nsfwOnlyErrorMsg;
 	private final String nsfwDMDeniedErrorMsg;
 
+	/**
+	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
+	 */
+	@ApiStatus.Internal
 	public DefaultMessages(@NotNull Locale locale) {
 		final BResourceBundle bundle = BResourceBundle.getBundle("DefaultMessages", locale);
 
