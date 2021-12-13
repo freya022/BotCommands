@@ -89,6 +89,9 @@
                         <link>https://ci.dv8tion.net/job/JDA/javadoc</link>
                         <link>https://javadoc.io/doc/org.jetbrains/annotations/latest</link>
                     </links>
+                    <excludePackageNames>
+                        com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
+                    </excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>
