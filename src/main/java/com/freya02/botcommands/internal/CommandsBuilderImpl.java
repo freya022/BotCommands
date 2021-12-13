@@ -162,6 +162,9 @@ public final class CommandsBuilderImpl {
 			if (!method.canAccess(annotatedInstance))
 				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is not public");
 
+			if (Modifier.isStatic(method.getModifiers()))
+				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is static");
+
 			return annotatedInstance;
 		}
 
