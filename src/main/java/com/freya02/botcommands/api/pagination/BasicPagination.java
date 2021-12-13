@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
