@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils;
 
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.api.Logging;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

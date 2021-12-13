@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal;
+package com.freya02.botcommands.api;
 
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;

@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;

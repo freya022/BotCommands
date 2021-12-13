@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;

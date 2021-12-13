@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.utils;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.annotations.ConditionalUse;
 import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
-import com.freya02.botcommands.internal.Logging;
 import io.github.classgraph.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

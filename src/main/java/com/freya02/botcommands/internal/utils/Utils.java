@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.ComponentManager;
-import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

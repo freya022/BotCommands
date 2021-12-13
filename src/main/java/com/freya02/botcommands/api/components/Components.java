@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
@@ -9,7 +10,6 @@ import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
 import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;

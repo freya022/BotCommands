@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.events;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
