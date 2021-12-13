@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,8 +15,14 @@ import java.util.List;
 /**
  * Annotation to mark methods as being autocompletion functions for {@link AppOption slash command options}
  *
- * <br>
- * <br>The annotated method returns a {@link List} of things
+ * <br>Requirements:
+ * <ul>
+ *     <li>The method must be public</li>
+ *     <li>The method must be non-static</li>
+ *     <li>The first parameter must be {@link CommandAutoCompleteEvent}</li>
+ * </ul>
+ *
+ * The annotated method returns a {@link List} of things
  * <br>These things can be, and are mapped as follows:
  * <ul>
  *     <li>String, Long, Double -> Choice(String, String), uses fuzzy matching to give the best choices first</li>
