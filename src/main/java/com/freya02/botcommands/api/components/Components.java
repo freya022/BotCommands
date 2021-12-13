@@ -71,7 +71,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static Component[] group(@NotNull Component... components) {
+	public static Component[] group(@NotNull Component @NotNull... components) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(components)
 						.map(Component::getId)
@@ -107,7 +107,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static ActionRow[] groupRows(@NotNull ActionRow... rows) {
+	public static ActionRow[] groupRows(@NotNull ActionRow @NotNull... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
 						.flatMap(row -> row.getComponents().stream())
@@ -247,7 +247,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName,  @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.PRIMARY);
 	}
 
@@ -261,7 +261,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SECONDARY);
 	}
 
@@ -275,7 +275,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.DANGER);
 	}
 
@@ -289,7 +289,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder successButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder successButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SUCCESS);
 	}
 
@@ -303,7 +303,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _, _ -> new")
-	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), style);
 	}
 
@@ -332,7 +332,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, Object... args) {
+	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }
