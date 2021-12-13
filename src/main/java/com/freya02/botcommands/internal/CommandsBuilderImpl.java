@@ -1,6 +1,8 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.DefaultMessages;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.RegistrationListener;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
@@ -159,6 +161,9 @@ public final class CommandsBuilderImpl {
 
 			if (!method.canAccess(annotatedInstance))
 				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is not public");
+
+			if (Modifier.isStatic(method.getModifiers()))
+				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is static");
 
 			return annotatedInstance;
 		}

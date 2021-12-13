@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.Logging;

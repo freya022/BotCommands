@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
 import com.freya02.botcommands.api.utils.RichTextFinder;
 import com.freya02.botcommands.api.utils.RichTextType;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.entities.EmojiImpl;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;

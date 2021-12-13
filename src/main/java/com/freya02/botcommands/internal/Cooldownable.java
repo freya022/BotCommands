@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.CooldownScope;
+import com.freya02.botcommands.api.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;

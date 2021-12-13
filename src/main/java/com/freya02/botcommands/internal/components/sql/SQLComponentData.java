@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.components.sql;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.Logging;
 import org.slf4j.Logger;

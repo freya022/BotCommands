@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.components;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.builder.*;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.components.HandleComponentResult;
 import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
