@@ -2,25 +2,32 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.Logging;
+import gnu.trove.TCollections;
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
+import static gnu.trove.impl.Constants.DEFAULT_CAPACITY;
+import static gnu.trove.impl.Constants.DEFAULT_LOAD_FACTOR;
+
 public abstract class Cooldownable {
+	private record UserGuild(long guildId, long userId) {}
+
 	private static final Logger LOGGER = Logging.getLogger();
 	private final CooldownStrategy cooldownStrategy;
 
-	//The values is the time on which the cooldown expires
-	private final Map<Long, Map<Long, Long>> userCooldowns = Collections.synchronizedMap(new HashMap<>());
-	private final Map<Long, Long> channelCooldowns = Collections.synchronizedMap(new HashMap<>());
-	private final Map<Long, Long> guildCooldowns = Collections.synchronizedMap(new HashMap<>());
+	//Trove maps are not *always* the fastest, by a small margin, but are by far the most memory efficient
+	//The values are the time on which the cooldown expires
+	private final TObjectLongMap<UserGuild> userCooldowns = TCollections.synchronizedMap(new TObjectLongHashMap<>(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, 0));
+	private final TLongLongMap channelCooldowns = TCollections.synchronizedMap(new TLongLongHashMap(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, 0, 0));
+	private final TLongLongMap guildCooldowns = TCollections.synchronizedMap(new TLongLongHashMap(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR, 0, 0));
 
 	protected Cooldownable(CooldownStrategy cooldownStrategy) {
 		this.cooldownStrategy = cooldownStrategy;
@@ -36,22 +43,25 @@ public abstract class Cooldownable {
 
 	public void applyCooldown(GuildMessageReceivedEvent event) {
 		switch (getCooldownScope()) {
-			case USER -> getGuildUserCooldownMap(event.getGuild()).put(event.getAuthor().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
+			case USER -> userCooldowns.put(getUGKey(event), System.currentTimeMillis() + getCooldownMillis());
 			case GUILD -> guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 			case CHANNEL -> channelCooldowns.put(event.getChannel().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
 		}
 	}
 
-	@NotNull
-	private Map<Long, Long> getGuildUserCooldownMap(Guild guild) {
-		return userCooldowns.computeIfAbsent(guild.getIdLong(), x -> Collections.synchronizedMap(new HashMap<>()));
+	private UserGuild getUGKey(GuildMessageReceivedEvent event) {
+		return new UserGuild(event.getGuild().getIdLong(), event.getAuthor().getIdLong());
+	}
+
+	private UserGuild getUGKey(Interaction event, Guild guild) {
+		return new UserGuild(guild.getIdLong(), event.getUser().getIdLong());
 	}
 
 	public void applyCooldown(Interaction event) {
 		switch (getCooldownScope()) {
 			case USER -> {
 				if (event.getGuild() == null) break;
-				getGuildUserCooldownMap(event.getGuild()).put(event.getUser().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
+				userCooldowns.put(getUGKey(event, event.getGuild()), System.currentTimeMillis() + getCooldownMillis());
 			}
 			case GUILD -> {
 				if (event.getGuild() == null) break;
@@ -66,9 +76,9 @@ public abstract class Cooldownable {
 
 	public long getCooldown(GuildMessageReceivedEvent event) {
 		return switch (getCooldownScope()) {
-			case USER -> Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getAuthor().getIdLong(), 0L) - System.currentTimeMillis());
-			case GUILD -> Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
-			case CHANNEL -> Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+			case USER -> Math.max(0, userCooldowns.get(getUGKey(event)) - System.currentTimeMillis());
+			case GUILD -> Math.max(0, guildCooldowns.get(event.getGuild().getIdLong()) - System.currentTimeMillis());
+			case CHANNEL -> Math.max(0, channelCooldowns.get(event.getChannel().getIdLong()) - System.currentTimeMillis());
 		};
 	}
 
@@ -81,7 +91,7 @@ public abstract class Cooldownable {
 					return 0;
 				}
 
-				return Math.max(0, getGuildUserCooldownMap(event.getGuild()).getOrDefault(event.getUser().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, userCooldowns.get(getUGKey(event, event.getGuild())) - System.currentTimeMillis());
 			}
 			case GUILD -> {
 				if (event.getGuild() == null) {
@@ -90,7 +100,7 @@ public abstract class Cooldownable {
 					return 0;
 				}
 
-				return Math.max(0, guildCooldowns.getOrDefault(event.getGuild().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, guildCooldowns.get(event.getGuild().getIdLong()) - System.currentTimeMillis());
 			}
 			case CHANNEL -> {
 				if (event.getChannel() == null) {
@@ -99,7 +109,7 @@ public abstract class Cooldownable {
 					return 0;
 				}
 
-				return Math.max(0, channelCooldowns.getOrDefault(event.getChannel().getIdLong(), 0L) - System.currentTimeMillis());
+				return Math.max(0, channelCooldowns.get(event.getChannel().getIdLong()) - System.currentTimeMillis());
 			}
 			default -> throw new IllegalStateException("Unexpected value: " + getCooldownScope());
 		}
