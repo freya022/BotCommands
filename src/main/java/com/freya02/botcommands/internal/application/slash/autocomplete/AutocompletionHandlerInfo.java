@@ -233,7 +233,9 @@ public class AutocompletionHandlerInfo {
 		final List<SlashCommand.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event);
 
 		final OptionMapping optionMapping = event.getFocusedOptionType();
-		if (!optionMapping.getAsString().isBlank())
+
+		//If something is typed but there are no choices, don't display user input
+		if (!optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
 			actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
 
 		for (int i = 0; i < MAX_CHOICES && i < suppliedChoices.size(); i++) {
