@@ -4,7 +4,8 @@
 *.iml
 .idea
 target
-/src/test
+/src/test/java/com/freya02/botcommands/oldtests
+Config.json
 
 logs
 TestDB

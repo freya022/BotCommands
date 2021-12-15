@@ -1,0 +1,28 @@
+package com.freya02.botcommands.test.commands.slash;
+
+import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.Nullable;
+
+public class SlashBan2 extends ApplicationCommand {
+	@JDASlashCommand(name = "ban2name", group = "ban2group", subcommand = "ban2subname")
+	public void ban2(GuildSlashEvent event,
+	                 @AppOption(name = "ban2UserName", description = "ban2UserDescription")
+			                 User user,
+	                 @AppOption(name = "ban2delDaysName", description = "ban2delDaysDescription") @Optional
+			                 long delDays,
+	                 @AppOption(name = "ban2reasonName", description = "ban2reasonDescription") @Nullable
+			                 String reason) { //@Nullable is the same as @Optional but with static analysis
+		event.reply("Nah 2").setEphemeral(true).queue();
+
+		System.out.println("user = " + user);
+		System.out.println("delDays = " + delDays);
+		System.out.println("reason = " + reason);
+
+		//ban
+	}
+}
