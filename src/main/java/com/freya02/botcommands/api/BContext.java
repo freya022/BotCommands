@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
@@ -314,11 +313,11 @@ public interface BContext {
 	 * <i>This method is called by the application commands builder on startup</i>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
+	 * @param force  Whether or not commands and permissions should be updated no matter what
 	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
-	 * @throws IOException If unable to write the cache data
 	 */
 	@NotNull
-	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds) throws IOException;
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)

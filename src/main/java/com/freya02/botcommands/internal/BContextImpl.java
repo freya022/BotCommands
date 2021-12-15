@@ -31,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -448,8 +447,12 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds) throws IOException {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds);
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	}
+
+	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
+		return slashCommandsBuilder;
 	}
 
 	@Override
