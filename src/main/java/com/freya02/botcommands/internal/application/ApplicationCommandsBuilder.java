@@ -22,19 +22,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -209,80 +205,5 @@ public final class ApplicationCommandsBuilder {
 				throw new RuntimeException("An exception occurred while updating guild commands for guild '" + guild.getName() + "' (" + guild.getId() + ")", e);
 			}
 		}, es);
-	}
-
-	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
-		boolean changed = false;
-
-		List<ApplicationCommandsUpdater> updaters = new ArrayList<>();
-		for (Guild guild : guilds) {
-			if (slashGuildIds.isEmpty() || slashGuildIds.contains(guild.getIdLong())) {
-				updaters.add(ApplicationCommandsUpdater.ofGuild(context, guild));
-			}
-		}
-
-		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>(updaters.size());
-		for (ApplicationCommandsUpdater updater : updaters) {
-			final Guild guild = updater.getGuild();
-
-			Checks.check(guild != null, "Guild should have not been null");
-
-			if (updater.shouldUpdateCommands()) {
-				changed = true;
-
-				commandUpdatePairs.add(new ImmutablePair<>(guild, updater.updateCommands()));
-				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
-			} else {
-				LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
-			}
-		}
-
-		final List<Long> missedGuilds = new ArrayList<>();
-		for (ImmutablePair<Guild, CompletableFuture<?>> commandUpdatePair : commandUpdatePairs) {
-			try {
-				commandUpdatePair.getRight().join();
-			} catch (CompletionException e) { // Check missing access exceptions
-				if (e.getCause() instanceof ErrorResponseException) {
-					if (((ErrorResponseException) e.getCause()).getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
-						final Guild guild = commandUpdatePair.getLeft();
-
-						final String inviteUrl = context.getJDA().getInviteUrl() + "&guild_id=" + guild.getId();
-
-						LOGGER.warn("Could not register guild commands for guild '{}' ({}) as it appears the OAuth2 grants misses applications.commands, you can re-invite the bot in this guild with its already existing permission with this link: {}", guild.getName(), guild.getId(), inviteUrl);
-						context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
-
-						missedGuilds.add(guild.getIdLong());
-
-						continue;
-					}
-				}
-
-				throw e;
-			}
-		}
-
-		List<CompletableFuture<?>> privilegesFutures = new ArrayList<>(updaters.size());
-		for (ApplicationCommandsUpdater updater : updaters) {
-			final Guild guild = updater.getGuild();
-
-			Checks.check(guild != null, "Guild should have not been null");
-
-			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
-
-			if (updater.shouldUpdatePrivileges()) {
-				changed = true;
-
-				privilegesFutures.add(updater.updatePrivileges());
-				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
-			} else {
-				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
-			}
-		}
-
-		for (CompletableFuture<?> future : privilegesFutures) {
-			future.join();
-		}
-
-		return changed;
 	}
 }

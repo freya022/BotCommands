@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
+	public void onGenericGuildMemberUpdate(@NotNull GenericGuildMemberUpdateEvent event) {
 		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
 			tryUpdate(event.getGuild());
 		}
