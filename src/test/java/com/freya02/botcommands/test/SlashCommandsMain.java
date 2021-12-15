@@ -58,6 +58,8 @@ public class SlashCommandsMain {
 //						}
 //					})
 					.build(jda);
+
+			LOGGER.info("Finished building");
 		} catch (Exception e) {
 			LOGGER.error("Could not start the bot", e);
 
