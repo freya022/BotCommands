@@ -272,12 +272,28 @@ public class BContextImpl implements BContext {
 
 		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
+		//Checks below this block only check if shorter or equal commands exists
+		// We need to check if longer commands exists
+		//Would be more performant if we used a Trie
+		for (Map.Entry<CommandPath, SlashCommandInfo> entry : slashCommandMap.entrySet()) {
+			final CommandPath commandPath = entry.getKey();
+			final SlashCommandInfo mapInfo = entry.getValue();
+
+			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
+						path,
+						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						commandPath,
+						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+			}
+		}
+
 		CommandPath p = path;
 		do {
 			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
 			
 			if (mapInfo != null) {
-				throw new IllegalStateException(String.format("Tried to add a command with path %s (at %s) but a equal/shorter path already exists: %s (at %s)",
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
 						path,
 						Utils.formatMethodShort(commandInfo.getCommandMethod()),
 						p,
