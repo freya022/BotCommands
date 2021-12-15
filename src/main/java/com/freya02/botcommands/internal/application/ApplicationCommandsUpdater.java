@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
@@ -254,7 +255,7 @@ public class ApplicationCommandsUpdater {
 							}
 						}
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing command " + notLocalizedPath, e);
+						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getCommandMethod()), e);
 					}
 				});
 	}
