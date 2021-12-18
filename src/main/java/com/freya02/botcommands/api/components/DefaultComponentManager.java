@@ -2,8 +2,6 @@ package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.builder.*;
-import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.components.HandleComponentResult;
 import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
@@ -39,8 +37,8 @@ public class DefaultComponentManager implements ComponentManager {
 
 	private final Supplier<Connection> connectionSupplier;
 
-	private final Map<Long, Consumer<ButtonEvent>> buttonLambdaMap = new HashMap<>();
-	private final Map<Long, Consumer<SelectionEvent>> selectionMenuLambdaMap = new HashMap<>();
+	private final Map<Long, ButtonConsumer> buttonLambdaMap = new HashMap<>();
+	private final Map<Long, SelectionConsumer> selectionMenuLambdaMap = new HashMap<>();
 
 	public DefaultComponentManager(@NotNull Supplier<Connection> connectionSupplier) {
 		this.connectionSupplier = connectionSupplier;
@@ -98,11 +96,11 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@SuppressWarnings("DuplicatedCode")
-	private <EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
-	                                                                                                Consumer<ComponentErrorReason> onError,
-	                                                                                                Consumer<DATA> dataConsumer,
-	                                                                                                Map<Long, Consumer<EVENT>> map,
-	                                                                                                Function<Consumer<EVENT>, DATA> eventFunc) {
+	private <CONSUMER extends ComponentConsumer<EVENT>, EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
+	                                                                                                                                           Consumer<ComponentErrorReason> onError,
+	                                                                                                                                           Consumer<DATA> dataConsumer,
+	                                                                                                                                           Map<Long, CONSUMER> map,
+	                                                                                                                                           Function<CONSUMER, DATA> eventFunc) {
 		try (Connection connection = getConnection()) {
 			final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, event.getComponentId());
 
@@ -122,7 +120,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 			final long handlerId = data.getHandlerId();
 
-			final Consumer<EVENT> consumer;
+			final CONSUMER consumer;
 			if (result.shouldDelete()) {
 				data.delete(connection);
 

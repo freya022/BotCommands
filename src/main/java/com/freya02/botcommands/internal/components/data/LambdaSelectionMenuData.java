@@ -1,18 +1,16 @@
 package com.freya02.botcommands.internal.components.data;
 
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.SelectionConsumer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
-
 public class LambdaSelectionMenuData {
-	private final Consumer<SelectionEvent> consumer;
+	private final SelectionConsumer consumer;
 
-	public LambdaSelectionMenuData(@NotNull Consumer<SelectionEvent> consumer) {
+	public LambdaSelectionMenuData(@NotNull SelectionConsumer consumer) {
 		this.consumer = consumer;
 	}
 
-	public Consumer<SelectionEvent> getConsumer() {
+	public SelectionConsumer getConsumer() {
 		return consumer;
 	}
 }
