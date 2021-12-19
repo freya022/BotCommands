@@ -469,6 +469,12 @@ public class BContextImpl implements BContext {
 		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
 	}
 
+	@Override
+	@NotNull
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force);
+	}
+
 	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
 		return slashCommandsBuilder;
 	}

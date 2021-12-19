@@ -307,17 +307,31 @@ public interface BContext {
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
 	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
-	 *     <li>You decide to remove a command from a guild while the bot is running</li>
+	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
-	 * <i>This method is called by the application commands builder on startup</i>
-	 *
 	 * @param guilds Iterable collection of the guilds to update
-	 * @param force  Whether or not commands and permissions should be updated no matter what
-	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
+	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
 	@NotNull
 	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
+
+	/**
+	 * Updates the application commands and their permissions in the specified guild <br><br>
+	 * Why you could call this method:
+	 * <ul>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
+	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
+	 * </ul>
+	 *
+	 * @param guild The guild which needs to be updated
+	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
+	 */
+	@NotNull
+	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)
