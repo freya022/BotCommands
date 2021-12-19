@@ -2,9 +2,10 @@ package com.freya02.bot;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 //You can add more fields in this class, if your input json matches the structure
 //You will need a valid Config.json in the package com.freya02.bot for this to work
@@ -21,20 +22,17 @@ public class Config {
 	 * @throws IOException if the config JSON could not be read
 	 */
 	public static Config readConfig() throws IOException {
-		final InputStream stream = Config.class.getResourceAsStream("Config.json");
-		if (stream == null) {
+		try (BufferedReader reader = Files.newBufferedReader(Path.of("Config.json"))) {
+			return new Gson().fromJson(reader, Config.class);
+		} catch (IOException e) {
 			throw new IOException("""
-					Config.json was not found in the current package, did you forget to put it ?
+					Config.json was not found in the root folder (of the project), did you forget to put it ?
 					Example structure:
 
 					{
-					\t"token": "[your_bot_token_here]"
+						"token": "[your_bot_token_here]"
 					}
-					""");
-		}
-
-		try (InputStreamReader reader = new InputStreamReader(stream)) {
-			return new Gson().fromJson(reader, Config.class);
+					""", e);
 		}
 	}
 
