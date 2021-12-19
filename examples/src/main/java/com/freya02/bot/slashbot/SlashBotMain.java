@@ -2,7 +2,7 @@ package com.freya02.bot.slashbot;
 
 import com.freya02.bot.CommonMain;
 import com.freya02.botcommands.api.CommandsBuilder;
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.api.Logging;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 

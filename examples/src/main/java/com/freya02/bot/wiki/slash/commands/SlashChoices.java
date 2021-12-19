@@ -1,18 +1,17 @@
 package com.freya02.bot.wiki.slash.commands;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,14 +46,8 @@ public class SlashChoices extends ApplicationCommand {
 
 		valueList.add(new SlashCommand.Choice(name, value));
 
-		try {
-			event.getContext().scheduleApplicationCommandsUpdate(List.of(event.getGuild()));
+		event.getContext().scheduleApplicationCommandsUpdate(event.getGuild(), false);
 
-			event.getHook().sendMessage("Choice added successfully").queue();
-		} catch (IOException e) {
-			LOGGER.error("Unable to update guild commands", e);
-
-			event.getHook().sendMessage("Could not add the choice").queue();
-		}
+		event.getHook().sendMessage("Choice added successfully").queue();
 	}
 }
