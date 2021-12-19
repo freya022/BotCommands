@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -144,7 +143,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder primaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder primaryButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.PRIMARY);
@@ -159,7 +158,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder secondaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder secondaryButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SECONDARY);
@@ -174,7 +173,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder dangerButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder dangerButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.DANGER);
@@ -189,7 +188,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder successButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder successButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SUCCESS);
@@ -204,13 +203,13 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, style);
 	}
 
-	private static void checkCapturedVars(Consumer<?> consumer) {
+	private static void checkCapturedVars(Object consumer) {
 		for (Field field : consumer.getClass().getDeclaredFields()) {
 			for (Class<?> aClass : RESTRICTED_CLASSES) {
 				if (aClass.isAssignableFrom(field.getType())) {
@@ -316,7 +315,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull Consumer<SelectionEvent> consumer) {
+	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull SelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaSelectionMenuBuilder(context, consumer);

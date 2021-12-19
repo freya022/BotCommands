@@ -34,6 +34,9 @@ import org.slf4j.Logger;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -73,6 +76,9 @@ public class BContextImpl implements BContext {
 	private ExceptionHandler uncaughtExceptionHandler;
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
+
+	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
+	private final List<Long> alreadyNotifiedList = new ArrayList<>();
 
 	@Override
 	@NotNull
@@ -290,7 +296,7 @@ public class BContextImpl implements BContext {
 		CommandPath p = path;
 		do {
 			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
-			
+
 			if (mapInfo != null) {
 				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
 						path,
@@ -302,7 +308,7 @@ public class BContextImpl implements BContext {
 
 		slashCommandMap.put(path, commandInfo);
 	}
-	
+
 	public void addUserCommand(UserCommandInfo commandInfo) {
 		final CommandPath path = commandInfo.getPath();
 
@@ -353,11 +359,23 @@ public class BContextImpl implements BContext {
 
 	public void dispatchException(String message, Throwable e) {
 		for (Long ownerId : getOwnerIds()) {
+			synchronized (alreadyNotifiedList) {
+				if (alreadyNotifiedList.contains(ownerId)) {
+					continue;
+				}
+
+				alreadyNotifiedList.add(ownerId);
+				exceptionTimeoutService.schedule(() -> {
+					synchronized (alreadyNotifiedList) {
+						alreadyNotifiedList.remove(ownerId);
+					}
+				}, 10, TimeUnit.MINUTES);
+			}
+
 			getJDA().openPrivateChannelById(ownerId)
-					.queue(channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e))
-							.queue(null, new ErrorHandler()
-									.handle(ErrorResponse.CANNOT_SEND_TO_USER,
-											t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId))));
+					.flatMap(channel -> channel.sendMessage(message + ", exception : \n" + Utils.getException(e) + "\n\n Please check the logs for more detail and possible exceptions"))
+					.queue(null, new ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER,
+							t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId)));
 		}
 	}
 

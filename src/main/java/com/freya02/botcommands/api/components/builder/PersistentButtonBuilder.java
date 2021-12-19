@@ -43,11 +43,11 @@ public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<
 	public Button build(ButtonContent content) {
 		//Build either a button with a label, an emoji, or both
 
-		if (content.str() != null) {
+		if (content.text() != null) {
 			if (content.emoji() != null) { //both
-				return new ButtonImpl(buildId(), "", buttonStyle, false, content.emoji()).withLabel(content.str());
+				return new ButtonImpl(buildId(), "", buttonStyle, false, content.emoji()).withLabel(content.text());
 			} else { //label
-				return new ButtonImpl(buildId(), "", buttonStyle, false, null).withLabel(content.str());
+				return new ButtonImpl(buildId(), "", buttonStyle, false, null).withLabel(content.text());
 			}
 		} else { //emoji
 			return new ButtonImpl(buildId(), "", buttonStyle, false, content.emoji());
