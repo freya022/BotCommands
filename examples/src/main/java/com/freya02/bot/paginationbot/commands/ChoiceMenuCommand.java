@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.pagination.Paginator;
+import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,11 +18,13 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 	public void run(GuildSlashEvent event) {
 		final List<Guild> entries = new ArrayList<>(event.getJDA().getGuilds());
 
-		//Only the caller can use the choice menu
-		// There must be no delete button as the message is ephemeral
 		// The choice menu is like a menu except the user has buttons to choose an entry, 
 		//      and you can wait or use a callback to use the user choice
-		final Paginator paginator = new ChoiceMenuBuilder<>(event.getUser().getIdLong(), false, entries)
+		final ChoiceMenu<Guild> paginator = new ChoiceMenuBuilder<>(entries)
+				//Only the caller can use the choice menu
+				.setOwnerId(event.getUser().getIdLong())
+				// There must be no delete button as the message is ephemeral
+				.useDeleteButton(false)
 				//Transforms each entry (a Guild) into this text
 				.setTransformer(guild -> String.format("%s (%s)", guild.getName(), guild.getId()))
 				//Show only 1 entry per page
@@ -30,9 +32,9 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 				//Set the entry (row) prefix
 				// This will then display as
 				// - GuildName (GuildId)
-				.setRowPrefix((entry, maxEntry) -> " - ")
+				.setRowPrefixSupplier((entry, maxEntry) -> " - ")
 				//This gets called when the user chooses an entry via the buttons
-				// First callback parameter is the button event and the second is the choosed entry (the Guild)
+				// First callback parameter is the button event and the second is the chosen entry (the Guild)
 				.setCallback((btnEvt, guild) -> {
 					//Edit the message with a Message so everything is replaced, instead of just the content
 					btnEvt.editMessage(new MessageBuilder("You chose the guild '" + guild.getName() + "' !").build()).queue();

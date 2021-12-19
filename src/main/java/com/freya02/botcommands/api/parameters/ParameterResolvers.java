@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.parameters;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.parameters.*;
+import com.freya02.botcommands.internal.parameters.channels.*;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
  *     <li>{@linkplain Role}</li>
  *     <li>{@linkplain User}</li>
  *     <li>{@linkplain Member}</li>
- *     <li>{@linkplain TextChannel}</li>
+ *     <li>{@linkplain GuildChannel all guild channels (in theory)}</li>
  *     <li>{@linkplain Message} (only message context commands)</li>
  * </ul>
  */
@@ -59,7 +60,14 @@ public class ParameterResolvers {
 		register(new MentionableResolver());
 		register(new RoleResolver());
 		register(new StringResolver());
+
+		register(new GuildChannelResolver());
 		register(new TextChannelResolver());
+		register(new VoiceChannelResolver());
+		register(new StoreChannelResolver());
+		register(new StageChannelResolver());
+		register(new CategoryResolver());
+
 		register(new UserResolver());
 		register(new MessageResolver());
 	}

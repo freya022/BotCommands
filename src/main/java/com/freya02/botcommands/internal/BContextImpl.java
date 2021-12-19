@@ -1,16 +1,16 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
+import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandUpdateResult;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfoMap;
-import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
-import com.freya02.botcommands.internal.application.ApplicationCommandsCache;
+import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -28,11 +28,15 @@ import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -70,6 +74,11 @@ public class BContextImpl implements BContext {
 	private ApplicationCommandsCache applicationCommandsCache;
 	private Function<Guild, DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
+
+	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
+
+	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
+	private final List<Long> alreadyNotifiedList = new ArrayList<>();
 
 	@Override
 	@NotNull
@@ -111,7 +120,10 @@ public class BContextImpl implements BContext {
 	@Override
 	@Nullable
 	public TextCommandInfo findFirstCommand(@NotNull CommandPath path) {
-		return textCommandMap.get(path).findFirst();
+		final TextCommandCandidates candidates = textCommandMap.get(path);
+		if (candidates == null) return null;
+
+		return candidates.findFirst();
 	}
 
 	@Nullable
@@ -153,22 +165,52 @@ public class BContextImpl implements BContext {
 		return getMessageCommandsMap().get(CommandPath.ofName(name));
 	}
 
+	@NotNull
 	public ApplicationCommandInfoMap getApplicationCommandInfoMap() {
 		return applicationCommandInfoMap;
 	}
 
-	private ApplicationCommandInfoMap.CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
-		return getApplicationCommandInfoMap().getSlashCommands();
-	}
-	
+	@Override
 	@NotNull
-	private ApplicationCommandInfoMap.CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
-		return getApplicationCommandInfoMap().getUserCommands();
+	@UnmodifiableView
+	public ApplicationCommandInfoMapView getApplicationCommandInfoMapView() {
+		return applicationCommandInfoMap;
 	}
 
 	@NotNull
-	private ApplicationCommandInfoMap.CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
+	private CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
+		return getApplicationCommandInfoMap().getSlashCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView() {
+		return getApplicationCommandInfoMapView().getSlashCommandsView();
+	}
+
+	@NotNull
+	private CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
+		return getApplicationCommandInfoMap().getUserCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<UserCommandInfo> getUserCommandsMapView() {
+		return getApplicationCommandInfoMapView().getUserCommandsView();
+	}
+
+	@NotNull
+	private CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
 		return getApplicationCommandInfoMap().getMessageCommands();
+	}
+
+	@Override
+	@NotNull
+	@UnmodifiableView
+	public CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView() {
+		return getApplicationCommandInfoMapView().getMessageCommandsView();
 	}
 
 	@Override
@@ -235,12 +277,28 @@ public class BContextImpl implements BContext {
 
 		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
 
+		//Checks below this block only check if shorter or equal commands exists
+		// We need to check if longer commands exists
+		//Would be more performant if we used a Trie
+		for (Map.Entry<CommandPath, SlashCommandInfo> entry : slashCommandMap.entrySet()) {
+			final CommandPath commandPath = entry.getKey();
+			final SlashCommandInfo mapInfo = entry.getValue();
+
+			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
+						path,
+						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						commandPath,
+						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+			}
+		}
+
 		CommandPath p = path;
 		do {
 			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
-			
+
 			if (mapInfo != null) {
-				throw new IllegalStateException(String.format("Tried to add a command with path %s (at %s) but a equal/shorter path already exists: %s (at %s)",
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
 						path,
 						Utils.formatMethodShort(commandInfo.getCommandMethod()),
 						p,
@@ -250,7 +308,7 @@ public class BContextImpl implements BContext {
 
 		slashCommandMap.put(path, commandInfo);
 	}
-	
+
 	public void addUserCommand(UserCommandInfo commandInfo) {
 		final CommandPath path = commandInfo.getPath();
 
@@ -294,17 +352,30 @@ public class BContextImpl implements BContext {
 		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
 
-	public Collection<? extends ApplicationCommandInfo> getApplicationCommands() {
-		return applicationCommandInfoMap.getAllApplicationCommands();
+	@UnmodifiableView
+	public Collection<? extends ApplicationCommandInfo> getApplicationCommandsView() {
+		return applicationCommandInfoMap.getAllApplicationCommandsView();
 	}
 
 	public void dispatchException(String message, Throwable e) {
 		for (Long ownerId : getOwnerIds()) {
+			synchronized (alreadyNotifiedList) {
+				if (alreadyNotifiedList.contains(ownerId)) {
+					continue;
+				}
+
+				alreadyNotifiedList.add(ownerId);
+				exceptionTimeoutService.schedule(() -> {
+					synchronized (alreadyNotifiedList) {
+						alreadyNotifiedList.remove(ownerId);
+					}
+				}, 10, TimeUnit.MINUTES);
+			}
+
 			getJDA().openPrivateChannelById(ownerId)
-					.queue(channel -> channel.sendMessage(message + ", exception : \r\n" + Utils.getException(e))
-							.queue(null, new ErrorHandler()
-									.handle(ErrorResponse.CANNOT_SEND_TO_USER,
-											t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId))));
+					.flatMap(channel -> channel.sendMessage(message + ", exception : \n" + Utils.getException(e) + "\n\n Please check the logs for more detail and possible exceptions"))
+					.queue(null, new ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER,
+							t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId)));
 		}
 	}
 
@@ -393,8 +464,13 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
-		return slashCommandsBuilder.tryUpdateGuildCommands(guilds);
+	@NotNull
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	}
+
+	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
+		return slashCommandsBuilder;
 	}
 
 	@Override
@@ -446,5 +522,13 @@ public class BContextImpl implements BContext {
 	@Override
 	public ExceptionHandler getUncaughtExceptionHandler() {
 		return uncaughtExceptionHandler;
+	}
+
+	public AutocompletionTransformer<?> getAutocompletionTransformer(Class<?> type) {
+		return autocompletionTransformers.get(type);
+	}
+
+	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+		autocompletionTransformers.put(type, autocompletionTransformer);
 	}
 }

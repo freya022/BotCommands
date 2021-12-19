@@ -1,16 +1,19 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.CooldownScope;
+import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.ExceptionHandler;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.*;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.RunnableEx;
+import com.freya02.botcommands.internal.Usability;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
@@ -138,7 +141,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions((GuildChannel) event.getChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getTextChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());

@@ -1,10 +1,11 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.CommandParameter;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,7 @@ public class PrefixedCommandsBuilder {
 
 	public void processPrefixedCommand(TextCommand command, Method method) {
 		try {
-			if (!Utils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
+			if (!ReflectionUtils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
 				throw new IllegalArgumentException("Prefixed command at " + Utils.formatMethodShort(method) + " must have a BaseCommandEvent or a CommandEvent as first parameter");
 
 			final TextCommandInfo info = new TextCommandInfo(command, method);

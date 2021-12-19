@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.*;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.Nullable;
@@ -17,8 +17,11 @@ import java.lang.annotation.Target;
  * <p>
  * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
  *
- * @see Optional Optional (can also see @Nullable)
- * @see Nullable
+ * @see Optional @Optional
+ * @see Nullable @Nullable (same as @Optional but better)
+ * @see LongRange @LongRange
+ * @see DoubleRange @DoubleRange
+ * @see ChannelTypes @ChannelTypes
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
@@ -42,4 +45,9 @@ public @interface AppOption {
 	 * @return Description of the option
 	 */
 	String description() default "";
+
+	/**
+	 * Name of the autocompletion handler, must match a method annotated with {@link AutocompletionHandler} with the same name in it
+	 */
+	String autocomplete() default "";
 }

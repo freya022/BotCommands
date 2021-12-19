@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
+import com.freya02.botcommands.internal.parameters.channels.AbstractChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -59,32 +60,60 @@ public class SlashUtils {
 				data = new OptionData(OptionType.USER, name, description);
 			} else if (boxedType == Role.class) {
 				data = new OptionData(OptionType.ROLE, name, description);
-			} else if (boxedType == TextChannel.class) {
+			} else if (GuildChannel.class.isAssignableFrom(boxedType)) {
 				data = new OptionData(OptionType.CHANNEL, name, description);
+
+				if (parameter.getChannelTypes().isEmpty()) {
+					final AbstractChannelResolver<?> resolver = (AbstractChannelResolver<?>) parameter.getResolver();
+
+					data.setChannelTypes(resolver.getChannelType());
+				} else {
+					data.setChannelTypes(parameter.getChannelTypes());
+				}
 			} else if (boxedType == IMentionable.class) {
 				data = new OptionData(OptionType.MENTIONABLE, name, description);
 			} else if (boxedType == Boolean.class) {
 				data = new OptionData(OptionType.BOOLEAN, name, description);
 			} else if (boxedType == Long.class) {
 				data = new OptionData(OptionType.INTEGER, name, description);
+
+				data.setMinValue(parameter.getMinValue().longValue());
+				data.setMaxValue(parameter.getMaxValue().longValue());
 			} else if (boxedType == Double.class) {
 				data = new OptionData(OptionType.NUMBER, name, description);
+
+				data.setMinValue(parameter.getMinValue().doubleValue());
+				data.setMaxValue(parameter.getMaxValue().doubleValue());
 			} else if (ParameterResolvers.exists(boxedType)) {
 				data = new OptionData(OptionType.STRING, name, description);
 			} else {
 				throw new IllegalArgumentException("Unknown slash command option: " + boxedType.getName());
 			}
 
+			if (applicationOptionData.hasAutocompletion()) {
+				if (!data.getType().canSupportChoices()) {
+					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " does not support autocompletion");
+				}
+
+				data.setAutoComplete(true);
+			}
+
 			if (data.getType().canSupportChoices()) {
-				//choices might just be empty
-				if (optionsChoices.size() >= i) {
+				//optionChoices might just be empty
+				// choices of the option might also be empty as an empty list might be generated
+				// do not add choices if it's empty, to not trigger checks
+				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+					if (applicationOptionData.hasAutocompletion()) {
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
+					}
+
 					data.addChoices(optionsChoices.get(i - 1));
 				}
 			}
 
-			list.add(data);
-
 			data.setRequired(!parameter.isOptional());
+
+			list.add(data);
 
 			i++;
 		}

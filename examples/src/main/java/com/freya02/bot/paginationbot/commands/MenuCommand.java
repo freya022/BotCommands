@@ -1,11 +1,11 @@
 package com.freya02.bot.paginationbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
-import com.freya02.botcommands.api.pagination.Paginator;
-import com.freya02.botcommands.api.pagination.menu.MenuBuilder;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.pagination.menu.Menu;
+import com.freya02.botcommands.api.pagination.menu.MenuBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.ArrayList;
@@ -19,7 +19,11 @@ public class MenuCommand extends ApplicationCommand {
 
 		//Only the caller can use the menu
 		// There must be no delete button as the message is ephemeral
-		final Paginator paginator = new MenuBuilder<>(event.getUser().getIdLong(), false, entries)
+		final Menu<Guild> paginator = new MenuBuilder<>(entries)
+				//Only the caller can use the choice menu
+				.setOwnerId(event.getUser().getIdLong())
+				// There must be no delete button as the message is ephemeral
+				.useDeleteButton(false)
 				//Transforms each entry (a Guild) into this text
 				.setTransformer(guild -> String.format("%s (%s)", guild.getName(), guild.getId()))
 				//Show only 1 entry per page
@@ -27,7 +31,7 @@ public class MenuCommand extends ApplicationCommand {
 				//Set the entry (row) prefix
 				// This will then display as
 				// - GuildName (GuildId)
-				.setRowPrefix((entry, maxEntry) -> " - ")
+				.setRowPrefixSupplier((entry, maxEntry) -> " - ")
 				.build();
 
 		//You must send the menu as a message

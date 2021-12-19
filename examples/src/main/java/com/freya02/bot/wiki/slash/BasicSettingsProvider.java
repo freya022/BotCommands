@@ -46,7 +46,7 @@ public class BasicSettingsProvider implements SettingsProvider {
 		getBlacklist(guild).remove(commandName); //Removes the command from the blacklist
 
 		try {
-			context.tryUpdateGuildCommands(Collections.singleton(guild));
+			context.scheduleApplicationCommandsUpdate(Collections.singleton(guild));
 		} catch (IOException e) { //Should not happen unless it can't write the cached commands on the disk
 			LOGGER.error("An error occurred while updating guild commands manually", e);
 		}

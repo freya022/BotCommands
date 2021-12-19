@@ -1,10 +1,12 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.internal.DefaultMessages;
+import com.freya02.botcommands.internal.application.CommandInfoMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -16,11 +18,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -143,6 +147,46 @@ public interface BContext {
 	 */
 	@Nullable
 	MessageCommandInfo findMessageCommand(@NotNull String name);
+
+	/**
+	 * Returns a view for all the registered application commands
+	 * <br>This doesn't filter commands on a per-guild basis
+	 *
+	 * @return A view of all the application commands
+	 */
+	@NotNull
+	@UnmodifiableView
+	ApplicationCommandInfoMapView getApplicationCommandInfoMapView();
+
+	/**
+	 * Returns a view for all the registered slash commands
+	 * <br>This doesn't filter commands on a per-guild basis
+	 *
+	 * @return A view of all the slash commands
+	 */
+	@NotNull
+	@UnmodifiableView
+	CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView();
+
+	/**
+	 * Returns a view for all the registered user context commands
+	 * <br>This doesn't filter commands on a per-guild basis
+	 *
+	 * @return A view of all the user context commands
+	 */
+	@NotNull
+	@UnmodifiableView
+	CommandInfoMap<UserCommandInfo> getUserCommandsMapView();
+
+	/**
+	 * Returns a view for all the registered message context commands
+	 * <br>This doesn't filter commands on a per-guild basis
+	 *
+	 * @return A view of all the message context commands
+	 */
+	@NotNull
+	@UnmodifiableView
+	CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView();
 
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
@@ -269,10 +313,11 @@ public interface BContext {
 	 * <i>This method is called by the application commands builder on startup</i>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
+	 * @param force  Whether or not commands and permissions should be updated no matter what
 	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
-	 * @throws IOException If unable to write the cache data
 	 */
-	boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException;
+	@NotNull
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)

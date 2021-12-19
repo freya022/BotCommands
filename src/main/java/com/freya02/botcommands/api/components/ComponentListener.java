@@ -1,11 +1,11 @@
 package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.ExceptionHandler;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;

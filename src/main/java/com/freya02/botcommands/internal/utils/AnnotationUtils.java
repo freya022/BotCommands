@@ -3,10 +3,12 @@ package com.freya02.botcommands.internal.utils;
 import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.annotations.*;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.annotations.ChannelTypes;
 import com.freya02.botcommands.api.prefixed.annotations.Hidden;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.CooldownStrategy;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -124,5 +126,12 @@ public class AnnotationUtils {
 		} else {
 			return method.getDeclaringClass().getAnnotation(annotationType);
 		}
+	}
+
+	public static ChannelType[] getEffectiveChannelTypes(Parameter parameter) {
+		final ChannelTypes annotation = parameter.getAnnotation(ChannelTypes.class);
+		if (annotation == null) return new ChannelType[0];
+
+		return annotation.value();
 	}
 }

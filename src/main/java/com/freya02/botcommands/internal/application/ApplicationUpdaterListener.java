@@ -1,24 +1,24 @@
 package com.freya02.botcommands.internal.application;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ApplicationUpdaterListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
-	private final BContextImpl context;
 
-	private final List<Long> updatedJoinedGuilds = new ArrayList<>();
+	private final BContextImpl context;
+	private final Set<Long> failedGuilds = Collections.synchronizedSet(new HashSet<>());
 
 	public ApplicationUpdaterListener(BContextImpl context) {
 		this.context = context;
@@ -26,25 +26,33 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
-		tryUpdate(event.getGuild());
+		tryUpdate(event.getGuild(), true);
 	}
 
 	@Override
 	public void onGuildJoin(@NotNull GuildJoinEvent event) {
-		tryUpdate(event.getGuild());
+		tryUpdate(event.getGuild(), true);
 	}
 
-	private void tryUpdate(Guild guild) {
-		synchronized (updatedJoinedGuilds) {
-			if (updatedJoinedGuilds.contains(guild.getIdLong())) return;
-
-			updatedJoinedGuilds.add(guild.getIdLong());
+	//Use this as a mean to detect OAuth scope changes
+	@Override
+	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
+		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
+			tryUpdate(event.getGuild(), false);
 		}
+	}
 
-		try {
-			context.tryUpdateGuildCommands(Collections.singleton(guild));
-		} catch (IOException e) {
-			LOGGER.error("An error occurred while updating guild '{}' ({}) commands (on guild join / on unavailable guild join but became available later)", guild.getName(), guild.getIdLong(), e);
-		}
+	private void tryUpdate(Guild guild, boolean force) {
+		final boolean hadFailed = failedGuilds.remove(guild.getIdLong());
+
+		context.getSlashCommandsBuilder()
+				.scheduleApplicationCommandsUpdate(guild, force || hadFailed)
+				.whenCompleteAsync((commandUpdateResult, e) -> {
+			if (e != null) {
+				failedGuilds.add(guild.getIdLong());
+
+				context.getSlashCommandsBuilder().handleApplicationUpdateException(guild, e);
+			}
+		});
 	}
 }

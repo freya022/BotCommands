@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
@@ -9,7 +10,6 @@ import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
 import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -25,7 +25,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -54,7 +53,7 @@ import java.util.stream.Collectors;
  * </code></pre>
  */
 public class Components {
-	private static final List<Class<? extends ISnowflake>> RESTRICTED_CLASSES = List.of(Role.class, AbstractChannel.class, Guild.class, Emote.class, User.class, Message.class);
+	private static final List<Class<? extends ISnowflake>> RESTRICTED_CLASSES = List.of(Role.class, Channel.class, Guild.class, Emote.class, User.class, Message.class);
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private static BContext context;
@@ -71,7 +70,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static Component[] group(@NotNull Component... components) {
+	public static Component[] group(@NotNull Component @NotNull... components) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(components)
 						.map(Component::getId)
@@ -107,7 +106,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static ActionRow[] groupRows(@NotNull ActionRow... rows) {
+	public static ActionRow[] groupRows(@NotNull ActionRow @NotNull... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
 						.flatMap(row -> row.getComponents().stream())
@@ -144,7 +143,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder primaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder primaryButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.PRIMARY);
@@ -159,7 +158,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder secondaryButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder secondaryButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SECONDARY);
@@ -174,7 +173,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder dangerButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder dangerButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.DANGER);
@@ -189,7 +188,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaButtonBuilder successButton(@NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder successButton(@NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, ButtonStyle.SUCCESS);
@@ -204,13 +203,13 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull Consumer<ButtonEvent> consumer) {
+	public static LambdaButtonBuilder button(@NotNull ButtonStyle style, @NotNull ButtonConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaButtonBuilder(context, consumer, style);
 	}
 
-	private static void checkCapturedVars(Consumer<?> consumer) {
+	private static void checkCapturedVars(Object consumer) {
 		for (Field field : consumer.getClass().getDeclaredFields()) {
 			for (Class<?> aClass : RESTRICTED_CLASSES) {
 				if (aClass.isAssignableFrom(field.getType())) {
@@ -247,7 +246,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName,  @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.PRIMARY);
 	}
 
@@ -261,7 +260,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SECONDARY);
 	}
 
@@ -275,7 +274,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.DANGER);
 	}
 
@@ -289,7 +288,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder successButton(@NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder successButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SUCCESS);
 	}
 
@@ -303,7 +302,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _, _ -> new")
-	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, Object... args) {
+	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), style);
 	}
 
@@ -316,7 +315,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull Consumer<SelectionEvent> consumer) {
+	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull SelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaSelectionMenuBuilder(context, consumer);
@@ -332,7 +331,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, Object... args) {
+	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull... args) {
 		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }

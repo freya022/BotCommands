@@ -1,12 +1,13 @@
 package com.freya02.botcommands.internal.application;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,7 @@ public class ApplicationCommandsUpdater {
 	private final Map<String, String> localizedBaseNameToBaseName = new HashMap<>();
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
+	private final Collection<CommandData> allCommandData;
 
 	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild) throws IOException {
 		this.context = context;
@@ -71,6 +73,8 @@ public class ApplicationCommandsUpdater {
 		}
 
 		computeCommands();
+
+		this.allCommandData = map.getAllCommandData();
 	}
 
 	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context) throws IOException {
@@ -87,24 +91,40 @@ public class ApplicationCommandsUpdater {
 	}
 
 	public boolean shouldUpdateCommands() throws IOException {
-		if (Files.notExists(commandsCachePath)) return true;
+		if (Files.notExists(commandsCachePath)) {
+			LOGGER.trace("Updating commands because cache file does not exists");
+
+			return true;
+		}
 
 		final byte[] oldBytes = Files.readAllBytes(commandsCachePath);
-		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(map.getAllCommandData());
+		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(allCommandData);
 
-		return !Arrays.equals(oldBytes, newBytes);
+		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);
+
+		if (needUpdate) {
+			LOGGER.trace("Updating commands because content is not equal");
+
+//			LOGGER.trace("Old commands bytes: {}", new String(oldBytes));
+//			LOGGER.trace("New commands bytes: {}", new String(newBytes));
+		}
+
+		return needUpdate;
 	}
 
-	public CompletableFuture<?> updateCommands() {
-		final Collection<CommandData> commandData = map.getAllCommandData();
-
+	@Blocking
+	public void updateCommands() {
 		final CommandListUpdateAction updateAction = guild != null ? guild.updateCommands() : context.getJDA().updateCommands();
 
-		final CompletableFuture<List<Command>> future = updateAction
-				.addCommands(commandData)
-				.submit();
+		final List<Command> commands = updateAction
+				.addCommands(allCommandData)
+				.complete();
 
-		return guild != null ? thenAcceptGuild(commandData, future, guild) : thenAcceptGlobal(commandData, future);
+		if (guild != null) {
+			thenAcceptGuild(commands, guild);
+		} else {
+			thenAcceptGlobal(commands);
+		}
 	}
 
 	public boolean shouldUpdatePrivileges() throws IOException {
@@ -112,29 +132,46 @@ public class ApplicationCommandsUpdater {
 
 		if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
-		if (Files.notExists(privilegesCachePath)) return true;
+		if (Files.notExists(privilegesCachePath)) {
+			LOGGER.trace("Updating privileges because privilege cache does not exists");
+
+			return true;
+		}
 
 		final byte[] oldBytes = Files.readAllBytes(privilegesCachePath);
 		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap);
 
-		return !Arrays.equals(oldBytes, newBytes);
+		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);
+
+		if (needUpdate) {
+			LOGGER.trace("Updating privileges because content is not equal");
+
+//			LOGGER.trace("Old privileges bytes: {}", new String(oldBytes));
+//			LOGGER.trace("New privileges bytes: {}", new String(newBytes));
+		}
+
+		return needUpdate;
 	}
 
-	public CompletableFuture<?> updatePrivileges() {
+	@Blocking
+	public void updatePrivileges() {
 		if (guild == null) {
-			return CompletableFuture.completedFuture(null);
+			return;
 		}
 
 		if (commands.isEmpty()) {
 			LOGGER.info("Privileges has changed but commands were not updated, retrieving current command list");
 
-			return guild.retrieveCommands().submit().thenApply(retrievedCommands -> updatePrivileges0(guild, retrievedCommands));
+			final List<Command> retrievedCommands = guild.retrieveCommands().complete();
+
+			updatePrivileges0(guild, retrievedCommands);
 		} else {
-			return updatePrivileges0(guild, commands);
+			updatePrivileges0(guild, commands);
 		}
 	}
 
-	private CompletableFuture<?> updatePrivileges0(@NotNull Guild guild, @NotNull List<Command> commands) {
+	@Blocking
+	private void updatePrivileges0(@NotNull Guild guild, @NotNull List<Command> commands) {
 		for (Command command : commands) {
 			final Collection<? extends CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
 
@@ -143,34 +180,17 @@ public class ApplicationCommandsUpdater {
 			}
 		}
 
-		return guild.updateCommandPrivileges(cmdIdToPrivilegesMap).submit().thenAccept(privilegesMap -> {
-			try {
-				Files.write(privilegesCachePath, ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-			} catch (IOException e) {
-				LOGGER.error("An exception occurred while temporarily saving guild ({} ({})) command privileges", guild.getName(), guild.getId(), e);
-			}
-		});
+		guild.updateCommandPrivileges(cmdIdToPrivilegesMap).complete();
+
+		try {
+			Files.write(privilegesCachePath, ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			LOGGER.error("An exception occurred while temporarily saving guild ({} ({})) command privileges", guild.getName(), guild.getId(), e);
+		}
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommands().stream()
-				.filter(info -> {
-					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
-						return false;
-					} else if (!info.isGuildOnly() && guild != null) { //Do not update global commands in guild context
-						return false;
-					}
-
-					//Get the actual usable commands in this context (dm or guild)
-					if (guild == null) return true;
-
-					final SettingsProvider settingsProvider = context.getSettingsProvider();
-					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
-
-					return settingsProvider.getGuildCommands(guild).getFilter().test(info.getPath());
-				})
-				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
-				.collect(Collectors.toCollection(ArrayList::new)); //Ensure spliterator is ORDERED for future Stream usage
+		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandInfoMap().filterByGuild(context, guild);
 
 		computeSlashCommands(guildApplicationCommands);
 
@@ -271,7 +291,7 @@ public class ApplicationCommandsUpdater {
 							}
 						}
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing command " + notLocalizedPath, e);
+						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getCommandMethod()), e);
 					}
 				});
 	}
@@ -331,53 +351,49 @@ public class ApplicationCommandsUpdater {
 		return List.of();
 	}
 
-	private CompletableFuture<?> thenAcceptGuild(Collection<CommandData> commandData, CompletableFuture<List<Command>> future, @NotNull Guild guild) {
-		return future.thenAccept(commands -> {
-			for (Command command : commands) {
-				if (command instanceof SlashCommand) {
-					context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, (SlashCommand) command));
-				}
+	private void thenAcceptGuild(List<Command> commands, @NotNull Guild guild) {
+		for (Command command : commands) {
+			if (command instanceof SlashCommand) {
+				context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, (SlashCommand) command));
 			}
+		}
 
-			this.commands.addAll(commands);
+		this.commands.addAll(commands);
 
-			try {
-				Files.write(commandsCachePath, ApplicationCommandsCache.getCommandsBytes(commandData), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-			} catch (IOException e) {
-				LOGGER.error("An exception occurred while temporarily saving guild ({} ({})) commands in '{}'", guild.getName(), guild.getId(), commandsCachePath.toAbsolutePath(), e);
-			}
+		try {
+			Files.write(commandsCachePath, ApplicationCommandsCache.getCommandsBytes(allCommandData), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			LOGGER.error("An exception occurred while temporarily saving guild ({} ({})) commands in '{}'", guild.getName(), guild.getId(), commandsCachePath.toAbsolutePath(), e);
+		}
 
-			if (!LOGGER.isTraceEnabled()) return;
+		if (!LOGGER.isTraceEnabled()) return;
 
-			final StringBuilder sb = new StringBuilder("Updated commands for ");
-			sb.append(guild.getName()).append(" :\n");
-			appendCommands(commands, sb);
+		final StringBuilder sb = new StringBuilder("Updated " + commands.size() + " / " + allCommandData.size() + " ( " + context.getApplicationCommandsView().size() + ") commands for ");
+		sb.append(guild.getName()).append(" :\n");
+		appendCommands(commands, sb);
 
-			LOGGER.trace(sb.toString().trim());
-		});
+		LOGGER.trace(sb.toString().trim());
 	}
 
-	private CompletableFuture<?> thenAcceptGlobal(Collection<CommandData> commandData, CompletableFuture<List<Command>> future) {
-		return future.thenAccept(commands -> {
-			for (Command command : commands) {
-				if (command instanceof SlashCommand) {
-					context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered((SlashCommand) command));
-				}
+	private void thenAcceptGlobal(List<Command> commands) {
+		for (Command command : commands) {
+			if (command instanceof SlashCommand) {
+				context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered((SlashCommand) command));
 			}
+		}
 
-			try {
-				Files.write(commandsCachePath, ApplicationCommandsCache.getCommandsBytes(commandData), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-			} catch (IOException e) {
-				LOGGER.error("An exception occurred while temporarily saving {} commands in '{}'", guild == null ? "global" : String.format("guild '%s' (%s)", guild.getName(), guild.getId()), commandsCachePath.toAbsolutePath(), e);
-			}
+		try {
+			Files.write(commandsCachePath, ApplicationCommandsCache.getCommandsBytes(allCommandData), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		} catch (IOException e) {
+			LOGGER.error("An exception occurred while temporarily saving {} commands in '{}'", guild == null ? "global" : String.format("guild '%s' (%s)", guild.getName(), guild.getId()), commandsCachePath.toAbsolutePath(), e);
+		}
 
-			if (!LOGGER.isTraceEnabled()) return;
+		if (!LOGGER.isTraceEnabled()) return;
 
-			final StringBuilder sb = new StringBuilder("Updated global commands:\n");
-			appendCommands(commands, sb);
+		final StringBuilder sb = new StringBuilder("Updated global commands:\n");
+		appendCommands(commands, sb);
 
-			LOGGER.trace(sb.toString().trim());
-		});
+		LOGGER.trace(sb.toString().trim());
 	}
 
 	//See how to integrate this step on the command build in order to use localized base names instead of resolving the not-localized one

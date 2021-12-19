@@ -1,11 +1,13 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
 
 public class ApplicationOptionData {
 	private final String effectiveName, effectiveDescription;
+	private final String autocompletionHandlerName;
 
 	public ApplicationOptionData(Parameter parameter) {
 		final AppOption option = parameter.getAnnotation(AppOption.class);
@@ -20,6 +22,12 @@ public class ApplicationOptionData {
 			effectiveDescription = "No description";
 		} else {
 			effectiveDescription = option.description();
+		}
+
+		if (option.autocomplete().isBlank()) {
+			autocompletionHandlerName = null;
+		} else {
+			autocompletionHandlerName = option.autocomplete();
 		}
 	}
 
@@ -56,5 +64,14 @@ public class ApplicationOptionData {
 	 */
 	public String getEffectiveDescription() {
 		return effectiveDescription;
+	}
+
+	public boolean hasAutocompletion() {
+		return getAutocompletionHandlerName() != null;
+	}
+
+	@Nullable
+	public String getAutocompletionHandlerName() {
+		return autocompletionHandlerName;
 	}
 }

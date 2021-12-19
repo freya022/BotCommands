@@ -1,6 +1,8 @@
 package com.freya02.botcommands.internal.application;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
@@ -11,30 +13,36 @@ import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.tuple.ImmutablePair;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.locks.ReentrantLock;
 
 public final class ApplicationCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
+	private final ExecutorService es = Executors.newFixedThreadPool(Math.min(4, Runtime.getRuntime().availableProcessors()));
 	private final BContextImpl context;
 	private final List<Long> slashGuildIds;
+
+	private final Map<Long, ReentrantLock> lockMap = Collections.synchronizedMap(new HashMap<>());
 
 	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
@@ -58,15 +66,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDAUserCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class) && !Utils.hasFirstParameter(method, GuildUserEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildUserEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only user command {} uses GlobalUserEvent, consider using GuildUserEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalUserEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
@@ -78,15 +86,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDAMessageCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class) && !Utils.hasFirstParameter(method, GuildMessageEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildMessageEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only message command {} uses GlobalMessageEvent, consider using GuildMessageEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalMessageEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
@@ -98,15 +106,15 @@ public final class ApplicationCommandsBuilder {
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
 		if (method.getAnnotation(JDASlashCommand.class).guildOnly()) {
-			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class) && !Utils.hasFirstParameter(method, GuildSlashEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 
-			if (!Utils.hasFirstParameter(method, GuildSlashEvent.class)) {
+			if (!ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class)) {
 				//If type is correct but guild specialization isn't used
 				LOGGER.warn("Guild-only slash command {} uses GlobalSlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
 			}
 		} else {
-			if (!Utils.hasFirstParameter(method, GlobalSlashEvent.class))
+			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 
@@ -121,96 +129,102 @@ public final class ApplicationCommandsBuilder {
 
 		context.setApplicationCommandsCache(new ApplicationCommandsCache(context));
 
-		final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
-		if (globalUpdater.shouldUpdateCommands()) {
-			globalUpdater.updateCommands();
-			LOGGER.debug("Global commands were updated");
+		es.submit(() -> {
+			try {
+				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
+				if (globalUpdater.shouldUpdateCommands()) {
+					globalUpdater.updateCommands();
+					LOGGER.debug("Global commands were updated");
+				} else {
+					LOGGER.debug("Global commands does not have to be updated");
+				}
+			} catch (IOException e) {
+				LOGGER.error("An error occurred while updating global commands", e);
+			}
+		});
+
+		final Map<Guild, CompletableFuture<CommandUpdateResult>> map;
+		final ShardManager shardManager = context.getJDA().getShardManager();
+		if (shardManager != null) {
+			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false);
 		} else {
-			LOGGER.debug("Global commands does not have to be updated");
+			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false);
 		}
 
-		final List<Guild> guildCache;
-		if (context.getJDA().getShardManager() != null) {
-			guildCache = context.getJDA().getShardManager().getGuilds();
-		} else {
-			guildCache = context.getJDA().getGuilds();
-		}
-
-		tryUpdateGuildCommands(guildCache);
+		map.forEach((guild, future) -> {
+			future.whenComplete((result, throwable) -> handleApplicationUpdateException(guild, throwable));
+		});
 	}
 
-	public boolean tryUpdateGuildCommands(Iterable<Guild> guilds) throws IOException {
-		boolean changed = false;
+	void handleApplicationUpdateException(Guild guild, Throwable throwable) {
+		if (throwable != null) {
+			ErrorResponseException e = Utils.getErrorResponseException(throwable);
 
-		List<ApplicationCommandsUpdater> updaters = new ArrayList<>();
-		for (Guild guild : guilds) {
-			if (slashGuildIds.isEmpty() || slashGuildIds.contains(guild.getIdLong())) {
-				updaters.add(ApplicationCommandsUpdater.ofGuild(context, guild));
-			}
-		}
+			if (e != null && e.getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
+				final String inviteUrl = context.getJDA().getInviteUrl() + "&guild_id=" + guild.getId();
 
-		List<ImmutablePair<Guild, CompletableFuture<?>>> commandUpdatePairs = new ArrayList<>(updaters.size());
-		for (ApplicationCommandsUpdater updater : updaters) {
-			final Guild guild = updater.getGuild();
-
-			Checks.check(guild != null, "Guild should have not been null");
-
-			if (updater.shouldUpdateCommands()) {
-				changed = true;
-
-				commandUpdatePairs.add(new ImmutablePair<>(guild, updater.updateCommands()));
-				LOGGER.debug("Guild '{}' ({}) commands were updated", guild.getName(), guild.getId());
+				LOGGER.warn("Could not register guild commands for guild '{}' ({}) as it appears the OAuth2 grants misses applications.commands, you can re-invite the bot in this guild with its already existing permission with this link: {}", guild.getName(), guild.getId(), inviteUrl);
+				context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
 			} else {
-				LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
+				LOGGER.error("Encountered an exception while updating commands for guild '{}' ({})", guild.getName(), guild.getId(), e);
 			}
 		}
+	}
 
-		final List<Long> missedGuilds = new ArrayList<>();
-		for (ImmutablePair<Guild, CompletableFuture<?>> commandUpdatePair : commandUpdatePairs) {
+	@NotNull
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force) {
+		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
+
+		for (Guild guild : guilds) {
+			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+
+			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
+		}
+
+		return map;
+	}
+
+	@NotNull
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+		return CompletableFuture.supplyAsync(() -> {
+			final ReentrantLock lock;
+			synchronized (lockMap) {
+				lock = lockMap.computeIfAbsent(guild.getIdLong(), x -> new ReentrantLock());
+			}
+
 			try {
-				commandUpdatePair.getRight().join();
-			} catch (CompletionException e) { // Check missing access exceptions
-				if (e.getCause() instanceof ErrorResponseException) {
-					if (((ErrorResponseException) e.getCause()).getErrorResponse() == ErrorResponse.MISSING_ACCESS) {
-						final Guild guild = commandUpdatePair.getLeft();
+				lock.lock();
 
-						final String inviteUrl = context.getJDA().getInviteUrl() + "&guild_id=" + guild.getId();
+				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild);
 
-						LOGGER.warn("Could not register guild commands for guild '{}' ({}) as it appears the OAuth2 grants misses applications.commands, you can re-invite the bot in this guild with its already existing permission with this link: {}", guild.getName(), guild.getId(), inviteUrl);
-						context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
+				boolean updatedCommands = false, updatedPrivileges = false;
 
-						missedGuilds.add(guild.getIdLong());
+				if (force || updater.shouldUpdateCommands()) {
+					updater.updateCommands();
 
-						continue;
-					}
+					updatedCommands = true;
+
+					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
+				} else {
+					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
 				}
 
-				throw e;
+				if (force || updater.shouldUpdatePrivileges()) {
+					updater.updatePrivileges();
+
+					updatedPrivileges = true;
+
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
+				} else {
+					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
+				}
+
+				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
+			} catch (Throwable e) {
+				throw new RuntimeException("An exception occurred while updating guild commands for guild '" + guild.getName() + "' (" + guild.getId() + ")", e);
+			} finally {
+				lock.unlock();
 			}
-		}
-
-		List<CompletableFuture<?>> privilegesFutures = new ArrayList<>(updaters.size());
-		for (ApplicationCommandsUpdater updater : updaters) {
-			final Guild guild = updater.getGuild();
-
-			Checks.check(guild != null, "Guild should have not been null");
-
-			if (missedGuilds.contains(guild.getIdLong())) continue; //Missing the OAuth2 applications.commands scope in this guild
-
-			if (updater.shouldUpdatePrivileges()) {
-				changed = true;
-
-				privilegesFutures.add(updater.updatePrivileges());
-				LOGGER.debug("Guild '{}' ({}) commands privileges were updated", guild.getName(), guild.getId());
-			} else {
-				LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
-			}
-		}
-
-		for (CompletableFuture<?> future : privilegesFutures) {
-			future.join();
-		}
-
-		return changed;
+		}, es);
 	}
 }

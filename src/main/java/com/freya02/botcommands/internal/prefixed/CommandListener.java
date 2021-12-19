@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.CooldownScope;
-import com.freya02.botcommands.api.ExceptionHandler;
-import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.MessageInfo;
-import com.freya02.botcommands.internal.*;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.RunnableEx;
+import com.freya02.botcommands.internal.Usability;
 import com.freya02.botcommands.internal.Usability.UnusableReason;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
@@ -153,6 +153,8 @@ public final class CommandListener extends ListenerAdapter {
 			if (helpCommand != null) {
 				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, event, ""),
 						candidates.first().getPath());
+			} else if (context.getHelpConsumer() != null) {
+				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args));
 			}
 		}, msg, event);
 	}

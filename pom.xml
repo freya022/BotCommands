@@ -6,7 +6,7 @@
 
     <groupId>com.freya02</groupId>
     <artifactId>BotCommands</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.2.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -85,6 +85,13 @@
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:-html</additionalJOption>
                     </additionalJOptions>
+                    <links>
+                        <link>https://ci.dv8tion.net/job/JDA/javadoc</link>
+                        <link>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</link>
+                    </links>
+                    <excludePackageNames>
+                        com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
+                    </excludePackageNames>
                 </configuration>
                 <executions>
                     <execution>
@@ -110,9 +117,9 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.github.aasmart</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>dbce817</version>
+            <version>7f6dadee2f</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -121,6 +128,19 @@
             </exclusions>
             <scope>provided</scope>
         </dependency>
+        <!-- Local testing -->
+<!--        <dependency>-->
+<!--            <groupId>net.dv8tion</groupId>-->
+<!--            <artifactId>JDA</artifactId>-->
+<!--            <version>4.3.0_DEV</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>club.minnced</groupId>-->
+<!--                    <artifactId>opus-java</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.vdurmont</groupId>
             <artifactId>emoji-java</artifactId>
@@ -141,30 +161,30 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.8</version>
+            <version>2.8.9</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>22.0.0</version>
-            <scope>compile</scope>
+            <version>23.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.114</version>
+            <version>4.8.137</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.23.jre7</version>
+            <version>42.3.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

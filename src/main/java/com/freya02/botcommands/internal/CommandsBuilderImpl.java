@@ -1,12 +1,15 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.DefaultMessages;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.RegistrationListener;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
+import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
@@ -14,6 +17,7 @@ import com.freya02.botcommands.api.waiter.EventWaiter;
 import com.freya02.botcommands.internal.application.ApplicationCommandListener;
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
@@ -21,15 +25,16 @@ import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,6 +50,7 @@ public final class CommandsBuilderImpl {
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final EventListenersBuilder eventListenersBuilder;
+	private final AutocompletionHandlersBuilder autocompletionHandlersBuilder;
 
 	private final ComponentsBuilder componentsBuilder;
 
@@ -70,65 +76,58 @@ public final class CommandsBuilderImpl {
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
+		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
 	}
 
-	private void buildClasses() {
-		try {
-			classes.removeIf(c -> {
-				try {
-					return !Utils.isInstantiable(c);
-				} catch (IllegalAccessException | InvocationTargetException e) {
-					LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
+	private void buildClasses() throws Exception {
+		classes.removeIf(c -> {
+			try {
+				return !ReflectionUtils.isInstantiable(c);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
 
-					throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
-				}
-			});
-
-			for (Class<?> aClass : classes) {
-				processClass(aClass);
+				throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
 			}
+		});
 
-			if (!context.isHelpDisabled()) {
-				processClass(HelpCommand.class);
-
-				final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
-				if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
-
-				final HelpCommand help = (HelpCommand) helpInfo.getInstance();
-				help.generate();
-			}
-
-			prefixedCommandsBuilder.postProcess();
-
-			if (context.getComponentManager() != null) {
-				//Load button listeners
-				for (Class<?> aClass : classes) {
-					componentsBuilder.processClass(aClass);
-				}
-			} else {
-				LOGGER.info("ComponentManager is not set, the Components API, paginators and menus won't be usable");
-			}
-
-			applicationCommandsBuilder.postProcess();
-
-			if (context.getComponentManager() != null) {
-				componentsBuilder.postProcess();
-			}
-
-			eventListenersBuilder.postProcess();
-
-			context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
-
-			LOGGER.info("Finished registering all commands");
-		} catch (RuntimeException e) {
-			LOGGER.error("An error occurred while loading the commands, the commands will not work");
-
-			throw e;
-		} catch (Throwable e) {
-			LOGGER.error("An error occurred while loading the commands, the commands will not work");
-
-			throw new RuntimeException(e);
+		for (Class<?> aClass : classes) {
+			processClass(aClass);
 		}
+
+		if (!context.isHelpDisabled()) {
+			processClass(HelpCommand.class);
+
+			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
+			if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
+
+			final HelpCommand help = (HelpCommand) helpInfo.getInstance();
+			help.generate();
+		}
+
+		prefixedCommandsBuilder.postProcess();
+
+		if (context.getComponentManager() != null) {
+			//Load button listeners
+			for (Class<?> aClass : classes) {
+				componentsBuilder.processClass(aClass);
+			}
+		} else {
+			LOGGER.info("ComponentManager is not set, the Components API, paginators and menus won't be usable");
+		}
+
+		applicationCommandsBuilder.postProcess();
+
+		if (context.getComponentManager() != null) {
+			componentsBuilder.postProcess();
+		}
+
+		eventListenersBuilder.postProcess();
+
+		autocompletionHandlersBuilder.postProcess();
+
+		context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
+
+		LOGGER.info("Finished registering all commands");
 	}
 
 	private void processClass(Class<?> aClass) throws InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -163,6 +162,9 @@ public final class CommandsBuilderImpl {
 			if (!method.canAccess(annotatedInstance))
 				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is not public");
 
+			if (Modifier.isStatic(method.getModifiers()))
+				throw new IllegalStateException(requiredClassDesc + " " + Utils.formatMethodShort(method) + " is static");
+
 			return annotatedInstance;
 		}
 
@@ -194,6 +196,13 @@ public final class CommandsBuilderImpl {
 			return true;
 		}
 
+		final Object autocompletionHandler = tryInstantiateMethod(AutocompletionHandler.class, Object.class, "Slash command auto completion", method);
+		if (autocompletionHandler != null) {
+			autocompletionHandlersBuilder.processHandler(autocompletionHandler, method);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -202,7 +211,18 @@ public final class CommandsBuilderImpl {
 	 *
 	 * @param jda The JDA instance of your bot
 	 */
-	public void build(JDA jda) throws IOException {
+	public void build(JDA jda) throws Exception {
+		if (jda.getShardInfo().getShardId() != 0) {
+			LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...");
+
+			final ShardManager manager = jda.getShardManager();
+			if (manager == null) throw new IllegalArgumentException("Unable to retrieve Shard 0 as shard manager is null");
+
+			jda = manager.getShardById(0);
+
+			if (jda == null) throw new IllegalArgumentException("Unable to retrieve Shard 0");
+		}
+
 		if (jda.getStatus() != JDA.Status.CONNECTED) {
 			try {
 				LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !");
@@ -222,7 +242,7 @@ public final class CommandsBuilderImpl {
 
 		setupContext(jda);
 
-		Utils.scanOptionals(classes);
+		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 

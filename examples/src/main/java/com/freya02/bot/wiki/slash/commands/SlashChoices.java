@@ -48,7 +48,7 @@ public class SlashChoices extends ApplicationCommand {
 		valueList.add(new SlashCommand.Choice(name, value));
 
 		try {
-			event.getContext().tryUpdateGuildCommands(List.of(event.getGuild()));
+			event.getContext().scheduleApplicationCommandsUpdate(List.of(event.getGuild()));
 
 			event.getHook().sendMessage("Choice added successfully").queue();
 		} catch (IOException e) {

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.internal.Logging;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.slf4j.Logger;
 

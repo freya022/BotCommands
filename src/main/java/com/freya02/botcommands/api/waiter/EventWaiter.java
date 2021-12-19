@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.waiter;
 
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import com.freya02.botcommands.internal.waiter.WaitingEvent;
