@@ -4,10 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
-import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.*;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -34,7 +31,7 @@ import java.util.stream.Collectors;
  *     <li>Unlimited argument storage (no more 100 chars limit !)</li>
  *     <li>One-use components</li>
  *     <li>Timeouts</li>
- *     <li>Allowing one user to interact with them</li>
+ *     <li>Allowing one or multiple users / roles to interact with them, also define usability by permissions</li>
  * </ul>
  * A typical usage could look like this:
  *
@@ -70,7 +67,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static Component[] group(@NotNull Component @NotNull... components) {
+	public static Component[] group(@NotNull Component @NotNull ... components) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(components)
 						.map(Component::getId)
@@ -106,7 +103,7 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static ActionRow[] groupRows(@NotNull ActionRow @NotNull... rows) {
+	public static ActionRow[] groupRows(@NotNull ActionRow @NotNull ... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
 						.flatMap(row -> row.getComponents().stream())
@@ -132,6 +129,41 @@ public class Components {
 						.collect(Collectors.toList()));
 
 		return rows;
+	}
+
+	/**
+	 * Applies the supplier {@link InteractionConstraints interaction constraints} on these (non-built) components
+	 *
+	 * @param constraints The interaction constraints to propagate
+	 * @param builders    The builders on which the constraints must propagate on
+	 * @param <T>         The type of components
+	 * @return The same components as passed, but with the constraints set
+	 */
+	@Contract("_, _ -> param2")
+	public static <T extends ComponentBuilder<T>> T[] applyConstraints(InteractionConstraints constraints, @NotNull T @NotNull ... builders) {
+		for (T builder : builders) {
+			builder.setConstraints(constraints);
+		}
+
+		return builders;
+	}
+
+	/**
+	 * Applies the supplier {@link InteractionConstraints interaction constraints} on these (non-built) components
+	 *
+	 * @param constraints The interaction constraints to propagate
+	 * @param builders    The builders on which the constraints must propagate on
+	 * @param <T>         The type of components
+	 * @param <C>         The type of the collection
+	 * @return The same components as passed, but with the constraints set
+	 */
+	@Contract("_, _ -> param2")
+	public static <T extends ComponentBuilder<T>, C extends Collection<T>> C applyConstraints(InteractionConstraints constraints, @NotNull C builders) {
+		for (T builder : builders) {
+			builder.setConstraints(constraints);
+		}
+
+		return builders;
 	}
 
 	/**
@@ -246,7 +278,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName,  @NotNull Object @NotNull... args) {
+	public static PersistentButtonBuilder primaryButton(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.PRIMARY);
 	}
 
@@ -260,7 +292,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
+	public static PersistentButtonBuilder secondaryButton(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SECONDARY);
 	}
 
@@ -274,7 +306,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
+	public static PersistentButtonBuilder dangerButton(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.DANGER);
 	}
 
@@ -288,7 +320,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentButtonBuilder successButton(@NotNull String handlerName, @NotNull Object @NotNull... args) {
+	public static PersistentButtonBuilder successButton(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), ButtonStyle.SUCCESS);
 	}
 
@@ -302,7 +334,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _, _ -> new")
-	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, @NotNull Object @NotNull... args) {
+	public static PersistentButtonBuilder button(@NotNull ButtonStyle style, @NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentButtonBuilder(context, handlerName, processArgs(args), style);
 	}
 
@@ -331,7 +363,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull... args) {
+	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
 		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }
