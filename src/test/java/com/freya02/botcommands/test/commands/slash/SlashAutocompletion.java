@@ -23,7 +23,7 @@ public class SlashAutocompletion extends ApplicationCommand {
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY)
 	public List<String> autoStr(CommandAutoCompleteEvent event) {
-		return List.of("a", "ab", "abc");
+		return List.of("a", "ab", "abc", "Abc Def");
 	}
 
 	@AutocompletionHandler(name = "autoInt")

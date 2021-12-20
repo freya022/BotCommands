@@ -169,7 +169,7 @@ public class AutocompletionHandlerInfo {
 			final List<String> list = ((List<Object>) invokeAutocompletionHandler(slashCommand, event))
 					.stream()
 					.map(Object::toString)
-					.filter(s -> s.startsWith(query))
+					.filter(s -> Utils.startsWithIgnoreCase(s, query))
 					.sorted()
 					.collect(Collectors.toCollection(ArrayList::new));
 
