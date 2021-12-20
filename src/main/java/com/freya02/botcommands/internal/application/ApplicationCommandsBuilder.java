@@ -204,7 +204,7 @@ public final class ApplicationCommandsBuilder {
 
 					updatedCommands = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
 				} else {
 					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
 				}
@@ -214,7 +214,7 @@ public final class ApplicationCommandsBuilder {
 
 					updatedPrivileges = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
 				} else {
 					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
 				}
