@@ -33,12 +33,13 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class AutocompletionHandlerInfo {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final int MAX_CHOICES = OptionData.MAX_CHOICES - 1; //accommodate for user input
 
 	private final Object autocompletionHandler;
 	private final Method method;
 
 	private final String handlerName;
+	private final boolean showUserInput;
+	private final int maxChoices;
 
 	private final ChoiceSupplier choiceSupplier;
 	private final AutocompletionTransformer<Object> transformer;
@@ -52,6 +53,8 @@ public class AutocompletionHandlerInfo {
 		final AutocompletionHandler annotation = method.getAnnotation(AutocompletionHandler.class);
 		final AutocompletionMode autocompletionMode = annotation.mode();
 		this.handlerName = annotation.name();
+		this.showUserInput = annotation.showUserInput();
+		this.maxChoices = OptionData.MAX_CHOICES - (showUserInput ? 1 : 0); //accommodate for user input
 
 		Class<?> collectionReturnType = ClassUtils.getCollectionReturnType(method);
 		this.transformer = (AutocompletionTransformer<Object>) context.getAutocompletionTransformer(collectionReturnType);
@@ -138,7 +141,7 @@ public class AutocompletionHandlerInfo {
 		return (slashCommand, event) -> {
 			final List<SlashCommand.Choice> choices = (List<SlashCommand.Choice>) invokeAutocompletionHandler(slashCommand, event);
 
-			return choices.subList(0, Math.min(MAX_CHOICES, choices.size()));
+			return choices.subList(0, Math.min(maxChoices, choices.size()));
 		};
 	}
 
@@ -147,7 +150,7 @@ public class AutocompletionHandlerInfo {
 			final List<Object> results = (List<Object>) invokeAutocompletionHandler(slashCommand, event);
 
 			return results.stream()
-					.limit(MAX_CHOICES)
+					.limit(maxChoices)
 					.map(transformer::apply)
 					.collect(Collectors.toList());
 		};
@@ -176,10 +179,10 @@ public class AutocompletionHandlerInfo {
 			final List<ExtractedResult> results = FuzzySearch.extractTop(query,
 					list,
 					FuzzySearch::ratio,
-					MAX_CHOICES);
+					maxChoices);
 
 			return results.stream()
-					.limit(MAX_CHOICES)
+					.limit(maxChoices)
 					.map(c -> getChoice(optionMapping, c.getString()))
 					.toList();
 		};
@@ -199,16 +202,16 @@ public class AutocompletionHandlerInfo {
 			final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
 					list,
 					FuzzySearch::partialRatio,
-					MAX_CHOICES);
+					maxChoices);
 
 			//Then sort the results by similarities but don't take length into account
 			final List<ExtractedResult> similarities = FuzzySearch.extractTop(optionMapping.getAsString(),
 					bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
 					FuzzySearch::ratio,
-					MAX_CHOICES);
+					maxChoices);
 
 			return similarities.stream()
-					.limit(MAX_CHOICES)
+					.limit(maxChoices)
 					.map(c -> getChoice(optionMapping, c.getString()))
 					.toList();
 		};
@@ -235,10 +238,10 @@ public class AutocompletionHandlerInfo {
 		final OptionMapping optionMapping = event.getFocusedOptionType();
 
 		//If something is typed but there are no choices, don't display user input
-		if (!optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
+		if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
 			actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
 
-		for (int i = 0; i < MAX_CHOICES && i < suppliedChoices.size(); i++) {
+		for (int i = 0; i < maxChoices && i < suppliedChoices.size(); i++) {
 			actualChoices.add(suppliedChoices.get(i));
 		}
 

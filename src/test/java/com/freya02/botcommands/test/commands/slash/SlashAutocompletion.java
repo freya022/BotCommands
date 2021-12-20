@@ -21,9 +21,42 @@ public class SlashAutocompletion extends ApplicationCommand {
 		event.reply(str).queue();
 	}
 
-	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY)
+	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
 	public List<String> autoStr(CommandAutoCompleteEvent event) {
-		return List.of("a", "ab", "abc", "Abc Def");
+		System.out.println(event.getFocusedOptionType().getAsString());
+
+		return List.of("Anaheim Ducks",
+				"Arizona Coyotes",
+				"Boston Bruins",
+				"Buffalo Sabres",
+				"Calgary Flames",
+				"Carolina Hurricanes",
+				"Chicago Blackhawks",
+				"Colorado Avalanche",
+				"Columbus Blue Jackets",
+				"Dallas Stars",
+				"Detroit Red Wings",
+				"Edmonton Oilers",
+				"Florida Panthers",
+				"Los Angeles Kings",
+				"Minnesota Wild",
+				"Montréal Canadiens",
+				"Nashville Predators",
+				"New Jersey Devils",
+				"New York Islanders",
+				"New York Rangers",
+				"Ottawa Senators",
+				"Philadelphia Flyers",
+				"Pittsburgh Penguins",
+				"San Jose Sharks",
+				"Seattle Kraken",
+				"St. Louis Blues",
+				"Tampa Bay Lightning",
+				"Toronto Maple Leafs",
+				"Vancouver Canucks",
+				"Vegas Golden Knights",
+				"Washington Capitals",
+				"Winnipeg Jets");
 	}
 
 	@AutocompletionHandler(name = "autoInt")
