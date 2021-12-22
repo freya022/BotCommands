@@ -69,8 +69,6 @@ public class ReflectionUtils {
 							LOGGER.error("Unable to load class {}", result);
 						}
 					});
-
-			break;
 		}
 
 		return classes;
