@@ -1,14 +1,13 @@
 package com.freya02.botcommands.internal.application;
 
-import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.application.diff.DiffLogger;
 import com.google.gson.Gson;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,19 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ApplicationCommandsCache {
-	private static final Logger LOGGER = Logging.getLogger();
 	private final Path cachePath;
 
 	ApplicationCommandsCache(BContextImpl context) throws IOException {
 		cachePath = Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + "slashcommands");
 
 		Files.createDirectories(cachePath);
-	}
-
-	public void deleteGuildCache(Guild guild) throws IOException {
-		final Path path = getGuildCommandsPath(guild);
-
-		Files.deleteIfExists(path);
 	}
 
 	static byte[] getCommandsBytes(Collection<CommandData> commandData) {
@@ -61,13 +53,29 @@ public class ApplicationCommandsCache {
 		final Object oldMap = new Gson().fromJson(oldContent, Object.class);
 		final Object newMap = new Gson().fromJson(newContent, Object.class);
 
-		return checkDiff(oldMap, newMap);
+		final DiffLogger diffLogger = DiffLogger.getLogger();
+
+		final boolean isSame = checkDiff(oldMap, newMap, diffLogger, 0);
+
+		diffLogger.printLogs();
+
+		return isSame;
 	}
 
 	@SuppressWarnings("SuspiciousMethodCalls")
-	private static boolean checkDiff(Object oldObj, Object newObj) {
+	private static boolean checkDiff(Object oldObj, Object newObj, DiffLogger logger, int indent) {
+		if (oldObj == null) {
+			logger.trace(indent, "oldObj is null");
+
+			return false;
+		} else if (newObj == null) {
+			logger.trace(indent, "newObj is null");
+
+			return false;
+		}
+
 		if (oldObj.getClass() != newObj.getClass()) {
-			LOGGER.trace("Class type not equal: {} to {}", oldObj.getClass().getSimpleName(), newObj.getClass().getSimpleName());
+			logger.trace(indent, "Class type not equal: %s to %s", oldObj.getClass().getSimpleName(), newObj.getClass().getSimpleName());
 
 			return false;
 		}
@@ -76,8 +84,8 @@ public class ApplicationCommandsCache {
 			if (!oldMap.keySet().containsAll(newMap.keySet())) return false;
 
 			for (Object key : oldMap.keySet()) {
-				if (!checkDiff(oldMap.get(key), newMap.get(key))) {
-					LOGGER.trace("Map value not equal for key '{}': {} to {}", key, oldMap.get(key), newMap.get(key));
+				if (!checkDiff(oldMap.get(key), newMap.get(key), logger, indent + 1)) {
+					logger.trace(indent, "Map value not equal for key '%s': %s to %s", key, oldMap.get(key), newMap.get(key));
 
 					return false;
 				}
@@ -86,16 +94,26 @@ public class ApplicationCommandsCache {
 			if (oldList.size() != newList.size()) return false;
 
 			for (int i = 0; i < oldList.size(); i++) {
-				final int index = newList.indexOf(oldList.get(i));
-				if (index > -1) {
-					//Not a change - don't log it
-//					LOGGER.trace("Found exact object at index {} (original object at {}) : {}", index, i, oldList.get(i));
+				boolean found = false;
+				int index = -1;
+
+				for (Object o : newList) {
+					index++;
+
+					if (checkDiff(oldList.get(i), o, logger, indent + 1)) {
+						found = true;
+						break;
+					}
+				}
+
+				if (found) {
+					logger.trace(indent, "Found exact object at index %s (original object at %s) : %s", index, i, oldList.get(i));
 
 					continue;
 				}
 
-				if (!checkDiff(oldList.get(i), newList.get(i))) {
-					LOGGER.trace("List item not equal: {} to {}", oldList.get(i), newList.get(i));
+				if (!checkDiff(oldList.get(i), newList.get(i), logger, indent + 1)) {
+					logger.trace(indent,"List item not equal: %s to %s", oldList.get(i), newList.get(i));
 
 					return false;
 				}
@@ -103,7 +121,7 @@ public class ApplicationCommandsCache {
 		} else {
 			final boolean equals = oldObj.equals(newObj);
 
-			if (!equals) LOGGER.trace("Not same object: {} to {}", oldObj, newObj);
+			if (!equals) logger.trace(indent,"Not same object: %s to %s", oldObj, newObj);
 
 			return equals;
 		}

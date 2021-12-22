@@ -368,7 +368,7 @@ public class ApplicationCommandsUpdater {
 
 		if (!LOGGER.isTraceEnabled()) return;
 
-		final StringBuilder sb = new StringBuilder("Updated " + commands.size() + " / " + allCommandData.size() + " ( " + context.getApplicationCommandsView().size() + ") commands for ");
+		final StringBuilder sb = new StringBuilder("Updated " + commands.size() + " / " + allCommandData.size() + " (" + context.getApplicationCommandsView().size() + ") commands for ");
 		sb.append(guild.getName()).append(" :\n");
 		appendCommands(commands, sb);
 

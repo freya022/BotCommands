@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public abstract class ApplicationCommandInfoMapView {
 	//Might or might not be localized
-	protected final EnumMap<CommandType, CommandInfoMap<? extends ApplicationCommandInfo>> typeMap = new EnumMap<>(CommandType.class);
+	protected final Map<CommandType, CommandInfoMap<? extends ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(CommandType.class));
 
 	@UnmodifiableView
 	public Collection<? extends ApplicationCommandInfo> getAllApplicationCommandsView() {

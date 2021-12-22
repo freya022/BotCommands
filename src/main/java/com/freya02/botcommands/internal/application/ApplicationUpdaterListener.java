@@ -26,11 +26,15 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
+		LOGGER.trace("Trying to force update commands due to an unavailable guild becoming available");
+
 		tryUpdate(event.getGuild(), true);
 	}
 
 	@Override
 	public void onGuildJoin(@NotNull GuildJoinEvent event) {
+		LOGGER.trace("Trying to force update commands due to a joined guild");
+
 		tryUpdate(event.getGuild(), true);
 	}
 
@@ -38,6 +42,8 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	@Override
 	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
 		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
+			LOGGER.trace("Trying to update commands due to a self member update");
+
 			tryUpdate(event.getGuild(), false);
 		}
 	}
@@ -47,7 +53,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 
 		context.getSlashCommandsBuilder()
 				.scheduleApplicationCommandsUpdate(guild, force || hadFailed)
-				.whenCompleteAsync((commandUpdateResult, e) -> {
+				.whenComplete((commandUpdateResult, e) -> {
 			if (e != null) {
 				failedGuilds.add(guild.getIdLong());
 

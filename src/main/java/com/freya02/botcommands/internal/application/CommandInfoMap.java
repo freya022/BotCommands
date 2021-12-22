@@ -15,7 +15,7 @@ public class CommandInfoMap<T extends ApplicationCommandInfo> implements Map<Com
 	private final Map<CommandPath, T> map;
 
 	public CommandInfoMap() {
-		map = new HashMap<>();
+		map = Collections.synchronizedMap(new HashMap<>());
 	}
 
 	public CommandInfoMap(Map<CommandPath, T> map) {
@@ -47,25 +47,27 @@ public class CommandInfoMap<T extends ApplicationCommandInfo> implements Map<Com
 	public T put(CommandPath key, T value) {return map.put(key, value);}
 
 	@Override
-	public T remove(Object key) {return map.remove(key);}
+//	public T remove(Object key) {return map.remove(key);}
+	public T remove(Object key) {throw new UnsupportedOperationException();}
 
 	@Override
 	public void putAll(@NotNull Map<? extends CommandPath, ? extends T> m) {map.putAll(m);}
 
 	@Override
-	public void clear() {map.clear();}
+//	public void clear() {map.clear();}
+	public void clear() {throw new UnsupportedOperationException();}
 
 	@NotNull
 	@Override
-	public Set<CommandPath> keySet() {return map.keySet();}
+	public Set<CommandPath> keySet() {return new HashSet<>(map.keySet());}
 
 	@NotNull
 	@Override
-	public Collection<T> values() {return map.values();}
+	public Collection<T> values() {return new ArrayList<>(map.values());}
 
 	@NotNull
 	@Override
-	public Set<Entry<CommandPath, T>> entrySet() {return map.entrySet();}
+	public Set<Entry<CommandPath, T>> entrySet() {return new HashSet<>(map.entrySet());}
 
 	@Override
 	public boolean equals(Object o) {return map.equals(o);}
