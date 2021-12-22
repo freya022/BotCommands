@@ -472,9 +472,11 @@ public class DefaultComponentManager implements ComponentManager {
 		if (member != null) {
 			//TODO fix v5
 			// member.hasPermission(event.getGuildChannel(), constraints.getPermissions())
-			if (event.getGuildChannel() instanceof IPermissionContainer permissionContainer) {
-				if (member.hasPermission(permissionContainer, constraints.getPermissions())) {
-					return true;
+			if (!constraints.getPermissions().isEmpty()) {
+				if (event.getGuildChannel() instanceof IPermissionContainer permissionContainer) {
+					if (member.hasPermission(permissionContainer, constraints.getPermissions())) {
+						return true;
+					}
 				}
 			}
 

@@ -14,7 +14,7 @@ import java.util.EnumSet;
 
 /**
  * Controls who can use interactions such as components (button, selection menu)
- * <br>This acts like a while list, if an user or a member has one of the requirements, he can use the interaction
+ * <br>This acts like a while list, if a user or a member has <b>at least one</b> of the requirements, he can use the interaction
  * <br>You can filter by:
  * <ul>
  *     <li>User ID</li>
