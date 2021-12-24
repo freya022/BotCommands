@@ -5,6 +5,7 @@
 .idea
 target
 /src/test/java/com/freya02/botcommands/oldtests
+/src/test/kotlin/com/freya02/botcommands/oldtests
 /src/test/resources/com/freya02/botcommands/oldtests
 Config.json
 

@@ -29,7 +29,7 @@ public class PrefixedCommandsBuilder {
 			if (!ReflectionUtils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
 				throw new IllegalArgumentException("Prefixed command at " + Utils.formatMethodShort(method) + " must have a BaseCommandEvent or a CommandEvent as first parameter");
 
-			final TextCommandInfo info = new TextCommandInfo(command, method);
+			final TextCommandInfo info = new TextCommandInfo(context, command, method);
 
 			context.addTextCommand(info);
 

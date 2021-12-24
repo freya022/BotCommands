@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -111,6 +112,7 @@ public final class CommandListener extends ListenerAdapter {
 		}
 
 		final String msg = event.getMessage().getContentRaw();
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event, msg);
 		runCommand(() -> {
 			final String msgNoPrefix = getMsgNoPrefix(msg, event.getGuild());
 
@@ -141,11 +143,11 @@ public final class CommandListener extends ListenerAdapter {
 					final Matcher matcher = pattern.matcher(args);
 
 					if (matcher.matches()) {
-						if (tryExecute(event, member, isNotOwner, args, candidate, matcher) != CONTINUE)
+						if (tryExecute(event, member, isNotOwner, args, candidate, matcher, throwableConsumer) != CONTINUE)
 							return;
 					}
 				} else { //Fallback, only CommandEvent
-					if (tryExecute(event, member, isNotOwner, args, candidate, null) != CONTINUE)
+					if (tryExecute(event, member, isNotOwner, args, candidate, null, throwableConsumer) != CONTINUE)
 						return;
 				}
 			}
@@ -156,10 +158,10 @@ public final class CommandListener extends ListenerAdapter {
 			} else if (context.getHelpConsumer() != null) {
 				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args));
 			}
-		}, msg, event);
+		}, throwableConsumer);
 	}
 
-	private ExecutionResult tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher) throws Exception {
+	private ExecutionResult tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
 		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
 		for (Predicate<MessageInfo> filter : context.getFilters()) {
 			if (!filter.test(messageInfo)) {
@@ -222,7 +224,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		return candidate.execute(context, event, args, matcher);
+		return candidate.execute(context, event, args, matcher, throwableConsumer);
 	}
 
 	@Nullable
@@ -270,32 +272,39 @@ public final class CommandListener extends ListenerAdapter {
 		).stream().map(ExtractedResult::getString).collect(Collectors.toList());
 	}
 
-	private void runCommand(RunnableEx code, String msg, GuildMessageReceivedEvent event) {
+	private void runCommand(RunnableEx code, Consumer<Throwable> throwableConsumer) {
 		commandService.execute(() -> {
-			final Message message = event.getMessage();
-
 			try {
 				code.run();
 			} catch (Throwable e) {
-				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
-				if (handler != null) {
-					handler.onException(context, event, e);
-
-					return;
-				}
-
-				Throwable baseEx = Utils.getException(e);
-
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
-
-				message.addReaction(BaseCommandEventImpl.ERROR).queue();
-				if (message.getTextChannel().canTalk()) {
-					message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
-				}
-
-				context.dispatchException(msg, baseEx);
+				throwableConsumer.accept(e);
 			}
 		});
+	}
+
+	@NotNull
+	private Consumer<Throwable> getThrowableConsumer(GuildMessageReceivedEvent event, String msg) {
+		return e -> {
+			Message message = event.getMessage();
+
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
+
+			message.addReaction(BaseCommandEventImpl.ERROR).queue();
+			if (message.getTextChannel().canTalk()) {
+				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
+			}
+
+			context.dispatchException(msg, baseEx);
+		};
 	}
 
 	private void reply(GuildMessageReceivedEvent event, String msg) {

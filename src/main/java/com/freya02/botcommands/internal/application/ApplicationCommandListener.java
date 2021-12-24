@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import java.util.EnumSet;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 public final class ApplicationCommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -49,6 +50,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	public void onUserContextCommand(@NotNull UserContextCommandEvent event) {
 		LOGGER.trace("Received user command: {}", event.getName());
 
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
 			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
 
@@ -59,14 +61,15 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, userCommand)) return;
 
-			userCommand.execute(context, event);
-		}, event);
+			userCommand.execute(context, event, throwableConsumer);
+		}, throwableConsumer);
 	}
 
 	@Override
 	public void onMessageContextCommand(@NotNull MessageContextCommandEvent event) {
 		LOGGER.trace("Received message command: {}", event.getName());
 
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
 			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
 
@@ -77,14 +80,15 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, messageCommand)) return;
 
-			messageCommand.execute(context, event);
-		}, event);
+			messageCommand.execute(context, event, throwableConsumer);
+		}, throwableConsumer);
 	}
 
 	@Override
 	public void onSlashCommand(@NotNull SlashCommandEvent event) {
 		LOGGER.trace("Received slash command: {}", reconstructCommand(event));
 
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
@@ -95,8 +99,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, slashCommand)) return;
 
-			slashCommand.execute(context, event);
-		}, event);
+			slashCommand.execute(context, event, throwableConsumer);
+		}, throwableConsumer);
 	}
 
 	@NotNull
@@ -172,30 +176,36 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		return true;
 	}
 
-	private void runCommand(RunnableEx code, GenericCommandEvent event) {
+	private void runCommand(RunnableEx code, Consumer<Throwable> throwableConsumer) {
 		commandService.execute(() -> {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
-				if (handler != null) {
-					handler.onException(context, event, e);
-
-					return;
-				}
-
-				Throwable baseEx = Utils.getException(e);
-
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
-				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
-				} else {
-					event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
-				}
-
-				context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);
+				throwableConsumer.accept(e);
 			}
 		});
+	}
+
+	private Consumer<Throwable> getThrowableConsumer(GenericCommandEvent event) {
+		return e -> {
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
+			if (event.isAcknowledged()) {
+				event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+			} else {
+				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+			}
+
+			context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);
+		};
 	}
 
 	private void reply(Interaction event, String msg) {

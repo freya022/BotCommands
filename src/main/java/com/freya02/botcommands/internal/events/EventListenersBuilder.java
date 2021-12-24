@@ -118,7 +118,7 @@ public class EventListenersBuilder {
 
 	@NotNull
 	private EventConsumer getParametrizedEventListener(Object eventListener, Method method) {
-		final MethodParameters<EventListenerParameter> parameters = MethodParameters.of(method, EventListenerParameter::new);
+		final MethodParameters<EventListenerParameter> parameters = MethodParameters.of(context, method, EventListenerParameter::new);
 
 		return event -> {
 			List<Object> objects = new ArrayList<>(parameters.size() + 1);

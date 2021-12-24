@@ -16,13 +16,14 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 public class UserCommandInfo extends ApplicationCommandInfo {
 	private final Object instance;
 	private final MethodParameters<ContextCommandParameter<UserContextParameterResolver>> commandParameters;
 
-	public UserCommandInfo(ApplicationCommand instance, Method method) {
-		super(instance, method.getAnnotation(JDAUserCommand.class),
+	public UserCommandInfo(BContext context, ApplicationCommand instance, Method method) {
+		super(context, instance, method.getAnnotation(JDAUserCommand.class),
 				method,
 				method.getAnnotation(JDAUserCommand.class).name());
 
@@ -34,7 +35,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 			throw new IllegalArgumentException("First argument should be a GlobalUserEvent for method " + Utils.formatMethodShort(method));
 		}
 
-		this.commandParameters = MethodParameters.of(method, (parameter, i) -> {
+		this.commandParameters = MethodParameters.of(context, method, (parameter, i) -> {
 			if (parameter.isAnnotationPresent(TextOption.class))
 				throw new IllegalArgumentException(String.format("User command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
 
@@ -49,7 +50,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, UserContextCommandEvent event) throws Exception {
+	public boolean execute(BContext context, UserContextCommandEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		final Object[] objects = new Object[commandParameters.size() + 1];
 		if (guildOnly) {
 			objects[0] = new GuildUserEvent(context, event);
@@ -71,7 +72,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 
 		applyCooldown(event);
 
-		commandMethod.invoke(instance, objects);
+		getMethodRunner().invoke(objects, throwableConsumer);
 
 		return true;
 	}

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -41,8 +42,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	 */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
-	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
-		super(instance, commandMethod.getAnnotation(JDASlashCommand.class),
+	public SlashCommandInfo(BContext context, ApplicationCommand instance, Method commandMethod) {
+		super(context, instance, commandMethod.getAnnotation(JDASlashCommand.class),
 				commandMethod,
 				commandMethod.getAnnotation(JDASlashCommand.class).name(),
 				commandMethod.getAnnotation(JDASlashCommand.class).group(),
@@ -51,7 +52,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
 		this.instance = instance;
-		this.commandParameters = MethodParameters.of(commandMethod, (parameter, i) -> {
+		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, i) -> {
 			final Class<?> type = parameter.getType();
 
 			if (Member.class.isAssignableFrom(type)
@@ -81,7 +82,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 
-	public boolean execute(BContext context, SlashCommandEvent event) throws Exception {
+	public boolean execute(BContext context, SlashCommandEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
 			if (guildOnly) {
 				add(new GuildSlashEvent(context, event));
@@ -153,7 +154,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		applyCooldown(event);
 
-		commandMethod.invoke(instance, objects.toArray());
+		getMethodRunner().invoke(objects.toArray(), throwableConsumer);
 
 		return true;
 	}

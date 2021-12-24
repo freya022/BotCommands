@@ -78,7 +78,7 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
-		final UserCommandInfo info = new UserCommandInfo(applicationCommand, method);
+		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
 		context.addUserCommand(info);
@@ -98,7 +98,7 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
-		final MessageCommandInfo info = new MessageCommandInfo(applicationCommand, method);
+		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
 		context.addMessageCommand(info);
@@ -118,7 +118,7 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 
-		final SlashCommandInfo info = new SlashCommandInfo(applicationCommand, method);
+		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
 		context.addSlashCommand(info);

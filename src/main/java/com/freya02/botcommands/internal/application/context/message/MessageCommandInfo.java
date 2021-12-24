@@ -15,13 +15,14 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 public class MessageCommandInfo extends ApplicationCommandInfo {
 	private final Object instance;
 	private final MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> commandParameters;
 
-	public MessageCommandInfo(ApplicationCommand instance, Method method) {
-		super(instance, method.getAnnotation(JDAMessageCommand.class),
+	public MessageCommandInfo(BContext context, ApplicationCommand instance, Method method) {
+		super(context, instance, method.getAnnotation(JDAMessageCommand.class),
 				method,
 				method.getAnnotation(JDAMessageCommand.class).name());
 
@@ -33,7 +34,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			throw new IllegalArgumentException("First argument should be a GlobalUserEvent for method " + Utils.formatMethodShort(method));
 		}
 
-		this.commandParameters = MethodParameters.of(method, (parameter, i) -> {
+		this.commandParameters = MethodParameters.of(context, method, (parameter, i) -> {
 			if (parameter.isAnnotationPresent(TextOption.class))
 				throw new IllegalArgumentException(String.format("Message command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
 
@@ -41,7 +42,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, MessageContextCommandEvent event) throws Exception {
+	public boolean execute(BContext context, MessageContextCommandEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		final Object[] objects = new Object[commandParameters.size() + 1];
 		if (guildOnly) {
 			objects[0] = new GuildMessageEvent(context, event);
@@ -64,7 +65,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 
 		applyCooldown(event);
 
-		commandMethod.invoke(instance, objects);
+		getMethodRunner().invoke(objects, throwableConsumer);
 
 		return true;
 	}

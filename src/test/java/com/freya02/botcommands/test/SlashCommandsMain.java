@@ -3,6 +3,7 @@ package com.freya02.botcommands.test;
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
+import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -26,11 +27,12 @@ public class SlashCommandsMain {
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
-							.addFilter(messageInfo -> messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L)
+//							.addFilter(messageInfo -> messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L)
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
 							.registerParameterResolver(new DateTimeResolver())
+							.setMethodRunnerFactory(new KotlinMethodRunnerFactory(MethodRunnerScope.getDispatcher(), MethodRunnerScope.getScope()))
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))

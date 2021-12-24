@@ -17,6 +17,8 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
+import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
+import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -79,11 +81,21 @@ public class BContextImpl implements BContext {
 
 	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
+	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
 	@Override
 	@NotNull
 	public JDA getJDA() {
 		return jda;
+	}
+
+	@Override
+	public MethodRunnerFactory getMethodRunnerFactory() {
+		return methodRunnerFactory;
+	}
+
+	public void setMethodRunnerFactory(@NotNull MethodRunnerFactory methodRunnerFactory) {
+		this.methodRunnerFactory = methodRunnerFactory;
 	}
 
 	public void setJDA(JDA jda) {

@@ -18,8 +18,8 @@ import static com.freya02.botcommands.internal.utils.AnnotationUtils.getAnnotati
 public abstract class ApplicationCommandInfo extends AbstractCommandInfo<ApplicationCommand> {
 	protected final boolean guildOnly;
 
-	protected <A extends Annotation> ApplicationCommandInfo(@NotNull ApplicationCommand instance, @NotNull A annotation, @NotNull Method commandMethod, String... nameComponents) {
-		super(instance, annotation, commandMethod, nameComponents);
+	protected <A extends Annotation> ApplicationCommandInfo(@NotNull BContext context, @NotNull ApplicationCommand instance, @NotNull A annotation, @NotNull Method commandMethod, String... nameComponents) {
+		super(context, instance, commandMethod, nameComponents);
 
 		this.guildOnly = getAnnotationValue(annotation, "guildOnly");
 

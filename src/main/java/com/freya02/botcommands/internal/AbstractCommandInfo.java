@@ -1,13 +1,14 @@
 package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.CommandParameter;
+import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.List;
@@ -30,11 +31,12 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 	protected final EnumSet<Permission> botPermissions;
 
 	private final NSFWState nsfwState;
+	private final MethodRunner methodRunner;
 
-	protected <A extends Annotation> AbstractCommandInfo(@NotNull T instance,
-	                                                     @NotNull A annotation,
-	                                                     @NotNull Method commandMethod,
-	                                                     String... nameComponents) {
+	protected AbstractCommandInfo(@NotNull BContext context,
+	                              @NotNull T instance,
+	                              @NotNull Method commandMethod,
+	                              String... nameComponents) {
 		super(getEffectiveCooldownStrategy(commandMethod));
 
 		this.instance = instance;
@@ -47,6 +49,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 
 		this.path = CommandPath.of(nameComponents);
 		this.commandMethod = commandMethod;
+		this.methodRunner = context.getMethodRunnerFactory().make(instance, commandMethod);
 
 		this.ownerRequired = AnnotationUtils.getEffectiveRequireOwnerState(commandMethod);
 		this.nsfwState = NSFWState.ofMethod(commandMethod);
@@ -75,6 +78,10 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 
 	public Method getCommandMethod() {
 		return commandMethod;
+	}
+
+	public MethodRunner getMethodRunner() {
+		return methodRunner;
 	}
 
 	public boolean isOwnerRequired() {

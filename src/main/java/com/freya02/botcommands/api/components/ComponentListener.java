@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ComponentListener extends ListenerAdapter {
@@ -207,6 +208,7 @@ public class ComponentListener extends ListenerAdapter {
 			return;
 		}
 
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(handlerName, args);
 		try {
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
@@ -248,10 +250,15 @@ public class ComponentListener extends ListenerAdapter {
 				methodArgs.add(obj);
 			}
 
-			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
+			descriptor.getMethodRunner().invoke(methodArgs.toArray(), throwableConsumer);
 		} catch (Exception e) {
-			LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
+			throwableConsumer.accept(e);
 		}
+	}
+
+	@NotNull
+	private Consumer<Throwable> getThrowableConsumer(String handlerName, String[] args) {
+		return e -> LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
 	}
 
 	private void onError(GenericComponentInteractionCreateEvent event, String reason) {

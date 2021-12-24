@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
@@ -23,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,9 +45,8 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	private final Pattern completePattern;
 	private final int order;
 
-	public TextCommandInfo(TextCommand command, Method commandMethod) {
-		super(command,
-				commandMethod.getAnnotation(JDATextCommand.class),
+	public TextCommandInfo(BContext context, TextCommand instance, Method commandMethod) {
+		super(context, instance,
 				commandMethod,
 				commandMethod.getAnnotation(JDATextCommand.class).name(),
 				commandMethod.getAnnotation(JDATextCommand.class).group(),
@@ -60,7 +61,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		order = jdaCommand.order();
 
 		final boolean isRegexMethod = !ReflectionUtils.hasFirstParameter(commandMethod, CommandEvent.class);
-		parameters = MethodParameters.of(commandMethod, (parameter, index) -> {
+		parameters = MethodParameters.of(context, commandMethod, (parameter, index) -> {
 			if (parameter.isAnnotationPresent(AppOption.class))
 				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
 
@@ -115,7 +116,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		return (List<? extends TextCommandParameter>) super.getOptionParameters();
 	}
 
-	public ExecutionResult execute(BContextImpl context, GuildMessageReceivedEvent event, String args, Matcher matcher) throws Exception {
+	public ExecutionResult execute(BContextImpl context, GuildMessageReceivedEvent event, String args, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(parameters.size() + 1) {{
 			if (isRegexCommand()) {
 				add(new BaseCommandEventImpl(context, event, args));
@@ -175,7 +176,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 		//For some reason using an array list instead of a regular array
 		// magically unboxes primitives when passed to Method#invoke
-		commandMethod.invoke(getInstance(), objects.toArray());
+		getMethodRunner().invoke(objects.toArray(), throwableConsumer);
 
 		return OK;
 	}

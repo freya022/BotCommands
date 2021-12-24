@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -38,6 +39,13 @@ public interface BContext {
 	 */
 	@NotNull
 	JDA getJDA();
+
+	/**
+	 * Return the {@link MethodRunnerFactory} for this context
+	 *
+	 * @return The {@link MethodRunnerFactory}
+	 */
+	MethodRunnerFactory getMethodRunnerFactory();
 
 	/**
 	 * Returns the full list of prefixes used to trigger the bot

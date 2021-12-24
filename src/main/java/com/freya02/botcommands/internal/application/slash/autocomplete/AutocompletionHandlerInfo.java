@@ -75,7 +75,7 @@ public class AutocompletionHandlerInfo {
 			this.choiceSupplier = generateSupplierFromItems();
 		}
 
-		this.autocompleteParameters = MethodParameters.of(method, SlashCommandParameter::new);
+		this.autocompleteParameters = MethodParameters.of(context, method, SlashCommandParameter::new);
 	}
 
 	private Object invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteEvent event) throws IllegalAccessException, InvocationTargetException {
