@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import net.dv8tion.jda.api.events.Event;
@@ -106,7 +105,7 @@ public class ExtensionsBuilder {
 	/**
 	 * Sets the method runner factory, which allows methods to be reflectively executed
 	 * <br>A method runner factory is already set for pure java methods,
-	 * but you can set a {@link KotlinMethodRunnerFactory} to support <code>suspend</code> functions
+	 * but you can set a {@link com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory} to support <code>suspend</code> functions
 	 *
 	 * @param factory The {@link MethodRunnerFactory} to set
 	 * @return This builder for chaining convenience

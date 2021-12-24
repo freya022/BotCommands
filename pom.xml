@@ -145,7 +145,7 @@
                 <version>3.3.1</version>
                 <configuration>
                     <additionalJOptions>
-                        <additionalJOption>-Xdoclint:-html</additionalJOption>
+                        <additionalJOption>-Xdoclint:-html,-reference</additionalJOption>
                     </additionalJOptions>
                     <links>
                         <link>https://ci.dv8tion.net/job/JDA/javadoc</link>
