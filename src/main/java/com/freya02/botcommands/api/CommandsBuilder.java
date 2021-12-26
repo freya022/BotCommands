@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.dv8tion.jda.api.interactions.commands.SlashCommand.Choice;
+import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();

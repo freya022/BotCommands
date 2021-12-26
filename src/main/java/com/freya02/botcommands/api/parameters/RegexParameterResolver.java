@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public interface RegexParameterResolver {
 	@Nullable
-	Object resolve(GuildMessageReceivedEvent event, String[] args);
+	Object resolve(MessageReceivedEvent event, String[] args);
 
 	@NotNull
 	Pattern getPattern();

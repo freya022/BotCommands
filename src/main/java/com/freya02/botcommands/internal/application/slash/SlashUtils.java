@@ -12,7 +12,6 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +26,8 @@ public class SlashUtils {
 	public static void appendCommands(List<Command> commands, StringBuilder sb) {
 		for (Command command : commands) {
 			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
-			if (command instanceof SlashCommand) {
-				for (SlashCommand.Option option : ((SlashCommand) command).getOptions()) {
-					joiner.add(option.getType().name());
-				}
+			for (Command.Option option : command.getOptions()) {
+				joiner.add(option.getType().name());
 			}
 
 			sb.append(" - ").append(command.getName()).append(" ").append(joiner).append("\n");
@@ -40,7 +37,7 @@ public class SlashUtils {
 	public static List<OptionData> getLocalizedMethodOptions(@NotNull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
-		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
+		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().getOptionCount();
 		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
@@ -122,8 +119,8 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	public static List<List<SlashCommand.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
-		List<List<SlashCommand.Choice>> optionsChoices = new ArrayList<>();
+	public static List<List<Command.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
+		List<List<Command.Choice>> optionsChoices = new ArrayList<>();
 
 		final int count = info.getParameters().getOptionCount();
 		for (int optionIndex = 0; optionIndex < count; optionIndex++) {
@@ -134,8 +131,8 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	private static List<SlashCommand.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
-		final List<SlashCommand.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
+	private static List<Command.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
+		final List<Command.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
 
 		if (choices.isEmpty()) {
 			final SettingsProvider settingsProvider = context.getSettingsProvider();
@@ -166,7 +163,7 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
+	private static List<List<Command.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);

@@ -13,7 +13,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
 
 import java.lang.reflect.Method;
 
@@ -49,7 +49,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, UserContextCommandEvent event) throws Exception {
+	public boolean execute(BContext context, UserContextEvent event) throws Exception {
 		final Object[] objects = new Object[commandParameters.size() + 1];
 		if (guildOnly) {
 			objects[0] = new GuildUserEvent(context, event);

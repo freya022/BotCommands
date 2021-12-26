@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.parameters;
 
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,5 +18,5 @@ public interface SlashParameterResolver {
 	 * @return The resolved option mapping
 	 */
 	@Nullable
-	Object resolve(SlashCommandInteraction event, OptionMapping optionMapping);
+	Object resolve(CommandPayload event, OptionMapping optionMapping);
 }

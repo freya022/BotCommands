@@ -8,7 +8,7 @@ import gnu.trove.map.TObjectLongMap;
 import gnu.trove.map.hash.TLongLongHashMap;
 import gnu.trove.map.hash.TObjectLongHashMap;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.slf4j.Logger;
 
@@ -41,7 +41,7 @@ public abstract class Cooldownable {
 		return cooldownStrategy.getScope();
 	}
 
-	public void applyCooldown(GuildMessageReceivedEvent event) {
+	public void applyCooldown(MessageReceivedEvent event) {
 		switch (getCooldownScope()) {
 			case USER -> userCooldowns.put(getUGKey(event), System.currentTimeMillis() + getCooldownMillis());
 			case GUILD -> guildCooldowns.put(event.getGuild().getIdLong(), System.currentTimeMillis() + getCooldownMillis());
@@ -49,7 +49,7 @@ public abstract class Cooldownable {
 		}
 	}
 
-	private UserGuild getUGKey(GuildMessageReceivedEvent event) {
+	private UserGuild getUGKey(MessageReceivedEvent event) {
 		return new UserGuild(event.getGuild().getIdLong(), event.getAuthor().getIdLong());
 	}
 
@@ -74,7 +74,7 @@ public abstract class Cooldownable {
 		}
 	}
 
-	public long getCooldown(GuildMessageReceivedEvent event) {
+	public long getCooldown(MessageReceivedEvent event) {
 		return switch (getCooldownScope()) {
 			case USER -> Math.max(0, userCooldowns.get(getUGKey(event)) - System.currentTimeMillis());
 			case GUILD -> Math.max(0, guildCooldowns.get(event.getGuild().getIdLong()) - System.currentTimeMillis());

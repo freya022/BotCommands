@@ -10,12 +10,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -194,9 +189,9 @@ public class ApplicationCommandsUpdater {
 
 		computeSlashCommands(guildApplicationCommands);
 
-		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, CommandType.USER_CONTEXT);
+		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, Command.Type.USER);
 
-		computeContextCommands(guildApplicationCommands, MessageCommandInfo.class, CommandType.MESSAGE_CONTEXT);
+		computeContextCommands(guildApplicationCommands, MessageCommandInfo.class, Command.Type.MESSAGE);
 
 		if (guild != null) {
 			computePrivileges(guildApplicationCommands, guild);
@@ -228,8 +223,8 @@ public class ApplicationCommandsUpdater {
 
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
-							final CommandData rightCommand = new CommandData(localizedPath.getName(), description);
-							map.put(CommandType.SLASH, localizedPath, rightCommand);
+							final SlashCommandData rightCommand = Commands.slash(localizedPath.getName(), description);
+							map.put(Command.Type.SLASH, localizedPath, rightCommand);
 
 							rightCommand.addOptions(localizedMethodOptions);
 
@@ -239,8 +234,8 @@ public class ApplicationCommandsUpdater {
 						} else if (localizedPath.getNameCount() == 2) {
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
 
-							final CommandData commandData = map.computeIfAbsent(CommandType.SLASH, localizedPath, x -> {
-								final CommandData tmpData = new CommandData(localizedPath.getName(), "No description (base name)");
+							final SlashCommandData commandData = (SlashCommandData) map.computeIfAbsent(Command.Type.SLASH, localizedPath, x -> {
+								final SlashCommandData tmpData = Commands.slash(localizedPath.getName(), "No description (base name)");
 								if (info.isOwnerRequired()) {
 									tmpData.setDefaultEnabled(false);
 								}
@@ -257,8 +252,8 @@ public class ApplicationCommandsUpdater {
 							Checks.notNull(localizedPath.getGroup(), "Command group name");
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
 
-							final SubcommandGroupData groupData = getSubcommandGroup(CommandType.SLASH, localizedPath, x -> {
-								final CommandData commandData = new CommandData(localizedPath.getName(), "No description (base name)");
+							final SubcommandGroupData groupData = getSubcommandGroup(Command.Type.SLASH, localizedPath, x -> {
+								final SlashCommandData commandData = Commands.slash(localizedPath.getName(), "No description (base name)");
 
 								if (info.isOwnerRequired()) {
 									commandData.setDefaultEnabled(false);
@@ -275,7 +270,7 @@ public class ApplicationCommandsUpdater {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
 
-						context.addApplicationCommandAlternative(localizedPath, CommandType.SLASH, info);
+						context.addApplicationCommandAlternative(localizedPath, Command.Type.SLASH, info);
 
 						if (!info.isOwnerRequired()) {
 							if (ownerOnlyCommands.contains(notLocalizedPath.getName())) {
@@ -297,7 +292,7 @@ public class ApplicationCommandsUpdater {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends ApplicationCommandInfo> void computeContextCommands(List<ApplicationCommandInfo> guildApplicationCommands, Class<T> targetClazz, CommandType type) {
+	private <T extends ApplicationCommandInfo> void computeContextCommands(List<ApplicationCommandInfo> guildApplicationCommands, Class<T> targetClazz, Command.Type type) {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
@@ -316,7 +311,7 @@ public class ApplicationCommandsUpdater {
 
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
-							final CommandData rightCommand = new CommandData(type, localizedPath.getName());
+							final CommandData rightCommand = Commands.context(type, localizedPath.getName());
 							map.put(type, localizedPath, rightCommand);
 
 							if (info.isOwnerRequired()) {
@@ -353,9 +348,7 @@ public class ApplicationCommandsUpdater {
 
 	private void thenAcceptGuild(List<Command> commands, @NotNull Guild guild) {
 		for (Command command : commands) {
-			if (command instanceof SlashCommand) {
-				context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, (SlashCommand) command));
-			}
+			context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, command));
 		}
 
 		this.commands.addAll(commands);
@@ -377,9 +370,7 @@ public class ApplicationCommandsUpdater {
 
 	private void thenAcceptGlobal(List<Command> commands) {
 		for (Command command : commands) {
-			if (command instanceof SlashCommand) {
-				context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered((SlashCommand) command));
-			}
+			context.getRegistrationListeners().forEach(l -> l.onGlobalSlashCommandRegistered(command));
 		}
 
 		try {
@@ -423,14 +414,14 @@ public class ApplicationCommandsUpdater {
 		}
 	}
 
-	//I am aware that the type is always CommandType#SLASH, still use a parameter to mimic how ApplicationCommandMap functions and for future proof uses
+	//I am aware that the type is always Command.Type#SLASH, still use a parameter to mimic how ApplicationCommandMap functions and for future proof uses
 	@SuppressWarnings("SameParameterValue")
 	@NotNull
-	private SubcommandGroupData getSubcommandGroup(CommandType type, CommandPath path, Function<String, CommandData> baseCommandSupplier) {
+	private SubcommandGroupData getSubcommandGroup(Command.Type type, CommandPath path, Function<String, CommandData> baseCommandSupplier) {
 		if (path.getGroup() == null)
 			throw new IllegalArgumentException("Group component of command path is null at '" + path + "'");
 
-		final CommandData data = map.computeIfAbsent(type, path, baseCommandSupplier);
+		final SlashCommandData data = (SlashCommandData) map.computeIfAbsent(type, path, baseCommandSupplier);
 
 		return data.getSubcommandGroups()
 				.stream()

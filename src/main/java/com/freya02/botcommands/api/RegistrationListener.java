@@ -3,7 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 public abstract class RegistrationListener {
 	/**
@@ -25,7 +25,7 @@ public abstract class RegistrationListener {
 	 *
 	 * @param command Slash command which got registered
 	 */
-	public abstract void onGlobalSlashCommandRegistered(SlashCommand command);
+	public abstract void onGlobalSlashCommandRegistered(Command command);
 
 	/**
 	 * Fired when Discord acknowledged the application command in this {@linkplain Guild}
@@ -33,7 +33,7 @@ public abstract class RegistrationListener {
 	 * @param guild   Guild in which the command was registered in
 	 * @param command Slash command which got registered
 	 */
-	public abstract void onGuildSlashCommandRegistered(Guild guild, SlashCommand command);
+	public abstract void onGuildSlashCommandRegistered(Guild guild, Command command);
 
 	/**
 	 * Fired when the bot doesn't have the applications.commands scope in a Guild, thus is unable to register the application commands

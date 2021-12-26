@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api;
 
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 /**
@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
  */
 public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
 	public final void onException(BContext context, Event event, Throwable throwable) {
-		if (event instanceof GuildMessageReceivedEvent e) {
+		if (event instanceof MessageReceivedEvent e) {
 			handle(context, e, throwable);
 		} else if (event instanceof SlashCommandEvent e) {
 			handle(context, e, throwable);
@@ -27,7 +27,7 @@ public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
 
 	public void handle(BContext context, Event event, Throwable throwable) {}
 
-	public void handle(BContext context, GuildMessageReceivedEvent event, Throwable throwable) {}
+	public void handle(BContext context, MessageReceivedEvent event, Throwable throwable) {}
 
 	public void handle(BContext context, SlashCommandEvent event, Throwable throwable) {}
 

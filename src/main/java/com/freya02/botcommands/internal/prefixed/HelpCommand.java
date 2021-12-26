@@ -114,7 +114,7 @@ public final class HelpCommand extends TextCommand {
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberGlobalHelpContent(event.getMember(), event.getChannel());
+		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberGlobalHelpContent(event.getMember(), event.getTextChannel());
 
 		builder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
@@ -146,7 +146,7 @@ public final class HelpCommand extends TextCommand {
 		}
 
 		final Member member = event.getMember();
-		final TextChannel channel = event.getChannel();
+		final TextChannel channel = event.getTextChannel();
 		final Usability usability = Usability.of(context, cmds.first(), member, channel, !context.isOwner(member.getIdLong()));
 		if (usability.isNotShowable()) {
 			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));

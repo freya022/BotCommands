@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -335,7 +335,7 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, CommandType type, T commandInfo) {
+	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, Command.Type type, T commandInfo) {
 		//it's pretty much possible that the path already exist if two guilds use the same language for example
 		//Still, check that the alternative path points to the same path if it exists
 

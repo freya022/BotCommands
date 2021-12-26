@@ -14,7 +14,7 @@ import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -115,7 +115,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		return (List<? extends TextCommandParameter>) super.getOptionParameters();
 	}
 
-	public ExecutionResult execute(BContextImpl context, GuildMessageReceivedEvent event, String args, Matcher matcher) throws Exception {
+	public ExecutionResult execute(BContextImpl context, MessageReceivedEvent event, String args, Matcher matcher) throws Exception {
 		List<Object> objects = new ArrayList<>(parameters.size() + 1) {{
 			if (isRegexCommand()) {
 				add(new BaseCommandEventImpl(context, event, args));

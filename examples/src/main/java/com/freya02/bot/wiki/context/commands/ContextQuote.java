@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.Message;
 public class ContextQuote extends ApplicationCommand {
 	@JDAMessageCommand(name = "Quote message")
 	public void execute(GuildMessageEvent event) {
-		final Message targetMessage = event.getTargetMessage();
+		final Message targetMessage = event.getTarget();
 
 		event.reply("> " + targetMessage.getContentRaw()).queue();
 	}

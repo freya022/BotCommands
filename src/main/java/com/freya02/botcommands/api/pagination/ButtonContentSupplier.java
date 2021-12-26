@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 /**
  * A {@link ButtonContent} supplier for use in different paginators, allowing you to use custom buttons (text / emoji)
