@@ -9,7 +9,6 @@ import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
 import com.freya02.botcommands.internal.components.sql.*;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.entities.IPermissionContainer;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -470,13 +469,9 @@ public class DefaultComponentManager implements ComponentManager {
 
 		final Member member = event.getMember();
 		if (member != null) {
-			//TODO fix v5
-			// member.hasPermission(event.getGuildChannel(), constraints.getPermissions())
 			if (!constraints.getPermissions().isEmpty()) {
-				if (event.getGuildChannel() instanceof IPermissionContainer permissionContainer) {
-					if (member.hasPermission(permissionContainer, constraints.getPermissions())) {
-						return true;
-					}
+				if (member.hasPermission(event.getGuildChannel(), constraints.getPermissions())) {
+					return true;
 				}
 			}
 
