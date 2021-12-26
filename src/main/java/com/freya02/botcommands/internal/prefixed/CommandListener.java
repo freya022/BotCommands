@@ -286,7 +286,7 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	private Consumer<Throwable> getThrowableConsumer(GuildMessageReceivedEvent event, String msg) {
+	private Consumer<Throwable> getThrowableConsumer(MessageReceivedEvent event, String msg) {
 		return e -> {
 			Message message = event.getMessage();
 

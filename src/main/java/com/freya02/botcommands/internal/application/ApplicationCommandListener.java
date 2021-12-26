@@ -186,7 +186,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		});
 	}
 
-	private Consumer<Throwable> getThrowableConsumer(GenericCommandEvent event) {
+	private <T extends GenericCommandEvent & CommandInteraction> Consumer<Throwable> getThrowableConsumer(T event) {
 		return e -> {
 			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 			if (handler != null) {
