@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>3fb771b619</version>
+            <version>d7781b5c03</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

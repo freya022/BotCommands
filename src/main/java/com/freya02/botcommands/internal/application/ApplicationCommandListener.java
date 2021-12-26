@@ -105,14 +105,14 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 	@NotNull
 	public static String reconstructCommand(GenericCommandEvent event) {
-		if (event instanceof SlashCommandEvent) {
-			return ((SlashCommandEvent) event).getCommandString();
+		if (event instanceof SlashCommandEvent slashEvent) {
+			return slashEvent.getCommandString();
 		} else {
 			return "/" + event.getName();
 		}
 	}
 
-	private <T extends GenericCommandEvent & CommandInteraction> boolean canRun(@NotNull T event, ApplicationCommandInfo applicationCommand) {
+	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
 		final Usability usability = Usability.of(context, event, applicationCommand, isNotOwner);
 
@@ -186,7 +186,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		});
 	}
 
-	private <T extends GenericCommandEvent & CommandInteraction> Consumer<Throwable> getThrowableConsumer(T event) {
+	private Consumer<Throwable> getThrowableConsumer(GenericCommandEvent event) {
 		return e -> {
 			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 			if (handler != null) {
