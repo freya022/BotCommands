@@ -4,7 +4,7 @@
 
 ## Notice
 
-Please use group id `com.github.freya022` and version `a39e0aa5af`, this is the context-menu branch of JDA
+Please use group id `com.github.freya022` and version `3fb771b619`, this is the context-menu branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.

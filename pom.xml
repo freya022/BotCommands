@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>a39e0aa5af</version>
+            <version>3fb771b619</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -246,7 +246,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.137</version>
+            <version>4.8.138</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -257,7 +257,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.7</version>
+            <version>1.2.9</version>
             <scope>test</scope>
         </dependency>
         <dependency>
