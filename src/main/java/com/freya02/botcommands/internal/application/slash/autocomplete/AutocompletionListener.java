@@ -95,11 +95,13 @@ public class AutocompletionListener implements EventListener {
 	}
 
 	private String reconstructCommand(CommandAutoCompleteEvent event) {
-		StringBuilder builder = new StringBuilder("/" + event.getName());
-		if (event.getSubcommandGroup() != null)
-			builder.append(' ').append(event.getSubcommandGroup());
-		if (event.getSubcommandName() != null)
-			builder.append(' ').append(event.getSubcommandName());
-		return builder.toString();
+		return event.getCommandString();
+
+//		StringBuilder builder = new StringBuilder("/" + event.getName());
+//		if (event.getSubcommandGroup() != null)
+//			builder.append(' ').append(event.getSubcommandGroup());
+//		if (event.getSubcommandName() != null)
+//			builder.append(' ').append(event.getSubcommandName());
+//		return builder.toString();
 	}
 }
