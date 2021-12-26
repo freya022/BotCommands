@@ -14,12 +14,12 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -47,7 +47,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onUserContextCommand(@NotNull UserContextCommandEvent event) {
+	public void onUserContext(@NotNull UserContextEvent event) {
 		LOGGER.trace("Received user command: {}", event.getName());
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
@@ -66,7 +66,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onMessageContextCommand(@NotNull MessageContextCommandEvent event) {
+	public void onMessageContext(@NotNull MessageContextEvent event) {
 		LOGGER.trace("Received message command: {}", event.getName());
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
@@ -112,7 +112,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}
 	}
 
-	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
+	private <T extends GenericCommandEvent & CommandInteraction> boolean canRun(@NotNull T event, ApplicationCommandInfo applicationCommand) {
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
 		final Usability usability = Usability.of(context, event, applicationCommand, isNotOwner);
 
@@ -208,7 +208,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		};
 	}
 
-	private void reply(Interaction event, String msg) {
+	private void reply(CommandInteraction event, String msg) {
 		event.reply(msg)
 				.setEphemeral(true)
 				.queue(null,

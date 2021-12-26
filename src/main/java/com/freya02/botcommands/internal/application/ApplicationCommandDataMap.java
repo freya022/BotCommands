@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.application.CommandPath;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 public class ApplicationCommandDataMap {
 	//The String is CommandPath's base name
-	private final EnumMap<CommandType, Map<String, CommandData>> typeMap = new EnumMap<>(CommandType.class);
+	private final EnumMap<Command.Type, Map<String, CommandData>> typeMap = new EnumMap<>(Command.Type.class);
 	
 	public Collection<CommandData> getAllCommandData() {
 		return typeMap.values()
@@ -20,15 +20,15 @@ public class ApplicationCommandDataMap {
 				.flatMap(map -> map.values().stream()).toList();
 	}
 	
-	public CommandData computeIfAbsent(CommandType type, CommandPath path, Function<String, CommandData> mappingFunction) {
+	public CommandData computeIfAbsent(Command.Type type, CommandPath path, Function<String, CommandData> mappingFunction) {
 		return getTypeMap(type).computeIfAbsent(path.getName(), mappingFunction);
 	}
 
-	public CommandData put(CommandType type, CommandPath path, CommandData value) {
+	public CommandData put(Command.Type type, CommandPath path, CommandData value) {
 		return getTypeMap(type).put(path.getName(), value);
 	}
 
-	private Map<String, CommandData> getTypeMap(CommandType type) {
+	private Map<String, CommandData> getTypeMap(Command.Type type) {
 		return typeMap.computeIfAbsent(type, x -> new HashMap<>());
 	}
 }

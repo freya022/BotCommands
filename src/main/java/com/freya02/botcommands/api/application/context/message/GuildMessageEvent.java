@@ -3,11 +3,11 @@ package com.freya02.botcommands.api.application.context.message;
 import com.freya02.botcommands.api.BContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildMessageEvent extends GlobalMessageEvent {
-	public GuildMessageEvent(BContext context, MessageContextCommandEvent event) {
+	public GuildMessageEvent(BContext context, MessageContextEvent event) {
 		super(context, event);
 
 		if (!event.isFromGuild())

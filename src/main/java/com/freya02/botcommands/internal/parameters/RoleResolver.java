@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public class RoleResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
+	public Object resolve(MessageReceivedEvent event, String[] args) {
 		if (event.getGuild().getId().equals(args[0])) return null; //@everyone role
 
 		return event.getGuild().getRoleById(args[0]);
@@ -44,7 +44,7 @@ public class RoleResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandInteraction event, OptionMapping optionMapping) {
+	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsRole();
 	}
 

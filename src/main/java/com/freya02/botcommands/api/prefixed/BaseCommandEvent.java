@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.CommandsBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  *     <li>Adding a reaction to indicate command success/failure</li>
  * </ul>
  */
-public abstract class BaseCommandEvent extends GuildMessageReceivedEvent {
+public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public BaseCommandEvent(@NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
 	}

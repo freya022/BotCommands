@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +14,7 @@ public class SlashWaiterTest extends TextCommand {
 	@JDATextCommand(name = "simon")
 	public void execute(CommandEvent event) {
 		event.reply("Simon says: say `hi` in less than 5 seconds").queue(m -> {
-			EventWaiter.of(GuildMessageReceivedEvent.class) //Listen to guild messages
+			EventWaiter.of(MessageReceivedEvent.class) //Listen to guild messages
 					//Check for the same channel
 					.addPrecondition(e -> e.getChannel().equals(event.getChannel()))
 

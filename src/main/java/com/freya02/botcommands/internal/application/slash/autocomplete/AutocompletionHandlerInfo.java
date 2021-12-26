@@ -12,9 +12,9 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class AutocompletionHandlerInfo {
 
 		if (String.class.isAssignableFrom(collectionReturnType) || Long.class.isAssignableFrom(collectionReturnType) || Double.class.isAssignableFrom(collectionReturnType)) {
 			this.choiceSupplier = generateSupplierFromStrings(autocompletionMode);
-		} else if (SlashCommand.Choice.class.isAssignableFrom(collectionReturnType)) {
+		} else if (Command.Choice.class.isAssignableFrom(collectionReturnType)) {
 			this.choiceSupplier = generateSupplierFromChoices();
 		} else {
 			if (context.getAutocompletionTransformer(collectionReturnType) == null) {
@@ -139,7 +139,7 @@ public class AutocompletionHandlerInfo {
 
 	private ChoiceSupplier generateSupplierFromChoices() {
 		return (slashCommand, event) -> {
-			final List<SlashCommand.Choice> choices = (List<SlashCommand.Choice>) invokeAutocompletionHandler(slashCommand, event);
+			final List<Command.Choice> choices = (List<Command.Choice>) invokeAutocompletionHandler(slashCommand, event);
 
 			return choices.subList(0, Math.min(maxChoices, choices.size()));
 		};
@@ -166,7 +166,7 @@ public class AutocompletionHandlerInfo {
 
 	private ChoiceSupplier generateContinuitySupplier() {
 		return (slashCommand, event) -> {
-			final OptionMapping optionMapping = event.getFocusedOptionType();
+			final OptionMapping optionMapping = event.getFocusedOption();
 
 			final String query = optionMapping.getAsString();
 			final List<String> list = ((List<Object>) invokeAutocompletionHandler(slashCommand, event))
@@ -197,7 +197,7 @@ public class AutocompletionHandlerInfo {
 					.sorted()
 					.toList();
 
-			final OptionMapping optionMapping = event.getFocusedOptionType();
+			final OptionMapping optionMapping = event.getFocusedOption();
 			//First sort the results by similarities but by taking into account an incomplete input
 			final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
 					list,
@@ -217,11 +217,11 @@ public class AutocompletionHandlerInfo {
 		};
 	}
 
-	private SlashCommand.Choice getChoice(OptionMapping optionMapping, String string) {
+	private Command.Choice getChoice(OptionMapping optionMapping, String string) {
 		return switch (optionMapping.getType()) {
-			case STRING -> new SlashCommand.Choice(string, string);
-			case INTEGER -> new SlashCommand.Choice(string, Long.parseLong(string));
-			case NUMBER -> new SlashCommand.Choice(string, Double.parseDouble(string));
+			case STRING -> new Command.Choice(string, string);
+			case INTEGER -> new Command.Choice(string, Long.parseLong(string));
+			case NUMBER -> new Command.Choice(string, Double.parseDouble(string));
 			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
 		};
 	}
@@ -230,12 +230,12 @@ public class AutocompletionHandlerInfo {
 		return handlerName;
 	}
 
-	public List<SlashCommand.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteEvent event) throws Exception {
-		final List<SlashCommand.Choice> actualChoices = new ArrayList<>(25);
+	public List<Command.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteEvent event) throws Exception {
+		final List<Command.Choice> actualChoices = new ArrayList<>(25);
 
-		final List<SlashCommand.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event);
+		final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event);
 
-		final OptionMapping optionMapping = event.getFocusedOptionType();
+		final OptionMapping optionMapping = event.getFocusedOption();
 
 		//If something is typed but there are no choices, don't display user input
 		if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())

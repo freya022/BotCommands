@@ -4,10 +4,10 @@ import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,7 +20,7 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
+	public Object resolve(MessageReceivedEvent event, String[] args) {
 		return parseBoolean(args[0]);
 	}
 
@@ -38,7 +38,7 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandInteraction event, OptionMapping optionMapping) {
+	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsBoolean();
 	}
 

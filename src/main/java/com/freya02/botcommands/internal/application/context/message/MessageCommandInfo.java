@@ -12,7 +12,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
@@ -42,7 +42,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, MessageContextCommandEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
+	public boolean execute(BContext context, MessageContextEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		final Object[] objects = new Object[commandParameters.size() + 1];
 		if (guildOnly) {
 			objects[0] = new GuildMessageEvent(context, event);

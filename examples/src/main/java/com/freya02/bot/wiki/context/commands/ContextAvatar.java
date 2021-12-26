@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.User;
 public class ContextAvatar extends ApplicationCommand {
 	@JDAUserCommand(name = "Get avatar")
 	public void execute(GuildUserEvent event) {
-		final User targetUser = event.getTargetUser();
+		final User targetUser = event.getTarget();
 
 		event.reply(targetUser.getEffectiveAvatarUrl()).queue();
 	}

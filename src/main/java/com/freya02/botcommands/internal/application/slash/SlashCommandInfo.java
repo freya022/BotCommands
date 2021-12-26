@@ -13,8 +13,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -165,7 +165,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 	@Nullable
 	public String getAutocompletionHandlerName(CommandAutoCompleteEvent event) {
-		final OptionMapping focusedOption = event.getFocusedOptionType();
+		final OptionMapping focusedOption = event.getFocusedOption();
 
 		int optionIndex = 0;
 		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;

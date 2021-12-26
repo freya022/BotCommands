@@ -3,12 +3,12 @@ package com.freya02.botcommands.internal.parameters;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.prefixed.Utils;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.api.interactions.commands.CommandPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(GuildMessageReceivedEvent event, String[] args) {
+	public Object resolve(MessageReceivedEvent event, String[] args) {
 		try {
 			//Fastpath for mentioned entities passed in the message
 			long id = Long.parseLong(args[0]);
@@ -52,7 +52,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(SlashCommandInteraction event, OptionMapping optionMapping) {
+	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsMember();
 	}
 
@@ -71,7 +71,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Nullable
 	@Override
-	public Object resolve(UserContextCommandEvent event) {
+	public Object resolve(UserContextEvent event) {
 		return event.getTargetMember();
 	}
 }

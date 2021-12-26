@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -44,13 +44,16 @@ public class AutocompletionListener implements EventListener {
 				final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 				if (slashCommand == null) {
-					event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
+					LOGGER.warn("Slash command not found during autocompletion for: {}", event.getCommandPath());
+
+					event.replyChoices().queue();
+
 					return;
 				}
 
 				final String autocompletionHandler = slashCommand.getAutocompletionHandlerName(event);
 				if (autocompletionHandler == null) {
-					LOGGER.warn("Found no autocompletion handler name for option '{}' in command '{}'", event.getFocusedOptionType().getName(), slashCommand.getPath());
+					LOGGER.warn("Found no autocompletion handler name for option '{}' in command '{}'", event.getFocusedOption().getName(), slashCommand.getPath());
 
 					return;
 				}
@@ -62,7 +65,7 @@ public class AutocompletionListener implements EventListener {
 					return;
 				}
 
-				event.respondChoices(handler.getChoices(slashCommand, event)).queue();
+				event.replyChoices(handler.getChoices(slashCommand, event)).queue();
 			}, event);
 		}
 	}
@@ -82,10 +85,8 @@ public class AutocompletionListener implements EventListener {
 				Throwable baseEx = Utils.getException(e);
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while autocompleting a command option '" + reconstructCommand(event) + "'", baseEx);
-				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
-				} else {
-					event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				if (!event.isAcknowledged()) {
+					event.replyChoices().queue();
 				}
 
 				context.dispatchException("Exception while autocompleting '" + reconstructCommand(event) + "'", baseEx);

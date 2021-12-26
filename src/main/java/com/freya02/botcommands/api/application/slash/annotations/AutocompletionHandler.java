@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

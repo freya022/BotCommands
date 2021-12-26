@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.application;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +33,7 @@ public interface GuildApplicationSettings {
 	 * @see ChoiceList
 	 */
 	@NotNull
-	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
+	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
 		return Collections.emptyList();
 	}
 

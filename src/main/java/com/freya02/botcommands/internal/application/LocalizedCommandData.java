@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashUtils;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,7 +17,7 @@ public class LocalizedCommandData {
 	@NotNull private final CommandPath localizedPath;
 	@NotNull private final String localizedDescription;
 	@NotNull private final List<LocalizedOption> localizedOptionNames;
-	@NotNull private final List<List<SlashCommand.Choice>> localizedOptionChoices;
+	@NotNull private final List<List<Command.Choice>> localizedOptionChoices;
 
 	/**
 	 * Constructs new localized application command data for a specific Guild
@@ -31,7 +31,7 @@ public class LocalizedCommandData {
 	private LocalizedCommandData(@NotNull CommandPath localizedPath,
 	                             @NotNull String localizedDescription,
 	                             @NotNull List<LocalizedOption> localizedOptionNames,
-	                             @NotNull List<List<SlashCommand.Choice>> localizedOptionChoices) {
+	                             @NotNull List<List<Command.Choice>> localizedOptionChoices) {
 		this.localizedPath = localizedPath;
 		this.localizedDescription = localizedDescription;
 		this.localizedOptionNames = localizedOptionNames;
@@ -53,7 +53,7 @@ public class LocalizedCommandData {
 
 		final String localizedDescription;
 		final List<LocalizedOption> localizedOptions;
-		final List<List<SlashCommand.Choice>> localizedChoices;
+		final List<List<Command.Choice>> localizedChoices;
 
 		if (data != null && data.getLocalizedDescription() != null) {
 			localizedDescription = data.getLocalizedDescription();
@@ -97,7 +97,7 @@ public class LocalizedCommandData {
 	}
 
 	@NotNull
-	public List<List<SlashCommand.Choice>> getLocalizedOptionChoices() {
+	public List<List<Command.Choice>> getLocalizedOptionChoices() {
 		return localizedOptionChoices;
 	}
 

@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -100,7 +100,10 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+	public void onMessageReceived(MessageReceivedEvent event) {
+		if (!event.isFromGuild())
+			return;
+
 		if (event.getAuthor().isBot() || event.isWebhookMessage())
 			return;
 
@@ -161,7 +164,7 @@ public final class CommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
-	private ExecutionResult tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
+	private ExecutionResult tryExecute(MessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
 		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
 		for (Predicate<MessageInfo> filter : context.getFilters()) {
 			if (!filter.test(messageInfo)) {
@@ -169,7 +172,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final Usability usability = Usability.of(context, candidate, member, event.getChannel(), isNotOwner);
+		final Usability usability = Usability.of(context, candidate, member, event.getTextChannel(), isNotOwner);
 
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
@@ -196,7 +199,7 @@ public final class CommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = candidate.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getTextChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());
@@ -237,7 +240,7 @@ public final class CommandListener extends ListenerAdapter {
 		return getCommandCandidates(Arrays.copyOf(split, split.length - 1));
 	}
 
-	private void onCommandNotFound(GuildMessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
+	private void onCommandNotFound(MessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
@@ -246,7 +249,7 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	private List<String> getSuggestions(GuildMessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
+	private List<String> getSuggestions(MessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
 		final Function<CommandPath, String> pathToStringFunc = switch (triedCommandPath.getNameCount()) {
 			case 1 -> CommandPath::getName;
 			case 2, 3 -> CommandPath::getSubname;
@@ -254,7 +257,7 @@ public final class CommandListener extends ListenerAdapter {
 		};
 
 		final List<String> commandNames = context.getCommands().stream()
-				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
+				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getTextChannel(), isNotOwner).isUsable())
 				.map(c -> pathToStringFunc.apply(c.findFirst().getPath()))
 				.collect(Collectors.toList());
 
@@ -307,10 +310,10 @@ public final class CommandListener extends ListenerAdapter {
 		};
 	}
 
-	private void reply(GuildMessageReceivedEvent event, String msg) {
+	private void reply(MessageReceivedEvent event, String msg) {
 		final RestAction<? extends MessageChannel> channelAction;
 
-		if (event.getChannel().canTalk()) {
+		if (event.getTextChannel().canTalk()) {
 			channelAction = new CompletedRestAction<>(event.getJDA(), event.getChannel());
 		} else {
 			channelAction = event.getAuthor().openPrivateChannel();

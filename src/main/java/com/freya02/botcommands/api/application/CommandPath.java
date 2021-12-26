@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.internal.application.CommandPathImpl;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

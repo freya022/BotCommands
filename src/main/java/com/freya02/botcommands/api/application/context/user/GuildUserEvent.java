@@ -3,11 +3,11 @@ package com.freya02.botcommands.api.application.context.user;
 import com.freya02.botcommands.api.BContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildUserEvent extends GlobalUserEvent {
-	public GuildUserEvent(BContext context, UserContextCommandEvent event) {
+	public GuildUserEvent(BContext context, UserContextEvent event) {
 		super(context, event);
 
 		if (!event.isFromGuild())
