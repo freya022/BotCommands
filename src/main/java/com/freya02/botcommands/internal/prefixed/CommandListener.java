@@ -2,7 +2,8 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
+import com.freya02.botcommands.api.prefixed.TextFilteringData;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.Usability;
@@ -32,7 +33,6 @@ import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -165,9 +165,11 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	private ExecutionResult tryExecute(MessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
-		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
-		for (Predicate<MessageInfo> filter : context.getFilters()) {
-			if (!filter.test(messageInfo)) {
+		final TextFilteringData filteringData = new TextFilteringData(context, event, candidate, args);
+		for (TextCommandFilter filter : context.getTextFilters()) {
+			if (!filter.isAccepted(filteringData)) {
+				LOGGER.trace("Cancelled prefixed commands due to filter");
+
 				return STOP;
 			}
 		}

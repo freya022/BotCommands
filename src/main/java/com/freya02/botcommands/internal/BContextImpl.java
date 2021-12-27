@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
+import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
@@ -9,7 +10,7 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -41,7 +42,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -59,7 +59,8 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 
-	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
+	private final List<TextCommandFilter> textFilters = new ArrayList<>();
+	private final List<ApplicationCommandFilter> applicationFilters = new ArrayList<>();
 
 	private JDA jda;
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
@@ -392,17 +393,39 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public void addFilter(Predicate<MessageInfo> filter) {
-		filters.add(filter);
+	public void addTextFilter(TextCommandFilter filter) {
+		Checks.notNull(filter, "Text command filter");
+
+		textFilters.add(filter);
 	}
 
 	@Override
-	public void removeFilter(Predicate<MessageInfo> filter) {
-		filters.remove(filter);
+	public void addApplicationFilter(ApplicationCommandFilter filter) {
+		Checks.notNull(filter, "Application command filter");
+
+		applicationFilters.add(filter);
 	}
 
-	public List<Predicate<MessageInfo>> getFilters() {
-		return filters;
+	@Override
+	public void removeTextFilter(TextCommandFilter filter) {
+		Checks.notNull(filter, "Text command filter");
+
+		textFilters.remove(filter);
+	}
+
+	@Override
+	public void removeApplicationFilter(ApplicationCommandFilter filter) {
+		Checks.notNull(filter, "Application command filter");
+
+		applicationFilters.remove(filter);
+	}
+
+	public List<TextCommandFilter> getTextFilters() {
+		return textFilters;
+	}
+
+	public List<ApplicationCommandFilter> getApplicationFilters() {
+		return applicationFilters;
 	}
 
 	@Override

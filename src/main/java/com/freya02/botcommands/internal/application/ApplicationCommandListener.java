@@ -4,6 +4,8 @@ import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.application.ApplicationCommandFilter;
+import com.freya02.botcommands.api.application.ApplicationFilteringData;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -113,6 +115,14 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
+		for (ApplicationCommandFilter applicationFilter : context.getApplicationFilters()) {
+			if (!applicationFilter.isAccepted(new ApplicationFilteringData(context, event, applicationCommand))) {
+				LOGGER.trace("Cancelled application commands due to filter");
+
+				return false;
+			}
+		}
+
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
 		final Usability usability = Usability.of(context, event, applicationCommand, isNotOwner);
 

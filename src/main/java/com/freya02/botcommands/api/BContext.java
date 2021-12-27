@@ -1,11 +1,12 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -28,7 +29,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -222,27 +222,47 @@ public interface BContext {
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**
-	 * Adds a filter for the command listener to check on each <b>regular / regex</b> command<br>
-	 * If one of the filters returns false, then the command is skipped, not executed
+	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
+	 * <br>If one of the filters returns false, then the command is not executed
+	 * <br>Command overloads are also not executed
 	 *
 	 * <h2>Example</h2>
 	 * <h3>Restricting the bot to a certain TextChannel</h3>
 	 * <pre><code>
-	 * final CommandsBuilder builder = CommandsBuilder.withPrefix(":", 222046562543468545L);
-	 * builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L);
+	 * CommandsBuilder.newBuilder()
+	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
+	 *          .addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L)
+	 *      )
 	 * </code></pre>
 	 *
 	 * @param filter The filter to add
 	 */
-	void addFilter(Predicate<MessageInfo> filter);
+	void addTextFilter(TextCommandFilter filter);
 
 	/**
-	 * Removes a previously set filter
+	 * Adds a filter for the application command listener, this will check slash commands as well as context commands
+	 * <br>If one of the filters returns false, then the command is not executed
+	 * <br><b>You still have to reply to the interaction !</b>
+	 *
+	 * @param filter The filter to add
+	 */
+	void addApplicationFilter(ApplicationCommandFilter filter);
+
+	/**
+	 * Removes a previously set text command filter
 	 *
 	 * @param filter The filter to remove
-	 * @see #addFilter(Predicate)
+	 * @see #addTextFilter(TextCommandFilter)
 	 */
-	void removeFilter(Predicate<MessageInfo> filter);
+	void removeTextFilter(TextCommandFilter filter);
+
+	/**
+	 * Removes a previously set application command filter
+	 *
+	 * @param filter The filter to remove
+	 * @see #addApplicationFilter(ApplicationCommandFilter)
+	 */
+	void removeApplicationFilter(ApplicationCommandFilter filter);
 
 	/**
 	 * Overrides the default help given for text commands

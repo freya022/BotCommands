@@ -27,7 +27,7 @@ public class SlashCommandsMain {
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
-//							.addFilter(messageInfo -> messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L)
+							.addTextFilter(data -> data.event().getChannel().getIdLong() != 722891685755093076L)
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
