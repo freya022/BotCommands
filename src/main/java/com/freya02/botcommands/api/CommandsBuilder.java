@@ -2,7 +2,7 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -27,8 +27,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
-
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 
@@ -39,6 +37,7 @@ public final class CommandsBuilder {
 	private final Set<Class<?>> classes = new HashSet<>();
 
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
+	private final ApplicationCommandsBuilder applicationCommandBuilder = new ApplicationCommandsBuilder(context);
 	private final ExtensionsBuilder extensionsBuilder = new ExtensionsBuilder(context);
 
 	private CommandsBuilder(long topOwnerId) {
@@ -224,13 +223,25 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Configures some settings related to framework text commands
+	 * Configures some settings related to text commands
 	 *
-	 * @param consumer The consumer to run in order to configure text commands settings
+	 * @param consumer The consumer to run in order to configure text commands
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) {
 		consumer.accept(textCommandBuilder);
+
+		return this;
+	}
+
+	/**
+	 * Configures some settings related to application commands
+	 *
+	 * @param consumer The consumer to run in order to configure application commands
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder applicationCommandBuilder(@NotNull Consumer<@NotNull ApplicationCommandsBuilder> consumer) {
+		consumer.accept(applicationCommandBuilder);
 
 		return this;
 	}

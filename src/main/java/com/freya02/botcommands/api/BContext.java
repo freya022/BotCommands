@@ -223,7 +223,7 @@ public interface BContext {
 
 	/**
 	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
-	 * <br>If one of the filters returns false, then the command is not executed
+	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
 	 * <br>Command overloads are also not executed
 	 *
 	 * <h2>Example</h2>
@@ -241,7 +241,7 @@ public interface BContext {
 
 	/**
 	 * Adds a filter for the application command listener, this will check slash commands as well as context commands
-	 * <br>If one of the filters returns false, then the command is not executed
+	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
 	 * <br><b>You still have to reply to the interaction !</b>
 	 *
 	 * @param filter The filter to add

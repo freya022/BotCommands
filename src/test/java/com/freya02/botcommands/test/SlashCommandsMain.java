@@ -2,6 +2,7 @@ package com.freya02.botcommands.test;
 
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import net.dv8tion.jda.api.JDA;
@@ -33,6 +34,18 @@ public class SlashCommandsMain {
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
 							.registerParameterResolver(new DateTimeResolver())
 							.setMethodRunnerFactory(new KotlinMethodRunnerFactory(MethodRunnerScope.getDispatcher(), MethodRunnerScope.getScope()))
+					)
+					.applicationCommandBuilder(applicationCommandsBuilder -> applicationCommandsBuilder
+							.addApplicationFilter(data -> {
+								final boolean isDoNotRun = data.commandInfo().getPath().equals(CommandPath.ofName("donotrun"));
+
+								data.event()
+										.reply("This command should not be ran")
+										.setEphemeral(true)
+										.queue();
+
+								return !isDoNotRun;
+							})
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
