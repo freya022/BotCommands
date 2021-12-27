@@ -4,13 +4,16 @@ import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -98,6 +101,21 @@ public class ExtensionsBuilder {
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
 
 		ParameterResolvers.register(new CustomResolver(parameterType, function));
+
+		return this;
+	}
+
+	/**
+	 * Registers an autocompletion transformer
+	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
+	 *
+	 * @param type                      Type of the List generic element type
+	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Command.Choice choice}
+	 * @param <T>                       Type of the List generic element type
+	 * @return This builder for chaining convenience
+	 */
+	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+		context.registerAutocompletionTransformer(type, autocompletionTransformer);
 
 		return this;
 	}

@@ -136,21 +136,6 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Registers an autocompletion transformer
-	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
-	 *
-	 * @param type                      Type of the List generic element type
-	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Choice choice}
-	 * @param <T>                       Type of the List generic element type
-	 * @return This builder for chaining convenience
-	 */
-	public <T> CommandsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
-		context.registerAutocompletionTransformer(type, autocompletionTransformer);
-
-		return this;
-	}
-
-	/**
 	 * Sets the component manager, used to handle storing/retrieving persistent/lambda components handlers
 	 *
 	 * @param componentManager The {@link ComponentManager}
