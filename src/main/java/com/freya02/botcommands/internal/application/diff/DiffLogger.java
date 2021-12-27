@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.application.diff;
 
-public interface DiffLogger {
-	boolean LOG_DIFFS = Boolean.parseBoolean(System.getProperty("botcommands.logDiff", "false"));
+import com.freya02.botcommands.api.builder.DebugBuilder;
 
+public interface DiffLogger {
 	static DiffLogger getLogger() {
-		if (LOG_DIFFS) {
+		if (DebugBuilder.isLogApplicationDiffsEnabled()) {
 			return new DiffLoggerImpl();
 		} else {
 			return new DiffLoggerNoop();

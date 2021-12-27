@@ -3,6 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
+import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -39,6 +40,7 @@ public final class CommandsBuilder {
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
 	private final ApplicationCommandsBuilder applicationCommandBuilder = new ApplicationCommandsBuilder(context);
 	private final ExtensionsBuilder extensionsBuilder = new ExtensionsBuilder(context);
+	private final DebugBuilder debugBuilder = new DebugBuilder();
 
 	private CommandsBuilder(long topOwnerId) {
 		context.addOwner(topOwnerId);
@@ -242,6 +244,18 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder applicationCommandBuilder(@NotNull Consumer<@NotNull ApplicationCommandsBuilder> consumer) {
 		consumer.accept(applicationCommandBuilder);
+
+		return this;
+	}
+
+	/**
+	 * Configures some settings related to debugging
+	 *
+	 * @param consumer The consumer to run in order to configure debug features
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder debugBuilder(@NotNull Consumer<@NotNull DebugBuilder> consumer) {
+		consumer.accept(debugBuilder);
 
 		return this;
 	}
