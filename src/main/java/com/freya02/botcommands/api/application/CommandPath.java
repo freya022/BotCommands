@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
  * <br>The different components are name, group and subcommand.
  * <br>This is mainly a utility class to avoid manipulating strings
  */
-public interface CommandPath {
+public interface CommandPath extends Comparable<CommandPath> {
 	static CommandPath of(@NotNull String name, @Nullable String group, @Nullable String subname) {
 		return new CommandPathImpl(name, group, subname);
 	}
@@ -132,4 +132,23 @@ public interface CommandPath {
 	 * @return <code>true</code> if this path starts with the other, <code>false</code> otherwise
 	 */
 	boolean startsWith(CommandPath o);
+
+	/**
+	 * Indicates if this command path is equal to another object
+	 *
+	 * @param o Another object
+	 * @return <code>true</code> if they are equal, <code>false</code> if not
+	 */
+	boolean equals(Object o);
+
+	@Override
+	default int compareTo(@NotNull CommandPath o) {
+		if (this.getNameCount() == o.getNameCount()) {
+			if (this.equals(o)) {
+				return 0;
+			}
+		}
+
+		return this.getFullPath().compareTo(o.getFullPath());
+	}
 }
