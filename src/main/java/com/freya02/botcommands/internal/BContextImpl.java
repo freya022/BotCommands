@@ -21,6 +21,9 @@ import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
 import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
+import gnu.trove.TCollections;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -58,6 +61,8 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
+
+	private final TLongSet testGuildIds = TCollections.synchronizedSet(new TLongHashSet());
 
 	private final List<TextCommandFilter> textFilters = new ArrayList<>();
 	private final List<ApplicationCommandFilter> applicationFilters = new ArrayList<>();
@@ -563,6 +568,15 @@ public class BContextImpl implements BContext {
 	@Override
 	public ExceptionHandler getUncaughtExceptionHandler() {
 		return uncaughtExceptionHandler;
+	}
+
+	@Override
+	public TLongSet getTestGuildIds() {
+		return testGuildIds;
+	}
+
+	public void addTestGuildIds(long... ids) {
+		testGuildIds.addAll(ids);
 	}
 
 	public AutocompletionTransformer<?> getAutocompletionTransformer(Class<?> type) {

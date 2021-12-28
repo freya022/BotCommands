@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -40,14 +39,12 @@ public final class ApplicationCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final ExecutorService es = Executors.newFixedThreadPool(Math.min(4, Runtime.getRuntime().availableProcessors()));
 	private final BContextImpl context;
-	private final List<Long> slashGuildIds;
 
 	private final Map<Long, ReentrantLock> lockMap = Collections.synchronizedMap(new HashMap<>());
 
-	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
+	public ApplicationCommandsBuilder(@NotNull BContextImpl context) {
 		this.context = context;
 		this.context.setSlashCommandsBuilder(this);
-		this.slashGuildIds = slashGuildIds;
 	}
 
 	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
@@ -176,8 +173,6 @@ public final class ApplicationCommandsBuilder {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
 
 		for (Guild guild : guilds) {
-			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
-
 			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
 		}
 

@@ -24,14 +24,14 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
-
-	private final List<Long> slashGuildIds = new ArrayList<>();
 
 	private final BContextImpl context = new BContextImpl();
 
@@ -119,19 +119,6 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
 		context.setUncaughtExceptionHandler(exceptionHandler);
-
-		return this;
-	}
-
-	/**
-	 * Debug feature - Makes it so application commands are only updated on these guilds
-	 *
-	 * @param slashGuildIds IDs of the guilds
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
-		this.slashGuildIds.clear();
-		this.slashGuildIds.addAll(slashGuildIds);
 
 		return this;
 	}
@@ -283,7 +270,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
+			new CommandsBuilderImpl(context, classes).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
+import com.freya02.botcommands.api.application.annotations.Test;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
@@ -14,6 +15,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -378,4 +380,11 @@ public interface BContext {
 	 */
 	@Nullable
 	ExceptionHandler getUncaughtExceptionHandler();
+
+	/**
+	 * Returns the test guilds IDs, slash commands annotated with {@link Test @Test} will only be included in these guilds
+	 *
+	 * @return The set of test guild IDs
+	 */
+	TLongSet getTestGuildIds();
 }

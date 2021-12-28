@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 public class Config {
 	@SuppressWarnings("unused") private String token;
 	@SuppressWarnings("unused") private long ownerId;
+	@SuppressWarnings("unused") private long testGuildId;
 	@SuppressWarnings("unused") private String prefix;
 	@SuppressWarnings("unused") private DBConfig dbConfig;
 
@@ -35,6 +36,10 @@ public class Config {
 
 	public long getOwnerId() {
 		return ownerId;
+	}
+
+	public long getTestGuildId() {
+		return testGuildId;
 	}
 
 	public String getPrefix() {

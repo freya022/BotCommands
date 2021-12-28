@@ -61,7 +61,7 @@ public final class CommandsBuilderImpl {
 	
 	private final List<Class<?>> ignoredClasses = new ArrayList<>();
 
-	public CommandsBuilderImpl(BContextImpl context, List<Long> slashGuildIds, Set<Class<?>> classes) {
+	public CommandsBuilderImpl(BContextImpl context, Set<Class<?>> classes) {
 		if (classes.isEmpty())
 			LOGGER.warn("No classes have been found, make sure you have at least one search path");
 
@@ -73,7 +73,7 @@ public final class CommandsBuilderImpl {
 		if (usePing) LOGGER.info("No prefix has been set, using bot ping as prefix");
 
 		this.classes = classes;
-		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
+		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context);
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
 		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);

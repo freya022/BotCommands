@@ -7,6 +7,8 @@ import com.freya02.botcommands.internal.application.CommandInfoMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.utils.AnnotationUtils;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -74,6 +76,14 @@ public abstract class ApplicationCommandInfoMapView {
 
 					//Get the actual usable commands in this context (dm or guild)
 					if (guild == null) return true;
+
+					if (info.isTestOnly()) { //Do not include commands in guilds not present in the test guild IDs
+						final TLongSet effectiveTestGuildIds = AnnotationUtils.getEffectiveTestGuildIds(context, info.getCommandMethod());
+
+						if (!effectiveTestGuildIds.contains(guild.getIdLong())) {
+							return false;
+						}
+					}
 
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
 					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
