@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * <p>
  * <b>The targeted method must have a {@link GlobalMessageEvent} or a {@link GuildMessageEvent} and the only other argument possible is a {@link Message}, which will be the <i>targeted</i> message</b>
  *
- * @see GlobalMessageEvent#getTargetMessage()
+ * @see GlobalMessageEvent#getTarget()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions

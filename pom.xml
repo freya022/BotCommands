@@ -146,7 +146,7 @@
                 <configuration>
                     <release>17</release>
                     <additionalJOptions>
-                        <additionalJOption>-Xdoclint:-html,-reference</additionalJOption>
+                        <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
                     </additionalJOptions>
                     <links>
                         <link>https://ci.dv8tion.net/job/JDA/javadoc</link>

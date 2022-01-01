@@ -37,7 +37,7 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in it's constructor, and it will be injected during instantiation
+	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in its constructor, and it will be injected during instantiation
 	 *
 	 * @param <T>               Type of the parameter
 	 * @param parameterType     The type of the parameter inside your constructor
@@ -54,7 +54,7 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Registers a instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
+	 * Registers an instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
 	 * Instead of resolving the parameters manually with {@link #registerConstructorParameter(Class, ConstructorParameterSupplier)} you can use this to give directly the command's instance
 	 *
 	 * @param <T>              Type of the command's class
@@ -123,7 +123,7 @@ public class ExtensionsBuilder {
 	/**
 	 * Sets the method runner factory, which allows methods to be reflectively executed
 	 * <br>A method runner factory is already set for pure java methods,
-	 * but you can set a {@link com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory} to support <code>suspend</code> functions
+	 * but you can set a <code>KotlinMethodRunnerFactory</code> (see class) to support <code>suspend</code> functions
 	 *
 	 * @param factory The {@link MethodRunnerFactory} to set
 	 * @return This builder for chaining convenience
