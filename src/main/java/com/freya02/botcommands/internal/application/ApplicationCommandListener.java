@@ -16,10 +16,10 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandEvent;
-import net.dv8tion.jda.api.events.interaction.command.MessageContextEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +49,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onUserContext(@NotNull UserContextEvent event) {
+	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
 		LOGGER.trace("Received user command: {}", event.getName());
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
@@ -68,7 +68,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onMessageContext(@NotNull MessageContextEvent event) {
+	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
 		LOGGER.trace("Received message command: {}", event.getName());
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
@@ -87,7 +87,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onSlashCommand(@NotNull SlashCommandEvent event) {
+	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 		LOGGER.trace("Received slash command: {}", reconstructCommand(event));
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
@@ -106,15 +106,15 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	public static String reconstructCommand(GenericCommandEvent event) {
-		if (event instanceof SlashCommandEvent slashEvent) {
+	public static String reconstructCommand(GenericCommandInteractionEvent event) {
+		if (event instanceof SlashCommandInteractionEvent slashEvent) {
 			return slashEvent.getCommandString();
 		} else {
 			return "/" + event.getName();
 		}
 	}
 
-	private boolean canRun(@NotNull GenericCommandEvent event, ApplicationCommandInfo applicationCommand) {
+	private boolean canRun(@NotNull GenericCommandInteractionEvent event, ApplicationCommandInfo applicationCommand) {
 		for (ApplicationCommandFilter applicationFilter : context.getApplicationFilters()) {
 			if (!applicationFilter.isAccepted(new ApplicationFilteringData(context, event, applicationCommand))) {
 				LOGGER.trace("Cancelled application commands due to filter");
@@ -196,7 +196,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		});
 	}
 
-	private Consumer<Throwable> getThrowableConsumer(GenericCommandEvent event) {
+	private Consumer<Throwable> getThrowableConsumer(GenericCommandInteractionEvent event) {
 		return e -> {
 			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
 			if (handler != null) {

@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.entities.EmojiOrEmoteImpl;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +44,7 @@ public class EmojiOrEmoteResolver extends ParameterResolver implements RegexPara
 
 	@Override
 	@Nullable
-	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
+	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
 		final Matcher emoteMatcher = Message.MentionType.EMOTE.getPattern().matcher(optionMapping.getAsString());
 		if (emoteMatcher.find()) {
 			return new EmojiOrEmoteImpl(emoteMatcher.group(1), emoteMatcher.group(2));

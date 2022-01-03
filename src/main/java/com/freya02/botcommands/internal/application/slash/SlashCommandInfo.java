@@ -13,8 +13,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +82,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 
-	public boolean execute(BContext context, SlashCommandEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
+	public boolean execute(BContext context, SlashCommandInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
 			if (guildOnly) {
 				add(new GuildSlashEvent(context, event));
@@ -164,7 +164,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Nullable
-	public String getAutocompletionHandlerName(CommandAutoCompleteEvent event) {
+	public String getAutocompletionHandlerName(CommandAutoCompleteInteractionEvent event) {
 		final OptionMapping focusedOption = event.getFocusedOption();
 
 		int optionIndex = 0;

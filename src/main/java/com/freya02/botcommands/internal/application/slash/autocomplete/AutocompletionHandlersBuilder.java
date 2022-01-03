@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -27,8 +27,8 @@ public class AutocompletionHandlersBuilder {
 
 	public void processHandler(Object autocompleteHandler, Method method) {
 		try {
-			if (!ReflectionUtils.hasFirstParameter(method, CommandAutoCompleteEvent.class))
-				throw new IllegalArgumentException("Autocompletion handler at " + Utils.formatMethodShort(method) + " must have a " + CommandAutoCompleteEvent.class.getSimpleName() + " event as first parameter");
+			if (!ReflectionUtils.hasFirstParameter(method, CommandAutoCompleteInteractionEvent.class))
+				throw new IllegalArgumentException("Autocompletion handler at " + Utils.formatMethodShort(method) + " must have a " + CommandAutoCompleteInteractionEvent.class.getSimpleName() + " event as first parameter");
 
 			final AutocompletionHandlerInfo handler = new AutocompletionHandlerInfo(context, autocompleteHandler, method);
 

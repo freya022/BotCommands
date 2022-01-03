@@ -9,11 +9,11 @@ import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The only class you will have to use to create smart components such as {@link Button buttons} and {@link SelectionMenu selection menus}<br>
+ * The only class you will have to use to create smart components such as {@link Button buttons} and {@link SelectMenu selection menus}<br>
  * This class lets you create every type of buttons as well as have builder patterns, while benefiting from the persistent / lambda IDs such as:
  * <ul>
  *     <li>Unlimited argument storage (no more 100 chars limit !)</li>
@@ -67,10 +67,10 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static Component[] group(@NotNull Component @NotNull ... components) {
+	public static ActionComponent[] group(@NotNull ActionComponent @NotNull ... components) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(components)
-						.map(Component::getId)
+						.map(ActionComponent::getId)
 						.collect(Collectors.toList())
 		);
 
@@ -85,10 +85,10 @@ public class Components {
 	 * @return The exact same components for chaining purposes
 	 */
 	@NotNull
-	public static <T extends Collection<Component>> T group(@NotNull T components) {
+	public static <T extends Collection<ActionComponent>> T group(@NotNull T components) {
 		Utils.getComponentManager(context).registerGroup(
 				components.stream()
-						.map(Component::getId)
+						.map(ActionComponent::getId)
 						.collect(Collectors.toList())
 		);
 
@@ -107,7 +107,7 @@ public class Components {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
 						.flatMap(row -> row.getComponents().stream())
-						.map(Component::getId)
+						.map(ActionComponent::getId)
 						.collect(Collectors.toList()));
 
 		return rows;
@@ -125,7 +125,7 @@ public class Components {
 		Utils.getComponentManager(context).registerGroup(
 				rows.stream()
 						.flatMap(row -> row.getComponents().stream())
-						.map(Component::getId)
+						.map(ActionComponent::getId)
 						.collect(Collectors.toList()));
 
 		return rows;

@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	protected void onPostGet() {
 		for (ActionRow row : components.getActionRows()) {
-			for (Component component : row.getComponents()) {
+			for (ActionComponent component : row.getComponents()) {
 				final String id = component.getId();
 
 				if (id == null) continue;

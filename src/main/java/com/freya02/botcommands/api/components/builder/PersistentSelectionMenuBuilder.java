@@ -4,12 +4,12 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder<PersistentSelectionMenuBuilder> {
+public class PersistentSelectionMenuBuilder extends SelectMenu.Builder implements ComponentBuilder<PersistentSelectionMenuBuilder>, PersistentComponentBuilder<PersistentSelectionMenuBuilder> {
 	private final BContext context;
 	private final String handlerName;
 	private final String[] args;
@@ -38,10 +38,10 @@ public class PersistentSelectionMenuBuilder extends SelectionMenu.Builder implem
 
 	@NotNull
 	@Override
-	public SelectionMenu build() {
+	public SelectMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		setId(componentManager.putPersistentSelectionMenu(this));
+		setId(componentManager.putPersistentSelectMenu(this));
 
 		return super.build();
 	}

@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.GenericEvent;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class AutocompletionListener implements EventListener {
 
 	@Override
 	public void onEvent(@NotNull GenericEvent genericEvent) {
-		if (genericEvent instanceof CommandAutoCompleteEvent event) {
+		if (genericEvent instanceof CommandAutoCompleteInteractionEvent event) {
 			runAutocompletion(() -> {
 				final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
@@ -70,7 +70,7 @@ public class AutocompletionListener implements EventListener {
 		}
 	}
 
-	private void runAutocompletion(RunnableEx code, CommandAutoCompleteEvent event) {
+	private void runAutocompletion(RunnableEx code, CommandAutoCompleteInteractionEvent event) {
 		autocompletionService.execute(() -> {
 			try {
 				code.run();
@@ -94,7 +94,7 @@ public class AutocompletionListener implements EventListener {
 		});
 	}
 
-	private String reconstructCommand(CommandAutoCompleteEvent event) {
+	private String reconstructCommand(CommandAutoCompleteInteractionEvent event) {
 		return event.getCommandString();
 
 //		StringBuilder builder = new StringBuilder("/" + event.getName());

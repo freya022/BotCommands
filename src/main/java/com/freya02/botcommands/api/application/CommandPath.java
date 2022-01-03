@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.internal.application.CommandPathImpl;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a path of a command, each path component is delimited with a /, it is the same representation as JDA commands paths given in {@link SlashCommandEvent#getCommandPath()}
+ * Represents a path of a command, each path component is delimited with a /, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getCommandPath()}
  * <br>The different components are name, group and subcommand.
  * <br>This is mainly a utility class to avoid manipulating strings
  */

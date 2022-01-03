@@ -10,9 +10,9 @@ import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.interaction.component.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -65,7 +65,7 @@ public class ComponentListener extends ListenerAdapter {
 
 	@Override
 	public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
-		if (!(event instanceof ButtonClickEvent) && !(event instanceof SelectionMenuEvent)) return;
+		if (!(event instanceof ButtonInteractionEvent) && !(event instanceof SelectMenuInteractionEvent)) return;
 
 		runHandler(() -> handleComponentInteraction(event), event);
 	}
@@ -81,14 +81,14 @@ public class ComponentListener extends ListenerAdapter {
 			}
 
 			final ComponentType idType = fetchedComponent.getType();
-			if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonClickEvent)) {
-				LOGGER.error("Received a button id type but event is not a ButtonClickEvent");
+			if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonInteractionEvent)) {
+				LOGGER.error("Received a button id type but event is not a ButtonInteractionEvent");
 
 				return;
 			}
 
-			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectionMenuEvent)) {
-				LOGGER.error("Received a selection menu id type but event is not a SelectionMenuEvent");
+			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectMenuInteractionEvent)) {
+				LOGGER.error("Received a selection menu id type but event is not a SelectMenuInteractionEvent");
 
 				return;
 			}
@@ -101,26 +101,26 @@ public class ComponentListener extends ListenerAdapter {
 										buttonsMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										() -> new ButtonEvent(context, (ButtonClickEvent) event)),
+										() -> new ButtonEvent(context, (ButtonInteractionEvent) event)),
 								event));
 				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
 						fetchedComponent,
 						e -> onError(event, e.getReason()),
-						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)), event)
+						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonInteractionEvent) event)), event)
 				);
-				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
+				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectMenu(event,
 						fetchedComponent,
 						e -> onError(event, e.getReason()),
 						data -> runCallback(() -> handlePersistentComponent(event,
 										selectionMenuMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										() -> new SelectionEvent(context, (SelectionMenuEvent) event)),
+										() -> new SelectionEvent(context, (SelectMenuInteractionEvent) event)),
 								event));
-				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
+				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
 						fetchedComponent,
 						e -> onError(event, e.getReason()),
-						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
+						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectMenuInteractionEvent) event)), event));
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 			}
 		}
