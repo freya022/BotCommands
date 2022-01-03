@@ -3,11 +3,11 @@ package com.freya02.botcommands.internal.parameters;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.prefixed.Utils;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +52,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
+	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsMember();
 	}
 
@@ -71,7 +71,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Nullable
 	@Override
-	public Object resolve(UserContextEvent event) {
+	public Object resolve(UserContextInteractionEvent event) {
 		return event.getTargetMember();
 	}
 }

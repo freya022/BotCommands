@@ -12,7 +12,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -78,7 +78,7 @@ public class AutocompletionHandlerInfo {
 		this.autocompleteParameters = MethodParameters.of(context, method, SlashCommandParameter::new);
 	}
 
-	private Object invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteEvent event) throws IllegalAccessException, InvocationTargetException {
+	private Object invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws IllegalAccessException, InvocationTargetException {
 		List<Object> objects = new ArrayList<>(autocompleteParameters.size() + 1);
 
 		objects.add(event);
@@ -230,7 +230,7 @@ public class AutocompletionHandlerInfo {
 		return handlerName;
 	}
 
-	public List<Command.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteEvent event) throws Exception {
+	public List<Command.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws Exception {
 		final List<Command.Choice> actualChoices = new ArrayList<>(25);
 
 		final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event);

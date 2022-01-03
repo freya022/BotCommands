@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.parameters;
 import com.freya02.botcommands.api.parameters.*;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
+	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsString();
 	}
 

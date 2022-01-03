@@ -93,7 +93,7 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaSelectionMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
+	public void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
 		handleLambdaComponent(event,
 				(SQLFetchedComponent) fetchedComponent,
 				onError,
@@ -159,7 +159,7 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
+	public void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
 		handlePersistentComponent(event,
 				(SQLFetchedComponent) fetchedComponent,
 				onError,
@@ -243,7 +243,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	@NotNull
-	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
+	public String putLambdaSelectMenu(LambdaSelectionMenuBuilder builder) {
 		try (Connection connection = getConnection()) {
 			final LambdaComponentTimeoutInfo timeout = builder.getTimeout();
 			final SQLLambdaCreateResult result = SQLLambdaComponentData.create(connection,
@@ -310,7 +310,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	@NotNull
-	public String putPersistentSelectionMenu(PersistentSelectionMenuBuilder builder) {
+	public String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder) {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_SELECTION_MENU);
 	}
 

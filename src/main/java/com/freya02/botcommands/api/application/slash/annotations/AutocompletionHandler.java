@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,7 +19,7 @@ import java.util.List;
  * <ul>
  *     <li>The method must be public</li>
  *     <li>The method must be non-static</li>
- *     <li>The first parameter must be {@link CommandAutoCompleteEvent}</li>
+ *     <li>The first parameter must be {@link CommandAutoCompleteInteractionEvent}</li>
  * </ul>
  *
  * The annotated method returns a {@link List} of things
