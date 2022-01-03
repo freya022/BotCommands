@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.application.slash.annotations.AutocompletionH
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
-	public List<String> autoStr(CommandAutoCompleteEvent event) {
+	public List<String> autoStr(CommandAutoCompleteInteractionEvent event) {
 		System.out.println(event.getFocusedOption().getAsString());
 
 		return List.of("Anaheim Ducks",
@@ -60,12 +60,12 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoInt")
-	public List<Long> autoLong(CommandAutoCompleteEvent event, @AppOption(name = "str") String autoStr) {
+	public List<Long> autoLong(CommandAutoCompleteInteractionEvent event, @AppOption(name = "str") String autoStr) {
 		return List.of(1L, 12L, 123L);
 	}
 
 	@AutocompletionHandler(name = "autoDou")
-	public List<Double> autoDou(CommandAutoCompleteEvent event,
+	public List<Double> autoDou(CommandAutoCompleteInteractionEvent event,
 	                            @AppOption String str,
 	                            JDA jda,
 	                            @AppOption long integer,

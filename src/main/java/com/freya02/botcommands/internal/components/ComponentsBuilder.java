@@ -33,9 +33,9 @@ public class ComponentsBuilder {
 				continue;
 			}
 
-			JDASelectionMenuListener jdaSelectionMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
-			if (jdaSelectionMenuListener != null) {
-				handleComponentListener(method, jdaSelectionMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
+			JDASelectionMenuListener jdaSelectMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
+			if (jdaSelectMenuListener != null) {
+				handleComponentListener(method, jdaSelectMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
 			}
 		}
 	}

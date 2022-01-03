@@ -8,15 +8,15 @@ import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
- * A type of pagination which shows embeds and provides a {@link SelectionMenu} to navigate between menus
+ * A type of pagination which shows embeds and provides a {@link SelectMenu} to navigate between menus
  */
 public class InteractiveMenu extends BasicPagination<InteractiveMenu> {
 	private final List<InteractiveMenuItem> items;
@@ -32,7 +32,7 @@ public class InteractiveMenu extends BasicPagination<InteractiveMenu> {
 	}
 
 	@NotNull
-	private SelectionMenu buildSelectionMenu() {
+	private SelectMenu buildSelectMenu() {
 		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
@@ -58,7 +58,7 @@ public class InteractiveMenu extends BasicPagination<InteractiveMenu> {
 	public Message get() {
 		onPreGet();
 
-		components.addComponents(0, buildSelectionMenu());
+		components.addComponents(0, buildSelectMenu());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get(messageBuilder, components);
 		messageBuilder.setEmbeds(embed);

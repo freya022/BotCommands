@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel> extends Pa
 
 	@Override
 	@Nullable
-	public Object resolve(CommandPayload event, OptionMapping optionMapping) {
+	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
 		return optionMapping.getAsGuildChannel();
 	}
 

@@ -1,14 +1,14 @@
 package com.freya02.botcommands.api.application.context.user;
 
 import com.freya02.botcommands.api.BContext;
-import net.dv8tion.jda.api.events.interaction.command.UserContextEvent;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.context.UserContextInteraction;
 import org.jetbrains.annotations.NotNull;
 
-public class GlobalUserEvent extends UserContextEvent {
+public class GlobalUserEvent extends UserContextInteractionEvent {
 	private final BContext context;
 
-	public GlobalUserEvent(BContext context, UserContextEvent event) {
+	public GlobalUserEvent(BContext context, UserContextInteractionEvent event) {
 		super(event.getJDA(), event.getResponseNumber(), (UserContextInteraction) event.getInteraction());
 
 		this.context = context;

@@ -3,15 +3,14 @@ package com.freya02.botcommands.api.components.builder;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.components.SelectionConsumer;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder>, LambdaComponentBuilder<LambdaSelectionMenuBuilder> {
+public class LambdaSelectionMenuBuilder extends SelectMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder>, LambdaComponentBuilder<LambdaSelectionMenuBuilder> {
 	private final BContext context;
 	private final SelectionConsumer consumer;
 
@@ -32,10 +31,10 @@ public class LambdaSelectionMenuBuilder extends SelectionMenu.Builder implements
 
 	@NotNull
 	@Override
-	public SelectionMenu build() {
+	public SelectMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		setId(componentManager.putLambdaSelectionMenu(this));
+		setId(componentManager.putLambdaSelectMenu(this));
 
 		return super.build();
 	}

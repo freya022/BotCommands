@@ -56,7 +56,7 @@ public class SlashCommandsMain {
 //					.setUncaughtExceptionHandler(new ExceptionHandlerAdapter() {
 //						@Override
 //						public void handle(BContext context, Event event, Throwable throwable) {
-//							if (event instanceof SlashCommandEvent e) {
+//							if (event instanceof SlashCommandInteractionEvent e) {
 //								e.reply("AAAAAAAAAAAAAAAAA").setEphemeral(true).queue();
 //							} else {
 //								System.err.println("ERR");
@@ -69,7 +69,7 @@ public class SlashCommandsMain {
 //						}
 //					})
 //					.setUncaughtExceptionHandler((context, event, throwable) -> {
-//						if (event instanceof SlashCommandEvent e) {
+//						if (event instanceof SlashCommandInteractionEvent e) {
 //							e.reply("AAAAAAAAAAAAAAAAA").setEphemeral(true).queue();
 //						} else {
 //							System.err.println("ERR");
