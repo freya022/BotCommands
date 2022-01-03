@@ -85,14 +85,27 @@ public class ApplicationCommandsUpdater {
 		return guild;
 	}
 
+	@Blocking
 	public boolean shouldUpdateCommands() throws IOException {
-		if (Files.notExists(commandsCachePath)) {
-			LOGGER.trace("Updating commands because cache file does not exists");
+		final byte[] oldBytes;
 
-			return true;
+		if (context.isOnlineAppCommandCheckEnabled()) {
+			//TODO Discord sends default_permissions as always true when CommandData.default_permissions is set to false
+
+			final List<Command> discordCommands = (guild == null ? context.getJDA().retrieveCommands() : guild.retrieveCommands()).complete();
+			final List<CommandData> discordCommandsData = discordCommands.stream().map(CommandData::fromCommand).toList();
+
+			oldBytes = ApplicationCommandsCache.getCommandsBytes(discordCommandsData);
+		} else {
+			if (Files.notExists(commandsCachePath)) {
+				LOGGER.trace("Updating commands because cache file does not exists");
+
+				return true;
+			}
+
+			oldBytes = Files.readAllBytes(commandsCachePath);
 		}
 
-		final byte[] oldBytes = Files.readAllBytes(commandsCachePath);
 		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(allCommandData);
 
 		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);
@@ -127,13 +140,21 @@ public class ApplicationCommandsUpdater {
 
 		if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
-		if (Files.notExists(privilegesCachePath)) {
-			LOGGER.trace("Updating privileges because privilege cache does not exists");
+		final byte[] oldBytes;
+//		if (!context.isOnlineAppCommandCheckEnabled()) {
+			if (Files.notExists(privilegesCachePath)) {
+				LOGGER.trace("Updating privileges because privilege cache does not exists");
 
-			return true;
-		}
+				return true;
+			}
 
-		final byte[] oldBytes = Files.readAllBytes(privilegesCachePath);
+			oldBytes = Files.readAllBytes(privilegesCachePath);
+//		} else {
+//			final Map<String, List<CommandPrivilege>> privilegesMap = guild.retrieveCommandPrivileges().complete();
+//
+//			TODO wait for discord localisation so i can remove these base name mappings
+//		}
+
 		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap);
 
 		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);

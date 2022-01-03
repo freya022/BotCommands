@@ -41,4 +41,22 @@ public class ApplicationCommandsBuilder {
 
 		return this;
 	}
+
+	/**
+	 * Enables the library to do network calls to Discord in order to check if application commands / permissions need to be updated
+	 * <br>It's better to leave it disk-based, it is faster and doesn't require any request to Discord
+	 * <br><b>Online checks are to be avoided on production environments</b>, I strongly recommend you have a separate bot for tests purpose
+	 * <p>
+	 * <br>This option only makes sense if you work on your "development" bot is on multiple computers,
+	 *      as the files required for caching the already-pushed-commands are stored in your temporary files folder,
+	 *      another computer is not aware of it and might take <i>its own</i> files as being up-to-date, even if the commands on Discord are not.
+	 * <br>This issue is fixed by using online checks
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public ApplicationCommandsBuilder enableOnlineAppCommandCheck() {
+		context.enableOnlineAppCommandCheck();
+
+		return this;
+	}
 }
