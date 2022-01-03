@@ -121,6 +121,14 @@ public final class ApplicationCommandsBuilder {
 		context.addSlashCommand(info);
 	}
 
+	private String getCheckTypeString() {
+		if (context.isOnlineAppCommandCheckEnabled()) {
+			return "Online check";
+		} else {
+			return "Local disk check";
+		}
+	}
+
 	public void postProcess() throws IOException {
 		context.getJDA().setRequiredScopes("applications.commands");
 
@@ -131,9 +139,9 @@ public final class ApplicationCommandsBuilder {
 				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
 				if (globalUpdater.shouldUpdateCommands()) {
 					globalUpdater.updateCommands();
-					LOGGER.debug("Global commands were updated");
+					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
 				} else {
-					LOGGER.debug("Global commands does not have to be updated");
+					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
@@ -179,6 +187,7 @@ public final class ApplicationCommandsBuilder {
 		return map;
 	}
 
+	//TODO should we accept a boolean which is going to be the "online check" flag ?
 	@NotNull
 	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
 		return CompletableFuture.supplyAsync(() -> {
@@ -199,9 +208,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedCommands = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", getCheckTypeString());
 				} else {
-					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
 				if (force || updater.shouldUpdatePrivileges()) {
@@ -209,9 +218,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedPrivileges = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", getCheckTypeString());
 				} else {
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
 				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
