@@ -39,10 +39,12 @@ public class SlashCommandsMain {
 							.addApplicationFilter(data -> {
 								final boolean isDoNotRun = data.commandInfo().getPath().equals(CommandPath.ofName("donotrun"));
 
-								data.event()
-										.reply("This command should not be ran")
-										.setEphemeral(true)
-										.queue();
+								if (isDoNotRun) {
+									data.event()
+											.reply("This command should not be ran")
+											.setEphemeral(true)
+											.queue();
+								}
 
 								return !isDoNotRun;
 							})
