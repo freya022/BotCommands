@@ -136,7 +136,7 @@ public final class ApplicationCommandsBuilder {
 
 		es.submit(() -> {
 			try {
-				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
+				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, context.isOnlineAppCommandCheckEnabled());
 				if (globalUpdater.shouldUpdateCommands()) {
 					globalUpdater.updateCommands();
 					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
@@ -151,9 +151,9 @@ public final class ApplicationCommandsBuilder {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map;
 		final ShardManager shardManager = context.getJDA().getShardManager();
 		if (shardManager != null) {
-			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		} else {
-			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		}
 
 		map.forEach((guild, future) -> {
@@ -177,11 +177,11 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force) {
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
 
 		for (Guild guild : guilds) {
-			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
+			map.put(guild, scheduleApplicationCommandsUpdate(guild, force, onlineCheck));
 		}
 
 		return map;
@@ -189,7 +189,7 @@ public final class ApplicationCommandsBuilder {
 
 	//TODO should we accept a boolean which is going to be the "online check" flag ?
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		return CompletableFuture.supplyAsync(() -> {
 			final ReentrantLock lock;
 			synchronized (lockMap) {
@@ -199,7 +199,7 @@ public final class ApplicationCommandsBuilder {
 			try {
 				lock.lock();
 
-				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild);
+				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild, onlineCheck);
 
 				boolean updatedCommands = false, updatedPrivileges = false;
 

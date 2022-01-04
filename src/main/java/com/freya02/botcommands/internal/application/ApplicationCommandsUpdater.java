@@ -35,6 +35,7 @@ public class ApplicationCommandsUpdater {
 
 	private final BContextImpl context;
 	@Nullable private final Guild guild;
+	private final boolean onlineCheck;
 
 	private final Path commandsCachePath;
 	private final Path privilegesCachePath;
@@ -49,9 +50,10 @@ public class ApplicationCommandsUpdater {
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 	private final Collection<CommandData> allCommandData;
 
-	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild) throws IOException {
+	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild, boolean onlineCheck) throws IOException {
 		this.context = context;
 		this.guild = guild;
+		this.onlineCheck = onlineCheck;
 
 		this.commandsCachePath = guild == null
 				? context.getApplicationCommandsCache().getGlobalCommandsPath()
@@ -72,12 +74,12 @@ public class ApplicationCommandsUpdater {
 		this.allCommandData = map.getAllCommandData();
 	}
 
-	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context) throws IOException {
-		return new ApplicationCommandsUpdater(context, null);
+	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context, boolean onlineCheck) throws IOException {
+		return new ApplicationCommandsUpdater(context, null, onlineCheck);
 	}
 
-	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild) throws IOException {
-		return new ApplicationCommandsUpdater(context, guild);
+	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild, boolean onlineCheck) throws IOException {
+		return new ApplicationCommandsUpdater(context, guild, onlineCheck);
 	}
 
 	@Nullable
@@ -89,7 +91,7 @@ public class ApplicationCommandsUpdater {
 	public boolean shouldUpdateCommands() throws IOException {
 		final byte[] oldBytes;
 
-		if (context.isOnlineAppCommandCheckEnabled()) {
+		if (onlineCheck) {
 			//TODO Discord sends default_permissions as always true when CommandData.default_permissions is set to false
 
 			final List<Command> discordCommands = (guild == null ? context.getJDA().retrieveCommands() : guild.retrieveCommands()).complete();
@@ -141,7 +143,7 @@ public class ApplicationCommandsUpdater {
 		if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
 		final byte[] oldBytes;
-//		if (!context.isOnlineAppCommandCheckEnabled()) {
+//		if (!onlineCheck) { //TODO invert
 			if (Files.notExists(privilegesCachePath)) {
 				LOGGER.trace("Updating privileges because privilege cache does not exists");
 

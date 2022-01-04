@@ -506,14 +506,14 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false, onlineCheck);
 	}
 
 	@Override
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force);
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force, onlineCheck);
 	}
 
 	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
