@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.application;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -115,8 +116,10 @@ public class ApplicationCommandsUpdater {
 		if (needUpdate) {
 			LOGGER.trace("Updating commands because content is not equal");
 
-//			LOGGER.trace("Old commands bytes: {}", new String(oldBytes));
-//			LOGGER.trace("New commands bytes: {}", new String(newBytes));
+			if (DebugBuilder.isLogApplicationDiffsEnabled()) {
+				LOGGER.trace("Old commands bytes: {}", new String(oldBytes));
+				LOGGER.trace("New commands bytes: {}", new String(newBytes));
+			}
 		}
 
 		return needUpdate;
@@ -164,8 +167,10 @@ public class ApplicationCommandsUpdater {
 		if (needUpdate) {
 			LOGGER.trace("Updating privileges because content is not equal");
 
-//			LOGGER.trace("Old privileges bytes: {}", new String(oldBytes));
-//			LOGGER.trace("New privileges bytes: {}", new String(newBytes));
+			if (DebugBuilder.isLogApplicationDiffsEnabled()) {
+				LOGGER.trace("Old privileges bytes: {}", new String(oldBytes));
+				LOGGER.trace("New privileges bytes: {}", new String(newBytes));
+			}
 		}
 
 		return needUpdate;
