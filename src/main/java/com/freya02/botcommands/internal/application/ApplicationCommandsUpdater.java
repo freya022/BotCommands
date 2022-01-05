@@ -43,6 +43,8 @@ public class ApplicationCommandsUpdater {
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
 
+	private boolean updatedCommands = false;
+
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
 
@@ -134,6 +136,8 @@ public class ApplicationCommandsUpdater {
 				.addCommands(allCommandData)
 				.complete();
 
+		updatedCommands = true;
+
 		if (guild != null) {
 			thenAcceptGuild(commands, guild);
 		} else {
@@ -167,7 +171,7 @@ public class ApplicationCommandsUpdater {
 //
 //			oldBytes = ApplicationCommandsCache.getPrivilegesBytes(localCmdBaseNameToPrivilegesMap);
 //		} else {
-			if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
+			if (updatedCommands) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
 			if (Files.notExists(privilegesCachePath)) {
 				LOGGER.trace("Updating privileges because privilege cache does not exists");
@@ -200,7 +204,7 @@ public class ApplicationCommandsUpdater {
 			return;
 		}
 
-		if (commands.isEmpty()) {
+		if (!updatedCommands) {
 			LOGGER.info("Privileges has changed but commands were not updated, retrieving current command list");
 
 			final List<Command> retrievedCommands = guild.retrieveCommands().complete();
