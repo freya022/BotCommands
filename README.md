@@ -44,7 +44,7 @@ Note that text-based commands, slash commands and component handlers are running
 You are recommended to have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
-[OpenJDK 11+](https://adoptopenjdk.net/) <br>
+[OpenJDK 16+](https://adoptium.net/releases.html?variant=openjdk16&jvmVariant=hotspot) <br>
 An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://maven.apache.org/download.cgi) manually <br>
 **Do not forget to add the Maven bin directory to your PATH environment variables**, if you choose not to use an IDE
 
