@@ -217,9 +217,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedPrivileges = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", getCheckTypeString());
-				} else {
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", "Local disk check");
+				} else { //TODO change prints once privileges can be checked online
+					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
 				}
 
 				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
