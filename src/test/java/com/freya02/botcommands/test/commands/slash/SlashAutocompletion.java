@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.application.slash.autocomplete.Autocompletion
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
-import java.util.List;
+import java.util.*;
 
 public class SlashAutocompletion extends ApplicationCommand {
 	@JDASlashCommand(name = "auto")
@@ -22,10 +22,10 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
-	public List<String> autoStr(CommandAutoCompleteInteractionEvent event) {
+	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
 		System.out.println(event.getFocusedOption().getAsString());
 
-		return List.of("Anaheim Ducks",
+		return new ArrayDeque<>(List.of("Anaheim Ducks",
 				"Arizona Coyotes",
 				"Boston Bruins",
 				"Buffalo Sabres",
@@ -56,20 +56,20 @@ public class SlashAutocompletion extends ApplicationCommand {
 				"Vancouver Canucks",
 				"Vegas Golden Knights",
 				"Washington Capitals",
-				"Winnipeg Jets");
+				"Winnipeg Jets"));
 	}
 
 	@AutocompletionHandler(name = "autoInt")
-	public List<Long> autoLong(CommandAutoCompleteInteractionEvent event, @AppOption(name = "str") String autoStr) {
-		return List.of(1L, 12L, 123L);
+	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event, @AppOption(name = "str") String autoStr) {
+		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
 	@AutocompletionHandler(name = "autoDou")
-	public List<Double> autoDou(CommandAutoCompleteInteractionEvent event,
-	                            @AppOption String str,
-	                            JDA jda,
-	                            @AppOption long integer,
-	                            @AppOption double number) {
+	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
+	                                  @AppOption String str,
+	                                  JDA jda,
+	                                  @AppOption long integer,
+	                                  @AppOption double number) {
 		System.out.println(event.getOptions());
 		System.out.println("str = " + str);
 		System.out.println("jda = " + jda);

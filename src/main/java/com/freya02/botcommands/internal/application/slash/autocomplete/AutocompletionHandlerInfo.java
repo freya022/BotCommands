@@ -56,12 +56,13 @@ public class AutocompletionHandlerInfo {
 		this.showUserInput = annotation.showUserInput();
 		this.maxChoices = OptionData.MAX_CHOICES - (showUserInput ? 1 : 0); //accommodate for user input
 
-		Class<?> collectionReturnType = ClassUtils.getCollectionReturnType(method);
-		this.transformer = (AutocompletionTransformer<Object>) context.getAutocompletionTransformer(collectionReturnType);
+		final Class<?> collectionReturnType = ClassUtils.getCollectionReturnType(method);
 
 		if (collectionReturnType == null) {
-			throw new IllegalArgumentException("Unable to determine return type of " + Utils.formatMethodShort(method) + ", is the collection a List ?");
+			throw new IllegalArgumentException("Unable to determine return type of " + Utils.formatMethodShort(method) + ", does the collection inherit Collection ?");
 		}
+
+		this.transformer = (AutocompletionTransformer<Object>) context.getAutocompletionTransformer(collectionReturnType);
 
 		if (String.class.isAssignableFrom(collectionReturnType) || Long.class.isAssignableFrom(collectionReturnType) || Double.class.isAssignableFrom(collectionReturnType)) {
 			this.choiceSupplier = generateSupplierFromStrings(autocompletionMode);
