@@ -144,27 +144,29 @@ public class ApplicationCommandsUpdater {
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
+		//TODO rework when i can finally work out privileges for global commands in a guild context
+		// When discord adds native localisation
 		final byte[] oldBytes;
-		if (onlineCheck) {
-			//Since we online checked, we have the commands list
-			// That command list might have been changed (when it would be outdated)
-			// If the list changed the privileges are empty, could do an optimisation here
-			final Map<String, List<CommandPrivilege>> privilegesMap = guild.retrieveCommandPrivileges().complete();
-			final Map<String, Collection<? extends CommandPrivilege>> localCmdBaseNameToPrivilegesMap = new HashMap<>();
-
-			//TODO testings
-			for (Command command : commands) {
-				final String baseName = localizedBaseNameToBaseName.get(command.getName());
-
-				final List<CommandPrivilege> privileges = privilegesMap.get(command.getId());
-
-				if (privileges != null) {
-					localCmdBaseNameToPrivilegesMap.put(baseName, privileges);
-				}
-			}
-
-			oldBytes = ApplicationCommandsCache.getPrivilegesBytes(localCmdBaseNameToPrivilegesMap);
-		} else {
+//		if (onlineCheck) {
+//			//Since we online checked, we have the commands list
+//			// That command list might have been changed (when it would be outdated)
+//			// If the list changed the privileges are empty, could do an optimisation here
+//			final Map<String, List<CommandPrivilege>> privilegesMap = guild.retrieveCommandPrivileges().complete();
+//			final Map<String, Collection<? extends CommandPrivilege>> localCmdBaseNameToPrivilegesMap = new HashMap<>();
+//
+//			//TODO testings
+//			for (Command command : commands) {
+//				final String baseName = localizedBaseNameToBaseName.get(command.getName());
+//
+//				final List<CommandPrivilege> privileges = privilegesMap.get(command.getId());
+//
+//				if (privileges != null) {
+//					localCmdBaseNameToPrivilegesMap.put(baseName, privileges);
+//				}
+//			}
+//
+//			oldBytes = ApplicationCommandsCache.getPrivilegesBytes(localCmdBaseNameToPrivilegesMap);
+//		} else {
 			if (!commands.isEmpty()) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
 			if (Files.notExists(privilegesCachePath)) {
@@ -174,7 +176,7 @@ public class ApplicationCommandsUpdater {
 			}
 
 			oldBytes = Files.readAllBytes(privilegesCachePath);
-		}
+//		}
 
 		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap);
 

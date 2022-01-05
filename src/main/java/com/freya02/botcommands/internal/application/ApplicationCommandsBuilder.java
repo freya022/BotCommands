@@ -187,7 +187,6 @@ public final class ApplicationCommandsBuilder {
 		return map;
 	}
 
-	//TODO should we accept a boolean which is going to be the "online check" flag ?
 	@NotNull
 	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		return CompletableFuture.supplyAsync(() -> {
