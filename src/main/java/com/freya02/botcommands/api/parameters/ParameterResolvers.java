@@ -1,12 +1,15 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.parameters.*;
 import com.freya02.botcommands.internal.parameters.channels.*;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,7 @@ import java.util.stream.Collectors;
  * </ul>
  */
 public class ParameterResolvers {
+	private static final Logger LOGGER = Logging.getLogger();
 	private static final Map<Class<?>, ParameterResolver> map = new HashMap<>();
 	
 	private static final List<Class<?>> possibleInterfaces = List.of(
@@ -73,19 +77,29 @@ public class ParameterResolvers {
 	}
 
 	public static void register(@NotNull ParameterResolver resolver) {
-		boolean hasInterface = false;
+		final boolean isCompatible = hasCompatibleInterface(resolver);
+
+		if (!isCompatible)
+			throw new IllegalArgumentException("The resolver should implement at least one of these interfaces: " + possibleInterfaces.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
+
+		final ParameterResolver oldResolver = map.put(resolver.getType(), resolver);
+
+		if (oldResolver != null) {
+			LOGGER.warn("An old parameter resolver ({}) got overridden by another ({}) at: {}",
+					oldResolver.getClass().getName(),
+					resolver.getClass().getName(),
+					ReflectionUtils.formatCallerMethod());
+		}
+	}
+
+	private static boolean hasCompatibleInterface(@NotNull ParameterResolver resolver) {
 		for (Class<?> possibleInterface : possibleInterfaces) {
 			if (possibleInterface.isAssignableFrom(resolver.getClass())) {
-				 hasInterface = true;
-				 
-				 break;
+				 return true;
 			}
 		}
 
-		if (!hasInterface)
-			throw new IllegalArgumentException("The resolver should implement at least one of these interfaces: " + possibleInterfaces.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
-
-		map.put(resolver.getType(), resolver);
+		return false;
 	}
 
 	@Nullable
