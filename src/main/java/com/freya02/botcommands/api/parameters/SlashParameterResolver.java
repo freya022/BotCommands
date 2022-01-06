@@ -4,12 +4,22 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface which indicates this class can resolve parameters for application commands
  */
 public interface SlashParameterResolver {
+	/**
+	 * Returns the supported {@link OptionType} for this slash command parameter
+	 *
+	 * @return The supported {@link OptionType} for this slash command parameter
+	 */
+	@NotNull
+	OptionType getOptionType();
+
 	/**
 	 * Returns a resolved object for this {@link OptionMapping}
 	 *

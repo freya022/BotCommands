@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +35,12 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 	@NotNull
 	public String getTestExample() {
 		return "true";
+	}
+
+	@Override
+	@NotNull
+	public OptionType getOptionType() {
+		return OptionType.BOOLEAN;
 	}
 
 	@Override

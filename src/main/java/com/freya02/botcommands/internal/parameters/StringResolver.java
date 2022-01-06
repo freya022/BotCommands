@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +37,12 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 	@NotNull
 	public String getTestExample() {
 		return "foobar";
+	}
+
+	@Override
+	@NotNull
+	public OptionType getOptionType() {
+		return OptionType.STRING;
 	}
 
 	@Override

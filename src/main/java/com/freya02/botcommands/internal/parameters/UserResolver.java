@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +47,12 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 	@NotNull
 	public String getTestExample() {
 		return "<@1234>";
+	}
+
+	@Override
+	@NotNull
+	public OptionType getOptionType() {
+		return OptionType.USER;
 	}
 
 	@Override
