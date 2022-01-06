@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -23,10 +25,12 @@ public interface SlashParameterResolver {
 	/**
 	 * Returns a resolved object for this {@link OptionMapping}
 	 *
-	 * @param event The event of this interaction, could be a {@link SlashCommandInteractionEvent} or a {@link CommandAutoCompleteInteractionEvent}
+	 * @param context       The {@link BContext} of this bot
+	 * @param info          The slash command info of the command being executed
+	 * @param event         The event of this interaction, could be a {@link SlashCommandInteractionEvent} or a {@link CommandAutoCompleteInteractionEvent}
 	 * @param optionMapping The {@link OptionMapping} to be resolved
 	 * @return The resolved option mapping
 	 */
 	@Nullable
-	Object resolve(CommandInteractionPayload event, OptionMapping optionMapping);
+	Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping);
 }

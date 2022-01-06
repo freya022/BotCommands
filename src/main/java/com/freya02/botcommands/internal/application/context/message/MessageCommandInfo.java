@@ -54,7 +54,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			ContextCommandParameter<MessageContextParameterResolver> parameter = commandParameters.get(i);
 
 			if (parameter.isOption()) {
-				objects[i + 1] = parameter.getResolver().resolve(event);
+				objects[i + 1] = parameter.getResolver().resolve(context, this, event);
 
 				//no need to check for unresolved parameters,
 				// it is impossible to have other arg types other than Message (and custom resolvers)

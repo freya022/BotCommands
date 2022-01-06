@@ -1,6 +1,9 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,5 +11,5 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ComponentParameterResolver {
 	@Nullable
-	Object resolve(GenericComponentInteractionCreateEvent event, String arg);
+	Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg);
 }

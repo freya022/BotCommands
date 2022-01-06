@@ -1,6 +1,11 @@
 package com.freya02.botcommands.internal.parameters;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.Utils;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
@@ -24,7 +29,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(MessageReceivedEvent event, String[] args) {
+	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		try {
 			//Fastpath for mentioned entities passed in the message
 			long id = Long.parseLong(args[0]);
@@ -57,13 +62,13 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
+	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsUser();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
+	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		try {
 			return event.getJDA().retrieveUserById(arg).complete();
 		} catch (ErrorResponseException e) {
@@ -74,7 +79,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Nullable
 	@Override
-	public Object resolve(UserContextInteractionEvent event) {
+	public Object resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
 		return event.getTarget();
 	}
 }

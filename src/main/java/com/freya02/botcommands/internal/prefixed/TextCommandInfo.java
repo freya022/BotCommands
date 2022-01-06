@@ -140,7 +140,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 					}
 
 					if (found == groupCount) { //Found all the groups
-						final Object resolved = parameter.getResolver().resolve(event, groups);
+						final Object resolved = parameter.getResolver().resolve(context, this, event, groups);
 						//Regex matched but could not be resolved
 						// if optional then it's ok
 						if (resolved == null && !parameter.isOptional()) {

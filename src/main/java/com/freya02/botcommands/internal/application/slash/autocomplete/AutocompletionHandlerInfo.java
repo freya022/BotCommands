@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 public class AutocompletionHandlerInfo {
 	private static final Logger LOGGER = Logging.getLogger();
 
+	private final BContextImpl context;
 	private final Object autocompletionHandler;
 	private final Method method;
 
@@ -47,6 +48,7 @@ public class AutocompletionHandlerInfo {
 	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
 
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
+		this.context = context;
 		this.autocompletionHandler = autocompletionHandler;
 		this.method = method;
 
@@ -112,7 +114,7 @@ public class AutocompletionHandlerInfo {
 					//Don't throw if option mapping is not found, this is normal under autocompletion, only some options are sent
 				}
 
-				obj = parameter.getResolver().resolve(event, optionMapping);
+				obj = parameter.getResolver().resolve(context, slashCommand, event, optionMapping);
 
 				if (obj == null) {
 					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers

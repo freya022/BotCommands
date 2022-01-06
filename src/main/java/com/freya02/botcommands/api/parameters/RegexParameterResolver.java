@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public interface RegexParameterResolver {
 	@Nullable
-	Object resolve(MessageReceivedEvent event, String[] args);
+	Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String[] args);
 
 	@NotNull
 	Pattern getPattern();

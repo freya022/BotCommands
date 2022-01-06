@@ -223,7 +223,7 @@ public class ComponentListener extends ListenerAdapter {
 					final String arg = args[optionIndex];
 					optionIndex++;
 
-					obj = parameter.getResolver().resolve(event, arg);
+					obj = parameter.getResolver().resolve(context, descriptor, event, arg);
 
 					if (obj == null) {
 						LOGGER.warn("Component id '{}', tried to resolve '{}' with an option resolver {} on method {} but result is null",
