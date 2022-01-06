@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
@@ -50,13 +51,14 @@ public class SlashUtils {
 			final String name = optionNames.get(i - 1).getName();
 			final String description = optionNames.get(i - 1).getDescription();
 
-			final OptionType optionType = parameter.getResolver().getOptionType();
+			final SlashParameterResolver resolver = parameter.getResolver();
+			final OptionType optionType = resolver.getOptionType();
 			final OptionData data = new OptionData(optionType, name, description);
 
 			if (optionType == OptionType.CHANNEL) {
 				//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
 				// Otherwise set the channel types of the parameter, if available
-				if (parameter.getChannelTypes().isEmpty() && parameter.getResolver() instanceof AbstractChannelResolver channelResolver) {
+				if (parameter.getChannelTypes().isEmpty() && resolver instanceof AbstractChannelResolver channelResolver) {
 					data.setChannelTypes(channelResolver.getChannelType());
 				} else if (!parameter.getChannelTypes().isEmpty()) {
 					data.setChannelTypes(parameter.getChannelTypes());
@@ -78,15 +80,23 @@ public class SlashUtils {
 			}
 
 			if (optionType.canSupportChoices()) {
+				Collection<Command.Choice> choices = null;
+
 				//optionChoices might just be empty
 				// choices of the option might also be empty as an empty list might be generated
 				// do not add choices if it's empty, to not trigger checks
 				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+					choices = optionsChoices.get(i - 1);
+				} else if (!resolver.getPredefinedChoices().isEmpty()) {
+					choices = resolver.getPredefinedChoices();
+				}
+
+				if (choices != null) {
 					if (applicationOptionData.hasAutocompletion()) {
 						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
 					}
 
-					data.addChoices(optionsChoices.get(i - 1));
+					data.addChoices(choices);
 				}
 			}
 
