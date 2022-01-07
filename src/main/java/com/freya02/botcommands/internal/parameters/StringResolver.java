@@ -33,6 +33,7 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 	}
 
 	@Override
+	@NotNull
 	public Pattern getQuotedPattern() {
 		return Pattern.compile("\"(\\X+)\"");
 	}

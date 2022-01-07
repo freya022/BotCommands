@@ -10,6 +10,14 @@ import org.jetbrains.annotations.Nullable;
  * Interface which indicates this class can resolve parameters for buttons commands
  */
 public interface ComponentParameterResolver {
+	/**
+	 * Returns a resolved object from this component interaction
+	 *
+	 * @param context    The {@link BContext} of this bot
+	 * @param descriptor The component description of the component being executed
+	 * @param event      The event of this component interaction
+	 * @return The resolved option mapping
+	 */
 	@Nullable
 	Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg);
 }
