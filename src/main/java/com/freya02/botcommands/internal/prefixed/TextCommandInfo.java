@@ -106,12 +106,14 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	}
 
 	@Override
+	@NotNull
 	public MethodParameters<TextCommandParameter> getParameters() {
 		return parameters;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@NotNull
 	public List<? extends TextCommandParameter> getOptionParameters() {
 		return (List<? extends TextCommandParameter>) super.getOptionParameters();
 	}
@@ -163,12 +165,12 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 						}
 					}
 				} else {
-					objects.add(parameter.getCustomResolver().resolve(event));
+					objects.add(parameter.getCustomResolver().resolve(context, this, event));
 				}
 			}
 		} else {
 			for (TextCommandParameter parameter : parameters) {
-				objects.add(parameter.getCustomResolver().resolve(event));
+				objects.add(parameter.getCustomResolver().resolve(context, this, event));
 			}
 		}
 

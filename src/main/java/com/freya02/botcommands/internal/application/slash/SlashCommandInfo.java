@@ -34,7 +34,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	 */
 	private final String description;
 
-	private final Object instance;
 	private final MethodParameters<SlashCommandParameter> commandParameters;
 
 	/**
@@ -51,7 +50,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
-		this.instance = instance;
 		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, i) -> {
 			final Class<?> type = parameter.getType();
 
@@ -100,7 +98,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isOption()) {
 				String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
 				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
 				}
 
 				optionIndex++;
@@ -144,7 +142,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					return false;
 				}
 			} else {
-				obj = parameter.getCustomResolver().resolve(event);
+				obj = parameter.getCustomResolver().resolve(context, this, event);
 			}
 
 			//For some reason using an array list instead of a regular array
@@ -175,7 +173,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isOption()) {
 				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
 				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
 				}
 
 				optionIndex++;
@@ -190,12 +188,14 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Override
+	@NotNull
 	public MethodParameters<SlashCommandParameter> getParameters() {
 		return commandParameters;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@NotNull
 	public List<? extends SlashCommandParameter> getOptionParameters() {
 		return (List<? extends SlashCommandParameter>) super.getOptionParameters();
 	}

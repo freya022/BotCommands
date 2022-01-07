@@ -61,7 +61,7 @@ public class LocalizationData {
 			throw new IllegalArgumentException("Unknown localization prefix for class: " + info.getClass().getSimpleName());
 		}
 
-		final String qualifier = info.getCommandMethod().getName();
+		final String qualifier = info.getMethod().getName();
 
 		final StringJoiner pathJoiner = new StringJoiner("/");
 		pathJoiner.add(tryLocalize(bundle, info.getPath().getName(), prefix, qualifier, "name"));

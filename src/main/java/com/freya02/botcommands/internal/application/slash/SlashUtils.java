@@ -40,7 +40,7 @@ public class SlashUtils {
 		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().getOptionCount();
-		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
+		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getMethod()));
 
 		int i = 1;
 		for (SlashCommandParameter parameter : info.getParameters()) {
@@ -73,7 +73,7 @@ public class SlashUtils {
 
 			if (applicationOptionData.hasAutocompletion()) {
 				if (!optionType.canSupportChoices()) {
-					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " does not support autocompletion");
+					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " does not support autocompletion");
 				}
 
 				data.setAutoComplete(true);
@@ -93,7 +93,7 @@ public class SlashUtils {
 
 				if (choices != null) {
 					if (applicationOptionData.hasAutocompletion()) {
-						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " cannot have autocompletion and choices at the same time");
 					}
 
 					data.addChoices(choices);

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
@@ -19,7 +20,6 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -30,7 +30,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -370,7 +369,7 @@ public interface BContext {
 	 * @param function      Supplier function, may receive interaction events of any type
 	 * @param <T>           Type of the parameter
 	 */
-	<T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function);
+	<T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function);
 
 	/**
 	 * Returns the uncaught exception handler

@@ -78,7 +78,7 @@ public abstract class ApplicationCommandInfoMapView {
 					if (guild == null) return true;
 
 					if (info.isTestOnly()) { //Do not include commands in guilds not present in the test guild IDs
-						final TLongSet effectiveTestGuildIds = AnnotationUtils.getEffectiveTestGuildIds(context, info.getCommandMethod());
+						final TLongSet effectiveTestGuildIds = AnnotationUtils.getEffectiveTestGuildIds(context, info.getMethod());
 
 						if (!effectiveTestGuildIds.contains(guild.getIdLong())) {
 							return false;
