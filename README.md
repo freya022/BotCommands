@@ -4,7 +4,7 @@
 
 ## Notice
 
-Please use group id `com.github.freya022` and version `3fb771b619`, this is the context-menu branch of JDA
+Please use group id `com.github.freya022` and version `bfa053d60a`, this is the context-menu branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
@@ -13,8 +13,8 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
 
 * Automatic command registration
 * Text based commands, with 2 ways of working:
-  * More manual parsing, you have a tokenized message and you choose how to process the token
-  * Automatic parsing of the arguments, your method signature is translated into a command syntax, such as:
+  * More manual parsing, you have a tokenized message, and you choose how to process the tokens
+  * Automatic parsing of the arguments, your method signature is translated into a command syntax, for example:
     * Suppose the prefix is `!` and the command is `ban`
       ```java
       @JDATextCommand(name = "ban")
@@ -27,26 +27,27 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
       ```
     * Which means `!ban @someone 42 Foobar` should be valid
 * Application commands
-  * Slash commands with **automatic & customizable argument parsing** via `ParameterResolver` in the `parameters` package
+  * Slash commands with **automatic & customizable argument parsing** (see wiki to add parsers)
+    * Also supports choices, min/max values, channel types and autocompletion
   * Context menu commands (User / Message)
-  * They are **automatically registered on Discord on startup** if any changes are detected
+  * Application commands are **automatically registered on Discord on startup**
     * This also includes command privileges (permissions) 
   * These commands as well as their options and choices **can also be localized** (per-guild language)
 * A JDA **event waiter** with (multiple) preconditions, timeouts and consumers for every completion states 
-* Secure (as in random 64 char length ID from 81 chars) component (buttons/selection menus) IDs *with persistent and non-persistent storage*, **also capable of received additional arguments** the same way as slash commands do
-* Message parsers (see RichTextParser) and emoji resolvers (can turn :joy: into 😂)
-* Paginators and menus (using buttons !)
+* Secure and unique components (buttons / selection menus) IDs *with persistent and non-persistent storage*
+  * **They can also receive additional arguments** the same way as slash commands do
+* Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (can turn \:joy\: into 😂)
+* Paginators and menus of different types (using buttons !)
 * Flexible constructors for your commands and injectable fields
 
 Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
 
 ## Getting Started
-You are recommended to have some experience with Java and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
+You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
-[OpenJDK 11+](https://adoptopenjdk.net/) <br>
-An IDE which supports Maven projects (like IntelliJ) or install [Maven](https://maven.apache.org/download.cgi) manually <br>
-**Do not forget to add the Maven bin directory to your PATH environment variables**, if you choose not to use an IDE
+[OpenJDK 16+](https://adoptium.net/releases.html?variant=openjdk16&jvmVariant=hotspot) <br>
+An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it will be useful to gain time with Live Templates)
 
 ## Getting the library
 ### Installing with Jitpack
@@ -137,28 +138,13 @@ commandsBuilder.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 
 To add a prefix for text based commands, this will also disable ping-as-prefix
 
-<details>
-<summary>Optional - How to set a default embed</summary>
-
-The library uses a default embed for the `help` command and can also be requested in `BaseCommandEvent#getDefaultEmbed`<br>
-You can supply a default embed by doing something like this
-```java
-final SelfUser selfUser = jda.getSelfUser();
-EmbedBuilder builder = new EmbedBuilder();
-builder.setAuthor(selfUser.getName(), null, selfUser.getEffectiveAvatarUrl());
-
-final Supplier<EmbedBuilder> embedSupplier = () -> new EmbedBuilder(builder).setTimestamp(Instant.now());
-```
-
-You will then set the default embed later.
-</details>
-
-### Building the ListenerAdapter
+### Building the framework
 You can now build the framework
 ```java
-commandsBuilder
-    .setDefaultEmbedFunction(embedSupplier, () -> null) /* Optional, can replace the 2nd argument with an icon supplier and setting a footer icon's URL as "attachment://icon.jpg" */
-    .build(jda, "com.freya02.bot.commands"); /* This is the package name with contains all your Command(s) */
+commandsBuilder.build(
+    jda,                        // The JDA instance you just built 
+    "com.freya02.bot.commands"  // This is the package name with contains all your commands / handlers...
+); 
 ```
 
 ## How do I make commands ?
@@ -167,17 +153,22 @@ See the [wiki](https://github.com/freya022/BotCommands/wiki), you got a page for
 ## Some debugging tools
 
 - Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://github.com/freya022/BotCommands/wiki/Logging)
-- [CommandsBuilder#updateCommandsOnGuildIds](src/main/java/com/freya02/botcommands/CommandsBuilder.java) - Updates the slash commands only in these guild IDs, useful for testing things without using another token
+- There are also some switches in `DebugBuilder`, if you ever need them
+- To test your application commands you can use the `@Test` annotation
 
 ## Replacing help content
 
-You can disable the prefixed help command and/or the `/help` command, these methods are in CommandsBuilder, if you do disable prefixed help commands you need to supply your own implementation when commands are detected, but their syntax is invalid
+You can disable the prefixed help command, these methods are in `TextCommandsBuilder`, if you do disable prefixed help commands you need to supply your own implementation when commands are detected, but their syntax is invalid
 
 The provided implementation could just do nothing (such as `e -> {}`) if you want to just remove any form of help message
 
 ## Examples
 
 You can find example bots in the [examples](Examples) folder
+
+## Template bot
+
+To get started with the framework, you can also clone this repo and extract the `BotTemplate` folder and use it as a bot template, of course, be sure to replace the group id as well as the artifact name, as well as providing a valid config file
 
 ## Support
 
