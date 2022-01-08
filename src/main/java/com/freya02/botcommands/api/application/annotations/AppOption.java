@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.application.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.application.slash.annotations.*;
+import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +35,7 @@ public @interface AppOption {
 	 *
 	 * @return Name of the option
 	 */
+	@DiscordNamePattern
 	String name() default "";
 
 	/**
