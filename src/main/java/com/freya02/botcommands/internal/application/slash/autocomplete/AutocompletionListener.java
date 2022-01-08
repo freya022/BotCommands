@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -37,6 +38,7 @@ public class AutocompletionListener implements EventListener {
 		this.autocompletionHandlersMap = autocompletionHandlersMap;
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onEvent(@NotNull GenericEvent genericEvent) {
 		if (genericEvent instanceof CommandAutoCompleteInteractionEvent event) {
