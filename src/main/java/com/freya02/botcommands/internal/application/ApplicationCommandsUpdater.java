@@ -263,7 +263,6 @@ public class ApplicationCommandsUpdater {
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
 							subcommandData.addOptions(localizedMethodOptions);
 
-							LOGGER.warn("adding {} to {} : {}", localizedPath.getSubname(), groupData.getName(), info);
 							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
