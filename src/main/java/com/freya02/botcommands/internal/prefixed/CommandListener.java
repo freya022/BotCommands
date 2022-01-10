@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -99,6 +100,7 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		if (!event.isFromGuild())

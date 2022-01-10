@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -24,6 +25,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 		this.context = context;
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
 		LOGGER.trace("Trying to force update commands due to an unavailable guild becoming available");
@@ -31,6 +33,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 		tryUpdate(event.getGuild(), true);
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onGuildJoin(@NotNull GuildJoinEvent event) {
 		LOGGER.trace("Trying to force update commands due to a joined guild");
@@ -39,6 +42,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	}
 
 	//Use this as a mean to detect OAuth scope changes
+	@SubscribeEvent
 	@Override
 	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
 		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {

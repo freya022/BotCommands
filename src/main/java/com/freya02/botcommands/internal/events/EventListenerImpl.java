@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -52,6 +53,7 @@ class EventListenerImpl implements EventListener {
 		});
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
 		if (!(event instanceof final Event realEvent)) return;

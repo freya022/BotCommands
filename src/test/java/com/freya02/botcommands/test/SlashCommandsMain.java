@@ -20,6 +20,8 @@ public class SlashCommandsMain {
 		try {
 			final Config config = Config.readConfig();
 
+//			debug();
+
 			final JDA jda = JDABuilder.createLight(config.getToken())
 					.setActivity(Activity.playing("application commands"))
 					.build()
@@ -84,4 +86,23 @@ public class SlashCommandsMain {
 			System.exit(-2);
 		}
 	}
+
+//	private static void debug() {
+//		final SlashCommandData baseCommand = Commands.slash("name", "desc");
+//		final SubcommandGroupData groupData = new SubcommandGroupData("group", "group desc");
+//		final SubcommandData sub1 = new SubcommandData("sub", "desc");
+//
+//		baseCommand.addSubcommandGroups(groupData);
+//
+//		groupData.addSubcommands(sub1);
+//
+//		sub1.addOptions(new OptionData(OptionType.STRING, "opt_name", "opt_desc"));
+//
+//		final SubcommandData sub2 = new SubcommandData("sub2", "desc2");
+//		sub2.addOptions(new OptionData(OptionType.STRING, "opt_name2", "opt_desc2"));
+//
+//		groupData.addSubcommands(sub2);
+//
+//		System.out.println();
+//	}
 }
