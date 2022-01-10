@@ -204,6 +204,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> a instanceof SlashCommandInfo)
 				.map(a -> (SlashCommandInfo) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
@@ -262,6 +263,7 @@ public class ApplicationCommandsUpdater {
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
 							subcommandData.addOptions(localizedMethodOptions);
 
+							LOGGER.warn("adding {} to {} : {}", localizedPath.getSubname(), groupData.getName(), info);
 							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
@@ -293,6 +295,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
