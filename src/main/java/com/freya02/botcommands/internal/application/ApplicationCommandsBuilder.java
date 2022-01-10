@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -39,11 +40,13 @@ public final class ApplicationCommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final ExecutorService es = Executors.newFixedThreadPool(Math.min(4, Runtime.getRuntime().availableProcessors()));
 	private final BContextImpl context;
+	private final List<Long> slashGuildIds;
 
 	private final Map<Long, ReentrantLock> lockMap = Collections.synchronizedMap(new HashMap<>());
 
-	public ApplicationCommandsBuilder(@NotNull BContextImpl context) {
+	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
+		this.slashGuildIds = slashGuildIds;
 		this.context.setSlashCommandsBuilder(this);
 	}
 
@@ -173,6 +176,8 @@ public final class ApplicationCommandsBuilder {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
 
 		for (Guild guild : guilds) {
+			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
+
 			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
 		}
 
@@ -181,6 +186,9 @@ public final class ApplicationCommandsBuilder {
 
 	@NotNull
 	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+		if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong()))
+			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false, false));
+
 		return CompletableFuture.supplyAsync(() -> {
 			final ReentrantLock lock;
 			synchronized (lockMap) {

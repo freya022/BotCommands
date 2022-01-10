@@ -270,7 +270,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, classes).build(jda);
+			new CommandsBuilderImpl(context, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
