@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		this.context = context;
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
 		LOGGER.trace("Received user command: {}", event.getName());
@@ -67,6 +69,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
 		LOGGER.trace("Received message command: {}", event.getName());
@@ -86,6 +89,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
 		LOGGER.trace("Received slash command: {}", reconstructCommand(event));

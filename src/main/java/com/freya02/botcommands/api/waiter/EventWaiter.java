@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.waiter.WaitingEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -138,6 +139,7 @@ public class EventWaiter implements EventListener {
 	}
 
 	@SuppressWarnings("unchecked")
+	@SubscribeEvent
 	@Override
 	public void onEvent(@NotNull GenericEvent event) {
 		final List<WaitingEvent<? extends GenericEvent>> waitingEvents = waitingMap.get(event.getClass());

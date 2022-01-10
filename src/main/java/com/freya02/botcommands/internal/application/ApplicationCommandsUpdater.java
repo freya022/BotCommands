@@ -42,6 +42,7 @@ public class ApplicationCommandsUpdater {
 	private final Path privilegesCachePath;
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
+	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
 
 	private boolean updatedCommands = false;
 
@@ -271,33 +272,30 @@ public class ApplicationCommandsUpdater {
 
 						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
 
+						final boolean isDefaultEnabled = isDefaultEnabled(info);
+
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
 							final SlashCommandData rightCommand = Commands.slash(localizedPath.getName(), description);
 							map.put(Command.Type.SLASH, localizedPath, rightCommand);
 
 							rightCommand.addOptions(localizedMethodOptions);
-
-							if (info.isOwnerRequired()) {
-								rightCommand.setDefaultEnabled(false);
-							}
+							rightCommand.setDefaultEnabled(isDefaultEnabled);
 						} else if (localizedPath.getNameCount() == 2) {
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
 
 							final SlashCommandData commandData = (SlashCommandData) map.computeIfAbsent(Command.Type.SLASH, localizedPath, x -> {
 								final SlashCommandData tmpData = Commands.slash(localizedPath.getName(), "No description (base name)");
-								if (info.isOwnerRequired()) {
-									tmpData.setDefaultEnabled(false);
-								}
+								tmpData.setDefaultEnabled(isDefaultEnabled);
 
 								return tmpData;
 							});
 
 							//Subcommand of a command
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							commandData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							commandData.addSubcommands(subcommandData);
 						} else if (localizedPath.getNameCount() == 3) {
 							Checks.notNull(localizedPath.getGroup(), "Command group name");
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
@@ -305,17 +303,15 @@ public class ApplicationCommandsUpdater {
 							final SubcommandGroupData groupData = getSubcommandGroup(Command.Type.SLASH, localizedPath, x -> {
 								final SlashCommandData commandData = Commands.slash(localizedPath.getName(), "No description (base name)");
 
-								if (info.isOwnerRequired()) {
-									commandData.setDefaultEnabled(false);
-								}
+								commandData.setDefaultEnabled(isDefaultEnabled);
 
 								return commandData;
 							});
 
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							groupData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
@@ -359,14 +355,16 @@ public class ApplicationCommandsUpdater {
 
 						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
 
+						final boolean isDefaultEnabled = isDefaultEnabled(info);
+
 						if (localizedPath.getNameCount() == 1) {
 							//Standard command
 							final CommandData rightCommand = Commands.context(type, localizedPath.getName());
 							map.put(type, localizedPath, rightCommand);
 
-							if (info.isOwnerRequired()) {
-								rightCommand.setDefaultEnabled(false);
+							rightCommand.setDefaultEnabled(isDefaultEnabled);
 
+							if (info.isOwnerRequired()) {
 								ownerOnlyCommands.add(notLocalizedPath.getName()); //Must be non-localized name
 							}
 						} else {
@@ -378,6 +376,18 @@ public class ApplicationCommandsUpdater {
 						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + notLocalizedPath, e);
 					}
 				});
+	}
+
+	private boolean isDefaultEnabled(ApplicationCommandInfo info) {
+		//Global commands do not get assigned permissions
+		// This is currently a BC restriction
+		if (guild == null) return true; //TODO see when discord adds localisation
+
+		//If owner only, don't default enable
+		if (info.isOwnerRequired()) return false;
+
+		//If it has no privileges then it's enabled
+		return getCommandPrivileges(guild, info).isEmpty();
 	}
 
 	@NotNull
@@ -474,16 +484,15 @@ public class ApplicationCommandsUpdater {
 
 		final SlashCommandData data = (SlashCommandData) map.computeIfAbsent(type, path, baseCommandSupplier);
 
-		return data.getSubcommandGroups()
-				.stream()
-				.filter(g -> g.getName().equals(path.getGroup()))
-				.findAny()
-				.orElseGet(() -> {
-					final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
+		final CommandPath parent = path.getParent();
+		if (parent == null) throw new IllegalStateException("A command path with less than 3 components was passed to #getSubcommandGroup");
 
-					data.addSubcommandGroups(groupData);
+		return subcommandGroupDataMap.computeIfAbsent(parent.getFullPath(), s -> {
+			final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
 
-					return groupData;
-				});
+			data.addSubcommandGroups(groupData);
+
+			return groupData;
+		});
 	}
 }
