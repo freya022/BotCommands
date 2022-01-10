@@ -40,6 +40,7 @@ public class ApplicationCommandsUpdater {
 	private final Path privilegesCachePath;
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
+	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
 
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
@@ -243,9 +244,9 @@ public class ApplicationCommandsUpdater {
 
 							//Subcommand of a command
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							commandData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							commandData.addSubcommands(subcommandData);
 						} else if (localizedPath.getNameCount() == 3) {
 							Checks.notNull(localizedPath.getGroup(), "Command group name");
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
@@ -259,9 +260,9 @@ public class ApplicationCommandsUpdater {
 							});
 
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							groupData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
@@ -433,16 +434,15 @@ public class ApplicationCommandsUpdater {
 
 		final SlashCommandData data = (SlashCommandData) map.computeIfAbsent(type, path, baseCommandSupplier);
 
-		return data.getSubcommandGroups()
-				.stream()
-				.filter(g -> g.getName().equals(path.getGroup()))
-				.findAny()
-				.orElseGet(() -> {
-					final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
+		final CommandPath parent = path.getParent();
+		if (parent == null) throw new IllegalStateException("A command path with less than 3 components was passed to #getSubcommandGroup");
 
-					data.addSubcommandGroups(groupData);
+		return subcommandGroupDataMap.computeIfAbsent(parent.getFullPath(), s -> {
+			final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
 
-					return groupData;
-				});
+			data.addSubcommandGroups(groupData);
+
+			return groupData;
+		});
 	}
 }
