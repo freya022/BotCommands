@@ -253,6 +253,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> a instanceof SlashCommandInfo)
 				.map(a -> (SlashCommandInfo) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
@@ -342,6 +343,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
