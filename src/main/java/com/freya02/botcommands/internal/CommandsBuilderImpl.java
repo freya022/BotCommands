@@ -272,11 +272,11 @@ public final class CommandsBuilderImpl {
 
 		context.registerConstructorParameter(BContext.class, ignored -> context);
 		context.registerCommandDependency(BContext.class, () -> context);
-		context.registerCustomResolver(BContext.class, ignored -> context);
+		context.registerCustomResolver(BContext.class, (x, y, ignored) -> context);
 
 		context.registerConstructorParameter(JDA.class, ignored -> jda);
 		context.registerCommandDependency(JDA.class, () -> jda);
-		context.registerCustomResolver(JDA.class, ignored -> jda);
+		context.registerCustomResolver(JDA.class, (x, y, ignored) -> jda);
 
 		context.setDefaultMessageProvider(new Function<>() {
 			private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();

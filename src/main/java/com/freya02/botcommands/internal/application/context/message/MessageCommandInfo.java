@@ -9,24 +9,21 @@ import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 public class MessageCommandInfo extends ApplicationCommandInfo {
-	private final Object instance;
 	private final MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> commandParameters;
 
 	public MessageCommandInfo(BContext context, ApplicationCommand instance, Method method) {
 		super(context, instance, method.getAnnotation(JDAMessageCommand.class),
 				method,
 				method.getAnnotation(JDAMessageCommand.class).name());
-
-		this.instance = instance;
 
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		
@@ -54,12 +51,12 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			ContextCommandParameter<MessageContextParameterResolver> parameter = commandParameters.get(i);
 
 			if (parameter.isOption()) {
-				objects[i + 1] = parameter.getResolver().resolve(event);
+				objects[i + 1] = parameter.getResolver().resolve(context, this, event);
 
 				//no need to check for unresolved parameters,
 				// it is impossible to have other arg types other than Message (and custom resolvers)
 			} else {
-				objects[i + 1] = parameter.getCustomResolver().resolve(event);
+				objects[i + 1] = parameter.getCustomResolver().resolve(context, this, event);
 			}
 		}
 
@@ -71,7 +68,8 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Override
-	public MethodParameters<? extends ApplicationCommandParameter<?>> getParameters() {
+	@NotNull
+	public MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> getParameters() {
 		return commandParameters;
 	}
 }

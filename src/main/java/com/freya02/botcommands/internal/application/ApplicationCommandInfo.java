@@ -46,10 +46,12 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 		return testOnly;
 	}
 
+	@NotNull
 	public abstract MethodParameters<? extends ApplicationCommandParameter<?>> getParameters();
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@NotNull
 	public List<? extends ApplicationCommandParameter<?>> getOptionParameters() {
 		return (List<? extends ApplicationCommandParameter<?>>) super.getOptionParameters();
 	}

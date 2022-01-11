@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import net.dv8tion.jda.api.Permission;
@@ -11,15 +10,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.internal.utils.AnnotationUtils.*;
 
 /**
  * @param <T> Command instance type
  */
-public abstract class AbstractCommandInfo<T> extends Cooldownable {
+public abstract class AbstractCommandInfo<T> extends Cooldownable implements ExecutableInteractionInfo {
 	private final T instance;
 
 	/** This is NOT localized */
@@ -58,9 +55,22 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		this.botPermissions = getEffectiveBotPermissions(commandMethod);
 	}
 
+	@Override
 	@NotNull
 	public T getInstance() {
 		return instance;
+	}
+
+	@Override
+	@NotNull
+	public Method getMethod() {
+		return commandMethod;
+	}
+
+	@Override
+	@NotNull
+	public MethodRunner getMethodRunner() {
+		return methodRunner;
 	}
 
 	/** This is NOT localized */
@@ -76,22 +86,8 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable {
 		return botPermissions;
 	}
 
-	public Method getCommandMethod() {
-		return commandMethod;
-	}
-
-	public MethodRunner getMethodRunner() {
-		return methodRunner;
-	}
-
 	public boolean isOwnerRequired() {
 		return ownerRequired;
-	}
-
-	public abstract MethodParameters<? extends CommandParameter<?>> getParameters();
-
-	public List<? extends CommandParameter<?>> getOptionParameters() {
-		return getParameters().stream().filter(CommandParameter::isOption).collect(Collectors.toList());
 	}
 
 	@Nullable

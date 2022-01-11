@@ -331,7 +331,7 @@ public class ApplicationCommandsUpdater {
 							}
 						}
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getCommandMethod()), e);
+						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getMethod()), e);
 					}
 				});
 	}

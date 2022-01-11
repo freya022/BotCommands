@@ -1,9 +1,13 @@
 package com.freya02.botcommands.internal.parameters.channels;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -11,6 +15,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +44,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel> extends Pa
 
 	@Override
 	@Nullable
-	public Object resolve(MessageReceivedEvent event, String[] args) {
+	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return channelResolver.apply(event.getGuild(), args[0]);
 	}
 
@@ -56,14 +61,20 @@ public abstract class AbstractChannelResolver<T extends GuildChannel> extends Pa
 	}
 
 	@Override
+	@NotNull
+	public OptionType getOptionType() {
+		return OptionType.CHANNEL;
+	}
+
+	@Override
 	@Nullable
-	public Object resolve(CommandInteractionPayload event, OptionMapping optionMapping) {
+	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsGuildChannel();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
+	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a guild from DMs");
 
 		return channelResolver.apply(event.getGuild(), arg);

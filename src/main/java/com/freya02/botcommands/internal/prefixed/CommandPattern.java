@@ -36,7 +36,7 @@ public class CommandPattern {
 		// if this fails then the pattern (and the command) is deemed too complex to be used
 		final String exampleStr = exampleBuilder.toString().trim();
 		if (!pattern.matcher(exampleStr).matches())
-			throw new IllegalArgumentException("Failed building pattern for method " + Utils.formatMethodShort(commandInfo.getCommandMethod()) + " with pattern '" + pattern + "' and example '" + exampleStr + "'\n" +
+			throw new IllegalArgumentException("Failed building pattern for method " + Utils.formatMethodShort(commandInfo.getMethod()) + " with pattern '" + pattern + "' and example '" + exampleStr + "'\n" +
 					"You can try to either rearrange the arguments as to make a parsable command, especially moving parameters which are parsed from strings, or, use slash commands");
 
 		return pattern;

@@ -6,9 +6,12 @@ import com.freya02.botcommands.api.application.slash.autocomplete.Autocompletion
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
+import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
@@ -31,11 +34,13 @@ import java.util.stream.Collectors;
 //      Choice -> keep the same choice
 //      Object -> Transformer -> Choice
 @SuppressWarnings("unchecked")
-public class AutocompletionHandlerInfo {
+public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	private static final Logger LOGGER = Logging.getLogger();
 
+	private final BContextImpl context;
 	private final Object autocompletionHandler;
 	private final Method method;
+	private final MethodRunner methodRunner;
 
 	private final String handlerName;
 	private final boolean showUserInput;
@@ -47,8 +52,10 @@ public class AutocompletionHandlerInfo {
 	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
 
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
+		this.context = context;
 		this.autocompletionHandler = autocompletionHandler;
 		this.method = method;
+		this.methodRunner = context.getMethodRunnerFactory().make(autocompletionHandler, method);
 
 		final AutocompletionHandler annotation = method.getAnnotation(AutocompletionHandler.class);
 		final AutocompletionMode autocompletionMode = annotation.mode();
@@ -112,7 +119,7 @@ public class AutocompletionHandlerInfo {
 					//Don't throw if option mapping is not found, this is normal under autocompletion, only some options are sent
 				}
 
-				obj = parameter.getResolver().resolve(event, optionMapping);
+				obj = parameter.getResolver().resolve(context, slashCommand, event, optionMapping);
 
 				if (obj == null) {
 					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
@@ -127,7 +134,7 @@ public class AutocompletionHandlerInfo {
 					return false;
 				}
 			} else {
-				obj = parameter.getCustomResolver().resolve(event);
+				obj = parameter.getCustomResolver().resolve(context, this, event);
 			}
 
 			//For some reason using an array list instead of a regular array
@@ -249,8 +256,28 @@ public class AutocompletionHandlerInfo {
 		return actualChoices;
 	}
 
+	@Override
+	@NotNull
 	public Method getMethod() {
 		return method;
+	}
+
+	@Override
+	@NotNull
+	public MethodRunner getMethodRunner() {
+		return methodRunner;
+	}
+
+	@Override
+	@NotNull
+	public MethodParameters<? extends CommandParameter<?>> getParameters() {
+		return autocompleteParameters;
+	}
+
+	@Override
+	@NotNull
+	public Object getInstance() {
+		return autocompletionHandler;
 	}
 
 	public void checkParameters(SlashCommandInfo info) {
@@ -268,7 +295,7 @@ public class AutocompletionHandlerInfo {
 				}
 			}
 
-			throw new IllegalArgumentException("Couldn't find parameter named %s in slash command %s".formatted(autocompleteParameter.getApplicationOptionData().getEffectiveName(), Utils.formatMethodShort(info.getCommandMethod())));
+			throw new IllegalArgumentException("Couldn't find parameter named %s in slash command %s".formatted(autocompleteParameter.getApplicationOptionData().getEffectiveName(), Utils.formatMethodShort(info.getMethod())));
 		}
 	}
 
