@@ -23,7 +23,11 @@ public class Usability {
 		final NSFWState nsfwState = cmdInfo.getNSFWState();
 		if (nsfwState == null) return;
 
-		//The command is indeed marked NSFW, but where ?
+		//The command is indeed marked NSFW, but where is the command ran ?
+
+		if (msgChannel instanceof ThreadChannel threadChannel) {
+			msgChannel = threadChannel.getParentMessageChannel();
+		}
 
 		if (msgChannel instanceof BaseGuildMessageChannel channel) {
 			//If guild NSFW is not enabled, and we are in a guild channel
