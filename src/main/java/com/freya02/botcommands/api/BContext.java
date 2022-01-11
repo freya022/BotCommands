@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
@@ -343,10 +344,11 @@ public interface BContext {
 	 *
 	 * @param guilds Iterable collection of the guilds to update
 	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
 	@NotNull
-	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
 
 	/**
 	 * Updates the application commands and their permissions in the specified guild <br><br>
@@ -359,10 +361,11 @@ public interface BContext {
 	 *
 	 * @param guild The guild which needs to be updated
 	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
 	 */
 	@NotNull
-	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force);
+	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)

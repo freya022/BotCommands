@@ -53,6 +53,7 @@ public class SlashCommandsMain {
 								return !isDoNotRun;
 							})
 							.addTestGuilds(config.getTestGuildId())
+//							.enableOnlineAppCommandCheck()
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
