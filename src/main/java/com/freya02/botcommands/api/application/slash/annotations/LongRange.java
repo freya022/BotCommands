@@ -14,12 +14,12 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 public @interface LongRange {
 	/**
-	 * @return The minimum value of this parameter
+	 * @return The minimum value of this parameter (included)
 	 */
-	double from();
+	long from();
 
 	/**
-	 * @return The maximum value of this parameter
+	 * @return The maximum value of this parameter  (included)
 	 */
-	double to();
+	long to();
 }
