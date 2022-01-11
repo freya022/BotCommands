@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
+import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
@@ -27,7 +28,6 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -61,6 +61,7 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
+	private boolean onlineAppCommandCheckEnabled;
 
 	private final TLongSet testGuildIds = TCollections.synchronizedSet(new TLongHashSet());
 
@@ -305,9 +306,9 @@ public class BContextImpl implements BContext {
 			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
 				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
 						path,
-						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						Utils.formatMethodShort(commandInfo.getMethod()),
 						commandPath,
-						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+						Utils.formatMethodShort(mapInfo.getMethod())));
 			}
 		}
 
@@ -318,9 +319,9 @@ public class BContextImpl implements BContext {
 			if (mapInfo != null) {
 				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
 						path,
-						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						Utils.formatMethodShort(commandInfo.getMethod()),
 						p,
-						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+						Utils.formatMethodShort(mapInfo.getMethod())));
 			}
 		} while ((p = p.getParent()) != null);
 
@@ -335,8 +336,8 @@ public class BContextImpl implements BContext {
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
 					path,
-					Utils.formatMethodShort(oldCmd.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod())));
+					Utils.formatMethodShort(oldCmd.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
 	}
 
@@ -348,8 +349,8 @@ public class BContextImpl implements BContext {
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
 					path,
-					Utils.formatMethodShort(oldCmd.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod())));
+					Utils.formatMethodShort(oldCmd.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
 	}
 
@@ -360,8 +361,8 @@ public class BContextImpl implements BContext {
 		final ApplicationCommandInfo oldVal = getApplicationCommandInfoMap().put(type, path, commandInfo);
 		if (oldVal != commandInfo && oldVal != null) {
 			throw new IllegalStateException(String.format("Tried to add a localized application command path but one already exists and isn't from the same command: %s and %s, path: %s",
-					Utils.formatMethodShort(oldVal.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod()),
+					Utils.formatMethodShort(oldVal.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod()),
 					path));
 		}
 	}
@@ -505,14 +506,14 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false, onlineCheck);
 	}
 
 	@Override
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force);
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force, onlineCheck);
 	}
 
 	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
@@ -520,7 +521,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public <T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+	public <T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
 		ParameterResolvers.register(new CustomResolver(parameterType, function));
 	}
 
@@ -585,5 +586,13 @@ public class BContextImpl implements BContext {
 
 	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
 		autocompletionTransformers.put(type, autocompletionTransformer);
+	}
+
+	public boolean isOnlineAppCommandCheckEnabled() {
+		return onlineAppCommandCheckEnabled;
+	}
+
+	public void enableOnlineAppCommandCheck() {
+		this.onlineAppCommandCheckEnabled = true;
 	}
 }

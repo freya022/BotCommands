@@ -8,13 +8,11 @@ import com.freya02.botcommands.api.application.slash.autocomplete.Autocompletion
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ExtensionsBuilder {
@@ -96,7 +94,7 @@ public class ExtensionsBuilder {
 	 * @param <T>           Type of the parameter
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
 		if (ParameterResolvers.exists(parameterType))
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
 

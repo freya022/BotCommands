@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -20,7 +21,10 @@ public class SlashCommandsMain {
 		try {
 			final Config config = Config.readConfig();
 
+//			debug();
+
 			final JDA jda = JDABuilder.createLight(config.getToken())
+					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.setActivity(Activity.playing("application commands"))
 					.build()
 					.awaitReady();
@@ -28,7 +32,7 @@ public class SlashCommandsMain {
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
-							.addTextFilter(data -> data.event().getChannel().getIdLong() != 722891685755093076L)
+							.addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L || data.event().getChannel().getIdLong() == 930384760298164235L)
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
@@ -49,6 +53,7 @@ public class SlashCommandsMain {
 								return !isDoNotRun;
 							})
 							.addTestGuilds(config.getTestGuildId())
+//							.enableOnlineAppCommandCheck()
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
@@ -84,4 +89,23 @@ public class SlashCommandsMain {
 			System.exit(-2);
 		}
 	}
+
+//	private static void debug() {
+//		final SlashCommandData baseCommand = Commands.slash("name", "desc");
+//		final SubcommandGroupData groupData = new SubcommandGroupData("group", "group desc");
+//		final SubcommandData sub1 = new SubcommandData("sub", "desc");
+//
+//		baseCommand.addSubcommandGroups(groupData);
+//
+//		groupData.addSubcommands(sub1);
+//
+//		sub1.addOptions(new OptionData(OptionType.STRING, "opt_name", "opt_desc"));
+//
+//		final SubcommandData sub2 = new SubcommandData("sub2", "desc2");
+//		sub2.addOptions(new OptionData(OptionType.STRING, "opt_name2", "opt_desc2"));
+//
+//		groupData.addSubcommands(sub2);
+//
+//		System.out.println();
+//	}
 }

@@ -9,25 +9,22 @@ import com.freya02.botcommands.api.parameters.UserContextParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 public class UserCommandInfo extends ApplicationCommandInfo {
-	private final Object instance;
 	private final MethodParameters<ContextCommandParameter<UserContextParameterResolver>> commandParameters;
 
 	public UserCommandInfo(BContext context, ApplicationCommand instance, Method method) {
 		super(context, instance, method.getAnnotation(JDAUserCommand.class),
 				method,
 				method.getAnnotation(JDAUserCommand.class).name());
-
-		this.instance = instance;
 
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		
@@ -62,11 +59,11 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 			ContextCommandParameter<UserContextParameterResolver> parameter = commandParameters.get(i);
 
 			if (parameter.isOption()) {
-				objects[i + 1] = parameter.getResolver().resolve(event);
+				objects[i + 1] = parameter.getResolver().resolve(context, this, event);
 				//no need to check for unresolved parameters,
 				// it is impossible to have other arg types other than User (and custom resolvers)
 			} else {
-				objects[i + 1] = parameter.getCustomResolver().resolve(event);
+				objects[i + 1] = parameter.getCustomResolver().resolve(context, this, event);
 			}
 		}
 
@@ -78,7 +75,8 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Override
-	public MethodParameters<? extends ApplicationCommandParameter<?>> getParameters() {
+	@NotNull
+	public MethodParameters<ContextCommandParameter<UserContextParameterResolver>> getParameters() {
 		return commandParameters;
 	}
 }

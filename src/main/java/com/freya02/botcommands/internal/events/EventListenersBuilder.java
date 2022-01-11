@@ -2,7 +2,10 @@ package com.freya02.botcommands.internal.events;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.application.CommandParameter;
+import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -120,13 +123,16 @@ public class EventListenersBuilder {
 	private EventConsumer getParametrizedEventListener(Object eventListener, Method method) {
 		final MethodParameters<EventListenerParameter> parameters = MethodParameters.of(context, method, EventListenerParameter::new);
 
+		final MethodRunner methodRunner = context.getMethodRunnerFactory().make(eventListener, method);
+		final var executableInteractionInfo = new EventListenerExecutableInteractionInfo(method, methodRunner, parameters, eventListener);
+
 		return event -> {
 			List<Object> objects = new ArrayList<>(parameters.size() + 1);
 
 			objects.add(event);
 
 			for (final EventListenerParameter parameter : parameters) {
-				final Object obj = parameter.getCustomResolver().resolve(event);
+				final Object obj = parameter.getCustomResolver().resolve(context, executableInteractionInfo, event);
 
 				//For some reason using an array list instead of a regular array
 				// magically unboxes primitives when passed to Method#invoke
@@ -163,5 +169,35 @@ public class EventListenersBuilder {
 
 	public void postProcess() {
 		context.addEventListeners(new EventListenerImpl(context, eventListenersMap));
+	}
+
+	private record EventListenerExecutableInteractionInfo(Method method,
+	                                                      MethodRunner methodRunner,
+	                                                      MethodParameters<EventListenerParameter> parameters,
+	                                                      Object eventListener) implements ExecutableInteractionInfo {
+
+		@Override
+		@NotNull
+		public Method getMethod() {
+			return method;
+		}
+
+		@Override
+		@NotNull
+		public MethodRunner getMethodRunner() {
+			return methodRunner;
+		}
+
+		@Override
+		@NotNull
+		public MethodParameters<? extends CommandParameter<?>> getParameters() {
+			return parameters;
+		}
+
+		@Override
+		@NotNull
+		public Object getInstance() {
+			return eventListener;
+		}
 	}
 }

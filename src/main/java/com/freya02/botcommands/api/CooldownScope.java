@@ -2,7 +2,7 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.Cooldown;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 
 /**
  * <p>Provides cooldown scopes for executed commands</p>
@@ -13,6 +13,6 @@ public enum CooldownScope {
     USER,
     /** Enables cooldown for the {@linkplain Guild guild} the command got called in */
     GUILD,
-    /** Enables cooldown for the {@linkplain TextChannel TextChannel} the command got called in */
+    /** Enables cooldown for the {@linkplain GuildMessageChannel} the command got called in */
     CHANNEL
 }

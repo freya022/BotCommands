@@ -2,14 +2,15 @@ package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.parameters.ParameterResolvers;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
-import com.freya02.botcommands.internal.parameters.channels.AbstractChannelResolver;
+import com.freya02.botcommands.internal.parameters.channels.ChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -40,71 +41,65 @@ public class SlashUtils {
 		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().getOptionCount();
-		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
+		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getMethod()));
 
 		int i = 1;
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
-			final Class<?> boxedType = parameter.getBoxedType();
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = optionNames.get(i - 1).getName();
 			final String description = optionNames.get(i - 1).getDescription();
 
-			final OptionData data;
-			if (boxedType == User.class || boxedType == Member.class) {
-				data = new OptionData(OptionType.USER, name, description);
-			} else if (boxedType == Role.class) {
-				data = new OptionData(OptionType.ROLE, name, description);
-			} else if (GuildChannel.class.isAssignableFrom(boxedType)) {
-				data = new OptionData(OptionType.CHANNEL, name, description);
+			final SlashParameterResolver resolver = parameter.getResolver();
+			final OptionType optionType = resolver.getOptionType();
+			final OptionData data = new OptionData(optionType, name, description);
 
-				if (parameter.getChannelTypes().isEmpty()) {
-					final AbstractChannelResolver<?> resolver = (AbstractChannelResolver<?>) parameter.getResolver();
+			if (optionType == OptionType.CHANNEL) {
+				//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
+				// Otherwise set the channel types of the parameter, if available
+				if (parameter.getChannelTypes().isEmpty() && resolver instanceof ChannelResolver channelResolver) {
+					final EnumSet<ChannelType> channelTypes = channelResolver.getChannelTypes();
 
-					data.setChannelTypes(resolver.getChannelType());
-				} else {
+					data.setChannelTypes(channelTypes);
+				} else if (!parameter.getChannelTypes().isEmpty()) {
 					data.setChannelTypes(parameter.getChannelTypes());
 				}
-			} else if (boxedType == IMentionable.class) {
-				data = new OptionData(OptionType.MENTIONABLE, name, description);
-			} else if (boxedType == Boolean.class) {
-				data = new OptionData(OptionType.BOOLEAN, name, description);
-			} else if (boxedType == Long.class) {
-				data = new OptionData(OptionType.INTEGER, name, description);
-
+			} else if (optionType == OptionType.INTEGER) {
 				data.setMinValue(parameter.getMinValue().longValue());
 				data.setMaxValue(parameter.getMaxValue().longValue());
-			} else if (boxedType == Double.class) {
-				data = new OptionData(OptionType.NUMBER, name, description);
-
+			} else if (optionType == OptionType.NUMBER) {
 				data.setMinValue(parameter.getMinValue().doubleValue());
 				data.setMaxValue(parameter.getMaxValue().doubleValue());
-			} else if (ParameterResolvers.exists(boxedType)) {
-				data = new OptionData(OptionType.STRING, name, description);
-			} else {
-				throw new IllegalArgumentException("Unknown slash command option: " + boxedType.getName());
 			}
 
 			if (applicationOptionData.hasAutocompletion()) {
-				if (!data.getType().canSupportChoices()) {
-					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " does not support autocompletion");
+				if (!optionType.canSupportChoices()) {
+					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " does not support autocompletion");
 				}
 
 				data.setAutoComplete(true);
 			}
 
-			if (data.getType().canSupportChoices()) {
+			if (optionType.canSupportChoices()) {
+				Collection<Command.Choice> choices = null;
+
 				//optionChoices might just be empty
 				// choices of the option might also be empty as an empty list might be generated
 				// do not add choices if it's empty, to not trigger checks
 				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+					choices = optionsChoices.get(i - 1);
+				} else if (!resolver.getPredefinedChoices().isEmpty()) {
+					choices = resolver.getPredefinedChoices();
+				}
+
+				if (choices != null) {
 					if (applicationOptionData.hasAutocompletion()) {
-						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " cannot have autocompletion and choices at the same time");
 					}
 
-					data.addChoices(optionsChoices.get(i - 1));
+					data.addChoices(choices);
 				}
 			}
 

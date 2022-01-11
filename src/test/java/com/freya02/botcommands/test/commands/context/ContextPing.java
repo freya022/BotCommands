@@ -4,15 +4,15 @@ import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.application.context.user.GlobalUserEvent;
+import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 
 public class ContextPing extends ApplicationCommand {
 	@RequireOwner
-	@JDAUserCommand(guildOnly = false, name = "Get pinged")
-	public void ping(GlobalUserEvent event, @AppOption User target) {
+	@JDAUserCommand(name = "Get pinged")
+	public void ping(GuildUserEvent event, @AppOption User target) {
 		target.openPrivateChannel().queue(p -> p.sendMessage("Get pinged, courtesy of " + event.getUser().getAsMention())
 				.queue(msg -> {
 					event.reply("This dood got pinged").setEphemeral(true).queue();

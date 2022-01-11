@@ -106,12 +106,14 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	}
 
 	@Override
+	@NotNull
 	public MethodParameters<TextCommandParameter> getParameters() {
 		return parameters;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@NotNull
 	public List<? extends TextCommandParameter> getOptionParameters() {
 		return (List<? extends TextCommandParameter>) super.getOptionParameters();
 	}
@@ -140,7 +142,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 					}
 
 					if (found == groupCount) { //Found all the groups
-						final Object resolved = parameter.getResolver().resolve(event, groups);
+						final Object resolved = parameter.getResolver().resolve(context, this, event, groups);
 						//Regex matched but could not be resolved
 						// if optional then it's ok
 						if (resolved == null && !parameter.isOptional()) {
@@ -163,12 +165,12 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 						}
 					}
 				} else {
-					objects.add(parameter.getCustomResolver().resolve(event));
+					objects.add(parameter.getCustomResolver().resolve(context, this, event));
 				}
 			}
 		} else {
 			for (TextCommandParameter parameter : parameters) {
-				objects.add(parameter.getCustomResolver().resolve(event));
+				objects.add(parameter.getCustomResolver().resolve(context, this, event));
 			}
 		}
 

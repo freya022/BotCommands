@@ -5,7 +5,9 @@ import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
@@ -19,6 +21,7 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +33,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -230,7 +232,7 @@ public interface BContext {
 	 *
 	 * <p>
 	 * <br><b>Example</b>
-	 * <br><b>Restricting the bot to a certain TextChannel</b>
+	 * <br><b>Restricting the bot to a certain {@link GuildMessageChannel}</b>
 	 * <pre><code>
 	 * CommandsBuilder.newBuilder()
 	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
@@ -343,10 +345,11 @@ public interface BContext {
 	 *
 	 * @param guilds Iterable collection of the guilds to update
 	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
 	@NotNull
-	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
 
 	/**
 	 * Updates the application commands and their permissions in the specified guild <br><br>
@@ -359,10 +362,11 @@ public interface BContext {
 	 *
 	 * @param guild The guild which needs to be updated
 	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
 	 */
 	@NotNull
-	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force);
+	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)
@@ -371,7 +375,7 @@ public interface BContext {
 	 * @param function      Supplier function, may receive interaction events of any type
 	 * @param <T>           Type of the parameter
 	 */
-	<T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function);
+	<T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function);
 
 	/**
 	 * Returns the uncaught exception handler

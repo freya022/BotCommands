@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.application;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -35,11 +36,15 @@ public class ApplicationCommandsUpdater {
 
 	private final BContextImpl context;
 	@Nullable private final Guild guild;
+	private final boolean onlineCheck;
 
 	private final Path commandsCachePath;
 	private final Path privilegesCachePath;
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
+	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
+
+	private boolean updatedCommands = false;
 
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
@@ -49,9 +54,10 @@ public class ApplicationCommandsUpdater {
 	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 	private final Collection<CommandData> allCommandData;
 
-	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild) throws IOException {
+	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild, boolean onlineCheck) throws IOException {
 		this.context = context;
 		this.guild = guild;
+		this.onlineCheck = onlineCheck;
 
 		this.commandsCachePath = guild == null
 				? context.getApplicationCommandsCache().getGlobalCommandsPath()
@@ -72,12 +78,12 @@ public class ApplicationCommandsUpdater {
 		this.allCommandData = map.getAllCommandData();
 	}
 
-	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context) throws IOException {
-		return new ApplicationCommandsUpdater(context, null);
+	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context, boolean onlineCheck) throws IOException {
+		return new ApplicationCommandsUpdater(context, null, onlineCheck);
 	}
 
-	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild) throws IOException {
-		return new ApplicationCommandsUpdater(context, guild);
+	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild, boolean onlineCheck) throws IOException {
+		return new ApplicationCommandsUpdater(context, guild, onlineCheck);
 	}
 
 	@Nullable
@@ -85,14 +91,26 @@ public class ApplicationCommandsUpdater {
 		return guild;
 	}
 
+	@Blocking
 	public boolean shouldUpdateCommands() throws IOException {
-		if (Files.notExists(commandsCachePath)) {
-			LOGGER.trace("Updating commands because cache file does not exists");
+		final byte[] oldBytes;
 
-			return true;
+		if (onlineCheck) {
+			commands.clear();
+			commands.addAll((guild == null ? context.getJDA().retrieveCommands() : guild.retrieveCommands()).complete());
+			final List<CommandData> discordCommandsData = commands.stream().map(CommandData::fromCommand).toList();
+
+			oldBytes = ApplicationCommandsCache.getCommandsBytes(discordCommandsData);
+		} else {
+			if (Files.notExists(commandsCachePath)) {
+				LOGGER.trace("Updating commands because cache file does not exists");
+
+				return true;
+			}
+
+			oldBytes = Files.readAllBytes(commandsCachePath);
 		}
 
-		final byte[] oldBytes = Files.readAllBytes(commandsCachePath);
 		final byte[] newBytes = ApplicationCommandsCache.getCommandsBytes(allCommandData);
 
 		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);
@@ -100,8 +118,10 @@ public class ApplicationCommandsUpdater {
 		if (needUpdate) {
 			LOGGER.trace("Updating commands because content is not equal");
 
-//			LOGGER.trace("Old commands bytes: {}", new String(oldBytes));
-//			LOGGER.trace("New commands bytes: {}", new String(newBytes));
+			if (DebugBuilder.isLogApplicationDiffsEnabled()) {
+				LOGGER.trace("Old commands bytes: {}", new String(oldBytes));
+				LOGGER.trace("New commands bytes: {}", new String(newBytes));
+			}
 		}
 
 		return needUpdate;
@@ -115,6 +135,8 @@ public class ApplicationCommandsUpdater {
 				.addCommands(allCommandData)
 				.complete();
 
+		updatedCommands = true;
+
 		if (guild != null) {
 			thenAcceptGuild(commands, guild);
 		} else {
@@ -125,16 +147,40 @@ public class ApplicationCommandsUpdater {
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
-		if (!commands.isEmpty())
-			return true; //If the list is not empty, this means commands got updated, so the ids changed
+		//TODO rework when i can finally work out privileges for global commands in a guild context
+		// When discord adds native localisation
+		final byte[] oldBytes;
+//		if (onlineCheck) {
+//			//Since we online checked, we have the commands list
+//			// That command list might have been changed (when it would be outdated)
+//			// If the list changed the privileges are empty, could do an optimisation here
+//			final Map<String, List<CommandPrivilege>> privilegesMap = guild.retrieveCommandPrivileges().complete();
+//			final Map<String, Collection<? extends CommandPrivilege>> localCmdBaseNameToPrivilegesMap = new HashMap<>();
+//
+//			//TODO testings
+//			for (Command command : commands) {
+//				final String baseName = localizedBaseNameToBaseName.get(command.getName());
+//
+//				final List<CommandPrivilege> privileges = privilegesMap.get(command.getId());
+//
+//				if (privileges != null) {
+//					localCmdBaseNameToPrivilegesMap.put(baseName, privileges);
+//				}
+//			}
+//
+//			oldBytes = ApplicationCommandsCache.getPrivilegesBytes(localCmdBaseNameToPrivilegesMap);
+//		} else {
+			if (updatedCommands) return true; //If the list is not empty, this means commands got updated, so the ids changed
 
-		if (Files.notExists(privilegesCachePath)) {
-			LOGGER.trace("Updating privileges because privilege cache does not exists");
+			if (Files.notExists(privilegesCachePath)) {
+				LOGGER.trace("Updating privileges because privilege cache does not exists");
 
-			return true;
-		}
+				return true;
+			}
 
-		final byte[] oldBytes = Files.readAllBytes(privilegesCachePath);
+			oldBytes = Files.readAllBytes(privilegesCachePath);
+//		}
+
 		final byte[] newBytes = ApplicationCommandsCache.getPrivilegesBytes(cmdBaseNameToPrivilegesMap);
 
 		final boolean needUpdate = !ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes);
@@ -142,8 +188,10 @@ public class ApplicationCommandsUpdater {
 		if (needUpdate) {
 			LOGGER.trace("Updating privileges because content is not equal");
 
-//			LOGGER.trace("Old privileges bytes: {}", new String(oldBytes));
-//			LOGGER.trace("New privileges bytes: {}", new String(newBytes));
+			if (DebugBuilder.isLogApplicationDiffsEnabled()) {
+				LOGGER.trace("Old privileges bytes: {}", new String(oldBytes));
+				LOGGER.trace("New privileges bytes: {}", new String(newBytes));
+			}
 		}
 
 		return needUpdate;
@@ -155,7 +203,7 @@ public class ApplicationCommandsUpdater {
 			return;
 		}
 
-		if (commands.isEmpty()) {
+		if (!updatedCommands) {
 			LOGGER.info("Privileges has changed but commands were not updated, retrieving current command list");
 
 			final List<Command> retrievedCommands = guild.retrieveCommands().complete();
@@ -203,6 +251,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> a instanceof SlashCommandInfo)
 				.map(a -> (SlashCommandInfo) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
@@ -243,9 +292,9 @@ public class ApplicationCommandsUpdater {
 
 							//Subcommand of a command
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							commandData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							commandData.addSubcommands(subcommandData);
 						} else if (localizedPath.getNameCount() == 3) {
 							Checks.notNull(localizedPath.getGroup(), "Command group name");
 							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
@@ -259,9 +308,9 @@ public class ApplicationCommandsUpdater {
 							});
 
 							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							groupData.addSubcommands(subcommandData);
-
 							subcommandData.addOptions(localizedMethodOptions);
+
+							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
@@ -282,7 +331,7 @@ public class ApplicationCommandsUpdater {
 							}
 						}
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getCommandMethod()), e);
+						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getMethod()), e);
 					}
 				});
 	}
@@ -292,6 +341,7 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
+				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
 					final CommandPath notLocalizedPath = info.getPath();
 
@@ -361,6 +411,7 @@ public class ApplicationCommandsUpdater {
 			context.getRegistrationListeners().forEach(l -> l.onGuildSlashCommandRegistered(this.guild, command));
 		}
 
+		this.commands.clear();
 		this.commands.addAll(commands);
 
 		try {
@@ -433,16 +484,15 @@ public class ApplicationCommandsUpdater {
 
 		final SlashCommandData data = (SlashCommandData) map.computeIfAbsent(type, path, baseCommandSupplier);
 
-		return data.getSubcommandGroups()
-				.stream()
-				.filter(g -> g.getName().equals(path.getGroup()))
-				.findAny()
-				.orElseGet(() -> {
-					final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
+		final CommandPath parent = path.getParent();
+		if (parent == null) throw new IllegalStateException("A command path with less than 3 components was passed to #getSubcommandGroup");
 
-					data.addSubcommandGroups(groupData);
+		return subcommandGroupDataMap.computeIfAbsent(parent.getFullPath(), s -> {
+			final SubcommandGroupData groupData = new SubcommandGroupData(path.getGroup(), "No description (group)");
 
-					return groupData;
-				});
+			data.addSubcommandGroups(groupData);
+
+			return groupData;
+		});
 	}
 }
