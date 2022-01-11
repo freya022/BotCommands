@@ -124,6 +124,14 @@ public final class ApplicationCommandsBuilder {
 		context.addSlashCommand(info);
 	}
 
+	private String getCheckTypeString() {
+		if (context.isOnlineAppCommandCheckEnabled()) {
+			return "Online check";
+		} else {
+			return "Local disk check";
+		}
+	}
+
 	public void postProcess() throws IOException {
 		context.getJDA().setRequiredScopes("applications.commands");
 
@@ -131,12 +139,12 @@ public final class ApplicationCommandsBuilder {
 
 		es.submit(() -> {
 			try {
-				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
+				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, context.isOnlineAppCommandCheckEnabled());
 				if (globalUpdater.shouldUpdateCommands()) {
 					globalUpdater.updateCommands();
-					LOGGER.debug("Global commands were updated");
+					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
 				} else {
-					LOGGER.debug("Global commands does not have to be updated");
+					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
@@ -146,9 +154,9 @@ public final class ApplicationCommandsBuilder {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map;
 		final ShardManager shardManager = context.getJDA().getShardManager();
 		if (shardManager != null) {
-			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		} else {
-			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		}
 
 		map.forEach((guild, future) -> {
@@ -172,20 +180,20 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force) {
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
 
 		for (Guild guild : guilds) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 
-			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
+			map.put(guild, scheduleApplicationCommandsUpdate(guild, force, onlineCheck));
 		}
 
 		return map;
 	}
 
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong()))
 			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false, false));
 
@@ -198,7 +206,7 @@ public final class ApplicationCommandsBuilder {
 			try {
 				lock.lock();
 
-				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild);
+				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild, onlineCheck);
 
 				boolean updatedCommands = false, updatedPrivileges = false;
 
@@ -207,9 +215,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedCommands = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", getCheckTypeString());
 				} else {
-					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
 				if (force || updater.shouldUpdatePrivileges()) {
@@ -217,9 +225,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedPrivileges = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? " force" : "");
-				} else {
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", "Local disk check");
+				} else { //TODO change prints once privileges can be checked online
+					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
 				}
 
 				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
