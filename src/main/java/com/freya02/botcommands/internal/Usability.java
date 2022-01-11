@@ -25,7 +25,7 @@ public class Usability {
 
 		//The command is indeed marked NSFW, but where ?
 
-		if (msgChannel instanceof TextChannel channel) {
+		if (msgChannel instanceof BaseGuildMessageChannel channel) {
 			//If guild NSFW is not enabled, and we are in a guild channel
 			if (!nsfwState.isEnabledInGuild()) {
 				unusableReasons.add(NSFW_DISABLED);
@@ -50,7 +50,7 @@ public class Usability {
 		}
 	}
 
-	public static Usability of(BContext context, TextCommandInfo cmdInfo, Member member, TextChannel channel, boolean isNotOwner) {
+	public static Usability of(BContext context, TextCommandInfo cmdInfo, Member member, GuildMessageChannel channel, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 		if (isNotOwner && cmdInfo.isHidden()) {
 			unusableReasons.add(HIDDEN);
@@ -86,7 +86,7 @@ public class Usability {
 			return new Usability(unusableReasons);
 		}
 
-		final TextChannel channel = event.getTextChannel();
+		final GuildChannel channel = event.getGuildChannel();
 		final Guild guild = Objects.requireNonNull(event.getGuild(), "Guild shouldn't be null as this code path is guild-only");
 		final Member member = Objects.requireNonNull(event.getMember(), "Member shouldn't be null as this code path is guild-only");
 		if (!guild.getSelfMember().hasPermission(channel, cmdInfo.getBotPermissions())) {

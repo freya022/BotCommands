@@ -12,9 +12,9 @@ import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -114,7 +114,7 @@ public final class HelpCommand extends TextCommand {
 	}
 
 	private synchronized void getAllHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberGlobalHelpContent(event.getMember(), event.getTextChannel());
+		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberGlobalHelpContent(event.getMember(), event.getGuildChannel());
 
 		builder.setTimestamp(Instant.now());
 		final Member member = event.getMember();
@@ -130,7 +130,7 @@ public final class HelpCommand extends TextCommand {
 
 	}
 
-	private EmbedBuilder getMemberGlobalHelpContent(Member member, TextChannel channel) {
+	private EmbedBuilder getMemberGlobalHelpContent(Member member, GuildMessageChannel channel) {
 		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
 
 		fillGlobalHelp(builder, info -> Usability.of(context, info, member, channel, !context.isOwner(member.getIdLong())).isShowable());
@@ -146,7 +146,7 @@ public final class HelpCommand extends TextCommand {
 		}
 
 		final Member member = event.getMember();
-		final TextChannel channel = event.getTextChannel();
+		final GuildMessageChannel channel = event.getGuildChannel();
 		final Usability usability = Usability.of(context, cmds.first(), member, channel, !context.isOwner(member.getIdLong()));
 		if (usability.isNotShowable()) {
 			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));

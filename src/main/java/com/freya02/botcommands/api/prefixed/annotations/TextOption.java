@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.prefixed.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
@@ -21,7 +20,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
 public @interface TextOption {
-	@DiscordNamePattern
 	String name() default "";
 
 	String example() default "";

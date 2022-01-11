@@ -63,6 +63,7 @@ public class ParameterResolvers {
 
 		register(new GuildChannelResolver());
 		register(new TextChannelResolver());
+		register(new ThreadChannelResolver());
 		register(new VoiceChannelResolver());
 		register(new StoreChannelResolver());
 		register(new StageChannelResolver());

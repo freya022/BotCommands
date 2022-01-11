@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
-import com.freya02.botcommands.internal.parameters.channels.AbstractChannelResolver;
+import com.freya02.botcommands.internal.parameters.channels.ChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -61,9 +61,10 @@ public class SlashUtils {
 				data = new OptionData(OptionType.CHANNEL, name, description);
 
 				if (parameter.getChannelTypes().isEmpty()) {
-					final AbstractChannelResolver<?> resolver = (AbstractChannelResolver<?>) parameter.getResolver();
+					final ChannelResolver resolver = (ChannelResolver) parameter.getResolver();
 
-					data.setChannelTypes(resolver.getChannelType());
+					final EnumSet<ChannelType> channelTypes = resolver.getChannelTypes();
+					data.setChannelTypes(channelTypes);
 				} else {
 					data.setChannelTypes(parameter.getChannelTypes());
 				}
