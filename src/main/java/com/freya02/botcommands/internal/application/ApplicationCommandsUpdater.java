@@ -96,8 +96,6 @@ public class ApplicationCommandsUpdater {
 		final byte[] oldBytes;
 
 		if (onlineCheck) {
-			//TODO Discord sends default_permissions as always true when CommandData.default_permissions is set to false
-
 			commands.clear();
 			commands.addAll((guild == null ? context.getJDA().retrieveCommands() : guild.retrieveCommands()).complete());
 			final List<CommandData> discordCommandsData = commands.stream().map(CommandData::fromCommand).toList();
