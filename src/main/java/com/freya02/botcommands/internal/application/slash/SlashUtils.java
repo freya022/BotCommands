@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
 import com.freya02.botcommands.internal.parameters.channels.ChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -58,8 +59,10 @@ public class SlashUtils {
 			if (optionType == OptionType.CHANNEL) {
 				//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
 				// Otherwise set the channel types of the parameter, if available
-				if (parameter.getChannelTypes().isEmpty() && resolver instanceof AbstractChannelResolver channelResolver) {
-					data.setChannelTypes(channelResolver.getChannelType());
+				if (parameter.getChannelTypes().isEmpty() && resolver instanceof ChannelResolver channelResolver) {
+					final EnumSet<ChannelType> channelTypes = channelResolver.getChannelTypes();
+
+					data.setChannelTypes(channelTypes);
 				} else if (!parameter.getChannelTypes().isEmpty()) {
 					data.setChannelTypes(parameter.getChannelTypes());
 				}
