@@ -3,7 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.annotations.NSFW;
 import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -285,7 +285,7 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when a command is used in a non-NSFW {@link TextChannel}
+	 * @return Message to display when a command is used in a non-NSFW {@link GuildMessageChannel}
 	 */
 	public String getNSFWOnlyErrorMsg() {
 		return nsfwOnlyErrorMsg;

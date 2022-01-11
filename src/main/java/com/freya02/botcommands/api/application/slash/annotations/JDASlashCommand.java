@@ -61,7 +61,14 @@ import java.lang.annotation.Target;
  *     <li>{@linkplain Role}</li>
  *     <li>{@linkplain User}</li>
  *     <li>{@linkplain Member}</li>
+ *
+ *     <li>{@linkplain Category}</li>
+ *     <li>{@linkplain GuildChannel}</li>
  *     <li>{@linkplain TextChannel}</li>
+ *     <li>{@linkplain ThreadChannel}</li>
+ *     <li>{@linkplain VoiceChannel}</li>
+ *     <li>{@linkplain StoreChannel}</li>
+ *     <li>{@linkplain StageChannel}</li>
  * </ul>
  *
  * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>

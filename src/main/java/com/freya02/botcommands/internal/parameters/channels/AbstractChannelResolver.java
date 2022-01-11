@@ -19,25 +19,27 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-public abstract class AbstractChannelResolver<T extends GuildChannel> extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public abstract class AbstractChannelResolver<T extends GuildChannel> extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, ChannelResolver {
 	private static final Pattern PATTERN = Pattern.compile("(?:<#)?(\\d+)>?");
-	private final ChannelType channelType;
+	private final EnumSet<ChannelType> channelTypes;
 	private final BiFunction<Guild, String, T> channelResolver;
 
 	public AbstractChannelResolver(Class<T> channelClass, @Nullable ChannelType channelType, BiFunction<Guild, String, T> channelResolver) {
 		super(channelClass);
 
-		this.channelType = channelType;
+		this.channelTypes = channelType == null ? EnumSet.noneOf(ChannelType.class) : EnumSet.of(channelType);
 		this.channelResolver = channelResolver;
 	}
 
-	@Nullable
-	public ChannelType getChannelType() {
-		return channelType;
+	@Override
+	@NotNull
+	public EnumSet<ChannelType> getChannelTypes() {
+		return channelTypes;
 	}
 
 	@Override

@@ -21,6 +21,8 @@ import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -229,7 +231,7 @@ public interface BContext {
 	 * <br>Command overloads are also not executed
 	 *
 	 * <h2>Example</h2>
-	 * <h3>Restricting the bot to a certain TextChannel</h3>
+	 * <h3>Restricting the bot to a certain {@link GuildMessageChannel}</h3>
 	 * <pre><code>
 	 * CommandsBuilder.newBuilder()
 	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder

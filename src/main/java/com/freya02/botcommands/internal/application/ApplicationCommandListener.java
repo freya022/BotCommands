@@ -159,7 +159,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = applicationCommand.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getTextChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getGuildChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());

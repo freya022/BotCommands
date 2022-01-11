@@ -176,7 +176,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		final Usability usability = Usability.of(context, candidate, member, event.getTextChannel(), isNotOwner);
+		final Usability usability = Usability.of(context, candidate, member, event.getGuildChannel(), isNotOwner);
 
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
@@ -203,7 +203,7 @@ public final class CommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = candidate.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getTextChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getGuildChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());
@@ -261,7 +261,7 @@ public final class CommandListener extends ListenerAdapter {
 		};
 
 		final List<String> commandNames = context.getCommands().stream()
-				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getTextChannel(), isNotOwner).isUsable())
+				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getGuildChannel(), isNotOwner).isUsable())
 				.map(c -> pathToStringFunc.apply(c.findFirst().getPath()))
 				.collect(Collectors.toList());
 
@@ -306,7 +306,7 @@ public final class CommandListener extends ListenerAdapter {
 			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
 
 			message.addReaction(BaseCommandEventImpl.ERROR).queue();
-			if (message.getTextChannel().canTalk()) {
+			if (message.getGuildChannel().canTalk()) {
 				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
 			}
 
@@ -317,7 +317,7 @@ public final class CommandListener extends ListenerAdapter {
 	private void reply(MessageReceivedEvent event, String msg) {
 		final RestAction<? extends MessageChannel> channelAction;
 
-		if (event.getTextChannel().canTalk()) {
+		if (event.getGuildChannel().canTalk()) {
 			channelAction = new CompletedRestAction<>(event.getJDA(), event.getChannel());
 		} else {
 			channelAction = event.getAuthor().openPrivateChannel();

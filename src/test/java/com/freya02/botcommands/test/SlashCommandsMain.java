@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -23,6 +24,7 @@ public class SlashCommandsMain {
 //			debug();
 
 			final JDA jda = JDABuilder.createLight(config.getToken())
+					.enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.setActivity(Activity.playing("application commands"))
 					.build()
 					.awaitReady();
@@ -30,7 +32,7 @@ public class SlashCommandsMain {
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
-							.addTextFilter(data -> data.event().getChannel().getIdLong() != 722891685755093076L)
+							.addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L || data.event().getChannel().getIdLong() == 930384760298164235L)
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
