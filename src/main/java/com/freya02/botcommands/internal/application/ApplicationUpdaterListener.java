@@ -30,7 +30,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
 		LOGGER.trace("Trying to force update commands due to an unavailable guild becoming available");
 
-		tryUpdate(event.getGuild(), true);
+		tryUpdate(event.getGuild(), true, true);
 	}
 
 	@SubscribeEvent
@@ -38,7 +38,7 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 	public void onGuildJoin(@NotNull GuildJoinEvent event) {
 		LOGGER.trace("Trying to force update commands due to a joined guild");
 
-		tryUpdate(event.getGuild(), true);
+		tryUpdate(event.getGuild(), true, true);
 	}
 
 	//Use this as a mean to detect OAuth scope changes
@@ -48,15 +48,15 @@ public class ApplicationUpdaterListener extends ListenerAdapter {
 		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
 			LOGGER.trace("Trying to update commands due to a self member update");
 
-			tryUpdate(event.getGuild(), false);
+			tryUpdate(event.getGuild(), false, true);
 		}
 	}
 
-	private void tryUpdate(Guild guild, boolean force) {
+	private void tryUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		final boolean hadFailed = failedGuilds.remove(guild.getIdLong());
 
 		context.getSlashCommandsBuilder()
-				.scheduleApplicationCommandsUpdate(guild, force || hadFailed)
+				.scheduleApplicationCommandsUpdate(guild, force || hadFailed, onlineCheck)
 				.whenComplete((commandUpdateResult, e) -> {
 			if (e != null) {
 				failedGuilds.add(guild.getIdLong());

@@ -7,11 +7,20 @@ import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ApplicationCommandsBuilder {
 	private final BContextImpl context;
 
+	private final List<Long> slashGuildIds = new ArrayList<>();
+
 	public ApplicationCommandsBuilder(BContextImpl context) {
 		this.context = context;
+	}
+
+	public List<Long> getSlashGuildIds() {
+		return slashGuildIds;
 	}
 
 	/**
@@ -29,6 +38,19 @@ public class ApplicationCommandsBuilder {
 	}
 
 	/**
+	 * Debug feature - Makes it so application commands are only updated on these guilds
+	 *
+	 * @param slashGuildIds IDs of the guilds
+	 * @return This builder for chaining convenience
+	 */
+	public ApplicationCommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
+		this.slashGuildIds.clear();
+		this.slashGuildIds.addAll(slashGuildIds);
+
+		return this;
+	}
+
+	/**
 	 * Adds test guilds IDs for all commands annotated with {@link Test}
 	 *
 	 * @param guildIds The test {@link Guild} IDs
@@ -38,6 +60,25 @@ public class ApplicationCommandsBuilder {
 	 */
 	public ApplicationCommandsBuilder addTestGuilds(long... guildIds) {
 		context.addTestGuildIds(guildIds);
+
+		return this;
+	}
+
+	/**
+	 * Enables the library to do network calls to Discord in order to check if application commands / permissions need to be updated
+	 * <br><b>Permissions are not online checked yet, waiting for Discord to add native localisation</b>
+	 * <br>It's better to leave it disk-based, it is faster and doesn't require any request to Discord
+	 * <br><b>Online checks are to be avoided on production environments</b>, I strongly recommend you have a separate bot for tests purpose
+	 * <p>
+	 * <br>This option only makes sense if you work on your "development" bot is on multiple computers,
+	 *      as the files required for caching the already-pushed-commands are stored in your temporary files folder,
+	 *      another computer is not aware of it and might take <i>its own</i> files as being up-to-date, even if the commands on Discord are not.
+	 * <br>This issue is fixed by using online checks
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public ApplicationCommandsBuilder enableOnlineAppCommandCheck() {
+		context.enableOnlineAppCommandCheck();
 
 		return this;
 	}

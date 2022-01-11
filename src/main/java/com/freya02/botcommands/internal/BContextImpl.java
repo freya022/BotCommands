@@ -61,6 +61,7 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
+	private boolean onlineAppCommandCheckEnabled;
 
 	private final TLongSet testGuildIds = TCollections.synchronizedSet(new TLongHashSet());
 
@@ -505,14 +506,14 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false, onlineCheck);
 	}
 
 	@Override
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force);
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force, onlineCheck);
 	}
 
 	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
@@ -585,5 +586,13 @@ public class BContextImpl implements BContext {
 
 	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
 		autocompletionTransformers.put(type, autocompletionTransformer);
+	}
+
+	public boolean isOnlineAppCommandCheckEnabled() {
+		return onlineAppCommandCheckEnabled;
+	}
+
+	public void enableOnlineAppCommandCheck() {
+		this.onlineAppCommandCheckEnabled = true;
 	}
 }
