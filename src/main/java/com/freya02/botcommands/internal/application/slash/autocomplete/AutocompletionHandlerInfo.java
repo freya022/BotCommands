@@ -11,10 +11,12 @@ import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
+import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierChoices;
+import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringContinuity;
+import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringFuzzy;
+import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierTransformer;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
-import me.xdrop.fuzzywuzzy.FuzzySearch;
-import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -25,8 +27,8 @@ import org.slf4j.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // The annotated method returns a list of things
 // These things can be, and are mapped as follows:
@@ -47,7 +49,6 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	private final int maxChoices;
 
 	private final ChoiceSupplier choiceSupplier;
-	private final AutocompletionTransformer<Object> transformer;
 
 	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
 
@@ -69,24 +70,24 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			throw new IllegalArgumentException("Unable to determine return type of " + Utils.formatMethodShort(method) + ", does the collection inherit Collection ?");
 		}
 
-		this.transformer = (AutocompletionTransformer<Object>) context.getAutocompletionTransformer(collectionReturnType);
-
 		if (String.class.isAssignableFrom(collectionReturnType) || Long.class.isAssignableFrom(collectionReturnType) || Double.class.isAssignableFrom(collectionReturnType)) {
 			this.choiceSupplier = generateSupplierFromStrings(autocompletionMode);
 		} else if (Command.Choice.class.isAssignableFrom(collectionReturnType)) {
-			this.choiceSupplier = generateSupplierFromChoices();
+			this.choiceSupplier = new ChoiceSupplierChoices(this);
 		} else {
-			if (context.getAutocompletionTransformer(collectionReturnType) == null) {
+			final AutocompletionTransformer<Object> transformer = (AutocompletionTransformer<Object>) context.getAutocompletionTransformer(collectionReturnType);
+
+			if (transformer == null) {
 				throw new IllegalArgumentException("No autocompletion transformer has been register for objects of type '" + collectionReturnType.getSimpleName() + "', for method " + Utils.formatMethodShort(method) + ", you may also check the docs for " + AutocompletionHandler.class.getSimpleName());
 			}
 
-			this.choiceSupplier = generateSupplierFromItems();
+			this.choiceSupplier = new ChoiceSupplierTransformer(this, transformer);
 		}
 
 		this.autocompleteParameters = MethodParameters.of(context, method, SlashCommandParameter::new);
 	}
 
-	private Object invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws IllegalAccessException, InvocationTargetException {
+	Collection<?> invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws IllegalAccessException, InvocationTargetException {
 		List<Object> objects = new ArrayList<>(autocompleteParameters.size() + 1);
 
 		objects.add(event);
@@ -126,13 +127,13 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
 					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
-					return false;
+					return List.of();
 				}
 
 				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
 					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
-					return false;
+					return List.of();
 				}
 			} else {
 				obj = parameter.getCustomResolver().resolve(context, this, event);
@@ -143,90 +144,18 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			objects.add(obj);
 		}
 
-		return method.invoke(autocompletionHandler, objects.toArray());
-	}
-
-	private ChoiceSupplier generateSupplierFromChoices() {
-		return (slashCommand, event) -> {
-			final List<Command.Choice> choices = (List<Command.Choice>) invokeAutocompletionHandler(slashCommand, event);
-
-			return choices.subList(0, Math.min(maxChoices, choices.size()));
-		};
-	}
-
-	private ChoiceSupplier generateSupplierFromItems() {
-		return (slashCommand, event) -> {
-			final List<Object> results = (List<Object>) invokeAutocompletionHandler(slashCommand, event);
-
-			return results.stream()
-					.limit(maxChoices)
-					.map(transformer::apply)
-					.collect(Collectors.toList());
-		};
+		return (Collection<?>) method.invoke(autocompletionHandler, objects.toArray());
 	}
 
 	private ChoiceSupplier generateSupplierFromStrings(AutocompletionMode autocompletionMode) {
 		if (autocompletionMode == AutocompletionMode.FUZZY) {
-			return generateFuzzySupplier();
+			return new ChoiceSupplierStringFuzzy(this);
 		} else {
-			return generateContinuitySupplier();
+			return new ChoiceSupplierStringContinuity(this);
 		}
 	}
 
-	private ChoiceSupplier generateContinuitySupplier() {
-		return (slashCommand, event) -> {
-			final OptionMapping optionMapping = event.getFocusedOption();
-
-			final String query = optionMapping.getAsString();
-			final List<String> list = ((List<Object>) invokeAutocompletionHandler(slashCommand, event))
-					.stream()
-					.map(Object::toString)
-					.filter(s -> Utils.startsWithIgnoreCase(s, query))
-					.sorted()
-					.collect(Collectors.toCollection(ArrayList::new));
-
-			final List<ExtractedResult> results = FuzzySearch.extractTop(query,
-					list,
-					FuzzySearch::ratio,
-					maxChoices);
-
-			return results.stream()
-					.limit(maxChoices)
-					.map(c -> getChoice(optionMapping, c.getString()))
-					.toList();
-		};
-	}
-
-	@NotNull
-	private ChoiceSupplier generateFuzzySupplier() {
-		return (slashCommand, event) -> {
-			final List<String> list = ((List<Object>) invokeAutocompletionHandler(slashCommand, event))
-					.stream()
-					.map(Object::toString)
-					.sorted()
-					.toList();
-
-			final OptionMapping optionMapping = event.getFocusedOption();
-			//First sort the results by similarities but by taking into account an incomplete input
-			final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
-					list,
-					FuzzySearch::partialRatio,
-					maxChoices);
-
-			//Then sort the results by similarities but don't take length into account
-			final List<ExtractedResult> similarities = FuzzySearch.extractTop(optionMapping.getAsString(),
-					bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
-					FuzzySearch::ratio,
-					maxChoices);
-
-			return similarities.stream()
-					.limit(maxChoices)
-					.map(c -> getChoice(optionMapping, c.getString()))
-					.toList();
-		};
-	}
-
-	private Command.Choice getChoice(OptionMapping optionMapping, String string) {
+	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
 		return switch (optionMapping.getType()) {
 			case STRING -> new Command.Choice(string, string);
 			case INTEGER -> new Command.Choice(string, Long.parseLong(string));
@@ -242,7 +171,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	public List<Command.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws Exception {
 		final List<Command.Choice> actualChoices = new ArrayList<>(25);
 
-		final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event);
+		final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event, invokeAutocompletionHandler(slashCommand, event));
 
 		final OptionMapping optionMapping = event.getFocusedOption();
 
@@ -308,5 +237,9 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		if (!slashParameterType.equals(autocompleteParameterType)) {
 			throw new IllegalArgumentException("Autocompletion handler parameter #%d does not have the same type as slash command parameter: Provided: %s, correct: %s".formatted(autocompleteParameter.getIndex(), autocompleteParameterType, slashParameterType));
 		}
+	}
+
+	public int getMaxChoices() {
+		return maxChoices;
 	}
 }

@@ -60,7 +60,9 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoInt")
-	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event, @AppOption(name = "str") String autoStr) {
+	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
+	                          @AppOption(name = "str") String autoStr,
+	                          @AppOption long integer) {
 		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
