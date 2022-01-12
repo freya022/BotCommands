@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.events;
 
-import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.Event;
@@ -12,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 class EventListenerImpl implements EventListener {
 	private final BContextImpl context;
@@ -32,23 +32,12 @@ class EventListenerImpl implements EventListener {
 		this.eventListeners = eventListeners;
 	}
 
-	private void runCallback(EventConsumer consumer, Event event) {
+	private void runCallback(EventConsumer consumer, Event event, Consumer<Throwable> throwableConsumer) {
 		eventExecutor.execute(() -> {
 			try {
 				consumer.accept(event);
 			} catch (Throwable e) {
-				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
-				if (handler != null) {
-					handler.onException(context, event, e);
-
-					return;
-				}
-
-				Throwable baseEx = Utils.getException(e);
-
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an event", baseEx);
-
-				context.dispatchException("Exception in component callback", baseEx);
+				throwableConsumer.accept(e);
 			}
 		});
 	}
@@ -60,8 +49,10 @@ class EventListenerImpl implements EventListener {
 
 		final List<EventConsumer> eventConsumers = eventListeners.get(event.getClass());
 		if (eventConsumers != null) {
+			final Consumer<Throwable> throwableConsumer = EventListenersBuilder.getThrowableConsumer(context, realEvent);
+
 			for (EventConsumer consumer : eventConsumers) {
-				runCallback(consumer, realEvent);
+				runCallback(consumer, realEvent, throwableConsumer);
 			}
 		}
 	}

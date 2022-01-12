@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 public class AutocompletionListener implements EventListener {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -42,6 +43,8 @@ public class AutocompletionListener implements EventListener {
 	@Override
 	public void onEvent(@NotNull GenericEvent genericEvent) {
 		if (genericEvent instanceof CommandAutoCompleteInteractionEvent event) {
+			final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
+
 			runAutocompletion(() -> {
 				final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
@@ -67,33 +70,39 @@ public class AutocompletionListener implements EventListener {
 					return;
 				}
 
-				event.replyChoices(handler.getChoices(slashCommand, event)).queue();
-			}, event);
+				event.replyChoices(handler.getChoices(slashCommand, event, throwableConsumer)).queue();
+			}, throwableConsumer);
 		}
 	}
 
-	private void runAutocompletion(RunnableEx code, CommandAutoCompleteInteractionEvent event) {
+	private void runAutocompletion(RunnableEx code, Consumer<Throwable> throwableConsumer) {
 		autocompletionService.execute(() -> {
 			try {
 				code.run();
 			} catch (Throwable e) {
-				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
-				if (handler != null) {
-					handler.onException(context, event, e);
-
-					return;
-				}
-
-				Throwable baseEx = Utils.getException(e);
-
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while autocompleting a command option '" + reconstructCommand(event) + "'", baseEx);
-				if (!event.isAcknowledged()) {
-					event.replyChoices().queue();
-				}
-
-				context.dispatchException("Exception while autocompleting '" + reconstructCommand(event) + "'", baseEx);
+				throwableConsumer.accept(e);
 			}
 		});
+	}
+
+	private Consumer<Throwable> getThrowableConsumer(CommandAutoCompleteInteractionEvent event) {
+		return e -> {
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while autocompleting a command option '" + reconstructCommand(event) + "'", baseEx);
+			if (!event.isAcknowledged()) {
+				event.replyChoices().queue();
+			}
+
+			context.dispatchException("Exception while autocompleting '" + reconstructCommand(event) + "'", baseEx);
+		};
 	}
 
 	private String reconstructCommand(CommandAutoCompleteInteractionEvent event) {
