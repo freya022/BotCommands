@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -55,9 +54,10 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	@Nullable
-	public SQLFetchedComponent fetchComponent(String id) {
-		Connection connection = getConnection();
+	@NotNull
+	public SQLFetchResult fetchComponent(String id) {
+		final Connection connection = getConnection();
+
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(
 					"select * " +
@@ -71,21 +71,21 @@ public class DefaultComponentManager implements ComponentManager {
 
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
-				return new SQLFetchedComponent(connection, resultSet);
+				return new SQLFetchResult(new SQLFetchedComponent(resultSet), connection);
 			} else {
-				return null;
+				return new SQLFetchResult(null, connection);
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Unable to get the ID type of '{}'", id);
 
-			return null;
+			return new SQLFetchResult(null, connection);
 		}
 	}
 
 	@Override
-	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
+	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
 		handleLambdaComponent(event,
-				(SQLFetchedComponent) fetchedComponent,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				buttonLambdaMap,
@@ -93,9 +93,9 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
+	public void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
 		handleLambdaComponent(event,
-				(SQLFetchedComponent) fetchedComponent,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				selectionMenuLambdaMap,
@@ -104,12 +104,16 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@SuppressWarnings("DuplicatedCode")
 	private <CONSUMER extends ComponentConsumer<EVENT>,EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
-																									SQLFetchedComponent fetchedComponent,
+																									SQLFetchResult fetchResult,
 	                                                                                                Consumer<ComponentErrorReason> onError,
 	                                                                                                Consumer<DATA> dataConsumer,
 	                                                                                                Map<Long, CONSUMER> map, Function<CONSUMER, DATA> eventFunc) {
 
 		try {
+			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
+			if (fetchedComponent == null)
+				throw new IllegalArgumentException("A null fetched component cannot be handled");
+
 			final SQLLambdaComponentData data = SQLLambdaComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
@@ -150,26 +154,30 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
+	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
 		handlePersistentComponent(event,
-				(SQLFetchedComponent) fetchedComponent,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				PersistentButtonData::new);
 	}
 
 	@Override
-	public void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
+	public void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
 		handlePersistentComponent(event,
-				(SQLFetchedComponent) fetchedComponent,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				PersistentSelectionMenuData::new);
 	}
 
 	@SuppressWarnings("DuplicatedCode")
-	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, SQLFetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
+	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, SQLFetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
 		try {
+			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
+			if (fetchedComponent == null)
+				throw new IllegalArgumentException("A null fetched component cannot be handled");
+
 			final SQLPersistentComponentData data = SQLPersistentComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
@@ -184,9 +192,7 @@ public class DefaultComponentManager implements ComponentManager {
 			final String[] args = data.getArgs();
 
 			if (result.shouldDelete()) {
-				try (Connection connection = getConnection()) {
-					data.delete(connection);
-				}
+				data.delete(fetchResult.getConnection());
 			}
 
 			dataConsumer.accept(dataFunction.apply(handlerName, args));

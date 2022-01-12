@@ -65,7 +65,10 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).setConstraints(constraints).oneUse().build(deleteContent);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked)
+					.setConstraints(constraints)
+					.oneUse()
+					.build(deleteContent);
 		} else {
 			this.deleteButton = null;
 		}
@@ -92,6 +95,8 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	}
 
 	private void onDeleteClicked(ButtonEvent e) {
+		cancelTimeout();
+
 		if (!e.getMessage().isEphemeral()) {
 			e.deferEdit().queue();
 			e.getMessage().delete().queue();

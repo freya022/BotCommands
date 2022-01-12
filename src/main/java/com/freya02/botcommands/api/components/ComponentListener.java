@@ -73,7 +73,9 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) throws Exception {
-		try (FetchedComponent fetchedComponent = componentManager.fetchComponent(event.getComponentId())) {
+		try (FetchResult fetchResult = componentManager.fetchComponent(event.getComponentId())) {
+			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
+
 			if (fetchedComponent == null) {
 				event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
 						.setEphemeral(true)
@@ -97,7 +99,7 @@ public class ComponentListener extends ListenerAdapter {
 
 			switch (idType) {
 				case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
-						fetchedComponent,
+						fetchResult,
 						e -> onError(event, e.getReason()),
 						data -> runCallback(() -> handlePersistentComponent(event,
 										buttonsMap,
@@ -106,12 +108,12 @@ public class ComponentListener extends ListenerAdapter {
 										() -> new ButtonEvent(context, (ButtonInteractionEvent) event)),
 								event));
 				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
-						fetchedComponent,
+						fetchResult,
 						e -> onError(event, e.getReason()),
 						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonInteractionEvent) event)), event)
 				);
 				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectMenu(event,
-						fetchedComponent,
+						fetchResult,
 						e -> onError(event, e.getReason()),
 						data -> runCallback(() -> handlePersistentComponent(event,
 										selectionMenuMap,
@@ -120,7 +122,7 @@ public class ComponentListener extends ListenerAdapter {
 										() -> new SelectionEvent(context, (SelectMenuInteractionEvent) event)),
 								event));
 				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
-						fetchedComponent,
+						fetchResult,
 						e -> onError(event, e.getReason()),
 						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectMenuInteractionEvent) event)), event));
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());

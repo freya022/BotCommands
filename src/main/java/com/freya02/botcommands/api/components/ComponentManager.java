@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,16 +21,16 @@ import java.util.function.Consumer;
  * The button id is supposed to be fully treated before returning data, if it is indicated it is one use, the id must be deleted before returning for example
  */
 public interface ComponentManager {
-	@Nullable
-	FetchedComponent fetchComponent(String id);
+	@NotNull
+	FetchResult fetchComponent(String id);
 
-	void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer);
+	void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer);
 
-	void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer);
+	void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer);
 
-	void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer);
+	void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer);
 
-	void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchedComponent fetchedComponent, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer);
+	void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer);
 
 	@NotNull
 	String putLambdaButton(LambdaButtonBuilder builder);

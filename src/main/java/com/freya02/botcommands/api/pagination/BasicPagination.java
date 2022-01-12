@@ -101,6 +101,16 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	}
 
 	/**
+	 * Cancels the timeout action for this pagination instance
+	 * <br>The timeout will be enabled back if the page changes
+	 */
+	public void cancelTimeout() {
+		if (timeoutFuture != null) {
+			timeoutFuture.cancel(false);
+		}
+	}
+
+	/**
 	 * Cleans up the button IDs used in this paginator
 	 * <br>This will remove every stored button IDs, even then buttons you included yourself
 	 *

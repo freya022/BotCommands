@@ -20,6 +20,7 @@ public class TestDB {
 
 		source.setDataSource(pgSource);
 		source.setMaximumPoolSize(2);
+		source.setLeakDetectionThreshold(2500);
 
 		try {
 			pgSource.getConnection().close();

@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.components;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface FetchedComponent extends AutoCloseable {
+public interface FetchedComponent{
 	@NotNull
 	ComponentType getType();
 }

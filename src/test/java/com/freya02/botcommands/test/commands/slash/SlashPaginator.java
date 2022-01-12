@@ -36,6 +36,7 @@ public class SlashPaginator extends ApplicationCommand {
 	private void replyPaginator(GuildSlashEvent event, BContext context, InteractionConstraints constraints) {
 		final PaginatorBuilder builder = new PaginatorBuilder()
 				.setConstraints(constraints)
+				.useDeleteButton(true)
 				.setTimeout(5, TimeUnit.SECONDS, (paginator, message) -> {
 					paginator.cleanup(context);
 
