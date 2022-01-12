@@ -37,7 +37,14 @@ public class SlashPaginator extends ApplicationCommand {
 				.setTimeout(5, TimeUnit.SECONDS, (paginator, message) -> {
 					paginator.cleanup(context);
 
-					System.out.println("oof");
+					//Remove components on timeout
+					event.getHook().editOriginalComponents().queue();
+
+					//Disable all components on timeout, more expensive
+//					event.getHook()
+//							.retrieveOriginal()
+//							.flatMap(m -> m.editMessageComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
+//							.queue();
 				})
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
