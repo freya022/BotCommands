@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @param <T> Type of the implementor
@@ -49,13 +50,15 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	 *
 	 * @return The {@link Message} for this current page
 	 */
-	protected abstract Message get();
+	public abstract Message get();
 
 	/**
 	 * Sets the {@link Message} associated to this paginator
 	 * <br>This is an optional operation and will only provide the {@link Message} object through the {@link PaginationTimeoutConsumer} you have set in your paginator builder
+	 * <br><b>This message instance is not updated, this should only help you get the message's ID and not what's inside it</b>
 	 *
 	 * @param message The {@link Message} object associated to this paginator
+	 * @see BasicPaginationBuilder#setTimeout(long, TimeUnit, PaginationTimeoutConsumer)
 	 */
 	public void setMessage(@NotNull Message message) {
 		this.message = message;
@@ -81,7 +84,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 				timeoutPassed = true;
 
 				timeout.onTimeout().accept((T) this, message);
-				}, timeout.timeout(), timeout.unit());
+			}, timeout.timeout(), timeout.unit());
 		}
 	}
 
@@ -99,6 +102,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	/**
 	 * Cleans up the button IDs used in this paginator
+	 * <br>This will remove every stored button IDs, even then buttons you included yourself
 	 *
 	 * @param context The {@link BContext} of this bot
 	 */

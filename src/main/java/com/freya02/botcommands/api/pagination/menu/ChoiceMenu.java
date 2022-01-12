@@ -36,7 +36,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 	           int maxEntriesPerPage,
 	           EntryTransformer<? super E> transformer,
 	           RowPrefixSupplier rowPrefixSupplier,
-	           PaginatorSupplier supplier,
+	           PaginatorSupplier<ChoiceMenu<E>> supplier,
 	           ButtonContentSupplier<E> buttonContentSupplier,
 	           ChoiceCallback<E> callback) {
 		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
