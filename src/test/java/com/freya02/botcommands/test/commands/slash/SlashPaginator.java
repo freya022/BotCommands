@@ -5,10 +5,12 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
+import com.freya02.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
@@ -48,8 +50,22 @@ public class SlashPaginator extends ApplicationCommand {
 				})
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
-				.setPaginatorSupplier((messageBuilder, components, page) -> {
-					return new EmbedBuilder().setTitle("Page #" + page).build();
+				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
+					components.addComponents(1, Components.primaryButton(btnEvt -> {
+						paginator.setPage(2); //Pages starts at 0
+
+						btnEvt.editMessage(paginator.get()).queue();
+					}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+
+					components.addComponents(1, Components.primaryButton(btnEvt -> {
+						paginator.setPage(4); //Pages starts at 0
+
+						btnEvt.editMessage(paginator.get()).queue();
+					}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+
+					return new EmbedBuilder()
+							.setTitle("Page #" + (page + 1)) //Pages starts at 0
+							.build();
 				});
 
 		final Paginator paginator = builder.build();

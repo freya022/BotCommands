@@ -20,7 +20,7 @@ public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, 
 	private static final ButtonContent DEFAULT_LAST_CONTENT = ButtonContent.withShortcode("fast_forward");
 	private static final ButtonContent DEFAULT_DELETE_CONTENT = ButtonContent.withShortcode("wastebasket");
 
-	protected PaginatorSupplier paginatorSupplier;
+	protected PaginatorSupplier<R> paginatorSupplier;
 
 	protected ButtonContent firstContent = DEFAULT_FIRST_CONTENT;
 	protected ButtonContent previousContent = DEFAULT_PREVIOUS_CONTENT;
@@ -37,7 +37,7 @@ public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, 
 	 * @param paginatorSupplier The {@link PaginatorSupplier} for this paginator
 	 * @return This builder for chaining convenience
 	 */
-	public T setPaginatorSupplier(@NotNull PaginatorSupplier paginatorSupplier) {
+	public T setPaginatorSupplier(@NotNull PaginatorSupplier<R> paginatorSupplier) {
 		this.paginatorSupplier = paginatorSupplier;
 
 		return (T) this;

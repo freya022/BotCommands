@@ -21,7 +21,7 @@ import com.freya02.botcommands.api.utils.ButtonContent;
  * @see Menu
  */
 public final class Paginator extends BasicPaginator<Paginator> {
-	Paginator(InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
+	Paginator(InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier<Paginator> supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
 		super(constraints, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

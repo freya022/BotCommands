@@ -26,13 +26,13 @@ import java.util.List;
 public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
-	protected final PaginatorSupplier supplier;
+	protected final PaginatorSupplier<T> supplier;
 	private final int maxPages;
 	private final Button deleteButton;
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
-	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton,
+	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
 	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
 		super(constraints, timeout);
 
@@ -76,7 +76,8 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	}
 
 	/**
-	 * Sets the page number, <b>this does not update the embed in any way</b>
+	 * Sets the page number, <b>this does not update the embed in any way</b>,
+	 * for example you can use {@link #get()} with an <code>editOriginal</code> in order to update the embed on Discord
 	 *
 	 * @param page Number of the page, from <code>0</code> to <code>maxPages - 1</code>
 	 * @return This {@link Paginator} for chaining convenience
@@ -129,7 +130,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 	@NotNull
 	protected MessageEmbed getEmbed() {
-		return supplier.get(messageBuilder, components, page);
+		return supplier.get((T) this, messageBuilder, components, page);
 	}
 
 	protected void putComponents() {

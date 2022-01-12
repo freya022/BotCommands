@@ -32,19 +32,20 @@ public abstract class BasicMenu<E, T extends BasicMenu<E, T>> extends BasicPagin
 	                    ButtonContent lastContent,
 	                    ButtonContent deleteContent,
 	                    @NotNull Map<Integer, MenuPage<E>> pages,
-	                    @Nullable PaginatorSupplier supplier) {
+	                    @Nullable PaginatorSupplier<T> supplier) {
 		super(constraints, timeout, pages.size(), supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 
 		this.pages = pages;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@NotNull
 	protected MessageEmbed getEmbed() {
 		final EmbedBuilder builder;
 
 		if (supplier != null) {
-			builder = new EmbedBuilder(supplier.get(messageBuilder, components, page));
+			builder = new EmbedBuilder(supplier.get((T) this, messageBuilder, components, page));
 		} else {
 			builder = new EmbedBuilder();
 		}

@@ -30,7 +30,7 @@ public final class Menu<E> extends BasicMenu<E, Menu<E>> {
 	     int maxEntriesPerPage,
 	     EntryTransformer<? super E> transformer,
 	     RowPrefixSupplier rowPrefixSupplier,
-	     PaginatorSupplier supplier) {
+	     PaginatorSupplier<Menu<E>> supplier) {
 		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
 				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
 				supplier);
