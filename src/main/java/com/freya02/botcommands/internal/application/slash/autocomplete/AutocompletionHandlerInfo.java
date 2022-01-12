@@ -107,7 +107,8 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
-				if (optionMapping == null) {
+				//Discord sends empty strings if you don't type anything
+				if (optionMapping == null || optionMapping.getAsString().isEmpty()) {
 					if (parameter.isPrimitive()) {
 						objects.add(0);
 					} else {
