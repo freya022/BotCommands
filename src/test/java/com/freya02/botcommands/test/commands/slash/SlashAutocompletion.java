@@ -22,7 +22,9 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
-	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
+	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) throws InterruptedException {
+		Thread.sleep(2000); //Simulate a long API request to show cache working
+
 		System.out.println(event.getFocusedOption().getAsString());
 
 		return new ArrayDeque<>(List.of("Anaheim Ducks",
@@ -62,7 +64,9 @@ public class SlashAutocompletion extends ApplicationCommand {
 	@AutocompletionHandler(name = "autoInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
 	                          @AppOption(name = "str") String autoStr,
-	                          @AppOption long integer) {
+	                          @AppOption long integer) throws InterruptedException {
+		Thread.sleep(2000); //Simulate a long API request to show cache working
+
 		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
@@ -71,7 +75,9 @@ public class SlashAutocompletion extends ApplicationCommand {
 	                                  @AppOption String str,
 	                                  JDA jda,
 	                                  @AppOption long integer,
-	                                  @AppOption double number) {
+	                                  @AppOption double number) throws InterruptedException {
+		Thread.sleep(2000); //Simulate a long API request to show cache working
+
 		System.out.println(event.getOptions());
 		System.out.println("str = " + str);
 		System.out.println("jda = " + jda);

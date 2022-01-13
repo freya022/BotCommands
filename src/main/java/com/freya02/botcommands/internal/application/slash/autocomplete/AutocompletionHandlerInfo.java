@@ -4,10 +4,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
-import com.freya02.botcommands.internal.ApplicationOptionData;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.ExecutableInteractionInfo;
-import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
@@ -17,6 +14,8 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierTransformer;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -24,11 +23,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 // The annotated method returns a list of things
 // These things can be, and are mapped as follows:
@@ -38,6 +37,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final long MB = 1024 * 1024;
 
 	private final BContextImpl context;
 	private final Object autocompletionHandler;
@@ -51,6 +51,25 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	private final ChoiceSupplier choiceSupplier;
 
 	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
+
+	private final Cache<String, List<Command.Choice>> cache = Caffeine.newBuilder()
+			//10 MB String cache basically
+			.maximumWeight(10L * MB)
+			.evictionListener((key, value, cause) -> {
+				LOGGER.trace("Evicted autocomplete key {} for cause {}", key, cause.name());
+			})
+			//Weight by the sum of the choice value lengths
+			.weigher((k, v) -> {
+				int sum = ((String) k).length();
+
+				final List<Command.Choice> choices = (List<Command.Choice>) v;
+				for (final Command.Choice c : choices) {
+					sum += c.getAsString().length();
+				}
+
+				return sum;
+			})
+			.build();
 
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
 		this.context = context;
@@ -87,7 +106,19 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		this.autocompleteParameters = MethodParameters.of(context, method, SlashCommandParameter::new);
 	}
 
-	Collection<?> invokeAutocompletionHandler(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws IllegalAccessException, InvocationTargetException {
+	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
+		return switch (optionMapping.getType()) {
+			case STRING -> new Command.Choice(string, string);
+			case INTEGER -> new Command.Choice(string, Long.parseLong(string));
+			case NUMBER -> new Command.Choice(string, Double.parseDouble(string));
+			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
+		};
+	}
+
+	private void invokeAutocompletionHandler(SlashCommandInfo slashCommand,
+	                                         CommandAutoCompleteInteractionEvent event,
+	                                         Consumer<Throwable> throwableConsumer,
+	                                         ConsumerEx<Collection<?>> collectionCallback) throws Exception {
 		List<Object> objects = new ArrayList<>(autocompleteParameters.size() + 1);
 
 		objects.add(event);
@@ -127,13 +158,13 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
 					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
-					return List.of();
+					return;
 				}
 
 				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
 					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
-					return List.of();
+					return;
 				}
 			} else {
 				obj = parameter.getCustomResolver().resolve(context, this, event);
@@ -144,7 +175,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			objects.add(obj);
 		}
 
-		return (Collection<?>) method.invoke(autocompletionHandler, objects.toArray());
+		methodRunner.invoke(objects.toArray(), throwableConsumer, collectionCallback);
 	}
 
 	private ChoiceSupplier generateSupplierFromStrings(AutocompletionMode autocompletionMode) {
@@ -155,35 +186,46 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		}
 	}
 
-	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
-		return switch (optionMapping.getType()) {
-			case STRING -> new Command.Choice(string, string);
-			case INTEGER -> new Command.Choice(string, Long.parseLong(string));
-			case NUMBER -> new Command.Choice(string, Double.parseDouble(string));
-			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
-		};
-	}
-
 	public String getHandlerName() {
 		return handlerName;
 	}
 
-	public List<Command.Choice> getChoices(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event) throws Exception {
-		final List<Command.Choice> actualChoices = new ArrayList<>(25);
+	public void retrieveChoices(SlashCommandInfo slashCommand,
+	                            CommandAutoCompleteInteractionEvent event,
+	                            Consumer<Throwable> throwableConsumer,
+	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
+		final String stringOption = event.getFocusedOption().getAsString();
 
-		final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event, invokeAutocompletionHandler(slashCommand, event));
+		final List<Command.Choice> cachedValue = cache.getIfPresent(stringOption);
+		if (cachedValue != null) {
+			choiceCallback.accept(cachedValue);
+		} else {
+			generateChoices(slashCommand, event, throwableConsumer, choices -> {
+				cache.put(stringOption, choices);
 
-		final OptionMapping optionMapping = event.getFocusedOption();
-
-		//If something is typed but there are no choices, don't display user input
-		if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
-			actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
-
-		for (int i = 0; i < maxChoices && i < suppliedChoices.size(); i++) {
-			actualChoices.add(suppliedChoices.get(i));
+				choiceCallback.accept(choices);
+			});
 		}
+	}
 
-		return actualChoices;
+	private void generateChoices(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<Throwable> throwableConsumer, ConsumerEx<List<Command.Choice>> choiceCallback) throws Exception {
+		invokeAutocompletionHandler(slashCommand, event, throwableConsumer, collection -> {
+			final List<Command.Choice> actualChoices = new ArrayList<>(25);
+
+			final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event, collection);
+
+			final OptionMapping optionMapping = event.getFocusedOption();
+
+			//If something is typed but there are no choices, don't display user input
+			if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
+				actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
+
+			for (int i = 0; i < maxChoices && i < suppliedChoices.size(); i++) {
+				actualChoices.add(suppliedChoices.get(i));
+			}
+
+			choiceCallback.accept(actualChoices);
+		});
 	}
 
 	@Override

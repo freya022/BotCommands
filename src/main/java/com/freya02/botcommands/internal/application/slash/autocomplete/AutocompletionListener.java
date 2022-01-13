@@ -70,7 +70,10 @@ public class AutocompletionListener implements EventListener {
 					return;
 				}
 
-				event.replyChoices(handler.getChoices(slashCommand, event, throwableConsumer)).queue();
+				//I really don't like the internal chaining of result consumers...
+				handler.retrieveChoices(slashCommand, event, throwableConsumer, choices -> {
+					event.replyChoices(choices).queue();
+				});
 			}, throwableConsumer);
 		}
 	}
