@@ -127,7 +127,8 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 				// Discord also sends invalid number strings
 				if (optionMapping == null
 						|| optionMapping.getAsString().isEmpty()
-						|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))) {
+						|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))
+				) {
 					if (parameter.isPrimitive()) {
 						objects.add(0);
 					} else {

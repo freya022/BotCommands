@@ -50,7 +50,7 @@ public class DoubleResolver extends ParameterResolver implements RegexParameterR
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return Double.valueOf(optionMapping.getAsString());
+		return optionMapping.getAsDouble();
 	}
 
 	@Override
