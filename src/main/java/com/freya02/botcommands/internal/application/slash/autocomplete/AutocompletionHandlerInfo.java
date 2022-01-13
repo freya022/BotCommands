@@ -123,8 +123,11 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
-				//Discord sends empty strings if you don't type anything
-				if (optionMapping == null || optionMapping.getAsString().isEmpty()) {
+				//TODO Discord sends empty strings if you don't type anything, might be a discord bug
+				// Discord also sends invalid number strings
+				if (optionMapping == null
+						|| optionMapping.getAsString().isEmpty()
+						|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))) {
 					if (parameter.isPrimitive()) {
 						objects.add(0);
 					} else {
