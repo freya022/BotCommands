@@ -1,29 +1,38 @@
 package com.freya02.botcommands.test.commands.slash;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
-public class SlashAutocompletion extends ApplicationCommand {
-	@JDASlashCommand(name = "auto")
+public class SlashAutocompletionCache extends ApplicationCommand {
+	private static final Logger LOGGER = Logging.getLogger();
+
+	@JDASlashCommand(name = "auto_cache")
 	public void auto(GuildSlashEvent event,
-	                 @AppOption(autocomplete = "autoStr") String str,
-	                 @AppOption(autocomplete = "autoInt") long integer,
-	                 @AppOption(autocomplete = "autoDou") double number
+	                 @AppOption(autocomplete = "autoCacheStr") String str,
+	                 @AppOption(autocomplete = "autoCacheInt") long integer,
+	                 @AppOption(autocomplete = "autoCacheDou") double number
 	) {
 		event.reply(str).queue();
 	}
 
-	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
-	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
-		System.out.println(event.getFocusedOption().getAsString());
+	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false, cacheMode = AutocompletionCacheMode.CONSTANT)
+	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) throws InterruptedException {
+		LOGGER.warn("Computing constant");
+
+		Thread.sleep(2000); //Simulate a long API request to show cache working
 
 		return new ArrayDeque<>(List.of("Anaheim Ducks",
 				"Arizona Coyotes",
@@ -59,24 +68,26 @@ public class SlashAutocompletion extends ApplicationCommand {
 				"Winnipeg Jets"));
 	}
 
-	@AutocompletionHandler(name = "autoInt")
+	@AutocompletionHandler(name = "autoCacheInt", cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY)
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
 	                          @AppOption(name = "str") String autoStr,
-	                          @AppOption long integer) {
-		return new HashSet<>(List.of(1L, 12L, 123L));
+	                          @AppOption long integer) throws InterruptedException {
+		LOGGER.warn("Computing constant by key");
+
+		Thread.sleep(2000); //Simulate a long API request to show cache working
+
+		return LongStream.rangeClosed(0, 500).boxed().collect(Collectors.toSet());
 	}
 
-	@AutocompletionHandler(name = "autoDou")
+	@AutocompletionHandler(name = "autoCacheDou", cacheMode = AutocompletionCacheMode.NO_CACHE)
 	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
 	                                  @AppOption String str,
 	                                  JDA jda,
 	                                  @AppOption long integer,
-	                                  @AppOption double number) {
-		System.out.println(event.getOptions());
-		System.out.println("str = " + str);
-		System.out.println("jda = " + jda);
-		System.out.println("integer = " + integer);
-		System.out.println("number = " + number);
+	                                  @AppOption double number) throws InterruptedException {
+		LOGGER.warn("Computing key");
+
+		Thread.sleep(2000); //Simulate a long API request to show cache working
 
 		return List.of(1.1, 12.12, 123.123);
 	}

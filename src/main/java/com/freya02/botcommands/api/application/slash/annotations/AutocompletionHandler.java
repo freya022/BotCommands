@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.application.slash.annotations;
 
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -76,6 +77,21 @@ public @interface AutocompletionHandler {
 	 * @see AutocompletionMode
 	 */
 	AutocompletionMode mode() default AutocompletionMode.FUZZY;
+
+	/**
+	 * Sets the {@link AutocompletionCacheMode autocompletion cache mode}
+	 *
+	 * @return Mode of the autocompletion cache
+	 */
+	AutocompletionCacheMode cacheMode() default AutocompletionCacheMode.NO_CACHE;
+
+	/**
+	 * Sets the cache size for this autocompletion cache, <b>in kilobytes (KB)</b>
+	 * <br>This will work only on {@link AutocompletionCacheMode#CONSTANT_BY_KEY}
+	 *
+	 * @return The cache size for this autocompletion mode
+	 */
+	long cacheSize() default 10240;
 
 	/**
 	 * Determines if the user input is shown as the first suggestion

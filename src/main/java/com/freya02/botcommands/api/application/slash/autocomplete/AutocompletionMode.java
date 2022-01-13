@@ -5,6 +5,9 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 
 import java.util.Collection;
 
+/**
+ * See values
+ */
 public enum AutocompletionMode {
 	/**
 	 * Sorts the strings by fuzzy search score

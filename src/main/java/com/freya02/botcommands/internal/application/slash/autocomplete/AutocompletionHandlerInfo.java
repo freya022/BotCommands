@@ -8,14 +8,13 @@ import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
+import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierChoices;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringContinuity;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringFuzzy;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierTransformer;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -37,7 +36,6 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final long MB = 1024 * 1024;
 
 	private final BContextImpl context;
 	private final Object autocompletionHandler;
@@ -52,24 +50,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
 
-	private final Cache<String, List<Command.Choice>> cache = Caffeine.newBuilder()
-			//10 MB String cache basically
-			.maximumWeight(10L * MB)
-			.evictionListener((key, value, cause) -> {
-				LOGGER.trace("Evicted autocomplete key {} for cause {}", key, cause.name());
-			})
-			//Weight by the sum of the choice value lengths
-			.weigher((k, v) -> {
-				int sum = ((String) k).length();
-
-				final List<Command.Choice> choices = (List<Command.Choice>) v;
-				for (final Command.Choice c : choices) {
-					sum += c.getAsString().length();
-				}
-
-				return sum;
-			})
-			.build();
+	private final AbstractAutocompletionCache cache;
 
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
 		this.context = context;
@@ -79,6 +60,9 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 		final AutocompletionHandler annotation = method.getAnnotation(AutocompletionHandler.class);
 		final AutocompletionMode autocompletionMode = annotation.mode();
+
+		this.cache = AbstractAutocompletionCache.fromMode(annotation.cacheMode(), annotation.cacheSize());
+
 		this.handlerName = annotation.name();
 		this.showUserInput = annotation.showUserInput();
 		this.maxChoices = OptionData.MAX_CHOICES - (showUserInput ? 1 : 0); //accommodate for user input
@@ -196,16 +180,13 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
 		final String stringOption = event.getFocusedOption().getAsString();
 
-		final List<Command.Choice> cachedValue = cache.getIfPresent(stringOption);
-		if (cachedValue != null) {
-			choiceCallback.accept(cachedValue);
-		} else {
+		cache.retrieveAndCall(stringOption, choiceCallback, () -> {
 			generateChoices(slashCommand, event, throwableConsumer, choices -> {
 				cache.put(stringOption, choices);
 
 				choiceCallback.accept(choices);
 			});
-		}
+		});
 	}
 
 	private void generateChoices(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<Throwable> throwableConsumer, ConsumerEx<List<Command.Choice>> choiceCallback) throws Exception {
