@@ -93,8 +93,20 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
 		return switch (optionMapping.getType()) {
 			case STRING -> new Command.Choice(string, string);
-			case INTEGER -> new Command.Choice(string, Long.parseLong(string));
-			case NUMBER -> new Command.Choice(string, Double.parseDouble(string));
+			case INTEGER -> {
+				try {
+					yield new Command.Choice(string, Long.parseLong(string));
+				} catch (NumberFormatException e) {
+					yield null;
+				}
+			}
+			case NUMBER -> {
+				try {
+					yield new Command.Choice(string, Double.parseDouble(string));
+				} catch (NumberFormatException e) {
+					yield null;
+				}
+			}
 			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
 		};
 	}
@@ -202,8 +214,14 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			final OptionMapping optionMapping = event.getFocusedOption();
 
 			//If something is typed but there are no choices, don't display user input
-			if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty())
-				actualChoices.add(getChoice(optionMapping, optionMapping.getAsString()));
+			if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty()) {
+				final Command.Choice choice = getChoice(optionMapping, optionMapping.getAsString());
+
+				//Could be null if option mapping is malformed
+				if (choice != null) {
+					actualChoices.add(choice);
+				}
+			}
 
 			for (int i = 0; i < maxChoices && i < suppliedChoices.size(); i++) {
 				actualChoices.add(suppliedChoices.get(i));

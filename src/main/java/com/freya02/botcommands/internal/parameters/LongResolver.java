@@ -50,7 +50,11 @@ public class LongResolver extends ParameterResolver implements RegexParameterRes
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsLong();
+		try {
+			return optionMapping.getAsLong();
+		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
+			return 0;
+		}
 	}
 
 	@Override
