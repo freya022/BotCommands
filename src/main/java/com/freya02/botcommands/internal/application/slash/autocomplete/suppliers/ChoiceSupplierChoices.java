@@ -19,8 +19,10 @@ public class ChoiceSupplierChoices implements ChoiceSupplier {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Command.Choice> apply(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
-		final List<Command.Choice> choices = (List<Command.Choice>) collection;
+		final Collection<Command.Choice> choices = (Collection<Command.Choice>) collection;
 
-		return choices.subList(0, Math.min(handlerInfo.getMaxChoices(), choices.size()));
+		return choices.stream()
+				.limit(handlerInfo.getMaxChoices())
+				.toList();
 	}
 }
