@@ -28,7 +28,7 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 		event.reply(str).queue();
 	}
 
-	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false, cacheMode = AutocompletionCacheMode.CONSTANT)
+	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false, cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) throws InterruptedException {
 		LOGGER.warn("Computing constant");
 
