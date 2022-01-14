@@ -16,4 +16,9 @@ public class NoCacheAutocompletion extends AbstractAutocompletionCache {
 	public void put(String stringOption, List<Command.Choice> choices) {
 		//Don't cache
 	}
+
+	@Override
+	public void invalidate() {
+		//No cache to invalidate
+	}
 }

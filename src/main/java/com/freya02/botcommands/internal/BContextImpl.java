@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
@@ -62,6 +63,8 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 	private boolean onlineAppCommandCheckEnabled;
+
+	private final Map<String, AutocompletionHandlerInfo> autocompleteHandlersMap = new HashMap<>();
 
 	private final TLongSet testGuildIds = TCollections.synchronizedSet(new TLongHashSet());
 
@@ -365,6 +368,27 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(commandInfo.getMethod()),
 					path));
 		}
+	}
+
+	public void addAutocompletionHandler(AutocompletionHandlerInfo handlerInfo) {
+		final AutocompletionHandlerInfo oldHandler = autocompleteHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
+
+		if (oldHandler != null) {
+			throw new IllegalArgumentException("Tried to register autocompletion handler '" + handlerInfo.getHandlerName() + "' at " + Utils.formatMethodShort(handlerInfo.getMethod()) + " was already registered at " + Utils.formatMethodShort(oldHandler.getMethod()));
+		}
+	}
+
+	@Nullable
+	public AutocompletionHandlerInfo getAutocompletionHandler(String autocompletionHandlerName) {
+		return autocompleteHandlersMap.get(autocompletionHandlerName);
+	}
+
+	@Override
+	public void invalidateAutocompletionCache(String autocompletionHandlerName) {
+		final AutocompletionHandlerInfo handler = getAutocompletionHandler(autocompletionHandlerName);
+		if (handler == null) throw new IllegalArgumentException("Autocompletion handler name not found for '" + autocompletionHandlerName + "'");
+
+		handler.invalidate();
 	}
 
 	public Collection<TextCommandCandidates> getCommands() {

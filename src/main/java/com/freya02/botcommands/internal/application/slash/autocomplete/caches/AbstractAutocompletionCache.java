@@ -18,4 +18,6 @@ public abstract class AbstractAutocompletionCache {
 	public abstract void retrieveAndCall(String stringOption, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception;
 
 	public abstract void put(String stringOption, List<Command.Choice> choices);
+
+	public abstract void invalidate();
 }

@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
@@ -22,7 +21,6 @@ public class AutocompletionListener implements EventListener {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final BContextImpl context;
-	private final Map<String, AutocompletionHandlerInfo> autocompletionHandlersMap;
 
 	private int autocompletionThreadNumber = 0;
 	private final ExecutorService autocompletionService = Utils.createCommandPool(r -> {
@@ -34,9 +32,8 @@ public class AutocompletionListener implements EventListener {
 		return thread;
 	});
 
-	public AutocompletionListener(BContextImpl context, Map<String, AutocompletionHandlerInfo> autocompletionHandlersMap) {
+	public AutocompletionListener(BContextImpl context) {
 		this.context = context;
-		this.autocompletionHandlersMap = autocompletionHandlersMap;
 	}
 
 	@SubscribeEvent
@@ -63,7 +60,7 @@ public class AutocompletionListener implements EventListener {
 					return;
 				}
 
-				final AutocompletionHandlerInfo handler = autocompletionHandlersMap.get(autocompletionHandler);
+				final AutocompletionHandlerInfo handler = context.getAutocompletionHandler(autocompletionHandler);
 				if (handler == null) {
 					LOGGER.warn("Found no autocompletion handler for '{}'", autocompletionHandler);
 

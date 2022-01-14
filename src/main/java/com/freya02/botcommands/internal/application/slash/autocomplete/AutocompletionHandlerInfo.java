@@ -287,4 +287,8 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	public int getMaxChoices() {
 		return maxChoices;
 	}
+
+	public void invalidate() {
+		cache.invalidate();
+	}
 }

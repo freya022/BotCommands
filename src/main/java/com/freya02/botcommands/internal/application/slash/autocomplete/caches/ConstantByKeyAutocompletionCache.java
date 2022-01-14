@@ -49,4 +49,9 @@ public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCach
 	public void put(String stringOption, List<Command.Choice> choices) {
 		cache.put(stringOption, choices);
 	}
+
+	@Override
+	public void invalidate() {
+		cache.invalidateAll();
+	}
 }
