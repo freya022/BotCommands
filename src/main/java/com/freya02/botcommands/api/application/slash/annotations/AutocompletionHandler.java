@@ -91,7 +91,7 @@ public @interface AutocompletionHandler {
 	 *
 	 * @return The cache size for this autocompletion mode
 	 */
-	long cacheSize() default 10240;
+	long cacheSize() default 2048;
 
 	/**
 	 * Determines if the user input is shown as the first suggestion

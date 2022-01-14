@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class AbstractAutocompletionCache {
-	public static AbstractAutocompletionCache fromMode(AutocompletionCacheMode cacheMode, long maxCacheSize) {
+	public static AbstractAutocompletionCache fromMode(AutocompletionCacheMode cacheMode, long maxCacheSizeKb) {
 		return switch (cacheMode) {
 			case CONSTANT -> new ConstantAutocompletionCache();
-			case CONSTANT_BY_KEY -> new ConstantByKeyAutocompletionCache(maxCacheSize);
+			case CONSTANT_BY_KEY -> new ConstantByKeyAutocompletionCache(maxCacheSizeKb);
 			case NO_CACHE -> new NoCacheAutocompletion();
 		};
 	}

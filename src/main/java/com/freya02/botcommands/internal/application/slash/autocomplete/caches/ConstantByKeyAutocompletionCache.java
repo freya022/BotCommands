@@ -11,9 +11,9 @@ import java.util.function.Consumer;
 public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCache {
 	protected final Cache<String, List<Command.Choice>> cache;
 
-	public ConstantByKeyAutocompletionCache(long maximumWeight) {
+	public ConstantByKeyAutocompletionCache(long maximumWeightKb) {
 		cache = Caffeine.newBuilder()
-				.maximumWeight(maximumWeight)
+				.maximumWeight(maximumWeightKb * 1024)
 //				.evictionListener((key, value, cause) -> {
 //					LOGGER.trace("Evicted autocomplete key '{}', of size {} for cause {}, maximum weight: {}", key, getEntrySize(key, value), cause.name(), maximumWeight);
 //				})
