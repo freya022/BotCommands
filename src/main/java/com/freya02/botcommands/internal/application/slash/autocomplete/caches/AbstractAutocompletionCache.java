@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.internal.RunnableEx;
+import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.List;
@@ -15,9 +16,9 @@ public abstract class AbstractAutocompletionCache {
 		};
 	}
 
-	public abstract void retrieveAndCall(String stringOption, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception;
+	public abstract void retrieveAndCall(CompositeAutocompletionKey key, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception;
 
-	public abstract void put(String stringOption, List<Command.Choice> choices);
+	public abstract void put(CompositeAutocompletionKey key, List<Command.Choice> choices);
 
 	public abstract void invalidate();
 }

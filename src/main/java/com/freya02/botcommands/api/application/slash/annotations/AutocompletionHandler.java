@@ -57,6 +57,7 @@ import java.util.List;
  *
  * @see AppOption
  * @see JDASlashCommand
+ * @see CompositeKey
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -80,8 +81,10 @@ public @interface AutocompletionHandler {
 
 	/**
 	 * Sets the {@link AutocompletionCacheMode autocompletion cache mode}
+	 * <br>You can mark app options your autocompletion depends on as composite keys, this would be useful to make an autocompletion result depend on multiple options, instead of only the focused one
 	 *
 	 * @return Mode of the autocompletion cache
+	 * @see CompositeKey
 	 */
 	AutocompletionCacheMode cacheMode() default AutocompletionCacheMode.NO_CACHE;
 

@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.application.slash.annotations.CompositeKey;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
@@ -70,8 +71,8 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 
 	@AutocompletionHandler(name = "autoCacheInt", cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY)
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
-	                          @AppOption(name = "str") String autoStr,
-	                          @AppOption long integer) throws InterruptedException {
+	                          @CompositeKey @AppOption(name = "str") String autoStr,
+	                          @CompositeKey @AppOption long integer) throws InterruptedException {
 		LOGGER.warn("Computing constant by key");
 
 		Thread.sleep(2000); //Simulate a long API request to show cache working

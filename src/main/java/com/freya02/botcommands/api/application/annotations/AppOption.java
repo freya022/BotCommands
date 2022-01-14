@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
  * @see LongRange @LongRange
  * @see DoubleRange @DoubleRange
  * @see ChannelTypes @ChannelTypes
+ * @see AutocompletionHandler @AutocompletionHandler
+ * @see CompositeKey @CompositeKey
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
@@ -50,6 +52,8 @@ public @interface AppOption {
 
 	/**
 	 * Name of the autocompletion handler, must match a method annotated with {@link AutocompletionHandler} with the same name in it
+	 *
+	 * @see CompositeKey
 	 */
 	String autocomplete() default "";
 }

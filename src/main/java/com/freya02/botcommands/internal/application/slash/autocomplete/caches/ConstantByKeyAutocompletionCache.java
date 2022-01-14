@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.internal.RunnableEx;
+import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCache {
-	protected final Cache<String, List<Command.Choice>> cache;
+	protected final Cache<CompositeAutocompletionKey, List<Command.Choice>> cache;
 
 	public ConstantByKeyAutocompletionCache(long maximumWeightKb) {
 		cache = Caffeine.newBuilder()
@@ -24,7 +25,7 @@ public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCach
 
 	@SuppressWarnings("unchecked")
 	private int getEntrySize(Object k, Object v) {
-		int sum = ((String) k).length();
+		int sum = ((CompositeAutocompletionKey) k).length();
 
 		final List<Command.Choice> choices = (List<Command.Choice>) v;
 		for (final Command.Choice c : choices) {
@@ -35,8 +36,8 @@ public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCach
 	}
 
 	@Override
-	public void retrieveAndCall(String stringOption, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception {
-		final List<Command.Choice> cachedValue = cache.getIfPresent(stringOption);
+	public void retrieveAndCall(CompositeAutocompletionKey key, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception {
+		final List<Command.Choice> cachedValue = cache.getIfPresent(key);
 
 		if (cachedValue != null) {
 			choiceCallback.accept(cachedValue);
@@ -46,8 +47,8 @@ public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCach
 	}
 
 	@Override
-	public void put(String stringOption, List<Command.Choice> choices) {
-		cache.put(stringOption, choices);
+	public void put(CompositeAutocompletionKey key, List<Command.Choice> choices) {
+		cache.put(key, choices);
 	}
 
 	@Override

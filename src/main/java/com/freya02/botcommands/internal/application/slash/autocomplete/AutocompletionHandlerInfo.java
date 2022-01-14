@@ -48,7 +48,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 	private final ChoiceSupplier choiceSupplier;
 
-	private final MethodParameters<SlashCommandParameter> autocompleteParameters;
+	private final MethodParameters<AutocompleteCommandParameter> autocompleteParameters;
 
 	private final AbstractAutocompletionCache cache;
 
@@ -87,7 +87,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			this.choiceSupplier = new ChoiceSupplierTransformer(this, transformer);
 		}
 
-		this.autocompleteParameters = MethodParameters.of(context, method, SlashCommandParameter::new);
+		this.autocompleteParameters = MethodParameters.of(context, method, AutocompleteCommandParameter::new);
 	}
 
 	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
@@ -109,6 +109,39 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			}
 			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
 		};
+	}
+
+	private String[] getCompositeOptionValues(SlashCommandInfo slashCommand,
+	                                          CommandAutoCompleteInteractionEvent event) {
+		final List<String> optionValues = new ArrayList<>();
+		optionValues.add(event.getFocusedOption().getAsString());
+
+		int optionIndex = 0;
+		final List<String> optionNames = event.getGuild() != null ? slashCommand.getLocalizedOptions(event.getGuild()) : null;
+		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+
+			if (parameter.isOption()) {
+				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
+				if (optionName == null) {
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(method)));
+				}
+
+				optionIndex++;
+
+				if (parameter.isCompositeKey()) {
+					final OptionMapping option = event.getOption(optionName);
+
+					if (option == null) {
+						optionValues.add("null");
+					} else if (!event.getFocusedOption().getName().equals(optionName)) { //Only add the options other than the focused one, since it's already there, saves us from an HashSet
+						optionValues.add(option.getAsString());
+					}
+				}
+			}
+		}
+
+		return optionValues.toArray(new String[0]);
 	}
 
 	private void invokeAutocompletionHandler(SlashCommandInfo slashCommand,
@@ -135,8 +168,8 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
-				//TODO Discord sends empty strings if you don't type anything, might be a discord bug
-				// Discord also sends invalid number strings
+				// Discord sends empty strings if you don't type anything, apparently is intended behavior
+				// Discord also sends invalid number strings, intended behavior too...
 				if (optionMapping == null
 						|| optionMapping.getAsString().isEmpty()
 						|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))
@@ -194,11 +227,13 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	                            CommandAutoCompleteInteractionEvent event,
 	                            Consumer<Throwable> throwableConsumer,
 	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
-		final String stringOption = event.getFocusedOption().getAsString();
+		final String[] compositeOptionValues = getCompositeOptionValues(slashCommand, event);
 
-		cache.retrieveAndCall(stringOption, choiceCallback, () -> {
+		final CompositeAutocompletionKey key = new CompositeAutocompletionKey(compositeOptionValues);
+
+		cache.retrieveAndCall(key, choiceCallback, () -> {
 			generateChoices(slashCommand, event, throwableConsumer, choices -> {
-				cache.put(stringOption, choices);
+				cache.put(key, choices);
 
 				choiceCallback.accept(choices);
 			});
