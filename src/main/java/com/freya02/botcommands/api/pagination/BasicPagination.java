@@ -64,7 +64,6 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 		this.message = message;
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void onPreGet() {
 		if (timeoutPassed && timeout != null) {
 			LOGGER.warn("Timeout has already been cleaned up by pagination is still used ! Make sure you called BasicPagination#cleanup in the timeout consumer, timeout consumer at: {}", timeout.onTimeout().getClass().getNestHost());
@@ -73,6 +72,15 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 		messageBuilder.clear();
 		components.clear();
 
+		restartTimeout();
+	}
+
+	/**
+	 * Restarts the timeout of this pagination instance
+	 * <br>This means the timeout will be scheduled again, as if you called {@link #get()}, but without changing the actual content
+	 */
+	@SuppressWarnings("unchecked")
+	public void restartTimeout() {
 		if (timeout != null) {
 			if (timeoutFuture != null) {
 				timeoutFuture.cancel(false);

@@ -230,8 +230,9 @@ public interface BContext {
 	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
 	 * <br>Command overloads are also not executed
 	 *
-	 * <h2>Example</h2>
-	 * <h3>Restricting the bot to a certain {@link GuildMessageChannel}</h3>
+	 * <p>
+	 * <br><b>Example</b>
+	 * <br><b>Restricting the bot to a certain {@link GuildMessageChannel}</b>
 	 * <pre><code>
 	 * CommandsBuilder.newBuilder()
 	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
