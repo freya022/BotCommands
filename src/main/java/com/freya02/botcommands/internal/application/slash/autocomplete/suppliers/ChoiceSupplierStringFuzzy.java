@@ -1,10 +1,9 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.suppliers;
 
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteAlgorithms;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.ChoiceSupplier;
-import me.xdrop.fuzzywuzzy.FuzzySearch;
-import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -21,26 +20,10 @@ public class ChoiceSupplierStringFuzzy implements ChoiceSupplier {
 
 	@Override
 	public List<Command.Choice> apply(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
-		final List<String> list = collection
-				.stream()
-				.map(Object::toString)
-				.sorted()
-				.toList();
-
 		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
-		//First sort the results by similarities but by taking into account an incomplete input
-		final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(autoCompleteQuery.getValue(),
-				list,
-				FuzzySearch::partialRatio,
-				handlerInfo.getMaxChoices());
 
-		//Then sort the results by similarities but don't take length into account
-		final List<ExtractedResult> similarities = FuzzySearch.extractTop(autoCompleteQuery.getValue(),
-				bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
-				FuzzySearch::ratio,
-				handlerInfo.getMaxChoices());
-
-		return similarities.stream()
+		return AutocompleteAlgorithms.fuzzyMatching(collection, Object::toString, event)
+				.stream()
 				.limit(handlerInfo.getMaxChoices())
 				.map(c -> AutocompletionHandlerInfo.getChoice(autoCompleteQuery.getType(), c.getString()))
 				.toList();
