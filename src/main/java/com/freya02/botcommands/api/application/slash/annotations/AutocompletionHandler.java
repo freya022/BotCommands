@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.application.slash.annotations;
 
-import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.lang.annotation.ElementType;
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * <p>
  *
- * You can add more List element types with {@link CommandsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
+ * You can add more List element types with {@link ExtensionsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
  *
  * <p>
  *
