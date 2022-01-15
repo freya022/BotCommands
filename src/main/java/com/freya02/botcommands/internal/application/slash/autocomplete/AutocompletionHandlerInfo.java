@@ -210,7 +210,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		invokeAutocompletionHandler(slashCommand, event, throwableConsumer, collection -> {
 			final List<Command.Choice> actualChoices = new ArrayList<>(25);
 
-			final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event, collection);
+			final List<Command.Choice> suppliedChoices = choiceSupplier.apply(event, collection);
 
 			final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 

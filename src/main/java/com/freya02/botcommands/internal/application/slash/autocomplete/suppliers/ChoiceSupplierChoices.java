@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.suppliers;
 
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.ChoiceSupplier;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -18,7 +17,7 @@ public class ChoiceSupplierChoices implements ChoiceSupplier {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Command.Choice> apply(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
+	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
 		final Collection<Command.Choice> choices = (Collection<Command.Choice>) collection;
 
 		return choices.stream()
