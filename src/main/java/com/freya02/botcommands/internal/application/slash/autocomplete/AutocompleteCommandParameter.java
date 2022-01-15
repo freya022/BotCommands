@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
-import com.freya02.botcommands.api.application.slash.annotations.CompositeKey;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 
 import java.lang.reflect.Parameter;

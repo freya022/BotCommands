@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.application.slash.annotations;
+package com.freya02.botcommands.api.application.slash.autocomplete.annotations;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
 
