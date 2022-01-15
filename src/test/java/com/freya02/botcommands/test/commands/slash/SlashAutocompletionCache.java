@@ -29,14 +29,15 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 		event.reply(str).queue();
 	}
 
-	@CacheAutocompletion
+	@CacheAutocompletion(guildLocal = true, channelLocal = true, userLocal = true)
 	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) throws InterruptedException {
 		LOGGER.warn("Computing constant");
 
 		Thread.sleep(2000); //Simulate a long API request to show cache working
 
-		return new ArrayDeque<>(List.of("Anaheim Ducks",
+		return new ArrayDeque<>(List.of(event.getChannel().getName(),
+				"Anaheim Ducks",
 				"Arizona Coyotes",
 				"Boston Bruins",
 				"Buffalo Sabres",

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCache {
-	protected final Cache<CompositeAutocompletionKey, List<Command.Choice>> cache;
+	private final Cache<CompositeAutocompletionKey, List<Command.Choice>> cache;
 
 	public ConstantByKeyAutocompletionCache(long maximumWeightKb) {
 		cache = Caffeine.newBuilder()

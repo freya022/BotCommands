@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.ToLongFunction;
 
 // The annotated method returns a list of things
 // These things can be, and are mapped as follows:
@@ -53,6 +54,10 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 	private final AbstractAutocompletionCache cache;
 
+	private final ToLongFunction<CommandAutoCompleteInteractionEvent> guildFunction;
+	private final ToLongFunction<CommandAutoCompleteInteractionEvent> channelFunction;
+	private final ToLongFunction<CommandAutoCompleteInteractionEvent> userFunction;
+
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
 		this.context = context;
 		this.autocompletionHandler = autocompletionHandler;
@@ -62,7 +67,16 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		final AutocompletionHandler annotation = method.getAnnotation(AutocompletionHandler.class);
 		final AutocompletionMode autocompletionMode = annotation.mode();
 
-		this.cache = AbstractAutocompletionCache.fromMode(method.getAnnotation(CacheAutocompletion.class));
+		final CacheAutocompletion cacheAutocompletion = method.getAnnotation(CacheAutocompletion.class);
+		this.cache = AbstractAutocompletionCache.fromMode(cacheAutocompletion);
+
+		if (cacheAutocompletion != null) {
+			guildFunction = cacheAutocompletion.guildLocal() ? (e -> e.getGuild() != null ? e.getGuild().getIdLong() : 0) : (e -> 0);
+			channelFunction = cacheAutocompletion.channelLocal() ? (e -> e.getChannel() != null ? e.getChannel().getIdLong() : 0) : (e -> 0);
+			userFunction = cacheAutocompletion.userLocal() ? (e -> e.getUser().getIdLong()) : (e -> 0);
+		} else {
+			guildFunction = channelFunction = userFunction = e -> 0L;
+		}
 
 		this.handlerName = annotation.name();
 		this.showUserInput = annotation.showUserInput();
@@ -230,7 +244,10 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
 		final String[] compositeOptionValues = getCompositeOptionValues(slashCommand, event);
 
-		final CompositeAutocompletionKey key = new CompositeAutocompletionKey(compositeOptionValues);
+		final CompositeAutocompletionKey key = new CompositeAutocompletionKey(compositeOptionValues,
+				guildFunction.applyAsLong(event),
+				channelFunction.applyAsLong(event),
+				userFunction.applyAsLong(event));
 
 		cache.retrieveAndCall(key, choiceCallback, () -> {
 			generateChoices(slashCommand, event, throwableConsumer, choices -> {

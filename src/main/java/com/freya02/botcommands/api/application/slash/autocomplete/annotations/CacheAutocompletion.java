@@ -2,6 +2,9 @@ package com.freya02.botcommands.api.application.slash.autocomplete.annotations;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
+import net.dv8tion.jda.api.entities.Channel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -37,4 +40,25 @@ public @interface CacheAutocompletion {
 	 * @return The cache size for this autocompletion mode
 	 */
 	long cacheSize() default 2048;
+
+	/**
+	 * Defines whether this autocompletion will give different results based on which {@link Guild} this interaction is executing on
+	 *
+	 * @return <code>true</code> if the autocompletion depends on the {@link Guild} this interaction is execution on
+	 */
+	boolean guildLocal() default false;
+
+	/**
+	 * Defines whether this autocompletion will give different results based on which {@link User} is executing this interaction
+	 *
+	 * @return <code>true</code> if the autocompletion depends on which {@link User} is executing this interaction
+	 */
+	boolean userLocal() default false;
+
+	/**
+	 * Defines whether this autocompletion will give different results based on which {@link Channel} this interaction is executing on
+	 *
+	 * @return <code>true</code> if the autocompletion depends on the {@link Channel} this interaction is execution on
+	 */
+	boolean channelLocal() default false;
 }
