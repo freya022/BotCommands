@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.application.slash.autocomplete.annotations;
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -59,6 +58,7 @@ import java.util.List;
  * @see AppOption
  * @see JDASlashCommand
  * @see CompositeKey
+ * @see CacheAutocompletion
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -79,23 +79,6 @@ public @interface AutocompletionHandler {
 	 * @see AutocompletionMode
 	 */
 	AutocompletionMode mode() default AutocompletionMode.FUZZY;
-
-	/**
-	 * Sets the {@link AutocompletionCacheMode autocompletion cache mode}
-	 * <br>You can mark app options your autocompletion depends on as composite keys, this would be useful to make an autocompletion result depend on multiple options, instead of only the focused one
-	 *
-	 * @return Mode of the autocompletion cache
-	 * @see CompositeKey
-	 */
-	AutocompletionCacheMode cacheMode() default AutocompletionCacheMode.NO_CACHE;
-
-	/**
-	 * Sets the cache size for this autocompletion cache, <b>in kilobytes (KB)</b>
-	 * <br>This will work only on {@link AutocompletionCacheMode#CONSTANT_BY_KEY}
-	 *
-	 * @return The cache size for this autocompletion mode
-	 */
-	long cacheSize() default 2048;
 
 	/**
 	 * Determines if the user input is shown as the first suggestion

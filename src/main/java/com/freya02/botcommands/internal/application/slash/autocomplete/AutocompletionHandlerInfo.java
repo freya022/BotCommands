@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -61,7 +62,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		final AutocompletionHandler annotation = method.getAnnotation(AutocompletionHandler.class);
 		final AutocompletionMode autocompletionMode = annotation.mode();
 
-		this.cache = AbstractAutocompletionCache.fromMode(annotation.cacheMode(), annotation.cacheSize());
+		this.cache = AbstractAutocompletionCache.fromMode(method.getAnnotation(CacheAutocompletion.class));
 
 		this.handlerName = annotation.name();
 		this.showUserInput = annotation.showUserInput();

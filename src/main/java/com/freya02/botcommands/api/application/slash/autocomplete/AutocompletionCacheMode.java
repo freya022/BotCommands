@@ -9,9 +9,5 @@ public enum AutocompletionCacheMode {
 	 * <br><b>The value is assumed to always be the same at any point in time, for the same key</b>, as <code>f(key, t) = value(key)</code>
 	 * <br>The values may be computed if the key has been evicted
 	 */
-	CONSTANT_BY_KEY,
-	/**
-	 * The autocompletion choice list will always be computed
-	 */
-	NO_CACHE
+	CONSTANT_BY_KEY
 }

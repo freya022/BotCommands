@@ -5,9 +5,9 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -29,7 +29,8 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 		event.reply(str).queue();
 	}
 
-	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false, cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY)
+	@CacheAutocompletion
+	@AutocompletionHandler(name = "autoCacheStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) throws InterruptedException {
 		LOGGER.warn("Computing constant");
 
@@ -69,7 +70,8 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 				"Winnipeg Jets"));
 	}
 
-	@AutocompletionHandler(name = "autoCacheInt", cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY)
+	@CacheAutocompletion
+	@AutocompletionHandler(name = "autoCacheInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
 	                          @CompositeKey @AppOption(name = "str") String autoStr,
 	                          @CompositeKey @AppOption long integer) throws InterruptedException {
@@ -80,7 +82,7 @@ public class SlashAutocompletionCache extends ApplicationCommand {
 		return LongStream.rangeClosed(0, 500).boxed().collect(Collectors.toSet());
 	}
 
-	@AutocompletionHandler(name = "autoCacheDou", cacheMode = AutocompletionCacheMode.NO_CACHE)
+	@AutocompletionHandler(name = "autoCacheDou")
 	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
 	                                  @AppOption String str,
 	                                  JDA jda,
