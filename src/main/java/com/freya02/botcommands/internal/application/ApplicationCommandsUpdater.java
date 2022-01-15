@@ -50,8 +50,8 @@ public class ApplicationCommandsUpdater {
 	private final List<Command> commands = new ArrayList<>();
 
 	private final Map<String, String> localizedBaseNameToBaseName = new HashMap<>();
-	private final Map<String, Collection<? extends CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
-	private final Map<String, Collection<? extends CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
+	private final Map<String, Collection<CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
+	private final Map<String, Collection<CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 	private final Collection<CommandData> allCommandData;
 
 	private ApplicationCommandsUpdater(@NotNull BContextImpl context, @Nullable Guild guild, boolean onlineCheck) throws IOException {
@@ -217,7 +217,7 @@ public class ApplicationCommandsUpdater {
 	@Blocking
 	private void updatePrivileges0(@NotNull Guild guild, @NotNull List<Command> commands) {
 		for (Command command : commands) {
-			final Collection<? extends CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
+			final Collection<CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
 
 			if (privileges != null) {
 				cmdIdToPrivilegesMap.put(command.getId(), privileges);

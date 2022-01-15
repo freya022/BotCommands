@@ -17,8 +17,10 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -105,8 +107,8 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		this.autocompleteParameters = MethodParameters.of(context, method, AutocompleteCommandParameter::new);
 	}
 
-	public static Command.Choice getChoice(OptionMapping optionMapping, String string) {
-		return switch (optionMapping.getType()) {
+	public static Command.Choice getChoice(OptionType type, String string) {
+		return switch (type) {
 			case STRING -> new Command.Choice(string, string);
 			case INTEGER -> {
 				try {
@@ -122,14 +124,14 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 					yield null;
 				}
 			}
-			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + optionMapping.getType());
+			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + type);
 		};
 	}
 
 	private String[] getCompositeOptionValues(SlashCommandInfo slashCommand,
 	                                          CommandAutoCompleteInteractionEvent event) {
 		final List<String> optionValues = new ArrayList<>();
-		optionValues.add(event.getFocusedOption().getAsString());
+		optionValues.add(event.getFocusedOption().getValue());
 
 		int optionIndex = 0;
 		final List<String> optionNames = event.getGuild() != null ? slashCommand.getLocalizedOptions(event.getGuild()) : null;
@@ -264,11 +266,11 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 			final List<Command.Choice> suppliedChoices = choiceSupplier.apply(slashCommand, event, collection);
 
-			final OptionMapping optionMapping = event.getFocusedOption();
+			final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
 			//If something is typed but there are no choices, don't display user input
-			if (showUserInput && !optionMapping.getAsString().isBlank() && !suppliedChoices.isEmpty()) {
-				final Command.Choice choice = getChoice(optionMapping, optionMapping.getAsString());
+			if (showUserInput && !autoCompleteQuery.getValue().isBlank() && !suppliedChoices.isEmpty()) {
+				final Command.Choice choice = getChoice(autoCompleteQuery.getType(), autoCompleteQuery.getValue());
 
 				//Could be null if option mapping is malformed
 				if (choice != null) {

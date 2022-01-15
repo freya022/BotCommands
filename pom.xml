@@ -181,7 +181,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.0-native-mt</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>6e0b3d9bc7</version>
+            <version>e38137ecf6</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -286,7 +286,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

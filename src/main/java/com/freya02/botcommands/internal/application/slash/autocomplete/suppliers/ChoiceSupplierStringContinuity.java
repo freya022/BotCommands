@@ -7,8 +7,8 @@ import com.freya02.botcommands.internal.utils.Utils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,9 +24,9 @@ public class ChoiceSupplierStringContinuity implements ChoiceSupplier {
 
 	@Override
 	public List<Command.Choice> apply(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
-		final OptionMapping optionMapping = event.getFocusedOption();
+		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
-		final String query = optionMapping.getAsString();
+		final String query = autoCompleteQuery.getValue();
 		final List<String> list = collection
 				.stream()
 				.map(Object::toString)
@@ -41,7 +41,7 @@ public class ChoiceSupplierStringContinuity implements ChoiceSupplier {
 
 		return results.stream()
 				.limit(handlerInfo.getMaxChoices())
-				.map(c -> AutocompletionHandlerInfo.getChoice(optionMapping, c.getString()))
+				.map(c -> AutocompletionHandlerInfo.getChoice(autoCompleteQuery.getType(), c.getString()))
 				.toList();
 	}
 }

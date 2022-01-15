@@ -6,8 +6,8 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.ChoiceSup
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,22 +27,22 @@ public class ChoiceSupplierStringFuzzy implements ChoiceSupplier {
 				.sorted()
 				.toList();
 
-		final OptionMapping optionMapping = event.getFocusedOption();
+		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 		//First sort the results by similarities but by taking into account an incomplete input
-		final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(optionMapping.getAsString(),
+		final List<ExtractedResult> bigLengthDiffResults = FuzzySearch.extractTop(autoCompleteQuery.getValue(),
 				list,
 				FuzzySearch::partialRatio,
 				handlerInfo.getMaxChoices());
 
 		//Then sort the results by similarities but don't take length into account
-		final List<ExtractedResult> similarities = FuzzySearch.extractTop(optionMapping.getAsString(),
+		final List<ExtractedResult> similarities = FuzzySearch.extractTop(autoCompleteQuery.getValue(),
 				bigLengthDiffResults.stream().map(ExtractedResult::getString).toList(),
 				FuzzySearch::ratio,
 				handlerInfo.getMaxChoices());
 
 		return similarities.stream()
 				.limit(handlerInfo.getMaxChoices())
-				.map(c -> AutocompletionHandlerInfo.getChoice(optionMapping, c.getString()))
+				.map(c -> AutocompletionHandlerInfo.getChoice(autoCompleteQuery.getType(), c.getString()))
 				.toList();
 	}
 }

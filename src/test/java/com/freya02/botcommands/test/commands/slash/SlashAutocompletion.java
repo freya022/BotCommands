@@ -23,7 +23,7 @@ public class SlashAutocompletion extends ApplicationCommand {
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
-		System.out.println(event.getFocusedOption().getAsString());
+		System.out.println(event.getFocusedOption().getValue());
 
 		return new ArrayDeque<>(List.of("Anaheim Ducks",
 				"Arizona Coyotes",
