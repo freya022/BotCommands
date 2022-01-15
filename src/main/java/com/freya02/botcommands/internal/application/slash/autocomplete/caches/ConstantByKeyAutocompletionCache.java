@@ -1,20 +1,30 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
-import com.freya02.botcommands.internal.RunnableEx;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
+import com.freya02.botcommands.internal.ConsumerEx;
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCache {
+public class ConstantByKeyAutocompletionCache extends BaseAutocompletionCache {
+	private final AutocompletionHandlerInfo handlerInfo;
 	private final Cache<CompositeAutocompletionKey, List<Command.Choice>> cache;
 
-	public ConstantByKeyAutocompletionCache(long maximumWeightKb) {
+	public ConstantByKeyAutocompletionCache(AutocompletionHandlerInfo handlerInfo, @NotNull CacheAutocompletion cacheAutocompletion) {
+		super(cacheAutocompletion);
+
+		this.handlerInfo = handlerInfo;
+
 		cache = Caffeine.newBuilder()
-				.maximumWeight(maximumWeightKb * 1024)
+				.maximumWeight(cacheAutocompletion.cacheSize() * 1024)
 //				.evictionListener((key, value, cause) -> {
 //					LOGGER.trace("Evicted autocomplete key '{}', of size {} for cause {}, maximum weight: {}", key, getEntrySize(key, value), cause.name(), maximumWeight);
 //				})
@@ -36,13 +46,14 @@ public class ConstantByKeyAutocompletionCache extends AbstractAutocompletionCach
 	}
 
 	@Override
-	public void retrieveAndCall(CompositeAutocompletionKey key, Consumer<List<Command.Choice>> choiceCallback, RunnableEx valueComputer) throws Exception {
-		final List<Command.Choice> cachedValue = cache.getIfPresent(key);
+	public void retrieveAndCall(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {
+		final CompositeAutocompletionKey compositeKey = getCompositeKey(handlerInfo, slashCommand, event);
+		final List<Command.Choice> cachedValue = cache.getIfPresent(compositeKey);
 
 		if (cachedValue != null) {
 			choiceCallback.accept(cachedValue);
 		} else {
-			valueComputer.run(); //Choice callback is called by valueComputer
+			valueComputer.accept(compositeKey); //Choice callback is called by valueComputer
 		}
 	}
 

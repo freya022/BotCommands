@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.application.slash.autocomplete.Autocompletion
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.*;
-import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.ToLongFunction;
 
 // The annotated method returns a list of things
 // These things can be, and are mapped as follows:
@@ -56,10 +54,6 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 	private final AbstractAutocompletionCache cache;
 
-	private final ToLongFunction<CommandAutoCompleteInteractionEvent> guildFunction;
-	private final ToLongFunction<CommandAutoCompleteInteractionEvent> channelFunction;
-	private final ToLongFunction<CommandAutoCompleteInteractionEvent> userFunction;
-
 	public AutocompletionHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
 		this.context = context;
 		this.autocompletionHandler = autocompletionHandler;
@@ -70,15 +64,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		final AutocompletionMode autocompletionMode = annotation.mode();
 
 		final CacheAutocompletion cacheAutocompletion = method.getAnnotation(CacheAutocompletion.class);
-		this.cache = AbstractAutocompletionCache.fromMode(cacheAutocompletion);
-
-		if (cacheAutocompletion != null) {
-			guildFunction = cacheAutocompletion.guildLocal() ? (e -> e.getGuild() != null ? e.getGuild().getIdLong() : 0) : (e -> 0);
-			channelFunction = cacheAutocompletion.channelLocal() ? (e -> e.getChannel() != null ? e.getChannel().getIdLong() : 0) : (e -> 0);
-			userFunction = cacheAutocompletion.userLocal() ? (e -> e.getUser().getIdLong()) : (e -> 0);
-		} else {
-			guildFunction = channelFunction = userFunction = e -> 0L;
-		}
+		this.cache = AbstractAutocompletionCache.fromMode(this, cacheAutocompletion);
 
 		this.handlerName = annotation.name();
 		this.showUserInput = annotation.showUserInput();
@@ -126,39 +112,6 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			}
 			default -> throw new IllegalArgumentException("Invalid autocompletion option type: " + type);
 		};
-	}
-
-	private String[] getCompositeOptionValues(SlashCommandInfo slashCommand,
-	                                          CommandAutoCompleteInteractionEvent event) {
-		final List<String> optionValues = new ArrayList<>();
-		optionValues.add(event.getFocusedOption().getValue());
-
-		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? slashCommand.getLocalizedOptions(event.getGuild()) : null;
-		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
-			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
-
-			if (parameter.isOption()) {
-				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
-				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(method)));
-				}
-
-				optionIndex++;
-
-				if (parameter.isCompositeKey()) {
-					final OptionMapping option = event.getOption(optionName);
-
-					if (option == null) {
-						optionValues.add("null");
-					} else if (!event.getFocusedOption().getName().equals(optionName)) { //Only add the options other than the focused one, since it's already there, saves us from an HashSet
-						optionValues.add(option.getAsString());
-					}
-				}
-			}
-		}
-
-		return optionValues.toArray(new String[0]);
 	}
 
 	private void invokeAutocompletionHandler(SlashCommandInfo slashCommand,
@@ -244,14 +197,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	                            CommandAutoCompleteInteractionEvent event,
 	                            Consumer<Throwable> throwableConsumer,
 	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
-		final String[] compositeOptionValues = getCompositeOptionValues(slashCommand, event);
-
-		final CompositeAutocompletionKey key = new CompositeAutocompletionKey(compositeOptionValues,
-				guildFunction.applyAsLong(event),
-				channelFunction.applyAsLong(event),
-				userFunction.applyAsLong(event));
-
-		cache.retrieveAndCall(key, choiceCallback, () -> {
+		cache.retrieveAndCall(slashCommand, event, choiceCallback, key -> {
 			generateChoices(slashCommand, event, throwableConsumer, choices -> {
 				cache.put(key, choices);
 
@@ -300,7 +246,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 	@Override
 	@NotNull
-	public MethodParameters<? extends CommandParameter<?>> getParameters() {
+	public MethodParameters<AutocompleteCommandParameter> getParameters() {
 		return autocompleteParameters;
 	}
 
