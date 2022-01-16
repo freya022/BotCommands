@@ -48,8 +48,6 @@ public class AutocompletionListener implements EventListener {
 				if (slashCommand == null) {
 					LOGGER.warn("Slash command not found during autocompletion for: {}", event.getCommandPath());
 
-					event.replyChoices().queue();
-
 					return;
 				}
 
