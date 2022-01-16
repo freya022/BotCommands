@@ -1,23 +1,22 @@
 package com.freya02.botcommands.api.components;
 
+import com.freya02.botcommands.api.DefaultMessages;
+
+import java.util.function.Function;
+
 public enum ComponentErrorReason {
-	NOT_ALLOWED(null),
-	EXPIRED("This component is not usable anymore (expired)"),
-	DONT_EXIST("This component could not be found");
+	NOT_ALLOWED(DefaultMessages::getComponentNotAllowedErrorMsg),
+	EXPIRED(DefaultMessages::getComponentExpiredErrorMsg),
+	NOT_FOUND(DefaultMessages::getComponentNotFoundErrorMsg),
+	INVALID_DATA(DefaultMessages::getComponentInvalidDataErrorMsg);
 
-	private String reason;
+	private final Function<DefaultMessages, String> reasonProvider;
 
-	ComponentErrorReason(String reason) {
-		setReason(reason);
+	ComponentErrorReason(Function<DefaultMessages, String> reasonProvider) {
+		this.reasonProvider = reasonProvider;
 	}
 
-	public ComponentErrorReason setReason(String reason) {
-		this.reason = reason;
-
-		return this;
-	}
-
-	public String getReason() {
-		return reason;
+	public String getReason(DefaultMessages defaultMessages) {
+		return reasonProvider.apply(defaultMessages);
 	}
 }

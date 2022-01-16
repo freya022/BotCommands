@@ -139,6 +139,7 @@ public class Components {
 	 * @param <T>         The type of components
 	 * @return The same components as passed, but with the constraints set
 	 */
+	@SafeVarargs
 	@Contract("_, _ -> param2")
 	public static <T extends ComponentBuilder<T>> T[] applyConstraints(InteractionConstraints constraints, @NotNull T @NotNull ... builders) {
 		for (T builder : builders) {

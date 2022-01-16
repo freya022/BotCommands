@@ -102,7 +102,6 @@ public class DefaultComponentManager implements ComponentManager {
 				LambdaSelectionMenuData::new);
 	}
 
-	@SuppressWarnings("DuplicatedCode")
 	private <CONSUMER extends ComponentConsumer<EVENT>,EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
 																									SQLFetchResult fetchResult,
 	                                                                                                Consumer<ComponentErrorReason> onError,
@@ -138,7 +137,7 @@ public class DefaultComponentManager implements ComponentManager {
 			}
 
 			if (consumer == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
+				onError.accept(ComponentErrorReason.NOT_FOUND);
 
 				LOGGER.warn("Could not find a consumer for handler id {} on component {}", handlerId, event.getComponentId());
 
@@ -171,7 +170,6 @@ public class DefaultComponentManager implements ComponentManager {
 				PersistentSelectionMenuData::new);
 	}
 
-	@SuppressWarnings("DuplicatedCode")
 	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, SQLFetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
 		try {
 			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();

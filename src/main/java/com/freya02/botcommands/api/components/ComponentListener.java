@@ -100,7 +100,7 @@ public class ComponentListener extends ListenerAdapter {
 			switch (idType) {
 				case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
 						fetchResult,
-						e -> onError(event, e.getReason()),
+						e -> onError(event, e),
 						data -> runCallback(() -> handlePersistentComponent(event,
 										buttonsMap,
 										data.getHandlerName(),
@@ -109,12 +109,12 @@ public class ComponentListener extends ListenerAdapter {
 								event));
 				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
 						fetchResult,
-						e -> onError(event, e.getReason()),
+						e -> onError(event, e),
 						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonInteractionEvent) event)), event)
 				);
 				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectMenu(event,
 						fetchResult,
-						e -> onError(event, e.getReason()),
+						e -> onError(event, e),
 						data -> runCallback(() -> handlePersistentComponent(event,
 										selectionMenuMap,
 										data.getHandlerName(),
@@ -123,7 +123,7 @@ public class ComponentListener extends ListenerAdapter {
 								event));
 				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
 						fetchResult,
-						e -> onError(event, e.getReason()),
+						e -> onError(event, e),
 						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectMenuInteractionEvent) event)), event));
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 			}
@@ -207,7 +207,7 @@ public class ComponentListener extends ListenerAdapter {
 		if (parameters.getOptionCount() != args.length) {
 			LOGGER.warn("Resolver for {} has {} arguments but component had {} data objects", Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args);
 
-			onError(event, "Invalid component data");
+			onError(event, ComponentErrorReason.INVALID_DATA);
 
 			return;
 		}
@@ -236,6 +236,8 @@ public class ComponentListener extends ListenerAdapter {
 								parameter.getCustomResolver().getClass().getSimpleName(),
 								Utils.formatMethodShort(descriptor.getMethod()));
 
+						onError(event, ComponentErrorReason.INVALID_DATA);
+
 						return;
 					}
 				} else {
@@ -246,6 +248,8 @@ public class ComponentListener extends ListenerAdapter {
 								event.getComponentId(),
 								parameter.getCustomResolver().getClass().getSimpleName(),
 								Utils.formatMethodShort(descriptor.getMethod()));
+
+						onError(event, ComponentErrorReason.INVALID_DATA);
 
 						return;
 					}
@@ -265,13 +269,12 @@ public class ComponentListener extends ListenerAdapter {
 		return e -> LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
 	}
 
-	private void onError(GenericComponentInteractionCreateEvent event, String reason) {
-		if (reason != null) {
-			event.reply(reason)
-					.setEphemeral(true)
-					.queue();
-		} else {
-			event.deferEdit().queue();
-		}
+	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
+		//TODO need to change the locale getters to use the one provided by the events
+		// Which also means we need to change the way the default message instances are supplied
+		// So, change the Guild key for a Locale
+		event.reply(reason.getReason(context.getDefaultMessages(event.getGuild())))
+				.setEphemeral(true)
+				.queue();
 	}
 }
