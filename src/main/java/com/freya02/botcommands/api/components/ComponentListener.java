@@ -73,6 +73,14 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) throws Exception {
+		for (ComponentInteractionFilter componentFilter : context.getComponentFilters()) {
+			if (!componentFilter.isAccepted(new ComponentFilteringData(context, event))) {
+				LOGGER.trace("Cancelled component interaction due to filter");
+
+				return;
+			}
+		}
+
 		try (FetchResult fetchResult = componentManager.fetchComponent(event.getComponentId())) {
 			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 

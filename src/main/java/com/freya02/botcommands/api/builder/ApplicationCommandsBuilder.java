@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.builder;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.annotations.Test;
+import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +34,20 @@ public class ApplicationCommandsBuilder {
 	@NotNull
 	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) {
 		context.addApplicationFilter(commandFilter);
+
+		return this;
+	}
+
+	/**
+	 * Add a component interaction filter for this context
+	 *
+	 * @param componentFilter The component interaction filter to add
+	 * @return This builder for chaining convenience
+	 * @see BContext#addComponentFilter(ComponentInteractionFilter)
+	 */
+	@NotNull
+	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) {
+		context.addComponentFilter(componentFilter);
 
 		return this;
 	}

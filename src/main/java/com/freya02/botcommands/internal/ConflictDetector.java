@@ -54,8 +54,10 @@ public class ConflictDetector {
 
 				final Map<String, Path> libMap = Map.of(
 						"JDA-Utils", getFsPath(fs, "com/jagrosh/jdautilities/command"),
+						"JDA-Chewtils", getFsPath(fs, "pw/chew/jdachewtils/command"),
 						"Flight", getFsPath(fs, "me/devoxin/flight"),
-						"jda-commands", getFsPath(fs, "com/github/kaktushose/jda/commands")
+						"jda-commands", getFsPath(fs, "com/github/kaktushose/jda/commands"),
+						"rimor", getFsPath(fs, "com/jasperls/rimor")
 				);
 
 				for (Map.Entry<String, Path> entry : libMap.entrySet()) {
