@@ -52,6 +52,14 @@ public class SlashCommandsMain {
 
 								return !isDoNotRun;
 							})
+							.addComponentFilter(data -> {
+								final boolean canRun = data.event().getChannel().getIdLong() != 932902082724380744L;
+								if (!canRun) {
+									data.event().deferEdit().queue();
+								}
+
+								return canRun;
+							})
 							.addTestGuilds(config.getTestGuildId())
 //							.enableOnlineAppCommandCheck()
 					)

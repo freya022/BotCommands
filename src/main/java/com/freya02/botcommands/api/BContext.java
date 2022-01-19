@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
+import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
@@ -254,6 +255,15 @@ public interface BContext {
 	void addApplicationFilter(ApplicationCommandFilter filter);
 
 	/**
+	 * Adds a filter for the component interaction listener, this will check all components such as buttons and selection menus
+	 * <br>If one of the filters returns <code>false</code>, then the component's code is not executed
+	 * <br><b>You still have to acknowledge to the interaction !</b>
+	 *
+	 * @param filter The filter to add
+	 */
+	void addComponentFilter(ComponentInteractionFilter filter);
+
+	/**
 	 * Removes a previously set text command filter
 	 *
 	 * @param filter The filter to remove
@@ -268,6 +278,14 @@ public interface BContext {
 	 * @see #addApplicationFilter(ApplicationCommandFilter)
 	 */
 	void removeApplicationFilter(ApplicationCommandFilter filter);
+
+	/**
+	 * Removes a previously set component interaction filter
+	 *
+	 * @param filter The filter to remove
+	 * @see #addComponentFilter(ComponentInteractionFilter)
+	 */
+	void removeComponentFilter(ComponentInteractionFilter filter);
 
 	/**
 	 * Overrides the default help given for text commands

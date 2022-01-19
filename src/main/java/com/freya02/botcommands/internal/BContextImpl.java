@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
@@ -70,6 +71,7 @@ public class BContextImpl implements BContext {
 
 	private final List<TextCommandFilter> textFilters = new ArrayList<>();
 	private final List<ApplicationCommandFilter> applicationFilters = new ArrayList<>();
+	private final List<ComponentInteractionFilter> componentFilters = new ArrayList<>();
 
 	private JDA jda;
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
@@ -437,6 +439,13 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
+	public void addComponentFilter(ComponentInteractionFilter filter) {
+		Checks.notNull(filter, "Component interaction filter");
+
+		componentFilters.add(filter);
+	}
+
+	@Override
 	public void removeTextFilter(TextCommandFilter filter) {
 		Checks.notNull(filter, "Text command filter");
 
@@ -450,12 +459,23 @@ public class BContextImpl implements BContext {
 		applicationFilters.remove(filter);
 	}
 
+	@Override
+	public void removeComponentFilter(ComponentInteractionFilter filter) {
+		Checks.notNull(filter, "Component interaction filter");
+
+		componentFilters.remove(filter);
+	}
+
 	public List<TextCommandFilter> getTextFilters() {
 		return textFilters;
 	}
 
 	public List<ApplicationCommandFilter> getApplicationFilters() {
 		return applicationFilters;
+	}
+
+	public List<ComponentInteractionFilter> getComponentFilters() {
+		return componentFilters;
 	}
 
 	@Override

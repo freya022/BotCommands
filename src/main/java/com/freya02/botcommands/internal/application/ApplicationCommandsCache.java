@@ -107,6 +107,22 @@ public class ApplicationCommandsCache {
 				}
 
 				if (found) {
+					//If command options (parameters, not subcommands, not groups) are moved
+					// then it means the command data changed
+					if (i != index) {
+						//Check if any final command property is here,
+						// such as autocomplete, or required
+						if (oldList.get(index) instanceof Map<?, ?> map
+								&& map.get("autocomplete") != null) {
+							//We found a real command option that has **changed index**,
+							// this is NOT equal under different indexes
+
+							logger.trace(indent, "Final command option has changed place from index %s to %s : %s", i, index, oldList.get(i));
+
+							return false;
+						}
+					}
+
 					logger.trace(indent, "Found exact object at index %s (original object at %s) : %s", index, i, oldList.get(i));
 
 					continue;
