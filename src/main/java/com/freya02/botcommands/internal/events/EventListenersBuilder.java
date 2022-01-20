@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.events;
 
+import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.ExecutableInteractionInfo;
@@ -19,6 +20,7 @@ import java.lang.invoke.*;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.function.Consumer;
 
 // We need to avoid using the ClassWalker from ListenerAdapter
 // For this, we have to store all the possible triggered consumers by a specific event type
@@ -139,7 +141,24 @@ public class EventListenersBuilder {
 				objects.add(obj);
 			}
 
-			method.invoke(eventListener, objects.toArray());
+			methodRunner.invoke(objects.toArray(), getThrowableConsumer(context, event));
+		};
+	}
+
+	public static Consumer<Throwable> getThrowableConsumer(BContextImpl context, Event event) {
+		return e -> {
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an event", baseEx);
+
+			context.dispatchException("Exception in component callback", baseEx);
 		};
 	}
 

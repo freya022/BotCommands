@@ -1,6 +1,7 @@
-package com.freya02.botcommands.api.application.slash.annotations;
+package com.freya02.botcommands.api.application.slash.autocomplete.annotations;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
@@ -56,6 +57,8 @@ import java.util.List;
  *
  * @see AppOption
  * @see JDASlashCommand
+ * @see CompositeKey
+ * @see CacheAutocompletion
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

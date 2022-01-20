@@ -12,14 +12,11 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AutocompletionHandlersBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final BContextImpl context;
-	private final Map<String, AutocompletionHandlerInfo> autocompleteHandlersMap = new HashMap<>();
 
 	public AutocompletionHandlersBuilder(BContextImpl context) {
 		this.context = context;
@@ -32,11 +29,7 @@ public class AutocompletionHandlersBuilder {
 
 			final AutocompletionHandlerInfo handler = new AutocompletionHandlerInfo(context, autocompleteHandler, method);
 
-			final AutocompletionHandlerInfo oldHandler = autocompleteHandlersMap.put(handler.getHandlerName(), handler);
-
-			if (oldHandler != null) {
-				throw new IllegalArgumentException("Tried to register autocompletion handler '" + handler.getHandlerName() + "' at " + Utils.formatMethodShort(method) + " was already registered at " + Utils.formatMethodShort(oldHandler.getMethod()));
-			}
+			context.addAutocompletionHandler(handler);
 
 			LOGGER.debug("Adding autocompletion handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
 		} catch (Exception e) {
@@ -57,7 +50,7 @@ public class AutocompletionHandlersBuilder {
 				final String autocompleteHandlerName = applicationOptionData.getAutocompletionHandlerName();
 
 				if (autocompleteHandlerName != null) {
-					final AutocompletionHandlerInfo handler = autocompleteHandlersMap.get(autocompleteHandlerName);
+					final AutocompletionHandlerInfo handler = context.getAutocompletionHandler(autocompleteHandlerName);
 
 					if (handler == null) {
 						throw new IllegalArgumentException("Slash command parameter #" + i + " at " + Utils.formatMethodShort(info.getMethod()) + " uses autocompletion but has no handler assigned, did you misspell the handler name ? Consider using a constant variable to share with the handler and the option");
@@ -68,6 +61,6 @@ public class AutocompletionHandlersBuilder {
 			}
 		}
 
-		context.addEventListeners(new AutocompletionListener(context, autocompleteHandlersMap));
+		context.addEventListeners(new AutocompletionListener(context));
 	}
 }

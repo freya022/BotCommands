@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
-import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
+import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
@@ -95,7 +95,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return Name of the command
 	 */
-	@DiscordNamePattern
+	@LowercaseDiscordNamePattern
 	String name();
 
 	/**
@@ -104,7 +104,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return Command group of the command
 	 */
-	@DiscordNamePattern
+	@LowercaseDiscordNamePattern
 	String group() default "";
 
 	/**
@@ -113,7 +113,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return The subcommand name of this command
 	 */
-	@DiscordNamePattern
+	@LowercaseDiscordNamePattern
 	String subcommand() default "";
 
 	/**

@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -409,4 +410,12 @@ public interface BContext {
 	 * @return The set of test guild IDs
 	 */
 	TLongSet getTestGuildIds();
+
+	/**
+	 * Invalides the autocompletion cache of the specified autocompletion handler
+	 * <br>This means that the cache of this autocompletion handler will be fully cleared
+	 *
+	 * @param autocompletionHandlerName The name of the autocompletion handler, supplied at {@link AutocompletionHandler#name()}
+	 */
+	void invalidateAutocompletionCache(String autocompletionHandlerName);
 }

@@ -3,9 +3,9 @@ package com.freya02.botcommands.test.commands.slash;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
@@ -23,7 +23,7 @@ public class SlashAutocompletion extends ApplicationCommand {
 
 	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
-		System.out.println(event.getFocusedOption().getAsString());
+		System.out.println(event.getFocusedOption().getValue());
 
 		return new ArrayDeque<>(List.of("Anaheim Ducks",
 				"Arizona Coyotes",
@@ -60,7 +60,9 @@ public class SlashAutocompletion extends ApplicationCommand {
 	}
 
 	@AutocompletionHandler(name = "autoInt")
-	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event, @AppOption(name = "str") String autoStr) {
+	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
+	                          @AppOption(name = "str") String autoStr,
+	                          @AppOption long integer) {
 		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
