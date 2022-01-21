@@ -4,7 +4,7 @@
 
 ## Notice
 
-For the JDA dependency, you will need a special build of JDA, which you can find with group id `com.github.freya022` and version `e38137ecf6`, this is the interaction rework branch of JDA
+For the JDA dependency, you will need a special build of JDA, which you can find with group id `com.github.freya022` and version `ce738b9e58`, this is the interaction rework branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
