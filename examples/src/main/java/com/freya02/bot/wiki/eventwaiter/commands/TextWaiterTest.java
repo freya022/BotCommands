@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.concurrent.TimeUnit;
 
 @Description("Do what Simon says")
-public class SlashWaiterTest extends TextCommand {
+public class TextWaiterTest extends TextCommand {
 	@JDATextCommand(name = "simon")
 	public void execute(CommandEvent event) {
 		event.reply("Simon says: say `hi` in less than 5 seconds").queue(m -> {

@@ -30,7 +30,7 @@ public class PaginatorCommand extends ApplicationCommand {
 				.useDeleteButton(false)
 				// There is 5 pages for the paginator
 				.setMaxPages(5)
-				.setPaginatorSupplier((messageBuilder, components, page) -> embedBuilders.get(page).build())
+				.setPaginatorSupplier((instance, messageBuilder, components, page) -> embedBuilders.get(page).build())
 				.build();
 
 		//You must send the paginator as a message

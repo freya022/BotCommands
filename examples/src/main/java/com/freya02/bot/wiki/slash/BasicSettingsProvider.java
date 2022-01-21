@@ -47,6 +47,7 @@ public class BasicSettingsProvider implements SettingsProvider {
 	public void addCommand(Guild guild, String commandName) {
 		getBlacklist(guild).remove(commandName); //Removes the command from the blacklist
 
-		context.scheduleApplicationCommandsUpdate(guild, false);
+		//You should handle the exceptions inside the completable future, in case an error occurred
+		context.scheduleApplicationCommandsUpdate(guild, false, false);
 	}
 }

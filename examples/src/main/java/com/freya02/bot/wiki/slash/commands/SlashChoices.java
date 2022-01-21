@@ -46,7 +46,8 @@ public class SlashChoices extends ApplicationCommand {
 
 		valueList.add(new Command.Choice(name, value));
 
-		event.getContext().scheduleApplicationCommandsUpdate(event.getGuild(), false);
+		//You should handle the exceptions inside the completable future, in case an error occurred
+		event.getContext().scheduleApplicationCommandsUpdate(event.getGuild(), false, false);
 
 		event.getHook().sendMessage("Choice added successfully").queue();
 	}

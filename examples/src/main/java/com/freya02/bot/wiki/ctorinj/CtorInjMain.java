@@ -16,8 +16,8 @@ public class CtorInjMain {
 
 			final JDA jda = JDABuilder.createLight(config.getToken()).build().awaitReady();
 
-			alt1(jda);
-//			alt2(jda);
+//			alt1(jda);
+			alt2(jda);
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -36,7 +36,7 @@ public class CtorInjMain {
 
 	private static void alt2(JDA jda) throws IOException {
 		Connection connection = null; //Just a test value
-		CommandsBuilder.newBuilder(0L)
+		CommandsBuilder.newBuilder()
 				.extensionsBuilder(extensionsBuilder ->
 						extensionsBuilder.registerInstanceSupplier(SlashCtorInjectionTest.class, context -> new SlashCtorInjectionTest(context, connection))
 				)

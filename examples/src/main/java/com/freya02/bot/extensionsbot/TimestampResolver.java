@@ -1,13 +1,18 @@
 package com.freya02.bot.extensionsbot;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.CommandPayload;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.TimeFormat;
 import net.dv8tion.jda.api.utils.Timestamp;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class TimestampResolver extends ParameterResolver implements SlashParameterResolver, ComponentParameterResolver {
@@ -17,14 +22,20 @@ public class TimestampResolver extends ParameterResolver implements SlashParamet
 
 	@Nullable
 	@Override
-	public Object resolve(GenericComponentInteractionCreateEvent event, String arg) {
+	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return getTimestamp(arg);
+	}
+
+	@Override
+	@NotNull
+	public OptionType getOptionType() {
+		return OptionType.STRING;
 	}
 
 	@Nullable
 	@Override
-	public Object resolve(CommandPayload event, OptionMapping optionData) {
-		return getTimestamp(optionData.getAsString());
+	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+		return getTimestamp(optionMapping.getAsString());
 	}
 
 	@Nullable
