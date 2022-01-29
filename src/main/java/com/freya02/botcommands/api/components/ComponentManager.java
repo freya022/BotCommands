@@ -62,7 +62,7 @@ public interface ComponentManager {
 		final ArrayList<String> ids = new ArrayList<>();
 
 		for (ActionRow actionRow : actionRows) {
-			for (ActionComponent component : actionRow) {
+			for (ActionComponent component : actionRow.getActionComponents()) {
 				ids.add(component.getId());
 			}
 		}

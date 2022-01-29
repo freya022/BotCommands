@@ -98,7 +98,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	protected void onPostGet() {
 		for (ActionRow row : components.getActionRows()) {
-			for (ActionComponent component : row.getComponents()) {
+			for (ActionComponent component : row.getActionComponents()) {
 				final String id = component.getId();
 
 				if (id == null) continue;

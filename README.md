@@ -1,10 +1,6 @@
-![](https://img.shields.io/badge/JDA%20Version-Read_notice-important)
+![](https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.5-important)
 ![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-
-## Notice
-
-For the JDA dependency, you will need a special build of JDA, which you can find with group id `com.github.freya022` and version `ce738b9e58`, this is the interaction rework branch of JDA
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.

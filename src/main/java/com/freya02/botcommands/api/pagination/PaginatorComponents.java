@@ -22,7 +22,7 @@ public class PaginatorComponents {
 		if (actionRows.size() <= row) {
 			actionRows.add(ActionRow.of(components));
 		} else {
-			final List<ActionComponent> list = actionRows.get(row).getComponents();
+			final List<ActionComponent> list = actionRows.get(row).getActionComponents();
 			if (list.size() + components.length > 5)
 				throw new UnsupportedOperationException("Cannot put more than 5 buttons in row " + row + " (contains " + list.size() + ")");
 

@@ -106,7 +106,9 @@ public class Components {
 	public static ActionRow[] groupRows(@NotNull ActionRow @NotNull ... rows) {
 		Utils.getComponentManager(context).registerGroup(
 				Arrays.stream(rows)
-						.flatMap(row -> row.getComponents().stream())
+						.flatMap(row -> row.getComponents().stream()
+								.filter(ActionComponent.class::isInstance) //See ActionRow#getActionComponents
+								.map(ActionComponent.class::cast))
 						.map(ActionComponent::getId)
 						.collect(Collectors.toList()));
 
@@ -124,7 +126,9 @@ public class Components {
 	public static <T extends Collection<ActionRow>> T groupRows(@NotNull T rows) {
 		Utils.getComponentManager(context).registerGroup(
 				rows.stream()
-						.flatMap(row -> row.getComponents().stream())
+						.flatMap(row -> row.getComponents().stream()
+								.filter(ActionComponent.class::isInstance) //See ActionRow#getActionComponents
+								.map(ActionComponent.class::cast))
 						.map(ActionComponent::getId)
 						.collect(Collectors.toList()));
 
