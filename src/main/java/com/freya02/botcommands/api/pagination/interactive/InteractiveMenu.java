@@ -14,7 +14,7 @@ import java.util.List;
  * <br><i>This does not provide pagination for each embed</i> (no arrow buttons, only the selection menu)
  */
 public final class InteractiveMenu extends BasicInteractiveMenu<InteractiveMenu> {
-	InteractiveMenu(@NotNull List<InteractiveMenuItem> items, InteractionConstraints constraints, @Nullable TimeoutInfo<InteractiveMenu> timeout) {
+	InteractiveMenu(@NotNull List<InteractiveMenuItem<InteractiveMenu>> items, InteractionConstraints constraints, @Nullable TimeoutInfo<InteractiveMenu> timeout) {
 		super(items, constraints, timeout);
 	}
 }

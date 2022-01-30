@@ -80,10 +80,10 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 	/**
 	 * Sets the page number, <b>this does not update the embed in any way</b>,
-	 * for example you can use {@link #get()} with an <code>editOriginal</code> in order to update the embed on Discord
+	 * you can use {@link #get()} with an <code>editOriginal</code> in order to update the embed on Discord
 	 *
 	 * @param page Number of the page, from <code>0</code> to <code>maxPages - 1</code>
-	 * @return This {@link Paginator} for chaining convenience
+	 * @return This instance for chaining convenience
 	 */
 	public T setPage(int page) {
 		Checks.check(page >= 0, "Page cannot be negative");

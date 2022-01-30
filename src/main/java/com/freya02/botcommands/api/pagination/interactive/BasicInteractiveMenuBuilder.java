@@ -14,7 +14,7 @@ import java.util.List;
  */
 @SuppressWarnings("unchecked")
 public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenuBuilder<T, R>, R extends BasicInteractiveMenu<R>> extends BasicPaginationBuilder<T, R> {
-	protected final List<InteractiveMenuItem> items = new ArrayList<>();
+	protected final List<InteractiveMenuItem<R>> items = new ArrayList<>();
 
 	/**
 	 * Adds a menu to this {@link InteractiveMenu}
@@ -25,8 +25,8 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 * @return This builder for chaining convenience
 	 * @see SelectContent#of(String, String, Emoji)
 	 */
-	public T addMenu(@NotNull SelectContent content, @NotNull InteractiveMenuSupplier supplier) {
-		items.add(new InteractiveMenuItem(content, supplier));
+	public T addMenu(@NotNull SelectContent content, @NotNull InteractiveMenuSupplier<R> supplier) {
+		items.add(new InteractiveMenuItem<>(content, supplier));
 
 		return (T) this;
 	}
