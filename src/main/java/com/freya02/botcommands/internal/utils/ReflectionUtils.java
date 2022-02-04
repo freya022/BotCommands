@@ -71,7 +71,7 @@ public class ReflectionUtils {
 						try {
 							classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
 						} catch (ClassNotFoundException e) {
-							LOGGER.error("Unable to load class {}", result);
+							LOGGER.error("Unable to load class '{}' in class path '{}', isJAR = {}, filesystem: {}", result, strPath, isJar, walkRoot.getFileSystem(), e);
 						}
 					});
 		}
