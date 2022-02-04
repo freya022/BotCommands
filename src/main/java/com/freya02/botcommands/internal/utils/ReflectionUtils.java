@@ -61,7 +61,9 @@ public class ReflectionUtils {
 					.filter(p -> IOUtils.getFileExtension(p).equals("class"))
 					.forEach(p -> {
 						// Change from a/b/c/d to c/d
-						final String relativePath = walkRoot.relativize(p).toString().replace('\\',  '.');
+						final String relativePath = walkRoot.relativize(p)
+								.toString()
+								.replace(walkRoot.getFileSystem().getSeparator(),  ".");
 
 						//Remove .class suffix and add package prefix
 						final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
