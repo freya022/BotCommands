@@ -6,10 +6,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -116,7 +113,7 @@ public class EventWaiterBuilder<T extends GenericEvent> {
 	 *
 	 * @return The {@link Future} of this event waiter, can be cancelled
 	 */
-	public Future<T> submit() {
+	public CompletableFuture<T> submit() {
 		return EventWaiter.submit(new WaitingEvent<>(eventType, preconditions, onComplete, onSuccess, onTimeout, onCancelled, timeout, timeoutUnit));
 	}
 

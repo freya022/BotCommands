@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -94,7 +93,7 @@ public class EventWaiter implements EventListener {
 		return new EventWaiterBuilder<>(eventType);
 	}
 
-	static <T extends GenericEvent> Future<T> submit(WaitingEvent<T> waitingEvent) {
+	static <T extends GenericEvent> CompletableFuture<T> submit(WaitingEvent<T> waitingEvent) {
 		CompletableFuture<T> future = waitingEvent.getCompletableFuture();
 
 		final List<WaitingEvent<?>> waitingEvents = getWaitingEventsByType(waitingEvent);
