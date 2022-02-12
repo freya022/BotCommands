@@ -50,16 +50,12 @@ public class LocalizationData {
 			return null;
 		}
 
-		final String prefix;
-		if (info instanceof SlashCommandInfo) {
-			prefix = "slash";
-		} else if (info instanceof UserCommandInfo) {
-			prefix = "user";
-		} else if (info instanceof MessageCommandInfo) {
-			prefix = "message";
-		} else {
-			throw new IllegalArgumentException("Unknown localization prefix for class: " + info.getClass().getSimpleName());
-		}
+		final String prefix = switch (info) {
+			case SlashCommandInfo ignored -> "slash";
+			case UserCommandInfo ignored -> "user";
+			case MessageCommandInfo ignored -> "message";
+			default -> throw new IllegalArgumentException("Unknown localization prefix for class: " + info.getClass().getSimpleName());
+		};
 
 		final String qualifier = info.getMethod().getName();
 
