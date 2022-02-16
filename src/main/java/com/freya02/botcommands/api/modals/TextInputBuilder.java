@@ -19,12 +19,31 @@ public class TextInputBuilder extends TextInput.Builder {
 		this.inputName = inputName;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>You can still set a custom ID on this TextInputBuilder, this is an <b>optional</b> step
+	 *
+	 * <br>This could be useful if this modal gets closed by the user by mistake, as Discord caches the inputs by its modal ID (and input IDs),
+	 * keeping the same ID might help the user not having to type things again
+	 *
+	 * <p><b>Pay attention, if the ID is the same then it means that inputs associated to that ID will be overwritten</b>,
+	 * so you should do something like appending the interacting user's ID at the end of the modal ID
+	 */
+	@NotNull
+	@Override
+	public TextInputBuilder setId(@NotNull String customId) {
+		super.setId(customId);
+
+		return this;
+	}
+
 	@NotNull
 	@Override
 	public TextInput build() {
 		final TextInput input = super.build();
 
-		modalMaps.insertInput(new InputData(inputName));
+		modalMaps.insertInput(new InputData(inputName), getId());
 
 		return input;
 	}

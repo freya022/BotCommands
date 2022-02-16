@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -31,11 +30,23 @@ public class ModalBuilder extends Modal.Builder {
 
 	//TODO add #addActionRow to avoid ActionRow#of
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>You can still set a custom ID on this ModalBuilder, this is an <b>optional</b> step
+	 *
+	 * <br>This could be useful if this modal gets closed by the user by mistake, as Discord caches the inputs by its modal ID (and input IDs),
+	 * keeping the same ID might help the user not having to type things again
+	 *
+	 * <p><b>Pay attention, if the ID is the same then it means that modals associated to that ID will be overwritten</b>,
+	 * so you should do something like appending the interacting user's ID at the end of the modal ID
+	 */
 	@NotNull
 	@Override
-	@Contract("_ -> fail")
-	public Modal.Builder setId(@NotNull String customId) {
-		throw new IllegalStateException("Modal ID is already set on this builder");
+	public ModalBuilder setId(@NotNull String customId) {
+		super.setId(customId);
+
+		return this;
 	}
 
 	@NotNull
@@ -43,6 +54,7 @@ public class ModalBuilder extends Modal.Builder {
 	public Modal build() {
 		final Modal modal = super.build();
 
+		//Extract input data into this map
 		final Map<String, InputData> inputDataMap = new HashMap<>();
 		for (ActionRow row : getActionRows()) {
 			for (ActionComponent actionComponent : row.getActionComponents()) {
@@ -56,7 +68,7 @@ public class ModalBuilder extends Modal.Builder {
 			}
 		}
 
-		modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap));
+		modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap), getId());
 
 		return modal;
 	}

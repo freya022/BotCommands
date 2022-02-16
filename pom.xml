@@ -179,7 +179,7 @@
         <dependency>
             <groupId>com.github.xirado</groupId>
             <artifactId>JDA</artifactId>
-            <version>c1e12a7115</version>
+            <version>d66d7bc6e4</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
