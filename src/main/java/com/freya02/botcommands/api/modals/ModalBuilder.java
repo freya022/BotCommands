@@ -52,8 +52,6 @@ public class ModalBuilder extends Modal.Builder {
 	@NotNull
 	@Override
 	public Modal build() {
-		final Modal modal = super.build();
-
 		//Extract input data into this map
 		final Map<String, InputData> inputDataMap = new HashMap<>();
 		for (ActionRow row : getActionRows()) {
@@ -68,8 +66,10 @@ public class ModalBuilder extends Modal.Builder {
 			}
 		}
 
-		modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap), getId());
+		final String actualId = modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap), getId());
 
-		return modal;
+		setId(actualId);
+
+		return super.build();
 	}
 }

@@ -36,6 +36,11 @@ public class SlashModal extends ApplicationCommand {
 	public void handle(ModalInteractionEvent event,
 					   @ModalData String test,
 	                   @ModalInput(name = "code") String javaCode) {
-
+		event.reply(("""
+						User data: %s
+						Your code:
+						%s""").formatted(test, javaCode))
+				.setEphemeral(true)
+				.queue();
 	}
 }

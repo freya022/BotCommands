@@ -144,6 +144,7 @@ public final class Utils {
 		}
 	}
 
+	//TODO move to StringUtils
 	public static boolean startsWithIgnoreCase(@NotNull String original, @NotNull String input) {
 		return original.regionMatches(true, 0, input, 0, input.length());
 	}

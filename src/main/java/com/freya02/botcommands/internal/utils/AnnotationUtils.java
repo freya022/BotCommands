@@ -6,6 +6,8 @@ import com.freya02.botcommands.api.annotations.*;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.annotations.Test;
 import com.freya02.botcommands.api.application.slash.annotations.ChannelTypes;
+import com.freya02.botcommands.api.modals.annotations.ModalData;
+import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import com.freya02.botcommands.api.prefixed.annotations.Hidden;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.CooldownStrategy;
@@ -26,6 +28,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class AnnotationUtils {
 	@SuppressWarnings("unchecked")
@@ -176,7 +179,7 @@ public class AnnotationUtils {
 	}
 
 	public static boolean isOption(Parameter parameter) {
-		return parameter.isAnnotationPresent(TextOption.class) || parameter.isAnnotationPresent(AppOption.class);
+		return Stream.of(TextOption.class, AppOption.class, ModalData.class, ModalInput.class).anyMatch(parameter::isAnnotationPresent);
 	}
 
 	@Nullable
