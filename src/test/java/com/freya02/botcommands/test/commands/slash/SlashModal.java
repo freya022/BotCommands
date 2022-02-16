@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.modals.Modals;
+import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -19,7 +20,7 @@ public class SlashModal extends ApplicationCommand {
 			description = "Test modal"
 	)
 	public void onSlashModal(GuildSlashEvent event) {
-		final Modal modal = Modals.create(MODAL_HANDLER_NAME)
+		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar")
 				.setTitle("Formatting !")
 				.addActionRows(ActionRow.of(
 						Modals.createTextInput("code", "Java code", TextInputStyle.PARAGRAPH)
@@ -33,7 +34,8 @@ public class SlashModal extends ApplicationCommand {
 
 	@ModalHandler(name = MODAL_HANDLER_NAME)
 	public void handle(ModalInteractionEvent event,
-	                   @ModalInput(name = "code") String text) {
+					   @ModalData String test,
+	                   @ModalInput(name = "code") String javaCode) {
 
 	}
 }
