@@ -9,12 +9,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class TextInputBuilder extends TextInput.Builder {
 	private final ModalMaps modalMaps;
+	private final String inputName;
 
 	@ApiStatus.Internal
-	public TextInputBuilder(ModalMaps modalMaps, String label, TextInputStyle style) {
+	public TextInputBuilder(ModalMaps modalMaps, String inputName, String label, TextInputStyle style) {
 		super("0", label, style);
 
 		this.modalMaps = modalMaps;
+		this.inputName = inputName;
 	}
 
 	@NotNull
@@ -22,7 +24,7 @@ public class TextInputBuilder extends TextInput.Builder {
 	public TextInput build() {
 		final TextInput input = super.build();
 
-		modalMaps.insertInput(new InputData());
+		modalMaps.insertInput(new InputData(inputName));
 
 		return input;
 	}

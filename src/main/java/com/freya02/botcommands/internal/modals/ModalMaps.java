@@ -11,6 +11,8 @@ public class ModalMaps {
 	private static final long MIN_ID = (long) Math.pow(10, Math.floor(Math.log10(MAX_ID))); //Same amount of digits except every digit is 0 but the first one is 1
 
 	private final Map<String, ModalData> modalMap = new HashMap<>();
+
+	//Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
 	private final Map<String, InputData> inputMap = new HashMap<>();
 
 	public void insertModal(ModalData data) {
@@ -47,7 +49,9 @@ public class ModalMaps {
 	}
 
 	@Nullable
-	public InputData getInputData(String inputId) {
-		return inputMap.get(inputId);
+	public InputData removeInput(String inputId) {
+		synchronized (inputMap) {
+			return inputMap.remove(inputId);
+		}
 	}
 }

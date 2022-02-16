@@ -28,7 +28,7 @@ public class InternalModals {
 	}
 
 	@NotNull
-	public static TextInputBuilder createTextInput(@NotNull String label, @NotNull TextInputStyle style) {
-		return new TextInputBuilder(getContext().getModalMaps(), label, style);
+	public static TextInputBuilder createTextInput(@NotNull String inputName, @NotNull String label, @NotNull TextInputStyle style) {
+		return new TextInputBuilder(getContext().getModalMaps(), inputName, label, style);
 	}
 }

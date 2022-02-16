@@ -29,8 +29,6 @@ public class ModalListener implements EventListener {
 			}
 
 			final ModalHandlerInfo modalHandler = context.getModalHandler(modalData.getHandlerName());
-
-
 		}
 	}
 }
