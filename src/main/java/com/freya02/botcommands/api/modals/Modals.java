@@ -11,7 +11,7 @@ public interface Modals {
 	}
 
 	@NotNull
-	static TextInputBuilder createTextInput(@NotNull String label, @NotNull TextInputStyle style) {
-		return InternalModals.createTextInput(label, style);
+	static TextInputBuilder createTextInput(@NotNull String inputName, @NotNull String label, @NotNull TextInputStyle style) {
+		return InternalModals.createTextInput(inputName, label, style);
 	}
 }
