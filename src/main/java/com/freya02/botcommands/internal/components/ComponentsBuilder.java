@@ -33,9 +33,9 @@ public class ComponentsBuilder {
 				continue;
 			}
 
-			JDASelectionMenuListener jdaSelectionMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
-			if (jdaSelectionMenuListener != null) {
-				handleComponentListener(method, jdaSelectionMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
+			JDASelectionMenuListener jdaSelectMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
+			if (jdaSelectMenuListener != null) {
+				handleComponentListener(method, jdaSelectMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
 			}
 		}
 	}
@@ -50,7 +50,7 @@ public class ComponentsBuilder {
 			if (!method.canAccess(obj))
 				throw new IllegalStateException(componentType + " " + Utils.formatMethodShort(method) + " is not public");
 
-			final ComponentDescriptor newDescriptor = new ComponentDescriptor(obj, method);
+			final ComponentDescriptor newDescriptor = new ComponentDescriptor(context, obj, method);
 			final ComponentDescriptor oldVal = map.put(handlerName, newDescriptor);
 			if (oldVal != null) {
 				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + Utils.formatMethodShort(method) + " was already registered as " + oldVal.getMethod());

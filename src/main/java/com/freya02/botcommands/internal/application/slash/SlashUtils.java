@@ -2,17 +2,17 @@ package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.parameters.ParameterResolvers;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.application.LocalizedCommandData;
-import com.freya02.botcommands.internal.parameters.channels.AbstractChannelResolver;
+import com.freya02.botcommands.internal.parameters.channels.ChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +27,8 @@ public class SlashUtils {
 	public static void appendCommands(List<Command> commands, StringBuilder sb) {
 		for (Command command : commands) {
 			final StringJoiner joiner = new StringJoiner("] [", "[", "]").setEmptyValue("");
-			if (command instanceof SlashCommand) {
-				for (SlashCommand.Option option : ((SlashCommand) command).getOptions()) {
-					joiner.add(option.getType().name());
-				}
+			for (Command.Option option : command.getOptions()) {
+				joiner.add(option.getType().name());
 			}
 
 			sb.append(" - ").append(command.getName()).append(" ").append(joiner).append("\n");
@@ -40,74 +38,68 @@ public class SlashUtils {
 	public static List<OptionData> getLocalizedMethodOptions(@NotNull SlashCommandInfo info, @NotNull LocalizedCommandData localizedCommandData) {
 		final List<OptionData> list = new ArrayList<>();
 		final List<LocalizedOption> optionNames = getLocalizedOptions(info, localizedCommandData);
-		final List<List<SlashCommand.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
+		final List<List<Command.Choice>> optionsChoices = getAllOptionsLocalizedChoices(localizedCommandData);
 
 		final long optionParamCount = info.getParameters().getOptionCount();
-		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getCommandMethod()));
+		Checks.check(optionNames.size() == optionParamCount, "Slash command has %s options but has %d parameters (after the event) @ %s, you should check if you return the correct number of localized strings", optionNames, optionParamCount - 1, Utils.formatMethodShort(info.getMethod()));
 
 		int i = 1;
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
-			final Class<?> boxedType = parameter.getBoxedType();
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = optionNames.get(i - 1).getName();
 			final String description = optionNames.get(i - 1).getDescription();
 
-			final OptionData data;
-			if (boxedType == User.class || boxedType == Member.class) {
-				data = new OptionData(OptionType.USER, name, description);
-			} else if (boxedType == Role.class) {
-				data = new OptionData(OptionType.ROLE, name, description);
-			} else if (GuildChannel.class.isAssignableFrom(boxedType)) {
-				data = new OptionData(OptionType.CHANNEL, name, description);
+			final SlashParameterResolver resolver = parameter.getResolver();
+			final OptionType optionType = resolver.getOptionType();
+			final OptionData data = new OptionData(optionType, name, description);
 
-				if (parameter.getChannelTypes().isEmpty()) {
-					final AbstractChannelResolver<?> resolver = (AbstractChannelResolver<?>) parameter.getResolver();
+			if (optionType == OptionType.CHANNEL) {
+				//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
+				// Otherwise set the channel types of the parameter, if available
+				if (parameter.getChannelTypes().isEmpty() && resolver instanceof ChannelResolver channelResolver) {
+					final EnumSet<ChannelType> channelTypes = channelResolver.getChannelTypes();
 
-					data.setChannelTypes(resolver.getChannelType());
-				} else {
+					data.setChannelTypes(channelTypes);
+				} else if (!parameter.getChannelTypes().isEmpty()) {
 					data.setChannelTypes(parameter.getChannelTypes());
 				}
-			} else if (boxedType == IMentionable.class) {
-				data = new OptionData(OptionType.MENTIONABLE, name, description);
-			} else if (boxedType == Boolean.class) {
-				data = new OptionData(OptionType.BOOLEAN, name, description);
-			} else if (boxedType == Long.class) {
-				data = new OptionData(OptionType.INTEGER, name, description);
-
+			} else if (optionType == OptionType.INTEGER) {
 				data.setMinValue(parameter.getMinValue().longValue());
 				data.setMaxValue(parameter.getMaxValue().longValue());
-			} else if (boxedType == Double.class) {
-				data = new OptionData(OptionType.NUMBER, name, description);
-
+			} else if (optionType == OptionType.NUMBER) {
 				data.setMinValue(parameter.getMinValue().doubleValue());
 				data.setMaxValue(parameter.getMaxValue().doubleValue());
-			} else if (ParameterResolvers.exists(boxedType)) {
-				data = new OptionData(OptionType.STRING, name, description);
-			} else {
-				throw new IllegalArgumentException("Unknown slash command option: " + boxedType.getName());
 			}
 
 			if (applicationOptionData.hasAutocompletion()) {
-				if (!data.getType().canSupportChoices()) {
-					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " does not support autocompletion");
+				if (!optionType.canSupportChoices()) {
+					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " does not support autocompletion");
 				}
 
 				data.setAutoComplete(true);
 			}
 
-			if (data.getType().canSupportChoices()) {
+			if (optionType.canSupportChoices()) {
+				Collection<Command.Choice> choices = null;
+
 				//optionChoices might just be empty
 				// choices of the option might also be empty as an empty list might be generated
 				// do not add choices if it's empty, to not trigger checks
 				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+					choices = optionsChoices.get(i - 1);
+				} else if (!resolver.getPredefinedChoices().isEmpty()) {
+					choices = resolver.getPredefinedChoices();
+				}
+
+				if (choices != null) {
 					if (applicationOptionData.hasAutocompletion()) {
-						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getCommandMethod()) + " cannot have autocompletion and choices at the same time");
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " cannot have autocompletion and choices at the same time");
 					}
 
-					data.addChoices(optionsChoices.get(i - 1));
+					data.addChoices(choices);
 				}
 			}
 
@@ -122,8 +114,8 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	public static List<List<SlashCommand.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
-		List<List<SlashCommand.Choice>> optionsChoices = new ArrayList<>();
+	public static List<List<Command.Choice>> getNotLocalizedChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
+		List<List<Command.Choice>> optionsChoices = new ArrayList<>();
 
 		final int count = info.getParameters().getOptionCount();
 		for (int optionIndex = 0; optionIndex < count; optionIndex++) {
@@ -134,8 +126,8 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	private static List<SlashCommand.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
-		final List<SlashCommand.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
+	private static List<Command.Choice> getNotLocalizedChoicesForCommand(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
+		final List<Command.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
 
 		if (choices.isEmpty()) {
 			final SettingsProvider settingsProvider = context.getSettingsProvider();
@@ -166,7 +158,7 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	private static List<List<SlashCommand.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
+	private static List<List<Command.Choice>> getAllOptionsLocalizedChoices(@Nullable LocalizedCommandData localizedCommandData) {
 		return localizedCommandData == null
 				? Collections.emptyList() //Here choices are only obtainable via the localized data as the annotations were removed.
 				: Objects.requireNonNullElseGet(localizedCommandData.getLocalizedOptionChoices(), Collections::emptyList);

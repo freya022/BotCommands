@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
@@ -17,7 +18,7 @@ import java.util.List;
  * @see ChoiceMenu
  */
 public final class Menu<E> extends BasicMenu<E, Menu<E>> {
-	Menu(long ownerId,
+	Menu(InteractionConstraints constraints,
 	     TimeoutInfo<Menu<E>> timeout,
 	     boolean hasDeleteButton,
 	     ButtonContent firstContent,
@@ -29,8 +30,8 @@ public final class Menu<E> extends BasicMenu<E, Menu<E>> {
 	     int maxEntriesPerPage,
 	     EntryTransformer<? super E> transformer,
 	     RowPrefixSupplier rowPrefixSupplier,
-	     PaginatorSupplier supplier) {
-		super(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
+	     PaginatorSupplier<Menu<E>> supplier) {
+		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
 				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
 				supplier);
 	}

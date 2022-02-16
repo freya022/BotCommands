@@ -3,7 +3,7 @@ package com.freya02.bot.registeredclasses;
 import com.freya02.bot.CommonMain;
 import com.freya02.bot.registeredclasses.othercommands.InstantiatedCommand;
 import com.freya02.botcommands.api.CommandsBuilder;
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.api.Logging;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 

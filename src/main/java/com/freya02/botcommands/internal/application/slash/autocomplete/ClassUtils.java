@@ -8,6 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class ClassUtils {
@@ -16,7 +17,7 @@ public class ClassUtils {
 		if (returnType instanceof ParameterizedType type) {
 			final Class<?> rawType = (Class<?>) type.getRawType();
 
-			if (List.class.isAssignableFrom(rawType) && type.getOwnerType() == null) {
+			if (Collection.class.isAssignableFrom(rawType) && type.getOwnerType() == null) {
 				return (Class<?>) type.getActualTypeArguments()[0];
 			}
 		}

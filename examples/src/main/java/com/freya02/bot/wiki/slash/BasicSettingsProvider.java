@@ -2,14 +2,16 @@ package com.freya02.bot.wiki.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandList;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BasicSettingsProvider implements SettingsProvider {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -45,10 +47,7 @@ public class BasicSettingsProvider implements SettingsProvider {
 	public void addCommand(Guild guild, String commandName) {
 		getBlacklist(guild).remove(commandName); //Removes the command from the blacklist
 
-		try {
-			context.scheduleApplicationCommandsUpdate(Collections.singleton(guild));
-		} catch (IOException e) { //Should not happen unless it can't write the cached commands on the disk
-			LOGGER.error("An error occurred while updating guild commands manually", e);
-		}
+		//You should handle the exceptions inside the completable future, in case an error occurred
+		context.scheduleApplicationCommandsUpdate(guild, false, false);
 	}
 }

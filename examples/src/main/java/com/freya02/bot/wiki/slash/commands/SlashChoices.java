@@ -1,29 +1,28 @@
 package com.freya02.bot.wiki.slash.commands;
 
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.internal.Logging;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SlashChoices extends ApplicationCommand {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private final List<SlashCommand.Choice> valueList = new ArrayList<>();
+	private final List<Command.Choice> valueList = new ArrayList<>();
 
 	@Override
 	@NotNull
-	public List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
+	public List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
 		if (optionIndex == 0) {
 			return valueList;
 		}
@@ -45,16 +44,11 @@ public class SlashChoices extends ApplicationCommand {
 	                   @AppOption(description = "The value of the choice") String value) {
 		event.deferReply(true).queue();
 
-		valueList.add(new SlashCommand.Choice(name, value));
+		valueList.add(new Command.Choice(name, value));
 
-		try {
-			event.getContext().scheduleApplicationCommandsUpdate(List.of(event.getGuild()));
+		//You should handle the exceptions inside the completable future, in case an error occurred
+		event.getContext().scheduleApplicationCommandsUpdate(event.getGuild(), false, false);
 
-			event.getHook().sendMessage("Choice added successfully").queue();
-		} catch (IOException e) {
-			LOGGER.error("Unable to update guild commands", e);
-
-			event.getHook().sendMessage("Could not add the choice").queue();
-		}
+		event.getHook().sendMessage("Choice added successfully").queue();
 	}
 }

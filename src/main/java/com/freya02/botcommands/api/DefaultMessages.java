@@ -3,7 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.annotations.NSFW;
 import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -45,6 +45,12 @@ import java.util.StringJoiner;
  *     <li>nsfwOnlyErrorMsg = {@value DEFAULT_NSFW_ONLY_ERROR_MESSAGE}</li>
  *     <li>nsfwDMDeniedErrorMsg = {@value DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE}</li>
  * </ul>
+ * <ul>
+ *     <li>componentNotAllowedErrorMsg = {@value DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE}</li>
+ *     <li>componentExpiredErrorMsg = {@value DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE}</li>
+ *     <li>componentNotFoundErrorMsg = {@value DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE}</li>
+ *     <li>componentInvalidDataErrorMsg = {@value DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE}</li>
+ * </ul>
  *
  * @see SettingsProvider#getLocale(Guild)
  * @see SettingsProvider#doesUserConsentNSFW(User)
@@ -53,9 +59,11 @@ public final class DefaultMessages {
 	public static final String DEFAULT_USER_PERM_ERROR_MESSAGE = "You are not allowed to do this";
 	public static final String DEFAULT_BOT_PERM_ERROR_MESSAGE = "I am missing these permissions: %s";
 	public static final String DEFAULT_OWNER_ONLY_ERROR_MESSAGE = "Only the owner can use this";
+
 	public static final String DEFAULT_USER_COOLDOWN_MESSAGE = "You must wait **%.2f seconds**";
 	public static final String DEFAULT_CHANNEL_COOLDOWN_MESSAGE = "You must wait **%.2f seconds in this channel**";
 	public static final String DEFAULT_GUILD_COOLDOWN_MESSAGE = "You must wait **%.2f seconds in this guild**";
+
 	public static final String DEFAULT_COMMAND_NOT_FOUND_MESSAGE = "Unknown command, maybe you meant: %s";
 	public static final String DEFAULT_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "This component is not usable anymore";
@@ -66,9 +74,15 @@ public final class DefaultMessages {
 	public static final String DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE = "The parameter '%s' could not be resolved into a %s";
 	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
 	public static final String DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE = "This component is not usable anymore";
+
 	public static final String DEFAULT_NSFW_DISABLED_ERROR_MESSAGE = "This NSFW command is disabled in this kind of channel";
 	public static final String DEFAULT_NSFW_ONLY_ERROR_MESSAGE = "This command can only be used in NSFW channels";
 	public static final String DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE = "This command cannot be used in DMs unless you consent";
+
+	public static final String DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE = "You are not allowed to use this";
+	public static final String DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE = "This component is not usable anymore";
+	public static final String DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE = "This component could not be found";
+	public static final String DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE = "This component has invalid data";
 
 	private final String userPermErrorMsg;
 	private final String botPermErrorMsg;
@@ -92,6 +106,11 @@ public final class DefaultMessages {
 	private final String nsfwDisabledErrorMsg;
 	private final String nsfwOnlyErrorMsg;
 	private final String nsfwDMDeniedErrorMsg;
+
+	private final String componentNotAllowedErrorMsg;
+	private final String componentExpiredErrorMsg;
+	private final String componentNotFoundErrorMsg;
+	private final String componentInvalidDataErrorMsg;
 
 	/**
 	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
@@ -122,6 +141,11 @@ public final class DefaultMessages {
 		nsfwDisabledErrorMsg = getValue(bundle, "nsfwDisabledErrorMsg", DEFAULT_NSFW_DISABLED_ERROR_MESSAGE);
 		nsfwOnlyErrorMsg = getValue(bundle, "nsfwOnlyErrorMsg", DEFAULT_NSFW_ONLY_ERROR_MESSAGE);
 		nsfwDMDeniedErrorMsg = getValue(bundle, "nsfwDMDeniedErrorMsg", DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE);
+
+		componentNotAllowedErrorMsg = getValue(bundle, "componentNotAllowedErrorMsg", DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE);
+		componentExpiredErrorMsg = getValue(bundle, "componentExpiredErrorMsg", DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE);
+		componentNotFoundErrorMsg = getValue(bundle, "componentNotFoundErrorMsg", DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE);
+		componentInvalidDataErrorMsg = getValue(bundle, "componentInvalidDataErrorMsg", DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE);
 	}
 
 	@NotNull
@@ -285,7 +309,7 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when a command is used in a non-NSFW {@link TextChannel}
+	 * @return Message to display when a command is used in a non-NSFW {@link GuildMessageChannel}
 	 */
 	public String getNSFWOnlyErrorMsg() {
 		return nsfwOnlyErrorMsg;
@@ -296,5 +320,34 @@ public final class DefaultMessages {
 	 */
 	public String getNSFWDMDeniedErrorMsg() {
 		return nsfwDMDeniedErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a user tries to use a component it cannot interact with
+	 */
+	public String getComponentNotAllowedErrorMsg() {
+		return componentNotAllowedErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a user tries to use a component which has reached timeout while the bot was offline
+	 */
+	public String getComponentExpiredErrorMsg() {
+		return componentExpiredErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a user tries to use a component which is not know by this library
+	 */
+	public String getComponentNotFoundErrorMsg() {
+		return componentNotFoundErrorMsg;
+	}
+
+	/**
+	 * @return Message to display when a user tries to use a component which has invalid data
+	 * <br>This is usually when the number of arguments don't match up, so the button listener has a different signature
+	 */
+	public String getComponentInvalidDataErrorMsg() {
+		return componentInvalidDataErrorMsg;
 	}
 }

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
+import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 
@@ -60,7 +61,14 @@ import java.lang.annotation.Target;
  *     <li>{@linkplain Role}</li>
  *     <li>{@linkplain User}</li>
  *     <li>{@linkplain Member}</li>
+ *
+ *     <li>{@linkplain Category}</li>
+ *     <li>{@linkplain GuildChannel}</li>
  *     <li>{@linkplain TextChannel}</li>
+ *     <li>{@linkplain ThreadChannel}</li>
+ *     <li>{@linkplain VoiceChannel}</li>
+ *     <li>{@linkplain StoreChannel}</li>
+ *     <li>{@linkplain StageChannel}</li>
  * </ul>
  *
  * <h2>To test your command, specify this command as guild-only in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>
@@ -87,6 +95,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return Name of the command
 	 */
+	@LowercaseDiscordNamePattern
 	String name();
 
 	/**
@@ -95,6 +104,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return Command group of the command
 	 */
+	@LowercaseDiscordNamePattern
 	String group() default "";
 
 	/**
@@ -103,6 +113,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return The subcommand name of this command
 	 */
+	@LowercaseDiscordNamePattern
 	String subcommand() default "";
 
 	/**

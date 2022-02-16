@@ -8,8 +8,9 @@ public interface PersistentComponentBuilder<T extends PersistentComponentBuilder
 	String[] getArgs();
 
 	/**
-	 * Makes this component expire after the specified timeout<br>
-	 * Once the component expires it should be removed from the component manager
+	 * Makes this component expire after the specified timeout
+	 * <br>Once the component expires it should be removed from the component manager
+	 * <br>Additionally, components which are in the same group as this component are also deleted
 	 *
 	 * @return This component builder for chaining purposes
 	 */

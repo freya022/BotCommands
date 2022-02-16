@@ -32,7 +32,7 @@ public class Utils {
 	//Description either on class or method
 	@Nullable
 	public static String getDescription(@NotNull TextCommandInfo info) {
-		final Description classDescription = info.getCommandMethod().getDeclaringClass().getAnnotation(Description.class);
+		final Description classDescription = info.getMethod().getDeclaringClass().getAnnotation(Description.class);
 
 		if (classDescription != null) {
 			return classDescription.value();
@@ -50,7 +50,7 @@ public class Utils {
 
 	//Category only on class
 	public static String getCategory(@NotNull TextCommandInfo info) {
-		final Category category = info.getCommandMethod().getDeclaringClass().getAnnotation(Category.class);
+		final Category category = info.getMethod().getDeclaringClass().getAnnotation(Category.class);
 
 		if (category != null) {
 			return category.value();

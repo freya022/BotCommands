@@ -46,8 +46,8 @@ public final class ApplicationCommandsBuilder {
 
 	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
 		this.context = context;
-		this.context.setSlashCommandsBuilder(this);
 		this.slashGuildIds = slashGuildIds;
+		this.context.setSlashCommandsBuilder(this);
 	}
 
 	public void processApplicationCommand(ApplicationCommand applicationCommand, Method method) {
@@ -78,7 +78,7 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
-		final UserCommandInfo info = new UserCommandInfo(applicationCommand, method);
+		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
 		context.addUserCommand(info);
@@ -98,7 +98,7 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
-		final MessageCommandInfo info = new MessageCommandInfo(applicationCommand, method);
+		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
 		context.addMessageCommand(info);
@@ -118,10 +118,18 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 
-		final SlashCommandInfo info = new SlashCommandInfo(applicationCommand, method);
+		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
 
 		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
 		context.addSlashCommand(info);
+	}
+
+	private String getCheckTypeString() {
+		if (context.isOnlineAppCommandCheckEnabled()) {
+			return "Online check";
+		} else {
+			return "Local disk check";
+		}
 	}
 
 	public void postProcess() throws IOException {
@@ -131,12 +139,12 @@ public final class ApplicationCommandsBuilder {
 
 		es.submit(() -> {
 			try {
-				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context);
+				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, context.isOnlineAppCommandCheckEnabled());
 				if (globalUpdater.shouldUpdateCommands()) {
 					globalUpdater.updateCommands();
-					LOGGER.debug("Global commands were updated");
+					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
 				} else {
-					LOGGER.debug("Global commands does not have to be updated");
+					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
@@ -146,9 +154,9 @@ public final class ApplicationCommandsBuilder {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map;
 		final ShardManager shardManager = context.getJDA().getShardManager();
 		if (shardManager != null) {
-			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(shardManager.getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		} else {
-			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false);
+			map = scheduleApplicationCommandsUpdate(context.getJDA().getGuildCache(), false, context.isOnlineAppCommandCheckEnabled());
 		}
 
 		map.forEach((guild, future) -> {
@@ -166,26 +174,29 @@ public final class ApplicationCommandsBuilder {
 				LOGGER.warn("Could not register guild commands for guild '{}' ({}) as it appears the OAuth2 grants misses applications.commands, you can re-invite the bot in this guild with its already existing permission with this link: {}", guild.getName(), guild.getId(), inviteUrl);
 				context.getRegistrationListeners().forEach(r -> r.onGuildSlashCommandMissingAccess(guild, inviteUrl));
 			} else {
-				LOGGER.error("Encountered an exception while updating commands for guild '{}' ({})", guild.getName(), guild.getId(), e);
+				LOGGER.error("Encountered an exception while updating commands for guild '{}' ({})", guild.getName(), guild.getId(), throwable);
 			}
 		}
 	}
 
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force) {
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(@NotNull Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
 		final Map<Guild, CompletableFuture<CommandUpdateResult>> map = new HashMap<>();
 
 		for (Guild guild : guilds) {
 			if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong())) continue;
 
-			map.put(guild, scheduleApplicationCommandsUpdate(guild, force));
+			map.put(guild, scheduleApplicationCommandsUpdate(guild, force, onlineCheck));
 		}
 
 		return map;
 	}
 
 	@NotNull
-	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force) {
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
+		if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong()))
+			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false, false));
+
 		return CompletableFuture.supplyAsync(() -> {
 			final ReentrantLock lock;
 			synchronized (lockMap) {
@@ -195,7 +206,7 @@ public final class ApplicationCommandsBuilder {
 			try {
 				lock.lock();
 
-				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild);
+				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild, onlineCheck);
 
 				boolean updatedCommands = false, updatedPrivileges = false;
 
@@ -204,9 +215,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedCommands = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
+					LOGGER.debug("Guild '{}' ({}) commands were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", getCheckTypeString());
 				} else {
-					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
 				if (force || updater.shouldUpdatePrivileges()) {
@@ -214,9 +225,9 @@ public final class ApplicationCommandsBuilder {
 
 					updatedPrivileges = true;
 
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated", guild.getName(), guild.getId(), force ? "force" : "");
-				} else {
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated", guild.getName(), guild.getId());
+					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", "Local disk check");
+				} else { //TODO change prints once privileges can be checked online
+					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
 				}
 
 				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);

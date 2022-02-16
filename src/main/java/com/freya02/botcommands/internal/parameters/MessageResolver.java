@@ -1,9 +1,12 @@
 package com.freya02.botcommands.internal.parameters;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class MessageResolver extends ParameterResolver implements MessageContextParameterResolver {
@@ -13,7 +16,7 @@ public class MessageResolver extends ParameterResolver implements MessageContext
 
 	@Nullable
 	@Override
-	public Object resolve(MessageContextCommandEvent event) {
-		return event.getTargetMessage();
+	public Object resolve(@NotNull BContext context, @NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
+		return event.getTarget();
 	}
 }

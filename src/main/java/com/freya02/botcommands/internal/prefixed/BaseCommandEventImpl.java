@@ -7,10 +7,11 @@ import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
@@ -31,11 +32,14 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	protected final BContext context;
 	protected final String argumentsStr;
 
-	public BaseCommandEventImpl(BContext context, GuildMessageReceivedEvent event, String arguments) {
+	protected final GuildMessageChannel channel;
+
+	public BaseCommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
 		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
 
 		this.context = context;
 		this.argumentsStr = arguments;
+		this.channel = event.getGuildChannel();
 	}
 
 	@Override

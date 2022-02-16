@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.annotations.BotPermissions;
 import com.freya02.botcommands.api.annotations.Cooldown;
 import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,6 +31,7 @@ public @interface JDATextCommand {
 	 *
 	 * @return Name of this command
 	 */
+	@LowercaseDiscordNamePattern
 	String name();
 
 	/**
@@ -37,6 +39,7 @@ public @interface JDATextCommand {
 	 *
 	 * @return Group name of this command
 	 */
+	@LowercaseDiscordNamePattern
 	String group() default "";
 
 	/**
@@ -44,6 +47,7 @@ public @interface JDATextCommand {
 	 *
 	 * @return Subcommand name of this command
 	 */
+	@LowercaseDiscordNamePattern
 	String subcommand() default "";
 
 	/**

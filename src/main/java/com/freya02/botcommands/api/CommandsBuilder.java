@@ -2,7 +2,8 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
+import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -23,23 +24,23 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import static net.dv8tion.jda.api.interactions.commands.SlashCommand.Choice;
-
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
-
-	private final List<Long> slashGuildIds = new ArrayList<>();
 
 	private final BContextImpl context = new BContextImpl();
 
 	private final Set<Class<?>> classes = new HashSet<>();
 
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
+	private final ApplicationCommandsBuilder applicationCommandBuilder = new ApplicationCommandsBuilder(context);
 	private final ExtensionsBuilder extensionsBuilder = new ExtensionsBuilder(context);
+	private final DebugBuilder debugBuilder = new DebugBuilder();
 
 	private CommandsBuilder(long topOwnerId) {
 		context.addOwner(topOwnerId);
@@ -118,34 +119,6 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
 		context.setUncaughtExceptionHandler(exceptionHandler);
-
-		return this;
-	}
-
-	/**
-	 * Debug feature - Makes it so application commands are only updated on these guilds
-	 *
-	 * @param slashGuildIds IDs of the guilds
-	 * @return This builder for chaining convenience
-	 */
-	public CommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
-		this.slashGuildIds.clear();
-		this.slashGuildIds.addAll(slashGuildIds);
-
-		return this;
-	}
-
-	/**
-	 * Registers an autocompletion transformer
-	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
-	 *
-	 * @param type                      Type of the List generic element type
-	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Choice choice}
-	 * @param <T>                       Type of the List generic element type
-	 * @return This builder for chaining convenience
-	 */
-	public <T> CommandsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
-		context.registerAutocompletionTransformer(type, autocompletionTransformer);
 
 		return this;
 	}
@@ -239,13 +212,37 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Configures some settings related to framework text commands
+	 * Configures some settings related to text commands
 	 *
-	 * @param consumer The consumer to run in order to configure text commands settings
+	 * @param consumer The consumer to run in order to configure text commands
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) {
 		consumer.accept(textCommandBuilder);
+
+		return this;
+	}
+
+	/**
+	 * Configures some settings related to application commands
+	 *
+	 * @param consumer The consumer to run in order to configure application commands
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder applicationCommandBuilder(@NotNull Consumer<@NotNull ApplicationCommandsBuilder> consumer) {
+		consumer.accept(applicationCommandBuilder);
+
+		return this;
+	}
+
+	/**
+	 * Configures some settings related to debugging
+	 *
+	 * @param consumer The consumer to run in order to configure debug features
+	 * @return This builder for chaining convenience
+	 */
+	public CommandsBuilder debugBuilder(@NotNull Consumer<@NotNull DebugBuilder> consumer) {
+		consumer.accept(debugBuilder);
 
 		return this;
 	}
@@ -273,7 +270,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, slashGuildIds, classes).build(jda);
+			new CommandsBuilderImpl(context, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
