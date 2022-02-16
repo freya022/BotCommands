@@ -23,8 +23,8 @@ public class InternalModals {
 	}
 
 	@NotNull
-	public static ModalBuilder create(@NotNull String title) {
-		return new ModalBuilder(getContext().getModalMaps(), title);
+	public static ModalBuilder create(@NotNull String handlerName, Object... userData) {
+		return new ModalBuilder(getContext().getModalMaps(), handlerName, userData);
 	}
 
 	@NotNull
