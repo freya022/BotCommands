@@ -41,10 +41,10 @@ public class TextInputBuilder extends TextInput.Builder {
 	@NotNull
 	@Override
 	public TextInput build() {
-		final TextInput input = super.build();
+		final String actualId = modalMaps.insertInput(new InputData(inputName), getId());
 
-		modalMaps.insertInput(new InputData(inputName), getId());
+		setId(actualId);
 
-		return input;
+		return super.build();
 	}
 }
