@@ -16,6 +16,8 @@ public class ModalHandlersBuilder {
 
 	public ModalHandlersBuilder(BContextImpl context) {
 		this.context = context;
+
+		InternalModals.setContext(context);
 	}
 
 	public void processHandler(Object autocompleteHandler, Method method) {
@@ -34,6 +36,6 @@ public class ModalHandlersBuilder {
 	}
 
 	public void postProcess() {
-
+		context.addEventListeners(new ModalListener(context));
 	}
 }
