@@ -408,6 +408,11 @@ public class BContextImpl implements BContext {
 		}
 	}
 
+	@Nullable
+	public ModalHandlerInfo getModalHandler(String handlerName) {
+		return modalHandlersMap.get(handlerName);
+	}
+
 	public Collection<TextCommandCandidates> getCommands() {
 		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
