@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.application.slash.autocomplete;
 
-import com.freya02.botcommands.internal.utils.Utils;
+import com.freya02.botcommands.internal.utils.StringUtils;
 import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.ToStringFunction;
 import me.xdrop.fuzzywuzzy.model.BoundExtractedResult;
@@ -33,7 +33,7 @@ public class AutocompleteAlgorithms {
 		final String query = autoCompleteQuery.getValue();
 		final List<T> list = items
 				.stream()
-				.filter(s -> Utils.startsWithIgnoreCase(toStringFunction.apply(s), query))
+				.filter(s -> StringUtils.startsWithIgnoreCase(toStringFunction.apply(s), query))
 				.sorted(Comparator.comparing(toStringFunction::apply))
 				.toList();
 
