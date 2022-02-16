@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.utils;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -18,5 +20,9 @@ public class StringUtils {
 		sb.append(joiner).append(' ').append(strings.get(strings.size() - 1));
 
 		return sb.toString();
+	}
+
+	public static boolean startsWithIgnoreCase(@NotNull String original, @NotNull String input) {
+		return original.regionMatches(true, 0, input, 0, input.length());
 	}
 }

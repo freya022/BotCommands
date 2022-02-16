@@ -143,9 +143,4 @@ public final class Utils {
 			throw new RuntimeException("Unable to read resource at " + url + " for class " + callerClass.getName(), e);
 		}
 	}
-
-	//TODO move to StringUtils
-	public static boolean startsWithIgnoreCase(@NotNull String original, @NotNull String input) {
-		return original.regionMatches(true, 0, input, 0, input.length());
-	}
 }
