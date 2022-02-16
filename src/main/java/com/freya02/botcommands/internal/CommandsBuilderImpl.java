@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.application.slash.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
@@ -61,7 +61,7 @@ public final class CommandsBuilderImpl {
 	
 	private final List<Class<?>> ignoredClasses = new ArrayList<>();
 
-	public CommandsBuilderImpl(BContextImpl context, List<Long> slashGuildIds, Set<Class<?>> classes) {
+	public CommandsBuilderImpl(BContextImpl context, Set<Class<?>> classes, List<Long> slashGuildIds) {
 		if (classes.isEmpty())
 			LOGGER.warn("No classes have been found, make sure you have at least one search path");
 
@@ -272,11 +272,11 @@ public final class CommandsBuilderImpl {
 
 		context.registerConstructorParameter(BContext.class, ignored -> context);
 		context.registerCommandDependency(BContext.class, () -> context);
-		context.registerCustomResolver(BContext.class, ignored -> context);
+		context.registerCustomResolver(BContext.class, (x, y, ignored) -> context);
 
 		context.registerConstructorParameter(JDA.class, ignored -> jda);
 		context.registerCommandDependency(JDA.class, () -> jda);
-		context.registerCustomResolver(JDA.class, ignored -> jda);
+		context.registerCustomResolver(JDA.class, (x, y, ignored) -> jda);
 
 		context.setDefaultMessageProvider(new Function<>() {
 			private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();

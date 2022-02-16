@@ -13,8 +13,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.CommandAutoCompleteEvent;
-import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class SlashCommandInfo extends ApplicationCommandInfo {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -33,7 +35,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	 */
 	private final String description;
 
-	private final Object instance;
 	private final MethodParameters<SlashCommandParameter> commandParameters;
 
 	/**
@@ -41,8 +42,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	 */
 	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
-	public SlashCommandInfo(ApplicationCommand instance, Method commandMethod) {
-		super(instance, commandMethod.getAnnotation(JDASlashCommand.class),
+	public SlashCommandInfo(BContext context, ApplicationCommand instance, Method commandMethod) {
+		super(context, instance, commandMethod.getAnnotation(JDASlashCommand.class),
 				commandMethod,
 				commandMethod.getAnnotation(JDASlashCommand.class).name(),
 				commandMethod.getAnnotation(JDASlashCommand.class).group(),
@@ -50,8 +51,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
-		this.instance = instance;
-		this.commandParameters = MethodParameters.of(commandMethod, (parameter, i) -> {
+		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, i) -> {
 			final Class<?> type = parameter.getType();
 
 			if (Member.class.isAssignableFrom(type)
@@ -81,7 +81,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 
-	public boolean execute(BContext context, SlashCommandEvent event) throws Exception {
+	public boolean execute(BContext context, SlashCommandInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
 			if (guildOnly) {
 				add(new GuildSlashEvent(context, event));
@@ -99,7 +99,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isOption()) {
 				String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
 				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
 				}
 
 				optionIndex++;
@@ -116,11 +116,11 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 						continue;
 					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (localized '" + optionName + "'");
+						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (localized '" + optionName + "')");
 					}
 				}
 
-				obj = parameter.getResolver().resolve(event, optionMapping);
+				obj = parameter.getResolver().resolve(context, this, event, optionMapping);
 
 				if (obj == null) {
 					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName())
@@ -143,7 +143,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					return false;
 				}
 			} else {
-				obj = parameter.getCustomResolver().resolve(event);
+				obj = parameter.getCustomResolver().resolve(context, this, event);
 			}
 
 			//For some reason using an array list instead of a regular array
@@ -153,7 +153,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		applyCooldown(event);
 
-		commandMethod.invoke(instance, objects.toArray());
+		getMethodRunner().invoke(objects.toArray(), throwableConsumer);
 
 		return true;
 	}
@@ -163,8 +163,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Nullable
-	public String getAutocompletionHandlerName(CommandAutoCompleteEvent event) {
-		final OptionMapping focusedOption = event.getFocusedOptionType();
+	public String getAutocompletionHandlerName(CommandAutoCompleteInteractionEvent event) {
+		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
 		int optionIndex = 0;
 		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;
@@ -174,12 +174,12 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isOption()) {
 				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
 				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getCommandMethod())));
+					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
 				}
 
 				optionIndex++;
 
-				if (optionName.equals(focusedOption.getName())) {
+				if (optionName.equals(autoCompleteQuery.getName())) {
 					return applicationOptionData.getAutocompletionHandlerName();
 				}
 			}
@@ -189,12 +189,14 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	}
 
 	@Override
+	@NotNull
 	public MethodParameters<SlashCommandParameter> getParameters() {
 		return commandParameters;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@NotNull
 	public List<? extends SlashCommandParameter> getOptionParameters() {
 		return (List<? extends SlashCommandParameter>) super.getOptionParameters();
 	}

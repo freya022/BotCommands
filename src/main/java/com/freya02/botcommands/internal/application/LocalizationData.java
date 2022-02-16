@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashUtils;
 import com.freya02.botcommands.internal.utils.BResourceBundle;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,12 +24,12 @@ public class LocalizationData {
 	private final CommandPath localizedPath;
 	private final String localizedDescription;
 	private final List<LocalizedOption> localizedOptions;
-	private final List<List<SlashCommand.Choice>> localizedChoices;
+	private final List<List<Command.Choice>> localizedChoices;
 
 	private LocalizationData(@NotNull CommandPath localizedPath,
 	                         @Nullable String localizedDescription,
 	                         @Nullable List<LocalizedOption> localizedOptions,
-	                         @Nullable List<List<SlashCommand.Choice>> localizedChoices) {
+	                         @Nullable List<List<Command.Choice>> localizedChoices) {
 		this.localizedPath = localizedPath;
 		this.localizedDescription = localizedDescription;
 		this.localizedOptions = localizedOptions;
@@ -40,7 +40,7 @@ public class LocalizationData {
 		final CommandPath localizedPath;
 		final String localizedDescription;
 		final List<LocalizedOption> localizedOptions;
-		final List<List<SlashCommand.Choice>> localizedChoices;
+		final List<List<Command.Choice>> localizedChoices;
 
 		final Locale locale = context.getEffectiveLocale(guild);
 
@@ -61,7 +61,7 @@ public class LocalizationData {
 			throw new IllegalArgumentException("Unknown localization prefix for class: " + info.getClass().getSimpleName());
 		}
 
-		final String qualifier = info.getCommandMethod().getName();
+		final String qualifier = info.getMethod().getName();
 
 		final StringJoiner pathJoiner = new StringJoiner("/");
 		pathJoiner.add(tryLocalize(bundle, info.getPath().getName(), prefix, qualifier, "name"));
@@ -84,7 +84,7 @@ public class LocalizationData {
 			localizedOptions = new ArrayList<>();
 			localizedChoices = new ArrayList<>();
 
-			final List<List<SlashCommand.Choice>> notLocalizedChoices = SlashUtils.getNotLocalizedChoices(context, guild, info);
+			final List<List<Command.Choice>> notLocalizedChoices = SlashUtils.getNotLocalizedChoices(context, guild, info);
 			final List<? extends ApplicationCommandParameter<?>> parameters = info.getOptionParameters();
 			for (int optionIndex = 0, parametersSize = parameters.size(); optionIndex < parametersSize; optionIndex++) {
 				ApplicationCommandParameter<?> parameter = parameters.get(optionIndex);
@@ -95,7 +95,7 @@ public class LocalizationData {
 
 				localizedOptions.add(new LocalizedOption(optionName, optionDescription));
 
-				final List<SlashCommand.Choice> choices = getLocalizedChoices(bundle, prefix, qualifier, notLocalizedChoices, optionIndex, parameter);
+				final List<Command.Choice> choices = getLocalizedChoices(bundle, prefix, qualifier, notLocalizedChoices, optionIndex, parameter);
 
 				localizedChoices.add(choices);
 			}
@@ -108,30 +108,30 @@ public class LocalizationData {
 	}
 
 	@NotNull
-	private static List<SlashCommand.Choice> getLocalizedChoices(BResourceBundle bundle,
+	private static List<Command.Choice> getLocalizedChoices(BResourceBundle bundle,
 	                                                             String prefix,
 	                                                             String qualifier,
-	                                                             List<List<SlashCommand.Choice>> notLocalizedChoices,
+	                                                             List<List<Command.Choice>> notLocalizedChoices,
 	                                                             int optionIndex,
 	                                                             ApplicationCommandParameter<?> parameter) {
-		final List<SlashCommand.Choice> choices = new ArrayList<>();
+		final List<Command.Choice> choices = new ArrayList<>();
 
 		if (optionIndex < notLocalizedChoices.size()) {
-			List<SlashCommand.Choice> choiceList = notLocalizedChoices.get(optionIndex);
+			List<Command.Choice> choiceList = notLocalizedChoices.get(optionIndex);
 			for (int i = 0, getSize = choiceList.size(); i < getSize; i++) {
-				SlashCommand.Choice notLocalizedChoice = choiceList.get(i);
+				Command.Choice notLocalizedChoice = choiceList.get(i);
 
 				final String choiceName = tryLocalize(bundle, notLocalizedChoice.getName(), prefix, qualifier, "options", optionIndex, "choices", i, "name");
 
 				//Not really a great idea
 				if (parameter.getBoxedType() == Long.class) {
-					choices.add(new SlashCommand.Choice(choiceName, notLocalizedChoice.getAsLong()));
+					choices.add(new Command.Choice(choiceName, notLocalizedChoice.getAsLong()));
 				} else if (parameter.getBoxedType() == Double.class) {
-					choices.add(new SlashCommand.Choice(choiceName, notLocalizedChoice.getAsDouble()));
+					choices.add(new Command.Choice(choiceName, notLocalizedChoice.getAsDouble()));
 				} else {
 					final String choiceValue = tryLocalize(bundle, notLocalizedChoice.getAsString(), prefix, qualifier, "options", optionIndex, "choices", i, "value");
 
-					choices.add(new SlashCommand.Choice(choiceName, choiceValue));
+					choices.add(new Command.Choice(choiceName, choiceValue));
 				}
 			}
 		}
@@ -164,7 +164,7 @@ public class LocalizationData {
 	}
 
 	@Nullable
-	public List<List<SlashCommand.Choice>> getLocalizedChoices() {
+	public List<List<Command.Choice>> getLocalizedChoices() {
 		return localizedChoices;
 	}
 }

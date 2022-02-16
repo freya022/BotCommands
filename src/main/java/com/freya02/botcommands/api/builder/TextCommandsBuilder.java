@@ -2,13 +2,12 @@ package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class TextCommandsBuilder {
 	private final BContextImpl context;
@@ -55,14 +54,14 @@ public final class TextCommandsBuilder {
 	}
 
 	/**
-	 * Adds a filter for received messages (could prevent regular commands from running), <b>See {@link BContext#addFilter(Predicate)} for more info</b>
+	 * Adds a filter for received messages (could prevent regular commands from running), <b>See {@link BContext#addTextFilter(TextCommandFilter)} for more info</b>
 	 *
 	 * @param filter The filter to add, should return <code>false</code> if the message has to be ignored
 	 * @return This builder for chaining convenience
-	 * @see BContext#addFilter(Predicate)
+	 * @see BContext#addTextFilter(TextCommandFilter)
 	 */
-	public TextCommandsBuilder addFilter(Predicate<MessageInfo> filter) {
-		context.addFilter(filter);
+	public TextCommandsBuilder addTextFilter(TextCommandFilter filter) {
+		context.addTextFilter(filter);
 
 		return this;
 	}

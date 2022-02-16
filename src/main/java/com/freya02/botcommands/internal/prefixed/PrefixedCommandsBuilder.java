@@ -29,7 +29,7 @@ public class PrefixedCommandsBuilder {
 			if (!ReflectionUtils.hasFirstParameter(method, BaseCommandEvent.class)) //Handles CommandEvent (and subtypes) too
 				throw new IllegalArgumentException("Prefixed command at " + Utils.formatMethodShort(method) + " must have a BaseCommandEvent or a CommandEvent as first parameter");
 
-			final TextCommandInfo info = new TextCommandInfo(command, method);
+			final TextCommandInfo info = new TextCommandInfo(context, command, method);
 
 			context.addTextCommand(info);
 
@@ -58,7 +58,7 @@ public class PrefixedCommandsBuilder {
 				LOGGER.trace("Path: {}", command.getPath());
 				for (TextCommandInfo candidate : candidates) {
 					LOGGER.trace("\t- '{}' Bot permission=[{}] User permissions=[{}]",
-							Utils.formatMethodShort(candidate.getCommandMethod()),
+							Utils.formatMethodShort(candidate.getMethod()),
 							candidate.getBotPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")),
 							candidate.getUserPermissions().stream().map(Permission::getName).collect(Collectors.joining(", ")));
 				}
@@ -77,8 +77,8 @@ public class PrefixedCommandsBuilder {
 				for (TextCommandInfo commandInfo : command) {
 					if (info == commandInfo) continue;
 
-					final Method commandMethod1 = info.getCommandMethod();
-					final Method commandMethod2 = commandInfo.getCommandMethod();
+					final Method commandMethod1 = info.getMethod();
+					final Method commandMethod2 = commandInfo.getMethod();
 
 					final List<? extends TextCommandParameter> parameters1 = info.getOptionParameters();
 					final List<? extends TextCommandParameter> parameters2 = commandInfo.getOptionParameters();

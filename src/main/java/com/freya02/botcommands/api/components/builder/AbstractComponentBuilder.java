@@ -1,18 +1,14 @@
 package com.freya02.botcommands.api.components.builder;
 
+import com.freya02.botcommands.api.components.InteractionConstraints;
+
 @SuppressWarnings("unchecked")
 public abstract class AbstractComponentBuilder<T extends AbstractComponentBuilder<T>> implements ComponentBuilder<T> {
+	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 	private boolean oneUse;
-	private long ownerId;
 
 	public T oneUse() {
 		this.oneUse = true;
-
-		return (T) this;
-	}
-
-	public T ownerId(long ownerId) {
-		this.ownerId = ownerId;
 
 		return (T) this;
 	}
@@ -21,7 +17,8 @@ public abstract class AbstractComponentBuilder<T extends AbstractComponentBuilde
 		return oneUse;
 	}
 
-	public long getOwnerId() {
-		return ownerId;
+	@Override
+	public InteractionConstraints getInteractionConstraints() {
+		return interactionConstraints;
 	}
 }

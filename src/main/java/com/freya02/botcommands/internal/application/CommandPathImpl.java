@@ -5,6 +5,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.StringJoiner;
 
 public class CommandPathImpl implements CommandPath {
@@ -137,6 +138,14 @@ public class CommandPathImpl implements CommandPath {
 
 	@Override
 	public boolean startsWith(CommandPath o) {
-		return getFullPath().startsWith(o.getFullPath());
+		if (o.getNameCount() > getNameCount()) return false;
+
+		for (int i = 0; i < Math.min(getNameCount(), o.getNameCount()); i++) {
+			if (!Objects.equals(o.getNameAt(i), getNameAt(i))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

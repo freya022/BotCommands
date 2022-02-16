@@ -5,9 +5,9 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.ButtonStyle;
-import net.dv8tion.jda.internal.interactions.ButtonImpl;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 
 public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<PersistentButtonBuilder> {
 	private final BContext context;

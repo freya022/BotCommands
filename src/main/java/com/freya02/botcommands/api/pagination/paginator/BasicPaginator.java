@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -11,7 +12,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -25,15 +26,15 @@ import java.util.List;
 public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
-	protected final PaginatorSupplier supplier;
+	protected final PaginatorSupplier<T> supplier;
 	private final int maxPages;
 	private final Button deleteButton;
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
-	protected BasicPaginator(long ownerId, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton,
+	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
 	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(ownerId, timeout);
+		super(constraints, timeout);
 
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
@@ -42,29 +43,32 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			page = 0;
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(firstContent);
+		}).setConstraints(constraints).build(firstContent);
 
 		previousButton = Components.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(previousContent);
+		}).setConstraints(constraints).build(previousContent);
 
 		nextButton = Components.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(nextContent);
+		}).setConstraints(constraints).build(nextContent);
 
 		lastButton = Components.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
-		}).ownerId(ownerId).build(lastContent);
+		}).setConstraints(constraints).build(lastContent);
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked).ownerId(ownerId).oneUse().build(deleteContent);
+			this.deleteButton = Components.dangerButton(this::onDeleteClicked)
+					.setConstraints(constraints)
+					.oneUse()
+					.build(deleteContent);
 		} else {
 			this.deleteButton = null;
 		}
@@ -75,10 +79,11 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	}
 
 	/**
-	 * Sets the page number, <b>this does not update the embed in any way</b>
+	 * Sets the page number, <b>this does not update the embed in any way</b>,
+	 * you can use {@link #get()} with an <code>editOriginal</code> in order to update the embed on Discord
 	 *
 	 * @param page Number of the page, from <code>0</code> to <code>maxPages - 1</code>
-	 * @return This {@link Paginator} for chaining convenience
+	 * @return This instance for chaining convenience
 	 */
 	public T setPage(int page) {
 		Checks.check(page >= 0, "Page cannot be negative");
@@ -90,6 +95,8 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	}
 
 	private void onDeleteClicked(ButtonEvent e) {
+		cancelTimeout();
+
 		if (!e.getMessage().isEphemeral()) {
 			e.deferEdit().queue();
 			e.getMessage().delete().queue();
@@ -128,7 +135,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 	@NotNull
 	protected MessageEmbed getEmbed() {
-		return supplier.get(messageBuilder, components, page);
+		return supplier.get((T) this, messageBuilder, components, page);
 	}
 
 	protected void putComponents() {

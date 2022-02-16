@@ -1,29 +1,37 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
+import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
+import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
+import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
+import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
+import gnu.trove.TCollections;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +47,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -56,8 +63,15 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
+	private boolean onlineAppCommandCheckEnabled;
 
-	private final List<Predicate<MessageInfo>> filters = new ArrayList<>();
+	private final Map<String, AutocompletionHandlerInfo> autocompleteHandlersMap = new HashMap<>();
+
+	private final TLongSet testGuildIds = TCollections.synchronizedSet(new TLongHashSet());
+
+	private final List<TextCommandFilter> textFilters = new ArrayList<>();
+	private final List<ApplicationCommandFilter> applicationFilters = new ArrayList<>();
+	private final List<ComponentInteractionFilter> componentFilters = new ArrayList<>();
 
 	private JDA jda;
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
@@ -79,11 +93,21 @@ public class BContextImpl implements BContext {
 
 	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
+	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
 	@Override
 	@NotNull
 	public JDA getJDA() {
 		return jda;
+	}
+
+	@Override
+	public MethodRunnerFactory getMethodRunnerFactory() {
+		return methodRunnerFactory;
+	}
+
+	public void setMethodRunnerFactory(@NotNull MethodRunnerFactory methodRunnerFactory) {
+		this.methodRunnerFactory = methodRunnerFactory;
 	}
 
 	public void setJDA(JDA jda) {
@@ -287,9 +311,9 @@ public class BContextImpl implements BContext {
 			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
 				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
 						path,
-						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						Utils.formatMethodShort(commandInfo.getMethod()),
 						commandPath,
-						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+						Utils.formatMethodShort(mapInfo.getMethod())));
 			}
 		}
 
@@ -300,9 +324,9 @@ public class BContextImpl implements BContext {
 			if (mapInfo != null) {
 				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
 						path,
-						Utils.formatMethodShort(commandInfo.getCommandMethod()),
+						Utils.formatMethodShort(commandInfo.getMethod()),
 						p,
-						Utils.formatMethodShort(mapInfo.getCommandMethod())));
+						Utils.formatMethodShort(mapInfo.getMethod())));
 			}
 		} while ((p = p.getParent()) != null);
 
@@ -317,8 +341,8 @@ public class BContextImpl implements BContext {
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
 					path,
-					Utils.formatMethodShort(oldCmd.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod())));
+					Utils.formatMethodShort(oldCmd.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
 	}
 
@@ -330,22 +354,43 @@ public class BContextImpl implements BContext {
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
 					path,
-					Utils.formatMethodShort(oldCmd.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod())));
+					Utils.formatMethodShort(oldCmd.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
 	}
 
-	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, CommandType type, T commandInfo) {
+	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, Command.Type type, T commandInfo) {
 		//it's pretty much possible that the path already exist if two guilds use the same language for example
 		//Still, check that the alternative path points to the same path if it exists
 
 		final ApplicationCommandInfo oldVal = getApplicationCommandInfoMap().put(type, path, commandInfo);
 		if (oldVal != commandInfo && oldVal != null) {
 			throw new IllegalStateException(String.format("Tried to add a localized application command path but one already exists and isn't from the same command: %s and %s, path: %s",
-					Utils.formatMethodShort(oldVal.getCommandMethod()),
-					Utils.formatMethodShort(commandInfo.getCommandMethod()),
+					Utils.formatMethodShort(oldVal.getMethod()),
+					Utils.formatMethodShort(commandInfo.getMethod()),
 					path));
 		}
+	}
+
+	public void addAutocompletionHandler(AutocompletionHandlerInfo handlerInfo) {
+		final AutocompletionHandlerInfo oldHandler = autocompleteHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
+
+		if (oldHandler != null) {
+			throw new IllegalArgumentException("Tried to register autocompletion handler '" + handlerInfo.getHandlerName() + "' at " + Utils.formatMethodShort(handlerInfo.getMethod()) + " was already registered at " + Utils.formatMethodShort(oldHandler.getMethod()));
+		}
+	}
+
+	@Nullable
+	public AutocompletionHandlerInfo getAutocompletionHandler(String autocompletionHandlerName) {
+		return autocompleteHandlersMap.get(autocompletionHandlerName);
+	}
+
+	@Override
+	public void invalidateAutocompletionCache(String autocompletionHandlerName) {
+		final AutocompletionHandlerInfo handler = getAutocompletionHandler(autocompletionHandlerName);
+		if (handler == null) throw new IllegalArgumentException("Autocompletion handler name not found for '" + autocompletionHandlerName + "'");
+
+		handler.invalidate();
 	}
 
 	public Collection<TextCommandCandidates> getCommands() {
@@ -380,17 +425,57 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public void addFilter(Predicate<MessageInfo> filter) {
-		filters.add(filter);
+	public void addTextFilter(TextCommandFilter filter) {
+		Checks.notNull(filter, "Text command filter");
+
+		textFilters.add(filter);
 	}
 
 	@Override
-	public void removeFilter(Predicate<MessageInfo> filter) {
-		filters.remove(filter);
+	public void addApplicationFilter(ApplicationCommandFilter filter) {
+		Checks.notNull(filter, "Application command filter");
+
+		applicationFilters.add(filter);
 	}
 
-	public List<Predicate<MessageInfo>> getFilters() {
-		return filters;
+	@Override
+	public void addComponentFilter(ComponentInteractionFilter filter) {
+		Checks.notNull(filter, "Component interaction filter");
+
+		componentFilters.add(filter);
+	}
+
+	@Override
+	public void removeTextFilter(TextCommandFilter filter) {
+		Checks.notNull(filter, "Text command filter");
+
+		textFilters.remove(filter);
+	}
+
+	@Override
+	public void removeApplicationFilter(ApplicationCommandFilter filter) {
+		Checks.notNull(filter, "Application command filter");
+
+		applicationFilters.remove(filter);
+	}
+
+	@Override
+	public void removeComponentFilter(ComponentInteractionFilter filter) {
+		Checks.notNull(filter, "Component interaction filter");
+
+		componentFilters.remove(filter);
+	}
+
+	public List<TextCommandFilter> getTextFilters() {
+		return textFilters;
+	}
+
+	public List<ApplicationCommandFilter> getApplicationFilters() {
+		return applicationFilters;
+	}
+
+	public List<ComponentInteractionFilter> getComponentFilters() {
+		return componentFilters;
 	}
 
 	@Override
@@ -465,8 +550,14 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force) {
-		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false);
+	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false, onlineCheck);
+	}
+
+	@Override
+	@NotNull
+	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guild, force, onlineCheck);
 	}
 
 	public ApplicationCommandsBuilder getSlashCommandsBuilder() {
@@ -474,7 +565,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public <T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+	public <T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
 		ParameterResolvers.register(new CustomResolver(parameterType, function));
 	}
 
@@ -524,11 +615,28 @@ public class BContextImpl implements BContext {
 		return uncaughtExceptionHandler;
 	}
 
+	@Override
+	public TLongSet getTestGuildIds() {
+		return testGuildIds;
+	}
+
+	public void addTestGuildIds(long... ids) {
+		testGuildIds.addAll(ids);
+	}
+
 	public AutocompletionTransformer<?> getAutocompletionTransformer(Class<?> type) {
 		return autocompletionTransformers.get(type);
 	}
 
 	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
 		autocompletionTransformers.put(type, autocompletionTransformer);
+	}
+
+	public boolean isOnlineAppCommandCheckEnabled() {
+		return onlineAppCommandCheckEnabled;
+	}
+
+	public void enableOnlineAppCommandCheck() {
+		this.onlineAppCommandCheckEnabled = true;
 	}
 }

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.PaginatorComponents;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
@@ -20,7 +21,7 @@ import com.freya02.botcommands.api.utils.ButtonContent;
  * @see Menu
  */
 public final class Paginator extends BasicPaginator<Paginator> {
-	Paginator(long ownerId, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(ownerId, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+	Paginator(InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier<Paginator> supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
+		super(constraints, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

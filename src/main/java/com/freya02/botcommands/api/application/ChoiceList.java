@@ -1,16 +1,16 @@
 package com.freya02.botcommands.api.application;
 
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import java.util.ArrayList;
 
 /**
  * Utility class to generate a list of empty choices meant to be localized later
  */
-public class ChoiceList extends ArrayList<SlashCommand.Choice> {
+public class ChoiceList extends ArrayList<Command.Choice> {
 	private ChoiceList(int size) {
 		for (int i = 0; i < size; i++) {
-			add(new SlashCommand.Choice("", ""));
+			add(new Command.Choice("", ""));
 		}
 	}
 

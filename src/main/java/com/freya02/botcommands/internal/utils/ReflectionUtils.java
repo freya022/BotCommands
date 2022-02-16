@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import io.github.classgraph.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -25,8 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ReflectionUtils {
+	private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private static final Map<Parameter, Map<Class<?>, Annotation>> paramAnnotationsMap = new HashMap<>();
@@ -58,7 +61,9 @@ public class ReflectionUtils {
 					.filter(p -> IOUtils.getFileExtension(p).equals("class"))
 					.forEach(p -> {
 						// Change from a/b/c/d to c/d
-						final String relativePath = walkRoot.relativize(p).toString().replace('\\',  '.');
+						final String relativePath = walkRoot.relativize(p)
+								.toString()
+								.replace(walkRoot.getFileSystem().getSeparator(),  ".");
 
 						//Remove .class suffix and add package prefix
 						final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
@@ -66,11 +71,9 @@ public class ReflectionUtils {
 						try {
 							classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
 						} catch (ClassNotFoundException e) {
-							LOGGER.error("Unable to load class {}", result);
+							LOGGER.error("Unable to load class '{}' in class path '{}', isJAR = {}, filesystem: {}", result, strPath, isJar, walkRoot.getFileSystem(), e);
 						}
 					});
-
-			break;
 		}
 
 		return classes;
@@ -150,5 +153,38 @@ public class ReflectionUtils {
 				}
 			}
 		}
+	}
+
+	@NotNull
+	public static String formatFrameMethod(@NotNull StackWalker.StackFrame frame) {
+		return "[Line %d] %s#%s(%s)".formatted(frame.getLineNumber(),
+				frame.getDeclaringClass().getSimpleName(),
+				frame.getMethodName(),
+				frame.getMethodType().parameterList()
+						.stream()
+						.map(Class::getSimpleName)
+						.collect(Collectors.joining(", "))
+		);
+	}
+
+	@NotNull
+	public static String formatCallerMethod() {
+		final StackWalker.StackFrame callerFrame = getFrame(3);
+		if (callerFrame == null) throw new IllegalStateException("Found no method caller");
+
+		return formatFrameMethod(callerFrame);
+	}
+
+	@NotNull
+	public static StackWalker.StackFrame getCallerFrame() {
+		final StackWalker.StackFrame callerFrame = getFrame(3);
+		if (callerFrame == null) throw new IllegalStateException("Found no method caller");
+
+		return callerFrame;
+	}
+
+	@Nullable
+	public static StackWalker.StackFrame getFrame(@Range(from = 0, to = Integer.MAX_VALUE) int skip) {
+		return walker.walk(stackFrameStream -> stackFrameStream.skip(skip).findFirst().orElse(null));
 	}
 }

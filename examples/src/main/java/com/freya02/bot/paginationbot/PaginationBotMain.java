@@ -3,7 +3,7 @@ package com.freya02.bot.paginationbot;
 import com.freya02.bot.CommonMain;
 import com.freya02.bot.ComponentsDB;
 import com.freya02.botcommands.api.CommandsBuilder;
-import com.freya02.botcommands.internal.Logging;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
 import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;

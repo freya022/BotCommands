@@ -1,21 +1,29 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
+import com.freya02.botcommands.api.application.annotations.Test;
+import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
+import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -26,8 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -38,6 +44,13 @@ public interface BContext {
 	 */
 	@NotNull
 	JDA getJDA();
+
+	/**
+	 * Return the {@link MethodRunnerFactory} for this context
+	 *
+	 * @return The {@link MethodRunnerFactory}
+	 */
+	MethodRunnerFactory getMethodRunnerFactory();
 
 	/**
 	 * Returns the full list of prefixes used to trigger the bot
@@ -214,27 +227,65 @@ public interface BContext {
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**
-	 * Adds a filter for the command listener to check on each <b>regular / regex</b> command<br>
-	 * If one of the filters returns false, then the command is skipped, not executed
+	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
+	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
+	 * <br>Command overloads are also not executed
 	 *
-	 * <h2>Example</h2>
-	 * <h3>Restricting the bot to a certain TextChannel</h3>
+	 * <p>
+	 * <br><b>Example</b>
+	 * <br><b>Restricting the bot to a certain {@link GuildMessageChannel}</b>
 	 * <pre><code>
-	 * final CommandsBuilder builder = CommandsBuilder.withPrefix(":", 222046562543468545L);
-	 * builder.getContext().addFilter(messageInfo{@literal ->} messageInfo.getEvent().getChannel().getIdLong() == 722891685755093076L);
+	 * CommandsBuilder.newBuilder()
+	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
+	 *          .addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L)
+	 *      )
 	 * </code></pre>
 	 *
 	 * @param filter The filter to add
 	 */
-	void addFilter(Predicate<MessageInfo> filter);
+	void addTextFilter(TextCommandFilter filter);
 
 	/**
-	 * Removes a previously set filter
+	 * Adds a filter for the application command listener, this will check slash commands as well as context commands
+	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
+	 * <br><b>You still have to reply to the interaction !</b>
+	 *
+	 * @param filter The filter to add
+	 */
+	void addApplicationFilter(ApplicationCommandFilter filter);
+
+	/**
+	 * Adds a filter for the component interaction listener, this will check all components such as buttons and selection menus
+	 * <br>If one of the filters returns <code>false</code>, then the component's code is not executed
+	 * <br><b>You still have to acknowledge to the interaction !</b>
+	 *
+	 * @param filter The filter to add
+	 */
+	void addComponentFilter(ComponentInteractionFilter filter);
+
+	/**
+	 * Removes a previously set text command filter
 	 *
 	 * @param filter The filter to remove
-	 * @see #addFilter(Predicate)
+	 * @see #addTextFilter(TextCommandFilter)
 	 */
-	void removeFilter(Predicate<MessageInfo> filter);
+	void removeTextFilter(TextCommandFilter filter);
+
+	/**
+	 * Removes a previously set application command filter
+	 *
+	 * @param filter The filter to remove
+	 * @see #addApplicationFilter(ApplicationCommandFilter)
+	 */
+	void removeApplicationFilter(ApplicationCommandFilter filter);
+
+	/**
+	 * Removes a previously set component interaction filter
+	 *
+	 * @param filter The filter to remove
+	 * @see #addComponentFilter(ComponentInteractionFilter)
+	 */
+	void removeComponentFilter(ComponentInteractionFilter filter);
 
 	/**
 	 * Overrides the default help given for text commands
@@ -307,17 +358,33 @@ public interface BContext {
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
 	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
-	 *     <li>You decide to remove a command from a guild while the bot is running</li>
+	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
-	 * <i>This method is called by the application commands builder on startup</i>
-	 *
 	 * @param guilds Iterable collection of the guilds to update
-	 * @param force  Whether or not commands and permissions should be updated no matter what
-	 * @return <code>true</code> if one or more command / permission were changed, <code>false</code> if none changed
+	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
+	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
 	@NotNull
-	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force);
+	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
+
+	/**
+	 * Updates the application commands and their permissions in the specified guild <br><br>
+	 * Why you could call this method:
+	 * <ul>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
+	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
+	 * </ul>
+	 *
+	 * @param guild The guild which needs to be updated
+	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
+	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
+	 */
+	@NotNull
+	CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck);
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)
@@ -326,7 +393,7 @@ public interface BContext {
 	 * @param function      Supplier function, may receive interaction events of any type
 	 * @param <T>           Type of the parameter
 	 */
-	<T> void registerCustomResolver(Class<T> parameterType, Function<Event, T> function);
+	<T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function);
 
 	/**
 	 * Returns the uncaught exception handler
@@ -336,4 +403,19 @@ public interface BContext {
 	 */
 	@Nullable
 	ExceptionHandler getUncaughtExceptionHandler();
+
+	/**
+	 * Returns the test guilds IDs, slash commands annotated with {@link Test @Test} will only be included in these guilds
+	 *
+	 * @return The set of test guild IDs
+	 */
+	TLongSet getTestGuildIds();
+
+	/**
+	 * Invalides the autocompletion cache of the specified autocompletion handler
+	 * <br>This means that the cache of this autocompletion handler will be fully cleared
+	 *
+	 * @param autocompletionHandlerName The name of the autocompletion handler, supplied at {@link AutocompletionHandler#name()}
+	 */
+	void invalidateAutocompletionCache(String autocompletionHandlerName);
 }

@@ -1,0 +1,12 @@
+{
+  "token": "",
+  "ownerId": 0,
+  "prefix": "",
+  "dbConfig": {
+    "serverName": "",
+    "portNumber": 0,
+    "user": "",
+    "password": "",
+    "dbName": ""
+  }
+}
