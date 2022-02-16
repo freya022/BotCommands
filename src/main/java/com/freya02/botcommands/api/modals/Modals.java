@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Modals {
 	@NotNull
-	static ModalBuilder create(@NotNull String title) {
-		return InternalModals.create(title);
+	static ModalBuilder create(@NotNull String handlerName, Object... userData) {
+		return InternalModals.create(handlerName, userData);
 	}
 
 	@NotNull

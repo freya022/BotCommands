@@ -9,16 +9,19 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModalBuilder extends Modal.Builder {
 	private final ModalMaps modalMaps;
-	private final ModalData modalData = new ModalData();
+	private final String handlerName;
+	private final Object[] userData;
 
 	@ApiStatus.Internal
-	public ModalBuilder(ModalMaps modalMaps, String title) {
+	public ModalBuilder(ModalMaps modalMaps, @NotNull String handlerName, Object[] userData) {
 		super("0");
 
 		this.modalMaps = modalMaps;
-
-		setTitle(title);
+		this.handlerName = handlerName;
+		this.userData = userData;
 	}
+
+	//TODO add #addActionRow to avoid ActionRow#of
 
 	@NotNull
 	@Override
@@ -32,7 +35,7 @@ public class ModalBuilder extends Modal.Builder {
 	public Modal build() {
 		final Modal modal = super.build();
 
-		modalMaps.insertModal(modalData);
+		modalMaps.insertModal(new ModalData(handlerName, userData));
 
 		return modal;
 	}
