@@ -177,9 +177,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.xirado</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>f4dfec4829</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
