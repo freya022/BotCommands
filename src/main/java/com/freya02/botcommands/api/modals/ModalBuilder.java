@@ -6,27 +6,52 @@ import com.freya02.botcommands.internal.modals.ModalMaps;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class ModalBuilder extends Modal.Builder {
 	private final ModalMaps modalMaps;
 	private final String handlerName;
 	private final Object[] userData;
+	private ModalTimeoutInfo timeoutInfo;
 
 	@ApiStatus.Internal
 	public ModalBuilder(ModalMaps modalMaps, @NotNull String handlerName, Object[] userData) {
 		super("0");
+
+		Checks.notNull(handlerName, "Modal handler name");
+		Checks.notNull(userData, "Modal user data");
 
 		this.modalMaps = modalMaps;
 		this.handlerName = handlerName;
 		this.userData = userData;
 	}
 
-	//TODO timeouts
+	/**
+	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed
+	 * <br>The timeout will start when the modal is built
+	 *
+	 * @param timeout   The amount of time in the supplied time unit before the modal is removed
+	 * @param unit      The time unit of the timeout
+	 * @param onTimeout The function to run when the timeout has been reached
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	@NotNull
+	public ModalBuilder setTimeout(long timeout, @NotNull TimeUnit unit, @NotNull Runnable onTimeout) {
+		Checks.positive(timeout, "Timeout");
+		Checks.notNull(unit, "Time unit");
+		Checks.notNull(onTimeout, "On-timeout runnable");
+
+		this.timeoutInfo = new ModalTimeoutInfo(timeout, unit, onTimeout);
+
+		return this;
+	}
 
 	//TODO add #addActionRow to avoid ActionRow#of
 
@@ -66,7 +91,7 @@ public class ModalBuilder extends Modal.Builder {
 			}
 		}
 
-		final String actualId = modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap), getId());
+		final String actualId = modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap, timeoutInfo), getId());
 
 		setId(actualId);
 

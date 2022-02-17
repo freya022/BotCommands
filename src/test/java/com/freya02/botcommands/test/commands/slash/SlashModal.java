@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
+import java.util.concurrent.TimeUnit;
+
 public class SlashModal extends ApplicationCommand {
 	private static final String MODAL_HANDLER_NAME = "test";
 	private static final String CODE_INPUT_NAME = "code";
@@ -23,6 +25,7 @@ public class SlashModal extends ApplicationCommand {
 	)
 	public void onSlashModal(GuildSlashEvent event) {
 		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
+				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
 				.setTitle("Formatting !")
 				.addActionRows(ActionRow.of(
 						Modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)

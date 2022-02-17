@@ -41,13 +41,11 @@ public class ModalListener implements EventListener {
 			final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 
 			runCommand(() -> {
-				final ModalData modalData = context.getModalMaps().getModalData(event.getModalId());
+				final ModalData modalData = context.getModalMaps().consumeModal(event.getModalId());
 
-				if (modalData == null) {
-					LOGGER.warn("Got no modal data for modal ID: '{}'", event.getModalId());
-
+				if (modalData == null) { //Probably the modal expired
 					//TODO localize
-					event.reply("Modal data not found")
+					event.reply("This modal is no longer available")
 							.setEphemeral(true)
 							.queue();
 

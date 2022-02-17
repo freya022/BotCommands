@@ -4,9 +4,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ModalMaps {
+	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
+
 	private static final long MAX_ID = Long.MAX_VALUE;
 	private static final long MIN_ID = (long) Math.pow(10, Math.floor(Math.log10(MAX_ID))); //Same amount of digits except every digit is 0 but the first one is 1
 
@@ -36,14 +41,33 @@ public class ModalMaps {
 			}
 
 			modalMap.put(id, data);
+
+			if (data.getTimeoutInfo() != null) {
+				final String finalId = id;
+
+				final ScheduledFuture<?> future = TIMEOUT_SERVICE.schedule(() -> {
+					synchronized (modalMap) {
+						if (modalMap.remove(finalId) != null) { //If the timeout was reached without the modal being used
+							data.getTimeoutInfo().onTimeout().run();
+						}
+					}
+				}, data.getTimeoutInfo().timeout(), data.getTimeoutInfo().unit());
+
+				data.setTimeoutFuture(future);
+			}
 		}
 
 		return id;
 	}
 
 	@Nullable
-	public ModalData getModalData(String modalId) {
-		return modalMap.get(modalId);
+	public ModalData consumeModal(String modalId) {
+		synchronized (modalMap) {
+			final ModalData data = modalMap.remove(modalId);
+			data.cancelTimeoutFuture();
+
+			return data;
+		}
 	}
 
 	private String nextInputId() {
