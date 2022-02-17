@@ -166,6 +166,14 @@ You can find example bots in the [examples](Examples) folder
 
 To get started with the framework, you can also clone this repo and extract the `BotTemplate` folder and use it as a bot template, of course, be sure to replace the group id as well as the artifact name, as well as providing a valid config file
 
+## Live templates
+
+If you use IntelliJ, you can use the "live templates" provided [in live_templates.zip](live_templates.zip), this will help you make commands and handlers with predefined templates and ask you to complete them
+
+For example: if you type `slash` in your class, this will generate a slash command declaration and ask you to complete the command name, description, etc... Of course there are many more templates, you can see all of these in `Settings > Editor > Live Templates` and in the `BotCommands` group 
+
+If you don't know how to install live templates, you can follow [this guide from JetBrains](https://www.jetbrains.com/help/idea/sharing-live-templates.html#import)
+
 ## Support
 
 The [JDA guild](https://discord.gg/jda) is not a place where you should ask for support on this framework, if you need support please join [this guild instead (link)](https://discord.gg/frpCcQfvTz)
