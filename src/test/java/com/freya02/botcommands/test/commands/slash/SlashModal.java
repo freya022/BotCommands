@@ -9,7 +9,6 @@ import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.text.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
@@ -27,11 +26,11 @@ public class SlashModal extends ApplicationCommand {
 		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
 				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
 				.setTitle("Formatting !")
-				.addActionRows(ActionRow.of(
+				.addActionRow(
 						Modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
 								.setRequired(false)
 								.build()
-				))
+				)
 				.build();
 
 		event.replyModal(modal).queue();
