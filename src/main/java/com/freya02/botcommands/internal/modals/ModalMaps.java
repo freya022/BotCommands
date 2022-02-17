@@ -15,7 +15,7 @@ public class ModalMaps {
 	//Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
 	private final Map<String, InputData> inputMap = new HashMap<>();
 
-	private String insertModal(ModalData data) {
+	private String nextModalId() {
 		final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		synchronized (modalMap) {
@@ -25,22 +25,20 @@ public class ModalMaps {
 				id = String.valueOf(random.nextLong(MIN_ID, MAX_ID));
 			} while (modalMap.containsKey(id));
 
-			modalMap.put(id, data);
-
 			return id;
 		}
 	}
 
 	public String insertModal(ModalData data, String id) {
-		if (id == null || id.equals("0")) {
-			return insertModal(data);
-		} else {
-			synchronized (modalMap) {
-				modalMap.put(id, data);
-
-				return id;
+		synchronized (modalMap) {
+			if (id == null || id.equals("0")) {
+				id = nextModalId();
 			}
+
+			modalMap.put(id, data);
 		}
+
+		return id;
 	}
 
 	@Nullable
@@ -48,7 +46,7 @@ public class ModalMaps {
 		return modalMap.get(modalId);
 	}
 
-	private String insertInput(InputData data) {
+	private String nextInputId() {
 		final ThreadLocalRandom random = ThreadLocalRandom.current();
 
 		synchronized (inputMap) {
@@ -58,22 +56,20 @@ public class ModalMaps {
 				id = String.valueOf(random.nextLong(MIN_ID, MAX_ID));
 			} while (inputMap.containsKey(id));
 
-			inputMap.put(id, data);
-
 			return id;
 		}
 	}
 
 	public String insertInput(InputData data, String id) {
-		if (id == null || id.equals("0")) {
-			return insertInput(data);
-		} else {
-			synchronized (inputMap) {
-				inputMap.put(id, data);
-
-				return id;
+		synchronized (inputMap) {
+			if (id == null || id.equals("0")) {
+				id = nextInputId();
 			}
+
+			inputMap.put(id, data);
 		}
+
+		return id;
 	}
 
 	@Nullable
