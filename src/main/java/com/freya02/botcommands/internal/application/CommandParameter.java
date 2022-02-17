@@ -25,6 +25,14 @@ public abstract class CommandParameter<RESOLVER> {
 
 	protected abstract List<Class<? extends Annotation>> getOptionAnnotations();
 
+	/**
+	 * Returns the list of annotations that must be resolvable with a {@link ParameterResolver}
+	 * <br>If an option is not annotated with one of these but is still a valid option, it is up to the handler to fill up the parameters accordingly, without use the resolver nor the custom resolver
+	 */
+	protected List<Class<? extends Annotation>> getResolvableAnnotations() {
+		return getOptionAnnotations();
+	}
+
 	@SuppressWarnings("unchecked")
 	public CommandParameter(@Nullable Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		this.parameter = parameter;
@@ -36,7 +44,16 @@ public abstract class CommandParameter<RESOLVER> {
 
 		final ParameterResolver resolver = ParameterResolvers.of(this.boxedType);
 		final List<Class<? extends Annotation>> allowedAnnotation = getOptionAnnotations();
+		final List<Class<? extends Annotation>> resolvableAnnotation = getResolvableAnnotations();
 		if (allowedAnnotation.stream().anyMatch(parameter::isAnnotationPresent)) { //If the parameter has at least one valid annotation
+			//If the parameter is not resolvable, but is still an option, then let the handler put the values itself
+			if (resolvableAnnotation.stream().noneMatch(parameter::isAnnotationPresent)) {
+				this.resolver = null;
+				this.customResolver = null;
+
+				return;
+			}
+
 			if (resolverType == null) {
 				throw new IllegalArgumentException("Parameter of type " + boxedType.getName() + " is an annotated as an option but doesn't have a resolver type attached, please report to devs");
 			}

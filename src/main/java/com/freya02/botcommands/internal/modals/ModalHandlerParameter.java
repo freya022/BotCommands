@@ -49,4 +49,9 @@ public class ModalHandlerParameter extends CommandParameter<ModalParameterResolv
 	protected List<Class<? extends Annotation>> getOptionAnnotations() {
 		return List.of(ModalData.class, ModalInput.class);
 	}
+
+	@Override
+	protected List<Class<? extends Annotation>> getResolvableAnnotations() {
+		return List.of(ModalInput.class);
+	}
 }
