@@ -15,16 +15,17 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 
 public class SlashModal extends ApplicationCommand {
 	private static final String MODAL_HANDLER_NAME = "test";
+	private static final String CODE_INPUT_NAME = "code";
 
 	@JDASlashCommand(
 			name = "modal",
 			description = "Test modal"
 	)
 	public void onSlashModal(GuildSlashEvent event) {
-		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar")
+		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
 				.setTitle("Formatting !")
 				.addActionRows(ActionRow.of(
-						Modals.createTextInput("code", "Java code", TextInputStyle.PARAGRAPH)
+						Modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
 								.setRequired(false)
 								.build()
 				))
@@ -36,13 +37,14 @@ public class SlashModal extends ApplicationCommand {
 	@ModalHandler(name = MODAL_HANDLER_NAME)
 	public void handle(ModalInteractionEvent event,
 	                   @ModalData String test,
-	                   @ModalInput(name = "code") String javaCode,
+	                   @ModalData long number,
+	                   @ModalInput(name = CODE_INPUT_NAME) String javaCode,
 	                   BContext context) {
 		event.reply(("""
 						User data: %s
 						Context: %s
 						Your code:
-						%s""").formatted(test, context, javaCode))
+						%s""").formatted(test + " = " + number, context, javaCode))
 				.setEphemeral(true)
 				.queue();
 	}
