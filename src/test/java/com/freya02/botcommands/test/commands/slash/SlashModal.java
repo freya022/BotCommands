@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test.commands.slash;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
@@ -34,12 +35,14 @@ public class SlashModal extends ApplicationCommand {
 
 	@ModalHandler(name = MODAL_HANDLER_NAME)
 	public void handle(ModalInteractionEvent event,
-					   @ModalData String test,
-	                   @ModalInput(name = "code") String javaCode) {
+	                   @ModalData String test,
+	                   @ModalInput(name = "code") String javaCode,
+	                   BContext context) {
 		event.reply(("""
 						User data: %s
+						Context: %s
 						Your code:
-						%s""").formatted(test, javaCode))
+						%s""").formatted(test, context, javaCode))
 				.setEphemeral(true)
 				.queue();
 	}
