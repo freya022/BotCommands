@@ -53,8 +53,6 @@ public class ModalBuilder extends Modal.Builder {
 		return this;
 	}
 
-	//TODO add #addActionRow to avoid ActionRow#of
-
 	/**
 	 * {@inheritDoc}
 	 *
