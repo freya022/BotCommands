@@ -36,6 +36,8 @@ public class ModalBuilder extends Modal.Builder {
 	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed
 	 * <br>The timeout will start when the modal is built
 	 *
+	 * <p><b>It is extremely recommended to put a timeout on your modals</b>, if your user dismisses the modal, so, never uses it, the data of the modal could stay in your RAM indefinitely
+	 *
 	 * @param timeout   The amount of time in the supplied time unit before the modal is removed
 	 * @param unit      The time unit of the timeout
 	 * @param onTimeout The function to run when the timeout has been reached
