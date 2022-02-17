@@ -57,7 +57,7 @@ public class ModalListener implements EventListener {
 				final ModalHandlerInfo modalHandler = context.getModalHandler(modalData.getHandlerName());
 
 				if (modalHandler == null) {
-					LOGGER.warn("Got no modal handler for handler id: '{}'", modalData.getHandlerName());
+					LOGGER.warn("Got no modal handler for handler name: '{}'", modalData.getHandlerName());
 
 					//TODO localize
 					event.reply("Modal handler not found")

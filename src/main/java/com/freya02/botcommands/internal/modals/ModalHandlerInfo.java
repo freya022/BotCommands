@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 public class ModalHandlerInfo implements ExecutableInteractionInfo {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private final BContextImpl context;
 	private final Object autocompletionHandler;
 	private final Method method;
 	private final MethodRunner methodRunner;
@@ -32,7 +31,6 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 	private final MethodParameters<ModalHandlerParameter> modalParameters;
 
 	public ModalHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
-		this.context = context;
 		this.autocompletionHandler = autocompletionHandler;
 		this.method = method;
 		this.methodRunner = context.getMethodRunnerFactory().make(autocompletionHandler, method);
@@ -41,6 +39,23 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 		this.handlerName = annotation.name();
 
 		this.modalParameters = MethodParameters.of(context, method, ModalHandlerParameter::new);
+
+		final boolean hasModalData = modalParameters.stream().anyMatch(ModalHandlerParameter::isModalData);
+
+		//Check if the first parameters are all modal data
+		if (hasModalData) {
+			boolean sawModalData = false;
+			for (ModalHandlerParameter parameter : modalParameters) {
+				if (!parameter.isModalData() && !sawModalData)
+					throw new IllegalArgumentException(("Parameter #%d at %s must be annotated with @%s or situated after all modal data parameters.\n" +
+							"All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters").formatted(parameter.getIndex(),
+							Utils.formatMethodShort(method),
+							ModalData.class.getSimpleName()));
+
+				if (parameter.isModalData())
+					sawModalData = true;
+			}
+		}
 	}
 
 	@Override
@@ -85,19 +100,33 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 
 		final Object[] userData = modalData.getUserData();
 
-		//Check if there's enough arguments to fit user data
-		if (modalParameters.size() < 1 + userData.length) {
-			throw new IllegalArgumentException("Method at %s only has %d @%s parameters, but you gave %d parameters in the modal declaration".formatted(Utils.formatMethodShort(method),
-					modalParameters.stream().filter(ModalHandlerParameter::isModalData).count(),
-					com.freya02.botcommands.api.modals.annotations.ModalData.class.getSimpleName(),
-					userData.length
+		final long expectedModalDatas = modalParameters.stream().filter(ModalHandlerParameter::isModalData).count();
+		final long expectedModalInputs = modalParameters.stream().filter(ModalHandlerParameter::isModalInput).count();
+
+		//Check if there's enough arguments to fit user data + modal inputs
+		if (expectedModalDatas != userData.length
+				|| expectedModalInputs != event.getValues().size()) {
+			throw new IllegalArgumentException("""
+					Modal handler at %s does not match the received modal data:
+					Method signature: %d userdata parameters and %d modal input(s)
+					Discord data: %d userdata parameters and %d modal input(s)""".formatted(
+					Utils.formatMethodShort(method),
+					expectedModalDatas,
+					expectedModalInputs,
+					userData.length,
+					event.getValues().size()
 			));
 		}
 
+		//Insert modal data in the order of appearance, after the event
 		for (int i = 0; i < userData.length; i++) {
 			final ModalHandlerParameter parameter = modalParameters.get(i);
 
-			if (!parameter.isModalData()) throw new IllegalArgumentException();
+			if (!parameter.isModalData()) //Should be caught by the constructor
+				throw new IllegalArgumentException(("Parameter #%d at %s must be annotated with @%s or situated after all modal data parameters.\n" +
+						"All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters").formatted(i,
+						Utils.formatMethodShort(method),
+						ModalData.class.getSimpleName()));
 
 			final Object data = userData[i];
 
@@ -105,6 +134,9 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 				//TODO localize
 				// could be really nice to have a class which holds a version of the user-localized error and the dev-localized errors,
 				// based off the same parameters, using the new localization API
+
+				//TODO Should these be removed in favor of just throwing an exception ? The user doesn't need to know errors that specific,
+				// the dev already receives the error by DMs (and by looking at logs)
 				event.replyFormat("The parameter '%s' is not a valid type (expected a %s, got a %s)", parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName())
 						.setEphemeral(true)
 						.queue();
@@ -127,6 +159,11 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 				// But we have a Map of input *name* -> InputData (contains input ID)
 
 				final String inputId = inputNameToInputIdMap.get(parameter.getModalInputName());
+
+				if (inputId == null) {
+					throw new IllegalArgumentException(String.format("Modal input '%s' was not found", parameter.getModalInputName()));
+				}
+
 				final ModalMapping modalMapping = event.getValue(inputId);
 
 				if (modalMapping == null) {
