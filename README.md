@@ -32,7 +32,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
 * A JDA **event waiter** with (multiple) preconditions, timeouts and consumers for every completion states 
 * Secure and unique components (buttons / selection menus) IDs *with persistent and non-persistent storage*
   * **They can also receive additional arguments** the same way as slash commands do
-* Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (can turn \:joy\: into 😂)
+* Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (can turn `:joy:` into 😂)
 * Paginators and menus of different types (using buttons !)
 * Flexible constructors for your commands and injectable fields
 
