@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.ConsumerEx;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -21,7 +20,7 @@ public abstract class AbstractAutocompletionCache {
 		};
 	}
 
-	public abstract void retrieveAndCall(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception;
+	public abstract void retrieveAndCall(CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception;
 
 	public abstract void put(CompositeAutocompletionKey key, List<Command.Choice> choices);
 

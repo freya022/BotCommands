@@ -9,7 +9,6 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -23,9 +22,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class SlashCommandInfo extends ApplicationCommandInfo {
@@ -36,11 +33,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	private final String description;
 
 	private final MethodParameters<SlashCommandParameter> commandParameters;
-
-	/**
-	 * guild id => localized option names
-	 */
-	private final Map<Long, List<String>> localizedOptionMap = new HashMap<>();
 
 	public SlashCommandInfo(BContext context, ApplicationCommand instance, Method commandMethod) {
 		super(context, instance, commandMethod.getAnnotation(JDASlashCommand.class),
@@ -70,10 +62,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		this.description = annotation.description();
 	}
 
-	public void putLocalizedOptions(long guildId, @NotNull List<String> optionNames) {
-		localizedOptionMap.put(guildId, optionNames);
-	}
-
 	/**
 	 * This is NOT localized
 	 */
@@ -90,19 +78,12 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			}
 		}};
 
-		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;
 		for (final SlashCommandParameter parameter : commandParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final Object obj;
 			if (parameter.isOption()) {
-				String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
-				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
-				}
-
-				optionIndex++;
+				String optionName = applicationOptionData.getEffectiveName();
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
@@ -116,7 +97,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 						continue;
 					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (localized '" + optionName + "')");
+						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (" + optionName + ")");
 					}
 				}
 
@@ -158,26 +139,15 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return true;
 	}
 
-	public List<String> getLocalizedOptions(@NotNull Guild guild) {
-		return localizedOptionMap.get(guild.getIdLong());
-	}
-
 	@Nullable
 	public String getAutocompletionHandlerName(CommandAutoCompleteInteractionEvent event) {
 		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
-		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? getLocalizedOptions(event.getGuild()) : null;
 		for (final SlashCommandParameter parameter : commandParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			if (parameter.isOption()) {
-				final String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
-				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(getMethod())));
-				}
-
-				optionIndex++;
+				final String optionName = applicationOptionData.getEffectiveName();
 
 				if (optionName.equals(autoCompleteQuery.getName())) {
 					return applicationOptionData.getAutocompletionHandlerName();

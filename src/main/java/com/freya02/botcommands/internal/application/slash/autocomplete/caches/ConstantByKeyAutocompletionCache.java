@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.ConsumerEx;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -46,8 +45,8 @@ public class ConstantByKeyAutocompletionCache extends BaseAutocompletionCache {
 	}
 
 	@Override
-	public void retrieveAndCall(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {
-		final CompositeAutocompletionKey compositeKey = getCompositeKey(handlerInfo, slashCommand, event);
+	public void retrieveAndCall(CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {
+		final CompositeAutocompletionKey compositeKey = getCompositeKey(handlerInfo, event);
 		final List<Command.Choice> cachedValue = cache.getIfPresent(compositeKey);
 
 		if (cachedValue != null) {

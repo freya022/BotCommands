@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -356,19 +355,6 @@ public class BContextImpl implements BContext {
 					path,
 					Utils.formatMethodShort(oldCmd.getMethod()),
 					Utils.formatMethodShort(commandInfo.getMethod())));
-		}
-	}
-
-	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, Command.Type type, T commandInfo) {
-		//it's pretty much possible that the path already exist if two guilds use the same language for example
-		//Still, check that the alternative path points to the same path if it exists
-
-		final ApplicationCommandInfo oldVal = getApplicationCommandInfoMap().put(type, path, commandInfo);
-		if (oldVal != commandInfo && oldVal != null) {
-			throw new IllegalStateException(String.format("Tried to add a localized application command path but one already exists and isn't from the same command: %s and %s, path: %s",
-					Utils.formatMethodShort(oldVal.getMethod()),
-					Utils.formatMethodShort(commandInfo.getMethod()),
-					path));
 		}
 	}
 

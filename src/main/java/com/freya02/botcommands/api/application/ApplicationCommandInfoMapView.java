@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class ApplicationCommandInfoMapView {
-	//Might or might not be localized
 	protected final Map<Command.Type, CommandInfoMap<? extends ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(Command.Type.class));
 
 	@UnmodifiableView
