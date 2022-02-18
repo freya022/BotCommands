@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumSet;
 
 public class ThreadChannelResolver extends ParameterResolver implements SlashParameterResolver, ChannelResolver {
-	private static final EnumSet<ChannelType> THREAD_TYPES = EnumSet.of(ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
+	private static final EnumSet<ChannelType> THREAD_TYPES = EnumSet.of(ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
 
 	public ThreadChannelResolver() {
 		super(ThreadChannel.class);
@@ -30,7 +30,7 @@ public class ThreadChannelResolver extends ParameterResolver implements SlashPar
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsGuildChannel();
+		return optionMapping.getAsThreadChannel();
 	}
 
 	@Override
