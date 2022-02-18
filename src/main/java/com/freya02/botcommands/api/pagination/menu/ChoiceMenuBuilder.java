@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.pagination.menu;
 import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -55,6 +55,6 @@ public final class ChoiceMenuBuilder<E> extends BasicMenuBuilder<E, ChoiceMenuBu
 	@Override
 	@NotNull
 	public ChoiceMenu<E> build() {
-		return new ChoiceMenu<>(ownerId, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier, buttonContentSupplier, callback);
+		return new ChoiceMenu<>(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, entries, maxEntriesPerPage, transformer, rowPrefixSupplier, paginatorSupplier, buttonContentSupplier, callback);
 	}
 }

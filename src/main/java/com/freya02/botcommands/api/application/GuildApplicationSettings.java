@@ -2,8 +2,9 @@ package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,14 +27,15 @@ public interface GuildApplicationSettings {
 	 * <p>
 	 * <br>You can also use the {@link ChoiceList} class in order to create lists of <code>n</code> empty choices (meant to be localized only)
 	 *
-	 * @param guild       The {@link Guild} in which the commands is, might be <code>null</code> for global commands with choices
+	 * @param guild       The {@link Guild} in which the command is, might be <code>null</code> for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
 	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link AppOption @AppOption} there are, minus 1
 	 * @return The list of choices for this slash command's options
 	 * @see ChoiceList
+	 * @see SlashParameterResolver#getPredefinedChoices()
 	 */
 	@NotNull
-	default List<SlashCommand.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
+	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
 		return Collections.emptyList();
 	}
 

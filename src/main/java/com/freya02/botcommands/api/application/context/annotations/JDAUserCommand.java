@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  * <p>
  * <b>The targeted method must have a {@link GlobalUserEvent} or a {@link GuildUserEvent} and the only other arguments possible are a {@link Member} or a {@link User}, which will be the <i>targeted</i> entity</b>
  *
- * @see GlobalUserEvent#getTargetUser()
+ * @see GlobalUserEvent#getTarget()
  * @see GlobalUserEvent#getTargetMember()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
  * @see UserPermissions @UserPermissions

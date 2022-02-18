@@ -10,10 +10,11 @@ import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class ComponentListener extends ListenerAdapter {
@@ -62,61 +64,77 @@ public class ComponentListener extends ListenerAdapter {
 		Components.setContext(context);
 	}
 
+	@SubscribeEvent
 	@Override
 	public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
-		if (!(event instanceof ButtonClickEvent) && !(event instanceof SelectionMenuEvent)) return;
+		if (!(event instanceof ButtonInteractionEvent) && !(event instanceof SelectMenuInteractionEvent)) return;
 
 		runHandler(() -> handleComponentInteraction(event), event);
 	}
 
-	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) {
-		final ComponentType idType = componentManager.getIdType(event.getComponentId());
+	private void handleComponentInteraction(@NotNull GenericComponentInteractionCreateEvent event) throws Exception {
+		for (ComponentInteractionFilter componentFilter : context.getComponentFilters()) {
+			if (!componentFilter.isAccepted(new ComponentFilteringData(context, event))) {
+				LOGGER.trace("Cancelled component interaction due to filter");
 
-		if (idType == null) {
-			event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
-					.setEphemeral(true)
-					.queue();
-
-			return;
+				return;
+			}
 		}
 
-		if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonClickEvent)) {
-			LOGGER.error("Received a button id type but event is not a ButtonClickEvent");
+		try (FetchResult fetchResult = componentManager.fetchComponent(event.getComponentId())) {
+			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 
-			return;
-		}
+			if (fetchedComponent == null) {
+				event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
+						.setEphemeral(true)
+						.queue();
 
-		if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectionMenuEvent)) {
-			LOGGER.error("Received a selection menu id type but event is not a SelectionMenuEvent");
+				return;
+			}
 
-			return;
-		}
+			final ComponentType idType = fetchedComponent.getType();
+			if ((idType == ComponentType.PERSISTENT_BUTTON || idType == ComponentType.LAMBDA_BUTTON) && !(event instanceof ButtonInteractionEvent)) {
+				LOGGER.error("Received a button id type but event is not a ButtonInteractionEvent");
 
-		switch (idType) {
-			case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> handlePersistentComponent(event,
-									buttonsMap,
-									data.getHandlerName(),
-									data.getArgs(),
-									() -> new ButtonEvent(context, (ButtonClickEvent) event)),
-							event));
-			case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonClickEvent) event)), event)
-			);
-			case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectionMenu(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> handlePersistentComponent(event,
-									selectionMenuMap,
-									data.getHandlerName(),
-									data.getArgs(),
-									() -> new SelectionEvent(context, (SelectionMenuEvent) event)),
-							event));
-			case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectionMenu(event,
-					e -> onError(event, e.getReason()),
-					data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectionMenuEvent) event)), event));
-			default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
+				return;
+			}
+
+			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectMenuInteractionEvent)) {
+				LOGGER.error("Received a selection menu id type but event is not a SelectMenuInteractionEvent");
+
+				return;
+			}
+
+			switch (idType) {
+				case PERSISTENT_BUTTON -> componentManager.handlePersistentButton(event,
+						fetchResult,
+						e -> onError(event, e),
+						data -> runCallback(() -> handlePersistentComponent(event,
+										buttonsMap,
+										data.getHandlerName(),
+										data.getArgs(),
+										() -> new ButtonEvent(context, (ButtonInteractionEvent) event)),
+								event));
+				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
+						fetchResult,
+						e -> onError(event, e),
+						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonInteractionEvent) event)), event)
+				);
+				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectMenu(event,
+						fetchResult,
+						e -> onError(event, e),
+						data -> runCallback(() -> handlePersistentComponent(event,
+										selectionMenuMap,
+										data.getHandlerName(),
+										data.getArgs(),
+										() -> new SelectionEvent(context, (SelectMenuInteractionEvent) event)),
+								event));
+				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
+						fetchResult,
+						e -> onError(event, e),
+						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectMenuInteractionEvent) event)), event));
+				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
+			}
 		}
 	}
 
@@ -197,11 +215,12 @@ public class ComponentListener extends ListenerAdapter {
 		if (parameters.getOptionCount() != args.length) {
 			LOGGER.warn("Resolver for {} has {} arguments but component had {} data objects", Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args);
 
-			onError(event, "Invalid component data");
+			onError(event, ComponentErrorReason.INVALID_DATA);
 
 			return;
 		}
 
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(handlerName, args);
 		try {
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
@@ -216,7 +235,7 @@ public class ComponentListener extends ListenerAdapter {
 					final String arg = args[optionIndex];
 					optionIndex++;
 
-					obj = parameter.getResolver().resolve(event, arg);
+					obj = parameter.getResolver().resolve(context, descriptor, event, arg);
 
 					if (obj == null) {
 						LOGGER.warn("Component id '{}', tried to resolve '{}' with an option resolver {} on method {} but result is null",
@@ -225,16 +244,20 @@ public class ComponentListener extends ListenerAdapter {
 								parameter.getCustomResolver().getClass().getSimpleName(),
 								Utils.formatMethodShort(descriptor.getMethod()));
 
+						onError(event, ComponentErrorReason.INVALID_DATA);
+
 						return;
 					}
 				} else {
-					obj = parameter.getCustomResolver().resolve(event);
+					obj = parameter.getCustomResolver().resolve(context, descriptor, event);
 
 					if (obj == null) {
 						LOGGER.warn("Component id '{}', tried to use custom resolver {} on method {} but result is null",
 								event.getComponentId(),
 								parameter.getCustomResolver().getClass().getSimpleName(),
 								Utils.formatMethodShort(descriptor.getMethod()));
+
+						onError(event, ComponentErrorReason.INVALID_DATA);
 
 						return;
 					}
@@ -243,19 +266,23 @@ public class ComponentListener extends ListenerAdapter {
 				methodArgs.add(obj);
 			}
 
-			descriptor.getMethod().invoke(descriptor.getInstance(), methodArgs.toArray());
+			descriptor.getMethodRunner().invoke(methodArgs.toArray(), throwableConsumer);
 		} catch (Exception e) {
-			LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
+			throwableConsumer.accept(e);
 		}
 	}
 
-	private void onError(GenericComponentInteractionCreateEvent event, String reason) {
-		if (reason != null) {
-			event.reply(reason)
-					.setEphemeral(true)
-					.queue();
-		} else {
-			event.deferEdit().queue();
-		}
+	@NotNull
+	private Consumer<Throwable> getThrowableConsumer(String handlerName, String[] args) {
+		return e -> LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
+	}
+
+	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
+		//TODO need to change the locale getters to use the one provided by the events
+		// Which also means we need to change the way the default message instances are supplied
+		// So, change the Guild key for a Locale
+		event.reply(reason.getReason(context.getDefaultMessages(event.getGuild())))
+				.setEphemeral(true)
+				.queue();
 	}
 }

@@ -7,13 +7,12 @@ import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
-import com.freya02.botcommands.internal.components.sql.SqlComponentData;
-import com.freya02.botcommands.internal.components.sql.SqlLambdaComponentData;
-import com.freya02.botcommands.internal.components.sql.SqlLambdaCreateResult;
-import com.freya02.botcommands.internal.components.sql.SqlPersistentComponentData;
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
+import com.freya02.botcommands.internal.components.sql.*;
+import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -23,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiFunction;
@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 
 public class DefaultComponentManager implements ComponentManager {
 	private static final Logger LOGGER = Logging.getLogger();
+	private static final String LATEST_VERSION = "2";
 
 	private final ScheduledExecutorService timeoutService = Executors.newSingleThreadScheduledExecutor();
 
@@ -45,8 +46,6 @@ public class DefaultComponentManager implements ComponentManager {
 
 		try {
 			setupTables();
-
-			deleteTemporaryEntities();
 		} catch (SQLException e) {
 			LOGGER.error("Unable to create DefaultComponentManager", e);
 
@@ -55,31 +54,38 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	@Nullable
-	public ComponentType getIdType(String id) {
-		try (Connection connection = getConnection();
-		     PreparedStatement preparedStatement = connection.prepareStatement(
-				     "select type from componentdata where componentid = ? limit 1;"
-		     )) {
+	@NotNull
+	public SQLFetchResult fetchComponent(String id) {
+		final Connection connection = getConnection();
+
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(
+					"select * " +
+							"from componentdata " +
+							"left join lambdacomponentdata using (componentid) " +
+							"left join persistentcomponentdata using (componentid)" +
+							"where componentid = ? " +
+							"limit 1;"
+			);
 			preparedStatement.setString(1, id);
 
-			try (ResultSet resultSet = preparedStatement.executeQuery()) {
-				if (resultSet.next()) {
-					return ComponentType.fromKey(resultSet.getInt("type"));
-				} else {
-					return null;
-				}
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				return new SQLFetchResult(new SQLFetchedComponent(resultSet), connection);
+			} else {
+				return new SQLFetchResult(null, connection);
 			}
 		} catch (SQLException e) {
 			LOGGER.error("Unable to get the ID type of '{}'", id);
 
-			return null;
+			return new SQLFetchResult(null, connection);
 		}
 	}
 
 	@Override
-	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
+	public void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer) {
 		handleLambdaComponent(event,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				buttonLambdaMap,
@@ -87,28 +93,27 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
+	public void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
 		handleLambdaComponent(event,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				selectionMenuLambdaMap,
 				LambdaSelectionMenuData::new);
 	}
 
-	@SuppressWarnings("DuplicatedCode")
-	private <CONSUMER extends ComponentConsumer<EVENT>, EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
-	                                                                                                                                           Consumer<ComponentErrorReason> onError,
-	                                                                                                                                           Consumer<DATA> dataConsumer,
-	                                                                                                                                           Map<Long, CONSUMER> map,
-	                                                                                                                                           Function<CONSUMER, DATA> eventFunc) {
-		try (Connection connection = getConnection()) {
-			final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, event.getComponentId());
+	private <CONSUMER extends ComponentConsumer<EVENT>,EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
+																									SQLFetchResult fetchResult,
+	                                                                                                Consumer<ComponentErrorReason> onError,
+	                                                                                                Consumer<DATA> dataConsumer,
+	                                                                                                Map<Long, CONSUMER> map, Function<CONSUMER, DATA> eventFunc) {
 
-			if (data == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
+		try {
+			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
+			if (fetchedComponent == null)
+				throw new IllegalArgumentException("A null fetched component cannot be handled");
 
-				return;
-			}
+			final SQLLambdaComponentData data = SQLLambdaComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
 
@@ -122,7 +127,9 @@ public class DefaultComponentManager implements ComponentManager {
 
 			final CONSUMER consumer;
 			if (result.shouldDelete()) {
-				data.delete(connection);
+				try (Connection connection = getConnection()) {
+					data.delete(connection);
+				}
 
 				consumer = map.remove(handlerId);
 			} else {
@@ -130,7 +137,7 @@ public class DefaultComponentManager implements ComponentManager {
 			}
 
 			if (consumer == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
+				onError.accept(ComponentErrorReason.NOT_FOUND);
 
 				LOGGER.warn("Could not find a consumer for handler id {} on component {}", handlerId, event.getComponentId());
 
@@ -146,31 +153,30 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
+	public void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer) {
 		handlePersistentComponent(event,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				PersistentButtonData::new);
 	}
 
 	@Override
-	public void handlePersistentSelectionMenu(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
+	public void handlePersistentSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentSelectionMenuData> dataConsumer) {
 		handlePersistentComponent(event,
+				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
 				PersistentSelectionMenuData::new);
 	}
 
-	@SuppressWarnings("DuplicatedCode")
-	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
-		try (Connection connection = getConnection()) {
-			final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, event.getComponentId());
+	private <DATA> void handlePersistentComponent(GenericComponentInteractionCreateEvent event, SQLFetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<DATA> dataConsumer, BiFunction<String, String[], DATA> dataFunction) {
+		try {
+			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
+			if (fetchedComponent == null)
+				throw new IllegalArgumentException("A null fetched component cannot be handled");
 
-			if (data == null) {
-				onError.accept(ComponentErrorReason.DONT_EXIST);
-
-				return;
-			}
+			final SQLPersistentComponentData data = SQLPersistentComponentData.fromFetchedComponent(fetchedComponent);
 
 			final HandleComponentResult result = handleComponentData(event, data);
 
@@ -184,7 +190,7 @@ public class DefaultComponentManager implements ComponentManager {
 			final String[] args = data.getArgs();
 
 			if (result.shouldDelete()) {
-				data.delete(connection);
+				data.delete(fetchResult.getConnection());
 			}
 
 			dataConsumer.accept(dataFunction.apply(handlerName, args));
@@ -199,7 +205,8 @@ public class DefaultComponentManager implements ComponentManager {
 		if (timeout.timeout() > 0) {
 			timeoutService.schedule(() -> {
 				try (Connection connection = getConnection()) {
-					final SqlLambdaComponentData data = SqlLambdaComponentData.read(connection, componentId);
+					final SQLLambdaComponentData data = SQLLambdaComponentData.read(connection, componentId);
+
 					if (data != null) {
 						map.remove(handlerId);
 
@@ -218,19 +225,19 @@ public class DefaultComponentManager implements ComponentManager {
 	@NotNull
 	public String putLambdaButton(LambdaButtonBuilder builder) {
 		try (Connection connection = getConnection()) {
-			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+			final SQLLambdaCreateResult result = SQLLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_BUTTON,
 					builder.isOneUse(),
-					builder.getOwnerId(),
+					builder.getInteractionConstraints(),
 					builder.getTimeout());
 
-			buttonLambdaMap.put(result.getHandlerId(), builder.getConsumer());
+			buttonLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (builder.getTimeout().timeout() > 0) {
-				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.getHandlerId(), result.getComponentId());
+				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.handlerId(), result.componentId());
 			}
 
-			return result.getComponentId();
+			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
 
@@ -240,22 +247,22 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	@NotNull
-	public String putLambdaSelectionMenu(LambdaSelectionMenuBuilder builder) {
+	public String putLambdaSelectMenu(LambdaSelectionMenuBuilder builder) {
 		try (Connection connection = getConnection()) {
 			final LambdaComponentTimeoutInfo timeout = builder.getTimeout();
-			final SqlLambdaCreateResult result = SqlLambdaComponentData.create(connection,
+			final SQLLambdaCreateResult result = SQLLambdaComponentData.create(connection,
 					ComponentType.LAMBDA_SELECTION_MENU,
 					builder.isOneUse(),
-					builder.getOwnerId(),
+					builder.getInteractionConstraints(),
 					timeout);
 
-			selectionMenuLambdaMap.put(result.getHandlerId(), builder.getConsumer());
+			selectionMenuLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (timeout.timeout() > 0) {
-				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.getHandlerId(), result.getComponentId());
+				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.handlerId(), result.componentId());
 			}
 
-			return result.getComponentId();
+			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
 
@@ -267,7 +274,8 @@ public class DefaultComponentManager implements ComponentManager {
 		if (timeout.timeout() > 0) {
 			timeoutService.schedule(() -> {
 				try (Connection connection = getConnection()) {
-					final SqlPersistentComponentData data = SqlPersistentComponentData.read(connection, componentId);
+					final SQLPersistentComponentData data = SQLPersistentComponentData.read(connection, componentId);
+
 					if (data != null) {
 						data.delete(connection);
 					}
@@ -280,10 +288,10 @@ public class DefaultComponentManager implements ComponentManager {
 
 	private <T extends ComponentBuilder<T> & PersistentComponentBuilder<T>> String putPersistentComponent(T builder, ComponentType type) {
 		try (Connection connection = getConnection()) {
-			final String componentId = SqlPersistentComponentData.create(connection,
+			final String componentId = SQLPersistentComponentData.create(connection,
 					type,
 					builder.isOneUse(),
-					builder.getOwnerId(),
+					builder.getInteractionConstraints(),
 					builder.getTimeout(),
 					builder.getHandlerName(),
 					builder.getArgs());
@@ -306,7 +314,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	@NotNull
-	public String putPersistentSelectionMenu(PersistentSelectionMenuBuilder builder) {
+	public String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder) {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_SELECTION_MENU);
 	}
 
@@ -371,66 +379,115 @@ public class DefaultComponentManager implements ComponentManager {
 		return connectionSupplier.get();
 	}
 
-	private void deleteTemporaryEntities() throws SQLException {
+	private void setupTables() throws SQLException {
+		final String setupVersionSql = Utils.readResource("setupVersion.sql");
 		try (Connection connection = getConnection();
-		     PreparedStatement preparedStatement = connection.prepareStatement(
-				     "delete from componentdata where type = ? or type = ?"
+		     PreparedStatement setupVersionStatement = connection.prepareStatement(
+				     setupVersionSql
+		     );
+		     PreparedStatement readVersionStatement = connection.prepareStatement(
+				     "select version from version limit 1;"
 		     )) {
-			preparedStatement.setInt(1, ComponentType.LAMBDA_BUTTON.getKey());
-			preparedStatement.setInt(2, ComponentType.LAMBDA_SELECTION_MENU.getKey());
+			setupVersionStatement.execute();
 
-			preparedStatement.execute();
+			final ResultSet set = readVersionStatement.executeQuery();
+
+			if (set.next()) {
+				final String currentVersion = set.getString("version");
+
+				if (!currentVersion.equals(LATEST_VERSION)) {
+					askUpdate(connection, currentVersion);
+				} else {
+					LOGGER.trace("Running version {} of the components database", currentVersion);
+				}
+			} else { //If no version try to see if table exist
+				try (PreparedStatement detectDbStatement = connection.prepareStatement("select table_name from information_schema.tables where table_name = 'componentdata' limit 1;")) {
+					if (detectDbStatement.executeQuery().next()) {
+						askUpdate(connection, "1");
+					} else { //No version and no table
+						resetTables(connection);
+
+						LOGGER.trace("Running version {} of the components database", LATEST_VERSION);
+					}
+				}
+			}
+
+			final String setupSql = Utils.readResource("setup.sql");
+
+			try (PreparedStatement setupStatement = connection.prepareStatement(setupSql)) {
+				setupStatement.execute();
+			}
 		}
 	}
 
-	private void setupTables() throws SQLException {
-		try (Connection connection = getConnection();
-		     PreparedStatement preparedStatement = connection.prepareStatement(
-				     "drop table if exists LambdaComponentData;\n" + //TODO move to sql files
-						     "\n" +
-						     "create sequence if not exists group_seq as bigint;\n" +
-						     "\n" +
-						     "create table if not exists ComponentData\n" +
-						     "(\n" +
-						     "    componentId         text not null primary key,\n" +
-						     "    type                int  not null,\n" +
-						     "    groupId             bigint,\n" +
-						     "    oneUse              bool not null,\n" +
-						     "    ownerId             bigint,\n" +
-						     "    expirationTimestamp bigint\n" +
-						     ");\n" +
-						     "\n" +
-						     "create table LambdaComponentData\n" +
-						     "(\n" +
-						     "    componentId text   not null references ComponentData on delete cascade,\n" +
-						     "    handlerId   serial8 not null\n" +
-						     ");\n" +
-						     "\n" +
-						     "create table if not exists PersistentComponentData\n" +
-						     "(\n" +
-						     "    componentId text not null references ComponentData on delete cascade,\n" +
-						     "    handlerName text not null,\n" +
-						     "    args        text not null\n" +
-						     ");"
-		     )) {
-			preparedStatement.execute();
+	private void askUpdate(Connection connection, String currentVersion) throws SQLException {
+		LOGGER.warn("Database is at version {} but should be at version {}, do you wish to upgrade ?", currentVersion, LATEST_VERSION);
+		LOGGER.warn("This will delete all the component tables, other tables are not modified.");
+		LOGGER.warn("Enter 'yes' in order to continue, or anything else to abort");
+
+		final Scanner scanner = new Scanner(System.in);
+		final String line = scanner.nextLine();
+
+		if (line.equalsIgnoreCase("yes")) {
+			resetTables(connection);
+		} else {
+			LOGGER.error("Database is outdated, aborting");
+
+			throw new IllegalStateException("Database is at version " + currentVersion + " but should be at version " + LATEST_VERSION);
+		}
+	}
+
+	private void resetTables(Connection connection) throws SQLException {
+		try (PreparedStatement resetTablesStatement = connection.prepareStatement(
+				Utils.readResource("resetTables.sql")
+		)) {
+			resetTablesStatement.execute();
 		}
 	}
 
 	@NotNull
-	private HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event, SqlComponentData data) {
+	private HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event, SQLComponentData data) {
 		final boolean oneUse = data.isOneUse() || data.getGroupId() > 0;
-		final long ownerId = data.getOwnerId();
+		final InteractionConstraints constraints = data.getInteractionConstraints();
 		final long expirationTimestamp = data.getExpirationTimestamp();
 
 		if (expirationTimestamp > 0 && System.currentTimeMillis() > expirationTimestamp) {
 			return new HandleComponentResult(ComponentErrorReason.EXPIRED, true);
 		}
 
-		if (ownerId > 0 && event.getUser().getIdLong() != ownerId) {
-			return new HandleComponentResult(ComponentErrorReason.NOT_OWNER, false);
+		boolean allowed = checkConstraints(event, constraints);
+
+		if (!allowed) {
+			return new HandleComponentResult(ComponentErrorReason.NOT_ALLOWED, false);
 		}
 
 		return new HandleComponentResult(null, oneUse);
+	}
+
+	private boolean checkConstraints(GenericComponentInteractionCreateEvent event, InteractionConstraints constraints) {
+		if (constraints.isEmpty()) return true;
+
+		if (constraints.getUserList().contains(event.getUser().getIdLong())) {
+			return true;
+		}
+
+		final Member member = event.getMember();
+		if (member != null) {
+			if (!constraints.getPermissions().isEmpty()) {
+				if (member.hasPermission(event.getGuildChannel(), constraints.getPermissions())) {
+					return true;
+				}
+			}
+
+			for (Role role : member.getRoles()) {
+				boolean hasRole = constraints.getRoleList().contains(role.getIdLong());
+
+				if (hasRole) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

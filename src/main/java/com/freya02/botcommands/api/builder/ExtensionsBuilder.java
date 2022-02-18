@@ -4,11 +4,15 @@ import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
-import net.dv8tion.jda.api.events.Event;
+import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class ExtensionsBuilder {
@@ -31,7 +35,7 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in it's constructor, and it will be injected during instantiation
+	 * Registers a constructor parameter supplier, this means that your commands can have the given parameter type in its constructor, and it will be injected during instantiation
 	 *
 	 * @param <T>               Type of the parameter
 	 * @param parameterType     The type of the parameter inside your constructor
@@ -48,7 +52,7 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Registers a instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
+	 * Registers an instance supplier, this means that your commands can be instantiated using the given {@link InstanceSupplier}<br><br>
 	 * Instead of resolving the parameters manually with {@link #registerConstructorParameter(Class, ConstructorParameterSupplier)} you can use this to give directly the command's instance
 	 *
 	 * @param <T>              Type of the command's class
@@ -90,11 +94,42 @@ public class ExtensionsBuilder {
 	 * @param <T>           Type of the parameter
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, Function<Event, T> function) {
+	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
 		if (ParameterResolvers.exists(parameterType))
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
 
 		ParameterResolvers.register(new CustomResolver(parameterType, function));
+
+		return this;
+	}
+
+	/**
+	 * Registers an autocompletion transformer
+	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
+	 *
+	 * @param type                      Type of the List generic element type
+	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Command.Choice choice}
+	 * @param <T>                       Type of the List generic element type
+	 * @return This builder for chaining convenience
+	 */
+	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+		context.registerAutocompletionTransformer(type, autocompletionTransformer);
+
+		return this;
+	}
+
+	/**
+	 * Sets the method runner factory, which allows methods to be reflectively executed
+	 * <br>A method runner factory is already set for pure java methods,
+	 * but you can set a <code>KotlinMethodRunnerFactory</code> (see class) to support <code>suspend</code> functions
+	 *
+	 * @param factory The {@link MethodRunnerFactory} to set
+	 * @return This builder for chaining convenience
+	 */
+	public ExtensionsBuilder setMethodRunnerFactory(@NotNull MethodRunnerFactory factory) {
+		Checks.notNull(factory, "Method runner factory");
+
+		context.setMethodRunnerFactory(factory);
 
 		return this;
 	}

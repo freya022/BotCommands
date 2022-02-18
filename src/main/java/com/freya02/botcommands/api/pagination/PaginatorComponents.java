@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.pagination;
 
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,13 +16,13 @@ public class PaginatorComponents {
 		actionRows.addAll(components);
 	}
 
-	public void addComponents(int row, Component... components) {
+	public void addComponents(int row, ActionComponent... components) {
 		if (row >= 5) throw new IllegalArgumentException("Cannot have more than 5 rows");
 
 		if (actionRows.size() <= row) {
 			actionRows.add(ActionRow.of(components));
 		} else {
-			final List<Component> list = actionRows.get(row).getComponents();
+			final List<ActionComponent> list = actionRows.get(row).getActionComponents();
 			if (list.size() + components.length > 5)
 				throw new UnsupportedOperationException("Cannot put more than 5 buttons in row " + row + " (contains " + list.size() + ")");
 

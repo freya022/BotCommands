@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class SlashButtons extends ApplicationCommand {
 			description = "Shows how buttons works"
 	)
 	public void run(GlobalSlashEvent event) {
-		List<Component> components = new ArrayList<>();
+		List<ActionComponent> components = new ArrayList<>();
 		Collections.addAll(components, Components.group(
 				//A persistent button, works after a bot restart
 				Components.primaryButton(PRIMARY_HANDLER_NAME).build("Primary (Persistent, group 1)"),

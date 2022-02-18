@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
  * @see BaseCommandEvent
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
-	public CommandEvent(BContext context, GuildMessageReceivedEvent event, String args) {
+	public CommandEvent(BContext context, MessageReceivedEvent event, String args) {
 		super(context, event, args);
 	}
 

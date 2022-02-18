@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import net.dv8tion.jda.api.interactions.components.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

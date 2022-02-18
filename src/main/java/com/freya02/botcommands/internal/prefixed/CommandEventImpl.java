@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.utils.RichTextFinder;
 import com.freya02.botcommands.api.utils.RichTextType;
 import com.freya02.botcommands.internal.entities.EmojiImpl;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -29,9 +29,9 @@ public class CommandEventImpl extends CommandEvent {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final List<Object> arguments = new ArrayList<>();
-	private final GuildMessageReceivedEvent event;
+	private final MessageReceivedEvent event;
 
-	public CommandEventImpl(BContext context, GuildMessageReceivedEvent event, String arguments) {
+	public CommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
 		super(context, event, arguments);
 
 		this.event = event;

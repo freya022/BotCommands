@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components;
 
-import net.dv8tion.jda.api.events.interaction.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
 
 public interface ComponentConsumer<T extends GenericComponentInteractionCreateEvent> {

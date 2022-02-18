@@ -2,7 +2,8 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.prefixed.MessageInfo;
+import com.freya02.botcommands.api.prefixed.TextCommandFilter;
+import com.freya02.botcommands.api.prefixed.TextFilteringData;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.Usability;
@@ -15,9 +16,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -30,8 +32,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -98,8 +100,12 @@ public final class CommandListener extends ListenerAdapter {
 		}
 	}
 
+	@SubscribeEvent
 	@Override
-	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
+	public void onMessageReceived(MessageReceivedEvent event) {
+		if (!event.isFromGuild())
+			return;
+
 		if (event.getAuthor().isBot() || event.isWebhookMessage())
 			return;
 
@@ -111,6 +117,7 @@ public final class CommandListener extends ListenerAdapter {
 		}
 
 		final String msg = event.getMessage().getContentRaw();
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event, msg);
 		runCommand(() -> {
 			final String msgNoPrefix = getMsgNoPrefix(msg, event.getGuild());
 
@@ -141,11 +148,11 @@ public final class CommandListener extends ListenerAdapter {
 					final Matcher matcher = pattern.matcher(args);
 
 					if (matcher.matches()) {
-						if (tryExecute(event, member, isNotOwner, args, candidate, matcher) != CONTINUE)
+						if (tryExecute(event, member, isNotOwner, args, candidate, matcher, throwableConsumer) != CONTINUE)
 							return;
 					}
 				} else { //Fallback, only CommandEvent
-					if (tryExecute(event, member, isNotOwner, args, candidate, null) != CONTINUE)
+					if (tryExecute(event, member, isNotOwner, args, candidate, null, throwableConsumer) != CONTINUE)
 						return;
 				}
 			}
@@ -156,18 +163,20 @@ public final class CommandListener extends ListenerAdapter {
 			} else if (context.getHelpConsumer() != null) {
 				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args));
 			}
-		}, msg, event);
+		}, throwableConsumer);
 	}
 
-	private ExecutionResult tryExecute(GuildMessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher) throws Exception {
-		final MessageInfo messageInfo = new MessageInfo(context, event, candidate, args);
-		for (Predicate<MessageInfo> filter : context.getFilters()) {
-			if (!filter.test(messageInfo)) {
+	private ExecutionResult tryExecute(MessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
+		final TextFilteringData filteringData = new TextFilteringData(context, event, candidate, args);
+		for (TextCommandFilter filter : context.getTextFilters()) {
+			if (!filter.isAccepted(filteringData)) {
+				LOGGER.trace("Cancelled prefixed commands due to filter");
+
 				return STOP;
 			}
 		}
 
-		final Usability usability = Usability.of(context, candidate, member, event.getChannel(), isNotOwner);
+		final Usability usability = Usability.of(context, candidate, member, event.getGuildChannel(), isNotOwner);
 
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
@@ -194,7 +203,7 @@ public final class CommandListener extends ListenerAdapter {
 
 				//Take needed permissions, extract bot current permissions
 				final EnumSet<Permission> missingPerms = candidate.getBotPermissions();
-				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getChannel()));
+				missingPerms.removeAll(event.getGuild().getSelfMember().getPermissions(event.getGuildChannel()));
 
 				for (Permission botPermission : missingPerms) {
 					missingBuilder.add(botPermission.getName());
@@ -222,7 +231,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		return candidate.execute(context, event, args, matcher);
+		return candidate.execute(context, event, args, matcher, throwableConsumer);
 	}
 
 	@Nullable
@@ -235,7 +244,7 @@ public final class CommandListener extends ListenerAdapter {
 		return getCommandCandidates(Arrays.copyOf(split, split.length - 1));
 	}
 
-	private void onCommandNotFound(GuildMessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
+	private void onCommandNotFound(MessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
@@ -244,7 +253,7 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	private List<String> getSuggestions(GuildMessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
+	private List<String> getSuggestions(MessageReceivedEvent event, CommandPath triedCommandPath, boolean isNotOwner) {
 		final Function<CommandPath, String> pathToStringFunc = switch (triedCommandPath.getNameCount()) {
 			case 1 -> CommandPath::getName;
 			case 2, 3 -> CommandPath::getSubname;
@@ -252,7 +261,7 @@ public final class CommandListener extends ListenerAdapter {
 		};
 
 		final List<String> commandNames = context.getCommands().stream()
-				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getChannel(), isNotOwner).isUsable())
+				.filter(c -> Usability.of(context, c.findFirst(), event.getMember(), event.getGuildChannel(), isNotOwner).isUsable())
 				.map(c -> pathToStringFunc.apply(c.findFirst().getPath()))
 				.collect(Collectors.toList());
 
@@ -270,38 +279,45 @@ public final class CommandListener extends ListenerAdapter {
 		).stream().map(ExtractedResult::getString).collect(Collectors.toList());
 	}
 
-	private void runCommand(RunnableEx code, String msg, GuildMessageReceivedEvent event) {
+	private void runCommand(RunnableEx code, Consumer<Throwable> throwableConsumer) {
 		commandService.execute(() -> {
-			final Message message = event.getMessage();
-
 			try {
 				code.run();
 			} catch (Throwable e) {
-				final ExceptionHandler handler = context.getUncaughtExceptionHandler();
-				if (handler != null) {
-					handler.onException(context, event, e);
-
-					return;
-				}
-
-				Throwable baseEx = Utils.getException(e);
-
-				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
-
-				message.addReaction(BaseCommandEventImpl.ERROR).queue();
-				if (message.getTextChannel().canTalk()) {
-					message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
-				}
-
-				context.dispatchException(msg, baseEx);
+				throwableConsumer.accept(e);
 			}
 		});
 	}
 
-	private void reply(GuildMessageReceivedEvent event, String msg) {
+	@NotNull
+	private Consumer<Throwable> getThrowableConsumer(MessageReceivedEvent event, String msg) {
+		return e -> {
+			Message message = event.getMessage();
+
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing request '" + msg + "'", baseEx);
+
+			message.addReaction(BaseCommandEventImpl.ERROR).queue();
+			if (message.getGuildChannel().canTalk()) {
+				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
+			}
+
+			context.dispatchException(msg, baseEx);
+		};
+	}
+
+	private void reply(MessageReceivedEvent event, String msg) {
 		final RestAction<? extends MessageChannel> channelAction;
 
-		if (event.getChannel().canTalk()) {
+		if (event.getGuildChannel().canTalk()) {
 			channelAction = new CompletedRestAction<>(event.getJDA(), event.getChannel());
 		} else {
 			channelAction = event.getAuthor().openPrivateChannel();

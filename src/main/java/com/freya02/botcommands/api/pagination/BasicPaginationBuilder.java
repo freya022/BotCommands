@@ -1,8 +1,9 @@
 package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T, R>, R extends BasicPagination<R>> {
-	protected long ownerId;
+	protected InteractionConstraints constraints = new InteractionConstraints();
 	protected TimeoutInfo<R> timeout;
 
 	/**
@@ -25,7 +26,7 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 	 *
 	 * <br><br>How to manipulate the message on timeout, for example you want to delete the message, or replace its content:
 	 * <ul>
-	 *     <li>For application commands: You can use the {@link Interaction#getHook() Interaction hook} of application event</li>
+	 *     <li>For application commands: You can use the {@link IDeferrableCallback#getHook() Interaction hook} of application event</li>
 	 *     <li>For text commands: You can use {@link BasicPagination#setMessage(Message)} when the message has been sent successfully, so in your queue success consumer,
 	 *     you will then receive that same message in the {@link PaginationTimeoutConsumer} you have set</li>
 	 * </ul>
@@ -46,14 +47,16 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 	}
 
 	/**
-	 * Set the owner ID for the pagination instance
-	 * <br>Only the user with this ID will be able to use this, if the value is not set, or 0, then everyone can use it
+	 * Sets the interaction constraints for this pagination object
+	 * <br>These constraints control who can use this pagination object
 	 *
-	 * @param ownerId The ID of the user which can use this
+	 * @param constraints The {@link InteractionConstraints} for this pagination object
 	 * @return This builder for chaining convenience
+	 *
+	 * @see InteractionConstraints Factory methods of InteractionConstraints
 	 */
-	public T setOwnerId(long ownerId) {
-		this.ownerId = ownerId;
+	public T setConstraints(@NotNull InteractionConstraints constraints) {
+		this.constraints = constraints;
 
 		return (T) this;
 	}

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
@@ -22,7 +23,7 @@ import java.util.Map;
 public abstract class BasicMenu<E, T extends BasicMenu<E, T>> extends BasicPaginator<T> {
 	protected final Map<Integer, MenuPage<E>> pages;
 
-	protected BasicMenu(long ownerId,
+	protected BasicMenu(InteractionConstraints constraints,
 	                    TimeoutInfo<T> timeout,
 	                    boolean hasDeleteButton,
 	                    ButtonContent firstContent,
@@ -31,19 +32,20 @@ public abstract class BasicMenu<E, T extends BasicMenu<E, T>> extends BasicPagin
 	                    ButtonContent lastContent,
 	                    ButtonContent deleteContent,
 	                    @NotNull Map<Integer, MenuPage<E>> pages,
-	                    @Nullable PaginatorSupplier supplier) {
-		super(ownerId, timeout, pages.size(), supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+	                    @Nullable PaginatorSupplier<T> supplier) {
+		super(constraints, timeout, pages.size(), supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 
 		this.pages = pages;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@NotNull
 	protected MessageEmbed getEmbed() {
 		final EmbedBuilder builder;
 
 		if (supplier != null) {
-			builder = new EmbedBuilder(supplier.get(messageBuilder, components, page));
+			builder = new EmbedBuilder(supplier.get((T) this, messageBuilder, components, page));
 		} else {
 			builder = new EmbedBuilder();
 		}

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -22,7 +23,7 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 		//      and you can wait or use a callback to use the user choice
 		final ChoiceMenu<Guild> paginator = new ChoiceMenuBuilder<>(entries)
 				//Only the caller can use the choice menu
-				.setOwnerId(event.getUser().getIdLong())
+				.setConstraints(InteractionConstraints.ofUsers(event.getUser()))
 				// There must be no delete button as the message is ephemeral
 				.useDeleteButton(false)
 				//Transforms each entry (a Guild) into this text
