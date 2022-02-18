@@ -69,7 +69,7 @@ public class ParameterResolvers {
 		register(new TextChannelResolver());
 		register(new ThreadChannelResolver());
 		register(new VoiceChannelResolver());
-		register(new StoreChannelResolver());
+		register(new NewsChannelResolver());
 		register(new StageChannelResolver());
 		register(new CategoryResolver());
 
