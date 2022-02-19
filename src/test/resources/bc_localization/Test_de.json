@@ -1,0 +1,22 @@
+{
+    "commands": {
+        "ban": {
+            "name": "ban",
+            "description": "Bannis un utilisateur",
+            "options": {
+                "user": {
+                    "name": "utilisateur",
+                    "description": "Utilisateur a ban"
+                },
+                "delDays": {
+                    "name": "sup_messages",
+                    "description": "Nb jours à supprimer"
+                },
+                "reason": {
+                    "name": "raison",
+                    "description": "La raison"
+                }
+            }
+        }
+    }
+}

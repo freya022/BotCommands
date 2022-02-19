@@ -47,29 +47,23 @@ public class Localization {
 
 	@Nullable
 	private static Localization retrieveBundle(String baseName, Locale targetLocale) throws IOException {
-		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, targetLocale);
+		final BestLocale bestLocale = chooseBestLocale(baseName, targetLocale);
 
-		//TODO refactor in "chooseBestLocale", then determine if it has degraded
-		for (int i = 0, candidateLocalesSize = Math.max(candidateLocales.size() - 1, 1); i < candidateLocalesSize; i++) {
-			final Locale candidateLocale = candidateLocales.get(i);
+		if (bestLocale == null) {
+			LOGGER.warn("Could not find localization resources for '{}'", baseName);
 
-			//Try to retrieve with the locale
-			final InputStream resourceAsStream = Localization.class.getResourceAsStream("/bc_localization/" + CONTROL.toBundleName(baseName, candidateLocale) + ".json");
-
-			if (resourceAsStream != null) {
-				return new Localization(resourceAsStream);
-			} else if (!targetLocale.toString().isEmpty() && !candidateLocales.get(i + 1).toString().isEmpty()) { //Not default
-				LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to {}", baseName, candidateLocale, candidateLocales.get(i + 1));
-			}
-		}
-
-		if (!targetLocale.toString().isEmpty()) {
-			LOGGER.warn("Unable to find bundle '{}' with locale '{}', tried: {}", baseName, targetLocale, candidateLocales.subList(0, candidateLocales.size() - 1));
+			return null;
 		} else {
-			LOGGER.warn("Unable to find bundle '{}' with root locale", baseName);
-		}
+			if (!bestLocale.locale().equals(targetLocale)) { //Not default
+				if (bestLocale.locale().toString().isEmpty()) { //neutral lang
+					LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to neutral lang", baseName, targetLocale);
+				} else {
+					LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to '{}'", baseName, targetLocale, bestLocale.locale());
+				}
+			}
 
-		return null;
+			return new Localization(bestLocale.inputStream());
+		}
 	}
 
 	@Nullable

@@ -8,7 +8,7 @@ public class LocalizationTest {
 	public static void main(String[] args) {
 		final Localization localization = Localization.getInstance("Test", Locale.FRENCH);
 		final Localization localization1 = Localization.getInstance("Test", Locale.ENGLISH);
-		final Localization localization2 = Localization.getInstance("Test", Locale.ROOT);
+		final Localization localization2 = Localization.getInstance("Test", Locale.GERMANY);
 
 		final String localized = localization.get("commands.ban.name").localize(entry("user", "freya02"));
 		final String localized2 = localization1.get("key1").localize(entry("user", "freya02"));
