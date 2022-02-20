@@ -66,7 +66,7 @@ public final class DefaultMessages {
 
 	public static final String DEFAULT_COMMAND_NOT_FOUND_MESSAGE = "Unknown command, maybe you meant: %s";
 	public static final String DEFAULT_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
-	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "This component is not usable anymore";
+	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "Unable to send you a DM, please open your DMs from this server";
 	public static final String DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE = "Unknown application command";
 	public static final String DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
 	public static final String DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE = "An uncaught exception occurred";
