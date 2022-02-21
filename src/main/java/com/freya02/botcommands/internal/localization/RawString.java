@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.test;
+package com.freya02.botcommands.internal.localization;
 
 public class RawString implements LocalizableString {
 	private final String string;

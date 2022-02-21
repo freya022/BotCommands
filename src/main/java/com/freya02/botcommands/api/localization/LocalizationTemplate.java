@@ -1,4 +1,8 @@
-package com.freya02.botcommands.test.test;
+package com.freya02.botcommands.api.localization;
+
+import com.freya02.botcommands.internal.localization.FormattableString;
+import com.freya02.botcommands.internal.localization.LocalizableString;
+import com.freya02.botcommands.internal.localization.RawString;
 
 import java.util.ArrayList;
 import java.util.List;

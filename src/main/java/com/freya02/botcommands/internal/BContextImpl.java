@@ -94,6 +94,8 @@ public class BContextImpl implements BContext {
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
 	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
+	private LocalizationManager localizationManager = new LocalizationManager();
+
 	@Override
 	@NotNull
 	public JDA getJDA() {
@@ -624,5 +626,9 @@ public class BContextImpl implements BContext {
 
 	public void enableOnlineAppCommandCheck() {
 		this.onlineAppCommandCheckEnabled = true;
+	}
+
+	public LocalizationManager getLocalizationManager() {
+		return localizationManager;
 	}
 }

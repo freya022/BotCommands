@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GuildSlashEvent extends GlobalSlashEventImpl {
 	public GuildSlashEvent(BContext context, SlashCommandInteractionEvent event) {
-		super(context, event);
+		super(context, method, event);
 
 		if (!event.isFromGuild()) throw new IllegalArgumentException("Event is not from a guild");
 	}

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.test;
+package com.freya02.botcommands.api.localization;
 
 import com.freya02.botcommands.api.Logging;
 import com.google.gson.Gson;

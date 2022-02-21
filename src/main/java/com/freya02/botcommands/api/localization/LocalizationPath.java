@@ -1,11 +1,16 @@
-package com.freya02.botcommands.test.test;
+package com.freya02.botcommands.api.localization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-record LocalizationPath(List<String> paths) {
-	LocalizationPath() {
+public record LocalizationPath(List<String> paths) {
+	public LocalizationPath() {
 		this(List.of());
+	}
+
+	public LocalizationPath(String[] components) {
+		this(Arrays.asList(components));
 	}
 
 	public LocalizationPath resolve(String other) {

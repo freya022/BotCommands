@@ -1,8 +1,10 @@
 package com.freya02.botcommands.test.test;
 
+import com.freya02.botcommands.api.localization.Localization;
+
 import java.util.Locale;
 
-import static com.freya02.botcommands.test.test.Localization.Entry.entry;
+import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
 public class LocalizationTest {
 	public static void main(String[] args) {

@@ -74,7 +74,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (guildOnly) {
 				add(new GuildSlashEvent(context, event));
 			} else {
-				add(new GlobalSlashEventImpl(context, event));
+				add(new GlobalSlashEventImpl(context, method, event));
 			}
 		}};
 
