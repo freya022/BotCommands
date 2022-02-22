@@ -72,9 +72,9 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	public boolean execute(BContext context, SlashCommandInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
 			if (guildOnly) {
-				add(new GuildSlashEvent(context, event));
+				add(new GuildSlashEvent(getMethod(), context, event));
 			} else {
-				add(new GlobalSlashEventImpl(context, method, event));
+				add(new GlobalSlashEventImpl(getMethod(), context, event));
 			}
 		}};
 

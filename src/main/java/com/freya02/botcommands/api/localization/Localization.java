@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.localization;
 
 import com.freya02.botcommands.api.Logging;
 import com.google.gson.Gson;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -19,9 +20,12 @@ public class Localization {
 	private static final Map<LocalizationKey, Localization> localizationMap = Collections.synchronizedMap(new HashMap<>());
 
 	private final Map<String, LocalizationTemplate> strings = Collections.synchronizedMap(new HashMap<>());
+	private final Locale effectiveLocale;
 
 	@SuppressWarnings("unchecked")
-	private Localization(InputStream stream) throws IOException {
+	private Localization(Locale effectiveLocale, InputStream stream) throws IOException {
+		this.effectiveLocale = effectiveLocale;
+
 		try (InputStreamReader reader = new InputStreamReader(stream)) {
 			final Map<String, ?> map = new Gson().fromJson(reader, Map.class);
 
@@ -62,12 +66,12 @@ public class Localization {
 				}
 			}
 
-			return new Localization(bestLocale.inputStream());
+			return new Localization(bestLocale.locale(), bestLocale.inputStream());
 		}
 	}
 
 	@Nullable
-	public static Localization getInstance(String bundleName, Locale locale) {
+	public static Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
 		return localizationMap.computeIfAbsent(new LocalizationKey(bundleName, locale), l -> {
 			try {
 				return retrieveBundle(bundleName, locale);
@@ -97,8 +101,12 @@ public class Localization {
 	}
 
 	@Nullable
-	public LocalizationTemplate get(String query) {
-		return strings.get(query);
+	public LocalizationTemplate get(String path) {
+		return strings.get(path);
+	}
+
+	public Locale getEffectiveLocale() {
+		return effectiveLocale;
 	}
 
 	private record LocalizationKey(String bundleName, Locale locale) {}

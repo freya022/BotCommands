@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.localization.LocalizationPath;
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.api.localization.annotations.LocalizationPrefix;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -11,10 +14,12 @@ import java.util.regex.Pattern;
 
 public class LocalizationManager {
 	private static final Pattern SPLIT_PATTERN = Pattern.compile("\\.");
-	private final Map<Method, LocalizationPath> map = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Method, LocalizationPath> prefixMap = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Method, String> bundleMap = Collections.synchronizedMap(new HashMap<>());
 
+	@NotNull
 	public LocalizationPath getLocalizationPrefix(Method method) {
-		return map.computeIfAbsent(method, x -> {
+		return prefixMap.computeIfAbsent(method, x -> {
 			final LocalizationPrefix methodPrefix = method.getAnnotation(LocalizationPrefix.class);
 			if (methodPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(methodPrefix.value()));
 
@@ -25,15 +30,16 @@ public class LocalizationManager {
 		});
 	}
 
-	public LocalizationPath getLocalizationBundle(Method method) {
-		return map.computeIfAbsent(method, x -> { //TODO
-			final LocalizationPrefix methodPrefix = method.getAnnotation(LocalizationPrefix.class);
-			if (methodPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(methodPrefix.value()));
+	@Nullable
+	public String getLocalizationBundle(Method method) {
+		return bundleMap.computeIfAbsent(method, x -> { //TODO
+			final LocalizationBundle methodPrefix = method.getAnnotation(LocalizationBundle.class);
+			if (methodPrefix != null) return methodPrefix.value();
 
-			final LocalizationPrefix classPrefix = method.getDeclaringClass().getAnnotation(LocalizationPrefix.class);
-			if (classPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(classPrefix.value()));
+			final LocalizationBundle classPrefix = method.getDeclaringClass().getAnnotation(LocalizationBundle.class);
+			if (classPrefix != null) return classPrefix.value();
 
-			return new LocalizationPath();
+			return null;
 		});
 	}
 }

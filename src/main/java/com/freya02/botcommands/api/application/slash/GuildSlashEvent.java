@@ -7,9 +7,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
+
 public class GuildSlashEvent extends GlobalSlashEventImpl {
-	public GuildSlashEvent(BContext context, SlashCommandInteractionEvent event) {
-		super(context, method, event);
+	public GuildSlashEvent(@NotNull Method method, @NotNull BContext context, @NotNull SlashCommandInteractionEvent event) {
+		super(method, context, event);
 
 		if (!event.isFromGuild()) throw new IllegalArgumentException("Event is not from a guild");
 	}

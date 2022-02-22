@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.localization;
 import com.freya02.botcommands.internal.localization.FormattableString;
 import com.freya02.botcommands.internal.localization.LocalizableString;
 import com.freya02.botcommands.internal.localization.RawString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ public class LocalizationTemplate {
 		localizableStrings.add(new RawString(substring));
 	}
 
+	@NotNull
 	public String localize(Localization.Entry... args) {
 		final StringBuilder sb = new StringBuilder();
 
