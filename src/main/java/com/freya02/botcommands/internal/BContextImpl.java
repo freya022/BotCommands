@@ -85,7 +85,7 @@ public class BContextImpl implements BContext {
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
-	private Function<Guild, DefaultMessages> defaultMessageProvider;
+	private Function<Locale, DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
@@ -134,11 +134,11 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public DefaultMessages getDefaultMessages(@Nullable Guild guild) {
-		return defaultMessageProvider.apply(guild);
+	public DefaultMessages getDefaultMessages(@Nullable Locale locale) {
+		return defaultMessageProvider.apply(locale);
 	}
 
-	public void setDefaultMessageProvider(@NotNull Function<Guild, DefaultMessages> defaultMessageProvider) {
+	public void setDefaultMessageProvider(@NotNull Function<@Nullable Locale, @NotNull DefaultMessages> defaultMessageProvider) {
 		this.defaultMessageProvider = defaultMessageProvider;
 	}
 

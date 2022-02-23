@@ -96,7 +96,7 @@ public interface BContext {
 	}
 
 	@NotNull
-	DefaultMessages getDefaultMessages(@Nullable Guild guild);
+	DefaultMessages getDefaultMessages(@Nullable Locale locale);
 
 	/**
 	 * Returns the first occurrence of {@link TextCommandInfo} of the specified command name, the name can be an alias too
@@ -337,8 +337,12 @@ public interface BContext {
 	 * @param guild The {@link Guild} in which to take the {@link Locale} from
 	 * @return The {@link Locale} of the {@link Guild}
 	 */
-	@NotNull
+	@NotNull //TODO reintroduce getGuildLocale, default to Guild#getLocale if COMMUNITY is available, otherwise use supplied value
 	default Locale getEffectiveLocale(@Nullable Guild guild) {
+		if (guild.getFeatures().contains("COMMUNITY")) {
+
+		}
+
 		final SettingsProvider provider = getSettingsProvider();
 		if (provider == null) return Locale.getDefault();
 

@@ -59,7 +59,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
 
 			if (userCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -79,7 +79,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
 
 			if (messageCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -99,7 +99,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
+				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();
 				return;
 			}
 
@@ -133,23 +133,23 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
 			if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getOwnerOnlyErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNsfwDisabledErrorMsg());
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getNsfwDisabledErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWOnlyErrorMsg());
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getNSFWOnlyErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWDMDeniedErrorMsg());
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getNSFWDMDeniedErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getUserPermErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
@@ -165,7 +165,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 					missingBuilder.add(botPermission.getName());
 				}
 
-				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
+				reply(event, this.context.getDefaultMessages(event.getUserLocale()).getBotPermErrorMsg(missingBuilder.toString()));
 
 				return false;
 			}
@@ -174,7 +174,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (isNotOwner) {
 			final long cooldown = applicationCommand.getCooldown(event, event::getName);
 			if (cooldown > 0) {
-				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
+				final DefaultMessages messages = this.context.getDefaultMessages(event.getUserLocale());
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
 					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
 				} else if (applicationCommand.getCooldownScope() == CooldownScope.GUILD) {
@@ -213,9 +213,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
 			if (event.isAcknowledged()) {
-				event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.getHook().sendMessage(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 			} else {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
 			}
 
 			context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);

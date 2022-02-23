@@ -249,7 +249,7 @@ public final class CommandListener extends ListenerAdapter {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
-			reply(event, String.format(context.getDefaultMessages(event.getGuild()).getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
+			reply(event, String.format(context.getDefaultMessages(event.getGuild()).getCommandNotFoundMsg(suggestions), "**" + String.join("**, **", suggestions) + "**"));
 		}
 	}
 

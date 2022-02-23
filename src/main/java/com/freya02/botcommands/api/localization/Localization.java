@@ -11,8 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-//TODO annotation to pre-set bundle names
-
 //Low level API
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -122,8 +120,15 @@ public class Localization {
 		 * @param value The value to assign it to
 		 * @return The entry
 		 */
-		public static Entry entry(String key, String value) {
+		@NotNull
+		public static Entry entry(@NotNull String key, @NotNull String value) {
 			return new Entry(key, value);
+		}
+
+		//TODO docs
+		@NotNull
+		public static Entry entry(@NotNull String key, @NotNull Number value) {
+			return new Entry(key, value.toString());
 		}
 	}
 }

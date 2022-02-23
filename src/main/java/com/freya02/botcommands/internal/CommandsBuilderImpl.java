@@ -28,7 +28,6 @@ import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
@@ -278,15 +277,17 @@ public final class CommandsBuilderImpl {
 		context.registerCommandDependency(JDA.class, () -> jda);
 		context.registerCustomResolver(JDA.class, (x, y, ignored) -> jda);
 
-		context.setDefaultMessageProvider(new Function<>() {
-			private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
+		context.setDefaultMessageProvider(new DefaultMessagesFunction());
+	}
 
-			@Override
-			public DefaultMessages apply(Guild guild) {
-				final Locale effectiveLocale = context.getEffectiveLocale(guild);
+	private static class DefaultMessagesFunction implements Function<Locale, DefaultMessages> {
+		private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
 
-				return localeDefaultMessagesMap.computeIfAbsent(effectiveLocale, DefaultMessages::new);
-			}
-		});
+		@Override
+		public DefaultMessages apply(@Nullable Locale locale) {
+			if (locale == null) locale = Locale.getDefault(Locale.Category.DISPLAY);
+
+			return localeDefaultMessagesMap.computeIfAbsent(locale, DefaultMessages::new);
+		}
 	}
 }
