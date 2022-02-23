@@ -45,6 +45,7 @@ public final class CommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 	private final BContextImpl context;
+	private final TextCommandInfo helpInfo;
 
 	private int commandThreadNumber = 0;
 	private final ExecutorService commandService = Utils.createCommandPool(r -> {
@@ -61,7 +62,7 @@ public final class CommandListener extends ListenerAdapter {
 	public CommandListener(BContextImpl context) {
 		this.context = context;
 
-		final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
+		this.helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
 		if (helpInfo == null) {
 			LOGGER.debug("Help command not loaded");
 
@@ -158,10 +159,10 @@ public final class CommandListener extends ListenerAdapter {
 			}
 
 			if (helpCommand != null) {
-				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, event, ""),
+				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
 						candidates.first().getPath());
 			} else if (context.getHelpConsumer() != null) {
-				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args));
+				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, args));
 			}
 		}, throwableConsumer);
 	}

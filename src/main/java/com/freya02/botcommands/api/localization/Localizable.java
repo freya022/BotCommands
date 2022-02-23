@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 
 public interface Localizable {
+	@NotNull
 	String getLocalizationBundle();
 
 	@NotNull String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);

@@ -17,7 +17,7 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 	private final Locale guildLocale;
 	private final Locale userLocale;
 
-	public EventLocalizer(@NotNull BContextImpl context, @NotNull Method method, @Nullable Locale guildLocale, @Nullable Locale userLocale) {
+	public EventLocalizer(@NotNull BContextImpl context, @Nullable Method method, @Nullable Locale guildLocale, @Nullable Locale userLocale) {
 		this.context = context;
 		this.method = method;
 
@@ -30,15 +30,19 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
 		final LocalizationManager localizationManager = context.getLocalizationManager();
 
-		final LocalizationPath localizationPrefix = localizationManager.getLocalizationPrefix(method);
-
 		final Localization instance = Localization.getInstance(localizationBundle, locale);
 
 		if (instance == null) {
 			throw new IllegalArgumentException("Found no localization instance for bundle '%s' and locale '%s'".formatted(localizationBundle, locale));
 		}
 
-		final String effectivePath = localizationPrefix.resolve(localizationPath).toString();
+		final String effectivePath;
+		if (method != null) {
+			effectivePath = localizationManager.getLocalizationPrefix(method).resolve(localizationPath).toString();
+		} else {
+			effectivePath = localizationPath;
+		}
+
 		final LocalizationTemplate template = instance.get(effectivePath);
 
 		if (template == null) {
@@ -57,6 +61,10 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 	@Override
 	@NotNull
 	public String getLocalizationBundle() {
+		if (method == null) {
+			throw new IllegalStateException("Cannot use predefined localization bundles in this event");
+		}
+
 		final String localizationBundle = context.getLocalizationManager().getLocalizationBundle(method);
 
 		if (localizationBundle == null) {

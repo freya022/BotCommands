@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -34,8 +35,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	protected final GuildMessageChannel channel;
 
-	public BaseCommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
-		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
+	public BaseCommandEventImpl(@NotNull BContextImpl context, @NotNull Method method, MessageReceivedEvent event, String arguments) {
+		super(context, method, event.getJDA(), event.getResponseNumber(), event.getMessage());
 
 		this.context = context;
 		this.argumentsStr = arguments;

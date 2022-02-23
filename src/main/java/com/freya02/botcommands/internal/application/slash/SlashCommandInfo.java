@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.internal.ApplicationOptionData;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -69,12 +70,12 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		return description;
 	}
 
-	public boolean execute(BContext context, SlashCommandInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
+	public boolean execute(BContextImpl context, SlashCommandInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(commandParameters.size() + 1) {{
 			if (guildOnly) {
-				add(new GuildSlashEvent(getMethod(), context, event));
+				add(new GuildSlashEvent(context, getMethod(), event));
 			} else {
-				add(new GlobalSlashEventImpl(getMethod(), context, event));
+				add(new GlobalSlashEventImpl(context, getMethod(), event));
 			}
 		}};
 

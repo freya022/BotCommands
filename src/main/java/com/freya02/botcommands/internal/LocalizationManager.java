@@ -18,7 +18,7 @@ public class LocalizationManager {
 	private final Map<Method, String> bundleMap = Collections.synchronizedMap(new HashMap<>());
 
 	@NotNull
-	public LocalizationPath getLocalizationPrefix(Method method) {
+	public LocalizationPath getLocalizationPrefix(@NotNull Method method) {
 		return prefixMap.computeIfAbsent(method, x -> {
 			final LocalizationPrefix methodPrefix = method.getAnnotation(LocalizationPrefix.class);
 			if (methodPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(methodPrefix.value()));
@@ -31,8 +31,8 @@ public class LocalizationManager {
 	}
 
 	@Nullable
-	public String getLocalizationBundle(Method method) {
-		return bundleMap.computeIfAbsent(method, x -> { //TODO
+	public String getLocalizationBundle(@NotNull Method method) {
+		return bundleMap.computeIfAbsent(method, x -> {
 			final LocalizationBundle methodPrefix = method.getAnnotation(LocalizationBundle.class);
 			if (methodPrefix != null) return methodPrefix.value();
 

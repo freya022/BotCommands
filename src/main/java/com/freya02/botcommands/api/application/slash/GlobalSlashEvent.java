@@ -18,13 +18,10 @@ import java.util.Locale;
 public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
 	private final EventLocalizer localizer;
 
-	protected final Method method;
-
-	public GlobalSlashEvent(@NotNull Method method, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
+	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull Method method, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
 		super(api, responseNumber, interaction);
 
-		this.method = method;
-		this.localizer = new EventLocalizer((BContextImpl) getContext(), method, interaction.getGuildLocale(), interaction.getUserLocale());
+		this.localizer = new EventLocalizer(context, method, interaction.getGuildLocale(), interaction.getUserLocale());
 	}
 
 	public abstract BContext getContext();
