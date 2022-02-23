@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.localization.LocalizationPath;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.api.localization.annotations.LocalizationPrefix;
 import org.jetbrains.annotations.NotNull;
@@ -10,23 +9,21 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 public class LocalizationManager {
-	private static final Pattern SPLIT_PATTERN = Pattern.compile("\\.");
-	private final Map<Method, LocalizationPath> prefixMap = Collections.synchronizedMap(new HashMap<>());
+	private final Map<Method, String> prefixMap = Collections.synchronizedMap(new HashMap<>());
 	private final Map<Method, String> bundleMap = Collections.synchronizedMap(new HashMap<>());
 
-	@NotNull
-	public LocalizationPath getLocalizationPrefix(@NotNull Method method) {
+	@Nullable
+	public String getLocalizationPrefix(@NotNull Method method) {
 		return prefixMap.computeIfAbsent(method, x -> {
 			final LocalizationPrefix methodPrefix = method.getAnnotation(LocalizationPrefix.class);
-			if (methodPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(methodPrefix.value()));
+			if (methodPrefix != null) return methodPrefix.value();
 
 			final LocalizationPrefix classPrefix = method.getDeclaringClass().getAnnotation(LocalizationPrefix.class);
-			if (classPrefix != null) return new LocalizationPath(SPLIT_PATTERN.split(classPrefix.value()));
+			if (classPrefix != null) return classPrefix.value();
 
-			return new LocalizationPath();
+			return null;
 		});
 	}
 
