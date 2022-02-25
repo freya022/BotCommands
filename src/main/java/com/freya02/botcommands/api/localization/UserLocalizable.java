@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+//TODO
 public interface UserLocalizable extends Localizable {
 	@NotNull
 	Locale getUserLocale();

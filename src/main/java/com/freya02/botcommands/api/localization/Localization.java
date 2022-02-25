@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+//TODO docs
 //Low level API
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();

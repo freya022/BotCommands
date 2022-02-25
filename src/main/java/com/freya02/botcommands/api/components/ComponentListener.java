@@ -278,9 +278,6 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
-		//TODO need to change the locale getters to use the one provided by the events
-		// Which also means we need to change the way the default message instances are supplied
-		// So, change the Guild key for a Locale
 		event.reply(reason.getReason(context.getDefaultMessages(event.getUserLocale())))
 				.setEphemeral(true)
 				.queue();

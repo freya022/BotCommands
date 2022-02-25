@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
+//TODO
 public interface GuildLocalizable extends Localizable {
 	@NotNull
 	Locale getGuildLocale();
