@@ -16,20 +16,53 @@ import java.util.*;
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
-	private static final Map<LocalizationKey, Localization> localizationMap = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<LocalizationKey, Localization> localizationMap = new HashMap<>();
 
 	private final Map<String, LocalizationTemplate> strings = Collections.synchronizedMap(new HashMap<>());
 	private final Locale effectiveLocale;
+	private final boolean isInheritable;
 
 	@SuppressWarnings("unchecked")
-	private Localization(Locale effectiveLocale, InputStream stream) throws IOException {
+	private Localization(String baseName, Locale effectiveLocale, InputStream stream) throws IOException {
 		this.effectiveLocale = effectiveLocale;
 
+		final Map<String, LocalizationTemplate> tempMap = new HashMap<>(); //Need this so it doesn't throw on duplicated strings
 		try (InputStreamReader reader = new InputStreamReader(stream)) {
 			final Map<String, ?> map = new Gson().fromJson(reader, Map.class);
 
-			discoverEntries(new LocalizationPath(), map.entrySet());
+			this.isInheritable = map.get("inheritable") != null //Default to false
+					&& ((Boolean) map.get("inheritable"));
+
+			discoverEntries(tempMap, effectiveLocale, new LocalizationPath(), map.entrySet());
 		}
+
+		//Add parent localization first
+		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
+		Collections.reverse(candidateLocales); //Need to add the most precise locals last
+
+		for (Locale candidateLocale : candidateLocales) {
+			if (candidateLocale.equals(effectiveLocale)) continue;
+
+			final Localization instance = Localization.getInstance(baseName, candidateLocale);
+			if (instance == null) continue; //Parent localization failed to load
+
+			this.strings.putAll(instance.strings);
+
+			if (instance.isInheritable) { //Prevent purposefully inherited strings to be shown as warnings
+				tempMap.putAll(instance.strings);
+			}
+		}
+
+		//Check if inherited strings are missing from here
+		final ArrayList<String> inheritedKeys = new ArrayList<>(strings.keySet());
+		inheritedKeys.removeAll(tempMap.keySet()); //Remove keys that got read
+
+		if (!inheritedKeys.isEmpty()) {
+			LOGGER.warn("Bundle '{}' with locale '{}' is missing strings:\n{}", baseName, effectiveLocale, String.join("\n", inheritedKeys));
+		}
+
+		//Put this bundle's strings
+		this.strings.putAll(tempMap);
 	}
 
 	@Nullable
@@ -65,31 +98,43 @@ public class Localization {
 				}
 			}
 
-			return new Localization(bestLocale.locale(), bestLocale.inputStream());
+			return new Localization(baseName, bestLocale.locale(), bestLocale.inputStream());
 		}
 	}
 
 	@Nullable
-	public static Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
-		return localizationMap.computeIfAbsent(new LocalizationKey(bundleName, locale), l -> {
+	public static synchronized Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
+		final LocalizationKey key = new LocalizationKey(bundleName, locale);
+		final Localization value = localizationMap.get(key);
+
+		if (value != null) {
+			return value;
+		} else {
 			try {
-				return retrieveBundle(bundleName, locale);
+				final Localization newValue = retrieveBundle(bundleName, locale);
+				localizationMap.put(key, newValue);
+
+				return newValue;
 			} catch (Exception e) {
 				throw new RuntimeException("Unable to get bundle '%s' for locale '%s'".formatted(bundleName, locale), e);
 			}
-		});
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void discoverEntries(LocalizationPath currentPath, Set<? extends Map.Entry<String, ?>> entries) {
+	private static void discoverEntries(Map<String, LocalizationTemplate> strings, Locale effectiveLocale, LocalizationPath currentPath, Set<? extends Map.Entry<String, ?>> entries) {
 		for (Map.Entry<String, ?> entry : entries) {
 			if (entry.getValue() instanceof Map<?, ?> map) {
 				discoverEntries(
+						strings,
+						effectiveLocale,
 						currentPath.resolve(entry.getKey()),
 						((Map<String, ?>) map).entrySet()
 				);
 			} else {
 				final String key = currentPath.resolve(entry.getKey()).toString();
+				if (key.equals("inheritable")) continue; //Skip inheritable property
+
 				final LocalizationTemplate value = new LocalizationTemplate((String) entry.getValue(), effectiveLocale);
 
 				if (strings.put(key, value) != null) {

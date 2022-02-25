@@ -82,4 +82,9 @@ public class LocalizationTemplate {
 
 		throw new IllegalArgumentException("Could not find format '%s' in template: '%s'".formatted(formatterName, template));
 	}
+
+	@Override
+	public String toString() {
+		return template;
+	}
 }
