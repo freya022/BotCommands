@@ -89,7 +89,7 @@ public class Localization {
 				);
 			} else {
 				final String key = currentPath.resolve(entry.getKey()).toString();
-				final LocalizationTemplate value = new LocalizationTemplate((String) entry.getValue());
+				final LocalizationTemplate value = new LocalizationTemplate((String) entry.getValue(), effectiveLocale);
 
 				if (strings.put(key, value) != null) {
 					throw new IllegalStateException("Got two same localization keys: '" + key + "'");
@@ -111,7 +111,7 @@ public class Localization {
 
 	private record BestLocale(Locale locale, InputStream inputStream) {}
 
-	public record Entry(String key, String value) {
+	public record Entry(String key, Object value) {
 		/**
 		 * Create a new localization entry, this binds a key (from a templated string) into a value
 		 * <b>Highly recommended to use this method with a static import</b>
@@ -121,14 +121,8 @@ public class Localization {
 		 * @return The entry
 		 */
 		@NotNull
-		public static Entry entry(@NotNull String key, @NotNull String value) {
+		public static Entry entry(@NotNull String key, @NotNull Object value) {
 			return new Entry(key, value);
-		}
-
-		//TODO docs
-		@NotNull
-		public static Entry entry(@NotNull String key, @NotNull Number value) {
-			return new Entry(key, value.toString());
 		}
 	}
 }
