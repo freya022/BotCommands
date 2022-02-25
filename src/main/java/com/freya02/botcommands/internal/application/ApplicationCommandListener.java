@@ -176,11 +176,11 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			if (cooldown > 0) {
 				final DefaultMessages messages = this.context.getDefaultMessages(event.getUserLocale());
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getUserCooldownMsg(cooldown / 1000.0));
 				} else if (applicationCommand.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getGuildCooldownMsg(cooldown / 1000.0));
 				} else { //Implicit channel
-					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getChannelCooldownMsg(cooldown / 1000.0));
 				}
 
 				return false;
