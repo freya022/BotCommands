@@ -38,7 +38,13 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 		final String effectivePath;
 		if (method != null) {
-			effectivePath = localizationManager.getLocalizationPrefix(method) + "." + localizationPath;
+			final String localizationPrefix = localizationManager.getLocalizationPrefix(method);
+
+			if (localizationPrefix == null) {
+				effectivePath = localizationPath;
+			} else {
+				effectivePath = localizationPrefix + "." + localizationPath;
+			}
 		} else {
 			effectivePath = localizationPath;
 		}
