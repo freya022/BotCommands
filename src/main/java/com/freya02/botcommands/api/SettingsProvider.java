@@ -49,7 +49,7 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 */
 	@NotNull
 	default Locale getLocale(@Nullable Guild guild) {
-		return Locale.getDefault();
+		return Locale.getDefault(Locale.Category.DISPLAY);
 	}
 
 	/**

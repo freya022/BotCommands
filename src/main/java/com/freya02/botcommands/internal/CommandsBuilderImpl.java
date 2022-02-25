@@ -284,9 +284,7 @@ public final class CommandsBuilderImpl {
 		private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
 
 		@Override
-		public DefaultMessages apply(@Nullable Locale locale) {
-			if (locale == null) locale = Locale.getDefault(Locale.Category.DISPLAY);
-
+		public DefaultMessages apply(@NotNull Locale locale) {
 			return localeDefaultMessagesMap.computeIfAbsent(locale, DefaultMessages::new);
 		}
 	}

@@ -85,7 +85,7 @@ public class BContextImpl implements BContext {
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
-	private Function<Locale, DefaultMessages> defaultMessageProvider;
+	private Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
@@ -94,7 +94,7 @@ public class BContextImpl implements BContext {
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
 	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
-	private LocalizationManager localizationManager = new LocalizationManager();
+	private final LocalizationManager localizationManager = new LocalizationManager();
 
 	@Override
 	@NotNull
@@ -134,11 +134,11 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public DefaultMessages getDefaultMessages(@Nullable Locale locale) {
+	public DefaultMessages getDefaultMessages(@NotNull Locale locale) {
 		return defaultMessageProvider.apply(locale);
 	}
 
-	public void setDefaultMessageProvider(@NotNull Function<@Nullable Locale, @NotNull DefaultMessages> defaultMessageProvider) {
+	public void setDefaultMessageProvider(@NotNull Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider) {
 		this.defaultMessageProvider = defaultMessageProvider;
 	}
 
