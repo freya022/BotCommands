@@ -9,7 +9,7 @@
 
     "command.not.found.message": "Unknown command, maybe you meant: {suggestions}",
     "command.error.message": "An uncaught exception occurred",
-    "closed.dm.error.message": "This component is not usable anymore",
+    "closed.dm.error.message": "Unable to send you a DM, please open your DMs from this server",
     "application.command.not.found.message": "Unknown application command",
     "application.command.error.message": "An uncaught exception occurred",
     "component.handler.error.message": "An uncaught exception occurred",
