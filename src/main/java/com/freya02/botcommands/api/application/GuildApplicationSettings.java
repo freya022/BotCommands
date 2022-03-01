@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -53,7 +54,7 @@ public interface GuildApplicationSettings {
 	/**
 	 * TODO
 	 */
-	default boolean isEnabledOnGuild(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificName, @NotNull CommandPath commandPath) {
-		return false; //Only runs on @GuildSpecific, should not disable all commands
+	default CommandStatus getGuildSpecificCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificId, @NotNull CommandPath commandPath) {
+		return CommandStatus.UNSURE;
 	}
 }

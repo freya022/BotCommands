@@ -1,6 +1,7 @@
 package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.annotations.GuildSpecific;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
@@ -13,13 +14,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class SlashGuildSpecific extends ApplicationCommand {
 	@Override
-	public boolean isEnabledOnGuild(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificName, @NotNull CommandPath commandPath) {
-		if (specificName.equals("specific_run")) {
-			return guild.getIdLong() == 722891685755093072L;
+	public CommandStatus getGuildSpecificCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificId, @NotNull CommandPath commandPath) {
+		if (specificId.equals("specific_run")) {
+			if (guild.getIdLong() == 722891685755093072L) {
+				return CommandStatus.UNSURE; //Don't disable specific command on target guild
+			}
+
+			return CommandStatus.DISABLED;
 		}
 
-		//Enable non-specific command only on guilds that aren't targeted by the specific_run command
-		return true;
+		return super.getGuildSpecificCommandStatus(context, guild, specificId, commandPath);
 	}
 
 	@GuildSpecific("specific_run")

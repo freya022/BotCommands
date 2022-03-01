@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
@@ -84,8 +85,17 @@ public abstract class ApplicationCommandInfoMapView {
 						}
 					}
 
+					if (info.getSpecificId() != null) {
+						final CommandStatus commandStatus = info.getInstance().getGuildSpecificCommandStatus(context, guild, info.getSpecificId(), info.getPath());
+
+						if (commandStatus == CommandStatus.DISABLED) return false;
+					}
+
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
 					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
+
+					final CommandStatus commandStatus = settingsProvider.getGuildSpecificCommandStatus(context, guild, info.getSpecificId(), info.getPath());
+					if (commandStatus == CommandStatus.DISABLED) return false;
 
 					return settingsProvider.getGuildCommands(guild).getFilter().test(info.getPath());
 				})
