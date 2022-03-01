@@ -30,6 +30,12 @@ import java.util.function.Function;
 import static com.freya02.botcommands.internal.application.slash.SlashUtils.appendCommands;
 import static com.freya02.botcommands.internal.application.slash.SlashUtils.getMethodOptions;
 
+//TODO guild specific commands
+// Have a map of guild to a application command list
+// GuildApplicationSettings#isEnabledOnGuild(BContext, Guild, CommandPath)
+// Enabled using @GuildSpecific - Check if used on a guild command
+//  If this is not used then include command in all guilds
+//  If it is used then ask for a boolean, should return false (to exclude) by default
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
 

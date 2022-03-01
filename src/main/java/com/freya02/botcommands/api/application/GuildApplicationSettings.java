@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.application;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -17,7 +18,7 @@ import java.util.List;
  *
  * <h2>Implementation note:</h2>
  * These settings are looked first in {@link ApplicationCommand} and then again in {@link SettingsProvider}
- * <br>This provides the user either a clean enough look in SettingsProvider (no boilerplate in every SlashCommand) or an easy to use method in SlashCommand
+ * <br>This provides the user either a clean enough look in SettingsProvider (no boilerplate in every SlashCommand) or an easy-to-use method in SlashCommand
  */
 public interface GuildApplicationSettings {
 	/**
@@ -47,5 +48,12 @@ public interface GuildApplicationSettings {
 	@NotNull
 	default List<CommandPrivilege> getCommandPrivileges(@NotNull Guild guild, @NotNull String cmdBaseName) {
 		return Collections.emptyList();
+	}
+
+	/**
+	 * TODO
+	 */
+	default boolean isEnabledOnGuild(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificName, @NotNull CommandPath commandPath) {
+		return false; //Only runs on @GuildSpecific, should not disable all commands
 	}
 }
