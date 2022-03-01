@@ -237,7 +237,7 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandInfoMap().filterByGuild(context, guild);
+		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandsContext().getApplicationCommandInfoMap().filterByGuild(context, guild);
 
 		computeSlashCommands(guildApplicationCommands);
 

@@ -56,7 +56,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
+			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findUserCommand(event.getCommandPath());
 
 			if (userCommand == null) {
 				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();
@@ -76,7 +76,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
+			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findMessageCommand(event.getCommandPath());
 
 			if (messageCommand == null) {
 				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();
@@ -96,7 +96,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
+			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
 				event.reply(context.getDefaultMessages(event.getUserLocale()).getApplicationCommandNotFoundMsg()).queue();

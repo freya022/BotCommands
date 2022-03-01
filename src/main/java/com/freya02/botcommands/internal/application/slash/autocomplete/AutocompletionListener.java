@@ -43,7 +43,7 @@ public class AutocompletionListener implements EventListener {
 			final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 
 			runAutocompletion(() -> {
-				final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
+				final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findSlashCommand(CommandPath.of(event.getCommandPath()));
 
 				if (slashCommand == null) {
 					LOGGER.warn("Slash command not found during autocompletion for: {}", event.getCommandPath());
