@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -13,31 +14,34 @@ import java.util.List;
 
 public interface ApplicationCommandsContext {
 	/**
-	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
+	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild
 	 *
-	 * @param name Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 * @param guild The Guild the command has been invoked in, can be null for global commands
+	 * @param path Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	SlashCommandInfo findSlashCommand(@NotNull CommandPath name);
+	SlashCommandInfo findLiveSlashCommand(@NotNull Guild guild, @NotNull CommandPath path);
 
 	/**
-	 * Returns the {@link UserCommandInfo} object of the specified user context command name
+	 * Returns the {@link UserCommandInfo} object of the specified user context command name, in the specific guild
 	 *
+	 * @param guild The Guild the command has been invoked in, can be null for global commands
 	 * @param name Name of the user context command
 	 * @return The {@link UserCommandInfo} object of the user context command
 	 */
 	@Nullable
-	UserCommandInfo findUserCommand(@NotNull String name);
+	UserCommandInfo findLiveUserCommand(@NotNull Guild guild, @NotNull String name);
 
 	/**
-	 * Returns the {@link MessageCommandInfo} object of the specified message context command name
+	 * Returns the {@link MessageCommandInfo} object of the specified message context command name, in the specific guild
 	 *
+	 * @param guild The Guild the command has been invoked in, can be null for global commands
 	 * @param name Name of the message context command
 	 * @return The {@link MessageCommandInfo} object of the message context command
 	 */
 	@Nullable
-	MessageCommandInfo findMessageCommand(@NotNull String name);
+	MessageCommandInfo findLiveMessageCommand(@NotNull Guild guild, @NotNull String name);
 
 	/**
 	 * Returns a view for all the registered application commands
@@ -85,4 +89,12 @@ public interface ApplicationCommandsContext {
 	 * @return A list of the application commands paths
 	 */
 	List<CommandPath> getSlashCommandsPaths();
+
+	/**
+	 * Returns the live application commands for the specific guild
+	 *
+	 * @param guild The guild in which to query the commands, can be <code>null</code> for global commands
+	 * @return The {@link ApplicationCommandInfoMapView} of the specific guild
+	 */
+	@NotNull ApplicationCommandInfoMapView getLiveApplicationCommandsMap(@Nullable Guild guild);
 }

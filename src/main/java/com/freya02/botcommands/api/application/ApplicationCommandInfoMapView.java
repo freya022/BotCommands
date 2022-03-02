@@ -12,6 +12,8 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
@@ -58,6 +60,21 @@ public abstract class ApplicationCommandInfoMapView {
 		final CommandInfoMap<MessageCommandInfo> map = getTypeMap(Command.Type.MESSAGE);
 
 		return map.unmodifiable();
+	}
+
+	@Nullable
+	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
+		return this.getSlashCommandsView().get(path);
+	}
+
+	@Nullable
+	public UserCommandInfo findUserCommand(@NotNull String name) {
+		return this.getUserCommandsView().get(CommandPath.ofName(name));
+	}
+
+	@Nullable
+	public MessageCommandInfo findMessageCommand(@NotNull String name) {
+		return this.getMessageCommandsView().get(CommandPath.ofName(name));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
-import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
@@ -28,8 +27,6 @@ import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.TCollections;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -74,7 +71,6 @@ public class BContextImpl implements BContext {
 	// This is a "live" map, the map value should be immutable and be replaced on each command update (i.e. when sent to discord or when already cached)
 	// This is the map that should be searched by commands, otherwise @GuildSpecific will not work
 	// Really need to abstract getters such as #findSlashCommand as to avoid overloads
-	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	private boolean onlineAppCommandCheckEnabled;
 
