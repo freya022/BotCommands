@@ -13,6 +13,11 @@ import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
 public class SlashCommandId extends ApplicationCommand {
+	//TODO make a class aware of all the commands ids and command paths
+	// Keep a list of which command ids share the same paths
+	// Return a kind of "Allowed commands ids" per-guild, (try to precompute whether real command paths will be duplicated)
+	// Would do some kind of automatic command exclusion
+
 	@Override
 	public CommandStatus computeCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String commandId, @NotNull CommandPath commandPath) {
 		if (commandId.equals("specific_run")) {
