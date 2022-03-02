@@ -48,6 +48,7 @@ public class ApplicationCommandsUpdater {
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
 	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
+	private final List<ApplicationCommandInfo> guildApplicationCommands;
 
 	private boolean updatedCommands = false;
 
@@ -77,6 +78,10 @@ public class ApplicationCommandsUpdater {
 			Files.createDirectories(privilegesCachePath.getParent());
 		}
 
+		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
+				.getApplicationCommandInfoMap()
+				.filterByGuild(this.context, this.guild);
+
 		computeCommands();
 
 		this.allCommandData = map.getAllCommandData();
@@ -88,6 +93,10 @@ public class ApplicationCommandsUpdater {
 
 	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild, boolean onlineCheck) throws IOException {
 		return new ApplicationCommandsUpdater(context, guild, onlineCheck);
+	}
+
+	public List<ApplicationCommandInfo> getGuildApplicationCommands() {
+		return guildApplicationCommands;
 	}
 
 	@Nullable
@@ -237,8 +246,6 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandsContext().getApplicationCommandInfoMap().filterByGuild(context, guild);
-
 		computeSlashCommands(guildApplicationCommands);
 
 		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, Command.Type.USER);

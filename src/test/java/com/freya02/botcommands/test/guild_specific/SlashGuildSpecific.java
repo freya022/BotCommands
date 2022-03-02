@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands.slash;
+package com.freya02.botcommands.test.guild_specific;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandStatus;
@@ -21,12 +21,15 @@ public class SlashGuildSpecific extends ApplicationCommand {
 			}
 
 			return CommandStatus.DISABLED;
+		} else if (specificId.equals("global_run") && guild.getIdLong() == 722891685755093072L) { //command already exists
+			return CommandStatus.DISABLED;
 		}
 
 		return super.getGuildSpecificCommandStatus(context, guild, specificId, commandPath);
 	}
 
-	@GuildSpecific("specific_run")
+	//TODO rename to @CommandId ?
+	@GuildSpecific("global_run")
 	@JDASlashCommand(name = "specific")
 	public void run(GuildSlashEvent event) {
 		event.reply("normal ok")
@@ -34,7 +37,7 @@ public class SlashGuildSpecific extends ApplicationCommand {
 				.queue();
 	}
 
-	@GuildSpecific("global_run")
+	@GuildSpecific("specific_run")
 	@JDASlashCommand(name = "specific")
 	public void run2(GuildSlashEvent event, @AppOption(description = "lol") User user) {
 		event.reply("user " + user.getAsMention() + " ok")

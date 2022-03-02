@@ -29,6 +29,8 @@ public class SlashCommandsMain {
 					.build()
 					.awaitReady();
 
+//			jda.getGuildCache().forEach(g -> g.updateCommands().complete());
+
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
@@ -61,9 +63,10 @@ public class SlashCommandsMain {
 								return canRun;
 							})
 							.addTestGuilds(config.getTestGuildId())
-//							.enableOnlineAppCommandCheck()
+							.enableOnlineAppCommandCheck()
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
+					.addSearchPath("com.freya02.botcommands.test.guild_specific")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
 					.setSettingsProvider(new BasicSettingsProvider())
 //					.setUncaughtExceptionHandler(new ExceptionHandlerAdapter() {

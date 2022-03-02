@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandStatus;
+import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
@@ -15,12 +16,14 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
+import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class ApplicationCommandInfoMapView {
+	private static final Logger LOGGER = Logging.getLogger();
 	protected final Map<Command.Type, CommandInfoMap<? extends ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(Command.Type.class));
 
 	@UnmodifiableView
@@ -102,21 +105,37 @@ public abstract class ApplicationCommandInfoMapView {
 						}
 					}
 
-					if (info.getSpecificId() != null) {
-						final CommandStatus commandStatus = info.getInstance().getGuildSpecificCommandStatus(context, guild, info.getSpecificId(), info.getPath());
+					final CommandStatus effectiveCommandStatus = getCommandStatus(context, guild, info);
 
-						if (commandStatus == CommandStatus.DISABLED) return false;
+					if (effectiveCommandStatus == CommandStatus.DISABLED) {
+						return false;
 					}
 
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
 					if (settingsProvider == null) return true; //If no settings, assume it's not filtered
 
-					final CommandStatus commandStatus = settingsProvider.getGuildSpecificCommandStatus(context, guild, info.getSpecificId(), info.getPath());
-					if (commandStatus == CommandStatus.DISABLED) return false;
-
 					return settingsProvider.getGuildCommands(guild).getFilter().test(info.getPath());
 				})
 				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
 				.collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	private CommandStatus getCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull ApplicationCommandInfo info) {
+		final String specificId = info.getSpecificId();
+		if (specificId == null) return CommandStatus.UNSURE;
+
+		{
+			final CommandStatus commandStatus = info.getInstance().getGuildSpecificCommandStatus(context, guild, specificId, info.getPath());
+
+			if (commandStatus == CommandStatus.DISABLED) return commandStatus;
+		}
+
+		final SettingsProvider settingsProvider = context.getSettingsProvider();
+		if (settingsProvider == null) return CommandStatus.UNSURE; //If no settings, assume it's not filtered
+
+		final CommandStatus commandStatus = settingsProvider.getGuildSpecificCommandStatus(context, guild, specificId, info.getPath());
+		if (commandStatus == CommandStatus.DISABLED) return commandStatus;
+
+		return CommandStatus.UNSURE;
 	}
 }

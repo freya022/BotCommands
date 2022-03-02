@@ -6,10 +6,30 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.Function;
 
 public class ApplicationCommandInfoMap extends ApplicationCommandInfoMapView {
+	@NotNull
+	public static ApplicationCommandInfoMap fromCommandList(@NotNull List<ApplicationCommandInfo> guildApplicationCommands) {
+		final ApplicationCommandInfoMap map = new ApplicationCommandInfoMap();
+
+		for (ApplicationCommandInfo info : guildApplicationCommands) {
+			final Command.Type type = switch(info) {
+				case MessageCommandInfo ignored -> Command.Type.MESSAGE;
+				case UserCommandInfo ignored -> Command.Type.USER;
+				case SlashCommandInfo ignored -> Command.Type.SLASH;
+				default -> throw new IllegalArgumentException("Unknown application command info type: " + info.getClass().getName());
+			};
+
+			map.getTypeMap(type).put(info.getPath(), info);
+		}
+
+		return map;
+	}
+
 	public CommandInfoMap<SlashCommandInfo> getSlashCommands() {
 		return getTypeMap(Command.Type.SLASH);
 	}

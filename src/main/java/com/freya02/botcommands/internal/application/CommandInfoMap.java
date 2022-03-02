@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -44,7 +45,38 @@ public class CommandInfoMap<T extends ApplicationCommandInfo> implements Map<Com
 
 	@Nullable
 	@Override
-	public T put(CommandPath key, T value) {return map.put(key, value);}
+	public T put(CommandPath key, T value) {
+		//Checks below this block only check if shorter or equal commands exists
+		// We need to check if longer commands exists
+		//Would be more performant if we used a Trie
+		for (Map.Entry<CommandPath, T> entry : entrySet()) {
+			final CommandPath commandPath = entry.getKey();
+			final T mapInfo = entry.getValue();
+
+			if (commandPath.getNameCount() > key.getNameCount() && commandPath.startsWith(key)) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
+						key,
+						Utils.formatMethodShort(value.getMethod()),
+						commandPath,
+						Utils.formatMethodShort(mapInfo.getMethod())));
+			}
+		}
+
+		CommandPath p = key;
+		do {
+			final T mapInfo = get(p);
+
+			if (mapInfo != null) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
+						key,
+						Utils.formatMethodShort(value.getMethod()),
+						p,
+						Utils.formatMethodShort(mapInfo.getMethod())));
+			}
+		} while ((p = p.getParent()) != null);
+
+		return map.put(key, value);
+	}
 
 	@Override
 //	public T remove(Object key) {return map.remove(key);}

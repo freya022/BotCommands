@@ -104,7 +104,7 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 		return liveApplicationCommandInfoMap.get(getGuildKey(guild));
 	}
 
-	public void putLiveApplicationCommandsMap(long guildId, @NotNull ApplicationCommandInfoMap map) {
-		liveApplicationCommandInfoMap.put(guildId, map);
+	public void putLiveApplicationCommandsMap(@Nullable Guild guild, @NotNull ApplicationCommandInfoMap map) {
+		liveApplicationCommandInfoMap.put(getGuildKey(guild), map);
 	}
 }

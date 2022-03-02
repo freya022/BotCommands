@@ -12,10 +12,7 @@ import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
-import com.freya02.botcommands.internal.application.ApplicationCommandsCache;
-import com.freya02.botcommands.internal.application.ApplicationCommandsContextImpl;
+import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -239,45 +236,25 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addSlashCommand(SlashCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
-
-		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getApplicationCommandsContext().getSlashCommandsMap();
-
-		//Checks below this block only check if shorter or equal commands exists
-		// We need to check if longer commands exists
-		//Would be more performant if we used a Trie
-		for (Map.Entry<CommandPath, SlashCommandInfo> entry : slashCommandMap.entrySet()) {
-			final CommandPath commandPath = entry.getKey();
-			final SlashCommandInfo mapInfo = entry.getValue();
-
-			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
-						path,
-						Utils.formatMethodShort(commandInfo.getMethod()),
-						commandPath,
-						Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-		}
-
-		CommandPath p = path;
-		do {
-			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
-
-			if (mapInfo != null) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
-						path,
-						Utils.formatMethodShort(commandInfo.getMethod()),
-						p,
-						Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-		} while ((p = p.getParent()) != null);
-
-		slashCommandMap.put(path, commandInfo);
+	@NotNull
+	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo<?> commandInfo) {
+		return commandInfo.getSpecificId() == null
+				? commandInfo.getPath()
+				: CommandPath.of(commandInfo.getSpecificId());
 	}
 
-	public void addUserCommand(UserCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
+	public CommandPath addSlashCommand(SlashCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
+
+		final CommandInfoMap<SlashCommandInfo> slashCommandMap = getApplicationCommandsContext().getSlashCommandsMap();
+
+		slashCommandMap.put(path, commandInfo);
+
+		return path;
+	}
+
+	public CommandPath addUserCommand(UserCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
 
 		UserCommandInfo oldCmd = getApplicationCommandsContext().getUserCommandsMap().put(path, commandInfo);
 
@@ -287,10 +264,12 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(oldCmd.getMethod()),
 					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
+
+		return path;
 	}
 
-	public void addMessageCommand(MessageCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
+	public CommandPath addMessageCommand(MessageCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
 
 		MessageCommandInfo oldCmd = getApplicationCommandsContext().getMessageCommandsMap().put(path, commandInfo);
 
@@ -300,6 +279,8 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(oldCmd.getMethod()),
 					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
+
+		return path;
 	}
 
 	public void addAutocompletionHandler(AutocompletionHandlerInfo handlerInfo) {
