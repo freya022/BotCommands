@@ -35,6 +35,7 @@ public class CommandIdTest {
 	 *
 	 * ==> Given a command id, if it is bound to a guild, and it corresponds, then OK
 	 * ==> Given a command id, if it is not bound to a guild then check if there is an ID using the same command paths **that is allowed in that guild**, if one exists then deny this one
+	 * ==> Given a command id, if it is bound to a guild, and it does not correspond to its allowed guilds, then disable it
 	 */
 	private static CommandStatus getStatus(String commandPath, String commandId, long guildId) {
 		//Given a command id, if it is bound to a guild, and it corresponds, then OK
@@ -43,6 +44,8 @@ public class CommandIdTest {
 		//If the target command id is allowed in that guild then it means that the command is targeted toward the guild
 		if (allowedGuilds.contains(guildId)) {
 			return CommandStatus.UNSURE;
+		} else if (allowedGuilds != EMPTY_LIST) {
+			return CommandStatus.DISABLED;
 		}
 
 		//Given a command id, if it is not bound to a guild then check if there is an ID using the same command paths **that is allowed in that guild**, if one exists then deny this one
@@ -63,17 +66,29 @@ public class CommandIdTest {
 
 	public static void main(String[] args) {
 		commandPathToCommandIdsMap.computeIfAbsent("specific", x -> new ArrayList<>()).add("specific_run");
+		commandPathToCommandIdsMap.computeIfAbsent("specific", x -> new ArrayList<>()).add("specific_run2");
+		commandPathToCommandIdsMap.computeIfAbsent("specific", x -> new ArrayList<>()).add("sth_run");
 		commandPathToCommandIdsMap.computeIfAbsent("specific", x -> new ArrayList<>()).add("global_run");
 
 		commandIdToGuildsMap.put("specific_run", TLongArrayList.wrap(new long[]{123L}));
+		commandIdToGuildsMap.put("specific_run2", TLongArrayList.wrap(new long[]{123L}));
 
 		//If a command id has been marked as allowed in a guild then the commands with the same names must be disabled
 		//Let's check for "specific_run" in guild 123, it should be allowed
 
-		System.out.println(getStatus("specific", "specific_run", 123));
-		System.out.println(getStatus("specific", "global_run", 123));
-		System.out.println(getStatus("specific", "sth_run", 123));
-		System.out.println(getStatus("specific", "global_run", 1234));
-		System.out.println(getStatus("specific", "specific_run", 1234));
+		System.out.println(getStatus("specific", "specific_run", 123));         //Can we run the specific   command in the specific command guild ? yes
+		System.out.println(getStatus("specific", "global_run", 123));           //Can we run the global     command in the specific command guild ? no
+		System.out.println(getStatus("specific", "sth_run", 123));              //Can we run the other      command in the specific command guild ? no
+		System.out.println(getStatus("specific", "global_run", 1234));          //Can we run the global     command in the other    command guild ? yes
+		System.out.println(getStatus("specific", "specific_run", 1234));        //Can we run the specific   command in the other    command guild ? no
+		System.out.println(getStatus("specific", "specific_run2", 1234));       //Can we run the specific 2 command in the other    command guild ? no
+		System.out.println(getStatus("specific", "specific_run2", 123));        //Can we run the specific 2 command in the specific command guild ? yes
+		//TODO this one should actually be NO, this shares the same command path as specific_run as well as the same guild ID
+
+		for (long guildId : List.of(123, 1234)) {
+			for (String cmdId : List.of("specific_run", "global_run", "sth_run", "specific_run2")) {
+				System.out.println("getStatus(\"specific\", " + cmdId + ", " + guildId + ") = " + getStatus("specific", cmdId, guildId));
+			}
+		}
 	}
 }
