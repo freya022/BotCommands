@@ -63,12 +63,6 @@ public class BContextImpl implements BContext {
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 
-	//TODO
-	// Guild id -> application commands map
-	// This is a "live" map, the map value should be immutable and be replaced on each command update (i.e. when sent to discord or when already cached)
-	// This is the map that should be searched by commands, otherwise @GuildSpecific will not work
-	// Really need to abstract getters such as #findSlashCommand as to avoid overloads
-
 	private boolean onlineAppCommandCheckEnabled;
 
 	private final Map<String, AutocompletionHandlerInfo> autocompleteHandlersMap = new HashMap<>();
@@ -238,9 +232,9 @@ public class BContextImpl implements BContext {
 
 	@NotNull
 	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo<?> commandInfo) {
-		return commandInfo.getSpecificId() == null
+		return commandInfo.getCommandId() == null
 				? commandInfo.getPath()
-				: CommandPath.of(commandInfo.getSpecificId());
+				: CommandPath.of(commandInfo.getCommandId());
 	}
 
 	public CommandPath addSlashCommand(SlashCommandInfo commandInfo) {

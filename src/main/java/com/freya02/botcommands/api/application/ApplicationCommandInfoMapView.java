@@ -121,11 +121,11 @@ public abstract class ApplicationCommandInfoMapView {
 	}
 
 	private CommandStatus getCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull ApplicationCommandInfo info) {
-		final String specificId = info.getSpecificId();
-		if (specificId == null) return CommandStatus.UNSURE;
+		final String commandId = info.getCommandId();
+		if (commandId == null) return CommandStatus.UNSURE;
 
 		{
-			final CommandStatus commandStatus = info.getInstance().getGuildSpecificCommandStatus(context, guild, specificId, info.getPath());
+			final CommandStatus commandStatus = info.getInstance().computeCommandStatus(context, guild, commandId, info.getPath());
 
 			if (commandStatus == CommandStatus.DISABLED) return commandStatus;
 		}
@@ -133,7 +133,7 @@ public abstract class ApplicationCommandInfoMapView {
 		final SettingsProvider settingsProvider = context.getSettingsProvider();
 		if (settingsProvider == null) return CommandStatus.UNSURE; //If no settings, assume it's not filtered
 
-		final CommandStatus commandStatus = settingsProvider.getGuildSpecificCommandStatus(context, guild, specificId, info.getPath());
+		final CommandStatus commandStatus = settingsProvider.computeCommandStatus(context, guild, commandId, info.getPath());
 		if (commandStatus == CommandStatus.DISABLED) return commandStatus;
 
 		return CommandStatus.UNSURE;

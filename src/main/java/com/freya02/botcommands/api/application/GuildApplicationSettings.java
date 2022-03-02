@@ -54,7 +54,7 @@ public interface GuildApplicationSettings {
 	/**
 	 * TODO
 	 */
-	default CommandStatus getGuildSpecificCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String specificId, @NotNull CommandPath commandPath) {
+	default CommandStatus computeCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String commandId, @NotNull CommandPath commandPath) {
 		return CommandStatus.UNSURE;
 	}
 }
