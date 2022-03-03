@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
+import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
@@ -11,7 +12,6 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
-import com.freya02.botcommands.internal.application.ApplicationCommandsContext;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
