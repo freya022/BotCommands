@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
+import com.freya02.botcommands.internal.application.CommandIdProcessor;
 import com.freya02.botcommands.internal.application.CommandInfoMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -85,7 +86,7 @@ public abstract class ApplicationCommandInfoMapView {
 		return (CommandInfoMap<T>) typeMap.computeIfAbsent(type, x -> new CommandInfoMap<>());
 	}
 
-	public List<ApplicationCommandInfo> filterByGuild(BContext context, Guild guild) {
+	public List<ApplicationCommandInfo> filterByGuild(@NotNull BContext context, @Nullable Guild guild, @Nullable CommandIdProcessor commandIdProcessor) {
 		return getAllApplicationCommandsStream()
 				.filter(info -> {
 					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
@@ -105,10 +106,16 @@ public abstract class ApplicationCommandInfoMapView {
 						}
 					}
 
-					final CommandStatus effectiveCommandStatus = getCommandStatus(context, guild, info);
+					if (commandIdProcessor == null)
+						throw new IllegalArgumentException("Command ID processor should not be null if guild isn't null");
 
-					if (effectiveCommandStatus == CommandStatus.DISABLED) {
-						return false;
+					final String commandId = info.getCommandId();
+					if (commandId != null) {
+						final CommandStatus commandStatus = commandIdProcessor.getStatus(info.getPath(), commandId, guild.getIdLong());
+
+						if (commandStatus == CommandStatus.DISABLED) {
+							return false;
+						}
 					}
 
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
@@ -118,24 +125,5 @@ public abstract class ApplicationCommandInfoMapView {
 				})
 				.sorted(Comparator.comparingInt(info -> info.getPath().getNameCount()))
 				.collect(Collectors.toCollection(ArrayList::new));
-	}
-
-	private CommandStatus getCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull ApplicationCommandInfo info) {
-		final String commandId = info.getCommandId();
-		if (commandId == null) return CommandStatus.UNSURE;
-
-		{
-			final CommandStatus commandStatus = info.getInstance().computeCommandStatus(context, guild, commandId, info.getPath());
-
-			if (commandStatus == CommandStatus.DISABLED) return commandStatus;
-		}
-
-		final SettingsProvider settingsProvider = context.getSettingsProvider();
-		if (settingsProvider == null) return CommandStatus.UNSURE; //If no settings, assume it's not filtered
-
-		final CommandStatus commandStatus = settingsProvider.computeCommandStatus(context, guild, commandId, info.getPath());
-		if (commandStatus == CommandStatus.DISABLED) return commandStatus;
-
-		return CommandStatus.UNSURE;
 	}
 }

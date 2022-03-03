@@ -1,36 +1,25 @@
 package com.freya02.botcommands.test.guild_specific;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class SlashCommandId extends ApplicationCommand {
-	//TODO make a class aware of all the commands ids and command paths
-	// Keep a list of which command ids share the same paths
-	// Return a kind of "Allowed commands ids" per-guild, (try to precompute whether real command paths will be duplicated)
-	// Would do some kind of automatic command exclusion
-
 	@Override
-	public CommandStatus computeCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String commandId, @NotNull CommandPath commandPath) {
+	public List<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
 		if (commandId.equals("specific_run")) {
-			if (guild.getIdLong() == 722891685755093072L) {
-				return CommandStatus.UNSURE; //Don't disable specific command on target guild
-			}
-
-			return CommandStatus.DISABLED;
-		} else if (commandId.equals("global_run") && guild.getIdLong() == 722891685755093072L) { //command already exists
-			return CommandStatus.DISABLED;
+			return List.of(722891685755093072L);
 		}
 
-		return super.computeCommandStatus(context, guild, commandId, commandPath);
+		return super.getGuildsForCommandId(context, commandId, commandPath);
 	}
 
 	@CommandId("global_run")

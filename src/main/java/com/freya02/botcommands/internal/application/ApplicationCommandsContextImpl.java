@@ -13,12 +13,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApplicationCommandsContextImpl implements ApplicationCommandsContext {
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+	private final Map<String, List<String>> commandPathToCommandIdsMap = new HashMap<>();
 
 	private long getGuildKey(@Nullable Guild guild) {
 		return guild == null ? 0 : guild.getIdLong();

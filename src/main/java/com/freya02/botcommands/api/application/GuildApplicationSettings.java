@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.CommandStatus;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -54,7 +53,7 @@ public interface GuildApplicationSettings {
 	/**
 	 * TODO
 	 */
-	default CommandStatus computeCommandStatus(@NotNull BContext context, @NotNull Guild guild, @NotNull String commandId, @NotNull CommandPath commandPath) {
-		return CommandStatus.UNSURE;
+	default List<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
+		return List.of();
 	}
 }

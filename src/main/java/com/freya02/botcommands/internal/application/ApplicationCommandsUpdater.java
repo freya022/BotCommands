@@ -74,7 +74,7 @@ public class ApplicationCommandsUpdater {
 
 		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
 				.getApplicationCommandInfoMap()
-				.filterByGuild(this.context, this.guild);
+				.filterByGuild(this.context, this.guild, guild == null ? null : new CommandIdProcessor(context));
 
 		computeCommands();
 
