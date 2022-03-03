@@ -52,7 +52,7 @@ public class ModalListener implements EventListener {
 					return;
 				}
 
-				final ModalHandlerInfo modalHandler = context.getModalHandler(modalData.getHandlerName());
+				final ModalHandlerInfo modalHandler = context.getApplicationCommandsContext().getModalHandler(modalData.getHandlerName());
 
 				if (modalHandler == null) {
 					LOGGER.warn("Got no modal handler for handler name: '{}'", modalData.getHandlerName());

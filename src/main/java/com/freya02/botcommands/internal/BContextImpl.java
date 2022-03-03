@@ -17,7 +17,6 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
-import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
 import com.freya02.botcommands.internal.modals.ModalMaps;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -64,8 +63,6 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
-	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
-	private final Map<String, ModalHandlerInfo> modalHandlersMap = new HashMap<>();
 	private final ModalMaps modalMaps = new ModalMaps();
 
 	private boolean onlineAppCommandCheckEnabled;
@@ -301,22 +298,6 @@ public class BContextImpl implements BContext {
 		if (handler == null) throw new IllegalArgumentException("Autocompletion handler name not found for '" + autocompletionHandlerName + "'");
 
 		handler.invalidate();
-	}
-
-	public void addModalHandler(ModalHandlerInfo handlerInfo) {
-		final ModalHandlerInfo oldHandler = modalHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
-
-		if (oldHandler != null) {
-			throw new IllegalArgumentException("Tried to register modal handler '%s' at %s but it was already registered at %s".formatted(handlerInfo.getHandlerName(),
-					Utils.formatMethodShort(handlerInfo.getMethod()),
-					Utils.formatMethodShort(oldHandler.getMethod()))
-			);
-		}
-	}
-
-	@Nullable
-	public ModalHandlerInfo getModalHandler(String handlerName) {
-		return modalHandlersMap.get(handlerName);
 	}
 
 	public Collection<TextCommandCandidates> getCommands() {

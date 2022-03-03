@@ -27,7 +27,7 @@ public class ModalHandlersBuilder {
 
 			final ModalHandlerInfo handler = new ModalHandlerInfo(context, autocompleteHandler, method);
 
-			context.addModalHandler(handler);
+			context.getApplicationCommandsContext().addModalHandler(handler);
 
 			LOGGER.debug("Adding modal handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
 		} catch (Exception e) {
