@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class ComponentListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -85,7 +85,7 @@ public class ComponentListener extends ListenerAdapter {
 			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 
 			if (fetchedComponent == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getNullComponentTypeErrorMsg())
+				event.reply(context.getDefaultMessages(event.getUserLocale()).getNullComponentTypeErrorMsg())
 						.setEphemeral(true)
 						.queue();
 
@@ -113,12 +113,12 @@ public class ComponentListener extends ListenerAdapter {
 										buttonsMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										() -> new ButtonEvent(context, (ButtonInteractionEvent) event)),
+										descriptor -> new ButtonEvent(descriptor.getMethod(), context, (ButtonInteractionEvent) event)),
 								event));
 				case LAMBDA_BUTTON -> componentManager.handleLambdaButton(event,
 						fetchResult,
 						e -> onError(event, e),
-						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(context, (ButtonInteractionEvent) event)), event)
+						data -> runCallback(() -> data.getConsumer().accept(new ButtonEvent(null, context, (ButtonInteractionEvent) event)), event)
 				);
 				case PERSISTENT_SELECTION_MENU -> componentManager.handlePersistentSelectMenu(event,
 						fetchResult,
@@ -127,12 +127,12 @@ public class ComponentListener extends ListenerAdapter {
 										selectionMenuMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										() -> new SelectionEvent(context, (SelectMenuInteractionEvent) event)),
+										descriptor -> new SelectionEvent(descriptor.getMethod(), context, (SelectMenuInteractionEvent) event)),
 								event));
 				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
 						fetchResult,
 						e -> onError(event, e),
-						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(context, (SelectMenuInteractionEvent) event)), event));
+						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(null, context, (SelectMenuInteractionEvent) event)), event));
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 			}
 		}
@@ -158,9 +158,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event.getUserLocale()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event.getGuild()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event.getUserLocale()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component ID handler", baseEx);
@@ -188,9 +188,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event.getUserLocale()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event.getGuild()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event.getUserLocale()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component callback", baseEx);
@@ -202,7 +202,7 @@ public class ComponentListener extends ListenerAdapter {
 	                                       Map<String, ComponentDescriptor> map,
 	                                       String handlerName,
 	                                       String[] args,
-	                                       Supplier<? extends GenericComponentInteractionCreateEvent> eventFunction) {
+	                                       Function<ComponentDescriptor, ? extends GenericComponentInteractionCreateEvent> eventFunction) {
 		final ComponentDescriptor descriptor = map.get(handlerName);
 
 		if (descriptor == null) {
@@ -226,7 +226,7 @@ public class ComponentListener extends ListenerAdapter {
 			// magically unboxes primitives when passed to Method#invoke
 			final List<Object> methodArgs = new ArrayList<>(parameters.size() + 1);
 
-			methodArgs.add(eventFunction.get());
+			methodArgs.add(eventFunction.apply(descriptor));
 
 			int optionIndex = 0;
 			for (final CommandParameter<ComponentParameterResolver> parameter : parameters) {
@@ -278,10 +278,7 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
-		//TODO need to change the locale getters to use the one provided by the events
-		// Which also means we need to change the way the default message instances are supplied
-		// So, change the Guild key for a Locale
-		event.reply(reason.getReason(context.getDefaultMessages(event.getGuild())))
+		event.reply(reason.getReason(context.getDefaultMessages(event.getUserLocale())))
 				.setEphemeral(true)
 				.queue();
 	}

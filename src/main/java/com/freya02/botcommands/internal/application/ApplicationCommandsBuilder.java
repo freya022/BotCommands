@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
@@ -80,8 +81,8 @@ public final class ApplicationCommandsBuilder {
 
 		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addUserCommand(info);
+		final CommandPath effectivePath = context.addUserCommand(info);
+		LOGGER.debug("Added user command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
@@ -100,8 +101,8 @@ public final class ApplicationCommandsBuilder {
 
 		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addMessageCommand(info);
+		final CommandPath effectivePath = context.addMessageCommand(info);
+		LOGGER.debug("Added message command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
@@ -120,8 +121,8 @@ public final class ApplicationCommandsBuilder {
 
 		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
-		context.addSlashCommand(info);
+		final CommandPath effectivePath = context.addSlashCommand(info);
+		LOGGER.debug("Added slash command path {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private String getCheckTypeString() {
@@ -146,6 +147,8 @@ public final class ApplicationCommandsBuilder {
 				} else {
 					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
+
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getGuildApplicationCommands()));
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
 			}
@@ -229,6 +232,8 @@ public final class ApplicationCommandsBuilder {
 				} else { //TODO change prints once privileges can be checked online
 					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
 				}
+
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(guild, ApplicationCommandInfoMap.fromCommandList(updater.getGuildApplicationCommands()));
 
 				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
 			} catch (Throwable e) {

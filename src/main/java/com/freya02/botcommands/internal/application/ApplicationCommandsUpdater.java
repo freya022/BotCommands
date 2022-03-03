@@ -26,10 +26,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.internal.application.slash.SlashUtils.appendCommands;
-import static com.freya02.botcommands.internal.application.slash.SlashUtils.getLocalizedMethodOptions;
+import static com.freya02.botcommands.internal.application.slash.SlashUtils.getMethodOptions;
 
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -43,13 +42,13 @@ public class ApplicationCommandsUpdater {
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
 	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
+	private final List<ApplicationCommandInfo> guildApplicationCommands;
 
 	private boolean updatedCommands = false;
 
 	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
 
-	private final Map<String, String> localizedBaseNameToBaseName = new HashMap<>();
 	private final Map<String, Collection<CommandPrivilege>> cmdIdToPrivilegesMap = new HashMap<>();
 	private final Map<String, Collection<CommandPrivilege>> cmdBaseNameToPrivilegesMap = new HashMap<>();
 	private final Collection<CommandData> allCommandData;
@@ -73,6 +72,11 @@ public class ApplicationCommandsUpdater {
 			Files.createDirectories(privilegesCachePath.getParent());
 		}
 
+		final CommandIdProcessor commandIdProcessor = guild == null ? null : new CommandIdProcessor(context);
+		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
+				.getApplicationCommandInfoMap()
+				.filterByGuild(this.context, this.guild, commandIdProcessor);
+
 		computeCommands();
 
 		this.allCommandData = map.getAllCommandData();
@@ -84,6 +88,10 @@ public class ApplicationCommandsUpdater {
 
 	public static ApplicationCommandsUpdater ofGuild(@NotNull BContextImpl context, @NotNull Guild guild, boolean onlineCheck) throws IOException {
 		return new ApplicationCommandsUpdater(context, guild, onlineCheck);
+	}
+
+	public List<ApplicationCommandInfo> getGuildApplicationCommands() {
+		return guildApplicationCommands;
 	}
 
 	@Nullable
@@ -147,8 +155,7 @@ public class ApplicationCommandsUpdater {
 	public boolean shouldUpdatePrivileges() throws IOException {
 		if (guild == null) return false;
 
-		//TODO rework when i can finally work out privileges for global commands in a guild context
-		// When discord adds native localisation
+		//TODO rework with perms v2
 		final byte[] oldBytes;
 //		if (onlineCheck) {
 //			//Since we online checked, we have the commands list
@@ -217,7 +224,7 @@ public class ApplicationCommandsUpdater {
 	@Blocking
 	private void updatePrivileges0(@NotNull Guild guild, @NotNull List<Command> commands) {
 		for (Command command : commands) {
-			final Collection<CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(localizedBaseNameToBaseName.get(command.getName()));
+			final Collection<CommandPrivilege> privileges = cmdBaseNameToPrivilegesMap.get(command.getName());
 
 			if (privileges != null) {
 				cmdIdToPrivilegesMap.put(command.getId(), privileges);
@@ -234,8 +241,6 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		final List<ApplicationCommandInfo> guildApplicationCommands = context.getApplicationCommandInfoMap().filterByGuild(context, guild);
-
 		computeSlashCommands(guildApplicationCommands);
 
 		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, Command.Type.USER);
@@ -251,87 +256,72 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> a instanceof SlashCommandInfo)
 				.map(a -> (SlashCommandInfo) a)
-				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
-					final CommandPath notLocalizedPath = info.getPath();
+					final CommandPath commandPath = info.getPath();
+					final String description = info.getDescription();
 
 					try {
-						final LocalizedCommandData localizedCommandData = LocalizedCommandData.of(context, guild, info);
-
-						//Put localized option names in order to resolve them when called
-						final List<OptionData> localizedMethodOptions = getLocalizedMethodOptions(info, localizedCommandData);
-						if (guild != null) {
-							info.putLocalizedOptions(guild.getIdLong(), localizedMethodOptions.stream().map(OptionData::getName).collect(Collectors.toList()));
-						}
-
-						localizedBaseNameToBaseName.put(localizedCommandData.getLocalizedPath().getName(), notLocalizedPath.getName());
-
-						final CommandPath localizedPath = localizedCommandData.getLocalizedPath();
-						final String description = localizedCommandData.getLocalizedDescription();
-
-						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
+						final List<OptionData> methodOptions = getMethodOptions(context, guild, info);
 
 						final boolean isDefaultEnabled = isDefaultEnabled(info);
 
-						if (localizedPath.getNameCount() == 1) {
+						if (commandPath.getNameCount() == 1) {
 							//Standard command
-							final SlashCommandData rightCommand = Commands.slash(localizedPath.getName(), description);
-							map.put(Command.Type.SLASH, localizedPath, rightCommand);
+							final SlashCommandData rightCommand = Commands.slash(commandPath.getName(), description);
+							map.put(Command.Type.SLASH, commandPath, rightCommand);
 
-							rightCommand.addOptions(localizedMethodOptions);
+							rightCommand.addOptions(methodOptions);
 							rightCommand.setDefaultEnabled(isDefaultEnabled);
-						} else if (localizedPath.getNameCount() == 2) {
-							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
+						} else if (commandPath.getNameCount() == 2) {
+							Checks.notNull(commandPath.getSubname(), "Subcommand name");
 
-							final SlashCommandData commandData = (SlashCommandData) map.computeIfAbsent(Command.Type.SLASH, localizedPath, x -> {
-								final SlashCommandData tmpData = Commands.slash(localizedPath.getName(), "No description (base name)");
+							final SlashCommandData commandData = (SlashCommandData) map.computeIfAbsent(Command.Type.SLASH, commandPath, x -> {
+								final SlashCommandData tmpData = Commands.slash(commandPath.getName(), "No description (base name)");
 								tmpData.setDefaultEnabled(isDefaultEnabled);
 
 								return tmpData;
 							});
 
 							//Subcommand of a command
-							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							subcommandData.addOptions(localizedMethodOptions);
+							final SubcommandData subcommandData = new SubcommandData(commandPath.getSubname(), description);
+							subcommandData.addOptions(methodOptions);
 
 							commandData.addSubcommands(subcommandData);
-						} else if (localizedPath.getNameCount() == 3) {
-							Checks.notNull(localizedPath.getGroup(), "Command group name");
-							Checks.notNull(localizedPath.getSubname(), "Subcommand name");
+						} else if (commandPath.getNameCount() == 3) {
+							Checks.notNull(commandPath.getGroup(), "Command group name");
+							Checks.notNull(commandPath.getSubname(), "Subcommand name");
 
-							final SubcommandGroupData groupData = getSubcommandGroup(Command.Type.SLASH, localizedPath, x -> {
-								final SlashCommandData commandData = Commands.slash(localizedPath.getName(), "No description (base name)");
+							final SubcommandGroupData groupData = getSubcommandGroup(Command.Type.SLASH, commandPath, x -> {
+								final SlashCommandData commandData = Commands.slash(commandPath.getName(), "No description (base name)");
 
 								commandData.setDefaultEnabled(isDefaultEnabled);
 
 								return commandData;
 							});
 
-							final SubcommandData subcommandData = new SubcommandData(localizedPath.getSubname(), description);
-							subcommandData.addOptions(localizedMethodOptions);
+							final SubcommandData subcommandData = new SubcommandData(commandPath.getSubname(), description);
+							subcommandData.addOptions(methodOptions);
 
 							groupData.addSubcommands(subcommandData);
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
 
-						context.addApplicationCommandAlternative(localizedPath, Command.Type.SLASH, info);
-
 						if (!info.isOwnerRequired()) {
-							if (ownerOnlyCommands.contains(notLocalizedPath.getName())) {
-								LOGGER.warn("Non owner-only command '{}' is registered as a owner-only command because of another command with the same base name '{}'", notLocalizedPath, notLocalizedPath.getName());
+							if (ownerOnlyCommands.contains(commandPath.getName())) {
+								LOGGER.warn("Non owner-only command '{}' is registered as a owner-only command because of another command with the same base name '{}'", commandPath, commandPath.getName());
 							}
 						}
 
 						if (info.isOwnerRequired()) {
 							if (info.isGuildOnly()) {
-								ownerOnlyCommands.add(notLocalizedPath.getName());
+								ownerOnlyCommands.add(commandPath.getName());
 							} else {
-								LOGGER.warn("Owner-only command '{}' cannot be owner-only as it is a global command", notLocalizedPath);
+								LOGGER.warn("Owner-only command '{}' cannot be owner-only as it is a global command", commandPath);
 							}
 						}
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing command '" + notLocalizedPath + "' at " + Utils.formatMethodShort(info.getMethod()), e);
+						throw new RuntimeException("An exception occurred while processing command '" + commandPath + "' at " + Utils.formatMethodShort(info.getMethod()), e);
 					}
 				});
 	}
@@ -341,39 +331,27 @@ public class ApplicationCommandsUpdater {
 		guildApplicationCommands.stream()
 				.filter(a -> targetClazz.isAssignableFrom(a.getClass()))
 				.map(a -> (T) a)
-				.distinct() // Prevents localized commands from being included in this stream, as localized commands are inserted in the same map under a different name
 				.forEachOrdered(info -> {
-					final CommandPath notLocalizedPath = info.getPath();
+					final CommandPath commandPath = info.getPath();
 
 					try {
-						final LocalizedCommandData localizedCommandData = LocalizedCommandData.of(context, guild, info);
-
-						localizedBaseNameToBaseName.put(localizedCommandData.getLocalizedPath().getName(), notLocalizedPath.getName());
-
-						// User command name
-						final CommandPath localizedPath = localizedCommandData.getLocalizedPath();
-
-						Checks.check(localizedPath.getNameCount() == notLocalizedPath.getNameCount(), "Localized path does not have the same name count as the not-localized path");
-
 						final boolean isDefaultEnabled = isDefaultEnabled(info);
 
-						if (localizedPath.getNameCount() == 1) {
+						if (commandPath.getNameCount() == 1) {
 							//Standard command
-							final CommandData rightCommand = Commands.context(type, localizedPath.getName());
-							map.put(type, localizedPath, rightCommand);
+							final CommandData rightCommand = Commands.context(type, commandPath.getName());
+							map.put(type, commandPath, rightCommand);
 
 							rightCommand.setDefaultEnabled(isDefaultEnabled);
 
 							if (info.isOwnerRequired()) {
-								ownerOnlyCommands.add(notLocalizedPath.getName()); //Must be non-localized name
+								ownerOnlyCommands.add(commandPath.getName()); //Must be non-localized name
 							}
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
-
-						context.addApplicationCommandAlternative(localizedPath, type, info);
 					} catch (Exception e) {
-						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + notLocalizedPath, e);
+						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + commandPath, e);
 					}
 				});
 	}

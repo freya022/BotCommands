@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Parameter;
@@ -55,6 +56,7 @@ public class ApplicationOptionData {
 	/**
 	 * Not localized
 	 */
+	@NotNull
 	public String getEffectiveName() {
 		return effectiveName;
 	}
@@ -62,6 +64,7 @@ public class ApplicationOptionData {
 	/**
 	 * Not localized
 	 */
+	@NotNull
 	public String getEffectiveDescription() {
 		return effectiveDescription;
 	}

@@ -38,7 +38,7 @@ public class AutocompletionHandlersBuilder {
 	}
 
 	public void postProcess() {
-		for (SlashCommandInfo info : context.getApplicationCommandInfoMap().getSlashCommands().values()) {
+		for (SlashCommandInfo info : context.getApplicationCommandsContext().getApplicationCommandInfoMap().getSlashCommands().values()) {
 			MethodParameters<SlashCommandParameter> parameters = info.getParameters();
 			for (int i = 0, parametersSize = parameters.size(); i < parametersSize; i++) {
 				SlashCommandParameter parameter = parameters.get(i);

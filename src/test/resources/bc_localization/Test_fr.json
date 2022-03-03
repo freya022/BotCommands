@@ -1,0 +1,25 @@
+{
+    "commands": {
+        "ban": {
+            "name": "ban",
+            "description": "Bannis un utilisateur",
+            "options": {
+                "user": {
+                    "name": "utilisateur",
+                    "description": "Utilisateur a ban"
+                },
+                "delDays": {
+                    "name": "sup_messages",
+                    "description": "Nb jours à supprimer"
+                },
+                "reason": {
+                    "name": "raison",
+                    "description": "La raison"
+                }
+            }
+        }
+    },
+    "key2": "{myNumber} {myNumber, choice, -1#is negative| 0#is zero or fraction | 1#is one |1.0<is 1+ |2#is two |2<is more than 2.}",
+    "key3": "pi: {pi, number}",
+    "commands.localization.response": "Il y a {guild_users} {guild_users, choice, 0#utilisateurs|1#utilisateur|2>utilisateurs} et je suis resté allumé pendant {uptime, number} ms"
+}
