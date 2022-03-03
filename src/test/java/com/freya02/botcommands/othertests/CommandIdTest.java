@@ -52,13 +52,15 @@ public class CommandIdTest {
 
 		//Given a command id, if it is not bound to a guild then check if there is an ID using the same command paths **that is allowed in that guild**, if one exists then deny this one
 		final List<String> relatedCommandIds = commandPathToCommandIdsMap.get(commandPath);
-		for (String id : relatedCommandIds) {
-			final TLongList allowedGuildsOfRelated = commandIdToGuildsMap.getOrDefault(id, EMPTY_LIST);
+		if (relatedCommandIds != null) {
+			for (String id : relatedCommandIds) {
+				final TLongList allowedGuildsOfRelated = commandIdToGuildsMap.getOrDefault(id, EMPTY_LIST);
 
-			if (allowedGuildsOfRelated.contains(guildId)) {
-				//Found a guild where the related command id is allowed, this means that the current command cannot be registered as this will cause duplicates / override the old one
+				if (allowedGuildsOfRelated.contains(guildId)) {
+					//Found a guild where the related command id is allowed, this means that the current command cannot be registered as this will cause duplicates / override the old one
 
-				return CommandStatus.DISABLED;
+					return CommandStatus.DISABLED;
+				}
 			}
 		}
 
@@ -104,6 +106,8 @@ public class CommandIdTest {
 		System.out.println(getStatus("specific", "specific_run", 1234));        //Can we run the specific   command in the other    command guild ? no
 		System.out.println(getStatus("specific", "specific_run2", 1234));       //Can we run the specific 2 command in the other    command guild ? no
 		System.out.println(getStatus("specific", "specific_run2", 123));        //Can we run the specific 2 command in the specific command guild ? no
+		System.out.println(getStatus("not_specific", "lol", 123));        //Can we run the specific 2 command in the specific command guild ? no
+		System.out.println(getStatus("not_specific", "specific_run", 123));        //Can we run the specific 2 command in the specific command guild ? no
 
 		for (long guildId : List.of(123, 1234, 12345)) {
 			for (String cmdId : List.of("specific_run", "global_run", "sth_run", "specific_run2")) {
