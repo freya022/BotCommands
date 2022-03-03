@@ -15,8 +15,8 @@ import java.util.*;
 
 public class CommandIdProcessor {
 	private static final TLongSet EMPTY_LIST = new TLongHashSet();
-	private static final Map<String, TLongSet> commandIdToGuildsMap = new HashMap<>();
-	private static final Map<CommandPath, Set<String>> commandPathToCommandIdsMap = new HashMap<>();
+	private final Map<String, TLongSet> commandIdToGuildsMap = new HashMap<>();
+	private final Map<CommandPath, Set<String>> commandPathToCommandIdsMap = new HashMap<>();
 
 	private final BContext context;
 
@@ -45,12 +45,16 @@ public class CommandIdProcessor {
 			}
 
 			final Collection<Long> instanceAllowedGuilds = info.getInstance().getGuildsForCommandId(context, commandId, path);
-			commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(instanceAllowedGuilds);
+			if (instanceAllowedGuilds != null) {
+				commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(instanceAllowedGuilds);
+			}
 
 			final SettingsProvider settingsProvider = context.getSettingsProvider();
 			if (settingsProvider != null) {
 				final Collection<Long> allowedGuilds = settingsProvider.getGuildsForCommandId(context, commandId, path);
-				commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(allowedGuilds);
+				if (allowedGuilds != null) {
+					commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(allowedGuilds);
+				}
 			}
 		}
 

@@ -72,9 +72,10 @@ public class ApplicationCommandsUpdater {
 			Files.createDirectories(privilegesCachePath.getParent());
 		}
 
+		final CommandIdProcessor commandIdProcessor = guild == null ? null : new CommandIdProcessor(context);
 		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
 				.getApplicationCommandInfoMap()
-				.filterByGuild(this.context, this.guild, guild == null ? null : new CommandIdProcessor(context));
+				.filterByGuild(this.context, this.guild, commandIdProcessor);
 
 		computeCommands();
 

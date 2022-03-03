@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,8 +53,10 @@ public interface GuildApplicationSettings {
 
 	/**
 	 * TODO
+	 * TODO specify about empty collection vs null collection
 	 */
-	default List<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
-		return List.of();
+	@Nullable
+	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
+		return null;
 	}
 }
