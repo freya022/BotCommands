@@ -57,6 +57,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, ConstructorParameterSupplier<?>> parameterSupplierMap = new HashMap<>();
 	private final Map<Class<?>, InstanceSupplier<?>> instanceSupplierMap = new HashMap<>();
+	private final List<DynamicInstanceSupplier> dynamicInstanceSuppliers = new ArrayList<>();
 	private final Map<Class<?>, Supplier<?>> commandDependencyMap = new HashMap<>();
 
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
@@ -577,12 +578,20 @@ public class BContextImpl implements BContext {
 		instanceSupplierMap.put(classType, instanceSupplier);
 	}
 
+	public void registerDynamicInstanceSupplier(DynamicInstanceSupplier dynamicInstanceSupplier) {
+		dynamicInstanceSuppliers.add(dynamicInstanceSupplier);
+	}
+
 	public ConstructorParameterSupplier<?> getParameterSupplier(Class<?> parameterType) {
 		return parameterSupplierMap.get(parameterType);
 	}
 
 	public InstanceSupplier<?> getInstanceSupplier(Class<?> classType) {
 		return instanceSupplierMap.get(classType);
+	}
+
+	public List<DynamicInstanceSupplier> getDynamicInstanceSuppliers() {
+		return dynamicInstanceSuppliers;
 	}
 
 	public <T> void registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
