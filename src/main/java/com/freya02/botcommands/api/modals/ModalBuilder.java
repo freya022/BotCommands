@@ -21,8 +21,10 @@ public class ModalBuilder extends Modal.Builder {
 	private ModalTimeoutInfo timeoutInfo;
 
 	@ApiStatus.Internal
-	public ModalBuilder(ModalMaps modalMaps, @NotNull String handlerName, Object[] userData) {
+	public ModalBuilder(ModalMaps modalMaps, @NotNull String title, @NotNull String handlerName, Object[] userData) {
 		super("0");
+
+		setTitle(title);
 
 		Checks.notNull(handlerName, "Modal handler name");
 		Checks.notNull(userData, "Modal user data");

@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface ModalHandler {
 	/**
-	 * The name of the handler, must be the same as the handler name supplied in {@link Modals#create(String, Object...)}
+	 * The name of the handler, must be the same as the handler name supplied in {@link Modals#create(String, String, Object...)}
 	 *
 	 * @return The name of the modal handler
 	 */
