@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.application.context.annotations.JDAMessageCom
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
@@ -20,6 +21,7 @@ import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
+import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
 import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
@@ -48,9 +50,11 @@ public final class CommandsBuilderImpl {
 	private static final List<Class<? extends Annotation>> applicationMethodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
 
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
-	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final EventListenersBuilder eventListenersBuilder;
+
+	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final AutocompletionHandlersBuilder autocompletionHandlersBuilder;
+	private final ModalHandlersBuilder modalHandlersBuilder;
 
 	private final ComponentsBuilder componentsBuilder;
 
@@ -77,6 +81,7 @@ public final class CommandsBuilderImpl {
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
 		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
+		this.modalHandlersBuilder = new ModalHandlersBuilder(context);
 	}
 
 	private void buildClasses() throws Exception {
@@ -124,6 +129,8 @@ public final class CommandsBuilderImpl {
 		eventListenersBuilder.postProcess();
 
 		autocompletionHandlersBuilder.postProcess();
+
+		modalHandlersBuilder.postProcess();
 
 		context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
@@ -199,6 +206,13 @@ public final class CommandsBuilderImpl {
 		final Object autocompletionHandler = tryInstantiateMethod(AutocompletionHandler.class, Object.class, "Slash command auto completion", method);
 		if (autocompletionHandler != null) {
 			autocompletionHandlersBuilder.processHandler(autocompletionHandler, method);
+
+			return true;
+		}
+
+		final Object modalHandler = tryInstantiateMethod(ModalHandler.class, Object.class, "Modal handler", method);
+		if (modalHandler != null) {
+			modalHandlersBuilder.processHandler(modalHandler, method);
 
 			return true;
 		}

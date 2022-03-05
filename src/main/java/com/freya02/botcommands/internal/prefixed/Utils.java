@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Utils {
-	public static final Logger LOGGER = Logging.getLogger();
+	private static final Logger LOGGER = Logging.getLogger();
 
 	public static String getParameterName(Parameter parameter, String defaultName) {
 		if (parameter.isNamePresent()) {
