@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.api.application.slash.annotations.Default;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -7,6 +8,7 @@ import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
+import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -17,8 +19,9 @@ import java.util.EnumSet;
 public class SlashCommandParameter extends ApplicationCommandParameter<SlashParameterResolver> {
 	private final Number minValue, maxValue;
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+	private final DefaultOptionResolver defaultOptionResolver;
 
-	public SlashCommandParameter(Parameter parameter, int index) {
+	public SlashCommandParameter(SlashCommandInfo commandInfo, Parameter parameter, int index) {
 		super(SlashParameterResolver.class, parameter, index);
 
 		if (parameter.isAnnotationPresent(TextOption.class))
@@ -40,6 +43,22 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 		}
 
 		Collections.addAll(channelTypes, AnnotationUtils.getEffectiveChannelTypes(parameter));
+
+		final Default annotation = parameter.getAnnotation(Default.class);
+
+		if (annotation != null) {
+			if (!commandInfo.isGuildOnly()) {
+				throw new IllegalArgumentException("%s, parameter #%d: Cannot have default options for global commands".formatted(Utils.formatMethodShort(commandInfo.getMethod()), index));
+			}
+
+			if (annotation.constant()) {
+				this.defaultOptionResolver = new ConstantDefaultOptionResolver(commandInfo, this);
+			} else {
+				this.defaultOptionResolver = new ComputedDefaultOptionResolver(commandInfo, this);
+			}
+		} else {
+			this.defaultOptionResolver = null;
+		}
 	}
 
 	public EnumSet<ChannelType> getChannelTypes() {
@@ -52,5 +71,9 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 
 	public Number getMaxValue() {
 		return maxValue;
+	}
+
+	public DefaultOptionResolver getDefaultOptionResolver() {
+		return defaultOptionResolver;
 	}
 }

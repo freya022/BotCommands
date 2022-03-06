@@ -37,6 +37,8 @@ public class SlashUtils {
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
+			if (parameter.getDefaultOptionResolver() != null) continue; //Option is default-ed
+
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final String name = parameter.getApplicationOptionData().getEffectiveName();

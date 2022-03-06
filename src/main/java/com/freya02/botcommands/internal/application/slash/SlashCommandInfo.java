@@ -54,7 +54,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
-			return new SlashCommandParameter(parameter, i);
+			return new SlashCommandParameter(this, parameter, i);
 		});
 
 		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())
@@ -84,45 +84,56 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 			final Object obj;
 			if (parameter.isOption()) {
-				String optionName = applicationOptionData.getEffectiveName();
+				if (parameter.getDefaultOptionResolver() != null) {
+					if (event.getGuild() == null)
+						throw new IllegalStateException("Tried to use a default option resolver in a global command");
 
-				final OptionMapping optionMapping = event.getOption(optionName);
+					obj = parameter.getDefaultOptionResolver().resolve(context, event.getGuild());
 
-				if (optionMapping == null) {
-					if (parameter.isOptional()) {
-						if (parameter.isPrimitive()) {
-							objects.add(0);
-						} else {
-							objects.add(null);
-						}
-
-						continue;
-					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (" + optionName + ")");
+					if (obj == null && !parameter.isOptional()) {
+						throw new IllegalArgumentException();
 					}
-				}
+				} else {
+					final String optionName = applicationOptionData.getEffectiveName();
 
-				obj = parameter.getResolver().resolve(context, this, event, optionMapping);
+					final OptionMapping optionMapping = event.getOption(optionName);
 
-				if (obj == null) {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
+					if (optionMapping == null) {
+						if (parameter.isOptional()) {
+							if (parameter.isPrimitive()) {
+								objects.add(0);
+							} else {
+								objects.add(null);
+							}
 
-					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+							continue;
+						} else {
+							throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (" + optionName + ")");
+						}
+					}
 
-					return false;
-				}
+					obj = parameter.getResolver().resolve(context, this, event, optionMapping);
 
-				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), obj.getClass().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
+					if (obj == null) {
+						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
+								.setEphemeral(true)
+								.queue();
 
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+						//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+						LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
 
-					return false;
+						return false;
+					}
+
+					if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
+						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), obj.getClass().getSimpleName()))
+								.setEphemeral(true)
+								.queue();
+
+						LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+
+						return false;
+					}
 				}
 			} else {
 				obj = parameter.getCustomResolver().resolve(context, this, event);
