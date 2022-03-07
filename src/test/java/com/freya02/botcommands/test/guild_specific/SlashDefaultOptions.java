@@ -16,9 +16,25 @@ import org.jetbrains.annotations.Nullable;
 public class SlashDefaultOptions extends ApplicationCommand {
 	@Override
 	@Nullable
-	public DefaultValue getConstantDefaultValue(@NotNull BContext context, @NotNull Guild guild,
-	                                            @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                            @NotNull String optionName, @NotNull Class<?> parameterType) {
+	public Boolean isDefaultValueEnabled(@NotNull BContext context, @NotNull Guild guild,
+	                                     @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                     @NotNull String optionName, @NotNull Class<?> parameterType) {
+		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild
+			if (commandPath.toString().equals("default")) {
+				if (optionName.equals("user")) {
+					return true;
+				}
+			}
+		}
+
+		return super.isDefaultValueEnabled(context, guild, commandId, commandPath, optionName, parameterType);
+	}
+
+	@Override
+	@Nullable
+	public DefaultValue getDefaultValue(@NotNull BContext context, @NotNull Guild guild,
+	                                    @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                    @NotNull String optionName, @NotNull Class<?> parameterType) {
 		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild
 			if (commandPath.toString().equals("default")) {
 				if (optionName.equals("user")) {
@@ -27,7 +43,7 @@ public class SlashDefaultOptions extends ApplicationCommand {
 			}
 		}
 
-		return super.getConstantDefaultValue(context, guild, commandId, commandPath, optionName, parameterType);
+		return super.getDefaultValue(context, guild, commandId, commandPath, optionName, parameterType);
 	}
 
 	@JDASlashCommand(name = "default")

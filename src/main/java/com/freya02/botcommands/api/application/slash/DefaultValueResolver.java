@@ -10,23 +10,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Set;
-
 public interface DefaultValueResolver {
-	//List of guilds where the option can be default-ed dynamically
-	//TODO
-	@NotNull
-	default Collection<Long> getDynamicGuilds(@NotNull BContext context,
-	                                          @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                          @NotNull String optionName, @NotNull Class<?> parameterType) {
-		return Set.of();
-	}
-
 	@Nullable
-	default DefaultValue getDynamicDefaultValue(@NotNull BContext context, @NotNull Guild guild,
-	                                            @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                            @NotNull String optionName, @NotNull Class<?> parameterType) {
+	default Boolean isDefaultValueEnabled(@NotNull BContext context, @NotNull Guild guild,
+	                                      @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                      @NotNull String optionName, @NotNull Class<?> parameterType) {
 		return null;
 	}
 
@@ -40,14 +28,14 @@ public interface DefaultValueResolver {
 	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
-	 * @param parameterType The type of the command option
+	 * @param parameterType The <b>boxed</b> type of the command option
 	 *
-	 * @return A DefaultValue object if the option can be default-ed with a nullable object, or <code>null</code> if the option should not be default-ed
+	 * @return A DefaultValue object if the option can be default-ed with a nullable object
 	 */
 	@Nullable
-	default DefaultValue getConstantDefaultValue(@NotNull BContext context, @NotNull Guild guild,
-	                                             @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                             @NotNull String optionName, @NotNull Class<?> parameterType) {
+	default DefaultValue getDefaultValue(@NotNull BContext context, @NotNull Guild guild,
+	                                     @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                     @NotNull String optionName, @NotNull Class<?> parameterType) {
 		return null;
 	}
 }

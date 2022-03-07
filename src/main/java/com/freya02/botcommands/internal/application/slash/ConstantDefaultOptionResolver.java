@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.DefaultValue;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -27,16 +28,37 @@ public class ConstantDefaultOptionResolver implements DefaultOptionResolver {
 		if (value == null) {
 			synchronized (valueMap) {
 				if (valueMap.get(guild.getIdLong()) == null) {
-					value = commandInfo.getInstance().getConstantDefaultValue(context,
-							guild,
-							commandInfo.getCommandId(),
-							commandInfo.getPath(),
-							slashCommandParameter.getApplicationOptionData().getEffectiveName(),
-							slashCommandParameter.getBoxedType()
-					);
+					value = getDefaultValue(context, guild);
 
 					valueMap.put(guild.getIdLong(), value);
 				}
+			}
+		}
+
+		return value;
+	}
+
+	@Nullable
+	private DefaultValue getDefaultValue(@NotNull BContext context, @NotNull Guild guild) {
+		DefaultValue value = commandInfo.getInstance().getDefaultValue(context,
+				guild,
+				commandInfo.getCommandId(),
+				commandInfo.getPath(),
+				slashCommandParameter.getApplicationOptionData().getEffectiveName(),
+				slashCommandParameter.getBoxedType()
+		);
+
+		if (value == null) {
+			final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+			if (settingsProvider != null) {
+				return settingsProvider.getDefaultValue(context,
+						guild,
+						commandInfo.getCommandId(),
+						commandInfo.getPath(),
+						slashCommandParameter.getApplicationOptionData().getEffectiveName(),
+						slashCommandParameter.getBoxedType()
+				);
 			}
 		}
 

@@ -37,9 +37,23 @@ public class SlashUtils {
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
 
-			if (parameter.getDefaultOptionResolver() != null) continue; //Option is default-ed
-
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+
+			if (parameter.getDefaultOptionResolver() != null) {
+				if (guild == null) throw new IllegalArgumentException("Cannot use default options on global commands");
+
+				Boolean isEnabled = info.getInstance().isDefaultValueEnabled(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+
+				if (isEnabled == null) {
+					final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+					if (settingsProvider != null) {
+						isEnabled = settingsProvider.isDefaultValueEnabled(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+					}
+				}
+
+				if (isEnabled != null && isEnabled) continue;
+			}
 
 			final String name = parameter.getApplicationOptionData().getEffectiveName();
 			final String description = parameter.getApplicationOptionData().getEffectiveDescription();
