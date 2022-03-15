@@ -17,6 +17,7 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
+import com.freya02.botcommands.internal.modals.ModalMaps;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
@@ -62,6 +63,7 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
+	private final ModalMaps modalMaps = new ModalMaps();
 
 	private boolean onlineAppCommandCheckEnabled;
 
@@ -545,6 +547,10 @@ public class BContextImpl implements BContext {
 
 	public void enableOnlineAppCommandCheck() {
 		this.onlineAppCommandCheckEnabled = true;
+	}
+
+	public ModalMaps getModalMaps() {
+		return modalMaps;
 	}
 
 	public LocalizationManager getLocalizationManager() {

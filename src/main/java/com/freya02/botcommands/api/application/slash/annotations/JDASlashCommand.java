@@ -67,7 +67,7 @@ import java.lang.annotation.Target;
  *     <li>{@linkplain TextChannel}</li>
  *     <li>{@linkplain ThreadChannel}</li>
  *     <li>{@linkplain VoiceChannel}</li>
- *     <li>{@linkplain StoreChannel}</li>
+ *     <li>{@linkplain NewsChannel}</li>
  *     <li>{@linkplain StageChannel}</li>
  * </ul>
  *

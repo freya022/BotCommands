@@ -6,6 +6,8 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
+import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
@@ -14,12 +16,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApplicationCommandsContextImpl implements ApplicationCommandsContext {
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+
+	private final Map<String, ModalHandlerInfo> modalHandlersMap = new HashMap<>();
 
 	private long getGuildKey(@Nullable Guild guild) {
 		return guild == null ? 0 : guild.getIdLong();
@@ -107,5 +113,21 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 
 	public void putLiveApplicationCommandsMap(@Nullable Guild guild, @NotNull ApplicationCommandInfoMap map) {
 		liveApplicationCommandInfoMap.put(getGuildKey(guild), map);
+	}
+
+	public void addModalHandler(ModalHandlerInfo handlerInfo) {
+		final ModalHandlerInfo oldHandler = modalHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
+
+		if (oldHandler != null) {
+			throw new IllegalArgumentException("Tried to register modal handler '%s' at %s but it was already registered at %s".formatted(handlerInfo.getHandlerName(),
+					Utils.formatMethodShort(handlerInfo.getMethod()),
+					Utils.formatMethodShort(oldHandler.getMethod()))
+			);
+		}
+	}
+
+	@Nullable
+	public ModalHandlerInfo getModalHandler(String handlerName) {
+		return modalHandlersMap.get(handlerName);
 	}
 }

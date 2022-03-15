@@ -132,6 +132,7 @@
                     <release>17</release>
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                        <additionalJOption>--enable-preview</additionalJOption>
                     </additionalJOptions>
                     <links>
                         <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -177,9 +178,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.xirado</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>36eea2a1c5</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
