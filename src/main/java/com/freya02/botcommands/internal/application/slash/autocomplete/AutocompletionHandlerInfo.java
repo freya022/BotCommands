@@ -122,19 +122,12 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 		objects.add(event);
 
-		int optionIndex = 0;
-		final List<String> optionNames = event.getGuild() != null ? slashCommand.getLocalizedOptions(event.getGuild()) : null;
 		for (final SlashCommandParameter parameter : autocompleteParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final Object obj;
 			if (parameter.isOption()) {
-				String optionName = optionNames == null ? applicationOptionData.getEffectiveName() : optionNames.get(optionIndex);
-				if (optionName == null) {
-					throw new IllegalArgumentException(String.format("Option name #%d (%s) could not be resolved for %s", optionIndex, applicationOptionData.getEffectiveName(), Utils.formatMethodShort(method)));
-				}
-
-				optionIndex++;
+				String optionName = applicationOptionData.getEffectiveName();
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
@@ -197,7 +190,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	                            CommandAutoCompleteInteractionEvent event,
 	                            Consumer<Throwable> throwableConsumer,
 	                            Consumer<List<Command.Choice>> choiceCallback) throws Exception {
-		cache.retrieveAndCall(slashCommand, event, choiceCallback, key -> {
+		cache.retrieveAndCall(event, choiceCallback, key -> {
 			generateChoices(slashCommand, event, throwableConsumer, choices -> {
 				cache.put(key, choices);
 

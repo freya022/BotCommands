@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.GuildApplicationSettings;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -25,7 +26,7 @@ public interface SettingsProvider extends GuildApplicationSettings {
 
 	/**
 	 * Returns the list of guild commands usable in that Guild
-	 * <br><i>You can have a list of command names if needed in {@link BContext#getSlashCommandsPaths()} ()}</i>
+	 * <br><i>You can have a list of command names if needed in {@link ApplicationCommandsContext#getSlashCommandsPaths()} ()}</i>
 	 *
 	 * @return A CommandList of this guild's commands
 	 * @see CommandList#all()
@@ -49,7 +50,7 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 */
 	@NotNull
 	default Locale getLocale(@Nullable Guild guild) {
-		return Locale.getDefault();
+		return Locale.getDefault(Locale.Category.DISPLAY);
 	}
 
 	/**

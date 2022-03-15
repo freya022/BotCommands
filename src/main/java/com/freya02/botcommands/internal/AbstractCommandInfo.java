@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
@@ -28,6 +29,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	protected final EnumSet<Permission> botPermissions;
 
 	private final NSFWState nsfwState;
+	private final String commandId;
 	private final MethodRunner methodRunner;
 
 	protected AbstractCommandInfo(@NotNull BContext context,
@@ -49,6 +51,12 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 		this.methodRunner = context.getMethodRunnerFactory().make(instance, commandMethod);
 
 		this.ownerRequired = AnnotationUtils.getEffectiveRequireOwnerState(commandMethod);
+
+		final CommandId commandIdAnnot = commandMethod.getAnnotation(CommandId.class);
+		this.commandId = commandIdAnnot != null
+				? commandIdAnnot.value()
+				: null;
+
 		this.nsfwState = NSFWState.ofMethod(commandMethod);
 
 		this.userPermissions = getEffectiveUserPermissions(commandMethod);
@@ -93,5 +101,10 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	@Nullable
 	public NSFWState getNSFWState() {
 		return nsfwState;
+	}
+
+	@Nullable
+	public String getCommandId() {
+		return commandId;
 	}
 }

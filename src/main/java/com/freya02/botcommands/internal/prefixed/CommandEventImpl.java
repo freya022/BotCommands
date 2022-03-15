@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
 import com.freya02.botcommands.api.utils.RichTextFinder;
 import com.freya02.botcommands.api.utils.RichTextType;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.entities.EmojiImpl;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -16,6 +16,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +32,8 @@ public class CommandEventImpl extends CommandEvent {
 	private final List<Object> arguments = new ArrayList<>();
 	private final MessageReceivedEvent event;
 
-	public CommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
-		super(context, event, arguments);
+	public CommandEventImpl(@NotNull BContextImpl context, @NotNull Method method, MessageReceivedEvent event, String arguments) {
+		super(method, context, event, arguments);
 
 		this.event = event;
 

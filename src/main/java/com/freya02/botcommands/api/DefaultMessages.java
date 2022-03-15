@@ -1,346 +1,212 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.NSFW;
-import com.freya02.botcommands.internal.utils.BResourceBundle;
-import net.dv8tion.jda.api.entities.Guild;
+import com.freya02.botcommands.api.localization.Localization;
+import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.StringJoiner;
+
+import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
 /**
  * Class which holds all the strings the framework may use
- * <br>The strings are formatted as follows:
- * <br><code>Default label name = default value</code>
- * <br>The label name may be used in another DefaultMessages.properties file in order to localize these strings
+ * <p>The default values are contained in the resources, at <code>bc_localization/DefaultMessages.json</code>
+ * <p>You may change the default values by:
+ * <ul>
+ *     <li>Creating a new <code>DefaultMessages.json</code> in the resource folder <code>bc_localization</code>, effectively overriding the default resource</li>
+ *     <li>Creating language variations with a file with the same name, suffixed by the locale string, in the same folder, for example <code>bc_localization/DefaultMessages_fr.json</code></li>
+ * </ul>
+ * <p>The resulting paths must not be changed, however the localization templates can have their values in any order, and different format specifiers, but need to keep the same names
  *
- * <ul>
- *     <li>userPermErrorMsg = {@value #DEFAULT_USER_PERM_ERROR_MESSAGE}</li>
- *     <li>botPermErrorMsg = {@value DEFAULT_BOT_PERM_ERROR_MESSAGE}</li>
- *     <li>ownerOnlyErrorMsg = {@value DEFAULT_OWNER_ONLY_ERROR_MESSAGE}</li>
- * </ul>
- * <ul>
- *     <li>userCooldownMsg = {@value DEFAULT_USER_COOLDOWN_MESSAGE}</li>
- *     <li>channelCooldownMsg = {@value DEFAULT_CHANNEL_COOLDOWN_MESSAGE}</li>
- *     <li>guildCooldownMsg = {@value DEFAULT_GUILD_COOLDOWN_MESSAGE}</li>
- * </ul>
- * <ul>
- *     <li>commandNotFoundMsg = {@value DEFAULT_COMMAND_NOT_FOUND_MESSAGE}</li>
- *     <li>commandErrorMsg = {@value DEFAULT_COMMAND_ERROR_MESSAGE}</li>
- *     <li>closedDMErrorMsg = {@value DEFAULT_CLOSED_DM_ERROR_MESSAGE}</li>
- *     <li>applicationCommandNotFoundMsg = {@value DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE}</li>
- *     <li>applicationCommandErrorMsg = {@value DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE}</li>
- *     <li>componentHandlerErrorMsg = {@value DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE}</li>
- *     <li>componentCallbackErrorMsg = {@value DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE}</li>
- *     <li>slashCommandUnresolvableParameterMsg = {@value DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE}</li>
- *     <li>slashCommandInvalidParameterTypeMsg = {@value DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE}</li>
- *     <li>nullComponentTypeErrorMsg = {@value DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE}</li>
- * </ul>
- * <ul>
- *     <li>nsfwDisabledErrorMsg = {@value DEFAULT_NSFW_DISABLED_ERROR_MESSAGE}</li>
- *     <li>nsfwOnlyErrorMsg = {@value DEFAULT_NSFW_ONLY_ERROR_MESSAGE}</li>
- *     <li>nsfwDMDeniedErrorMsg = {@value DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE}</li>
- * </ul>
- * <ul>
- *     <li>componentNotAllowedErrorMsg = {@value DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE}</li>
- *     <li>componentExpiredErrorMsg = {@value DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE}</li>
- *     <li>componentNotFoundErrorMsg = {@value DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE}</li>
- *     <li>componentInvalidDataErrorMsg = {@value DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE}</li>
- * </ul>
+ * <p>Refer to {@link Localization} for more details
  *
- * @see SettingsProvider#getLocale(Guild)
  * @see SettingsProvider#doesUserConsentNSFW(User)
+ * @see Localization
  */
 public final class DefaultMessages {
-	public static final String DEFAULT_USER_PERM_ERROR_MESSAGE = "You are not allowed to do this";
-	public static final String DEFAULT_BOT_PERM_ERROR_MESSAGE = "I am missing these permissions: %s";
-	public static final String DEFAULT_OWNER_ONLY_ERROR_MESSAGE = "Only the owner can use this";
-
-	public static final String DEFAULT_USER_COOLDOWN_MESSAGE = "You must wait **%.2f seconds**";
-	public static final String DEFAULT_CHANNEL_COOLDOWN_MESSAGE = "You must wait **%.2f seconds in this channel**";
-	public static final String DEFAULT_GUILD_COOLDOWN_MESSAGE = "You must wait **%.2f seconds in this guild**";
-
-	public static final String DEFAULT_COMMAND_NOT_FOUND_MESSAGE = "Unknown command, maybe you meant: %s";
-	public static final String DEFAULT_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
-	public static final String DEFAULT_CLOSED_DM_ERROR_MESSAGE = "This component is not usable anymore";
-	public static final String DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE = "Unknown application command";
-	public static final String DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE = "An uncaught exception occurred";
-	public static final String DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE = "An uncaught exception occurred";
-	public static final String DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE = "An uncaught exception occurred";
-	public static final String DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE = "The parameter '%s' could not be resolved into a %s";
-	public static final String DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE = "The parameter '%s' is not a valid type (expected a %s, got a %s)";
-	public static final String DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE = "This component is not usable anymore";
-
-	public static final String DEFAULT_NSFW_DISABLED_ERROR_MESSAGE = "This NSFW command is disabled in this kind of channel";
-	public static final String DEFAULT_NSFW_ONLY_ERROR_MESSAGE = "This command can only be used in NSFW channels";
-	public static final String DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE = "This command cannot be used in DMs unless you consent";
-
-	public static final String DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE = "You are not allowed to use this";
-	public static final String DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE = "This component is not usable anymore";
-	public static final String DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE = "This component could not be found";
-	public static final String DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE = "This component has invalid data";
-
-	private final String userPermErrorMsg;
-	private final String botPermErrorMsg;
-	private final String ownerOnlyErrorMsg;
-
-	private final String userCooldownMsg;
-	private final String channelCooldownMsg;
-	private final String guildCooldownMsg;
-
-	private final String commandNotFoundMsg;
-	private final String commandErrorMsg;
-	private final String closedDMErrorMsg;
-	private final String applicationCommandNotFoundMsg;
-	private final String applicationCommandErrorMsg;
-	private final String componentHandlerErrorMsg;
-	private final String componentCallbackErrorMsg;
-	private final String slashCommandUnresolvableParameterMsg;
-	private final String slashCommandInvalidParameterTypeMsg;
-	private final String nullComponentTypeErrorMsg;
-
-	private final String nsfwDisabledErrorMsg;
-	private final String nsfwOnlyErrorMsg;
-	private final String nsfwDMDeniedErrorMsg;
-
-	private final String componentNotAllowedErrorMsg;
-	private final String componentExpiredErrorMsg;
-	private final String componentNotFoundErrorMsg;
-	private final String componentInvalidDataErrorMsg;
+	private final Localization localization;
 
 	/**
 	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
 	 */
 	@ApiStatus.Internal
 	public DefaultMessages(@NotNull Locale locale) {
-		final BResourceBundle bundle = BResourceBundle.getBundle("DefaultMessages", locale);
-
-		userPermErrorMsg = getValue(bundle, "userPermErrorMsg", DEFAULT_USER_PERM_ERROR_MESSAGE);
-		botPermErrorMsg = checkFormatters(getValue(bundle, "botPermErrorMsg", DEFAULT_BOT_PERM_ERROR_MESSAGE), "%s");
-		ownerOnlyErrorMsg = getValue(bundle, "ownerOnlyErrorMsg", DEFAULT_OWNER_ONLY_ERROR_MESSAGE);
-
-		userCooldownMsg = checkFormatters(getValue(bundle, "userCooldownMsg", DEFAULT_USER_COOLDOWN_MESSAGE), "%.2f");
-		channelCooldownMsg = checkFormatters(getValue(bundle, "channelCooldownMsg", DEFAULT_CHANNEL_COOLDOWN_MESSAGE), "%.2f");
-		guildCooldownMsg = checkFormatters(getValue(bundle, "guildCooldownMsg", DEFAULT_GUILD_COOLDOWN_MESSAGE), "%.2f");
-
-		commandNotFoundMsg = checkFormatters(getValue(bundle, "commandNotFoundMsg", DEFAULT_COMMAND_NOT_FOUND_MESSAGE), "%s");
-		commandErrorMsg = getValue(bundle, "commandErrorMsg", DEFAULT_COMMAND_ERROR_MESSAGE);
-		closedDMErrorMsg = getValue(bundle, "closedDMErrorMsg", DEFAULT_CLOSED_DM_ERROR_MESSAGE);
-		applicationCommandNotFoundMsg = getValue(bundle, "applicationCommandNotFoundMsg", DEFAULT_APPLICATION_COMMAND_NOT_FOUND_MESSAGE);
-		applicationCommandErrorMsg = getValue(bundle, "applicationCommandErrorMsg", DEFAULT_APPLICATION_COMMAND_ERROR_MESSAGE);
-		componentHandlerErrorMsg = getValue(bundle, "componentHandlerErrorMsg", DEFAULT_COMPONENT_HANDLER_ERROR_MESSAGE);
-		componentCallbackErrorMsg = getValue(bundle, "componentCallbackErrorMsg", DEFAULT_COMPONENT_CALLBACK_ERROR_MESSAGE);
-		slashCommandUnresolvableParameterMsg = checkFormatters(getValue(bundle, "slashCommandUnresolvableParameterMsg", DEFAULT_SLASH_COMMAND_UNRESOLVABLE_PARAMETER_MESSAGE), "%s", "%s");
-		slashCommandInvalidParameterTypeMsg = checkFormatters(getValue(bundle, "slashCommandInvalidParameterTypeMsg", DEFAULT_SLASH_COMMAND_INVALID_PARAMETER_TYPE_MESSAGE), "%s", "%s", "%s");
-		nullComponentTypeErrorMsg = getValue(bundle, "nullComponentTypeErrorMsg", DEFAULT_NULL_COMPONENT_TYPE_ERROR_MESSAGE);
-
-		nsfwDisabledErrorMsg = getValue(bundle, "nsfwDisabledErrorMsg", DEFAULT_NSFW_DISABLED_ERROR_MESSAGE);
-		nsfwOnlyErrorMsg = getValue(bundle, "nsfwOnlyErrorMsg", DEFAULT_NSFW_ONLY_ERROR_MESSAGE);
-		nsfwDMDeniedErrorMsg = getValue(bundle, "nsfwDMDeniedErrorMsg", DEFAULT_NSFW_DM_DENIED_ERROR_MESSAGE);
-
-		componentNotAllowedErrorMsg = getValue(bundle, "componentNotAllowedErrorMsg", DEFAULT_COMPONENT_NOT_ALLOWED_ERROR_MESSAGE);
-		componentExpiredErrorMsg = getValue(bundle, "componentExpiredErrorMsg", DEFAULT_COMPONENT_EXPIRED_ERROR_MESSAGE);
-		componentNotFoundErrorMsg = getValue(bundle, "componentNotFoundErrorMsg", DEFAULT_COMPONENT_NOT_FOUND_ERROR_MESSAGE);
-		componentInvalidDataErrorMsg = getValue(bundle, "componentInvalidDataErrorMsg", DEFAULT_COMPONENT_INVALID_DATA_ERROR_MESSAGE);
+		this.localization = Localization.getInstance("DefaultMessages", locale);
 	}
 
 	@NotNull
-	private static String getValue(@Nullable BResourceBundle bundle, @NotNull String label, @NotNull String defaultVal) {
-		if (bundle == null) return defaultVal;
-
-		return bundle.getValueOrDefault(label, defaultVal);
-	}
-
-	private static String checkFormatters(String str, String... formatters) {
-		int start = 0;
-
-		for (String formatter : formatters) {
-			final int index = str.indexOf(formatter, start);
-			if (index == -1) { //Formatter not found or beyond bounds
-				final StringJoiner joiner = new StringJoiner("', ", "'", "'");
-				for (String s : formatters) {
-					joiner.add(s);
-				}
-
-				throw new IllegalArgumentException(String.format("String '%s' must have these formatters in order: %s", str, joiner));
-			} else {
-				start = index + formatter.length();
-			}
+	private LocalizationTemplate getLocalizationTemplate(@NotNull String path) {
+		final LocalizationTemplate template = localization.get(path);
+		if (template == null) {
+			throw new IllegalArgumentException("Localization template for default messages '" + path + "' could not be found");
 		}
 
-		return str;
+		return template;
 	}
 
 	/**
 	 * @return Message to display when the user does not have enough permissions
 	 */
 	public String getUserPermErrorMsg() {
-		return userPermErrorMsg;
+		return getLocalizationTemplate("user.perm.error.message").localize();
 	}
 
 	/**
-	 * <b>The message must have a %s format specifier to insert the needed permissions</b>
-	 *
 	 * @return Message to display when the bot does not have enough permissions
 	 */
-	public String getBotPermErrorMsg() {
-		return botPermErrorMsg;
+	public String getBotPermErrorMsg(String permissionsString) {
+		return getLocalizationTemplate("bot.perm.error.message").localize(entry("permissions", permissionsString));
 	}
 
 	/**
 	 * @return Message to display when the command is only usable by the owner
 	 */
 	public String getOwnerOnlyErrorMsg() {
-		return ownerOnlyErrorMsg;
+		return getLocalizationTemplate("owner.only.error.message").localize();
 	}
 
 	/**
-	 * <p><b>Requires one string format for the per-user cooldown time (in seconds)</b></p>
-	 *
 	 * @return Message to display when the command is on per-user cooldown
 	 */
-	public String getUserCooldownMsg() {
-		return userCooldownMsg;
+	public String getUserCooldownMsg(double cooldown) {
+		return getLocalizationTemplate("user.cooldown.message").localize(entry("cooldown", cooldown));
 	}
 
 	/**
-	 * <p><b>Requires one string format for the per-channel cooldown time (in seconds)</b></p>
-	 *
 	 * @return Message to display when the command is on per-channel cooldown
 	 */
-	public String getChannelCooldownMsg() {
-		return channelCooldownMsg;
+	public String getChannelCooldownMsg(double cooldown) {
+		return getLocalizationTemplate("channel.cooldown.message").localize(entry("cooldown", cooldown));
 	}
 
 	/**
-	 * <p><b>Requires one string format for the per-guild cooldown time (in seconds)</b></p>
-	 *
 	 * @return Message to display when the command is on per-guild cooldown
 	 */
-	public String getGuildCooldownMsg() {
-		return guildCooldownMsg;
+	public String getGuildCooldownMsg(double cooldown) {
+		return getLocalizationTemplate("guild.cooldown.message").localize(entry("cooldown", cooldown));
 	}
 
 	/**
-	 * <b>The message must have a %s format specifier to insert the suggested commands</b>
-	 *
 	 * @return Message to display when the command is not found
 	 */
-	public String getCommandNotFoundMsg() {
-		return commandNotFoundMsg;
+	public String getCommandNotFoundMsg(String suggestions) {
+		return getLocalizationTemplate("command.not.found.message").localize(entry("suggestions", suggestions));
 	}
 
 	/**
 	 * @return Message to display when an exception occurs in a command
 	 */
 	public String getCommandErrorMsg() {
-		return commandErrorMsg;
+		return getLocalizationTemplate("command.error.message").localize();
 	}
 
 	/**
-	 * @return Message to display when a application command is not found
+	 * @return Message to display when an application command is not found
 	 */
 	public String getApplicationCommandNotFoundMsg() {
-		return applicationCommandNotFoundMsg;
+		return getLocalizationTemplate("application.command.not.found.message").localize();
 	}
 
 	/**
-	 * @return Message to display when an exception occurs in a application command
+	 * @return Message to display when an exception occurs in an application command
 	 */
 	public String getApplicationCommandErrorMsg() {
-		return applicationCommandErrorMsg;
+		return getLocalizationTemplate("application.command.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when an exception occurs in a component ID handler
 	 */
 	public String getComponentHandlerErrorMsg() {
-		return componentHandlerErrorMsg;
+		return getLocalizationTemplate("component.handler.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when an exception occurs in a component callback
 	 */
 	public String getComponentCallbackErrorMsg() {
-		return componentCallbackErrorMsg;
+		return getLocalizationTemplate("component.callback.error.message").localize();
 	}
 
 	/**
-	 * <b>The message must have <b>two</b> %s format specifier to insert the unresolved parameter</b>
-	 *
-	 * @return Message to display when a application command parameter is unresolvable
+	 * @return Message to display when an application command parameter is unresolvable
 	 */
-	public String getSlashCommandUnresolvableParameterMsg() {
-		return slashCommandUnresolvableParameterMsg;
+	public String getSlashCommandUnresolvableParameterMsg(String parameterName, String parameterType) {
+		return getLocalizationTemplate("slash.command.unresolvable.parameter.message").localize(
+				entry(parameterName, parameterName),
+				entry(parameterType, parameterType)
+		);
 	}
 
 	/**
-	 * <b>The message must have <b>three</b> %s format specifier to insert the needed parameter types </b>
-	 *
-	 * @return Message to display when a application command parameter is resolved into an invalid type
+	 * @return Message to display when an application command parameter is resolved into an invalid type
 	 */
-	public String getSlashCommandInvalidParameterTypeMsg() {
-		return slashCommandInvalidParameterTypeMsg;
+	public String getSlashCommandInvalidParameterTypeMsg(String parameterName, String expectedType, String actualType) {
+		return getLocalizationTemplate("slash.command.invalid.parameter.type.message").localize(
+				entry("parameterName", parameterName),
+				entry("expectedType", expectedType),
+				entry("actualType", actualType)
+		);
 	}
 
 	/**
 	 * @return Message to display when a component type is null (The ID is unresolvable / not found)
 	 */
 	public String getNullComponentTypeErrorMsg() {
-		return nullComponentTypeErrorMsg;
+		return getLocalizationTemplate("null.component.type.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a User's DMs are closed (when sending help content for example)
 	 */
 	public String getClosedDMErrorMsg() {
-		return closedDMErrorMsg;
+		return getLocalizationTemplate("closed.dm.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a command is used in a channel type that was not enabled by {@link NSFW @NSFW}
 	 */
 	public String getNsfwDisabledErrorMsg() {
-		return nsfwDisabledErrorMsg;
+		return getLocalizationTemplate("nsfw.disabled.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a command is used in a non-NSFW {@link GuildMessageChannel}
 	 */
 	public String getNSFWOnlyErrorMsg() {
-		return nsfwOnlyErrorMsg;
+		return getLocalizationTemplate("nsfw.only.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a command is used in DMs and the user has not given consent yet
 	 */
 	public String getNSFWDMDeniedErrorMsg() {
-		return nsfwDMDeniedErrorMsg;
+		return getLocalizationTemplate("nsfw.dm.denied.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a user tries to use a component it cannot interact with
 	 */
 	public String getComponentNotAllowedErrorMsg() {
-		return componentNotAllowedErrorMsg;
+		return getLocalizationTemplate("component.not.allowed.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a user tries to use a component which has reached timeout while the bot was offline
 	 */
 	public String getComponentExpiredErrorMsg() {
-		return componentExpiredErrorMsg;
+		return getLocalizationTemplate("component.expired.error.message").localize();
 	}
 
 	/**
 	 * @return Message to display when a user tries to use a component which is not know by this library
 	 */
 	public String getComponentNotFoundErrorMsg() {
-		return componentNotFoundErrorMsg;
+		return getLocalizationTemplate("component.not.found.error.message").localize();
 	}
 
 	/**
@@ -348,6 +214,6 @@ public final class DefaultMessages {
 	 * <br>This is usually when the number of arguments don't match up, so the button listener has a different signature
 	 */
 	public String getComponentInvalidDataErrorMsg() {
-		return componentInvalidDataErrorMsg;
+		return getLocalizationTemplate("component.invalid.data.error.message").localize();
 	}
 }

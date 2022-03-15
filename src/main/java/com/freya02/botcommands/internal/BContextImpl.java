@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
-import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
@@ -18,7 +17,6 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
-import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
 import com.freya02.botcommands.internal.modals.ModalMaps;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -33,7 +31,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -50,10 +47,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
+
+	private final ApplicationCommandsContextImpl applicationCommandsContext = new ApplicationCommandsContextImpl();
+
 	private final List<Long> ownerIds = new ArrayList<>();
 	private final List<String> prefixes = new ArrayList<>();
 
@@ -64,9 +63,8 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
-	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
-	private final Map<String, ModalHandlerInfo> modalHandlersMap = new HashMap<>();
 	private final ModalMaps modalMaps = new ModalMaps();
+
 	private boolean onlineAppCommandCheckEnabled;
 
 	private final Map<String, AutocompletionHandlerInfo> autocompleteHandlersMap = new HashMap<>();
@@ -90,7 +88,7 @@ public class BContextImpl implements BContext {
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
-	private Function<Guild, DefaultMessages> defaultMessageProvider;
+	private Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
@@ -98,6 +96,8 @@ public class BContextImpl implements BContext {
 	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
 	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
+
+	private final LocalizationManager localizationManager = new LocalizationManager();
 
 	@Override
 	@NotNull
@@ -137,11 +137,11 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public DefaultMessages getDefaultMessages(@Nullable Guild guild) {
-		return defaultMessageProvider.apply(guild);
+	public DefaultMessages getDefaultMessages(@NotNull Locale locale) {
+		return defaultMessageProvider.apply(locale);
 	}
 
-	public void setDefaultMessageProvider(@NotNull Function<Guild, DefaultMessages> defaultMessageProvider) {
+	public void setDefaultMessageProvider(@NotNull Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider) {
 		this.defaultMessageProvider = defaultMessageProvider;
 	}
 
@@ -175,83 +175,15 @@ public class BContextImpl implements BContext {
 		return textSubcommandsMap.get(path);
 	}
 
-	@Nullable
 	@Override
-	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
-		return getSlashCommandsMap().get(path);
-	}
-
-	@Nullable
-	@Override
-	public UserCommandInfo findUserCommand(@NotNull String name) {
-		return getUserCommandsMap().get(CommandPath.ofName(name));
-	}
-
-	@Nullable
-	@Override
-	public MessageCommandInfo findMessageCommand(@NotNull String name) {
-		return getMessageCommandsMap().get(CommandPath.ofName(name));
-	}
-
 	@NotNull
-	public ApplicationCommandInfoMap getApplicationCommandInfoMap() {
-		return applicationCommandInfoMap;
+	public ApplicationCommandsContextImpl getApplicationCommandsContext() {
+		return applicationCommandsContext;
 	}
 
 	@Override
 	@NotNull
-	@UnmodifiableView
-	public ApplicationCommandInfoMapView getApplicationCommandInfoMapView() {
-		return applicationCommandInfoMap;
-	}
-
-	@NotNull
-	private CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
-		return getApplicationCommandInfoMap().getSlashCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView() {
-		return getApplicationCommandInfoMapView().getSlashCommandsView();
-	}
-
-	@NotNull
-	private CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
-		return getApplicationCommandInfoMap().getUserCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<UserCommandInfo> getUserCommandsMapView() {
-		return getApplicationCommandInfoMapView().getUserCommandsView();
-	}
-
-	@NotNull
-	private CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
-		return getApplicationCommandInfoMap().getMessageCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView() {
-		return getApplicationCommandInfoMapView().getMessageCommandsView();
-	}
-
-	@Override
-	public List<CommandPath> getSlashCommandsPaths() {
-		return getSlashCommandsMap().values()
-				.stream()
-				.map(SlashCommandInfo::getPath)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	@NotNull
-	public  Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
+	public Supplier<EmbedBuilder> getDefaultEmbedSupplier() {
 		return defaultEmbedSupplier;
 	}
 
@@ -300,47 +232,27 @@ public class BContextImpl implements BContext {
 		}
 	}
 
-	public void addSlashCommand(SlashCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
-
-		final Map<CommandPath, SlashCommandInfo> slashCommandMap = getSlashCommandsMap();
-
-		//Checks below this block only check if shorter or equal commands exists
-		// We need to check if longer commands exists
-		//Would be more performant if we used a Trie
-		for (Map.Entry<CommandPath, SlashCommandInfo> entry : slashCommandMap.entrySet()) {
-			final CommandPath commandPath = entry.getKey();
-			final SlashCommandInfo mapInfo = entry.getValue();
-
-			if (commandPath.getNameCount() > path.getNameCount() && commandPath.startsWith(path)) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
-						path,
-						Utils.formatMethodShort(commandInfo.getMethod()),
-						commandPath,
-						Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-		}
-
-		CommandPath p = path;
-		do {
-			final SlashCommandInfo mapInfo = slashCommandMap.get(p);
-
-			if (mapInfo != null) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/shorter path already exists: '%s' (at %s)",
-						path,
-						Utils.formatMethodShort(commandInfo.getMethod()),
-						p,
-						Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-		} while ((p = p.getParent()) != null);
-
-		slashCommandMap.put(path, commandInfo);
+	@NotNull
+	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo<?> commandInfo) {
+		return commandInfo.getCommandId() == null
+				? commandInfo.getPath()
+				: CommandPath.of(commandInfo.getCommandId());
 	}
 
-	public void addUserCommand(UserCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
+	public CommandPath addSlashCommand(SlashCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
 
-		UserCommandInfo oldCmd = getUserCommandsMap().put(path, commandInfo);
+		final CommandInfoMap<SlashCommandInfo> slashCommandMap = getApplicationCommandsContext().getSlashCommandsMap();
+
+		slashCommandMap.put(path, commandInfo);
+
+		return path;
+	}
+
+	public CommandPath addUserCommand(UserCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
+
+		UserCommandInfo oldCmd = getApplicationCommandsContext().getUserCommandsMap().put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two user commands have the same names: '%s' from %s and %s",
@@ -348,12 +260,14 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(oldCmd.getMethod()),
 					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
+
+		return path;
 	}
 
-	public void addMessageCommand(MessageCommandInfo commandInfo) {
-		final CommandPath path = commandInfo.getPath();
+	public CommandPath addMessageCommand(MessageCommandInfo commandInfo) {
+		final CommandPath path = getEffectivePath(commandInfo);
 
-		MessageCommandInfo oldCmd = getMessageCommandsMap().put(path, commandInfo);
+		MessageCommandInfo oldCmd = getApplicationCommandsContext().getMessageCommandsMap().put(path, commandInfo);
 
 		if (oldCmd != null) {
 			throw new IllegalStateException(String.format("Two message commands have the same names: '%s' from %s and %s",
@@ -361,19 +275,8 @@ public class BContextImpl implements BContext {
 					Utils.formatMethodShort(oldCmd.getMethod()),
 					Utils.formatMethodShort(commandInfo.getMethod())));
 		}
-	}
 
-	public <T extends ApplicationCommandInfo> void addApplicationCommandAlternative(CommandPath path, Command.Type type, T commandInfo) {
-		//it's pretty much possible that the path already exist if two guilds use the same language for example
-		//Still, check that the alternative path points to the same path if it exists
-
-		final ApplicationCommandInfo oldVal = getApplicationCommandInfoMap().put(type, path, commandInfo);
-		if (oldVal != commandInfo && oldVal != null) {
-			throw new IllegalStateException(String.format("Tried to add a localized application command path but one already exists and isn't from the same command: %s and %s, path: %s",
-					Utils.formatMethodShort(oldVal.getMethod()),
-					Utils.formatMethodShort(commandInfo.getMethod()),
-					path));
-		}
+		return path;
 	}
 
 	public void addAutocompletionHandler(AutocompletionHandlerInfo handlerInfo) {
@@ -397,29 +300,15 @@ public class BContextImpl implements BContext {
 		handler.invalidate();
 	}
 
-	public void addModalHandler(ModalHandlerInfo handlerInfo) {
-		final ModalHandlerInfo oldHandler = modalHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
-
-		if (oldHandler != null) {
-			throw new IllegalArgumentException("Tried to register modal handler '%s' at %s but it was already registered at %s".formatted(handlerInfo.getHandlerName(),
-					Utils.formatMethodShort(handlerInfo.getMethod()),
-					Utils.formatMethodShort(oldHandler.getMethod()))
-			);
-		}
-	}
-
-	@Nullable
-	public ModalHandlerInfo getModalHandler(String handlerName) {
-		return modalHandlersMap.get(handlerName);
-	}
-
 	public Collection<TextCommandCandidates> getCommands() {
 		return Collections.unmodifiableCollection(textCommandMap.values());
 	}
 
 	@UnmodifiableView
 	public Collection<? extends ApplicationCommandInfo> getApplicationCommandsView() {
-		return applicationCommandInfoMap.getAllApplicationCommandsView();
+		return getApplicationCommandsContext()
+				.getApplicationCommandInfoMap()
+				.getAllApplicationCommandsView();
 	}
 
 	public void dispatchException(String message, Throwable e) {
@@ -662,5 +551,9 @@ public class BContextImpl implements BContext {
 
 	public ModalMaps getModalMaps() {
 		return modalMaps;
+	}
+
+	public LocalizationManager getLocalizationManager() {
+		return localizationManager;
 	}
 }

@@ -174,7 +174,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 
 				if (obj == null) {
 					//TODO localize, see above
-					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandUnresolvableParameterMsg(), parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName())
+					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName()))
 							.setEphemeral(true)
 							.queue();
 
@@ -186,7 +186,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 
 				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
 					//TODO localize, see above
-					event.replyFormat(context.getDefaultMessages(event.getGuild()).getSlashCommandInvalidParameterTypeMsg(), parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName())
+					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()))
 							.setEphemeral(true)
 							.queue();
 
