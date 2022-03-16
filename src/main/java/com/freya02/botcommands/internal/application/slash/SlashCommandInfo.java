@@ -106,14 +106,14 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 								throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");
 							}
 
-							objects.add(defaultVal);
+							objectList.add(defaultVal);
 
 							continue;
-						} else if (parameter.isOptional()) {
+						} else if (parameter.isOptional() || (parameter.isVarArg() && varArgNum != 0)) {
 							if (parameter.isPrimitive()) {
-								objects.add(0);
+								objectList.add(0);
 							} else {
-								objects.add(null);
+								objectList.add(null);
 							}
 
 							continue;
