@@ -95,7 +95,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 					final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
 					if (supplier != null) {
-						final Object defaultVal = supplier.getDefaultValue();
+						final Object defaultVal = supplier.getDefaultValue(event);
 
 						if (defaultVal == null && !parameter.isOptional()) {
 							throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");

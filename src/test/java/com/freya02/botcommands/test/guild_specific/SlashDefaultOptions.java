@@ -21,7 +21,7 @@ public class SlashDefaultOptions extends ApplicationCommand {
 		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild
 			if (commandPath.toString().equals("default")) {
 				if (optionName.equals("user")) {
-					return () -> context.getJDA().retrieveUserById(222046562543468545L).complete();
+					return event -> event.getJDA().retrieveUserById(222046562543468545L).complete();
 				}
 			}
 		}
