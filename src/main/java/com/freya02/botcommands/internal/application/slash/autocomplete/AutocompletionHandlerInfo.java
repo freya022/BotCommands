@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.application.slash.autocomplete.annotations.Ca
 import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
+import com.freya02.botcommands.internal.application.slash.SlashUtils;
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierChoices;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringContinuity;
@@ -125,52 +126,60 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		objects.add(event);
 
 		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
-			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+			final int arguments = Math.max(1, parameter.getVarArgs());
+			final List<Object> objectList = new ArrayList<>(arguments);
 
-			final Object obj;
-			if (parameter.isOption()) {
-				String optionName = applicationOptionData.getEffectiveName();
+			for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
+				final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
-				final OptionMapping optionMapping = event.getOption(optionName);
+				if (parameter.isOption()) {
+					String optionName = applicationOptionData.getEffectiveName();
+					final String varArgName = SlashUtils.getVarArgName(optionName, varArgNum);
 
-				// Discord sends empty strings if you don't type anything, apparently is intended behavior
-				// Discord also sends invalid number strings, intended behavior too...
-				if (optionMapping == null
-						|| optionMapping.getAsString().isEmpty()
-						|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))
-				) {
-					if (parameter.isPrimitive()) {
-						objects.add(0);
-					} else {
-						objects.add(null);
+					final OptionMapping optionMapping = event.getOption(varArgName);
+
+					// Discord sends empty strings if you don't type anything, apparently is intended behavior
+					// Discord also sends invalid number strings, intended behavior too...
+					if (optionMapping == null
+							|| optionMapping.getAsString().isEmpty()
+							|| (parameter.isPrimitive() && !optionMapping.getAsString().chars().allMatch(i -> Character.isDigit(i) || i == '.'))
+					) {
+						if (parameter.isPrimitive()) {
+							objectList.add(0);
+						} else {
+							objectList.add(null);
+						}
+
+						continue;
+
+						//Don't throw if option mapping is not found, this is normal under autocompletion, only some options are sent
 					}
 
-					continue;
+					final Object resolved = parameter.getResolver().resolve(context, slashCommand, event, optionMapping);
 
-					//Don't throw if option mapping is not found, this is normal under autocompletion, only some options are sent
+					//If this is an additional vararg then it's OK for it to be null
+					if (resolved == null) {
+						//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+						LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+
+						return;
+					}
+
+					if (!parameter.getBoxedType().isAssignableFrom(resolved.getClass())) {
+						LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+
+						return;
+					}
+
+					objectList.add(resolved);
+				} else {
+					objectList.add(parameter.getCustomResolver().resolve(context, this, event));
 				}
-
-				obj = parameter.getResolver().resolve(context, slashCommand, event, optionMapping);
-
-				if (obj == null) {
-					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return;
-				}
-
-				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return;
-				}
-			} else {
-				obj = parameter.getCustomResolver().resolve(context, this, event);
 			}
 
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
-			objects.add(obj);
+			objects.add(parameter.isVarArg() ? objectList : objectList.get(0));
 		}
 
 		methodRunner.invoke(objects.toArray(), throwableConsumer, collectionCallback);
@@ -279,9 +288,13 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			throw new IllegalArgumentException("Autocompletion handler parameter #%d does not have the same type as slash command parameter: Provided: %s, correct: %s".formatted(autocompleteParameter.getIndex(), autocompleteParameterType, slashParameterType));
 		}
 
-		//If one is var arg but not the other (XOR)
+		//If one is var arg but not the other
 		if (slashCommandParameter.isVarArg() ^ autocompleteParameter.isVarArg()) {
 			throw new IllegalArgumentException("Autocompletion handler parameter #%d must be annotated with @%s if the slash command option is too".formatted(autocompleteParameter.getIndex(), VarArgs.class.getSimpleName()));
+		}
+
+		if (slashCommandParameter.getVarArgs() != autocompleteParameter.getVarArgs()) {
+			throw new IllegalArgumentException("Autocompletion handler parameter #%d must have the same vararg number".formatted(autocompleteParameter.getIndex()));
 		}
 	}
 

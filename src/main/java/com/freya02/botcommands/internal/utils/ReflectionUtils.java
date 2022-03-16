@@ -221,8 +221,13 @@ public class ReflectionUtils {
 		return getCollectionReturnType(method.getReturnType(), returnType);
 	}
 
-	@Nullable
-	public static Class<?> getCollectionReturnType(@NotNull Parameter parameter) {
-		return getCollectionReturnType(parameter.getType(), parameter.getParameterizedType());
+	@NotNull
+	public static Class<?> getCollectionTypeOrBoxedSelfType(@NotNull Parameter parameter) {
+		final Class<?> type = getCollectionReturnType(parameter.getType(), parameter.getParameterizedType());
+		if (type == null) {
+			return Utils.getBoxedType(parameter.getType());
+		}
+
+		return type;
 	}
 }

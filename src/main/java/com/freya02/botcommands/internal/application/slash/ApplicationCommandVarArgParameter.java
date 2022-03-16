@@ -10,7 +10,7 @@ public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends Applic
 	private final int varArgs;
 
 	public ApplicationCommandVarArgParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
-		super(resolverType, parameter, ReflectionUtils.getCollectionReturnType(parameter), index);
+		super(resolverType, parameter, ReflectionUtils.getCollectionTypeOrBoxedSelfType(parameter), index);
 
 		final VarArgs varArgsAnnot = parameter.getAnnotation(VarArgs.class);
 		if (varArgsAnnot != null) {

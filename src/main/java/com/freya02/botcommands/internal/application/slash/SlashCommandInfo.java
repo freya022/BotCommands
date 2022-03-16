@@ -124,8 +124,6 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 					final Object resolved = parameter.getResolver().resolve(context, this, event, optionMapping);
 
-					objectList.add(resolved);
-
 					if (resolved == null) {
 						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
 								.setEphemeral(true)
@@ -146,6 +144,8 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 						return false;
 					}
+
+					objectList.add(resolved);
 				}
 			} else {
 				objectList.add(parameter.getCustomResolver().resolve(context, this, event));

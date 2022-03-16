@@ -39,25 +39,29 @@ public class AutocompletionHandlersBuilder {
 
 	public void postProcess() {
 		for (SlashCommandInfo info : context.getApplicationCommandsContext().getApplicationCommandInfoMap().getSlashCommands().values()) {
-			MethodParameters<SlashCommandParameter> parameters = info.getParameters();
-			for (int i = 0, parametersSize = parameters.size(); i < parametersSize; i++) {
-				SlashCommandParameter parameter = parameters.get(i);
+			try {
+				MethodParameters<SlashCommandParameter> parameters = info.getParameters();
+				for (int i = 0, parametersSize = parameters.size(); i < parametersSize; i++) {
+					SlashCommandParameter parameter = parameters.get(i);
 
-				if (!parameter.isOption()) continue;
+					if (!parameter.isOption()) continue;
 
-				final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+					final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
-				final String autocompleteHandlerName = applicationOptionData.getAutocompletionHandlerName();
+					final String autocompleteHandlerName = applicationOptionData.getAutocompletionHandlerName();
 
-				if (autocompleteHandlerName != null) {
-					final AutocompletionHandlerInfo handler = context.getAutocompletionHandler(autocompleteHandlerName);
+					if (autocompleteHandlerName != null) {
+						final AutocompletionHandlerInfo handler = context.getAutocompletionHandler(autocompleteHandlerName);
 
-					if (handler == null) {
-						throw new IllegalArgumentException("Slash command parameter #" + i + " at " + Utils.formatMethodShort(info.getMethod()) + " uses autocompletion but has no handler assigned, did you misspell the handler name ? Consider using a constant variable to share with the handler and the option");
+						if (handler == null) {
+							throw new IllegalArgumentException("Slash command parameter #" + i + " at " + Utils.formatMethodShort(info.getMethod()) + " uses autocompletion but has no handler assigned, did you misspell the handler name ? Consider using a constant variable to share with the handler and the option");
+						}
+
+						handler.checkParameters(info);
 					}
-
-					handler.checkParameters(info);
 				}
+			} catch (Exception e) {
+				throw new RuntimeException("An exception occurred while checking autocomplete handlers of slash command at " + Utils.formatMethodShort(info.getMethod()), e);
 			}
 		}
 
