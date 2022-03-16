@@ -15,6 +15,10 @@ public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends Applic
 		final VarArgs varArgsAnnot = parameter.getAnnotation(VarArgs.class);
 		if (varArgsAnnot != null) {
 			this.varArgs = varArgsAnnot.value();
+
+			if (varArgs < 1 || varArgs > 25) {
+				throw new IllegalArgumentException("@" + VarArgs.class.getSimpleName() + "'s value need to be between 1 and 25 included");
+			}
 		} else {
 			this.varArgs = -1;
 		}

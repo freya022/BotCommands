@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.application.slash.annotations;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
-import org.jetbrains.annotations.Range;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -18,8 +17,7 @@ import java.util.List;
 @Target(ElementType.PARAMETER)
 public @interface VarArgs {
 	/**
-	 * @return The number of times this option needs to appear
+	 * @return The number of times this option needs to appear, must be between 1 and 25 (max number of options)
 	 */
-	@Range(from = 1, to = Integer.MAX_VALUE)
 	int value();
 }
