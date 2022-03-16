@@ -15,6 +15,7 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringFuzzy;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierTransformer;
 import com.freya02.botcommands.internal.runner.MethodRunner;
+import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
@@ -71,7 +72,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		this.showUserInput = annotation.showUserInput();
 		this.maxChoices = OptionData.MAX_CHOICES - (showUserInput ? 1 : 0); //accommodate for user input
 
-		final Class<?> collectionReturnType = ClassUtils.getCollectionReturnType(method);
+		final Class<?> collectionReturnType = ReflectionUtils.getCollectionReturnType(method);
 
 		if (collectionReturnType == null) {
 			throw new IllegalArgumentException("Unable to determine return type of " + Utils.formatMethodShort(method) + ", does the collection inherit Collection ?");
