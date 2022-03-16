@@ -56,7 +56,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
-			return new SlashCommandParameter(this, parameter, i);
+			return new SlashCommandParameter(parameter, i);
 		});
 
 		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())

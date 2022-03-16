@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.Default;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -31,7 +30,7 @@ public class SlashDefaultOptions extends ApplicationCommand {
 	}
 
 	@JDASlashCommand(name = "default")
-	public void run(GuildSlashEvent event, @Default @AppOption User user) {
+	public void run(GuildSlashEvent event, @AppOption User user) {
 		event.reply("user " + user.getAsMention() + " ok")
 				.setEphemeral(true)
 				.queue();
