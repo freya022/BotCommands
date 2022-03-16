@@ -34,19 +34,28 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	@Nullable
 	@Override
 	public SlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path) {
-		return liveApplicationCommandInfoMap.get(getGuildKey(guild)).findSlashCommand(path);
+		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
+		if (view == null) return null;
+
+		return view.findSlashCommand(path);
 	}
 
 	@Nullable
 	@Override
 	public UserCommandInfo findLiveUserCommand(@Nullable Guild guild, @NotNull String name) {
-		return liveApplicationCommandInfoMap.get(getGuildKey(guild)).findUserCommand(name);
+		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
+		if (view == null) return null;
+
+		return view.findUserCommand(name);
 	}
 
 	@Nullable
 	@Override
 	public MessageCommandInfo findLiveMessageCommand(@Nullable Guild guild, @NotNull String name) {
-		return liveApplicationCommandInfoMap.get(getGuildKey(guild)).findMessageCommand(name);
+		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
+		if (view == null) return null;
+
+		return view.findMessageCommand(name);
 	}
 
 	@NotNull
