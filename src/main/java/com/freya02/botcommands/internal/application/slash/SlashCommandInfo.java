@@ -38,11 +38,12 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<SlashCommandParameter> commandParameters;
 
 	public SlashCommandInfo(BContext context, ApplicationCommand instance, Method commandMethod) {
-		super(context, instance, commandMethod.getAnnotation(JDASlashCommand.class),
+		super(context, instance,
+				commandMethod.getAnnotation(JDASlashCommand.class),
 				commandMethod,
-				commandMethod.getAnnotation(JDASlashCommand.class).name(),
-				commandMethod.getAnnotation(JDASlashCommand.class).group(),
-				commandMethod.getAnnotation(JDASlashCommand.class).subcommand());
+				JDASlashCommand::name,
+				JDASlashCommand::group,
+				JDASlashCommand::subcommand);
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 

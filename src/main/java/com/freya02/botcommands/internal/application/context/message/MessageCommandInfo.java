@@ -22,9 +22,10 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> commandParameters;
 
 	public MessageCommandInfo(BContext context, ApplicationCommand instance, Method method) {
-		super(context, instance, method.getAnnotation(JDAMessageCommand.class),
+		super(context, instance,
+				method.getAnnotation(JDAMessageCommand.class),
 				method,
-				method.getAnnotation(JDAMessageCommand.class).name());
+				JDAMessageCommand::name);
 
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		

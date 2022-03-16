@@ -9,8 +9,10 @@ import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.EnumSet;
+import java.util.function.Function;
 
 import static com.freya02.botcommands.internal.utils.AnnotationUtils.*;
 
@@ -32,21 +34,28 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	private final String commandId;
 	private final MethodRunner methodRunner;
 
-	protected AbstractCommandInfo(@NotNull BContext context,
-	                              @NotNull T instance,
-	                              @NotNull Method commandMethod,
-	                              String... nameComponents) {
+	@SafeVarargs
+	protected <A extends Annotation> AbstractCommandInfo(@NotNull BContext context,
+	                                                     @NotNull T instance,
+	                                                     @NotNull A annotation,
+	                                                     @NotNull Method commandMethod,
+	                                                     Function<A, String>... nameComponentsFunctions) {
 		super(getEffectiveCooldownStrategy(commandMethod));
 
 		this.instance = instance;
 
-		for (int i = 0; i < nameComponents.length; i++) {
-			if (nameComponents[i].isBlank()) {
-				nameComponents[i] = null; //We need to transform blank strings to null to conform with CommandPath
+		final String[] pathComponents = new String[nameComponentsFunctions.length];
+		for (int i = 0; i < nameComponentsFunctions.length; i++) {
+			final String component = nameComponentsFunctions[i].apply(annotation);
+
+			if (component.isEmpty()) {
+				pathComponents[i] = null; //We need to transform blank strings to null to conform with CommandPath
+			} else {
+				pathComponents[i] = component;
 			}
 		}
 
-		this.path = CommandPath.of(nameComponents);
+		this.path = CommandPath.of(pathComponents);
 		this.commandMethod = commandMethod;
 		this.methodRunner = context.getMethodRunnerFactory().make(instance, commandMethod);
 

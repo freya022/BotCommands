@@ -23,9 +23,10 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<ContextCommandParameter<UserContextParameterResolver>> commandParameters;
 
 	public UserCommandInfo(BContext context, ApplicationCommand instance, Method method) {
-		super(context, instance, method.getAnnotation(JDAUserCommand.class),
+		super(context, instance,
+				method.getAnnotation(JDAUserCommand.class),
 				method,
-				method.getAnnotation(JDAUserCommand.class).name());
+				JDAUserCommand::name);
 
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		

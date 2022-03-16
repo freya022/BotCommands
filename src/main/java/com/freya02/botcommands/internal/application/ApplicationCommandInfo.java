@@ -11,13 +11,19 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class ApplicationCommandInfo extends AbstractCommandInfo<ApplicationCommand> {
 	protected final boolean guildOnly;
 	protected final boolean testOnly;
 
-	protected <A extends Annotation> ApplicationCommandInfo(@NotNull BContext context, @NotNull ApplicationCommand instance, @NotNull A annotation, @NotNull Method commandMethod, String... nameComponents) {
-		super(context, instance, commandMethod, nameComponents);
+	@SafeVarargs
+	protected <A extends Annotation> ApplicationCommandInfo(@NotNull BContext context,
+	                                                        @NotNull ApplicationCommand instance,
+	                                                        @NotNull A annotation,
+	                                                        @NotNull Method commandMethod,
+	                                                        Function<A, String>... nameComponentsFunctions) {
+		super(context, instance, annotation, commandMethod, nameComponentsFunctions);
 
 		this.guildOnly = AnnotationUtils.getAnnotationValue(annotation, "guildOnly");
 		this.testOnly = AnnotationUtils.getEffectiveTestState(commandMethod);
