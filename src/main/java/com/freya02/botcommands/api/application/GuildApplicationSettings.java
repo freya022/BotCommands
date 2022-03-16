@@ -4,6 +4,8 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
+import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -71,7 +73,28 @@ public interface GuildApplicationSettings {
 	 * 		<br>This returns <code>null</code> by default
 	 */
 	@Nullable
-	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
+	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @Nullable String commandId, @NotNull CommandPath commandPath) {
+		return null;
+	}
+
+	/**
+	 * Returns the default value supplier of an {@link AppOption}, for slash commands only
+	 * <br>This method is called only if your option is annotated
+	 * <p>This method will only be called once per command option per guild
+	 *
+	 * @param context       The current BotCommands context
+	 * @param guild         The {@link Guild} in which to add the default value
+	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
+	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
+	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
+	 * @param parameterType The <b>boxed</b> type of the command option
+	 *
+	 * @return A {@link DefaultValueSupplier} if the option can be substituted with an object
+	 */
+	@Nullable
+	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
+	                                                     @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                     @NotNull String optionName, @NotNull Class<?> parameterType) {
 		return null;
 	}
 }

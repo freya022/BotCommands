@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
@@ -38,6 +39,24 @@ public class SlashUtils {
 			if (!parameter.isOption()) continue;
 
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+
+			if (guild != null) {
+				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+
+				if (defaultValueSupplier == null) {
+					final SettingsProvider settingsProvider = context.getSettingsProvider();
+
+					if (settingsProvider != null) {
+						defaultValueSupplier = settingsProvider.getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+					}
+				}
+
+				parameter.getDefaultOptionSupplierMap().put(guild.getIdLong(), defaultValueSupplier);
+
+				if (defaultValueSupplier != null) {
+					continue; //Skip option generation since this is a default value
+				}
+			}
 
 			final String name = parameter.getApplicationOptionData().getEffectiveName();
 			final String description = parameter.getApplicationOptionData().getEffectiveDescription();

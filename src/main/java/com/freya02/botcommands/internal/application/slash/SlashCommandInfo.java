@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.application.slash;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.internal.ApplicationOptionData;
@@ -10,6 +11,7 @@ import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -84,12 +86,25 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 			final Object obj;
 			if (parameter.isOption()) {
-				String optionName = applicationOptionData.getEffectiveName();
+				final String optionName = applicationOptionData.getEffectiveName();
 
 				final OptionMapping optionMapping = event.getOption(optionName);
 
 				if (optionMapping == null) {
-					if (parameter.isOptional()) {
+					final Guild guild = Utils.checkGuild(event.getGuild());
+
+					final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
+					if (supplier != null) {
+						final Object defaultVal = supplier.getDefaultValue(event);
+
+						if (defaultVal == null && !parameter.isOptional()) {
+							throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");
+						}
+
+						objects.add(defaultVal);
+
+						continue;
+					} else if (parameter.isOptional()) {
 						if (parameter.isPrimitive()) {
 							objects.add(0);
 						} else {

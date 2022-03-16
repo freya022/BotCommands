@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -7,6 +8,8 @@ import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -17,6 +20,7 @@ import java.util.EnumSet;
 public class SlashCommandParameter extends ApplicationCommandParameter<SlashParameterResolver> {
 	private final Number minValue, maxValue;
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
+	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = new TLongObjectHashMap<>();
 
 	public SlashCommandParameter(Parameter parameter, int index) {
 		super(SlashParameterResolver.class, parameter, index);
@@ -52,5 +56,9 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 
 	public Number getMaxValue() {
 		return maxValue;
+	}
+
+	public TLongObjectMap<DefaultValueSupplier> getDefaultOptionSupplierMap() {
+		return defaultOptionSupplierMap;
 	}
 }

@@ -122,7 +122,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 
 		objects.add(event);
 
-		for (final SlashCommandParameter parameter : autocompleteParameters) {
+		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			final Object obj;
@@ -253,7 +253,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		final List<? extends SlashCommandParameter> slashOptions = info.getOptionParameters();
 
 		autocompleteParameterLoop:
-		for (SlashCommandParameter autocompleteParameter : autocompleteParameters) {
+		for (AutocompleteCommandParameter autocompleteParameter : autocompleteParameters) {
 			if (!autocompleteParameter.isOption()) continue;
 
 			for (SlashCommandParameter slashCommandParameter : slashOptions) {
@@ -268,7 +268,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		}
 	}
 
-	private void checkParameter(SlashCommandParameter slashCommandParameter, SlashCommandParameter autocompleteParameter) {
+	private void checkParameter(SlashCommandParameter slashCommandParameter, AutocompleteCommandParameter autocompleteParameter) {
 		if (!slashCommandParameter.isOption()) return;
 
 		final Class<?> slashParameterType = slashCommandParameter.getBoxedType();
