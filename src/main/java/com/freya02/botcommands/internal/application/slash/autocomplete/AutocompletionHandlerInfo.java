@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
@@ -275,6 +276,11 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		final Class<?> autocompleteParameterType = autocompleteParameter.getBoxedType();
 		if (!slashParameterType.equals(autocompleteParameterType)) {
 			throw new IllegalArgumentException("Autocompletion handler parameter #%d does not have the same type as slash command parameter: Provided: %s, correct: %s".formatted(autocompleteParameter.getIndex(), autocompleteParameterType, slashParameterType));
+		}
+
+		//If one is var arg but not the other (XOR)
+		if (slashCommandParameter.isVarArg() ^ autocompleteParameter.isVarArg()) {
+			throw new IllegalArgumentException("Autocompletion handler parameter #%d must be annotated with @%s if the slash command option is too".formatted(autocompleteParameter.getIndex(), VarArgs.class.getSimpleName()));
 		}
 	}
 

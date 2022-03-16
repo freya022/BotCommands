@@ -33,10 +33,13 @@ public abstract class CommandParameter<RESOLVER> {
 		return getOptionAnnotations();
 	}
 
-	@SuppressWarnings("unchecked")
 	public CommandParameter(@Nullable Class<RESOLVER> resolverType, Parameter parameter, int index) {
+		this(resolverType, parameter, Utils.getBoxedType(parameter.getType()), index);
+	}
+
+	public CommandParameter(@Nullable Class<RESOLVER> resolverType, Parameter parameter, Class<?> boxedType, int index) {
 		this.parameter = parameter;
-		this.boxedType = Utils.getBoxedType(parameter.getType());
+		this.boxedType = boxedType;
 		this.index = index;
 
 		this.optional = ReflectionUtils.isOptional(parameter);

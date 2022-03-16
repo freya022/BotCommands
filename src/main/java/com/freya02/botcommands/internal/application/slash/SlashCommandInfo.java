@@ -83,70 +83,77 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		}};
 
 		for (final SlashCommandParameter parameter : commandParameters) {
-			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+			final int arguments = Math.max(1, parameter.getVarArgs());
+			final List<Object> objectList = new ArrayList<>(arguments);
 
-			final Object obj;
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 			if (parameter.isOption()) {
 				final String optionName = applicationOptionData.getEffectiveName();
 
-				final OptionMapping optionMapping = event.getOption(optionName);
+				for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
+					final String varArgName = SlashUtils.getVarArgName(optionName, varArgNum);
 
-				if (optionMapping == null) {
-					final Guild guild = Utils.checkGuild(event.getGuild());
+					final OptionMapping optionMapping = event.getOption(varArgName);
 
-					final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
-					if (supplier != null) {
-						final Object defaultVal = supplier.getDefaultValue(event);
+					if (optionMapping == null) {
+						final Guild guild = Utils.checkGuild(event.getGuild());
 
-						if (defaultVal == null && !parameter.isOptional()) {
-							throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");
-						}
+						final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
+						if (supplier != null) {
+							final Object defaultVal = supplier.getDefaultValue(event);
 
-						objects.add(defaultVal);
+							if (defaultVal == null && !parameter.isOptional()) {
+								throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");
+							}
 
-						continue;
-					} else if (parameter.isOptional()) {
-						if (parameter.isPrimitive()) {
-							objects.add(0);
+							objects.add(defaultVal);
+
+							continue;
+						} else if (parameter.isOptional()) {
+							if (parameter.isPrimitive()) {
+								objects.add(0);
+							} else {
+								objects.add(null);
+							}
+
+							continue;
 						} else {
-							objects.add(null);
+							throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (" + varArgName + ")");
 						}
+					}
 
-						continue;
-					} else {
-						throw new RuntimeException("Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(commandMethod) + " at parameter " + applicationOptionData.getEffectiveName() + " (" + optionName + ")");
+					final Object resolved = parameter.getResolver().resolve(context, this, event, optionMapping);
+
+					objectList.add(resolved);
+
+					if (resolved == null) {
+						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
+								.setEphemeral(true)
+								.queue();
+
+						//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+						LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+
+						return false;
+					}
+
+					if (!parameter.getBoxedType().isAssignableFrom(resolved.getClass())) {
+						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), resolved.getClass().getSimpleName()))
+								.setEphemeral(true)
+								.queue();
+
+						LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
+
+						return false;
 					}
 				}
-
-				obj = parameter.getResolver().resolve(context, this, event, optionMapping);
-
-				if (obj == null) {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
-
-					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return false;
-				}
-
-				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), obj.getClass().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
-
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return false;
-				}
 			} else {
-				obj = parameter.getCustomResolver().resolve(context, this, event);
+				objectList.add(parameter.getCustomResolver().resolve(context, this, event));
 			}
 
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
-			objects.add(obj);
+			objects.add(parameter.isVarArg() ? objectList : objectList.get(0));
 		}
 
 		applyCooldown(event);

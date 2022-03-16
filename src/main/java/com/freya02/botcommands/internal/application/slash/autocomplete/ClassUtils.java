@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public class ClassUtils {
 	@Nullable
-	private static Class<?> getCollectionReturnType(Class<?> returnClass, Type returnType) {
+	public static Class<?> getCollectionReturnType(Class<?> returnClass, Type returnType) {
 		if (returnType instanceof ParameterizedType type) {
 			final Class<?> rawType = (Class<?>) type.getRawType();
 
@@ -49,5 +50,10 @@ public class ClassUtils {
 		Type returnType = method.getGenericReturnType();
 
 		return getCollectionReturnType(method.getReturnType(), returnType);
+	}
+
+	@Nullable
+	public static Class<?> getCollectionReturnType(@NotNull Parameter parameter) {
+		return getCollectionReturnType(parameter.getType(), parameter.getParameterizedType());
 	}
 }

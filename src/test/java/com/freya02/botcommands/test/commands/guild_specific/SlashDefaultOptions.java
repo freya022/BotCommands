@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.guild_specific;
+package com.freya02.botcommands.test.commands.guild_specific;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;

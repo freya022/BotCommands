@@ -63,63 +63,78 @@ public class SlashUtils {
 
 			final SlashParameterResolver resolver = parameter.getResolver();
 			final OptionType optionType = resolver.getOptionType();
-			final OptionData data = new OptionData(optionType, name, description);
 
-			if (optionType == OptionType.CHANNEL) {
-				//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
-				// Otherwise set the channel types of the parameter, if available
-				if (parameter.getChannelTypes().isEmpty() && resolver instanceof ChannelResolver channelResolver) {
-					final EnumSet<ChannelType> channelTypes = channelResolver.getChannelTypes();
+			for (int varArgNum = 0; varArgNum < Math.max(1, parameter.getVarArgs()); varArgNum++) {
+				final String varArgName = getVarArgName(name, varArgNum);
 
-					data.setChannelTypes(channelTypes);
-				} else if (!parameter.getChannelTypes().isEmpty()) {
-					data.setChannelTypes(parameter.getChannelTypes());
-				}
-			} else if (optionType == OptionType.INTEGER) {
-				data.setMinValue(parameter.getMinValue().longValue());
-				data.setMaxValue(parameter.getMaxValue().longValue());
-			} else if (optionType == OptionType.NUMBER) {
-				data.setMinValue(parameter.getMinValue().doubleValue());
-				data.setMaxValue(parameter.getMaxValue().doubleValue());
-			}
+				final OptionData data = new OptionData(optionType, varArgName, description);
 
-			if (applicationOptionData.hasAutocompletion()) {
-				if (!optionType.canSupportChoices()) {
-					throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " does not support autocompletion");
-				}
+				if (optionType == OptionType.CHANNEL) {
+					//If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
+					// Otherwise set the channel types of the parameter, if available
+					if (parameter.getChannelTypes().isEmpty() && resolver instanceof ChannelResolver channelResolver) {
+						final EnumSet<ChannelType> channelTypes = channelResolver.getChannelTypes();
 
-				data.setAutoComplete(true);
-			}
-
-			if (optionType.canSupportChoices()) {
-				Collection<Command.Choice> choices = null;
-
-				//optionChoices might just be empty
-				// choices of the option might also be empty as an empty list might be generated
-				// do not add choices if it's empty, to not trigger checks
-				if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
-					choices = optionsChoices.get(i - 1);
-				} else if (!resolver.getPredefinedChoices().isEmpty()) {
-					choices = resolver.getPredefinedChoices();
+						data.setChannelTypes(channelTypes);
+					} else if (!parameter.getChannelTypes().isEmpty()) {
+						data.setChannelTypes(parameter.getChannelTypes());
+					}
+				} else if (optionType == OptionType.INTEGER) {
+					data.setMinValue(parameter.getMinValue().longValue());
+					data.setMaxValue(parameter.getMaxValue().longValue());
+				} else if (optionType == OptionType.NUMBER) {
+					data.setMinValue(parameter.getMinValue().doubleValue());
+					data.setMaxValue(parameter.getMaxValue().doubleValue());
 				}
 
-				if (choices != null) {
-					if (applicationOptionData.hasAutocompletion()) {
-						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " cannot have autocompletion and choices at the same time");
+				if (applicationOptionData.hasAutocompletion()) {
+					if (!optionType.canSupportChoices()) {
+						throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " does not support autocompletion");
 					}
 
-					data.addChoices(choices);
+					data.setAutoComplete(true);
 				}
+
+				if (optionType.canSupportChoices()) {
+					Collection<Command.Choice> choices = null;
+
+					//optionChoices might just be empty
+					// choices of the option might also be empty as an empty list might be generated
+					// do not add choices if it's empty, to not trigger checks
+					if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
+						choices = optionsChoices.get(i - 1);
+					} else if (!resolver.getPredefinedChoices().isEmpty()) {
+						choices = resolver.getPredefinedChoices();
+					}
+
+					if (choices != null) {
+						if (applicationOptionData.hasAutocompletion()) {
+							throw new IllegalArgumentException("Slash command parameter #" + i + " of " + Utils.formatMethodShort(info.getMethod()) + " cannot have autocompletion and choices at the same time");
+						}
+
+						data.addChoices(choices);
+					}
+				}
+
+				//If vararg then next arguments are optional
+				data.setRequired(!parameter.isOptional() && varArgNum == 0);
+
+				list.add(data);
 			}
-
-			data.setRequired(!parameter.isOptional());
-
-			list.add(data);
 
 			i++;
 		}
 
 		return list;
+	}
+
+	@NotNull
+	public static String getVarArgName(@NotNull String name, int varArgNum) {
+		if (varArgNum == 0) {
+			return name;
+		 } else {
+			return name + "_" + varArgNum;
+		}
 	}
 
 	@NotNull
