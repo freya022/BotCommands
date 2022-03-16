@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.application.slash.DefaultValueResolver;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -23,7 +23,7 @@ import java.util.List;
  * These settings are looked first in {@link ApplicationCommand} and then again in {@link SettingsProvider}
  * <br>This provides the user either a clean enough look in SettingsProvider (no boilerplate in every SlashCommand) or an easy-to-use method in {@link ApplicationCommand}(s)
  */
-public interface GuildApplicationSettings extends DefaultValueResolver {
+public interface GuildApplicationSettings {
 	/**
 	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
 	 * <p>
@@ -73,6 +73,13 @@ public interface GuildApplicationSettings extends DefaultValueResolver {
 	 */
 	@Nullable
 	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @Nullable String commandId, @NotNull CommandPath commandPath) {
+		return null;
+	}
+
+	@Nullable
+	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
+	                                                     @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                     @NotNull String optionName, @NotNull Class<?> parameterType) {
 		return null;
 	}
 }

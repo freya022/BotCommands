@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
@@ -39,20 +40,22 @@ public class SlashUtils {
 
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
-			if (parameter.getDefaultOptionResolver() != null) {
-				if (guild == null) throw new IllegalArgumentException("Cannot use default options on global commands");
+			if (guild != null) {
+				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getBoxedType());
 
-				Boolean isEnabled = info.getInstance().isDefaultValueEnabled(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getBoxedType());
-
-				if (isEnabled == null) {
+				if (defaultValueSupplier == null) {
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
 
 					if (settingsProvider != null) {
-						isEnabled = settingsProvider.isDefaultValueEnabled(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+						defaultValueSupplier = settingsProvider.getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getBoxedType());
 					}
 				}
 
-				if (isEnabled != null && isEnabled) continue;
+				parameter.getDefaultOptionSupplierMap().put(guild.getIdLong(), defaultValueSupplier);
+
+				if (defaultValueSupplier != null) {
+					continue; //Skip option generation since this is a default value
+				}
 			}
 
 			final String name = parameter.getApplicationOptionData().getEffectiveName();

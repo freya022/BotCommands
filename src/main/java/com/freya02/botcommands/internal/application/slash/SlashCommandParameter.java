@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.annotations.Default;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
@@ -9,6 +10,8 @@ import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
@@ -19,7 +22,7 @@ import java.util.EnumSet;
 public class SlashCommandParameter extends ApplicationCommandParameter<SlashParameterResolver> {
 	private final Number minValue, maxValue;
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
-	private final DefaultOptionResolver defaultOptionResolver;
+	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = new TLongObjectHashMap<>();
 
 	public SlashCommandParameter(SlashCommandInfo commandInfo, Parameter parameter, int index) {
 		super(SlashParameterResolver.class, parameter, index);
@@ -50,14 +53,6 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 			if (!commandInfo.isGuildOnly()) {
 				throw new IllegalArgumentException("%s, parameter #%d: Cannot have default options for global commands".formatted(Utils.formatMethodShort(commandInfo.getMethod()), index));
 			}
-
-			if (annotation.constant()) {
-				this.defaultOptionResolver = new ConstantDefaultOptionResolver(commandInfo, this);
-			} else {
-				this.defaultOptionResolver = new ComputedDefaultOptionResolver(commandInfo, this);
-			}
-		} else {
-			this.defaultOptionResolver = null;
 		}
 	}
 
@@ -73,7 +68,7 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 		return maxValue;
 	}
 
-	public DefaultOptionResolver getDefaultOptionResolver() {
-		return defaultOptionResolver;
+	public TLongObjectMap<DefaultValueSupplier> getDefaultOptionSupplierMap() {
+		return defaultOptionSupplierMap;
 	}
 }
