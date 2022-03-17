@@ -41,13 +41,13 @@ public class SlashUtils {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			if (guild != null) {
-				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getParameter().getType());
 
 				if (defaultValueSupplier == null) {
 					final SettingsProvider settingsProvider = context.getSettingsProvider();
 
 					if (settingsProvider != null) {
-						defaultValueSupplier = settingsProvider.getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getBoxedType());
+						defaultValueSupplier = settingsProvider.getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getParameter().getType());
 					}
 				}
 

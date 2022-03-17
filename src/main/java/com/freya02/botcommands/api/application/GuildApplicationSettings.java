@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -87,7 +88,7 @@ public interface GuildApplicationSettings {
 	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
-	 * @param parameterType The <b>boxed</b> type of the command option
+	 * @param parameterType The <b>boxed</b> type of the command option, or the item type of the parameter is annotated with {@link VarArgs}
 	 *
 	 * @return A {@link DefaultValueSupplier} if the option can be substituted with an object
 	 */

@@ -90,26 +90,46 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isOption()) {
 				final String optionName = applicationOptionData.getEffectiveName();
 
+				final Guild guild = event.getGuild();
+
+				if (guild != null) {
+					final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
+					if (supplier != null) {
+						final Object defaultVal = supplier.getDefaultValue(event);
+
+						if (defaultVal == null && !parameter.isOptional()) {
+							throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a null value but parameter is not optional".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod)));
+						}
+
+						if (defaultVal != null) {
+							final Class<?> expectedType = parameter.isVarArg()
+									? List.class
+									: parameter.getBoxedType();
+
+							if (!expectedType.isAssignableFrom(defaultVal.getClass())) {
+								throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a default value of type %s but a value of type %s was expected".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod), defaultVal.getClass().getSimpleName(), expectedType.getSimpleName()));
+							}
+
+							if (parameter.isVarArg() && defaultVal instanceof List<?> defaultValues) { //Check if first parameter exists
+								if (defaultValues.isEmpty() || defaultValues.get(0) == null) {
+									throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned either an empty list or a list with the first element being null".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod)));
+								}
+							}
+						}
+
+						objects.add(defaultVal);
+
+						continue;
+					}
+				}
+
 				for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
 					final String varArgName = SlashUtils.getVarArgName(optionName, varArgNum);
 
 					final OptionMapping optionMapping = event.getOption(varArgName);
 
 					if (optionMapping == null) {
-						final Guild guild = Utils.checkGuild(event.getGuild());
-
-						final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
-						if (supplier != null) {
-							final Object defaultVal = supplier.getDefaultValue(event);
-
-							if (defaultVal == null && !parameter.isOptional()) {
-								throw new IllegalArgumentException("Default value supplier for parameter #" + parameter.getIndex() + " has returned a null value but parameter is not optional");
-							}
-
-							objectList.add(defaultVal);
-
-							continue;
-						} else if (parameter.isOptional() || (parameter.isVarArg() && varArgNum != 0)) {
+						if (parameter.isOptional() || (parameter.isVarArg() && varArgNum != 0)) {
 							if (parameter.isPrimitive()) {
 								objectList.add(0);
 							} else {
