@@ -35,6 +35,12 @@ public abstract class BaseAutocompletionCache extends AbstractAutocompletionCach
 	private String[] getCompositeOptionValues(AutocompletionHandlerInfo info,
 	                                          CommandAutoCompleteInteractionEvent event) {
 		final List<String> optionValues = new ArrayList<>();
+
+		//Identify the cached value by its command path too !
+		optionValues.add(event.getName());
+		if (event.getSubcommandGroup() != null) optionValues.add(event.getSubcommandGroup());
+		if (event.getSubcommandName() != null) optionValues.add(event.getSubcommandName());
+
 		optionValues.add(event.getFocusedOption().getValue());
 
 		for (final AutocompleteCommandParameter parameter : info.getParameters()) {
