@@ -12,5 +12,5 @@ Config.json
 logs
 TestDB
 
-Test.json
+schemas/Test.json
 /schemas
