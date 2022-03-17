@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
@@ -18,6 +19,7 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -126,12 +128,34 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		objects.add(event);
 
 		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
+			final Guild guild = event.getGuild();
+
+			if (guild != null) {
+				//Resolve the target slash command parameter, so we can retrieve its default value
+				final SlashCommandParameter slashParameter = slashCommand.getParameters()
+						.stream()
+						.filter(p -> p.getApplicationOptionData().getEffectiveName().equals(parameter.getApplicationOptionData().getEffectiveName()))
+						.findAny()
+						.orElseThrow(() -> new IllegalArgumentException("Could not find corresponding slash command parameter '" + parameter.getApplicationOptionData().getEffectiveName() + "' when using autocomplete"));
+
+				final DefaultValueSupplier supplier = slashParameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
+				if (supplier != null) {
+					final Object defaultVal = supplier.getDefaultValue(event);
+
+					SlashUtils.checkDefaultValue(this, parameter, defaultVal);
+
+					objects.add(defaultVal);
+
+					continue;
+				}
+			}
+
 			final int arguments = Math.max(1, parameter.getVarArgs());
 			final List<Object> objectList = new ArrayList<>(arguments);
 
-			for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
-				final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
+			for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
 				if (parameter.isOption()) {
 					String optionName = applicationOptionData.getEffectiveName();
 					final String varArgName = SlashUtils.getVarArgName(optionName, varArgNum);

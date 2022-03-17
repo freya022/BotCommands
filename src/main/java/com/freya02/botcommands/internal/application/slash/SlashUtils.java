@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
+import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.parameters.channels.ChannelResolver;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -162,5 +163,27 @@ public class SlashUtils {
 		}
 
 		return choices;
+	}
+
+	public static void checkDefaultValue(ExecutableInteractionInfo executableInteractionInfo, ApplicationCommandVarArgParameter<?> parameter, Object defaultVal) {
+		if (defaultVal == null && !parameter.isOptional()) {
+			throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a null value but parameter is not optional".formatted(parameter.getIndex(), Utils.formatMethodShort(executableInteractionInfo.getMethod())));
+		}
+
+		if (defaultVal != null) {
+			final Class<?> expectedType = parameter.isVarArg()
+					? List.class
+					: parameter.getBoxedType();
+
+			if (!expectedType.isAssignableFrom(defaultVal.getClass())) {
+				throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a default value of type %s but a value of type %s was expected".formatted(parameter.getIndex(), Utils.formatMethodShort(executableInteractionInfo.getMethod()), defaultVal.getClass().getSimpleName(), expectedType.getSimpleName()));
+			}
+
+			if (parameter.isVarArg() && defaultVal instanceof List<?> defaultValues) { //Check if first parameter exists
+				if (defaultValues.isEmpty() || defaultValues.get(0) == null) {
+					throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned either an empty list or a list with the first element being null".formatted(parameter.getIndex(), Utils.formatMethodShort(executableInteractionInfo.getMethod())));
+				}
+			}
+		}
 	}
 }

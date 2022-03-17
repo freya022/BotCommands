@@ -97,25 +97,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					if (supplier != null) {
 						final Object defaultVal = supplier.getDefaultValue(event);
 
-						if (defaultVal == null && !parameter.isOptional()) {
-							throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a null value but parameter is not optional".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod)));
-						}
-
-						if (defaultVal != null) {
-							final Class<?> expectedType = parameter.isVarArg()
-									? List.class
-									: parameter.getBoxedType();
-
-							if (!expectedType.isAssignableFrom(defaultVal.getClass())) {
-								throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned a default value of type %s but a value of type %s was expected".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod), defaultVal.getClass().getSimpleName(), expectedType.getSimpleName()));
-							}
-
-							if (parameter.isVarArg() && defaultVal instanceof List<?> defaultValues) { //Check if first parameter exists
-								if (defaultValues.isEmpty() || defaultValues.get(0) == null) {
-									throw new IllegalArgumentException("Default value supplier for parameter #%d in %s has returned either an empty list or a list with the first element being null".formatted(parameter.getIndex(), Utils.formatMethodShort(commandMethod)));
-								}
-							}
-						}
+						SlashUtils.checkDefaultValue(this, parameter, defaultVal);
 
 						objects.add(defaultVal);
 
