@@ -83,27 +83,27 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 		}};
 
 		for (final SlashCommandParameter parameter : commandParameters) {
+			final Guild guild = event.getGuild();
+
+			if (guild != null) {
+				final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
+				if (supplier != null) {
+					final Object defaultVal = supplier.getDefaultValue(event);
+
+					SlashUtils.checkDefaultValue(this, parameter, defaultVal);
+
+					objects.add(defaultVal);
+
+					continue;
+				}
+			}
+
 			final int arguments = Math.max(1, parameter.getVarArgs());
 			final List<Object> objectList = new ArrayList<>(arguments);
 
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 			if (parameter.isOption()) {
 				final String optionName = applicationOptionData.getEffectiveName();
-
-				final Guild guild = event.getGuild();
-
-				if (guild != null) {
-					final DefaultValueSupplier supplier = parameter.getDefaultOptionSupplierMap().get(guild.getIdLong());
-					if (supplier != null) {
-						final Object defaultVal = supplier.getDefaultValue(event);
-
-						SlashUtils.checkDefaultValue(this, parameter, defaultVal);
-
-						objects.add(defaultVal);
-
-						continue;
-					}
-				}
 
 				for (int varArgNum = 0; varArgNum < arguments; varArgNum++) {
 					final String varArgName = SlashUtils.getVarArgName(optionName, varArgNum);
