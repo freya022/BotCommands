@@ -60,6 +60,7 @@ public class ParameterResolvers {
 		register(new EmoteResolver());
 		register(new GuildResolver());
 		register(new LongResolver());
+		register(new IntegerResolver());
 		register(new MemberResolver());
 		register(new MentionableResolver());
 		register(new RoleResolver());

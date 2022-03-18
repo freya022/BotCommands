@@ -8,6 +8,12 @@ import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 
 public class SlashNumber extends ApplicationCommand {
+	@JDASlashCommand(name = "number", subcommand = "integer")
+	public void longCmd(GuildSlashEvent event,
+	                    @AppOption int number) {
+		event.reply("" + number).setEphemeral(true).queue();
+	}
+
 	@JDASlashCommand(name = "number", subcommand = "long")
 	public void longCmd(GuildSlashEvent event,
 	                    @AppOption @LongRange(from = 10, to = 15) long number) {

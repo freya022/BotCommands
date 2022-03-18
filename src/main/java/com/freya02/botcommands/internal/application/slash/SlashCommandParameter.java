@@ -37,8 +37,13 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 				minValue = doubleRange.from();
 				maxValue = doubleRange.to();
 			} else {
-				minValue = OptionData.MIN_NEGATIVE_NUMBER;
-				maxValue = OptionData.MAX_POSITIVE_NUMBER;
+				if (getBoxedType() == Integer.class) {
+					minValue = Integer.MIN_VALUE;
+					maxValue = Integer.MAX_VALUE;
+				} else {
+					minValue = OptionData.MIN_NEGATIVE_NUMBER;
+					maxValue = OptionData.MAX_POSITIVE_NUMBER;
+				}
 			}
 		}
 
