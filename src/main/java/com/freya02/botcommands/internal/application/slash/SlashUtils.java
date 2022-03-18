@@ -35,9 +35,11 @@ public class SlashUtils {
 		final List<OptionData> list = new ArrayList<>();
 		final List<List<Command.Choice>> optionsChoices = getOptionChoices(context, guild, info);
 
-		int i = 1;
+		int i = 0;
 		for (SlashCommandParameter parameter : info.getParameters()) {
 			if (!parameter.isOption()) continue;
+
+			i++;
 
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
@@ -126,8 +128,6 @@ public class SlashUtils {
 
 				list.add(data);
 			}
-
-			i++;
 		}
 
 		return list;
