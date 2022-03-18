@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -28,19 +29,33 @@ import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
  * @see Localization
  */
 public final class DefaultMessages {
-	private final Localization localization;
+	@NotNull private final Localization defaultLocalization;
+	@Nullable private final Localization localization;
 
 	/**
 	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
 	 */
 	@ApiStatus.Internal
 	public DefaultMessages(@NotNull Locale locale) {
+		final Localization defaultLocalization = Localization.getInstance("DefaultMessages_default", locale);
+		if (defaultLocalization == null) {
+			throw new IllegalStateException("Could not find any DefaultMessages_default bundle");
+		}
+
+		this.defaultLocalization = defaultLocalization;
 		this.localization = Localization.getInstance("DefaultMessages", locale);
 	}
 
 	@NotNull
 	private LocalizationTemplate getLocalizationTemplate(@NotNull String path) {
-		final LocalizationTemplate template = localization.get(path);
+		LocalizationTemplate template = localization == null
+				? null
+				: localization.get(path);
+
+		if (template == null) {
+			template = defaultLocalization.get(path);
+		}
+
 		if (template == null) {
 			throw new IllegalArgumentException("Localization template for default messages '" + path + "' could not be found");
 		}
