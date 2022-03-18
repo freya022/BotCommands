@@ -35,7 +35,8 @@ public interface SlashParameterResolver {
 	 * This will be applied to all command parameters of this type, but can still be overridden if there are choices set in {@link GuildApplicationSettings#getOptionChoices(Guild, CommandPath, int)}
 	 * <br>This could be useful for, say, an enum resolver, or anything where the choices do not change between commands
 	 */
-	default Collection<Command.Choice> getPredefinedChoices() {
+	@NotNull
+	default Collection<Command.Choice> getPredefinedChoices(@Nullable Guild guild) {
 		return Collections.emptyList();
 	}
 

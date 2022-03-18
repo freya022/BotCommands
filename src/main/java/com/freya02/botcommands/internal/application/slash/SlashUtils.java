@@ -104,8 +104,12 @@ public class SlashUtils {
 					// do not add choices if it's empty, to not trigger checks
 					if (optionsChoices.size() >= i && !optionsChoices.get(i - 1).isEmpty()) {
 						choices = optionsChoices.get(i - 1);
-					} else if (!resolver.getPredefinedChoices().isEmpty()) {
-						choices = resolver.getPredefinedChoices();
+					} else {
+						final Collection<Command.Choice> predefinedChoices = resolver.getPredefinedChoices(guild);
+
+						if (!predefinedChoices.isEmpty()) {
+							choices = predefinedChoices;
+						}
 					}
 
 					if (choices != null) {
