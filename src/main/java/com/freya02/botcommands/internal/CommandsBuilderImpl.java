@@ -95,6 +95,10 @@ public final class CommandsBuilderImpl {
 		}
 
 		if (!context.isHelpDisabled()) {
+			if (context.findFirstCommand(CommandPath.of("help")) != null) {
+				throw new IllegalStateException("Help command was detected before build, and default help is not disabled, consider disabling it with TextCommandsBuilder#disableHelpCommand");
+			}
+
 			processClass(HelpCommand.class);
 
 			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
