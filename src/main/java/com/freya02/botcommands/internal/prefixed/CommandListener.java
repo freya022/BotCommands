@@ -44,7 +44,10 @@ import static com.freya02.botcommands.internal.prefixed.ExecutionResult.STOP;
 public final class CommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
+
 	private final BContextImpl context;
+
+	private final HelpCommand helpCommand;
 
 	private int commandThreadNumber = 0;
 	private final ExecutorService commandService = Utils.createCommandPool(r -> {
@@ -56,18 +59,20 @@ public final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	private final HelpCommand helpCommand;
-
 	public CommandListener(BContextImpl context) {
 		this.context = context;
 
-		final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
-		if (helpInfo == null) {
+		if (context.isHelpDisabled()) {
 			LOGGER.debug("Help command not loaded");
 
 			this.helpCommand = null;
 		} else {
-			this.helpCommand = (HelpCommand) helpInfo.getInstance();
+			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
+
+			if (helpInfo == null) throw new IllegalStateException("Help command is not disabled but help command has not been loaded");
+			if (!(helpInfo.getInstance() instanceof HelpCommand helpCmd)) throw new IllegalStateException("Help command is not disabled but help command is not of correct type");
+
+			this.helpCommand = helpCmd;
 		}
 	}
 
@@ -161,7 +166,7 @@ public final class CommandListener extends ListenerAdapter {
 				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, event, ""),
 						candidates.first().getPath());
 			} else if (context.getHelpConsumer() != null) {
-				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args));
+				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args), candidates.first().getPath());
 			}
 		}, throwableConsumer);
 	}
