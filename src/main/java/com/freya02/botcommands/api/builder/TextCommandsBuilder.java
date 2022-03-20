@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -35,7 +35,7 @@ public final class TextCommandsBuilder {
 	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid, can do nothing
 	 * @return This builder for chaining convenience
 	 */
-	public TextCommandsBuilder disableHelpCommand(@NotNull Consumer<BaseCommandEvent> helpConsumer) {
+	public TextCommandsBuilder disableHelpCommand(@NotNull HelpConsumer helpConsumer) {
 		this.context.overrideHelp(helpConsumer);
 
 		return this;

@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -226,14 +226,14 @@ public interface BContext {
 	 *
 	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
 	 */
-	void overrideHelp(Consumer<BaseCommandEvent> helpConsumer);
+	void overrideHelp(HelpConsumer helpConsumer);
 
 	/**
 	 * Returns the help consumer used when commands are found but not understood
 	 *
 	 * @return Consumer which should output help
 	 */
-	Consumer<BaseCommandEvent> getHelpConsumer();
+	HelpConsumer getHelpConsumer();
 
 	/**
 	 * Returns an immutable list of the registration listeners

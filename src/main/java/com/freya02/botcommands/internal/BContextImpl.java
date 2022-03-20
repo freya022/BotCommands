@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -79,7 +79,7 @@ public class BContextImpl implements BContext {
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = () -> null;
 
-	private Consumer<BaseCommandEvent> helpConsumer;
+	private HelpConsumer helpConsumer;
 	private ComponentManager componentManager;
 	private SettingsProvider settingProvider;
 
@@ -388,14 +388,14 @@ public class BContextImpl implements BContext {
 	}
 
 	@Override
-	public void overrideHelp(Consumer<BaseCommandEvent> helpConsumer) {
+	public void overrideHelp(HelpConsumer helpConsumer) {
 		Checks.notNull(helpConsumer, "Help replacement consumer");
 
 		this.helpConsumer = helpConsumer;
 	}
 
 	@Override
-	public Consumer<BaseCommandEvent> getHelpConsumer() {
+	public HelpConsumer getHelpConsumer() {
 		return helpConsumer;
 	}
 
