@@ -25,7 +25,8 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 	                                                        Function<A, String>... nameComponentsFunctions) {
 		super(context, instance, annotation, commandMethod, nameComponentsFunctions);
 
-		this.guildOnly = AnnotationUtils.getAnnotationValue(annotation, "guildOnly");
+		this.guildOnly = context.getApplicationCommandsContext().isForceGuildCommandsEnabled()
+				|| (boolean) AnnotationUtils.getAnnotationValue(annotation, "guildOnly");
 		this.testOnly = AnnotationUtils.getEffectiveTestState(commandMethod);
 
 		if (testOnly && !isGuildOnly()) {
