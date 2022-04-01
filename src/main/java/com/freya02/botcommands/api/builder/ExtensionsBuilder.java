@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
+import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.api.annotations.JDAEventListener;
@@ -65,6 +66,21 @@ public class ExtensionsBuilder {
 			throw new IllegalStateException("Instance supplier already exists for class " + classType.getName());
 
 		context.registerInstanceSupplier(classType, instanceSupplier);
+
+		return this;
+	}
+
+	/**
+	 * Registers a dynamic instance supplier, this means that your commands can be instantiated using the given {@link DynamicInstanceSupplier}
+	 * <br>This supplier receives the class that must be instantiated, if it returns <code>null</code> then other means of instantiation are tried
+	 * <p>Instead of resolving the parameters manually with {@link #registerConstructorParameter(Class, ConstructorParameterSupplier)} you can use this to give directly the command's instance
+	 *
+	 * @param dynamicInstanceSupplier Dynamic instance supplier for this command
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public ExtensionsBuilder registerDynamicInstanceSupplier(DynamicInstanceSupplier dynamicInstanceSupplier) {
+		context.registerDynamicInstanceSupplier(dynamicInstanceSupplier);
 
 		return this;
 	}

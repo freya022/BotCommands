@@ -2,9 +2,11 @@ package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
+import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.internal.BContextImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.*;
@@ -27,8 +29,26 @@ public class ClassInstancer {
 		if (oldInstance != null)
 			return oldInstance;
 
-		final Object instance;
+		final Object instance = constructInstance(context, aClass);
 
+		injectDependencies(context, instance);
+
+		context.putClassInstance(aClass, instance);
+
+		return instance;
+	}
+
+	@NotNull
+	private static Object constructInstance(BContextImpl context, Class<?> aClass) throws InstantiationException, IllegalAccessException, InvocationTargetException {
+		for (DynamicInstanceSupplier dynamicInstanceSupplier : context.getDynamicInstanceSuppliers()) {
+			final Object instance = dynamicInstanceSupplier.get(context, aClass);
+
+			if (instance != null) {
+				return instance;
+			}
+		}
+
+		final Object instance;
 		//The command object has to be created either by the instance supplier
 		// or by the **only** constructor a class has
 		// It must resolve all parameters types with the registered parameter suppliers
@@ -68,11 +88,6 @@ public class ClassInstancer {
 
 			instance = constructor.newInstance(parameterObjs.toArray());
 		}
-
-		injectDependencies(context, instance);
-
-		context.putClassInstance(aClass, instance);
-
 		return instance;
 	}
 
