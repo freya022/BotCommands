@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ApplicationCommandsContextImpl implements ApplicationCommandsContext {
+	private boolean forceGuildCommands;
+
 	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
 	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
@@ -118,6 +120,15 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	@NotNull
 	public ApplicationCommandInfoMapView getLiveApplicationCommandsMap(@Nullable Guild guild) {
 		return liveApplicationCommandInfoMap.get(getGuildKey(guild));
+	}
+
+	@Override
+	public boolean isForceGuildCommandsEnabled() {
+		return forceGuildCommands;
+	}
+
+	public void setForceGuildCommands(boolean forceGuildCommands) {
+		this.forceGuildCommands = forceGuildCommands;
 	}
 
 	public void putLiveApplicationCommandsMap(@Nullable Guild guild, @NotNull ApplicationCommandInfoMap map) {

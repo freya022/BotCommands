@@ -97,4 +97,15 @@ public class ApplicationCommandsBuilder {
 
 		return this;
 	}
+
+	/**
+	 * Sets whether all application commands should be guild-only, regardless of the guild-only switch on the annotation
+	 *
+	 * @param force <code>true</code> to make all application commands as guild-only
+	 */
+	public ApplicationCommandsBuilder forceCommandsAsGuildOnly(boolean force) {
+		context.getApplicationCommandsContext().setForceGuildCommands(force);
+
+		return this;
+	}
 }

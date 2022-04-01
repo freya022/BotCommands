@@ -96,4 +96,11 @@ public interface ApplicationCommandsContext {
 	 * @return The {@link ApplicationCommandInfoMapView} of the specific guild
 	 */
 	@NotNull ApplicationCommandInfoMapView getLiveApplicationCommandsMap(@Nullable Guild guild);
+
+	/**
+	 * Returns whether all application commands should be guild-only, regardless of the guild-only switch on the annotation
+	 *
+	 * @return <code>true</code> if all application commands should be guild-only
+	 */
+	boolean isForceGuildCommandsEnabled();
 }
