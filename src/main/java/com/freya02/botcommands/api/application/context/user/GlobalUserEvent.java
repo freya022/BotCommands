@@ -22,7 +22,7 @@ public class GlobalUserEvent extends UserContextInteractionEvent implements Guil
 		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
 
 		this.context = context;
-		this.localizer = new EventLocalizer(context, method, event.getGuildLocale(), event.getUserLocale());
+		this.localizer = new EventLocalizer(context, method, isFromGuild() ? event.getGuildLocale() : null, event.getUserLocale());
 	}
 
 	@NotNull

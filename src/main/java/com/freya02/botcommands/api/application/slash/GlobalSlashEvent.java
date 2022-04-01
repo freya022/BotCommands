@@ -21,7 +21,7 @@ public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent impl
 	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull Method method, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
 		super(api, responseNumber, interaction);
 
-		this.localizer = new EventLocalizer(context, method, interaction.getGuildLocale(), interaction.getUserLocale());
+		this.localizer = new EventLocalizer(context, method, isFromGuild() ? interaction.getGuildLocale() : null, interaction.getUserLocale());
 	}
 
 	public abstract BContext getContext();

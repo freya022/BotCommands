@@ -23,7 +23,7 @@ public class ButtonEvent extends ButtonInteractionEvent implements GuildLocaliza
 		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
 
 		this.context = context;
-		this.localizer = new EventLocalizer(context, method, event.getGuildLocale(), event.getUserLocale());
+		this.localizer = new EventLocalizer(context, method, isFromGuild() ? event.getGuildLocale() : null, event.getUserLocale());
 	}
 
 	public BContext getContext() {

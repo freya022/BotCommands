@@ -7,6 +7,13 @@ import java.util.Locale;
 
 //TODO
 public interface GuildLocalizable extends Localizable {
+	/**
+	 * TODO
+	 *
+	 * @throws IllegalStateException If the event did not happen in a Guild
+	 *
+	 * @return
+	 */
 	@NotNull
 	Locale getGuildLocale();
 
@@ -14,6 +21,8 @@ public interface GuildLocalizable extends Localizable {
 	 * This will localize to {@code en_US} if the Guild does not have the {@code COMMUNITY} feature flag
 	 *
 	 * TODO
+	 *
+	 * @throws IllegalStateException If the event did not happen in a Guild
 	 *
 	 * @see Guild#getLocale()
 	 */
@@ -26,6 +35,8 @@ public interface GuildLocalizable extends Localizable {
 	 * This will localize to {@code en_US} if the Guild does not have the {@code COMMUNITY} feature flag
 	 *
 	 * TODO
+	 *
+	 * @throws IllegalStateException If the event did not happen in a Guild
 	 *
 	 * @see Guild#getLocale()
 	 */
