@@ -19,5 +19,5 @@
             }
         }
     },
-    "commands.localization.response": "There are {guild_users} {guild_users, choice, 0#users|1#user|2>users} and my up-time is {uptime, number} ms"
+    "commands.localization.response": "There are {guild_users} {guild_users, choice, 0#users|1#user|2<users} and my up-time is {uptime, number} ms"
 }
