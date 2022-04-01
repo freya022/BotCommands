@@ -1,10 +1,7 @@
 package com.freya02.botcommands.api.application.annotations;
 
 import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.api.application.slash.annotations.ChannelTypes;
-import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.annotations.LongRange;
+import com.freya02.botcommands.api.application.slash.annotations.*;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
@@ -30,6 +27,7 @@ import java.lang.annotation.Target;
  * @see ChannelTypes @ChannelTypes
  * @see AutocompletionHandler @AutocompletionHandler
  * @see CompositeKey @CompositeKey
+ * @see VarArgs @VarArgs
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})

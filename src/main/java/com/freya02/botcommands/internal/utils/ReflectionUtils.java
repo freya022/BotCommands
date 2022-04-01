@@ -14,18 +14,12 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ReflectionUtils {
@@ -186,5 +180,54 @@ public class ReflectionUtils {
 	@Nullable
 	public static StackWalker.StackFrame getFrame(@Range(from = 0, to = Integer.MAX_VALUE) int skip) {
 		return walker.walk(stackFrameStream -> stackFrameStream.skip(skip).findFirst().orElse(null));
+	}
+
+	@Nullable
+	public static Class<?> getCollectionReturnType(Class<?> returnClass, Type returnType) {
+		if (returnType instanceof ParameterizedType type) {
+			final Class<?> rawType = (Class<?>) type.getRawType();
+
+			if (Collection.class.isAssignableFrom(rawType) && type.getOwnerType() == null) {
+				return (Class<?>) type.getActualTypeArguments()[0];
+			}
+		}
+
+		List<Class<?>> superclasses = new ArrayList<>();
+		List<Type> supertypes = new ArrayList<>();
+
+		if (returnClass.getGenericSuperclass() != null) {
+			superclasses.add(returnClass.getSuperclass());
+			supertypes.add(returnClass.getGenericSuperclass());
+		}
+
+		superclasses.addAll(Arrays.asList(returnClass.getInterfaces()));
+		supertypes.addAll(Arrays.asList(returnClass.getGenericInterfaces()));
+
+		for (int i = 0, supertypesSize = supertypes.size(); i < supertypesSize; i++) {
+			final Class<?> listReturnType = getCollectionReturnType(superclasses.get(i), supertypes.get(i));
+
+			if (listReturnType != null) {
+				return listReturnType;
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static Class<?> getCollectionReturnType(@NotNull Method method) {
+		Type returnType = method.getGenericReturnType();
+
+		return getCollectionReturnType(method.getReturnType(), returnType);
+	}
+
+	@NotNull
+	public static Class<?> getCollectionTypeOrBoxedSelfType(@NotNull Parameter parameter) {
+		final Class<?> type = getCollectionReturnType(parameter.getType(), parameter.getParameterizedType());
+		if (type == null) {
+			return Utils.getBoxedType(parameter.getType());
+		}
+
+		return type;
 	}
 }

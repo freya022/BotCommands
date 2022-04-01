@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
-import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import gnu.trove.map.TLongObjectMap;
@@ -17,7 +16,7 @@ import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.EnumSet;
 
-public class SlashCommandParameter extends ApplicationCommandParameter<SlashParameterResolver> {
+public class SlashCommandParameter extends ApplicationCommandVarArgParameter<SlashParameterResolver> {
 	private final Number minValue, maxValue;
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
 	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = new TLongObjectHashMap<>();
@@ -38,8 +37,13 @@ public class SlashCommandParameter extends ApplicationCommandParameter<SlashPara
 				minValue = doubleRange.from();
 				maxValue = doubleRange.to();
 			} else {
-				minValue = OptionData.MIN_NEGATIVE_NUMBER;
-				maxValue = OptionData.MAX_POSITIVE_NUMBER;
+				if (getBoxedType() == Integer.class) {
+					minValue = Integer.MIN_VALUE;
+					maxValue = Integer.MAX_VALUE;
+				} else {
+					minValue = OptionData.MIN_NEGATIVE_NUMBER;
+					maxValue = OptionData.MAX_POSITIVE_NUMBER;
+				}
 			}
 		}
 
