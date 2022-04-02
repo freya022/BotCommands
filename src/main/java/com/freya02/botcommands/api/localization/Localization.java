@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 //TODO docs
+//TODO LocalizationTemplate should be an interface with the #localize(Entry...) method
+// LocalizationBundleProvider which, for a given bundle name & locale, gives an object containing a map of String -> LT and different attributes like inheritance
+// Providers are cycled through until an object is given
 //Low level API
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
