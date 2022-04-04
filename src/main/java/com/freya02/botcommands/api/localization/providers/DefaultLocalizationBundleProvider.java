@@ -1,9 +1,6 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.DefaultLocalizationBundle;
-import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.LocalizationBundle;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.*;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,7 +84,7 @@ public class DefaultLocalizationBundleProvider implements LocalizationBundleProv
 				if (!(entry.getValue() instanceof String))
 					throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String".formatted(key, baseName, effectiveLocale));
 
-				final LocalizationTemplate value = new LocalizationTemplate((String) entry.getValue(), effectiveLocale);
+				final LocalizationTemplate value = new DefaultLocalizationTemplate((String) entry.getValue(), effectiveLocale);
 
 				if (templateMap.put(key, value) != null) {
 					throw new IllegalStateException("Got two same localization keys: '" + key + "'");
