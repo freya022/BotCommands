@@ -18,7 +18,7 @@ import java.util.*;
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
-	private static final Map<LocalizationKey, Localization> localizationMap = new HashMap<>();
+	private static final Map<String, Map<Locale, Localization>> localizationMap = Collections.synchronizedMap(new HashMap<>());
 
 	private final Map<String, ? extends LocalizationTemplate> strings;
 	private final Locale effectiveLocale;
@@ -69,17 +69,21 @@ public class Localization {
 		}
 	}
 
+	public static void invalidateLocalization(@NotNull String bundleName) {
+		localizationMap.remove(bundleName);
+	}
+
 	@Nullable
-	public static synchronized Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
-		final LocalizationKey key = new LocalizationKey(bundleName, locale);
-		final Localization value = localizationMap.get(key);
+	public static Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
+		final Map<Locale, Localization> localeMap = localizationMap.computeIfAbsent(bundleName, x -> Collections.synchronizedMap(new HashMap<>()));
+		final Localization value = localeMap.get(locale);
 
 		if (value != null) {
 			return value;
 		} else {
 			try {
 				final Localization newValue = retrieveBundle(bundleName, locale);
-				localizationMap.put(key, newValue);
+				localeMap.put(locale, newValue);
 
 				return newValue;
 			} catch (Exception e) {
@@ -96,8 +100,6 @@ public class Localization {
 	public Locale getEffectiveLocale() {
 		return effectiveLocale;
 	}
-
-	private record LocalizationKey(String bundleName, Locale locale) {}
 
 	private record BestLocale(Locale locale, LocalizationBundle bundle) {}
 
