@@ -48,13 +48,15 @@ public class DefaultLocalizationBundleProvider implements LocalizationBundleProv
 		for (Locale candidateLocale : candidateLocales) {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
-			final Map<String, LocalizationTemplate> parentTemplateMap = readTemplateMap(baseName, candidateLocale);
-			if (parentTemplateMap != null) {
+			final Localization parentLocalization = Localization.getInstance(baseName, candidateLocale);
+			if (parentLocalization != null) {
+				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.getTemplateMap();
+
 				if (templateMap == null) {
 					templateMap = new HashMap<>();
 				}
 
-				for (Map.Entry<String, LocalizationTemplate> entry : parentTemplateMap.entrySet()) {
+				for (Map.Entry<String, ? extends LocalizationTemplate> entry : parentTemplateMap.entrySet()) {
 					templateMap.putIfAbsent(entry.getKey(), entry.getValue());
 				}
 			}

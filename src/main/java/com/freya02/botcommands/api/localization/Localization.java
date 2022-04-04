@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.localization.providers.LocalizationBundleProviders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -20,12 +21,12 @@ public class Localization {
 	private static final ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
 	private static final Map<String, Map<Locale, Localization>> localizationMap = Collections.synchronizedMap(new HashMap<>());
 
-	private final Map<String, ? extends LocalizationTemplate> strings;
+	private final Map<String, ? extends LocalizationTemplate> templateMap;
 	private final Locale effectiveLocale;
 
 	private Localization(@NotNull LocalizationBundle bundle) {
 		this.effectiveLocale = bundle.getEffectiveLocale();
-		this.strings = bundle.getTemplateMap();
+		this.templateMap = bundle.getTemplateMap();
 	}
 
 	@Nullable
@@ -74,27 +75,33 @@ public class Localization {
 	}
 
 	@Nullable
-	public static Localization getInstance(@NotNull String bundleName, @NotNull Locale locale) {
-		final Map<Locale, Localization> localeMap = localizationMap.computeIfAbsent(bundleName, x -> Collections.synchronizedMap(new HashMap<>()));
+	public static Localization getInstance(@NotNull String baseName, @NotNull Locale locale) {
+		final Map<Locale, Localization> localeMap = localizationMap.computeIfAbsent(baseName, x -> Collections.synchronizedMap(new HashMap<>()));
 		final Localization value = localeMap.get(locale);
 
 		if (value != null) {
 			return value;
 		} else {
 			try {
-				final Localization newValue = retrieveBundle(bundleName, locale);
+				final Localization newValue = retrieveBundle(baseName, locale);
 				localeMap.put(locale, newValue);
 
 				return newValue;
 			} catch (Exception e) {
-				throw new RuntimeException("Unable to get bundle '%s' for locale '%s'".formatted(bundleName, locale), e);
+				throw new RuntimeException("Unable to get bundle '%s' for locale '%s'".formatted(baseName, locale), e);
 			}
 		}
 	}
 
+	@NotNull
+	@UnmodifiableView
+	public Map<String, ? extends LocalizationTemplate> getTemplateMap() {
+		return Collections.unmodifiableMap(templateMap);
+	}
+
 	@Nullable
 	public LocalizationTemplate get(String path) {
-		return strings.get(path);
+		return templateMap.get(path);
 	}
 
 	public Locale getEffectiveLocale() {
