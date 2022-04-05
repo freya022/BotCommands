@@ -34,7 +34,7 @@ public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
 		handle(context, event, throwable);
 	}
 
-	public void handle(BContext context, Event event, Throwable throwable) {} //TODO add modal & context menu exception handlers
+	public void handle(BContext context, Event event, Throwable throwable) {}
 
 	public void handle(BContext context, MessageReceivedEvent event, Throwable throwable) {}
 
