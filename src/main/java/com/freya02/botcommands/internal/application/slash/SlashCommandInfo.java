@@ -127,7 +127,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					final Object resolved = parameter.getResolver().resolve(context, this, event, optionMapping);
 
 					if (resolved == null) {
-						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
+						event.reply(context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName()))
 								.setEphemeral(true)
 								.queue();
 
@@ -138,7 +138,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					}
 
 					if (!parameter.getBoxedType().isAssignableFrom(resolved.getClass())) {
-						event.reply(context.getDefaultMessages(event.getUserLocale()).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), resolved.getClass().getSimpleName()))
+						event.reply(context.getDefaultMessages(event).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), resolved.getClass().getSimpleName()))
 								.setEphemeral(true)
 								.queue();
 

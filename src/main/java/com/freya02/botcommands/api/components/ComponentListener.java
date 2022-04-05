@@ -85,7 +85,7 @@ public class ComponentListener extends ListenerAdapter {
 			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 
 			if (fetchedComponent == null) {
-				event.reply(context.getDefaultMessages(event.getUserLocale()).getNullComponentTypeErrorMsg())
+				event.reply(context.getDefaultMessages(event).getNullComponentTypeErrorMsg())
 						.setEphemeral(true)
 						.queue();
 
@@ -158,9 +158,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getUserLocale()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component ID handler", baseEx);
@@ -188,9 +188,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event.getUserLocale()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event.getUserLocale()).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component callback", baseEx);
@@ -278,7 +278,7 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
-		event.reply(reason.getReason(context.getDefaultMessages(event.getUserLocale())))
+		event.reply(reason.getReason(context.getDefaultMessages(event)))
 				.setEphemeral(true)
 				.queue();
 	}
