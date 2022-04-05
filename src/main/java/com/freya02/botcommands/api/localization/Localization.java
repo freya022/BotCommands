@@ -66,8 +66,12 @@ public class Localization {
 		}
 	}
 
-	public static void invalidateLocalization(@NotNull String bundleName) {
-		localizationMap.remove(bundleName);
+	public static void invalidateLocalization(@NotNull String baseName) {
+		localizationMap.remove(baseName);
+	}
+
+	public static void invalidateLocalization(@NotNull String baseName, @NotNull Locale locale) {
+		localizationMap.computeIfAbsent(baseName, x -> Collections.synchronizedMap(new HashMap<>())).remove(locale);
 	}
 
 	@Nullable
