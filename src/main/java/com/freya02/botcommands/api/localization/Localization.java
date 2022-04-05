@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.localization;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.localization.providers.DefaultLocalizationBundleProvider;
+import com.freya02.botcommands.api.localization.providers.LocalizationBundleProvider;
 import com.freya02.botcommands.api.localization.providers.LocalizationBundleProviders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,8 +12,12 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.util.*;
 
-//TODO docs
-//Low level API
+/**
+ * Provides a low level API for localization
+ * <br>You can get an instance using {@link #getInstance(String, Locale)}, as well as invalidate cached localization data, as to reload them on next use
+ * <br>You can customize localization providers, as well as the localization templates they give, each provider is tested until one returns a valid localization bundle, see {@link DefaultLocalizationBundleProvider} for the default specification
+ * <p>You can add more localization bundle providers using {@link LocalizationBundleProviders#registerProvider(LocalizationBundleProvider)}
+ */
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
@@ -66,14 +72,34 @@ public class Localization {
 		}
 	}
 
+	/**
+	 * Invalidates all the localization bundles with the specified base name
+	 *
+	 * @param baseName The base name of the bundles to invalidate
+	 */
 	public static void invalidateLocalization(@NotNull String baseName) {
 		localizationMap.remove(baseName);
 	}
 
+	/**
+	 * Invalidates the localization bundles with the specified base name & locale
+	 *
+	 * @param baseName The base name of the bundles to invalidate
+	 * @param locale   The locale of the bundle to invalidate
+	 */
 	public static void invalidateLocalization(@NotNull String baseName, @NotNull Locale locale) {
 		localizationMap.computeIfAbsent(baseName, x -> Collections.synchronizedMap(new HashMap<>())).remove(locale);
 	}
 
+	/**
+	 * Gets the localization instance for the specified bundle name and locale
+	 * <br>This cycles through all the available {@link LocalizationBundleProvider LocalizationBundleProviders} until one returns a valid localization bundle
+	 *
+	 * @param baseName The name of the bundle
+	 * @param locale   The locale of the bundle
+	 *
+	 * @return The localization instance for this bundle
+	 */
 	@Nullable
 	public static Localization getInstance(@NotNull String baseName, @NotNull Locale locale) {
 		final Map<Locale, Localization> localeMap = localizationMap.computeIfAbsent(baseName, x -> Collections.synchronizedMap(new HashMap<>()));
@@ -93,17 +119,35 @@ public class Localization {
 		}
 	}
 
+	/**
+	 * Returns an unmodifiable view of the <code>localization path -> LocalizationTemplate</code> map
+	 *
+	 * @return An unmodifiable view of the <code>localization path -> LocalizationTemplate</code> map
+	 */
 	@NotNull
 	@UnmodifiableView
 	public Map<String, ? extends LocalizationTemplate> getTemplateMap() {
 		return Collections.unmodifiableMap(templateMap);
 	}
 
+	/**
+	 * Returns the {@link LocalizationTemplate} for the specified localization path
+	 *
+	 * @param path The localization path of the template
+	 *
+	 * @return The {@link LocalizationTemplate} for the specified localization path
+	 */
 	@Nullable
 	public LocalizationTemplate get(String path) {
 		return templateMap.get(path);
 	}
 
+	/**
+	 * Returns the effective Locale for this Localization instance
+	 * <br>This might not be the same as the one supplied in {@link #getInstance(String, Locale)} due to missing bundles
+	 *
+	 * @return The effective Locale for this Localization instance
+	 */
 	public Locale getEffectiveLocale() {
 		return effectiveLocale;
 	}
@@ -117,6 +161,7 @@ public class Localization {
 		 *
 		 * @param key   The key from the templated string
 		 * @param value The value to assign it to
+		 *
 		 * @return The entry
 		 */
 		@NotNull
