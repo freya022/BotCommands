@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -93,9 +94,16 @@ public interface BContext {
 	@NotNull
 	DefaultMessages getDefaultMessages(@NotNull Locale locale);
 
+	//TODO docs
 	@NotNull
 	default DefaultMessages getDefaultMessages(@Nullable Guild guild) {
 		return getDefaultMessages(getEffectiveLocale(guild));
+	}
+
+	//TODO docs
+	@NotNull
+	default DefaultMessages getDefaultMessages(@NotNull Interaction interaction) {
+		return getDefaultMessages(interaction.getUserLocale());
 	}
 
 	/**

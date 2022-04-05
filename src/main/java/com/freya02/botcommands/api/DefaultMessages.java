@@ -231,4 +231,11 @@ public final class DefaultMessages {
 	public String getComponentInvalidDataErrorMsg() {
 		return getLocalizationTemplate("component.invalid.data.error.message").localize();
 	}
+
+	/**
+	 * @return Message to display when a user tries to use a modal which has reached timeout
+	 */
+	public String getModalExpiredErrorMsg() {
+		return getLocalizationTemplate("modal.expired.error.message").localize();
+	}
 }

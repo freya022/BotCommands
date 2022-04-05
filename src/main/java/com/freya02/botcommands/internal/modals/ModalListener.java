@@ -44,8 +44,7 @@ public class ModalListener implements EventListener {
 				final ModalData modalData = context.getModalMaps().consumeModal(event.getModalId());
 
 				if (modalData == null) { //Probably the modal expired
-					//TODO localize
-					event.reply("This modal is no longer available")
+					event.reply(context.getDefaultMessages(event.getUserLocale()).getModalExpiredErrorMsg())
 							.setEphemeral(true)
 							.queue();
 
