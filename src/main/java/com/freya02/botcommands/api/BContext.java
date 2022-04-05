@@ -94,13 +94,25 @@ public interface BContext {
 	@NotNull
 	DefaultMessages getDefaultMessages(@NotNull Locale locale);
 
-	//TODO docs
+	/**
+	 * Returns the {@link DefaultMessages} instance for this Guild's locale
+	 *
+	 * @param guild The Guild to take the locale from
+	 *
+	 * @return The {@link DefaultMessages} instance with the Guild's locale
+	 */
 	@NotNull
 	default DefaultMessages getDefaultMessages(@Nullable Guild guild) {
 		return getDefaultMessages(getEffectiveLocale(guild));
 	}
 
-	//TODO docs
+	/**
+	 * Returns the {@link DefaultMessages} instance for this user's locale
+	 *
+	 * @param interaction The Interaction to take the user's locale from
+	 *
+	 * @return The {@link DefaultMessages} instance with the user's locale
+	 */
 	@NotNull
 	default DefaultMessages getDefaultMessages(@NotNull Interaction interaction) {
 		return getDefaultMessages(interaction.getUserLocale());
