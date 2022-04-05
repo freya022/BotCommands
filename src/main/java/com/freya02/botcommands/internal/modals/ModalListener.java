@@ -54,14 +54,7 @@ public class ModalListener implements EventListener {
 				final ModalHandlerInfo modalHandler = context.getApplicationCommandsContext().getModalHandler(modalData.getHandlerName());
 
 				if (modalHandler == null) {
-					LOGGER.warn("Got no modal handler for handler name: '{}'", modalData.getHandlerName());
-
-					//TODO localize
-					event.reply("Modal handler not found")
-							.setEphemeral(true)
-							.queue();
-
-					return;
+					throw new IllegalArgumentException("Got no modal handler for handler name: '%s'".formatted(modalData.getHandlerName()));
 				}
 
 				modalHandler.execute(context, modalData, event, throwableConsumer);
@@ -82,9 +75,9 @@ public class ModalListener implements EventListener {
 
 			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a modal handler", baseEx);
 			if (event.isAcknowledged()) {
-				event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getGeneralErrorMsg()).setEphemeral(true).queue();
 			} else {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.reply(context.getDefaultMessages(event.getGuild()).getGeneralErrorMsg()).setEphemeral(true).queue();
 			}
 
 			context.dispatchException("Exception in modal handler", baseEx);

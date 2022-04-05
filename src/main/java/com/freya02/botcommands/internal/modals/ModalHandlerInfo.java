@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.modals;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.ExecutableInteractionInfo;
@@ -11,7 +10,6 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,8 +19,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class ModalHandlerInfo implements ExecutableInteractionInfo {
-	private static final Logger LOGGER = Logging.getLogger();
-
 	private final Object autocompletionHandler;
 	private final Method method;
 	private final MethodRunner methodRunner;
@@ -131,19 +127,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 			final Object data = userData[i];
 
 			if (!parameter.getBoxedType().isAssignableFrom(data.getClass())) {
-				//TODO localize
-				// could be really nice to have a class which holds a version of the user-localized error and the dev-localized errors,
-				// based off the same parameters, using the new localization API
-
-				//TODO Should these be removed in favor of just throwing an exception ? The user doesn't need to know errors that specific,
-				// the dev already receives the error by DMs (and by looking at logs)
-				event.replyFormat("The parameter '%s' is not a valid type (expected a %s, got a %s)", parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName())
-						.setEphemeral(true)
-						.queue();
-
-				LOGGER.error("The modal user data '{}' is not a valid type (expected a {}, got a {})", parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName());
-
-				return false;
+				throw new IllegalArgumentException("The modal user data '%s' is not a valid type (expected a %s, got a %s)".formatted(parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName()));
 			}
 
 			objects.add(data);
@@ -167,31 +151,15 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 				final ModalMapping modalMapping = event.getValue(inputId);
 
 				if (modalMapping == null) {
-					throw new IllegalArgumentException(String.format("Modal input '%s' was not found", parameter.getModalInputName()));
+					throw new IllegalArgumentException("Modal input '%s' was not found".formatted(parameter.getModalInputName()));
 				}
 
 				obj = parameter.getResolver().resolve(context, this, event, modalMapping);
 
 				if (obj == null) {
-					event.reply(context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
-
-					//Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-					LOGGER.trace("The parameter '{}' of value '{}' could not be resolved into a {}", parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return false;
-				}
-
-				if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
-					//TODO localize, see above
-					event.reply(context.getDefaultMessages(event).getSlashCommandInvalidParameterTypeMsg(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()))
-							.setEphemeral(true)
-							.queue();
-
-					LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-					return false;
+					throw new IllegalArgumentException("The parameter '%s' of value '%s' could not be resolved into a %s".formatted(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()));
+				} else if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
+					throw new IllegalArgumentException("The parameter '%s' of value '%s' is not a valid type (expected a %s)".formatted(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()));
 				}
 			} else {
 				obj = parameter.getCustomResolver().resolve(context, this, event);

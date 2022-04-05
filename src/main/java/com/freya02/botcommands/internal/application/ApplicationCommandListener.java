@@ -59,8 +59,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findLiveUserCommand(event.getGuild(), event.getCommandPath());
 
 			if (userCommand == null) {
-				event.reply(context.getDefaultMessages(event).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("An user context command could not be found: " + event.getName());
 			}
 
 			if (!canRun(event, userCommand)) return;
@@ -79,8 +78,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findLiveMessageCommand(event.getGuild(), event.getCommandPath());
 
 			if (messageCommand == null) {
-				event.reply(context.getDefaultMessages(event).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("A message context command could not be found: " + event.getName());
 			}
 
 			if (!canRun(event, messageCommand)) return;
@@ -99,8 +97,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
-				event.reply(context.getDefaultMessages(event).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("A slash command could not be found: " + event.getCommandPath());
 			}
 
 			if (!canRun(event, slashCommand)) return;
@@ -213,9 +210,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
 			if (event.isAcknowledged()) {
-				event.getHook().sendMessage(context.getDefaultMessages(event).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.getHook().sendMessage(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 			} else {
-				event.reply(context.getDefaultMessages(event).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.reply(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 			}
 
 			context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);

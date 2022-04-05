@@ -85,7 +85,7 @@ public class ComponentListener extends ListenerAdapter {
 			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 
 			if (fetchedComponent == null) {
-				event.reply(context.getDefaultMessages(event).getNullComponentTypeErrorMsg())
+				event.reply(context.getDefaultMessages(event).getComponentNotFoundErrorMsg())
 						.setEphemeral(true)
 						.queue();
 
@@ -158,9 +158,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing the component ID handler", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event).getComponentHandlerErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component ID handler", baseEx);
@@ -188,9 +188,9 @@ public class ComponentListener extends ListenerAdapter {
 
 				Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing a component callback", baseEx);
 				if (event.isAcknowledged()) {
-					event.getHook().sendMessage(context.getDefaultMessages(event).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.getHook().sendMessage(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 				} else {
-					event.reply(context.getDefaultMessages(event).getComponentCallbackErrorMsg()).setEphemeral(true).queue();
+					event.reply(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 				}
 
 				context.dispatchException("Exception in component callback", baseEx);
@@ -213,11 +213,7 @@ public class ComponentListener extends ListenerAdapter {
 
 		final var parameters = descriptor.getParameters();
 		if (parameters.getOptionCount() != args.length) {
-			LOGGER.warn("Resolver for {} has {} arguments but component had {} data objects", Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args);
-
-			onError(event, ComponentErrorReason.INVALID_DATA);
-
-			return;
+			throw new IllegalArgumentException("Resolver for %s has %d arguments but component had %d data objects".formatted(Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args.length));
 		}
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(handlerName, args);
@@ -238,28 +234,22 @@ public class ComponentListener extends ListenerAdapter {
 					obj = parameter.getResolver().resolve(context, descriptor, event, arg);
 
 					if (obj == null) {
-						LOGGER.warn("Component id '{}', tried to resolve '{}' with an option resolver {} on method {} but result is null",
+						throw new IllegalArgumentException("Component id '%s', tried to resolve '%s' with an option resolver %s on method %s but result is null".formatted(
 								event.getComponentId(),
 								arg,
 								parameter.getCustomResolver().getClass().getSimpleName(),
-								Utils.formatMethodShort(descriptor.getMethod()));
-
-						onError(event, ComponentErrorReason.INVALID_DATA);
-
-						return;
+								Utils.formatMethodShort(descriptor.getMethod())
+						));
 					}
 				} else {
 					obj = parameter.getCustomResolver().resolve(context, descriptor, event);
 
 					if (obj == null) {
-						LOGGER.warn("Component id '{}', tried to use custom resolver {} on method {} but result is null",
+						throw new IllegalArgumentException("Component id '%s', tried to use custom resolver %s on method %s but result is null".formatted(
 								event.getComponentId(),
 								parameter.getCustomResolver().getClass().getSimpleName(),
-								Utils.formatMethodShort(descriptor.getMethod()));
-
-						onError(event, ComponentErrorReason.INVALID_DATA);
-
-						return;
+								Utils.formatMethodShort(descriptor.getMethod())
+						));
 					}
 				}
 

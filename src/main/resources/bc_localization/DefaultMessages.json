@@ -1,4 +1,6 @@
 {
+    "general_error_message": "An uncaught exception occurred and has been reported to the bot developers, please try again later",
+
     "user.perm.error.message": "You are not allowed to do this",
     "bot.perm.error.message": "I am missing these permissions: {permissions}",
     "owner.only.error.message": "Only the owner can use this",
@@ -8,15 +10,10 @@
     "guild.cooldown.message": "You must wait **{cooldown:%.2f} seconds in this guild**",
 
     "command.not.found.message": "Unknown command, maybe you meant: {suggestions}",
-    "command.error.message": "An uncaught exception occurred",
+
     "closed.dm.error.message": "Unable to send you a DM, please open your DMs from this server",
-    "application.command.not.found.message": "Unknown application command",
-    "application.command.error.message": "An uncaught exception occurred",
-    "component.handler.error.message": "An uncaught exception occurred",
-    "component.callback.error.message": "An uncaught exception occurred",
+
     "slash.command.unresolvable.parameter.message": "The parameter '{parameterName}' could not be resolved into a {parameterType}",
-    "slash.command.invalid.parameter.type.message": "The parameter '{parameterName}' is not a valid type (expected a {expectedType}, got a {actualType})",
-    "null.component.type.error.message": "This component is not usable anymore",
 
     "nsfw.disabled.error.message": "This NSFW command is disabled in this kind of channel",
     "nsfw.only.error.message": "This command can only be used in NSFW channels",
@@ -25,7 +22,6 @@
     "component.not.allowed.error.message": "You are not allowed to use this",
     "component.expired.error.message": "This component is not usable anymore",
     "component.not.found.error.message": "This component could not be found",
-    "component.invalid.data.error.message": "This component has invalid data",
 
     "modal.expired.error.message": "This modal is no longer available"
 }

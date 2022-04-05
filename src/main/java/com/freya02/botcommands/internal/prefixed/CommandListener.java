@@ -314,7 +314,7 @@ public final class CommandListener extends ListenerAdapter {
 
 			message.addReaction(BaseCommandEventImpl.ERROR).queue();
 			if (message.getGuildChannel().canTalk()) {
-				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
+				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getGeneralErrorMsg()).queue();
 			}
 
 			context.dispatchException(msg, baseEx);

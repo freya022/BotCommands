@@ -138,13 +138,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					}
 
 					if (!parameter.getBoxedType().isAssignableFrom(resolved.getClass())) {
-						event.reply(context.getDefaultMessages(event).getSlashCommandInvalidParameterTypeMsg(applicationOptionData.getEffectiveName(), parameter.getBoxedType().getSimpleName(), resolved.getClass().getSimpleName()))
-								.setEphemeral(true)
-								.queue();
-
-						LOGGER.error("The parameter '{}' of value '{}' is not a valid type (expected a {})", applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName());
-
-						return false;
+						throw new IllegalArgumentException("The parameter '%s' of value '%s' is not a valid type (expected a %s)".formatted(applicationOptionData.getEffectiveName(), optionMapping.getAsString(), parameter.getBoxedType().getSimpleName()));
 					}
 
 					objectList.add(resolved);

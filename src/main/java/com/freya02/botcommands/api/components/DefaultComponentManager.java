@@ -137,11 +137,7 @@ public class DefaultComponentManager implements ComponentManager {
 			}
 
 			if (consumer == null) {
-				onError.accept(ComponentErrorReason.NOT_FOUND);
-
-				LOGGER.warn("Could not find a consumer for handler id {} on component {}", handlerId, event.getComponentId());
-
-				return;
+				throw new IllegalArgumentException("Could not find a consumer for handler id %s on component %s".formatted(handlerId, event.getComponentId()));
 			}
 
 			dataConsumer.accept(eventFunc.apply(consumer));

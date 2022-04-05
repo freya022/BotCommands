@@ -64,6 +64,13 @@ public final class DefaultMessages {
 	}
 
 	/**
+	 * @return Message to display when an uncaught exception occurs
+	 */
+	public String getGeneralErrorMsg() {
+		return getLocalizationTemplate("general_error_message").localize();
+	}
+
+	/**
 	 * @return Message to display when the user does not have enough permissions
 	 */
 	public String getUserPermErrorMsg() {
@@ -113,41 +120,6 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when an exception occurs in a command
-	 */
-	public String getCommandErrorMsg() {
-		return getLocalizationTemplate("command.error.message").localize();
-	}
-
-	/**
-	 * @return Message to display when an application command is not found
-	 */
-	public String getApplicationCommandNotFoundMsg() {
-		return getLocalizationTemplate("application.command.not.found.message").localize();
-	}
-
-	/**
-	 * @return Message to display when an exception occurs in an application command
-	 */
-	public String getApplicationCommandErrorMsg() {
-		return getLocalizationTemplate("application.command.error.message").localize();
-	}
-
-	/**
-	 * @return Message to display when an exception occurs in a component ID handler
-	 */
-	public String getComponentHandlerErrorMsg() {
-		return getLocalizationTemplate("component.handler.error.message").localize();
-	}
-
-	/**
-	 * @return Message to display when an exception occurs in a component callback
-	 */
-	public String getComponentCallbackErrorMsg() {
-		return getLocalizationTemplate("component.callback.error.message").localize();
-	}
-
-	/**
 	 * @return Message to display when an application command parameter is unresolvable
 	 */
 	public String getSlashCommandUnresolvableParameterMsg(String parameterName, String parameterType) {
@@ -155,24 +127,6 @@ public final class DefaultMessages {
 				entry(parameterName, parameterName),
 				entry(parameterType, parameterType)
 		);
-	}
-
-	/**
-	 * @return Message to display when an application command parameter is resolved into an invalid type
-	 */
-	public String getSlashCommandInvalidParameterTypeMsg(String parameterName, String expectedType, String actualType) {
-		return getLocalizationTemplate("slash.command.invalid.parameter.type.message").localize(
-				entry("parameterName", parameterName),
-				entry("expectedType", expectedType),
-				entry("actualType", actualType)
-		);
-	}
-
-	/**
-	 * @return Message to display when a component type is null (The ID is unresolvable / not found)
-	 */
-	public String getNullComponentTypeErrorMsg() {
-		return getLocalizationTemplate("null.component.type.error.message").localize();
 	}
 
 	/**
@@ -222,14 +176,6 @@ public final class DefaultMessages {
 	 */
 	public String getComponentNotFoundErrorMsg() {
 		return getLocalizationTemplate("component.not.found.error.message").localize();
-	}
-
-	/**
-	 * @return Message to display when a user tries to use a component which has invalid data
-	 * <br>This is usually when the number of arguments don't match up, so the button listener has a different signature
-	 */
-	public String getComponentInvalidDataErrorMsg() {
-		return getLocalizationTemplate("component.invalid.data.error.message").localize();
 	}
 
 	/**
