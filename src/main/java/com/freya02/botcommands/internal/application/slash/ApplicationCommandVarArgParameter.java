@@ -10,7 +10,7 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 
 public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends ApplicationCommandParameter<RESOLVER> {
-	private final int varArgs;
+	private final int varArgs, numRequired;
 
 	public ApplicationCommandVarArgParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
 		super(resolverType, parameter, ReflectionUtils.getCollectionTypeOrBoxedSelfType(parameter), index);
@@ -18,6 +18,7 @@ public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends Applic
 		final VarArgs varArgsAnnot = parameter.getAnnotation(VarArgs.class);
 		if (varArgsAnnot != null) {
 			this.varArgs = varArgsAnnot.value();
+			this.numRequired = varArgsAnnot.numRequired();
 
 			if (!List.class.isAssignableFrom(parameter.getType())) {
 				throw new IllegalArgumentException("Parameter #%d at %s must be a List since it is annotated with @%s".formatted(index, Utils.formatMethodShort((Method) parameter.getDeclaringExecutable()), VarArgs.class.getSimpleName()));
@@ -27,7 +28,7 @@ public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends Applic
 				throw new IllegalArgumentException("@" + VarArgs.class.getSimpleName() + "'s value need to be between 1 and 25 included");
 			}
 		} else {
-			this.varArgs = -1;
+			this.varArgs = numRequired = -1;
 		}
 	}
 
@@ -37,5 +38,11 @@ public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends Applic
 
 	public int getVarArgs() {
 		return varArgs;
+	}
+
+	public boolean isRequiredVararg(int varArgNum) {
+		if (!isVarArg()) return !isOptional(); //Default if not a vararg
+
+		return varArgNum < numRequired;
 	}
 }

@@ -111,7 +111,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 					final OptionMapping optionMapping = event.getOption(varArgName);
 
 					if (optionMapping == null) {
-						if (parameter.isOptional() || (parameter.isVarArg() && varArgNum != 0)) {
+						if (parameter.isOptional() || (parameter.isVarArg() && !parameter.isRequiredVararg(varArgNum))) {
 							if (parameter.isPrimitive()) {
 								objectList.add(0);
 							} else {

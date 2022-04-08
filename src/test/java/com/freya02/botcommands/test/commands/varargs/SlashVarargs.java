@@ -25,9 +25,9 @@ public class SlashVarargs extends ApplicationCommand {
 	public DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
 	                                                    @Nullable String commandId, @NotNull CommandPath commandPath,
 	                                                    @NotNull String optionName, @NotNull Class<?> parameterType) {
-		if (optionName.equals("number")) {
-			return e -> List.of(42L);
-		}
+//		if (optionName.equals("number")) {
+//			return e -> List.of(42L, 43L, 44L);
+//		}
 
 		return super.getDefaultValueSupplier(context, guild, commandId, commandPath, optionName, parameterType);
 	}
@@ -35,7 +35,7 @@ public class SlashVarargs extends ApplicationCommand {
 	@JDASlashCommand(name = "varargs")
 	public void run(GuildSlashEvent event,
 	                @AppOption(autocomplete = STR_AUTOCOMPLETE_NAME) String string,
-	                @AppOption(name = "number", description = "lol") @VarArgs(3) List<Long> longs) {
+	                @AppOption(name = "number", description = "lol") @VarArgs(value = 3, numRequired = 2) List<Long> longs) {
 		event.reply("longs: " + longs)
 				.setEphemeral(true)
 				.queue();

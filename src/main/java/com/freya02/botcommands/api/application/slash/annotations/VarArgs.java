@@ -21,4 +21,9 @@ public @interface VarArgs {
 	 * @return The number of times this option needs to appear, must be between 1 and 25 (max number of options)
 	 */
 	int value();
+
+	/**
+	 * @return The number of required options for this vararg
+	 */
+	int numRequired() default 1;
 }

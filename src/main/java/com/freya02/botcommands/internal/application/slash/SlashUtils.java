@@ -124,7 +124,7 @@ public class SlashUtils {
 				}
 
 				//If vararg then next arguments are optional
-				data.setRequired(!parameter.isOptional() && varArgNum == 0);
+				data.setRequired(!parameter.isOptional() && parameter.isRequiredVararg(varArgNum));
 
 				list.add(data);
 			}
