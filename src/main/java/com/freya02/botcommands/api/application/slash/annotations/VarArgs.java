@@ -11,8 +11,8 @@ import java.util.List;
 //TODO see if we can auto generate description based off a MessageFormat, could cause issues with localization
 /**
  * Allows generating N command options from the specified {@link AppOption}
- * <br>Varargs works the same as they would in java, except at least one argument is required, but the rest of the arguments are optional
  * <br>The target parameter must be of type {@link List}
+ * <br>You can configure how many arguments are required with {@link #numRequired()}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
