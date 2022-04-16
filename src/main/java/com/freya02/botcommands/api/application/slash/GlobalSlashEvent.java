@@ -28,27 +28,35 @@ public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent impl
 
 	@Override
 	@NotNull
-	public String localizeGuild(@NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeGuild(localizationBundle, localizationPath, entries);}
+	public String localizeGuild(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
-	public String localizeGuild(@NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeGuild(localizationPath, entries);}
+	public String localizeGuild(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationPath, entries);}
 
 	@Override
 	@NotNull
-	public String localizeUser(@NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeUser(localizationBundle, localizationPath, entries);}
+	public String localizeUser(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeUser(localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
-	public String localizeUser(@NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeUser(localizationPath, entries);}
+	public String localizeUser(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeUser(localizationPath, entries);}
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+	public String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationBundle, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationPath, entries);}
 
 	@Override
 	@NotNull

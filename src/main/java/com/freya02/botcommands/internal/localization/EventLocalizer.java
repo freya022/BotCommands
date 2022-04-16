@@ -60,8 +60,32 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 	@Override
 	@NotNull
+	public String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
+		if (userLocale != null) {
+			return localizeUser(localizationPath, localizationBundle, entries);
+		} else if (guildLocale != null) {
+			return localizeGuild(localizationPath, localizationBundle, entries);
+		} else {
+			return localize(Locale.getDefault(), localizationBundle, localizationPath, entries);
+		}
+	}
+
+	@Override
+	@NotNull
 	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
 		return localize(locale, getLocalizationBundle(), localizationPath, entries);
+	}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
+		if (userLocale != null) {
+			return localizeUser(localizationPath, entries);
+		} else if (guildLocale != null) {
+			return localizeGuild(localizationPath, entries);
+		} else {
+			return localize(Locale.getDefault(), localizationPath, entries);
+		}
 	}
 
 	@Override
@@ -97,6 +121,4 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 		return userLocale;
 	}
-
-
 }

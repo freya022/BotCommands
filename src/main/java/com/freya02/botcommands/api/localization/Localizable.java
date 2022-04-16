@@ -30,6 +30,18 @@ public interface Localizable {
 	String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
 
 	/**
+	 * Localizes the provided path, in the specified bundle, with the best locale available (User > Guild > Default)
+	 *
+	 * @param localizationBundle The name of the localization bundle
+	 * @param localizationPath   The localization path to search for
+	 * @param entries            The entries to fill the template
+	 *
+	 * @return The localized string
+	 */
+	@NotNull
+	String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+
+	/**
 	 * Localizes the provided path, in the current context's bundle, with the provided locale
 	 *
 	 * @param locale             The Locale to use when fetching the localization bundle
@@ -40,4 +52,15 @@ public interface Localizable {
 	 */
 	@NotNull
 	String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+
+	/**
+	 * Localizes the provided path, in the current context's bundle, with the best locale available (User > Guild > Default)
+	 *
+	 * @param localizationPath   The localization path to search for
+	 * @param entries            The entries to fill the template
+	 *
+	 * @return The localized string
+	 */
+	@NotNull
+	String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
 }

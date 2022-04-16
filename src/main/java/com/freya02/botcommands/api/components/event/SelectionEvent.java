@@ -1,10 +1,8 @@
 package com.freya02.botcommands.api.components.event;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.localization.GuildLocalizable;
-import com.freya02.botcommands.api.localization.Localizable;
 import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.UserLocalizable;
+import com.freya02.botcommands.api.localization.components.LambdaLocalizable;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
@@ -14,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.Locale;
 
-public class SelectionEvent extends SelectMenuInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
+public class SelectionEvent extends SelectMenuInteractionEvent implements LambdaLocalizable {
 	private final EventLocalizer localizer;
 
 	private final BContext context;
@@ -30,69 +28,38 @@ public class SelectionEvent extends SelectMenuInteractionEvent implements GuildL
 		return context;
 	}
 
-	/**
-	 * <b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localizeGuild(@NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeGuild(localizationBundle, localizationPath, entries);}
+	public String localizeGuild(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationBundle, localizationPath, entries);}
 
-	/**
-	 * <b>Will not work under lambdas</b>
-	 * <br><b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localizeGuild(@NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeGuild(localizationPath, entries);}
+	public String localizeGuild(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationPath, entries);}
 
-	/**
-	 * <b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localizeUser(@NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeUser(localizationBundle, localizationPath, entries);}
+	public String localizeUser(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeUser(localizationBundle, localizationPath, entries);}
 
-	/**
-	 * <b>Will not work under lambdas</b>
-	 * <br><b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localizeUser(@NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localizeUser(localizationPath, entries);}
+	public String localizeUser(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeUser(localizationPath, entries);}
 
-	/**
-	 * <b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
 
-	/**
-	 * <b>Will not work under lambdas</b>
-	 * <br><b>Localization path prefix set on method / class will not be taken into account if the event comes from a lambda</b>
-	 *
-	 * {@inheritDoc}
-	 */
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, Localization.@NotNull Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+	public String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationBundle, localizationPath, entries);}
 
-	/**
-	 * <b>Will not work under lambdas</b>
-	 *
-	 * {@inheritDoc}
-	 * @return
-	 */
+	@Override
+	@NotNull
+	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationPath, entries);}
+
 	@Override
 	@NotNull
 	public String getLocalizationBundle() {return localizer.getLocalizationBundle();}
