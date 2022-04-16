@@ -178,9 +178,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.xirado</groupId>
+            <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>36eea2a1c5</version>
+            <version>07a7c9c269</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

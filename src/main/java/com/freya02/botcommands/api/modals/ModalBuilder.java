@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.modals.ModalData;
 import com.freya02.botcommands.internal.modals.ModalMaps;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.text.Modal;
+import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +22,7 @@ public class ModalBuilder extends Modal.Builder {
 
 	@ApiStatus.Internal
 	public ModalBuilder(ModalMaps modalMaps, @NotNull String title, @NotNull String handlerName, Object[] userData) {
-		super("0");
-
-		setTitle(title);
+		super("0", title);
 
 		Checks.notNull(handlerName, "Modal handler name");
 		Checks.notNull(userData, "Modal user data");
