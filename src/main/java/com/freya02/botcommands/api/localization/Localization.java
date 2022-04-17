@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.localization;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.localization.providers.DefaultLocalizationBundleProvider;
-import com.freya02.botcommands.api.localization.providers.LocalizationBundleProvider;
-import com.freya02.botcommands.api.localization.providers.LocalizationBundleProviders;
+import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider;
+import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
+import com.freya02.botcommands.api.localization.providers.LocalizationMapProviders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -15,8 +15,8 @@ import java.util.*;
 /**
  * Provides a low level API for localization
  * <br>You can get an instance using {@link #getInstance(String, Locale)}, as well as invalidate cached localization data, as to reload them on next use
- * <br>You can customize localization providers, as well as the localization templates they give, each provider is tested until one returns a valid localization bundle, see {@link DefaultLocalizationBundleProvider} for the default specification
- * <p>You can add more localization bundle providers using {@link LocalizationBundleProviders#registerProvider(LocalizationBundleProvider)}
+ * <br>You can customize localization providers, as well as the localization templates they give, each provider is tested until one returns a valid localization bundle, see {@link DefaultLocalizationMapProvider} for the default specification
+ * <p>You can add more localization bundle providers using {@link LocalizationMapProviders#registerProvider(LocalizationMapProvider)}
  */
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -26,7 +26,7 @@ public class Localization {
 	private final Map<String, ? extends LocalizationTemplate> templateMap;
 	private final Locale effectiveLocale;
 
-	private Localization(@NotNull LocalizationBundle bundle) {
+	private Localization(@NotNull LocalizationMap bundle) {
 		this.effectiveLocale = bundle.getEffectiveLocale();
 		this.templateMap = bundle.getTemplateMap();
 	}
@@ -37,7 +37,7 @@ public class Localization {
 
 		for (Locale candidateLocale : candidateLocales) {
 			//Try to retrieve with the locale
-			final LocalizationBundle localizationBundle = LocalizationBundleProviders.cycleProviders(baseName, candidateLocale);
+			final LocalizationMap localizationBundle = LocalizationMapProviders.cycleProviders(baseName, candidateLocale);
 
 			if (localizationBundle != null) {
 				if (!localizationBundle.getEffectiveLocale().equals(candidateLocale)) {
@@ -93,7 +93,7 @@ public class Localization {
 
 	/**
 	 * Gets the localization instance for the specified bundle name and locale
-	 * <br>This cycles through all the available {@link LocalizationBundleProvider LocalizationBundleProviders} until one returns a valid localization bundle
+	 * <br>This cycles through all the available {@link LocalizationMapProvider LocalizationBundleProviders} until one returns a valid localization bundle
 	 *
 	 * @param baseName The name of the bundle
 	 * @param locale   The locale of the bundle
@@ -152,7 +152,7 @@ public class Localization {
 		return effectiveLocale;
 	}
 
-	private record BestLocale(Locale locale, LocalizationBundle bundle) {}
+	private record BestLocale(Locale locale, LocalizationMap bundle) {}
 
 	public record Entry(String key, Object value) {
 		/**

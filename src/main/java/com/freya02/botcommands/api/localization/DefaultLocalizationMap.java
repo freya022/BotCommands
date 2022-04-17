@@ -5,11 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 import java.util.Map;
 
-public class DefaultLocalizationBundle implements LocalizationBundle {
+public class DefaultLocalizationMap implements LocalizationMap {
 	private final Locale effectiveLocale;
 	private final Map<String, ? extends LocalizationTemplate> templateMap;
 
-	public DefaultLocalizationBundle(Locale effectiveLocale, Map<String, ? extends LocalizationTemplate> templateMap) {
+	public DefaultLocalizationMap(Locale effectiveLocale, Map<String, ? extends LocalizationTemplate> templateMap) {
 		this.effectiveLocale = effectiveLocale;
 		this.templateMap = templateMap;
 	}

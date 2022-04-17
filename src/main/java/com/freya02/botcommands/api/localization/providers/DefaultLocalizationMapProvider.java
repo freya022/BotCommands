@@ -10,10 +10,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-public class DefaultLocalizationBundleProvider implements LocalizationBundleProvider {
+public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 	@Override
 	@Nullable
-	public LocalizationBundle getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
+	public LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
 		final Map<String, LocalizationTemplate> templateMap = readTemplateMap(baseName, effectiveLocale);
 
 		return withParentBundles(baseName, effectiveLocale, templateMap);
@@ -39,7 +39,7 @@ public class DefaultLocalizationBundleProvider implements LocalizationBundleProv
 	}
 
 	@Nullable
-	private LocalizationBundle withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) throws IOException {
+	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) throws IOException {
 		//Need to get parent bundles
 		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
 
@@ -66,7 +66,7 @@ public class DefaultLocalizationBundleProvider implements LocalizationBundleProv
 			return null;
 		}
 
-		return new DefaultLocalizationBundle(effectiveLocale, templateMap);
+		return new DefaultLocalizationMap(effectiveLocale, templateMap);
 	}
 
 	@SuppressWarnings("unchecked")

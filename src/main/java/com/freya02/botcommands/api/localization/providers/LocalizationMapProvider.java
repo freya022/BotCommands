@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.LocalizationBundle;
+import com.freya02.botcommands.api.localization.LocalizationMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public interface LocalizationBundleProvider {
+public interface LocalizationMapProvider {
 	ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
 
 	default String appendPath(String path, String other) {
@@ -23,5 +23,5 @@ public interface LocalizationBundleProvider {
 	}
 
 	@Nullable
-	LocalizationBundle getBundle(@NotNull String baseName, @NotNull Locale locale) throws IOException;
+	LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale locale) throws IOException;
 }
