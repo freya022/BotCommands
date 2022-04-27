@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+//TODO docs
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 	@Override
 	@Nullable
@@ -17,6 +18,15 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		final Map<String, LocalizationTemplate> templateMap = readTemplateMap(baseName, effectiveLocale);
 
 		return withParentBundles(baseName, effectiveLocale, templateMap);
+	}
+
+	@Override
+	@Nullable
+	public LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale) throws IOException {
+		final Map<String, LocalizationTemplate> map = readTemplateMap(baseName, locale);
+		if (map == null) return null;
+
+		return new DefaultLocalizationMap(locale, map);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -48,12 +58,13 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		for (Locale candidateLocale : candidateLocales) {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
-			final Localization parentLocalization = Localization.getInstance(baseName, candidateLocale);
+			final LocalizationMap parentLocalization = LocalizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale); //Do not try to use Localization which will **also** try to get the parent localizations
 			if (parentLocalization != null) {
 				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.getTemplateMap();
 
 				if (templateMap == null) {
 					templateMap = new HashMap<>();
+					effectiveLocale = candidateLocale;
 				}
 
 				for (Map.Entry<String, ? extends LocalizationTemplate> entry : parentTemplateMap.entrySet()) {

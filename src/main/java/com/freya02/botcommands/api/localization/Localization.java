@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProviders;
+import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -40,10 +41,6 @@ public class Localization {
 			final LocalizationMap localizationBundle = LocalizationMapProviders.cycleProviders(baseName, candidateLocale);
 
 			if (localizationBundle != null) {
-				if (!localizationBundle.getEffectiveLocale().equals(candidateLocale)) {
-					throw new IllegalArgumentException("LocalizationBundle locale '%s' differ from requested locale '%s'".formatted(localizationBundle.getEffectiveLocale(), candidateLocale));
-				}
-
 				return new BestLocale(localizationBundle.getEffectiveLocale(), localizationBundle);
 			}
 		}
@@ -56,15 +53,17 @@ public class Localization {
 		final BestLocale bestLocale = chooseBestLocale(baseName, targetLocale);
 
 		if (bestLocale == null) {
-			LOGGER.warn("Could not find localization resources for '{}'", baseName);
+			if (Logging.tryLog(baseName)) LOGGER.warn("Could not find localization resources for '{}'", baseName);
 
 			return null;
 		} else {
 			if (!bestLocale.locale().equals(targetLocale)) { //Not default
 				if (bestLocale.locale().toString().isEmpty()) { //neutral lang
-					LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to neutral lang", baseName, targetLocale);
+					if (Logging.tryLog(baseName, targetLocale.toLanguageTag()))
+						LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to neutral lang", baseName, targetLocale);
 				} else {
-					LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to '{}'", baseName, targetLocale, bestLocale.locale());
+					if (Logging.tryLog(baseName, targetLocale.toLanguageTag(), bestLocale.locale.toLanguageTag()))
+						LOGGER.warn("Unable to find bundle '{}' with locale '{}', falling back to '{}'", baseName, targetLocale, bestLocale.locale());
 				}
 			}
 
@@ -78,6 +77,8 @@ public class Localization {
 	 * @param baseName The base name of the bundles to invalidate
 	 */
 	public static void invalidateLocalization(@NotNull String baseName) {
+		Logging.removeLogs(BCLocalizationFunction.class);
+		Logging.removeLogs();
 		localizationMap.remove(baseName);
 	}
 
@@ -88,6 +89,8 @@ public class Localization {
 	 * @param locale   The locale of the bundle to invalidate
 	 */
 	public static void invalidateLocalization(@NotNull String baseName, @NotNull Locale locale) {
+		Logging.removeLogs(BCLocalizationFunction.class);
+		Logging.removeLogs();
 		localizationMap.computeIfAbsent(baseName, x -> Collections.synchronizedMap(new HashMap<>())).remove(locale);
 	}
 

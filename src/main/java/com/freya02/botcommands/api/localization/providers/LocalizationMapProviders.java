@@ -9,6 +9,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.io.IOException;
 import java.util.*;
 
+//TODO docs
 public final class LocalizationMapProviders {
 	private static final Set<LocalizationMapProvider> providers = new HashSet<>();
 
@@ -19,10 +20,25 @@ public final class LocalizationMapProviders {
 		return Collections.unmodifiableSet(providers);
 	}
 
+	//TODO docs
 	@Nullable
 	public static LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) throws IOException {
 		for (LocalizationMapProvider provider : providers) {
 			final LocalizationMap bundle = provider.getBundle(baseName, locale);
+
+			if (bundle != null) {
+				return bundle;
+			}
+		}
+
+		return null;
+	}
+
+	//TODO docs
+	@Nullable
+	public static LocalizationMap cycleProvidersNoParent(@NotNull String baseName, @NotNull Locale locale) throws IOException {
+		for (LocalizationMapProvider provider : providers) {
+			final LocalizationMap bundle = provider.getBundleNoParent(baseName, locale);
 
 			if (bundle != null) {
 				return bundle;
