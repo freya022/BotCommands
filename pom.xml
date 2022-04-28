@@ -180,7 +180,7 @@
         <dependency>
             <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>07a7c9c269</version>
+            <version>014f4e119b</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -193,7 +193,7 @@
 <!--        <dependency>-->
 <!--            <groupId>net.dv8tion</groupId>-->
 <!--            <artifactId>JDA</artifactId>-->
-<!--            <version>4.3.0_DEV</version>-->
+<!--            <version>5.0.0-alpha.11_DEV</version>-->
 <!--            <exclusions>-->
 <!--                <exclusion>-->
 <!--                    <groupId>club.minnced</groupId>-->

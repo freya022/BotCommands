@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 public class SlashCommandsMain {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -67,6 +68,7 @@ public class SlashCommandsMain {
 							})
 							.addTestGuilds(config.getTestGuildId())
 							.enableOnlineAppCommandCheck()
+							.addLocalizations("MyCommands", Locale.US, Locale.UK, Locale.FRENCH)
 					)
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.addSearchPath("com.freya02.botcommands.test.commands.guild_specific")

@@ -16,9 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ApplicationCommandsContextImpl implements ApplicationCommandsContext {
@@ -28,6 +26,8 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	private final Map<String, ModalHandlerInfo> modalHandlersMap = new HashMap<>();
+
+	private final Map<String, List<Locale>> baseNameToLocalesMap = new HashMap<>();
 
 	private long getGuildKey(@Nullable Guild guild) {
 		return guild == null ? 0 : guild.getIdLong();
@@ -149,5 +149,24 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	@Nullable
 	public ModalHandlerInfo getModalHandler(String handlerName) {
 		return modalHandlersMap.get(handlerName);
+	}
+
+	@Override
+	public void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
+		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).addAll(locales);
+	}
+
+	@Override
+	public void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
+		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).removeAll(locales);
+	}
+
+	@Override
+	public void removeLocalizations(@NotNull String bundleName) {
+		baseNameToLocalesMap.remove(bundleName);
+	}
+
+	public Map<String, List<Locale>> getBaseNameToLocalesMap() {
+		return baseNameToLocalesMap;
 	}
 }

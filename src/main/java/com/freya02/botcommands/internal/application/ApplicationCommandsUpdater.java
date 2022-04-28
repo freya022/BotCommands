@@ -7,10 +7,13 @@ import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -80,6 +83,13 @@ public class ApplicationCommandsUpdater {
 		computeCommands();
 
 		this.allCommandData = map.getAllCommandData();
+
+		//Apply localization
+		final LocalizationFunction localizationFunction = new BCLocalizationFunction(context);
+		final LocalizationMapper localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
+		for (CommandData commandData : allCommandData) {
+			commandData.setLocalizationMapper(localizationMapper);
+		}
 	}
 
 	public static ApplicationCommandsUpdater ofGlobal(@NotNull BContextImpl context, boolean onlineCheck) throws IOException {
@@ -105,7 +115,7 @@ public class ApplicationCommandsUpdater {
 
 		if (onlineCheck) {
 			commands.clear();
-			commands.addAll((guild == null ? context.getJDA().retrieveCommands() : guild.retrieveCommands()).complete());
+			commands.addAll((guild == null ? context.getJDA().retrieveCommands(true) : guild.retrieveCommands(true)).complete());
 			final List<CommandData> discordCommandsData = commands.stream().map(CommandData::fromCommand).toList();
 
 			oldBytes = ApplicationCommandsCache.getCommandsBytes(discordCommandsData);
@@ -213,7 +223,7 @@ public class ApplicationCommandsUpdater {
 		if (!updatedCommands) {
 			LOGGER.info("Privileges has changed but commands were not updated, retrieving current command list");
 
-			final List<Command> retrievedCommands = guild.retrieveCommands().complete();
+			final List<Command> retrievedCommands = guild.retrieveCommands(false).complete();
 
 			updatePrivileges0(guild, retrievedCommands);
 		} else {

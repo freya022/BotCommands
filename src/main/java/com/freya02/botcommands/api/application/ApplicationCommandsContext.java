@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface ApplicationCommandsContext {
 	/**
@@ -103,4 +104,10 @@ public interface ApplicationCommandsContext {
 	 * @return <code>true</code> if all application commands should be guild-only
 	 */
 	boolean isForceGuildCommandsEnabled();
+
+	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
+
+	void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
+
+	void removeLocalizations(@NotNull String bundleName);
 }
