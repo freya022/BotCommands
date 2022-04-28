@@ -198,7 +198,7 @@ public final class ApplicationCommandsBuilder {
 	@NotNull
 	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong()))
-			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false, false));
+			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false));
 
 		return CompletableFuture.supplyAsync(() -> {
 			final ReentrantLock lock;
@@ -211,7 +211,7 @@ public final class ApplicationCommandsBuilder {
 
 				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild, onlineCheck);
 
-				boolean updatedCommands = false, updatedPrivileges = false;
+				boolean updatedCommands = false;
 
 				if (force || updater.shouldUpdateCommands()) {
 					updater.updateCommands();
@@ -223,19 +223,9 @@ public final class ApplicationCommandsBuilder {
 					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
-				if (force || updater.shouldUpdatePrivileges()) {
-					updater.updatePrivileges();
-
-					updatedPrivileges = true;
-
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", "Local disk check");
-				} else { //TODO change prints once privileges can be checked online
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
-				}
-
 				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(guild, ApplicationCommandInfoMap.fromCommandList(updater.getGuildApplicationCommands()));
 
-				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
+				return new CommandUpdateResult(guild, updatedCommands);
 			} catch (Throwable e) {
 				throw new RuntimeException("An exception occurred while updating guild commands for guild '" + guild.getName() + "' (" + guild.getId() + ")", e);
 			} finally {

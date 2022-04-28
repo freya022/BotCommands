@@ -27,7 +27,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
     * Also supports choices, min/max values, channel types and autocompletion
   * Context menu commands (User / Message)
   * Application commands are **automatically registered on Discord on startup**
-    * This also includes command privileges (permissions) 
+    * This also includes command permissions
   * These commands as well as their options and choices **can also be localized** (per-guild language)
 * A JDA **event waiter** with (multiple) preconditions, timeouts and consumers for every completion states 
 * Secure and unique components (buttons / selection menus) IDs *with persistent and non-persistent storage*

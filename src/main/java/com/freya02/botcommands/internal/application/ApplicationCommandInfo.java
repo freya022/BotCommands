@@ -33,10 +33,8 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command annotated with @Test must be a guild-only command");
 		}
 
-		if (isOwnerRequired() && !isGuildOnly()) {
-			//TODO remove when i can finally work out privileges for global commands in a guild context
-			// When discord adds native localisation
-			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : global application commands cannot have privileges");
+		if (isOwnerRequired()) {
+			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application commands cannot be marked as owner-only");
 		}
 
 		if ((userPermissions.size() != 0 || botPermissions.size() != 0) && !guildOnly)

@@ -180,7 +180,7 @@
         <dependency>
             <groupId>com.github.freya022</groupId>
             <artifactId>JDA</artifactId>
-            <version>014f4e119b</version>
+            <version>9e3580bcc0</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
