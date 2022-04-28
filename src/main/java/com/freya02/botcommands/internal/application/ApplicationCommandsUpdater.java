@@ -44,7 +44,6 @@ public class ApplicationCommandsUpdater {
 	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
 	private final List<ApplicationCommandInfo> guildApplicationCommands;
 
-	private final List<String> ownerOnlyCommands = new ArrayList<>();
 	private final List<Command> commands = new ArrayList<>();
 
 	private final Collection<CommandData> allCommandData;
@@ -205,20 +204,6 @@ public class ApplicationCommandsUpdater {
 						} else {
 							throw new IllegalStateException("A slash command with more than 4 path components got registered");
 						}
-
-						if (!info.isOwnerRequired()) {
-							if (ownerOnlyCommands.contains(commandPath.getName())) {
-								LOGGER.warn("Non owner-only command '{}' is registered as a owner-only command because of another command with the same base name '{}'", commandPath, commandPath.getName());
-							}
-						}
-
-						if (info.isOwnerRequired()) {
-							if (info.isGuildOnly()) {
-								ownerOnlyCommands.add(commandPath.getName());
-							} else {
-								LOGGER.warn("Owner-only command '{}' cannot be owner-only as it is a global command", commandPath);
-							}
-						}
 					} catch (Exception e) {
 						throw new RuntimeException("An exception occurred while processing command '" + commandPath + "' at " + Utils.formatMethodShort(info.getMethod()), e);
 					}
@@ -240,10 +225,6 @@ public class ApplicationCommandsUpdater {
 							map.put(type, commandPath, rightCommand);
 
 							rightCommand.setDefaultPermissions(info.getUserPermissions());
-
-							if (info.isOwnerRequired()) {
-								ownerOnlyCommands.add(commandPath.getName()); //Must be non-localized name
-							}
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
