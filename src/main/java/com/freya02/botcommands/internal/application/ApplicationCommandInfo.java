@@ -42,8 +42,8 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 		if ((userPermissions.size() != 0 || botPermissions.size() != 0) && !guildOnly)
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command with permissions should be guild-only");
 
-		if (getCommandId() != null && !isGuildOnly()) {
-			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command with guild-specific ID should be guild-only");
+		if (getCommandId() != null && scope != CommandScope.GUILD) {
+			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command with guild-specific ID must have the GUILD scope");
 		}
 	}
 
