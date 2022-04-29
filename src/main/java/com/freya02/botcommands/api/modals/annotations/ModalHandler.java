@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * <ul>
  *     <li>Be non-static and public</li>
  *     <li>Have {@link ModalInteractionEvent} as its first parameter</li>
- *     <li>Optionally: Have all your consecutive {@link ModalData}, specified in {@link Modals#create(String, Object...)}</li>
+ *     <li>Optionally: Have all your consecutive {@link ModalData}, specified in {@link Modals#create(String, String, Object...)}</li>
  *     <li>And finally: Have all your {@link ModalInput} and custom parameters, in the order you want</li>
  * </ul>
  *

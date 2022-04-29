@@ -36,7 +36,7 @@ public interface GuildApplicationSettings {
 	 *
 	 * @return The list of choices for this slash command's options
 	 *
-	 * @see SlashParameterResolver#getPredefinedChoices()
+	 * @see SlashParameterResolver#getPredefinedChoices(Guild)
 	 */
 	@NotNull
 	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
