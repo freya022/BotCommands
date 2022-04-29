@@ -311,16 +311,15 @@ public interface BContext {
 	Consumer<EmbedBuilder> getHelpBuilderConsumer();
 
 	/**
-	 * Updates the application commands and their permissions in the specified guilds <br><br>
+	 * Updates the application commands in the specified guilds <br><br>
 	 * Why you could call this method:
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
-	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @param force  Whether the commands should be updated no matter what
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
@@ -328,16 +327,15 @@ public interface BContext {
 	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
 
 	/**
-	 * Updates the application commands and their permissions in the specified guild <br><br>
+	 * Updates the application commands in the specified guild <br><br>
 	 * Why you could call this method:
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
 	 * @param guild The guild which needs to be updated
-	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @param force Whether the commands should be updated no matter what
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
 	 */
