@@ -80,7 +80,7 @@ public class Usability {
 	public static Usability of(BContext context, Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 
-		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) {
+		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) { //Should not happen anymore
 			unusableReasons.add(GUILD_ONLY);
 		}
 

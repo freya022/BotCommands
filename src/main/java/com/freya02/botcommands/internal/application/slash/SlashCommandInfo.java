@@ -53,7 +53,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 			if (Member.class.isAssignableFrom(type)
 					|| Role.class.isAssignableFrom(type)
 					|| GuildChannel.class.isAssignableFrom(type)) {
-				if (!annotation.guildOnly())
+				if (!isGuildOnly())
 					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 

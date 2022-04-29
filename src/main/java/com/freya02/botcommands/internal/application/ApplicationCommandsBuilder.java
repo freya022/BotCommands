@@ -66,7 +66,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAUserCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAUserCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
@@ -86,7 +86,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAMessageCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAMessageCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
@@ -106,7 +106,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDASlashCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDASlashCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 

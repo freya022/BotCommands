@@ -89,9 +89,9 @@ public abstract class ApplicationCommandInfoMapView {
 	public List<ApplicationCommandInfo> filterByGuild(@NotNull BContext context, @Nullable Guild guild, @Nullable CommandIdProcessor commandIdProcessor) {
 		return getAllApplicationCommandsStream()
 				.filter(info -> {
-					if (info.isGuildOnly() && guild == null) { //Do not update guild-only commands in global context
+					if (info.getScope() == CommandScope.GUILD && guild == null) { //Do not update guild-only commands in global context
 						return false;
-					} else if (!info.isGuildOnly() && guild != null) { //Do not update global commands in guild context
+					} else if (info.getScope() != CommandScope.GUILD && guild != null) { //Do not update global commands in guild context
 						return false;
 					}
 

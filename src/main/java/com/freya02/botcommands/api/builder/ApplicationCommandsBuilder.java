@@ -101,7 +101,7 @@ public class ApplicationCommandsBuilder {
 	}
 
 	/**
-	 * Sets whether all application commands should be guild-only, regardless of the guild-only switch on the annotation
+	 * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation
 	 *
 	 * @param force <code>true</code> to make all application commands as guild-only
 	 */
