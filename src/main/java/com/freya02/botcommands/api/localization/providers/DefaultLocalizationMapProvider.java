@@ -10,7 +10,29 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
-//TODO docs
+/**
+ * Default localization bundle provider
+ * <p><b>Specification:</b>
+ * <br>Localization bundles are read from "<code>/bc_localization/</code>", so, a "<code>bc_localization</code>" directory, in the root of your resources
+ * <br>Those localization bundles are in the JSON format and can have any name, with the extension being <code>.json</code>
+ * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as "<code>"my_command.name": "my_command_in_en_US"</code>"
+ * <br>But you can also use nesting as a way to not copy the same path prefix everytime, such as:
+ * <code><pre>
+ *     {
+ *         "my_command": {
+ *             "name": "my_command_in_en_US",
+ *             "description": "my_command_description_in_en_US"
+ *         }
+ *     }
+ * </pre></code>
+ * <p>
+ * About localization bundle loading:
+ * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProvidersNoParent(String, Locale)}
+ *
+ * <br>See {@link DefaultLocalizationTemplate} for what the localization templates should look like
+ *
+ * @see DefaultLocalizationTemplate
+ */
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 	@Override
 	@Nullable
@@ -60,7 +82,7 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 
 			final LocalizationMap parentLocalization = LocalizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale); //Do not try to use Localization which will **also** try to get the parent localizations
 			if (parentLocalization != null) {
-				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.getTemplateMap();
+				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.templateMap();
 
 				if (templateMap == null) {
 					templateMap = new HashMap<>();

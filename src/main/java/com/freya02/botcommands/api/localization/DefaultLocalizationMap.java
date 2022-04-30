@@ -5,24 +5,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Locale;
 import java.util.Map;
 
-public class DefaultLocalizationMap implements LocalizationMap {
-	private final Locale effectiveLocale;
-	private final Map<String, ? extends LocalizationTemplate> templateMap;
-
-	public DefaultLocalizationMap(Locale effectiveLocale, Map<String, ? extends LocalizationTemplate> templateMap) {
-		this.effectiveLocale = effectiveLocale;
-		this.templateMap = templateMap;
-	}
-
+/**
+ * POJO for effective locale and localization template map
+ */
+public record DefaultLocalizationMap(Locale effectiveLocale,
+                                     Map<String, ? extends LocalizationTemplate> templateMap) implements LocalizationMap {
 	@Override
 	@NotNull
-	public Locale getEffectiveLocale() {
+	public Locale effectiveLocale() {
 		return effectiveLocale;
 	}
 
 	@Override
 	@NotNull
-	public Map<String, ? extends LocalizationTemplate> getTemplateMap() {
+	public Map<String, ? extends LocalizationTemplate> templateMap() {
 		return templateMap;
 	}
 }
