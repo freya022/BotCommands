@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -28,12 +27,12 @@ public class Localization {
 	private final Locale effectiveLocale;
 
 	private Localization(@NotNull LocalizationMap bundle) {
-		this.effectiveLocale = bundle.getEffectiveLocale();
-		this.templateMap = bundle.getTemplateMap();
+		this.effectiveLocale = bundle.effectiveLocale();
+		this.templateMap = bundle.templateMap();
 	}
 
 	@Nullable
-	private static BestLocale chooseBestLocale(String baseName, Locale targetLocale) throws IOException {
+	private static BestLocale chooseBestLocale(String baseName, Locale targetLocale) {
 		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, targetLocale);
 
 		for (Locale candidateLocale : candidateLocales) {
@@ -41,7 +40,7 @@ public class Localization {
 			final LocalizationMap localizationBundle = LocalizationMapProviders.cycleProviders(baseName, candidateLocale);
 
 			if (localizationBundle != null) {
-				return new BestLocale(localizationBundle.getEffectiveLocale(), localizationBundle);
+				return new BestLocale(localizationBundle.effectiveLocale(), localizationBundle);
 			}
 		}
 
@@ -49,7 +48,7 @@ public class Localization {
 	}
 
 	@Nullable
-	private static Localization retrieveBundle(String baseName, Locale targetLocale) throws IOException {
+	private static Localization retrieveBundle(String baseName, Locale targetLocale) {
 		final BestLocale bestLocale = chooseBestLocale(baseName, targetLocale);
 
 		if (bestLocale == null) {
