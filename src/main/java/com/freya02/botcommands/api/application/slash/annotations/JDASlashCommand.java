@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 
 import java.lang.annotation.ElementType;
@@ -91,6 +92,19 @@ public @interface JDASlashCommand {
 	 * @see CommandScope
 	 */
 	CommandScope scope() default CommandScope.GUILD;
+
+	/**
+	 * Specifies whether the application command is disabled by default, so that administrators can further configure the command
+	 * <br><b>If this is used in coordination with {@link UserPermissions} then they will be cleared if this is default locked</b>,
+	 * as to allow discord to lock the command for everyone, until an admin configures it.
+	 * <br>This does NOT affect administrators.
+	 *
+	 * <p>For example, maybe you want a ban command to be usable by someone who has a certain role, but which doesn't have the {@link Permission#BAN_MEMBERS BAN_MEMBERS} permission,
+	 * you would then default lock the command and let the admins of the guild configure it
+	 *
+	 * @return <code>true</code> if the command should be disabled by default
+	 */
+	boolean defaultLocked() default false;
 
 	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>

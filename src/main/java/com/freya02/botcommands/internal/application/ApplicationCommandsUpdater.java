@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandPermission;
 import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -169,13 +170,13 @@ public class ApplicationCommandsUpdater {
 							map.put(Command.Type.SLASH, commandPath, rightCommand);
 
 							rightCommand.addOptions(methodOptions);
-							rightCommand.setDefaultPermissions(info.getUserPermissions());
+							configureTopLevel(info, rightCommand);
 						} else if (commandPath.getNameCount() == 2) {
 							Checks.notNull(commandPath.getSubname(), "Subcommand name");
 
 							final SlashCommandData commandData = (SlashCommandData) map.computeIfAbsent(Command.Type.SLASH, commandPath, x -> {
 								final SlashCommandData tmpData = Commands.slash(commandPath.getName(), "No description (base name)");
-								tmpData.setDefaultPermissions(info.getUserPermissions());
+								configureTopLevel(info, tmpData);
 
 								return tmpData;
 							});
@@ -191,8 +192,7 @@ public class ApplicationCommandsUpdater {
 
 							final SubcommandGroupData groupData = getSubcommandGroup(Command.Type.SLASH, commandPath, x -> {
 								final SlashCommandData commandData = Commands.slash(commandPath.getName(), "No description (base name)");
-
-								commandData.setDefaultPermissions(info.getUserPermissions());
+								configureTopLevel(info, commandData);
 
 								return commandData;
 							});
@@ -224,7 +224,7 @@ public class ApplicationCommandsUpdater {
 							final CommandData rightCommand = Commands.context(type, commandPath.getName());
 							map.put(type, commandPath, rightCommand);
 
-							rightCommand.setDefaultPermissions(info.getUserPermissions());
+							configureTopLevel(info, rightCommand);
 						} else {
 							throw new IllegalStateException("A " + type.name() + " command with more than 1 path component got registered");
 						}
@@ -232,6 +232,14 @@ public class ApplicationCommandsUpdater {
 						throw new RuntimeException("An exception occurred while processing a " + type.name() + " command " + commandPath, e);
 					}
 				});
+	}
+
+	private void configureTopLevel(ApplicationCommandInfo info, CommandData rightCommand) {
+		if (info.isDefaultLocked()) {
+			rightCommand.setDefaultPermissions(CommandPermission.DISABLED);
+		} else if (!info.getUserPermissions().isEmpty()) {
+			rightCommand.setDefaultPermissions(CommandPermission.enabledFor(info.getUserPermissions()));
+		}
 	}
 
 	private void thenAcceptGuild(List<Command> commands, @NotNull Guild guild) {

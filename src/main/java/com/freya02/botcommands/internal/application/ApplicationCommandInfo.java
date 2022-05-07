@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 public abstract class ApplicationCommandInfo extends AbstractCommandInfo<ApplicationCommand> {
 	protected final CommandScope scope;
+	protected final boolean defaultLocked;
 	protected final boolean guildOnly;
 	protected final boolean testOnly;
 
@@ -28,6 +29,7 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 		super(context, instance, annotation, commandMethod, nameComponentsFunctions);
 
 		this.scope = AnnotationUtils.getAnnotationValue(annotation, "scope");
+		this.defaultLocked = AnnotationUtils.getAnnotationValue(annotation, "defaultLocked");
 		this.guildOnly = context.getApplicationCommandsContext().isForceGuildCommandsEnabled() || scope.isGuildOnly();
 		this.testOnly = AnnotationUtils.getEffectiveTestState(commandMethod);
 
@@ -37,6 +39,12 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 
 		if (isOwnerRequired()) {
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application commands cannot be marked as owner-only");
+		}
+
+		//Administrators manage who can use what, bot doesn't need to check for user mistakes
+		// Why would you ask for a permission if the administrators want a less-powerful user to be able to use it ?
+		if (isDefaultLocked()) {
+			userPermissions.clear();
 		}
 
 		if ((userPermissions.size() != 0 || botPermissions.size() != 0) && !guildOnly)
@@ -49,6 +57,10 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 
 	public CommandScope getScope() {
 		return scope;
+	}
+
+	public boolean isDefaultLocked() {
+		return defaultLocked;
 	}
 
 	public boolean isGuildOnly() {

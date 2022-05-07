@@ -40,6 +40,16 @@ public @interface JDAUserCommand {
 	CommandScope scope() default CommandScope.GUILD;
 
 	/**
+	 * Specifies whether the application command is disabled by default, so that administrators can further configure the command
+	 * <br><b>If this is used in coordination with {@link UserPermissions} then they will be cleared if this is default locked</b>,
+	 * as to allow discord to lock the command for everyone, until an admin configures it.
+	 * <br>This does NOT affect administrators.
+	 *
+	 * @return <code>true</code> if the command should be disabled by default
+	 */
+	boolean defaultLocked() default false;
+
+	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
 	 *
 	 * @return Name of the command
