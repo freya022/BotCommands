@@ -19,11 +19,15 @@ public enum CommandScope {
 	GUILD(true),
 	/**
 	 * The global command scope, pushes this command to the first shard
+	 *
+	 * <p>Cannot be filtered on a per-guild basis
 	 */
 	GLOBAL(false),
 	/**
 	 * The global command scope, but with DMs disabled, pushes this command to the first shard
 	 * <br>This might be useful to have guild commands but without having to push them on every guild
+	 *
+	 * <p>Cannot be filtered on a per-guild basis
 	 */
 	GLOBAL_NO_DM(true);
 
