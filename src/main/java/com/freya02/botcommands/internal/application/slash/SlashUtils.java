@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
@@ -33,7 +32,7 @@ public class SlashUtils {
 
 	public static List<OptionData> getMethodOptions(@NotNull BContext context, @Nullable Guild guild, @NotNull SlashCommandInfo info) {
 		final List<OptionData> list = new ArrayList<>();
-		final List<List<Command.Choice>> optionsChoices = getOptionChoices(context, guild, info);
+		final List<List<Command.Choice>> optionsChoices = getOptionChoices(guild, info);
 
 		int i = 0;
 		for (SlashCommandParameter parameter : info.getParameters()) {
@@ -45,14 +44,6 @@ public class SlashUtils {
 
 			if (guild != null) {
 				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getParameter().getType());
-
-				if (defaultValueSupplier == null) {
-					final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-					if (settingsProvider != null) {
-						defaultValueSupplier = settingsProvider.getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(),applicationOptionData.getEffectiveName(), parameter.getParameter().getType());
-					}
-				}
 
 				parameter.getDefaultOptionSupplierMap().put(guild.getIdLong(), defaultValueSupplier);
 
@@ -143,30 +134,20 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	public static List<List<Command.Choice>> getOptionChoices(BContext context, @Nullable Guild guild, ApplicationCommandInfo info) {
+	public static List<List<Command.Choice>> getOptionChoices(@Nullable Guild guild, ApplicationCommandInfo info) {
 		List<List<Command.Choice>> optionsChoices = new ArrayList<>();
 
 		final int count = info.getParameters().getOptionCount();
 		for (int optionIndex = 0; optionIndex < count; optionIndex++) {
-			optionsChoices.add(getChoicesForCommandOption(context, guild, info, optionIndex));
+			optionsChoices.add(getChoicesForCommandOption(guild, info, optionIndex));
 		}
 
 		return optionsChoices;
 	}
 
 	@NotNull
-	private static List<Command.Choice> getChoicesForCommandOption(BContext context, @Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
-		final List<Command.Choice> choices = info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
-
-		if (choices.isEmpty()) {
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-
-			if (settingsProvider != null) {
-				return settingsProvider.getOptionChoices(guild, info.getPath(), optionIndex);
-			}
-		}
-
-		return choices;
+	private static List<Command.Choice> getChoicesForCommandOption(@Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
+		return info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
 	}
 
 	public static void checkDefaultValue(ExecutableInteractionInfo executableInteractionInfo, ApplicationCommandVarArgParameter<?> parameter, Object defaultVal) {

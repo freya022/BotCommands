@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
-import com.freya02.botcommands.api.application.GuildApplicationSettings;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
-public interface SettingsProvider extends GuildApplicationSettings {
+public interface SettingsProvider {
 	/**
 	 * Returns the list of prefix this Guild should use <br>
 	 * <b>If the returned list is null or empty, the global prefixes will be used</b>

@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandStatus;
-import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.map.TLongObjectMap;
@@ -47,14 +46,6 @@ public class CommandIdProcessor {
 			final Collection<Long> instanceAllowedGuilds = info.getInstance().getGuildsForCommandId(context, commandId, path);
 			if (instanceAllowedGuilds != null) {
 				commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(instanceAllowedGuilds);
-			}
-
-			final SettingsProvider settingsProvider = context.getSettingsProvider();
-			if (settingsProvider != null) {
-				final Collection<Long> allowedGuilds = settingsProvider.getGuildsForCommandId(context, commandId, path);
-				if (allowedGuilds != null) {
-					commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(allowedGuilds);
-				}
 			}
 		}
 
