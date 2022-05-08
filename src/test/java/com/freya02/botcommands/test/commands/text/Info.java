@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test.commands.text;
 
-import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.annotations.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Category;

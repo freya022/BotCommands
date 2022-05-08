@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.RegistrationListener;
-import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;

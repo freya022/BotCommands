@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.prefixed.annotations;
 
-import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.annotations.api.annotations.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;

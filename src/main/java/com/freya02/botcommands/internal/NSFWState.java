@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.annotations.NSFW;
+import com.freya02.botcommands.annotations.api.annotations.NSFW;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

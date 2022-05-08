@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test.commands.text
 
-import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent

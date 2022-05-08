@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.annotations.api.annotations.Optional;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;

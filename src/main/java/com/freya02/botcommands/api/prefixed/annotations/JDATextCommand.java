@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.prefixed.annotations;
 
-import com.freya02.botcommands.api.annotations.BotPermissions;
-import com.freya02.botcommands.api.annotations.Cooldown;
-import com.freya02.botcommands.api.annotations.UserPermissions;
+import com.freya02.botcommands.annotations.api.annotations.BotPermissions;
+import com.freya02.botcommands.annotations.api.annotations.Cooldown;
+import com.freya02.botcommands.annotations.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 

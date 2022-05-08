@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.utils;
 
+import com.freya02.botcommands.annotations.api.annotations.*;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CooldownScope;
-import com.freya02.botcommands.api.annotations.*;
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.annotations.Test;
 import com.freya02.botcommands.api.application.slash.annotations.ChannelTypes;

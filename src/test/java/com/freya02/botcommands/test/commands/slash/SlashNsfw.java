@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.api.annotations.NSFW;
+import com.freya02.botcommands.annotations.api.annotations.NSFW;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;

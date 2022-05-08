@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.annotations.api.annotations.CommandId;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.annotations.CommandId;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;

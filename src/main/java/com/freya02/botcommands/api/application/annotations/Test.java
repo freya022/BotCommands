@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application.annotations;
 
+import com.freya02.botcommands.annotations.api.annotations.AppendMode;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.annotations.AppendMode;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.lang.annotation.ElementType;

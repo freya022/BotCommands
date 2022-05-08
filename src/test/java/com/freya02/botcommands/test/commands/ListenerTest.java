@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test.commands;
 
-import com.freya02.botcommands.api.annotations.JDAEventListener;
+import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
 public class ListenerTest {

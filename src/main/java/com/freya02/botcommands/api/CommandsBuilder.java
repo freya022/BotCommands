@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.annotations.RequireOwner;
+import com.freya02.botcommands.annotations.api.annotations.RequireOwner;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.builder.DebugBuilder;

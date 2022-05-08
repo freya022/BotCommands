@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.annotations;
+package com.freya02.botcommands.annotations.api.annotations;
 
 /**
  * Specifies the append mode of the specified attribute, such as permissions or guild IDs.

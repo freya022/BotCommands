@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.annotations.Cooldown;
+import com.freya02.botcommands.annotations.api.annotations.Cooldown;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
 

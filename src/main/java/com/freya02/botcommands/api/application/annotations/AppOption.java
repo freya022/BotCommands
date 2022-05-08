@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.application.annotations;
 
-import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.annotations.api.annotations.Optional;
 import com.freya02.botcommands.api.application.slash.annotations.*;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;

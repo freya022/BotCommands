@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.text;
 
-import com.freya02.botcommands.api.annotations.AppendMode;
-import com.freya02.botcommands.api.annotations.BotPermissions;
-import com.freya02.botcommands.api.annotations.Optional;
-import com.freya02.botcommands.api.annotations.UserPermissions;
+import com.freya02.botcommands.annotations.api.annotations.AppendMode;
+import com.freya02.botcommands.annotations.api.annotations.BotPermissions;
+import com.freya02.botcommands.annotations.api.annotations.Optional;
+import com.freya02.botcommands.annotations.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;

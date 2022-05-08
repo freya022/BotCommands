@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.builder;
 
+import com.freya02.botcommands.annotations.api.annotations.Dependency;
+import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
-import com.freya02.botcommands.api.annotations.Dependency;
-import com.freya02.botcommands.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;

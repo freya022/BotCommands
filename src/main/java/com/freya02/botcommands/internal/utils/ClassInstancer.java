@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.utils;
 
+import com.freya02.botcommands.annotations.api.annotations.Dependency;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
-import com.freya02.botcommands.api.annotations.Dependency;
 import com.freya02.botcommands.internal.BContextImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
