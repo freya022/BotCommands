@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.modals;
 
-import com.freya02.botcommands.api.modals.annotations.ModalData;
-import com.freya02.botcommands.api.modals.annotations.ModalInput;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalData;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput;
 import com.freya02.botcommands.api.parameters.ModalParameterResolver;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.utils.Utils;

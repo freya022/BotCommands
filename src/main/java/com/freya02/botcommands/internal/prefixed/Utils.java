@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Category;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Description;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.entities.Emoji;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.annotations.Category;
-import com.freya02.botcommands.api.prefixed.annotations.Description;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;

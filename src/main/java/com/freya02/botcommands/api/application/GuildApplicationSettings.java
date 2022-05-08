@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.annotations.api.annotations.CommandId;
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;

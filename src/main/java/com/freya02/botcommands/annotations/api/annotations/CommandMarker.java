@@ -1,6 +1,6 @@
 package com.freya02.botcommands.annotations.api.annotations;
 
-import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

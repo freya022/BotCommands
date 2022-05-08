@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.ID;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.api.prefixed.annotations.ID;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.application.CommandParameter;
 
 import java.lang.annotation.Annotation;

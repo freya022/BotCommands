@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.text;
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Category;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.Category;
-import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 
 @Category("Misc")
 public class Ping extends TextCommand {

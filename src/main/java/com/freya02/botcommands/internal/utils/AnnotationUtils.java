@@ -1,15 +1,15 @@
 package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.annotations.api.annotations.*;
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.application.annotations.Test;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalData;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Hidden;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CooldownScope;
-import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.application.annotations.Test;
-import com.freya02.botcommands.api.application.slash.annotations.ChannelTypes;
-import com.freya02.botcommands.api.modals.annotations.ModalData;
-import com.freya02.botcommands.api.modals.annotations.ModalInput;
-import com.freya02.botcommands.api.prefixed.annotations.Hidden;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.CooldownStrategy;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;

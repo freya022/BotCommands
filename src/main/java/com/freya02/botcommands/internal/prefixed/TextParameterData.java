@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Parameter;

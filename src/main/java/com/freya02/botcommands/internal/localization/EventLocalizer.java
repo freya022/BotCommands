@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.localization;
 
+import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.api.localization.*;
-import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.LocalizationManager;
 import org.jetbrains.annotations.NotNull;

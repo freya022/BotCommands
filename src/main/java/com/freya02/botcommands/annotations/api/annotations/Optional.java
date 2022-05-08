@@ -1,7 +1,7 @@
 package com.freya02.botcommands.annotations.api.annotations;
 
-import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;

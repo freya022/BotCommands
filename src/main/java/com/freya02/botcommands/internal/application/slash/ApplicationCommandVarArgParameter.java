@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash;
 
-import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;

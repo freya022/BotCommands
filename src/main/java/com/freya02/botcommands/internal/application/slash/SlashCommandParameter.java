@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.annotations.api.application.slash.annotations.DoubleRange;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
-import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
-import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import gnu.trove.map.TLongObjectMap;

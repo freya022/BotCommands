@@ -1,11 +1,11 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.annotations.api.application.annotations.Test;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
-import com.freya02.botcommands.api.application.annotations.Test;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;

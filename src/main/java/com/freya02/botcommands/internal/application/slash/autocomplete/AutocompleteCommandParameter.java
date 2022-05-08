@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.application.slash.ApplicationCommandVarArgParameter;
 import net.dv8tion.jda.api.entities.Channel;

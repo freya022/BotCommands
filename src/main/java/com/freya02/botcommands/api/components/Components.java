@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.components;
 
+import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener;
+import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
-import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.builder.*;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;

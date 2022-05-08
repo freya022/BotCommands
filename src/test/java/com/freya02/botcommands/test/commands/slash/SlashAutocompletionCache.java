@@ -1,14 +1,14 @@
 package com.freya02.botcommands.test.commands.slash;
 
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.slf4j.Logger;

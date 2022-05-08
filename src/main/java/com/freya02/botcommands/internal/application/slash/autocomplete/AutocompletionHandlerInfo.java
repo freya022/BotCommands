@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete;
 
+import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
-import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;

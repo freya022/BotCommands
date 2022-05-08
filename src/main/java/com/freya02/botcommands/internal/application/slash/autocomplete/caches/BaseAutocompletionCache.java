@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
-import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CacheAutocompletion;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion;
 import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteCommandParameter;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;

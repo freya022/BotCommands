@@ -1,14 +1,14 @@
 package com.freya02.botcommands.internal.prefixed;
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Category;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Description;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.Category;
-import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
 import net.dv8tion.jda.api.EmbedBuilder;

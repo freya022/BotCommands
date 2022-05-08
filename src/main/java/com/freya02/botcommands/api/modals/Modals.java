@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.modals;
 
-import com.freya02.botcommands.api.modals.annotations.ModalHandler;
-import com.freya02.botcommands.api.modals.annotations.ModalInput;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput;
 import com.freya02.botcommands.internal.modals.InternalModals;
 import com.freya02.botcommands.internal.modals.ModalData;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;

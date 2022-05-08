@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
