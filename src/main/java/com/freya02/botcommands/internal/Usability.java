@@ -20,7 +20,7 @@ public class Usability {
 	}
 
 	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo<?> cmdInfo) {
-		final NSFWState nsfwState = cmdInfo.getNSFWState();
+		final NSFWState nsfwState = cmdInfo.getNsfwState();
 		if (nsfwState == null) return;
 
 		//The command is indeed marked NSFW, but where is the command ran ?

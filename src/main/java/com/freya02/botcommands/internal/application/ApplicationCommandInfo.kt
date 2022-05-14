@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.application
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
@@ -14,7 +13,7 @@ import kotlin.reflect.full.valueParameters
 abstract class ApplicationCommandInfo protected constructor(
     context: BContext,
     builder: ApplicationCommandBuilder
-) : AbstractCommandInfo<ApplicationCommand>(context, builder) {
+) : AbstractCommandInfo(context, builder) {
     val scope: CommandScope
     val isDefaultLocked: Boolean
     val isGuildOnly: Boolean

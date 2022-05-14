@@ -1,17 +1,25 @@
 package com.freya02.botcommands.api.builder
 
+import com.freya02.botcommands.api.CooldownScope
 import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.internal.CooldownStrategy
 import com.freya02.botcommands.internal.NSFWState
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.Permission
 import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KFunction
 
-abstract class CommandBuilder internal constructor(val path: CommandPath) {
+abstract class CommandBuilder internal constructor(val instance: Any, val path: CommandPath) {
+    var commandId: String? = null
+
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
-    protected val nsfwState: NSFWState? = null //TODO make DSL
+    var cooldownStrategy: CooldownStrategy = CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)
+
+    var nsfwState: NSFWState? = null //TODO make DSL
+        private set
 //    val commandId: String? = null //TODO unneeded, implement via per-guild command construction
 
     lateinit var function: KFunction<*>

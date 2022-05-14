@@ -1,106 +1,65 @@
-package com.freya02.botcommands.internal;
+package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.CooldownScope;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.builder.CommandBuilder;
-import com.freya02.botcommands.internal.runner.MethodRunner;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.Permission;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.EnumSet;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.internal.runner.MethodRunner
+import net.dv8tion.jda.api.Permission
+import java.util.*
+import java.util.function.Consumer
+import kotlin.reflect.KFunction
 
 /**
  * @param <T> Command instance type
- */
-public abstract class AbstractCommandInfo<T> extends Cooldownable implements ExecutableInteractionInfo {
-	private final T instance;
+</T> */
+abstract class AbstractCommandInfo protected constructor(
+    context: BContext,
+    builder: CommandBuilder
+) : Cooldownable(builder.cooldownStrategy), ExecutableInteractionInfo {
+    private val instance: Any
 
-	/** This is NOT localized */
-	protected final CommandPath path;
-	protected final boolean ownerRequired;
-	protected final KFunction<?> commandMethod;
+    val path: CommandPath
 
-	protected final EnumSet<Permission> userPermissions;
-	protected final EnumSet<Permission> botPermissions;
+    val isOwnerRequired: Boolean
 
-	private final NSFWState nsfwState;
-	private final String commandId;
-	private final MethodRunner methodRunner;
+    protected val commandMethod: KFunction<*>
+    val userPermissions: EnumSet<Permission>
+    val botPermissions: EnumSet<Permission>
+    val nsfwState: NSFWState?
+    val commandId: String?
+    private val methodRunner: MethodRunner
 
-	protected AbstractCommandInfo(@NotNull BContext context,
-	                              @NotNull CommandBuilder builder) {
-		super(new CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)); //TODO
+    init {
+        instance = builder.instance
+        path = builder.path
+        commandMethod = builder.function
+        isOwnerRequired = false //TODO remove ownerRequired from application, move to Text
+        commandId = builder.commandId
+        nsfwState = builder.nsfwState
+        userPermissions = builder.userPermissions
+        botPermissions = builder.botPermissions
 
-		this.instance = null;
+        methodRunner = object : MethodRunner {
+            //TODO replace
+            @Suppress("UNCHECKED_CAST")
+            override fun <R> invoke(
+                args: Array<Any>,
+                throwableConsumer: Consumer<Throwable>,
+                successCallback: ConsumerEx<R>
+            ) {
+                try {
+                    val call = commandMethod.call(*args)
+                    successCallback.accept(call as R)
+                } catch (e: Throwable) {
+                    throwableConsumer.accept(e)
+                }
+            }
+        }
+    }
 
-		this.path = builder.getPath();
-		this.commandMethod = builder.getFunction();
-		this.methodRunner = new MethodRunner() { //TODO replace
-			@SuppressWarnings("unchecked")
-			@Override
-			public <R> void invoke(@NotNull Object[] args, Consumer<Throwable> throwableConsumer, ConsumerEx<R> successCallback) {
-				try {
-					final Object call = commandMethod.call(args);
+    override fun getMethod(): KFunction<*> = commandMethod
 
-					successCallback.accept((R) call);
-				} catch (Throwable e) {
-					throwableConsumer.accept(e);
-				}
-			}
-		};
-		this.ownerRequired = ownerRequired;
-		this.commandId = commandId;
-		this.nsfwState = nsfwState;
-		this.userPermissions = userPermissions;
-		this.botPermissions = botPermissions;
-	}
+    override fun getMethodRunner(): MethodRunner = methodRunner
 
-	@Override
-	@NotNull
-	public T getInstance() {
-		return instance;
-	}
-
-	@Override
-	public KFunction<?> getMethod() {
-		return commandMethod;
-	}
-
-	@Override
-	@NotNull
-	public MethodRunner getMethodRunner() {
-		return methodRunner;
-	}
-
-	/** This is NOT localized */
-	public CommandPath getPath() {
-		return path;
-	}
-
-	public EnumSet<Permission> getUserPermissions() {
-		return userPermissions;
-	}
-
-	public EnumSet<Permission> getBotPermissions() {
-		return botPermissions;
-	}
-
-	public boolean isOwnerRequired() {
-		return ownerRequired;
-	}
-
-	@Nullable
-	public NSFWState getNSFWState() {
-		return nsfwState;
-	}
-
-	@Nullable
-	public String getCommandId() {
-		return commandId;
-	}
+    override fun getInstance(): Any = instance
 }
