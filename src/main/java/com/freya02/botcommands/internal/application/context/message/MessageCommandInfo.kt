@@ -16,13 +16,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
 
 class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
-    private val commandParameters: MethodParameters<ContextCommandParameter<MessageContextParameterResolver>>
+    override val parameters: MethodParameters<ContextCommandParameter<MessageContextParameterResolver>>
 
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        commandParameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
-            ContextCommandParameter(MessageContextParameterResolver::class.java, parameter, i)
+        parameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
+            ContextCommandParameter(MessageContextParameterResolver::class, parameter, i)
         }
     }
 
@@ -32,20 +32,16 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
         event: MessageContextInteractionEvent,
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
-        val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
+        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
         objects +=
             if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(
                 method, context, event)
 
-        for (i in 0 until commandParameters.size) {
-            val parameter = commandParameters[i]
-            if (parameter.isOption) {
-                objects[i + 1] = parameter.resolver.resolve(context, this, event)
-
-                //no need to check for unresolved parameters,
-                // it is impossible to have other arg types other than Message (and custom resolvers)
-            } else {
-                objects[i + 1] = parameter.customResolver.resolve(context, this, event)
+        for (parameter in parameters) {
+            objects += when {
+                //no need to check for unresolved parameters, it is impossible to have other arg types other than Message (and custom resolvers)
+                parameter.isOption -> parameter.resolver.resolve(context, this, event)
+                else -> parameter.customResolver.resolve(context, this, event)
             }
         }
 
@@ -58,9 +54,5 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
         }
 
         return true
-    }
-
-    override fun getParameters(): MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> {
-        return commandParameters
     }
 }

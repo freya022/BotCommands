@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal
 
+import com.freya02.botcommands.annotations.api.annotations.Optional
 import com.freya02.botcommands.internal.utils.Utils
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
@@ -7,6 +8,7 @@ import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
@@ -35,3 +37,13 @@ inline fun AbstractCommandInfo.requireUser(value: Boolean, lazyMessage: () -> St
         throwUser(lazyMessage())
     }
 }
+
+val KParameter.isReallyOptional: Boolean
+    get() {
+        return isOptional || hasAnnotation<Optional>() //TODO take into account invisible annotations like Nullable, see ReflectionUtils
+    }
+
+val KParameter.isPrimitive: Boolean
+    get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
+
+fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")

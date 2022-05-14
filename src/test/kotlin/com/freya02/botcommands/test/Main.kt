@@ -11,7 +11,9 @@ fun main() {
     //    function = ::func
     //}
 
-    val kFunction1 = KtTest::lol
+//    val kFunction1 = KtTest::lol
+
+    val kFunction2 = KtTest::l
 
     println()
 }

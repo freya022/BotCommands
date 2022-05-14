@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.parameters.*;
 import com.freya02.botcommands.internal.parameters.channels.*;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
+import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Has all the parameter resolvers registered here, 
+ * Has all the parameter resolvers registered here,
  * they help in resolving method parameters for regex commands, application commands and component callbacks<br><br>
  *
  * Supported parameters:
@@ -41,8 +42,8 @@ import java.util.stream.Collectors;
  */
 public class ParameterResolvers {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final Map<Class<?>, ParameterResolver> map = new HashMap<>();
-	
+	private static final Map<KType, ParameterResolver> map = new HashMap<>();
+
 	private static final List<Class<?>> possibleInterfaces = List.of(
 			RegexParameterResolver.class,
 			SlashParameterResolver.class,
@@ -105,11 +106,11 @@ public class ParameterResolvers {
 	}
 
 	@Nullable
-	public static ParameterResolver of(Class<?> type) {
-		return map.get(type);
+	public static ParameterResolver of(@NotNull ParameterType type) {
+		return map.get(type.getType());
 	}
 
-	public static boolean exists(Class<?> type) {
-		return map.containsKey(type);
+	public static boolean exists(@NotNull ParameterType type) {
+		return map.containsKey(type.getType());
 	}
 }

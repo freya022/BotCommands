@@ -111,7 +111,7 @@ public class ExtensionsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
-		if (ParameterResolvers.exists(parameterType))
+		if (ParameterResolvers.exists(ParameterType.ofClass(parameterType)))
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
 
 		ParameterResolvers.register(new CustomResolver(parameterType, function));

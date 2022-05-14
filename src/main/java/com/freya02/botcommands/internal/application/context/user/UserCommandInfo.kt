@@ -16,13 +16,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
 
 class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
-    private val commandParameters: MethodParameters<ContextCommandParameter<UserContextParameterResolver>>
+    override val parameters: MethodParameters<ContextCommandParameter<UserContextParameterResolver>>
 
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
-        commandParameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
-            ContextCommandParameter(UserContextParameterResolver::class.java, parameter, i)
+        parameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
+            ContextCommandParameter(UserContextParameterResolver::class, parameter, i)
         }
     }
 
@@ -32,12 +32,11 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
         event: UserContextInteractionEvent,
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
-        val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
+        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
         objects += if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(
             method, context, event)
 
-        for (i in 0 until commandParameters.size) {
-            val parameter = commandParameters[i]
+        parameters.forEachIndexed { i, parameter ->
             if (parameter.isOption) {
                 objects[i + 1] = parameter.resolver.resolve(context, this, event)
                 //no need to check for unresolved parameters,
@@ -56,9 +55,5 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
         }
 
         return true
-    }
-
-    override fun getParameters(): MethodParameters<ContextCommandParameter<UserContextParameterResolver>> {
-        return commandParameters
     }
 }
