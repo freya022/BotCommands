@@ -4,8 +4,9 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 
-class TextCommandBuilder internal constructor(path: CommandPath) : CommandBuilder(path) {
+class TextCommandBuilder internal constructor(instance: Any, path: CommandPath) : CommandBuilder(instance, path) {
     var ownerRequired: Boolean = false
+    var hidden: Boolean = false
     var aliases: List<CommandPath> = listOf()
     var description = "No description"
     var order = -1

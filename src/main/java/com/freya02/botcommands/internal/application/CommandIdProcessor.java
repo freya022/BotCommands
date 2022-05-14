@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandStatus;
+import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.map.TLongObjectMap;
@@ -43,7 +44,7 @@ public class CommandIdProcessor {
 				));
 			}
 
-			final Collection<Long> instanceAllowedGuilds = info.getInstance().getGuildsForCommandId(context, commandId, path);
+			final Collection<Long> instanceAllowedGuilds = ((ApplicationCommand) info.getInstance()).getGuildsForCommandId(context, commandId, path); //TODO change to use opaque user data
 			if (instanceAllowedGuilds != null) {
 				commandIdToGuildsMap.computeIfAbsent(commandId, x -> new TLongHashSet()).addAll(instanceAllowedGuilds);
 			}

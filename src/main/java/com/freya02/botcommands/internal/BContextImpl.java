@@ -234,7 +234,7 @@ public class BContextImpl implements BContext {
 	}
 
 	@NotNull
-	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo<?> commandInfo) {
+	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo commandInfo) {
 		return commandInfo.getCommandId() == null
 				? commandInfo.getPath()
 				: CommandPath.of(commandInfo.getCommandId());

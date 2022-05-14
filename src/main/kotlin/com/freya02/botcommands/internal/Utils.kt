@@ -47,3 +47,5 @@ val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
 
 fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
+
+inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)

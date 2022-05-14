@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 public class StringResolver extends ParameterResolver implements RegexParameterResolver, QuotableRegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, ModalParameterResolver {
 	public StringResolver() {
-		super(String.class);
+		super(ParameterType.ofClass(String.class));
 	}
 
 	@Override

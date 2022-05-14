@@ -23,7 +23,7 @@ public interface RegexParameterResolver {
 	 * @return The resolved option mapping
 	 */
 	@Nullable
-	Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String[] args);
+	Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @Nullable String[] args); //TODO array is NOT NULL, elements are nullable
 
 	/**
 	 * Returns the pattern required to recognize this parameter

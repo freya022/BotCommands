@@ -24,7 +24,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public UserResolver() {
-		super(User.class);
+		super(ParameterType.ofClass(User.class));
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class Usability {
 		this.unusableReasons = unusableReasons;
 	}
 
-	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo<?> cmdInfo) {
+	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo cmdInfo) {
 		final NSFWState nsfwState = cmdInfo.getNsfwState();
 		if (nsfwState == null) return;
 
@@ -56,7 +56,7 @@ public class Usability {
 
 	public static Usability of(BContext context, TextCommandInfo cmdInfo, Member member, GuildMessageChannel channel, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
-		if (isNotOwner && cmdInfo.isHidden()) {
+		if (isNotOwner && cmdInfo.getHidden()) {
 			unusableReasons.add(HIDDEN);
 		}
 

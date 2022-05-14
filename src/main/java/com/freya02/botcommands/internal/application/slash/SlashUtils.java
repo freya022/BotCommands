@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application.slash;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.ApplicationOptionData;
@@ -43,7 +44,7 @@ public class SlashUtils {
 			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
 
 			if (guild != null) {
-				DefaultValueSupplier defaultValueSupplier = info.getInstance().getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getParameter().getType());
+				DefaultValueSupplier defaultValueSupplier = ((ApplicationCommand) info.getInstance()).getDefaultValueSupplier(context, guild, info.getCommandId(), info.getPath(), applicationOptionData.getEffectiveName(), parameter.getParameter().getType()); //TODO change to use opaque user data
 
 				parameter.getDefaultOptionSupplierMap().put(guild.getIdLong(), defaultValueSupplier);
 
@@ -147,7 +148,7 @@ public class SlashUtils {
 
 	@NotNull
 	private static List<Command.Choice> getChoicesForCommandOption(@Nullable Guild guild, ApplicationCommandInfo info, int optionIndex) {
-		return info.getInstance().getOptionChoices(guild, info.getPath(), optionIndex);
+		return ((ApplicationCommand) info.getInstance()).getOptionChoices(guild, info.getPath(), optionIndex); //TODO change to use opaque user data
 	}
 
 	public static void checkDefaultValue(ExecutableInteractionInfo executableInteractionInfo, ApplicationCommandVarArgParameter<?> parameter, Object defaultVal) {

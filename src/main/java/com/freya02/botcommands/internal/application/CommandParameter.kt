@@ -22,11 +22,11 @@ abstract class CommandParameter<RESOLVER : Any>(
     val boxedType: KType,
     val index: Int
 ) {
-    private val _resolver: RESOLVER?
+    protected val _resolver: RESOLVER?
     val resolver: RESOLVER
         get() = _resolver ?: throwInternal("Tried to use a resolver but it was not set")
 
-    private val _customResolver: CustomResolver?
+    protected val _customResolver: CustomResolver?
     val customResolver: CustomResolver
         get() = _customResolver ?: throwInternal("Tried to use a custom resolver but it was not set")
 

@@ -25,8 +25,8 @@ abstract class ParameterResolver {
      *
      * @param type Type of the parameter being resolved
      */
-    constructor(type: KType) {
-        this.type = type
+    constructor(type: ParameterType) {
+        this.type = type.type
         this.LOGGER = Logging.getLogger(this)
     }
 }

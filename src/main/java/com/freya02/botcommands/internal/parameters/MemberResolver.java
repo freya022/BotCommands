@@ -25,7 +25,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public MemberResolver() {
-		super(Member.class);
+		super(ParameterType.ofClass(Member.class));
 	}
 
 	@Override

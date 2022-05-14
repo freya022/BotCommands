@@ -2,10 +2,7 @@ package com.freya02.botcommands.internal.parameters;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.entities.EmojiOrEmote;
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
@@ -26,7 +23,7 @@ import java.util.regex.Pattern;
 
 public class EmojiOrEmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmojiOrEmoteResolver() {
-		super(EmojiOrEmote.class);
+		super(ParameterType.ofClass(EmojiOrEmote.class));
 	}
 
 	@Override

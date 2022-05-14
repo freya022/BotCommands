@@ -5,7 +5,6 @@ import com.freya02.botcommands.annotations.api.application.context.annotations.J
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
@@ -14,8 +13,6 @@ import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
@@ -78,10 +75,12 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
 		}
 
-		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
+		throw new UnsupportedOperationException();
 
-		final CommandPath effectivePath = context.addUserCommand(info);
-		LOGGER.debug("Added user command {} for method {}", effectivePath, Utils.formatMethodShort(method));
+//		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
+//
+//		final CommandPath effectivePath = context.addUserCommand(info);
+//		LOGGER.debug("Added user command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
@@ -98,10 +97,12 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
 		}
 
-		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
+		throw new UnsupportedOperationException();
 
-		final CommandPath effectivePath = context.addMessageCommand(info);
-		LOGGER.debug("Added message command {} for method {}", effectivePath, Utils.formatMethodShort(method));
+//		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
+//
+//		final CommandPath effectivePath = context.addMessageCommand(info);
+//		LOGGER.debug("Added message command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {

@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.parameters;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MentionableResolver extends ParameterResolver implements SlashParameterResolver {
 	public MentionableResolver() {
-		super(IMentionable.class);
+		super(ParameterType.ofClass(IMentionable.class));
 	}
 
 	@Override

@@ -1,10 +1,7 @@
 package com.freya02.botcommands.internal.parameters;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -24,7 +21,7 @@ public class RoleResolver extends ParameterResolver implements RegexParameterRes
 	private static final Pattern PATTERN = Pattern.compile("(?:<@&)?(\\d+)>?");
 
 	public RoleResolver() {
-		super(Role.class);
+		super(ParameterType.ofClass(Role.class));
 	}
 
 	@Override

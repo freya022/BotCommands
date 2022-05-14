@@ -1,10 +1,7 @@
 package com.freya02.botcommands.internal.parameters.channels;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -29,7 +26,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel> extends Pa
 	private final EnumSet<ChannelType> channelTypes;
 	private final BiFunction<Guild, String, T> channelResolver;
 
-	public AbstractChannelResolver(Class<T> channelClass, @Nullable ChannelType channelType, BiFunction<Guild, String, T> channelResolver) {
+	public AbstractChannelResolver(ParameterType channelClass, @Nullable ChannelType channelType, BiFunction<Guild, String, T> channelResolver) {
 		super(channelClass);
 
 		this.channelTypes = channelType == null ? EnumSet.noneOf(ChannelType.class) : EnumSet.of(channelType);
