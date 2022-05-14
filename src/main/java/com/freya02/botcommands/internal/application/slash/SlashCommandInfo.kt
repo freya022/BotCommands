@@ -7,7 +7,8 @@ import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.isSubclassOfAny
+import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -34,12 +35,11 @@ class SlashCommandInfo(
 
     init {
         commandParameters = MethodParameters.of(commandMethod) { i, parameter ->
-            val type = parameter.type.jvmErasure.java
-            if (Member::class.java.isAssignableFrom(type)
-                || Role::class.java.isAssignableFrom(type)
-                || GuildChannel::class.java.isAssignableFrom(type)
-            ) {
-                require(isGuildOnly) { "The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.simpleName + " parameter as it is not guild-only" }
+            val type = parameter.type.jvmErasure
+            if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
+                if (!isGuildOnly) {
+                    throwUser("The slash command cannot have a " + type.simpleName + " parameter as it is not guild-only")
+                }
             }
             SlashCommandParameter(parameter, i)
         }
@@ -51,15 +51,9 @@ class SlashCommandInfo(
         event: SlashCommandInteractionEvent,
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
-        val objects: MutableList<Any?> = object : ArrayList<Any?>(commandParameters.size + 1) {
-            init {
-                if (guildOnly) {
-                    add(GuildSlashEvent(context, commandMethod, event)) //TODO fix
-                } else {
-                    add(GlobalSlashEventImpl(context, commandMethod, event)) //TODO fix
-                }
-            }
-        }
+        val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
+        objects += if (isGuildOnly) GuildSlashEvent(context, commandMethod, event) else GlobalSlashEventImpl(context, commandMethod, event)
+
         for (parameter in commandParameters) {
             val guild = event.guild
             if (guild != null) {
@@ -80,19 +74,16 @@ class SlashCommandInfo(
                     val varArgName = SlashUtils.getVarArgName(optionName, varArgNum)
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || parameter.isVarArg && !parameter.isRequiredVararg(varArgNum)) {
-                            if (parameter.isPrimitive) {
-                                objectList.add(0)
-                            } else {
-                                objectList.add(null)
+                            objectList += when {
+                                parameter.isPrimitive -> 0
+                                else -> null
                             }
+
                             continue
                         } else {
-                            throw RuntimeException(
-                                "Slash parameter couldn't be resolved for method " + Utils.formatMethodShort(
-                                    commandMethod
-                                ) + " at parameter " + applicationOptionData.effectiveName + " (" + varArgName + ")"
-                            )
+                            throwUser("Slash parameter couldn't be resolved at parameter " + applicationOptionData.effectiveName + " (" + varArgName + ")")
                         }
+
                     val resolved = parameter.resolver.resolve(context, this, event, optionMapping)
                     if (resolved == null) {
                         event.reply(
@@ -111,8 +102,10 @@ class SlashCommandInfo(
                             optionMapping.asString,
                             parameter.boxedType.jvmErasure.simpleName
                         )
+
                         return false
                     }
+
                     require(parameter.boxedType.jvmErasure.isSuperclassOf(resolved::class)) {
                         "The parameter '%s' of value '%s' is not a valid type (expected a %s)".format(
                             applicationOptionData.effectiveName,
@@ -120,6 +113,7 @@ class SlashCommandInfo(
                             parameter.boxedType.jvmErasure.simpleName
                         )
                     }
+
                     objectList.add(resolved)
                 }
             } else {
@@ -130,6 +124,7 @@ class SlashCommandInfo(
             // magically unboxes primitives when passed to Method#invoke
             objects.add(if (parameter.isVarArg) objectList else objectList[0])
         }
+
         applyCooldown(event)
 
         try {

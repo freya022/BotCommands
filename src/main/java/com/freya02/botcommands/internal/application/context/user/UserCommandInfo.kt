@@ -9,22 +9,18 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import java.util.function.Consumer
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
     private val commandParameters: MethodParameters<ContextCommandParameter<UserContextParameterResolver>>
 
     init {
-        val parameterTypes: List<KParameter> = method.valueParameters
-        require(GlobalUserEvent::class.isSuperclassOf(parameterTypes[0].type.jvmErasure)) {
-            "First argument should be a GlobalUserEvent for method " + Utils.formatMethodShort(method)
-        }
+        requireFirstParam(method.valueParameters, GlobalUserEvent::class)
+
         commandParameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
             ContextCommandParameter(UserContextParameterResolver::class.java, parameter, i)
         }
@@ -37,7 +33,7 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
         val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
-        objects[0] = if (guildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(method, context, event)
+        objects += if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(method, context, event)
 
         for (i in 0 until commandParameters.size) {
             val parameter = commandParameters[i]

@@ -9,22 +9,18 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import java.util.function.Consumer
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
     private val commandParameters: MethodParameters<ContextCommandParameter<MessageContextParameterResolver>>
 
     init {
-        val parameterTypes: List<KParameter> = method.valueParameters
-        require(GlobalMessageEvent::class.isSuperclassOf(parameterTypes[0].type.jvmErasure)) {
-            "First argument should be a GlobalUserEvent for method " + Utils.formatMethodShort(method)
-        }
+        requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
+
         commandParameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
             ContextCommandParameter(MessageContextParameterResolver::class.java, parameter, i)
         }
@@ -37,8 +33,8 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
         val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
-        objects[0] =
-            if (guildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(method, context, event)
+        objects +=
+            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(method, context, event)
 
         for (i in 0 until commandParameters.size) {
             val parameter = commandParameters[i]
