@@ -4,22 +4,22 @@ import com.freya02.botcommands.annotations.api.localization.annotations.Localiza
 import com.freya02.botcommands.api.localization.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.LocalizationManager;
+import kotlin.reflect.KFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 public class EventLocalizer implements UserLocalizable, GuildLocalizable, Localizable {
 	private final BContextImpl context;
-	private final Method method;
+	private final KFunction<?> function;
 
 	private final Locale guildLocale;
 	private final Locale userLocale;
 
-	public EventLocalizer(@NotNull BContextImpl context, @Nullable Method method, @Nullable Locale guildLocale, @Nullable Locale userLocale) {
+	public EventLocalizer(@NotNull BContextImpl context, @Nullable KFunction<?> function, @Nullable Locale guildLocale, @Nullable Locale userLocale) {
 		this.context = context;
-		this.method = method;
+		this.function = function;
 
 		this.guildLocale = guildLocale;
 		this.userLocale = userLocale;
@@ -37,8 +37,8 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 		}
 
 		final String effectivePath;
-		if (method != null) {
-			final String localizationPrefix = localizationManager.getLocalizationPrefix(method);
+		if (function != null) {
+			final String localizationPrefix = localizationManager.getLocalizationPrefix(function);
 
 			if (localizationPrefix == null) {
 				effectivePath = localizationPath;
@@ -91,11 +91,11 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 	@Override
 	@NotNull
 	public String getLocalizationBundle() {
-		if (method == null) {
+		if (function == null) {
 			throw new IllegalStateException("Cannot use predefined localization bundles in this event");
 		}
 
-		final String localizationBundle = context.getLocalizationManager().getLocalizationBundle(method);
+		final String localizationBundle = context.getLocalizationManager().getLocalizationBundle(function);
 
 		if (localizationBundle == null) {
 			throw new IllegalArgumentException("You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle.class.getSimpleName());

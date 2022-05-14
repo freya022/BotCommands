@@ -1,12 +1,11 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.annotations.api.prefixed.annotations.ID;
 import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.internal.application.CommandParameter;
+import kotlin.reflect.KParameter;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Parameter;
 import java.util.List;
 
 public class TextCommandParameter extends CommandParameter<RegexParameterResolver> {
@@ -14,7 +13,7 @@ public class TextCommandParameter extends CommandParameter<RegexParameterResolve
 	private final TextParameterData data;
 	private final boolean isId;
 
-	public TextCommandParameter(Class<RegexParameterResolver> resolverType, Parameter parameter, int index) {
+	public TextCommandParameter(Class<RegexParameterResolver> resolverType, KParameter parameter, int index) {
 		super(resolverType, parameter, index);
 
 		final RegexParameterResolver resolver = getResolver();
@@ -24,7 +23,7 @@ public class TextCommandParameter extends CommandParameter<RegexParameterResolve
 		} else this.groupCount = -1;
 
 		this.data = new TextParameterData(parameter);
-		this.isId = parameter.isAnnotationPresent(ID.class);
+		this.isId = true; //TODO fix
 	}
 
 	@Override

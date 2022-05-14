@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.components.LambdaLocalizable;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 public class ButtonEvent extends ButtonInteractionEvent implements LambdaLocalizable {
@@ -17,11 +17,11 @@ public class ButtonEvent extends ButtonInteractionEvent implements LambdaLocaliz
 
 	private final BContext context;
 
-	public ButtonEvent(@Nullable Method method, BContextImpl context, ButtonInteractionEvent event) {
+	public ButtonEvent(@Nullable KFunction<?> function, BContextImpl context, ButtonInteractionEvent event) {
 		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
 
 		this.context = context;
-		this.localizer = new EventLocalizer(context, method, isFromGuild() ? event.getGuildLocale() : null, event.getUserLocale());
+		this.localizer = new EventLocalizer(context, function, isFromGuild() ? event.getGuildLocale() : null, event.getUserLocale());
 	}
 
 	public BContext getContext() {

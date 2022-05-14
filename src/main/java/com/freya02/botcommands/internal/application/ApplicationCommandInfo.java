@@ -3,16 +3,13 @@ package com.freya02.botcommands.internal.application;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandScope;
+import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.MethodParameters;
-import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.function.Function;
 
 public abstract class ApplicationCommandInfo extends AbstractCommandInfo<ApplicationCommand> {
 	protected final CommandScope scope;
@@ -20,18 +17,14 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 	protected final boolean guildOnly;
 	protected final boolean testOnly;
 
-	@SafeVarargs
-	protected <A extends Annotation> ApplicationCommandInfo(@NotNull BContext context,
-	                                                        @NotNull ApplicationCommand instance,
-	                                                        @NotNull A annotation,
-	                                                        @NotNull Method commandMethod,
-	                                                        Function<A, String>... nameComponentsFunctions) {
-		super(context, instance, annotation, commandMethod, nameComponentsFunctions);
+	protected ApplicationCommandInfo(@NotNull BContext context,
+	                                 @NotNull ApplicationCommandBuilder builder) {
+		super(context, builder);
 
-		this.scope = AnnotationUtils.getAnnotationValue(annotation, "scope");
-		this.defaultLocked = AnnotationUtils.getAnnotationValue(annotation, "defaultLocked");
+		this.scope = builder.getScope();
+		this.defaultLocked = builder.getDefaultLocked();
 		this.guildOnly = context.getApplicationCommandsContext().isForceGuildCommandsEnabled() || scope.isGuildOnly();
-		this.testOnly = AnnotationUtils.getEffectiveTestState(commandMethod);
+		this.testOnly = builder.getTestOnly();
 
 		if (testOnly && scope != CommandScope.GUILD) {
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command annotated with @Test must have the GUILD scope");

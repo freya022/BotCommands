@@ -11,7 +11,7 @@ public final class NSFWState {
 	private final boolean enabledInGuild;
 	private final boolean enabledInDMs;
 
-	private NSFWState(boolean guildEnabled, boolean dmEnabled) {
+	public NSFWState(boolean guildEnabled, boolean dmEnabled) {
 		this.enabledInGuild = guildEnabled;
 		this.enabledInDMs = dmEnabled;
 

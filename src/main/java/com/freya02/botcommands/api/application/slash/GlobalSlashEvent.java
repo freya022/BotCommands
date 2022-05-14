@@ -7,21 +7,21 @@ import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.UserLocalizable;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
 	private final EventLocalizer localizer;
 
-	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull Method method, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
+	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
 		super(api, responseNumber, interaction);
 
-		this.localizer = new EventLocalizer(context, method, isFromGuild() ? interaction.getGuildLocale() : null, interaction.getUserLocale());
+		this.localizer = new EventLocalizer(context, function, isFromGuild() ? interaction.getGuildLocale() : null, interaction.getUserLocale());
 	}
 
 	public abstract BContext getContext();

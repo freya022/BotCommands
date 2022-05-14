@@ -1,33 +1,25 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
-import com.freya02.botcommands.internal.utils.AnnotationUtils;
-import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.internal.prefixed.ExecutionResult.CONTINUE;
 import static com.freya02.botcommands.internal.prefixed.ExecutionResult.OK;
@@ -45,34 +37,28 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	private final Pattern completePattern;
 	private final int order;
 
-	public TextCommandInfo(BContext context, TextCommand instance, Method commandMethod) {
-		super(context, instance,
-				commandMethod.getAnnotation(JDATextCommand.class),
-				commandMethod,
-				JDATextCommand::name,
-				JDATextCommand::group,
-				JDATextCommand::subcommand);
+	public TextCommandInfo(@NotNull BContext context,
+	                       @NotNull TextCommandBuilder builder) {
+		super(context, builder);
 
-		final JDATextCommand jdaCommand = commandMethod.getAnnotation(JDATextCommand.class);
+		this.aliases = aliases;
+		this.description = description;
 
-		aliases = Arrays.stream(jdaCommand.aliases()).map(CommandPath::of).collect(Collectors.toList());
-		description = jdaCommand.description();
+		this.order = order;
 
-		order = jdaCommand.order();
-
-		final boolean isRegexMethod = !ReflectionUtils.hasFirstParameter(commandMethod, CommandEvent.class);
-		parameters = MethodParameters.of(context, commandMethod, (parameter, index) -> {
-			if (parameter.isAnnotationPresent(AppOption.class))
-				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
-
-			//Fallback doesn't accept options
-			if (parameter.isAnnotationPresent(TextOption.class) && !isRegexMethod)
-				throw new IllegalArgumentException("Fallback text commands (CommandEvent ones) cannot have parameters annotated with @TextOption");
+//		final boolean isRegexMethod = !ReflectionUtils.hasFirstParameter(commandMethod, CommandEvent.class);
+		parameters = MethodParameters.of(commandMethod, (index, parameter) -> {
+//			if (parameter.isAnnotationPresent(AppOption.class))
+//				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
+//
+//			//Fallback doesn't accept options
+//			if (parameter.isAnnotationPresent(TextOption.class) && !isRegexMethod)
+//				throw new IllegalArgumentException("Fallback text commands (CommandEvent ones) cannot have parameters annotated with @TextOption");
 
 			return new TextCommandParameter(RegexParameterResolver.class, parameter, index);
 		});
 
-		hidden = AnnotationUtils.getEffectiveHiddenState(commandMethod);
+		this.hidden = hidden;
 
 		if (parameters.getOptionCount() > 0) {
 			completePattern = CommandPattern.of(this);

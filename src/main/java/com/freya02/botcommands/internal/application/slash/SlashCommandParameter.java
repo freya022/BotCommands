@@ -9,10 +9,10 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.lang.reflect.Parameter;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -21,7 +21,7 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
 	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = new TLongObjectHashMap<>();
 
-	public SlashCommandParameter(Parameter parameter, int index) {
+	public SlashCommandParameter(KParameter parameter, int index) {
 		super(SlashParameterResolver.class, parameter, index);
 
 		if (parameter.isAnnotationPresent(TextOption.class))

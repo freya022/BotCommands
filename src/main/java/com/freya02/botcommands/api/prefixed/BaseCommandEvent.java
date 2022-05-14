@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.localization.Localizable;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -18,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -36,13 +36,10 @@ import java.util.function.Supplier;
 public abstract class BaseCommandEvent extends MessageReceivedEvent implements GuildLocalizable, Localizable {
 	private final EventLocalizer localizer;
 
-	public BaseCommandEvent(@NotNull BContextImpl context, @NotNull Method method, @NotNull JDA api, long responseNumber, @NotNull Message message) {
+	public BaseCommandEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
 
-		this.localizer = new EventLocalizer(context,
-				method,
-				message.isFromGuild() ? message.getGuild().getLocale() : null,
-				null);
+		this.localizer = new EventLocalizer(context, function, message.isFromGuild() ? message.getGuild().getLocale() : null, null);
 	}
 
 	public abstract BContext getContext();

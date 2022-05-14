@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.Utils;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 		final ModalHandler annotation = method.getAnnotation(ModalHandler.class);
 		this.handlerName = annotation.name();
 
-		this.modalParameters = MethodParameters.of(context, method, ModalHandlerParameter::new);
+		this.modalParameters = MethodParameters.of(method, ModalHandlerParameter::new);
 
 		final boolean hasModalData = modalParameters.stream().anyMatch(ModalHandlerParameter::isModalData);
 
@@ -55,8 +56,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 	}
 
 	@Override
-	@NotNull
-	public Method getMethod() {
+	public KFunction<?> getMethod() {
 		return method;
 	}
 

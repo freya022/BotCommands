@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
@@ -95,7 +96,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			this.choiceSupplier = new ChoiceSupplierTransformer(this, transformer);
 		}
 
-		this.autocompleteParameters = MethodParameters.of(context, method, AutocompleteCommandParameter::new);
+		this.autocompleteParameters = MethodParameters.of(method, AutocompleteCommandParameter::new);
 	}
 
 	public static Command.Choice getChoice(OptionType type, String string) {
@@ -261,8 +262,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 	}
 
 	@Override
-	@NotNull
-	public Method getMethod() {
+	public KFunction<?> getMethod() {
 		return method;
 	}
 

@@ -1,20 +1,18 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.annotations.api.annotations.CommandId;
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.CooldownScope;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.builder.CommandBuilder;
 import com.freya02.botcommands.internal.runner.MethodRunner;
-import com.freya02.botcommands.internal.utils.AnnotationUtils;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.Permission;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.EnumSet;
-import java.util.function.Function;
-
-import static com.freya02.botcommands.internal.utils.AnnotationUtils.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * @param <T> Command instance type
@@ -25,7 +23,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	/** This is NOT localized */
 	protected final CommandPath path;
 	protected final boolean ownerRequired;
-	protected final Method commandMethod;
+	protected final KFunction<?> commandMethod;
 
 	protected final EnumSet<Permission> userPermissions;
 	protected final EnumSet<Permission> botPermissions;
@@ -34,42 +32,32 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	private final String commandId;
 	private final MethodRunner methodRunner;
 
-	@SafeVarargs
-	protected <A extends Annotation> AbstractCommandInfo(@NotNull BContext context,
-	                                                     @NotNull T instance,
-	                                                     @NotNull A annotation,
-	                                                     @NotNull Method commandMethod,
-	                                                     Function<A, String>... nameComponentsFunctions) {
-		super(getEffectiveCooldownStrategy(commandMethod));
+	protected AbstractCommandInfo(@NotNull BContext context,
+	                              @NotNull CommandBuilder builder) {
+		super(new CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)); //TODO
 
-		this.instance = instance;
+		this.instance = null;
 
-		final String[] pathComponents = new String[nameComponentsFunctions.length];
-		for (int i = 0; i < nameComponentsFunctions.length; i++) {
-			final String component = nameComponentsFunctions[i].apply(annotation);
+		this.path = builder.getPath();
+		this.commandMethod = builder.getFunction();
+		this.methodRunner = new MethodRunner() { //TODO replace
+			@SuppressWarnings("unchecked")
+			@Override
+			public <R> void invoke(@NotNull Object[] args, Consumer<Throwable> throwableConsumer, ConsumerEx<R> successCallback) {
+				try {
+					final Object call = commandMethod.call(args);
 
-			if (component.isEmpty()) {
-				pathComponents[i] = null; //We need to transform blank strings to null to conform with CommandPath
-			} else {
-				pathComponents[i] = component;
+					successCallback.accept((R) call);
+				} catch (Throwable e) {
+					throwableConsumer.accept(e);
+				}
 			}
-		}
-
-		this.path = CommandPath.of(pathComponents);
-		this.commandMethod = commandMethod;
-		this.methodRunner = context.getMethodRunnerFactory().make(instance, commandMethod);
-
-		this.ownerRequired = AnnotationUtils.getEffectiveRequireOwnerState(commandMethod);
-
-		final CommandId commandIdAnnot = commandMethod.getAnnotation(CommandId.class);
-		this.commandId = commandIdAnnot != null
-				? commandIdAnnot.value()
-				: null;
-
-		this.nsfwState = NSFWState.ofMethod(commandMethod);
-
-		this.userPermissions = getEffectiveUserPermissions(commandMethod);
-		this.botPermissions = getEffectiveBotPermissions(commandMethod);
+		};
+		this.ownerRequired = ownerRequired;
+		this.commandId = commandId;
+		this.nsfwState = nsfwState;
+		this.userPermissions = userPermissions;
+		this.botPermissions = botPermissions;
 	}
 
 	@Override
@@ -79,8 +67,7 @@ public abstract class AbstractCommandInfo<T> extends Cooldownable implements Exe
 	}
 
 	@Override
-	@NotNull
-	public Method getMethod() {
+	public KFunction<?> getMethod() {
 		return commandMethod;
 	}
 

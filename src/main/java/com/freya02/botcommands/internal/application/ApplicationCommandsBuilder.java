@@ -16,7 +16,6 @@ import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
@@ -119,10 +118,12 @@ public final class ApplicationCommandsBuilder {
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
 		}
 
-		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
+		throw new UnsupportedOperationException();
 
-		final CommandPath effectivePath = context.addSlashCommand(info);
-		LOGGER.debug("Added slash command path {} for method {}", effectivePath, Utils.formatMethodShort(method));
+//		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method, userPermissions, botPermissions, function, scope, defaultLocked, guildOnly, testOnly);
+
+//		final CommandPath effectivePath = context.addSlashCommand(info);
+//		LOGGER.debug("Added slash command path {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private String getCheckTypeString() {

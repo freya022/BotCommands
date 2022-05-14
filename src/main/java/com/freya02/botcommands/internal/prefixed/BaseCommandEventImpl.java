@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.internal.BContextImpl;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
@@ -20,7 +21,6 @@ import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,8 +35,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	protected final GuildMessageChannel channel;
 
-	public BaseCommandEventImpl(@NotNull BContextImpl context, @NotNull Method method, MessageReceivedEvent event, String arguments) {
-		super(context, method, event.getJDA(), event.getResponseNumber(), event.getMessage());
+	public BaseCommandEventImpl(@NotNull BContextImpl context, @NotNull KFunction<?> function, MessageReceivedEvent event, String arguments) {
+		super(context, function, event.getJDA(), event.getResponseNumber(), event.getMessage());
 
 		this.context = context;
 		this.argumentsStr = arguments;

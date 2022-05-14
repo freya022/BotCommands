@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.runner.MethodRunner;
+import kotlin.reflect.KFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
@@ -19,12 +20,11 @@ public class ComponentDescriptor implements ExecutableInteractionInfo {
 		this.instance = instance;
 		this.methodRunner = context.getMethodRunnerFactory().make(instance, method);
 
-		this.componentParameters = MethodParameters.of(context, method, ComponentHandlerParameter::new);
+		this.componentParameters = MethodParameters.of(method, ComponentHandlerParameter::new);
 	}
 
 	@Override
-	@NotNull
-	public Method getMethod() {
+	public KFunction<?> getMethod() {
 		return method;
 	}
 

@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.runner.MethodRunner;
 import com.freya02.botcommands.internal.utils.EventUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -123,7 +124,7 @@ public class EventListenersBuilder {
 
 	@NotNull
 	private EventConsumer getParametrizedEventListener(Object eventListener, Method method) {
-		final MethodParameters<EventListenerParameter> parameters = MethodParameters.of(context, method, EventListenerParameter::new);
+		final MethodParameters<EventListenerParameter> parameters = MethodParameters.of(method, EventListenerParameter::new);
 
 		final MethodRunner methodRunner = context.getMethodRunnerFactory().make(eventListener, method);
 		final var executableInteractionInfo = new EventListenerExecutableInteractionInfo(method, methodRunner, parameters, eventListener);
@@ -196,8 +197,7 @@ public class EventListenersBuilder {
 	                                                      Object eventListener) implements ExecutableInteractionInfo {
 
 		@Override
-		@NotNull
-		public Method getMethod() {
+		public KFunction<?> getMethod() {
 			return method;
 		}
 
