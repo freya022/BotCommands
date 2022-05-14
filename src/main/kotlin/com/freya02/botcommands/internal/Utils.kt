@@ -16,17 +16,17 @@ inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSe
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 
-fun AbstractCommandInfo<*>.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) = requireUser(klass.isSuperclassOf(kParameters[0].type.jvmErasure)) {
+fun AbstractCommandInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) = requireUser(klass.isSuperclassOf(kParameters[0].type.jvmErasure)) {
     "First argument should be a ${klass.simpleName}"
 }
 
-fun AbstractCommandInfo<*>.throwUser(message: String): Nothing = throwUser(commandMethod, message)
+fun AbstractCommandInfo.throwUser(message: String): Nothing = throwUser(method, message)
 
 fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${Utils.formatMethodShort(function)} : $message")
 
 @OptIn(ExperimentalContracts::class)
-inline fun AbstractCommandInfo<*>.requireUser(value: Boolean, lazyMessage: () -> String) {
+inline fun AbstractCommandInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }

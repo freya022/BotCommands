@@ -4,11 +4,8 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.isSubclassOfAny
-import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -31,10 +28,12 @@ class SlashCommandInfo(
     /**
      * This is NOT localized
      */
-    private val commandParameters: MethodParameters<SlashCommandParameter>
+    override val parameters: MethodParameters<SlashCommandParameter>
+    @Suppress("UNCHECKED_CAST")
+    override val optionParameters: List<SlashCommandParameter> = super.optionParameters as List<SlashCommandParameter>
 
     init {
-        commandParameters = MethodParameters.of(commandMethod) { i, parameter ->
+        parameters = MethodParameters.of(method) { i, parameter ->
             val type = parameter.type.jvmErasure
             if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
                 if (!isGuildOnly) {
@@ -51,10 +50,10 @@ class SlashCommandInfo(
         event: SlashCommandInteractionEvent,
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
-        val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
-        objects += if (isGuildOnly) GuildSlashEvent(context, commandMethod, event) else GlobalSlashEventImpl(context, commandMethod, event)
+        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
+        objects += if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
-        for (parameter in commandParameters) {
+        for (parameter in parameters) {
             val guild = event.guild
             if (guild != null) {
                 val supplier = parameter.defaultOptionSupplierMap[guild.idLong]
@@ -106,7 +105,7 @@ class SlashCommandInfo(
                         return false
                     }
 
-                    require(parameter.boxedType.jvmErasure.isSuperclassOf(resolved::class)) {
+                    requireUser(parameter.boxedType.jvmErasure.isSuperclassOf(resolved::class)) {
                         "The parameter '%s' of value '%s' is not a valid type (expected a %s)".format(
                             applicationOptionData.effectiveName,
                             optionMapping.asString,
@@ -128,7 +127,7 @@ class SlashCommandInfo(
         applyCooldown(event)
 
         try {
-            commandMethod.call(*objects.toTypedArray())
+            method.call(*objects.toTypedArray())
         } catch (e: Throwable) {
             throwableConsumer.accept(e)
         }
@@ -138,7 +137,7 @@ class SlashCommandInfo(
 
     fun getAutocompletionHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
         val autoCompleteQuery = event.focusedOption
-        for (parameter in commandParameters) {
+        for (parameter in parameters) {
             val applicationOptionData = parameter.applicationOptionData
             if (parameter.isOption) {
                 val optionName = applicationOptionData.effectiveName
@@ -148,15 +147,6 @@ class SlashCommandInfo(
             }
         }
         return null
-    }
-
-    override fun getParameters(): MethodParameters<SlashCommandParameter> {
-        return commandParameters
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    override fun getOptionParameters(): List<SlashCommandParameter> {
-        return super.getOptionParameters() as List<SlashCommandParameter>
     }
 
     companion object {

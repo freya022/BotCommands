@@ -33,7 +33,8 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
         val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
-        objects += if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(method, context, event)
+        objects += if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(
+            method, context, event)
 
         for (i in 0 until commandParameters.size) {
             val parameter = commandParameters[i]
@@ -49,7 +50,7 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
         applyCooldown(event)
 
         try {
-            commandMethod.call(*objects.toTypedArray())
+            method.call(*objects.toTypedArray())
         } catch (e: Throwable) {
             throwableConsumer.accept(e)
         }

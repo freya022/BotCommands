@@ -47,7 +47,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 		this.order = order;
 
 //		final boolean isRegexMethod = !ReflectionUtils.hasFirstParameter(commandMethod, CommandEvent.class);
-		parameters = MethodParameters.of(commandMethod, (index, parameter) -> {
+		parameters = MethodParameters.of(method, (index, parameter) -> {
 //			if (parameter.isAnnotationPresent(AppOption.class))
 //				throw new IllegalArgumentException(String.format("Text command parameter #%d of %s#%s cannot be annotated with @AppOption", index, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
 //
@@ -100,8 +100,8 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	@SuppressWarnings("unchecked")
 	@Override
 	@NotNull
-	public List<? extends TextCommandParameter> getOptionParameters() {
-		return (List<? extends TextCommandParameter>) super.getOptionParameters();
+	public List<? super TextCommandParameter> getOptionParameters() {
+		return (List<TextCommandParameter>) super.getOptionParameters();
 	}
 
 	public ExecutionResult execute(BContextImpl context, MessageReceivedEvent event, String args, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
@@ -139,7 +139,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 					} else if (!parameter.isOptional()) { //Parameter is not found yet the pattern matched and is not optional
 						LOGGER.warn("Could not find parameter #{} in {} for input args {}",
 								parameter.getIndex(),
-								Utils.formatMethodShort(commandMethod),
+								Utils.formatMethodShort(method),
 								args);
 
 						return CONTINUE;

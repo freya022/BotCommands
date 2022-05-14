@@ -16,23 +16,21 @@ abstract class AbstractCommandInfo protected constructor(
     context: BContext,
     builder: CommandBuilder
 ) : Cooldownable(builder.cooldownStrategy), ExecutableInteractionInfo {
-    private val instance: Any
-
     val path: CommandPath
-
     val isOwnerRequired: Boolean
-
-    protected val commandMethod: KFunction<*>
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
     val nsfwState: NSFWState?
     val commandId: String?
-    private val methodRunner: MethodRunner
+
+    final override val instance: Any
+    final override val methodRunner: MethodRunner
+    final override val method: KFunction<*>
 
     init {
         instance = builder.instance
         path = builder.path
-        commandMethod = builder.function
+        method = builder.function
         isOwnerRequired = false //TODO remove ownerRequired from application, move to Text
         commandId = builder.commandId
         nsfwState = builder.nsfwState
@@ -48,7 +46,7 @@ abstract class AbstractCommandInfo protected constructor(
                 successCallback: ConsumerEx<R>
             ) {
                 try {
-                    val call = commandMethod.call(*args)
+                    val call = method.call(*args)
                     successCallback.accept(call as R)
                 } catch (e: Throwable) {
                     throwableConsumer.accept(e)
@@ -56,10 +54,4 @@ abstract class AbstractCommandInfo protected constructor(
             }
         }
     }
-
-    override fun getMethod(): KFunction<*> = commandMethod
-
-    override fun getMethodRunner(): MethodRunner = methodRunner
-
-    override fun getInstance(): Any = instance
 }

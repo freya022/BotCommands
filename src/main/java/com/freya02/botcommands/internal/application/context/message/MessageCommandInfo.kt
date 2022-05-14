@@ -34,7 +34,8 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
     ): Boolean {
         val objects: MutableList<Any?> = ArrayList(commandParameters.size + 1)
         objects +=
-            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(method, context, event)
+            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(
+                method, context, event)
 
         for (i in 0 until commandParameters.size) {
             val parameter = commandParameters[i]
@@ -51,7 +52,7 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
         applyCooldown(event)
 
         try {
-            commandMethod.call(*objects.toTypedArray())
+            method.call(*objects.toTypedArray())
         } catch (e: Throwable) {
             throwableConsumer.accept(e)
         }

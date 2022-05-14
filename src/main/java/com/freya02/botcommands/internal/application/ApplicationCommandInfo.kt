@@ -19,6 +19,10 @@ abstract class ApplicationCommandInfo protected constructor(
     val isGuildOnly: Boolean
     val isTestOnly: Boolean
 
+    abstract override val parameters: MethodParameters<out ApplicationCommandParameter<*>>
+    @Suppress("UNCHECKED_CAST")
+    override val optionParameters: List<ApplicationCommandParameter<*>> = super.optionParameters as List<ApplicationCommandParameter<*>>
+
     init {
         scope = builder.scope
         isDefaultLocked = builder.defaultLocked
@@ -47,12 +51,5 @@ abstract class ApplicationCommandInfo protected constructor(
         if (commandId != null && scope != CommandScope.GUILD) {
             throwUser("Application command with guild-specific ID must have the GUILD scope")
         }
-    }
-
-    abstract override fun getParameters(): MethodParameters<out ApplicationCommandParameter<*>>
-
-    @Suppress("UNCHECKED_CAST")
-    override fun getOptionParameters(): List<ApplicationCommandParameter<*>> {
-        return super.getOptionParameters() as List<ApplicationCommandParameter<*>>
     }
 }
