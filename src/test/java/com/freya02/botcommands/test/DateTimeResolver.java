@@ -2,6 +2,7 @@ package com.freya02.botcommands.test;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -15,7 +16,7 @@ import java.time.ZoneOffset;
 
 class DateTimeResolver extends ParameterResolver implements SlashParameterResolver {
 	public DateTimeResolver() {
-		super(LocalDateTime.class);
+		super(ParameterType.ofClass(LocalDateTime.class));
 	}
 
 	@Override

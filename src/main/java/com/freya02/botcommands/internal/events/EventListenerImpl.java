@@ -49,11 +49,11 @@ class EventListenerImpl implements EventListener {
 
 		final List<EventConsumer> eventConsumers = eventListeners.get(event.getClass());
 		if (eventConsumers != null) {
-			final Consumer<Throwable> throwableConsumer = EventListenersBuilder.getThrowableConsumer(context, realEvent);
-
-			for (EventConsumer consumer : eventConsumers) {
-				runCallback(consumer, realEvent, throwableConsumer);
-			}
+//			final Consumer<Throwable> throwableConsumer = EventListenersBuilder.getThrowableConsumer(context, realEvent); //TODO event listener
+//
+//			for (EventConsumer consumer : eventConsumers) {
+//				runCallback(consumer, realEvent, throwableConsumer);
+//			}
 		}
 	}
 }

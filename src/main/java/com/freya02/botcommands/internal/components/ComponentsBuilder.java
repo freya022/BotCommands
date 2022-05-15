@@ -50,13 +50,15 @@ public class ComponentsBuilder {
 			if (!method.canAccess(obj))
 				throw new IllegalStateException(componentType + " " + Utils.formatMethodShort(method) + " is not public");
 
-			final ComponentDescriptor newDescriptor = new ComponentDescriptor(context, obj, method);
-			final ComponentDescriptor oldVal = map.put(handlerName, newDescriptor);
-			if (oldVal != null) {
-				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + Utils.formatMethodShort(method) + " was already registered as " + oldVal.getMethod());
-			}
+			throw new UnsupportedOperationException();
 
-			context.getRegistrationListeners().forEach(l -> l.onComponentRegistered(newDescriptor));
+//			final ComponentDescriptor newDescriptor = new ComponentDescriptor(context, obj, method);
+//			final ComponentDescriptor oldVal = map.put(handlerName, newDescriptor);
+//			if (oldVal != null) {
+//				throw new IllegalStateException(componentType + " with name " + handlerName + " in " + Utils.formatMethodShort(method) + " was already registered as " + oldVal.getMethod());
+//			}
+//
+//			context.getRegistrationListeners().forEach(l -> l.onComponentRegistered(newDescriptor));
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException("An error occurred while instantiating the class of the " + componentType + "'s method " + Utils.formatMethodShort(method), e);
 		}

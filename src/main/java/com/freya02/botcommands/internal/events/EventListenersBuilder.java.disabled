@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 // We need to avoid using the ClassWalker from ListenerAdapter
 // For this, we have to store all the possible triggered consumers by a specific event type
 // So we need to get *all* the implementors of an abstract class
-public class EventListenersBuilder {
+public class EventListenersBuilder { //TODO event listener
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final MethodHandles.Lookup lookup = MethodHandles.lookup(); //don't use publicLookup
 

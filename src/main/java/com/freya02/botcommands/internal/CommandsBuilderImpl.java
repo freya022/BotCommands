@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal;
 
-import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
@@ -20,7 +19,6 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
-import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
 import com.freya02.botcommands.internal.prefixed.HelpCommand;
@@ -49,7 +47,7 @@ public final class CommandsBuilderImpl {
 	private static final List<Class<? extends Annotation>> applicationMethodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
 
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
-	private final EventListenersBuilder eventListenersBuilder;
+//	private final EventListenersBuilder eventListenersBuilder; //TODO event listener
 
 	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final AutocompletionHandlersBuilder autocompletionHandlersBuilder;
@@ -78,7 +76,7 @@ public final class CommandsBuilderImpl {
 		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 
-		this.eventListenersBuilder = new EventListenersBuilder(context);
+//		this.eventListenersBuilder = new EventListenersBuilder(context); //TODO event listener
 		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
 		this.modalHandlersBuilder = new ModalHandlersBuilder(context);
 	}
@@ -129,7 +127,7 @@ public final class CommandsBuilderImpl {
 			componentsBuilder.postProcess();
 		}
 
-		eventListenersBuilder.postProcess();
+//		eventListenersBuilder.postProcess(); //TODO event listener
 
 		autocompletionHandlersBuilder.postProcess();
 
@@ -199,12 +197,12 @@ public final class CommandsBuilderImpl {
 			return true;
 		}
 
-		final Object eventListener = tryInstantiateMethod(JDAEventListener.class, Object.class, "JDA event listener", method);
-		if (eventListener != null) {
-			eventListenersBuilder.processEventListener(eventListener, method);
-
-			return true;
-		}
+//		final Object eventListener = tryInstantiateMethod(JDAEventListener.class, Object.class, "JDA event listener", method); //TODO event listener
+//		if (eventListener != null) {
+//			eventListenersBuilder.processEventListener(eventListener, method);
+//
+//			return true;
+//		}
 
 		final Object autocompletionHandler = tryInstantiateMethod(AutocompletionHandler.class, Object.class, "Slash command auto completion", method);
 		if (autocompletionHandler != null) {

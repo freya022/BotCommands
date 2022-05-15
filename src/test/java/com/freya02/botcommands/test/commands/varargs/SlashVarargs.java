@@ -9,6 +9,8 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import kotlin.reflect.KClass;
+import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -24,12 +26,12 @@ public class SlashVarargs extends ApplicationCommand {
 	@Nullable
 	public DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
 	                                                    @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                    @NotNull String optionName, @NotNull Class<?> parameterType) {
+	                                                    @NotNull String optionName, @NotNull KType type, @NotNull KClass<?> parameterType) {
 //		if (optionName.equals("number")) {
 //			return e -> List.of(42L, 43L, 44L);
 //		}
 
-		return super.getDefaultValueSupplier(context, guild, commandId, commandPath, optionName, parameterType);
+		return super.getDefaultValueSupplier(context, guild, commandId, commandPath, optionName, type, parameterType);
 	}
 
 	@JDASlashCommand(name = "varargs")

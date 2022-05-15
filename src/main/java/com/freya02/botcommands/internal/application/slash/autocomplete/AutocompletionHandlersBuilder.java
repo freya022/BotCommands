@@ -27,11 +27,12 @@ public class AutocompletionHandlersBuilder {
 			if (!ReflectionUtils.hasFirstParameter(method, CommandAutoCompleteInteractionEvent.class))
 				throw new IllegalArgumentException("Autocompletion handler at " + Utils.formatMethodShort(method) + " must have a " + CommandAutoCompleteInteractionEvent.class.getSimpleName() + " event as first parameter");
 
-			final AutocompletionHandlerInfo handler = new AutocompletionHandlerInfo(context, autocompleteHandler, method);
-
-			context.addAutocompletionHandler(handler);
-
-			LOGGER.debug("Adding autocompletion handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
+			throw new UnsupportedOperationException();
+//			final AutocompletionHandlerInfo handler = new AutocompletionHandlerInfo(context, autocompleteHandler, method);
+//
+//			context.addAutocompletionHandler(handler);
+//
+//			LOGGER.debug("Adding autocompletion handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
 		} catch (Exception e) {
 			throw new RuntimeException("An exception occurred while processing an autocompletion handler at " + Utils.formatMethodShort(method), e);
 		}

@@ -25,11 +25,12 @@ public class ModalHandlersBuilder {
 			if (!ReflectionUtils.hasFirstParameter(method, ModalInteractionEvent.class))
 				throw new IllegalArgumentException("Modal handler at " + Utils.formatMethodShort(method) + " must have a " + ModalInteractionEvent.class.getSimpleName() + " event as first parameter");
 
-			final ModalHandlerInfo handler = new ModalHandlerInfo(context, autocompleteHandler, method);
-
-			context.getApplicationCommandsContext().addModalHandler(handler);
-
-			LOGGER.debug("Adding modal handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
+			throw new UnsupportedOperationException();
+//			final ModalHandlerInfo handler = new ModalHandlerInfo(context, autocompleteHandler, method);
+//
+//			context.getApplicationCommandsContext().addModalHandler(handler);
+//
+//			LOGGER.debug("Adding modal handler '{}' for method {}", handler.getHandlerName(), Utils.formatMethodShort(method));
 		} catch (Exception e) {
 			throw new RuntimeException("An exception occurred while processing a modal handler at " + Utils.formatMethodShort(method), e);
 		}
