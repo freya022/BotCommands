@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -59,7 +60,7 @@ class SlashCommandInfo(
                 val supplier = parameter.defaultOptionSupplierMap[guild.idLong]
                 if (supplier != null) {
                     val defaultVal = supplier.getDefaultValue(event)
-                    SlashUtils.checkDefaultValue(this, parameter, defaultVal)
+                    checkDefaultValue(parameter, defaultVal)
                     objects.add(defaultVal)
                     continue
                 }

@@ -8,6 +8,8 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import kotlin.reflect.KClass;
+import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
@@ -78,10 +80,10 @@ public interface GuildApplicationSettings {
 	 *
 	 * @return A {@link DefaultValueSupplier} if the option can be substituted with an object
 	 */
-	@Nullable
+	@Nullable //TODO might be worth using a custom class to hold KType and KClass, as to allow java users to access Class without needing another parameter
 	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
 	                                                     @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                     @NotNull String optionName, @NotNull Class<?> parameterType) {
+	                                                     @NotNull String optionName, @NotNull KType parameterType, @NotNull KClass<?> erasedType) {
 		return null;
 	}
 }

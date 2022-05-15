@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.*;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter;
 import com.freya02.botcommands.internal.application.slash.SlashUtils;
+import com.freya02.botcommands.internal.application.slash.SlashUtils2;
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierChoices;
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringContinuity;
@@ -143,7 +144,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 				if (supplier != null) {
 					final Object defaultVal = supplier.getDefaultValue(event);
 
-					SlashUtils.checkDefaultValue(this, parameter, defaultVal);
+					SlashUtils2.checkDefaultValue(this, parameter, defaultVal);
 
 					objects.add(defaultVal);
 

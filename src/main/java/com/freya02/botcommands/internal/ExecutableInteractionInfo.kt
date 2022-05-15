@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.runner.MethodRunner
 import kotlin.reflect.KFunction
 
 interface ExecutableInteractionInfo {
-    val method: KFunction<*>?
+    val method: KFunction<*>
     val methodRunner: MethodRunner
     val parameters: MethodParameters<out CommandParameter<*>>
     val optionParameters: List<CommandParameter<*>>
