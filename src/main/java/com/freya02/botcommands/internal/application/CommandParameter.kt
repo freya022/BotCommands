@@ -17,7 +17,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 @OptIn(ExperimentalStdlibApi::class)
 abstract class CommandParameter<RESOLVER : Any>(
-    resolverType: KClass<RESOLVER>,
+    resolverType: KClass<RESOLVER>?,
     val parameter: KParameter,
     val boxedType: KType,
     val index: Int
@@ -46,7 +46,7 @@ abstract class CommandParameter<RESOLVER : Any>(
     protected open val resolvableAnnotations: List<KClass<out Annotation>>
         get() = optionAnnotations
 
-    constructor(resolverType: KClass<RESOLVER>, parameter: KParameter, index: Int) : this(
+    constructor(resolverType: KClass<RESOLVER>?, parameter: KParameter, index: Int) : this(
         resolverType,
         parameter,
         parameter.type,
@@ -63,6 +63,9 @@ abstract class CommandParameter<RESOLVER : Any>(
                 this._resolver = null
                 this._customResolver = null
             } else {
+                if (resolverType == null)
+                    throwInternal("Parameter of type " + boxedType.jvmErasure.qualifiedName + " is an annotated as an option but doesn't have a resolver type attached")
+
                 requireNotNull(resolver) { "Unknown interaction command option type: " + boxedType.jvmErasure.qualifiedName + " for target resolver " + resolverType.qualifiedName }
                 require(resolverType.isSuperclassOf(resolver.type.jvmErasure)) { "Unsupported interaction command option type: " + boxedType.jvmErasure.qualifiedName + " for target resolver " + resolverType.qualifiedName }
 

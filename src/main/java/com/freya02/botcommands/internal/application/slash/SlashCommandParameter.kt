@@ -21,8 +21,8 @@ class SlashCommandParameter(
 ) : ApplicationCommandVarArgParameter<SlashParameterResolver>(
     SlashParameterResolver::class, parameter, index
 ) {
-    var minValue: Number? = null //TODO use ClosedRange<*> ?
-    var maxValue: Number? = null
+    val minValue: Number //TODO use ClosedRange<*> ?
+    val maxValue: Number
     val channelTypes: EnumSet<ChannelType> = enumSetOf()
     val defaultOptionSupplierMap: TLongObjectMap<DefaultValueSupplier> = TLongObjectHashMap()
 

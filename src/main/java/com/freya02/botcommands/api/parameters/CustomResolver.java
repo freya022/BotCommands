@@ -21,7 +21,7 @@ public final class CustomResolver extends ParameterResolver {
 	 * @see CustomResolverFunction
 	 */
 	public <T> CustomResolver(Class<T> clazz, CustomResolverFunction<T> function) {
-		super(clazz);
+		super(ParameterType.ofClass(clazz));
 
 		this.function = function;
 	}
