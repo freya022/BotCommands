@@ -8,6 +8,7 @@ import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.KType
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
@@ -45,6 +46,9 @@ val KParameter.isReallyOptional: Boolean
 
 val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
+
+val KType.simpleName: String
+    get() = this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")
 
 fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 

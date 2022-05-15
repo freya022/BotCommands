@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.*;
@@ -27,6 +28,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.TCollections;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import kotlin.reflect.KType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -92,7 +94,7 @@ public class BContextImpl implements BContext {
 	private Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
 
-	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
+	private final Map<KType, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
 
 	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
 	private final List<Long> alreadyNotifiedList = new ArrayList<>();
@@ -542,12 +544,13 @@ public class BContextImpl implements BContext {
 		testGuildIds.addAll(ids);
 	}
 
-	public AutocompletionTransformer<?> getAutocompletionTransformer(Class<?> type) {
+	public AutocompletionTransformer<?> getAutocompletionTransformer(KType type) {
 		return autocompletionTransformers.get(type);
 	}
 
+	//TODO use KType
 	public <T> void registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
-		autocompletionTransformers.put(type, autocompletionTransformer);
+		autocompletionTransformers.put(ParameterType.ofClass(type).getType(), autocompletionTransformer);
 	}
 
 	public boolean isOnlineAppCommandCheckEnabled() {
