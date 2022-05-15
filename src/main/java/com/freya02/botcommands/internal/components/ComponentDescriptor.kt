@@ -1,48 +1,40 @@
-package com.freya02.botcommands.internal.components;
+package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.internal.ExecutableInteractionInfo;
-import com.freya02.botcommands.internal.MethodParameters;
-import com.freya02.botcommands.internal.runner.MethodRunner;
-import kotlin.reflect.KFunction;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.internal.ConsumerEx
+import com.freya02.botcommands.internal.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.runner.MethodRunner
+import java.util.function.Consumer
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 
-import java.lang.reflect.Method;
+class ComponentDescriptor(
+    context: BContext,
+    override val instance: Any,
+    override val method: KFunction<*>
+) : ExecutableInteractionInfo {
+    override val methodRunner: MethodRunner
+    override val parameters: MethodParameters<ComponentHandlerParameter>
 
-public class ComponentDescriptor implements ExecutableInteractionInfo {
-	private final Method method;
-	private final Object instance;
-	private final MethodRunner methodRunner;
-	private final MethodParameters<ComponentHandlerParameter> componentParameters;
+    init {
+        methodRunner = object : MethodRunner {
+            //TODO replace
+            @Suppress("UNCHECKED_CAST")
+            override fun <R> invoke(
+                args: Array<Any>,
+                throwableConsumer: Consumer<Throwable>,
+                successCallback: ConsumerEx<R>
+            ) {
+                try {
+                    val call = method.call(*args)
+                    successCallback.accept(call as R)
+                } catch (e: Throwable) {
+                    throwableConsumer.accept(e)
+                }
+            }
+        }
 
-	public ComponentDescriptor(BContext context, Object instance, Method method) {
-		this.method = method;
-		this.instance = instance;
-		this.methodRunner = context.getMethodRunnerFactory().make(instance, method);
-
-		this.componentParameters = MethodParameters.of(method, ComponentHandlerParameter::new);
-	}
-
-	@Override
-	public KFunction<?> getMethod() {
-		return method;
-	}
-
-	@Override
-	@NotNull
-	public MethodRunner getMethodRunner() {
-		return methodRunner;
-	}
-
-	@Override
-	@NotNull
-	public MethodParameters<ComponentHandlerParameter> getParameters() {
-		return componentParameters;
-	}
-
-	@Override
-	@NotNull
-	public Object getInstance() {
-		return instance;
-	}
+        parameters = MethodParameters.of(method) { index: Int, parameter: KParameter -> ComponentHandlerParameter(parameter, index) }
+    }
 }

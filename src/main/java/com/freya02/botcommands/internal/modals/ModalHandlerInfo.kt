@@ -1,177 +1,145 @@
-package com.freya02.botcommands.internal.modals;
+package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler;
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.ExecutableInteractionInfo;
-import com.freya02.botcommands.internal.MethodParameters;
-import com.freya02.botcommands.internal.runner.MethodRunner;
-import com.freya02.botcommands.internal.utils.Utils;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
-import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.runner.MethodRunner
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import java.util.function.Consumer
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.jvm.jvmErasure
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
+class ModalHandlerInfo(
+    context: BContextImpl,
+    override val instance: Any,
+    override val method: KFunction<*>
+) :
+    ExecutableInteractionInfo {
+    override val methodRunner: MethodRunner
+    val handlerName: String
+    override val parameters: MethodParameters<ModalHandlerParameter>
 
-public class ModalHandlerInfo implements ExecutableInteractionInfo {
-	private final Object autocompletionHandler;
-	private final Method method;
-	private final MethodRunner methodRunner;
+    init {
+        methodRunner = object : MethodRunner {
+            //TODO replace
+            @Suppress("UNCHECKED_CAST")
+            override fun <R> invoke(
+                args: Array<Any>,
+                throwableConsumer: Consumer<Throwable>,
+                successCallback: ConsumerEx<R>
+            ) {
+                try {
+                    val call = method.call(*args)
+                    successCallback.accept(call as R)
+                } catch (e: Throwable) {
+                    throwableConsumer.accept(e)
+                }
+            }
+        }
 
-	private final String handlerName;
-	private final MethodParameters<ModalHandlerParameter> modalParameters;
+        val annotation = method.findAnnotation<ModalHandler>()!!
+        handlerName = annotation.name
+        parameters = MethodParameters.of(method) { index, parameter -> ModalHandlerParameter(parameter, index) }
+        val hasModalData = parameters.stream().anyMatch { obj: ModalHandlerParameter -> obj.isModalData }
 
-	public ModalHandlerInfo(BContextImpl context, Object autocompletionHandler, Method method) {
-		this.autocompletionHandler = autocompletionHandler;
-		this.method = method;
-		this.methodRunner = context.getMethodRunnerFactory().make(autocompletionHandler, method);
+        //Check if the first parameters are all modal data
+        if (hasModalData) {
+            var sawModalData = false
+            for (parameter in parameters) {
+                requireUser(parameter.isModalData || sawModalData) {
+                    """Parameter #${parameter.index} must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
+All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters"""
+                }
+                if (parameter.isModalData) sawModalData = true
+            }
+        }
+    }
 
-		final ModalHandler annotation = method.getAnnotation(ModalHandler.class);
-		this.handlerName = annotation.name();
+    @Throws(Exception::class)
+    fun execute(
+        context: BContext,
+        modalData: ModalData,
+        event: ModalInteractionEvent,
+        throwableConsumer: Consumer<Throwable>
+    ): Boolean {
+        val inputDataMap = modalData.inputDataMap
+        val inputNameToInputIdMap: MutableMap<String, String> = HashMap()
+        inputDataMap.forEach { (inputId: String, inputData: InputData) ->
+            inputNameToInputIdMap[inputData.inputName] = inputId
+        }
+        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
+        objects.add(event)
+        val userData = modalData.userData
+        val expectedModalDatas = parameters.stream().filter { obj: ModalHandlerParameter -> obj.isModalData }.count()
+        val expectedModalInputs = parameters.stream().filter { obj: ModalHandlerParameter -> obj.isModalInput }.count()
 
-		this.modalParameters = MethodParameters.of(method, ModalHandlerParameter::new);
+        //Check if there's enough arguments to fit user data + modal inputs
+        requireUser(expectedModalDatas == userData.size.toLong() && expectedModalInputs == event.values.size.toLong()) {
+            """Modal handler does not match the received modal data:
+Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)
+Discord data: ${userData.size} userdata parameters and ${event.values.size} modal input(s)"""
+        }
 
-		final boolean hasModalData = modalParameters.stream().anyMatch(ModalHandlerParameter::isModalData);
+        //Insert modal data in the order of appearance, after the event
+        for (i in userData.indices) {
+            val parameter = parameters[i]
+            requireUser(parameter.isModalData) {
+                """Parameter #$i must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
+All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters"""
+            }
 
-		//Check if the first parameters are all modal data
-		if (hasModalData) {
-			boolean sawModalData = false;
-			for (ModalHandlerParameter parameter : modalParameters) {
-				if (!parameter.isModalData() && !sawModalData)
-					throw new IllegalArgumentException(("Parameter #%d at %s must be annotated with @%s or situated after all modal data parameters.\n" +
-							"All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters").formatted(parameter.getIndex(),
-							Utils.formatMethodShort(method),
-							ModalData.class.getSimpleName()));
+            val data = userData[i]
+            requireUser(parameter.boxedType.jvmErasure.isSuperclassOf(data::class)) {
+                "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
+                    parameter.parameter.name,
+                    parameter.boxedType.simpleName,
+                    data.javaClass.simpleName
+                )
+            }
 
-				if (parameter.isModalData())
-					sawModalData = true;
-			}
-		}
-	}
+            objects.add(data)
+        }
+        for (parameter in parameters) {
+            if (parameter.isModalData) continue  //We already processed modal data
+            val obj: Any?
+            if (parameter.isOption && parameter.isModalInput) {
+                //We have the modal input's ID
+                // But we have a Map of input *name* -> InputData (contains input ID)
+                val inputId = inputNameToInputIdMap[parameter.modalInputName]
+                    ?: throw IllegalArgumentException(
+                        String.format(
+                            "Modal input '%s' was not found",
+                            parameter.modalInputName
+                        )
+                    )
+                val modalMapping = event.getValue(inputId)
+                    ?: throw IllegalArgumentException("Modal input '%s' was not found".format(parameter.modalInputName))
+                obj = parameter.resolver.resolve(context, this, event, modalMapping)
 
-	@Override
-	public KFunction<?> getMethod() {
-		return method;
-	}
+                requireUser(obj != null) {
+                    "The parameter '${parameter.parameter.name}' of value '${modalMapping.asString}' could not be resolved into a ${parameter.boxedType.simpleName}"
+                }
 
-	@Override
-	@NotNull
-	public MethodRunner getMethodRunner() {
-		return methodRunner;
-	}
+                requireUser(parameter.boxedType.jvmErasure.isSuperclassOf(obj::class)) {
+                    "The parameter '${parameter.parameter.name}' of value '${modalMapping.asString}' is not a valid type (expected a ${parameter.boxedType.simpleName})"
+                }
+            } else {
+                obj = parameter.customResolver.resolve(context, this, event)
+            }
 
-	@Override
-	@NotNull
-	public MethodParameters<ModalHandlerParameter> getParameters() {
-		return modalParameters;
-	}
+            //For some reason using an array list instead of a regular array
+            // magically unboxes primitives when passed to Method#invoke
+            objects.add(obj)
+        }
 
-	@Override
-	@NotNull
-	public Object getInstance() {
-		return autocompletionHandler;
-	}
+        try {
+            method.call(*objects.toTypedArray())
+        } catch (e: Throwable) {
+            throwableConsumer.accept(e)
+        }
 
-	public String getHandlerName() {
-		return handlerName;
-	}
-
-	public boolean execute(BContext context, ModalData modalData, ModalInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
-		final Map<String, InputData> inputDataMap = modalData.getInputDataMap();
-		final Map<String, String> inputNameToInputIdMap = new HashMap<>();
-
-		inputDataMap.forEach((inputId, inputData) -> {
-			inputNameToInputIdMap.put(inputData.getInputName(), inputId);
-		});
-
-		List<Object> objects = new ArrayList<>(modalParameters.size() + 1);
-
-		objects.add(event);
-
-		final Object[] userData = modalData.getUserData();
-
-		final long expectedModalDatas = modalParameters.stream().filter(ModalHandlerParameter::isModalData).count();
-		final long expectedModalInputs = modalParameters.stream().filter(ModalHandlerParameter::isModalInput).count();
-
-		//Check if there's enough arguments to fit user data + modal inputs
-		if (expectedModalDatas != userData.length
-				|| expectedModalInputs != event.getValues().size()) {
-			throw new IllegalArgumentException("""
-					Modal handler at %s does not match the received modal data:
-					Method signature: %d userdata parameters and %d modal input(s)
-					Discord data: %d userdata parameters and %d modal input(s)""".formatted(
-					Utils.formatMethodShort(method),
-					expectedModalDatas,
-					expectedModalInputs,
-					userData.length,
-					event.getValues().size()
-			));
-		}
-
-		//Insert modal data in the order of appearance, after the event
-		for (int i = 0; i < userData.length; i++) {
-			final ModalHandlerParameter parameter = modalParameters.get(i);
-
-			if (!parameter.isModalData()) //Should be caught by the constructor
-				throw new IllegalArgumentException(("Parameter #%d at %s must be annotated with @%s or situated after all modal data parameters.\n" +
-						"All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters").formatted(i,
-						Utils.formatMethodShort(method),
-						ModalData.class.getSimpleName()));
-
-			final Object data = userData[i];
-
-			if (!parameter.getBoxedType().isAssignableFrom(data.getClass())) {
-				throw new IllegalArgumentException("The modal user data '%s' is not a valid type (expected a %s, got a %s)".formatted(parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName()));
-			}
-
-			objects.add(data);
-		}
-
-		for (ModalHandlerParameter parameter : modalParameters) {
-			if (parameter.isModalData()) continue; //We already processed modal data
-
-			final Object obj;
-
-			if (parameter.isOption() && parameter.isModalInput()) {
-				//We have the modal input's ID
-				// But we have a Map of input *name* -> InputData (contains input ID)
-
-				final String inputId = inputNameToInputIdMap.get(parameter.getModalInputName());
-
-				if (inputId == null) {
-					throw new IllegalArgumentException(String.format("Modal input '%s' was not found", parameter.getModalInputName()));
-				}
-
-				final ModalMapping modalMapping = event.getValue(inputId);
-
-				if (modalMapping == null) {
-					throw new IllegalArgumentException("Modal input '%s' was not found".formatted(parameter.getModalInputName()));
-				}
-
-				obj = parameter.getResolver().resolve(context, this, event, modalMapping);
-
-				if (obj == null) {
-					throw new IllegalArgumentException("The parameter '%s' of value '%s' could not be resolved into a %s".formatted(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()));
-				} else if (!parameter.getBoxedType().isAssignableFrom(obj.getClass())) {
-					throw new IllegalArgumentException("The parameter '%s' of value '%s' is not a valid type (expected a %s)".formatted(parameter.getParameter().getName(), modalMapping.getAsString(), parameter.getBoxedType().getSimpleName()));
-				}
-			} else {
-				obj = parameter.getCustomResolver().resolve(context, this, event);
-			}
-
-			//For some reason using an array list instead of a regular array
-			// magically unboxes primitives when passed to Method#invoke
-			objects.add(obj);
-		}
-
-		getMethodRunner().invoke(objects.toArray(), throwableConsumer);
-
-		return true;
-	}
+        return true
+    }
 }

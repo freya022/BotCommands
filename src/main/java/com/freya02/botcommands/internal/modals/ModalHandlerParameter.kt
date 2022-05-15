@@ -1,57 +1,39 @@
-package com.freya02.botcommands.internal.modals;
+package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData;
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput;
-import com.freya02.botcommands.api.parameters.ModalParameterResolver;
-import com.freya02.botcommands.internal.application.CommandParameter;
-import com.freya02.botcommands.internal.utils.Utils;
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
+import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
+import com.freya02.botcommands.api.parameters.ModalParameterResolver
+import com.freya02.botcommands.internal.application.CommandParameter
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.List;
+class ModalHandlerParameter(
+    parameter: KParameter,
+    index: Int
+) : CommandParameter<ModalParameterResolver>(
+    ModalParameterResolver::class, parameter, index
+) {
+    val isModalData: Boolean
+    val isModalInput: Boolean
+    var modalInputName: String? = null
 
-public class ModalHandlerParameter extends CommandParameter<ModalParameterResolver> {
-	private final boolean isModalData;
-	private final boolean isModalInput;
-	private final String modalInputName;
+    init {
+        val modalInput = parameter.findAnnotation<ModalInput>()
 
-	public ModalHandlerParameter(Parameter parameter, int index) {
-		super(ModalParameterResolver.class, parameter, index);
+        isModalData = parameter.hasAnnotation<ModalData>()
+        isModalInput = modalInput != null
 
-		this.isModalData = parameter.isAnnotationPresent(ModalData.class);
-		this.isModalInput = parameter.isAnnotationPresent(ModalInput.class);
+        require(isModalData xor isModalInput) {
+            "Parameter #$index cannot be both modal data and modal input"
+        }
 
-		if (isModalData && isModalInput)  {
-			throw new IllegalArgumentException("Parameter #%d of %s cannot be both modal data and modal input".formatted(index, Utils.formatMethodShort((Method) parameter.getDeclaringExecutable())));
-		}
+        modalInputName = when {
+            modalInput != null -> modalInput.name
+            else -> null
+        }
+    }
 
-		if (isModalInput) {
-			this.modalInputName = parameter.getAnnotation(ModalInput.class).name();
-		} else {
-			this.modalInputName = null;
-		}
-	}
-
-	public boolean isModalData() {
-		return isModalData;
-	}
-
-	public boolean isModalInput() {
-		return isModalInput;
-	}
-
-	public String getModalInputName() {
-		return modalInputName;
-	}
-
-	@Override
-	protected List<Class<? extends Annotation>> getOptionAnnotations() {
-		return List.of(ModalData.class, ModalInput.class);
-	}
-
-	@Override
-	protected List<Class<? extends Annotation>> getResolvableAnnotations() {
-		return List.of(ModalInput.class);
-	}
+    override val optionAnnotations = listOf(ModalData::class, ModalInput::class)
+    override val resolvableAnnotations = listOf(ModalInput::class)
 }
