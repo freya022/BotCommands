@@ -108,14 +108,9 @@ All modal data must be inserted after the event, with the same order as the cons
                 //We have the modal input's ID
                 // But we have a Map of input *name* -> InputData (contains input ID)
                 val inputId = inputNameToInputIdMap[parameter.modalInputName]
-                    ?: throw IllegalArgumentException(
-                        String.format(
-                            "Modal input '%s' was not found",
-                            parameter.modalInputName
-                        )
-                    )
+                    ?: throwUser("Modal input named '${parameter.modalInputName}' was not found")
                 val modalMapping = event.getValue(inputId)
-                    ?: throw IllegalArgumentException("Modal input '%s' was not found".format(parameter.modalInputName))
+                    ?: throwUser("Modal input ID '$inputId' was not found on the event")
                 obj = parameter.resolver.resolve(context, this, event, modalMapping)
 
                 requireUser(obj != null) {

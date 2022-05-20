@@ -11,5 +11,5 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface DynamicInstanceSupplier {
 	@Nullable
-	<T> T get(@NotNull BContext context, @NotNull Class<T> clazz);
+	<T> T supply(@NotNull BContext context, @NotNull Class<T> clazz);
 }

@@ -1,112 +1,86 @@
-package com.freya02.botcommands.internal.utils;
+package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.annotations.api.annotations.Dependency;
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.ConstructorParameterSupplier;
-import com.freya02.botcommands.api.DynamicInstanceSupplier;
-import com.freya02.botcommands.api.InstanceSupplier;
-import com.freya02.botcommands.internal.BContextImpl;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.annotations.api.annotations.Dependency
+import com.freya02.botcommands.internal.BContextImpl
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+import kotlin.reflect.KClass
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
-import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
+object ClassInstancer {
+    @JvmStatic
+    @Throws(InvocationTargetException::class, InstantiationException::class, IllegalAccessException::class)
+    fun getMethodTarget(context: BContextImpl, method: Method): Any? {
+        return when {
+            Modifier.isStatic(method.modifiers) -> null
+            else -> instantiate(context, method.declaringClass.kotlin)
+        }
+    }
 
-public class ClassInstancer {
-	@Nullable
-	public static Object getMethodTarget(BContextImpl context, Method method) throws InvocationTargetException, InstantiationException, IllegalAccessException {
-		if (Modifier.isStatic(method.getModifiers())) {
-			return null;
-		}
+    @Throws(InvocationTargetException::class, InstantiationException::class, IllegalAccessException::class)
+    fun instantiate(context: BContextImpl, clazz: KClass<*>): Any {
+        val oldInstance = context.getClassInstance(clazz)
+        if (oldInstance != null) return oldInstance
 
-		return instantiate(context, method.getDeclaringClass());
-	}
+        val instance = constructInstance(context, clazz)
+        injectDependencies(context, instance)
+        context.putClassInstance(clazz, instance)
 
-	public static Object instantiate(BContextImpl context, Class<?> aClass) throws InvocationTargetException, InstantiationException, IllegalAccessException {
-		final Object oldInstance = context.getClassInstance(aClass);
-		if (oldInstance != null)
-			return oldInstance;
+        return instance
+    }
 
-		final Object instance = constructInstance(context, aClass);
+    @Throws(InstantiationException::class, IllegalAccessException::class, InvocationTargetException::class)
+    private fun constructInstance(context: BContextImpl, clazz: KClass<*>): Any {
+        for (dynamicInstanceSupplier in context.dynamicInstanceSuppliers) {
+            val instance = dynamicInstanceSupplier.supply(context, clazz.java)
+            if (instance != null) {
+                return instance
+            }
+        }
 
-		injectDependencies(context, instance);
+        val instance: Any
 
-		context.putClassInstance(aClass, instance);
+        //The command object has to be created either by the instance supplier
+        // or by the **only** constructor a class has
+        // It must resolve all parameters types with the registered parameter suppliers
+        val instanceSupplier = context.getInstanceSupplier(clazz.java)
+        if (instanceSupplier != null) {
+            instance = instanceSupplier.supply(context)
+        } else {
+            val constructors = clazz.constructors
+            require(constructors.isNotEmpty()) { "Class " + clazz.simpleName + " must have an accessible constructor" }
+            require(constructors.size <= 1) { "Class " + clazz.simpleName + " must have exactly one constructor" }
 
-		return instance;
-	}
+            val constructor = constructors.first()
 
-	@NotNull
-	private static Object constructInstance(BContextImpl context, Class<?> aClass) throws InstantiationException, IllegalAccessException, InvocationTargetException {
-		for (DynamicInstanceSupplier dynamicInstanceSupplier : context.getDynamicInstanceSuppliers()) {
-			final Object instance = dynamicInstanceSupplier.get(context, aClass);
+            val parameters = constructor.valueParameters.map(KParameter::type).mapIndexed { i, parameterType ->
+                val supplier = requireNotNull(context.getParameterSupplier(parameterType.jvmErasure.java)) {
+                    "Found no constructor parameter supplier for parameter #$i of type $parameterType in class ${clazz.simpleName}"
+                }
 
-			if (instance != null) {
-				return instance;
-			}
-		}
+                return@mapIndexed supplier.supply(clazz.java)
+            }
 
-		final Object instance;
-		//The command object has to be created either by the instance supplier
-		// or by the **only** constructor a class has
-		// It must resolve all parameters types with the registered parameter suppliers
-		final InstanceSupplier<?> instanceSupplier = context.getInstanceSupplier(aClass);
-		if (instanceSupplier != null) {
-			instance = instanceSupplier.get(context);
+            instance = constructor.call(*parameters.toTypedArray())
+        }
+        return instance
+    }
 
-			if (instance == null) {
-				throw new IllegalArgumentException("InstanceSupplier from " + instanceSupplier.getClass() + " of " + aClass + " returned null");
-			}
-		} else {
-			final Constructor<?>[] constructors = aClass.getConstructors();
-			if (constructors.length == 0)
-				throw new IllegalArgumentException("Class " + aClass.getName() + " must have an accessible constructor");
+    @Throws(IllegalAccessException::class)
+    private fun injectDependencies(context: BContextImpl, someCommand: Any) {
+        for (field in someCommand.javaClass.declaredFields) {
+            if (!field.isAnnotationPresent(Dependency::class.java)) continue
+            if (!field.canAccess(someCommand)) {
+                require(field.trySetAccessible()) { "Dependency field $field is not accessible (make it public ?)" }
+            }
 
-			if (constructors.length > 1)
-				throw new IllegalArgumentException("Class " + aClass.getName() + " must have exactly one constructor");
+            val dependencySupplier = context.getCommandDependency(field.type)
+                ?: throw IllegalArgumentException("Dependency supplier for field $field was not set")
 
-			final Constructor<?> constructor = constructors[0];
-
-			List<Object> parameterObjs = new ArrayList<>();
-
-			Class<?>[] parameterTypes = constructor.getParameterTypes();
-			for (int i = 0, parameterTypesLength = parameterTypes.length; i < parameterTypesLength; i++) {
-				Class<?> parameterType = parameterTypes[i];
-
-				if (BContext.class.isAssignableFrom(parameterType)) {
-					parameterObjs.add(context);
-				} else {
-					final ConstructorParameterSupplier<?> supplier = context.getParameterSupplier(parameterType);
-					if (supplier == null)
-						throw new IllegalArgumentException(String.format("Found no constructor parameter supplier for parameter #%d of type %s in class %s", i, parameterType.getSimpleName(), aClass.getSimpleName()));
-
-					parameterObjs.add(supplier.get(aClass));
-				}
-			}
-
-			instance = constructor.newInstance(parameterObjs.toArray());
-		}
-		return instance;
-	}
-
-	private static void injectDependencies(BContextImpl context, Object someCommand) throws IllegalAccessException {
-		for (Field field : someCommand.getClass().getDeclaredFields()) {
-			if (!field.isAnnotationPresent(Dependency.class)) continue;
-
-			if (!field.canAccess(someCommand)) {
-				if (!field.trySetAccessible()) {
-					throw new IllegalArgumentException("Dependency field " + field + " is not accessible (make it public ?)");
-				}
-			}
-
-			final Supplier<?> dependencySupplier = context.getCommandDependency(field.getType());
-			if (dependencySupplier == null) {
-				throw new IllegalArgumentException("Dependency supplier for field " + field + " was not set");
-			}
-
-			field.set(someCommand, dependencySupplier.get());
-		}
-	}
+            field[someCommand] = dependencySupplier.get()
+        }
+    }
 }

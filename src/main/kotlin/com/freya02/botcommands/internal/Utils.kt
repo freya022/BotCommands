@@ -2,16 +2,15 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
 import com.freya02.botcommands.internal.utils.Utils
+import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
-import kotlin.reflect.KType
+import kotlin.reflect.*
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
 inline fun <reified T : Enum<T>> enumSetOf(): EnumSet<T> = EnumSet.noneOf(T::class.java)
@@ -28,14 +27,26 @@ fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(me
 fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${Utils.formatMethodShort(function)} : $message")
 
+fun throwUser(message: String): Nothing =
+    throw IllegalArgumentException(message)
+
 @OptIn(ExperimentalContracts::class)
 inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
 
+    requireUser(value, this.method, lazyMessage)
+}
+
+@OptIn(ExperimentalContracts::class)
+inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
     if (!value) {
-        throwUser(lazyMessage())
+        throwUser(function, lazyMessage())
     }
 }
 
@@ -49,6 +60,12 @@ val KParameter.isPrimitive: Boolean
 
 val KType.simpleName: String
     get() = this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")
+
+val KFunction<*>.isPublic: Boolean
+    get() = this.visibility == KVisibility.PUBLIC
+
+val KFunction<*>.isStatic: Boolean
+    get() = Modifier.isStatic(this.javaMethod!!.modifiers)
 
 fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 

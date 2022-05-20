@@ -28,6 +28,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import gnu.trove.TCollections;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import kotlin.reflect.KClass;
 import kotlin.reflect.KType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -63,7 +64,7 @@ public class BContextImpl implements BContext {
 	private final List<DynamicInstanceSupplier> dynamicInstanceSuppliers = new ArrayList<>();
 	private final Map<Class<?>, Supplier<?>> commandDependencyMap = new HashMap<>();
 
-	private final Map<Class<?>, Object> classToObjMap = new HashMap<>();
+	private final Map<KClass<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
 	private final Map<CommandPath, TextSubcommandCandidates> textSubcommandsMap = new HashMap<>();
 	private final ModalMaps modalMaps = new ModalMaps();
@@ -422,11 +423,11 @@ public class BContextImpl implements BContext {
 		this.componentManager = componentManager;
 	}
 
-	public Object getClassInstance(Class<?> clazz) {
+	public Object getClassInstance(KClass<?> clazz) {
 		return classToObjMap.get(clazz);
 	}
 
-	public void putClassInstance(Class<?> clazz, Object obj) {
+	public void putClassInstance(KClass<?> clazz, Object obj) {
 		classToObjMap.put(clazz, obj);
 	}
 

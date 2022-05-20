@@ -5,6 +5,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmErasure
 
 class ParameterType private constructor(val type: KType) {
     companion object {
@@ -25,4 +27,8 @@ class ParameterType private constructor(val type: KType) {
         @JvmStatic
         fun ofType(type: KType) = ParameterType(type)
     }
+
+    fun javaType() = type.javaType
+
+    fun javaClass() = type.jvmErasure.java
 }

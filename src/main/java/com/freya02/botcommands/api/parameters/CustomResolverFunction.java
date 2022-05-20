@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.parameters;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.internal.ExecutableInteractionInfo;
 import net.dv8tion.jda.api.events.Event;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @param <R> Type of the returned custom object
@@ -18,5 +19,5 @@ public interface CustomResolverFunction<R> {
 	 * @param event                     The event that triggered the execution of this resolver
 	 * @return The custom object which got computed
 	 */
-	R apply(BContext context, ExecutableInteractionInfo executableInteractionInfo, Event event);
+	R apply(@NotNull BContext context, @NotNull ExecutableInteractionInfo executableInteractionInfo, @NotNull Event event);
 }

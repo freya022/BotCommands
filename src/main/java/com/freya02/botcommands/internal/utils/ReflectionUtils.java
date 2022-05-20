@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.utils;
 
-import com.freya02.botcommands.annotations.api.annotations.ConditionalUse;
 import com.freya02.botcommands.annotations.api.annotations.Optional;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange;
@@ -14,7 +13,10 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -71,29 +73,6 @@ public class ReflectionUtils {
 		}
 
 		return classes;
-	}
-
-	public static boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
-		boolean canInstantiate = true;
-		for (Method declaredMethod : aClass.getDeclaredMethods()) {
-			if (declaredMethod.isAnnotationPresent(ConditionalUse.class)) {
-				if (Modifier.isStatic(declaredMethod.getModifiers())) {
-					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
-						if (!declaredMethod.canAccess(null))
-							throw new IllegalStateException("Method " + Utils.formatMethodShort(declaredMethod) + " is not public");
-						canInstantiate = (boolean) declaredMethod.invoke(null);
-					} else {
-						LOGGER.warn("Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)", aClass.getName(), declaredMethod.getName());
-					}
-				} else {
-					LOGGER.warn("Method {}#{} is annotated @ConditionalUse but is not static", aClass.getName(), declaredMethod.getName());
-				}
-
-				break;
-			}
-		}
-
-		return canInstantiate;
 	}
 
 	public static boolean hasFirstParameter(Method method, Class<?> type) {
