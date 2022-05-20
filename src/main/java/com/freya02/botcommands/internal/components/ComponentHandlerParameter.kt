@@ -12,5 +12,6 @@ class ComponentHandlerParameter(
 ) : CommandParameter<ComponentParameterResolver>(
     ComponentParameterResolver::class, parameter, index
 ) {
-    override val optionAnnotations: List<KClass<AppOption>> = listOf(AppOption::class)
+    override val optionAnnotations: List<KClass<AppOption>>
+        get() = listOf(AppOption::class)
 }

@@ -21,7 +21,8 @@ abstract class ApplicationCommandInfo protected constructor(
 
     abstract override val parameters: MethodParameters<out ApplicationCommandParameter<*>>
     @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<ApplicationCommandParameter<*>> = super.optionParameters as List<ApplicationCommandParameter<*>>
+    override val optionParameters: List<ApplicationCommandParameter<*>>
+        get() = super.optionParameters as List<ApplicationCommandParameter<*>>
 
     init {
         scope = builder.scope

@@ -5,5 +5,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
 class EventListenerParameter(parameter: KParameter, index: Int) : CommandParameter<Any>(null, parameter, index) {
-    override val optionAnnotations: List<KClass<out Annotation>> = listOf()
+    override val optionAnnotations: List<KClass<out Annotation>>
+        get() = listOf()
 }

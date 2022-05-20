@@ -18,8 +18,11 @@ inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSe
 
 fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 
-fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) = requireUser(klass.isSuperclassOf(kParameters[0].type.jvmErasure)) {
-    "First argument should be a ${klass.simpleName}"
+fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
+    val firstParameter = kParameters.firstOrNull() ?: throwUser("First argument should be a ${klass.simpleName}")
+    requireUser(klass.isSuperclassOf(firstParameter.type.jvmErasure)) {
+        "First argument should be a ${klass.simpleName}"
+    }
 }
 
 fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)

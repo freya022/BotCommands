@@ -6,7 +6,8 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.RegistrationListener
+import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.waiter.EventWaiter
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
@@ -24,11 +25,11 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.lang.reflect.InvocationTargetException
 import java.util.*
-import java.util.function.Consumer
 import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotations
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaMethod
@@ -54,7 +55,10 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
         this.usePing = context.prefixes.isEmpty()
         if (usePing) LOGGER.info("No prefix has been set, using bot ping as prefix")
 
-        this.classes = classes.map { it.kotlin }.toMutableList()
+        this.classes = classes.filter {
+            !(it.isAnonymousClass or it.isHidden or it.isSynthetic)
+        } .map { it.kotlin }.toMutableList()
+
         this.applicationCommandsBuilder = ApplicationCommandsBuilder(context, slashGuildIds)
 
 //		this.eventListenersBuilder = new EventListenersBuilder(context); //TODO event listener
@@ -107,9 +111,11 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
         }
 
 //		eventListenersBuilder.postProcess(); //TODO event listener
-        autocompletionHandlersBuilder.postProcess()
-        modalHandlersBuilder.postProcess()
-        context.registrationListeners.forEach(Consumer { obj: RegistrationListener -> obj.onBuildComplete() })
+//        autocompletionHandlersBuilder.postProcess() //TODO autocomplete
+//        modalHandlersBuilder.postProcess() //TODO modals
+
+        context.registrationListeners.forEach { it.onBuildComplete() }
+
         LOGGER.info("Finished registering all commands")
     }
 
@@ -120,7 +126,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 
             //Search for methods annotated with a compatible annotation
             for (method in aClass.memberFunctions) {
-                foundSomething = foundSomething or processMethod(method)
+                foundSomething = foundSomething or processMethod(aClass, method)
             }
 
             if (!foundSomething) {
@@ -159,7 +165,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
     }
 
     @Throws(InvocationTargetException::class, InstantiationException::class, IllegalAccessException::class)
-    private fun processMethod(method: KFunction<*>): Boolean {
+    private fun processMethod(clazz: KClass<*>, method: KFunction<*>): Boolean { //TODO pass to method above
 //        for (annotation in applicationMethodAnnotations) {
 //            val applicationCommand =
 //                tryInstantiateMethod<ApplicationCommand>(annotation, "Application command", method)
@@ -200,6 +206,13 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 //            modalHandlersBuilder.processHandler(modalHandler, method)
 //            return true
 //        }
+
+        if (method.hasAnnotation<Declaration>()) {
+            val args = ApplicationCommandManager(context)
+            method.call(ClassInstancer.instantiate(context, clazz), context, args) //TODO injection
+
+            return true
+        }
 
         return false
     }

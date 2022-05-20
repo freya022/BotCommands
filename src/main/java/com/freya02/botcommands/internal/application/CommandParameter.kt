@@ -55,7 +55,7 @@ abstract class CommandParameter<RESOLVER : Any>(
 
     init {
         val resolver = ParameterResolvers.of(ParameterType.ofType(boxedType))
-        val allowedAnnotation = optionAnnotations
+        val allowedAnnotation = optionAnnotations //TODO change that back to a function, not a property, too risky
         val resolvableAnnotation = resolvableAnnotations
         if (allowedAnnotation.any { parameter.findAnnotations(it).isNotEmpty() }) { //If the parameter has at least one valid annotation
             //If the parameter is not resolvable, but is still an option, then let the handler put the values itself

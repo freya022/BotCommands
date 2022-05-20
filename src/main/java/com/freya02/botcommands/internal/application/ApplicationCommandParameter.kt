@@ -13,7 +13,8 @@ abstract class ApplicationCommandParameter<RESOLVER : Any>(
     boxedType: KType,
     index: Int
 ) : CommandParameter<RESOLVER>(resolverType, parameter, boxedType, index) {
-    override val optionAnnotations: List<KClass<out Annotation>> = listOf(AppOption::class)
+    override val optionAnnotations: List<KClass<out Annotation>>
+        get() = listOf(AppOption::class)
 
     private val _applicationOptionData: ApplicationOptionData?
     val applicationOptionData: ApplicationOptionData

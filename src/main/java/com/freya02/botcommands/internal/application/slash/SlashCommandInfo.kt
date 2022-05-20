@@ -31,7 +31,8 @@ class SlashCommandInfo(
      */
     override val parameters: MethodParameters<SlashCommandParameter>
     @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<SlashCommandParameter> = super.optionParameters as List<SlashCommandParameter>
+    override val optionParameters: List<SlashCommandParameter>
+        get() = super.optionParameters as List<SlashCommandParameter>
 
     init {
         parameters = MethodParameters.of(method) { i, parameter ->
