@@ -26,25 +26,20 @@ class SlashCommandInfo(
 ) {
     val description = builder.description
 
-    /**
-     * This is NOT localized
-     */
-    override val parameters: MethodParameters<SlashCommandParameter>
+    override val parameters: MethodParameters<SlashCommandParameter> = MethodParameters.of(method) { i, parameter ->
+        val type = parameter.type.jvmErasure
+        if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
+            requireUser(isGuildOnly) {
+                "The slash command cannot have a ${type.simpleName} parameter as it is not guild-only"
+            }
+        }
+
+        SlashCommandParameter(parameter, i)
+    }
+
     @Suppress("UNCHECKED_CAST")
     override val optionParameters: List<SlashCommandParameter>
         get() = super.optionParameters as List<SlashCommandParameter>
-
-    init {
-        parameters = MethodParameters.of(method) { i, parameter ->
-            val type = parameter.type.jvmErasure
-            if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
-                if (!isGuildOnly) {
-                    throwUser("The slash command cannot have a " + type.simpleName + " parameter as it is not guild-only")
-                }
-            }
-            SlashCommandParameter(parameter, i)
-        }
-    }
 
     @Throws(Exception::class)
     fun execute(
@@ -72,7 +67,7 @@ class SlashCommandInfo(
             if (parameter.isOption) {
                 val optionName = applicationOptionData.effectiveName
                 for (varArgNum in 0 until arguments) {
-                    val varArgName = SlashUtils.getVarArgName(optionName, varArgNum)
+                    val varArgName = SlashUtils.getVarArgName(optionName, varArgNum) //TODO extension or infix
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || parameter.isVarArg && !parameter.isRequiredVararg(varArgNum)) {
                             objectList += when {
