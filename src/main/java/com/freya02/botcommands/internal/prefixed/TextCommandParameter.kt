@@ -13,10 +13,9 @@ class TextCommandParameter(
 ) : CommandParameter<RegexParameterResolver>(
     resolverType, parameter, index
 ) {
-    override val optionAnnotations: List<KClass<out Annotation>>
-        get() = listOf(TextOption::class)
-
-    val groupCount = _resolver?.preferredPattern?.matcher("")?.groupCount() ?: -1
+    val groupCount = resolver.getPreferredPattern().matcher("").groupCount()
     val data = TextParameterData(parameter)
     val isId = true //TODO fix
+
+    override fun optionAnnotations() = listOf(TextOption::class)
 }

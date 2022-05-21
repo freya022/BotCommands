@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.application.slash.SlashUtils2;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -30,7 +31,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.freya02.botcommands.internal.application.slash.SlashUtils.appendCommands;
-import static com.freya02.botcommands.internal.application.slash.SlashUtils.getMethodOptions;
 
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -162,7 +162,7 @@ public class ApplicationCommandsUpdater {
 					final String description = info.getDescription();
 
 					try {
-						final List<OptionData> methodOptions = getMethodOptions(context, guild, info);
+						final List<OptionData> methodOptions = SlashUtils2.getMethodOptions(info, context, guild);
 
 						if (commandPath.getNameCount() == 1) {
 							//Standard command

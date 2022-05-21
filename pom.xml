@@ -41,6 +41,9 @@
                 <configuration>
                     <args>
                         <arg>-java-parameters</arg>
+                        <arg>-opt-in=kotlin.RequiresOptIn</arg>
+                        <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
+                        <arg>-Xjvm-default=all</arg>
                     </args>
                 </configuration>
                 <executions>

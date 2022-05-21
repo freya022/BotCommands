@@ -1,7 +1,15 @@
 package com.freya02.botcommands.internal.application.slash
 
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.parameters.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import kotlin.math.max
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
@@ -30,5 +38,113 @@ object SlashUtils2 {
                 "Default value supplier for parameter #${parameter.index} in %s has returned either an empty list or a list with the first element being null"
             }
         }
+    }
+
+    @JvmStatic
+    fun SlashCommandInfo.getMethodOptions(context: BContext, guild: Guild?): List<OptionData> {
+        val list: MutableList<OptionData> = ArrayList()
+        val optionsChoices = SlashUtils.getOptionChoices(guild, this)
+
+        var i = 0
+		for (parameter in parameters) {
+            if (!parameter.isOption) continue
+
+            i++
+
+            val applicationOptionData = parameter.applicationOptionData
+
+            if (guild != null) {
+                //TODO change to use opaque user data
+                val defaultValueSupplier = (instance as ApplicationCommand).getDefaultValueSupplier(
+                    context,
+                    guild,
+                    commandId,
+                    path,
+                    applicationOptionData.effectiveName,
+                    parameter.parameter.type,
+                    parameter.parameter.type.jvmErasure
+                )
+
+                parameter.defaultOptionSupplierMap.put(guild.idLong, defaultValueSupplier)
+
+                if (defaultValueSupplier != null) {
+                    continue  //Skip option generation since this is a default value
+                }
+            }
+
+            val name = parameter.applicationOptionData.effectiveName
+            val description = parameter.applicationOptionData.effectiveDescription
+
+            val resolver = parameter.resolver
+            val optionType = resolver.optionType
+
+            for (varArgNum in 0 until max(1, parameter.varArgs)) {
+                val varArgName = SlashUtils.getVarArgName(name, varArgNum)
+
+                val data = OptionData(optionType, varArgName, description)
+
+                when (optionType) {
+                    OptionType.CHANNEL -> {
+                        //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
+                        // Otherwise set the channel types of the parameter, if available
+                        if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
+                            data.setChannelTypes(resolver.channelTypes)
+                        } else if (parameter.channelTypes.isNotEmpty()) {
+                            data.setChannelTypes(parameter.channelTypes)
+                        }
+                    }
+                    OptionType.INTEGER -> {
+                        data.setMinValue(parameter.minValue.toLong())
+                        data.setMaxValue(parameter.maxValue.toLong())
+                    }
+                    OptionType.NUMBER -> {
+                        data.setMinValue(parameter.minValue.toDouble())
+                        data.setMaxValue(parameter.maxValue.toDouble())
+                    }
+                    else -> {}
+                }
+
+                if (applicationOptionData.hasAutocompletion()) {
+                    requireUser(optionType.canSupportChoices()) {
+                        "Slash command parameter #$i does not support autocompletion"
+                    }
+
+                    data.isAutoComplete = true
+                }
+
+                if (optionType.canSupportChoices()) {
+                    var choices: Collection<Command.Choice>? = null
+
+                    //optionChoices might just be empty
+                    // choices of the option might also be empty as an empty list might be generated
+                    // do not add choices if it's empty, to not trigger checks
+                    if (optionsChoices.size >= i && optionsChoices[i - 1].isNotEmpty()) {
+                        choices = optionsChoices[i - 1]
+                    } else {
+                        val predefinedChoices = resolver.getPredefinedChoices(guild)
+                        if (predefinedChoices.isNotEmpty()) {
+                            choices = predefinedChoices
+                        }
+                    }
+
+                    if (choices != null) {
+                        requireUser(!applicationOptionData.hasAutocompletion()) {
+                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
+                        }
+
+                        data.addChoices(choices)
+                    }
+                }
+
+                //If vararg then next arguments are optional
+
+                //If vararg then next arguments are optional
+                data.isRequired = !parameter.isOptional && parameter.isRequiredVararg(varArgNum)
+
+                list.add(data)
+            }
+        }
+
+        return list
     }
 }

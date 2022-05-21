@@ -34,6 +34,8 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.javaMethod
 
+private val LOGGER = Logging.getLogger()
+
 class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGuildIds: List<Long>) {
     private val prefixedCommandsBuilder: PrefixedCommandsBuilder
 
@@ -301,7 +303,6 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
     }
 
     companion object {
-        private val LOGGER = Logging.getLogger()
         private val applicationMethodAnnotations = listOf(JDASlashCommand::class, JDAMessageCommand::class, JDAUserCommand::class)
     }
 }

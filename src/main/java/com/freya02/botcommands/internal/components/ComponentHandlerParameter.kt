@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.components
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver
 import com.freya02.botcommands.internal.application.CommandParameter
-import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
 class ComponentHandlerParameter(
@@ -12,6 +11,5 @@ class ComponentHandlerParameter(
 ) : CommandParameter<ComponentParameterResolver>(
     ComponentParameterResolver::class, parameter, index
 ) {
-    override val optionAnnotations: List<KClass<AppOption>>
-        get() = listOf(AppOption::class)
+    override fun optionAnnotations() = listOf(AppOption::class)
 }

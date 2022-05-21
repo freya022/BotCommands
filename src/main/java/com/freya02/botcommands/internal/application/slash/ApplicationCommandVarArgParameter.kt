@@ -11,7 +11,7 @@ abstract class ApplicationCommandVarArgParameter<RESOLVER : Any>(
 ) : ApplicationCommandParameter<RESOLVER>(
     resolverType, parameter, parameter.type, index
 ) {
-    val varArgs = 0
+    val varArgs = -1
     private val numRequired = 0 //TODO varargs
     val isVarArg = varArgs != -1
 

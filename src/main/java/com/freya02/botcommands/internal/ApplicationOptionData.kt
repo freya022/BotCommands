@@ -1,80 +1,50 @@
-package com.freya02.botcommands.internal;
+package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
 
-import java.lang.reflect.Parameter;
+class ApplicationOptionData(parameter: KParameter) {
+    val effectiveName: String
+    val effectiveDescription: String
+    val autocompletionHandlerName: String?
 
-public class ApplicationOptionData {
-	private final String effectiveName, effectiveDescription;
-	private final String autocompletionHandlerName;
+    init {
+        val option: AppOption = parameter.findAnnotation() ?: throwInternal("Tried to construct ApplicationOptionData but annotation wasn't found")
+        effectiveName = when {
+            option.name.isBlank() -> getOptionName(parameter)
+            else -> option.name
+        }
 
-	public ApplicationOptionData(Parameter parameter) {
-		final AppOption option = parameter.getAnnotation(AppOption.class);
+        effectiveDescription = when {
+            option.description.isBlank() -> "No description"
+            else -> option.description
+        }
 
-		if (option.name().isBlank()) {
-			effectiveName = getOptionName(parameter);
-		} else {
-			effectiveName = option.name();
-		}
-		
-		if (option.description().isBlank()) {
-			effectiveDescription = "No description";
-		} else {
-			effectiveDescription = option.description();
-		}
+        autocompletionHandlerName = when {
+            option.autocomplete.isBlank() -> null
+            else -> option.autocomplete
+        }
+    }
 
-		if (option.autocomplete().isBlank()) {
-			autocompletionHandlerName = null;
-		} else {
-			autocompletionHandlerName = option.autocomplete();
-		}
-	}
+    fun hasAutocompletion(): Boolean {
+        return autocompletionHandlerName != null
+    }
 
-	private static String getOptionName(Parameter parameter) {
-		if (!parameter.isNamePresent())
-			throw new RuntimeException("Parameter name cannot be deduced as the option's name is not specified on: " + parameter);
+    companion object {
+        private fun getOptionName(parameter: KParameter): String {
+            val name = parameter.name ?: throwUser("Parameter name cannot be deduced as the option's name is not specified on: $parameter")
 
-		final String name = parameter.getName();
-		final int nameLength = name.length();
+            val optionNameBuilder = StringBuilder(name.length + 10)
+            for (c in name) {
+                if (Character.isUpperCase(c)) {
+                    optionNameBuilder.append('_').append(c.lowercaseChar())
+                } else {
+                    optionNameBuilder.append(c)
+                }
+            }
 
-		final StringBuilder optionNameBuilder = new StringBuilder(nameLength + 10); //I doubt you'd have a parameter long enough to have more than 10 underscores
-		for (int i = 0; i < nameLength; i++) {
-			final char c = name.charAt(i);
-
-			if (Character.isUpperCase(c)) {
-				optionNameBuilder.append('_').append(Character.toLowerCase(c));
-			} else {
-				optionNameBuilder.append(c);
-			}
-		}
-
-		return optionNameBuilder.toString();
-	}
-
-	/**
-	 * Not localized
-	 */
-	@NotNull
-	public String getEffectiveName() {
-		return effectiveName;
-	}
-
-	/**
-	 * Not localized
-	 */
-	@NotNull
-	public String getEffectiveDescription() {
-		return effectiveDescription;
-	}
-
-	public boolean hasAutocompletion() {
-		return getAutocompletionHandlerName() != null;
-	}
-
-	@Nullable
-	public String getAutocompletionHandlerName() {
-		return autocompletionHandlerName;
-	}
+            return optionNameBuilder.toString()
+        }
+    }
 }

@@ -34,8 +34,6 @@ class ModalHandlerParameter(
         }
     }
 
-    override val optionAnnotations
-        get() = listOf(ModalData::class, ModalInput::class)
-    override val resolvableAnnotations
-        get() = listOf(ModalInput::class)
+    override fun optionAnnotations() = listOf(ModalData::class, ModalInput::class)
+    override fun resolvableAnnotations() = listOf(ModalInput::class)
 }

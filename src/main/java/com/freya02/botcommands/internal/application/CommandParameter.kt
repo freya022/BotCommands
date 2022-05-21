@@ -22,14 +22,13 @@ abstract class CommandParameter<RESOLVER : Any>(
     val boxedType: KType,
     val index: Int
 ) {
-    protected val _resolver: RESOLVER?
+    private val _resolver: RESOLVER?
     val resolver: RESOLVER
         get() = _resolver ?: throwInternal("Tried to use a resolver but it was not set")
 
-    protected val _customResolver: CustomResolver?
+    private val _customResolver: CustomResolver?
     val customResolver: CustomResolver
         get() = _customResolver ?: throwInternal("Tried to use a custom resolver but it was not set")
-
 
     val isOptional = parameter.isReallyOptional
     val isPrimitive = parameter.isPrimitive
@@ -37,14 +36,13 @@ abstract class CommandParameter<RESOLVER : Any>(
     val isOption: Boolean
         get() = _resolver != null
 
-    protected abstract val optionAnnotations: List<KClass<out Annotation>>
+    protected abstract fun optionAnnotations(): List<KClass<out Annotation>>
 
     /**
      * Returns the list of annotations that must be resolvable with a [ParameterResolver]
      * <br></br>If an option is not annotated with one of these but is still a valid option, it is up to the handler to fill up the parameters accordingly, without use the resolver nor the custom resolver
      */
-    protected open val resolvableAnnotations: List<KClass<out Annotation>>
-        get() = optionAnnotations
+    protected open fun resolvableAnnotations(): List<KClass<out Annotation>> = optionAnnotations()
 
     constructor(resolverType: KClass<RESOLVER>?, parameter: KParameter, index: Int) : this(
         resolverType,
@@ -55,8 +53,8 @@ abstract class CommandParameter<RESOLVER : Any>(
 
     init {
         val resolver = ParameterResolvers.of(ParameterType.ofType(boxedType))
-        val allowedAnnotation = optionAnnotations //TODO change that back to a function, not a property, too risky
-        val resolvableAnnotation = resolvableAnnotations
+        @Suppress("LeakingThis") val allowedAnnotation = optionAnnotations() //IJ plz stop
+        @Suppress("LeakingThis") val resolvableAnnotation = resolvableAnnotations()
         if (allowedAnnotation.any { parameter.findAnnotations(it).isNotEmpty() }) { //If the parameter has at least one valid annotation
             //If the parameter is not resolvable, but is still an option, then let the handler put the values itself
             if (resolvableAnnotation.none { parameter.findAnnotations(it).isNotEmpty() }) {
@@ -67,7 +65,7 @@ abstract class CommandParameter<RESOLVER : Any>(
                     throwInternal("Parameter of type " + boxedType.jvmErasure.qualifiedName + " is an annotated as an option but doesn't have a resolver type attached")
 
                 requireNotNull(resolver) { "Unknown interaction command option type: " + boxedType.jvmErasure.qualifiedName + " for target resolver " + resolverType.qualifiedName }
-                require(resolverType.isSuperclassOf(resolver.type.jvmErasure)) { "Unsupported interaction command option type: " + boxedType.jvmErasure.qualifiedName + " for target resolver " + resolverType.qualifiedName }
+                require(resolverType.isSuperclassOf(resolver::class)) { "Unsupported interaction command option type: " + boxedType.jvmErasure.qualifiedName + " for target resolver " + resolverType.qualifiedName }
 
                 @Suppress("UNCHECKED_CAST")
                 this._resolver = resolver as RESOLVER
