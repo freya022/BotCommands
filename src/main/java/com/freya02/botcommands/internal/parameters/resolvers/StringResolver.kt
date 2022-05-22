@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.parameters
+package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.parameters.*

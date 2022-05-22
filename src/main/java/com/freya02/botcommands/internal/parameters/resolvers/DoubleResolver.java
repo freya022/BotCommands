@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.parameters;
+package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
@@ -15,15 +15,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public class LongResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
-	public LongResolver() {
-		super(ParameterType.ofClass(Long.class));
+public class DoubleResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+	public DoubleResolver() {
+		super(ParameterType.ofClass(Double.class));
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return Long.valueOf(args[0]);
+		return Double.valueOf(args[0]);
 	}
 
 	@Override
@@ -35,20 +35,20 @@ public class LongResolver extends ParameterResolver implements RegexParameterRes
 	@Override
 	@NotNull
 	public String getTestExample() {
-		return "1234";
+		return "1234.42";
 	}
 
 	@Override
 	@NotNull
 	public OptionType getOptionType() {
-		return OptionType.INTEGER;
+		return OptionType.NUMBER;
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
-			return optionMapping.getAsLong();
+			return optionMapping.getAsDouble();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
 			return 0;
 		}
@@ -57,6 +57,6 @@ public class LongResolver extends ParameterResolver implements RegexParameterRes
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return Long.valueOf(arg);
+		return Double.valueOf(arg);
 	}
 }

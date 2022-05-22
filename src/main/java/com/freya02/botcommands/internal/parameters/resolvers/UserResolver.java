@@ -1,13 +1,14 @@
-package com.freya02.botcommands.internal.parameters;
+package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
+import com.freya02.botcommands.internal.prefixed.Utils;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
@@ -19,66 +20,66 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
-	public EmoteResolver() {
-		super(ParameterType.ofClass(Emote.class));
+public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
+	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
+
+	public UserResolver() {
+		super(ParameterType.ofClass(User.class));
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return getEmoteInGuild(args[1], event.getGuild());
+		try {
+			//Fastpath for mentioned entities passed in the message
+			long id = Long.parseLong(args[0]);
+
+			return Utils.findEntity(id,
+					event.getMessage().getMentions().getUsers(),
+					() -> event.getJDA().retrieveUserById(id).complete());
+		} catch (ErrorResponseException e) {
+			return null;
+		}
 	}
 
 	@Override
 	@NotNull
 	public Pattern getPattern() {
-		return Message.MentionType.EMOTE.getPattern();
+		return PATTERN;
 	}
 
 	@Override
 	@NotNull
 	public String getTestExample() {
-		return "<:name:1234>";
+		return "<@1234>";
 	}
 
 	@Override
 	@NotNull
 	public OptionType getOptionType() {
-		return OptionType.STRING;
+		return OptionType.USER;
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		final Guild guild = event.getGuild();
-
-		if (guild != null) {
-			return getEmoteInGuild(optionMapping.getAsString(), guild);
-		} else {
-			return event.getJDA().getEmoteById(optionMapping.getAsString());
-		}
+		return optionMapping.getAsUser();
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		final Guild guild = event.getGuild();
-
-		if (guild != null) {
-			return getEmoteInGuild(arg, guild);
-		} else {
-			return event.getJDA().getEmoteById(arg);
+		try {
+			return event.getJDA().retrieveUserById(arg).complete();
+		} catch (ErrorResponseException e) {
+			LOGGER.error("Could not resolve user: {}", e.getMeaning());
+			return null;
 		}
 	}
 
 	@Nullable
-	private Object getEmoteInGuild(String arg, Guild guild) {
-		try {
-			return guild.retrieveEmoteById(arg).complete();
-		} catch (ErrorResponseException e) {
-			LOGGER.error("Could not resolve emote in {} ({}): {}", guild.getName(), guild.getIdLong(), e.getMeaning());
-			return null;
-		}
+	@Override
+	public Object resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
+		return event.getTarget();
 	}
 }

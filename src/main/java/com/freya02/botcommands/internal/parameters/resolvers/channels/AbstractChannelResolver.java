@@ -1,45 +1,48 @@
-package com.freya02.botcommands.internal.parameters;
+package com.freya02.botcommands.internal.parameters.resolvers.channels;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import com.freya02.botcommands.internal.prefixed.Utils;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
-	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
+public abstract class AbstractChannelResolver<T extends GuildChannel> extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, ChannelResolver {
+	private static final Pattern PATTERN = Pattern.compile("(?:<#)?(\\d+)>?");
+	private final EnumSet<ChannelType> channelTypes;
+	private final BiFunction<Guild, String, T> channelResolver;
 
-	public UserResolver() {
-		super(ParameterType.ofClass(User.class));
+	public AbstractChannelResolver(ParameterType channelClass, @Nullable ChannelType channelType, BiFunction<Guild, String, T> channelResolver) {
+		super(channelClass);
+
+		this.channelTypes = channelType == null ? EnumSet.noneOf(ChannelType.class) : EnumSet.of(channelType);
+		this.channelResolver = channelResolver;
+	}
+
+	@Override
+	@NotNull
+	public EnumSet<ChannelType> getChannelTypes() {
+		return channelTypes;
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		try {
-			//Fastpath for mentioned entities passed in the message
-			long id = Long.parseLong(args[0]);
-
-			return Utils.findEntity(id,
-					event.getMessage().getMentions().getUsers(),
-					() -> event.getJDA().retrieveUserById(id).complete());
-		} catch (ErrorResponseException e) {
-			return null;
-		}
+		return channelResolver.apply(event.getGuild(), args[0]);
 	}
 
 	@Override
@@ -51,35 +54,26 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 	@Override
 	@NotNull
 	public String getTestExample() {
-		return "<@1234>";
+		return "<#1234>";
 	}
 
 	@Override
 	@NotNull
 	public OptionType getOptionType() {
-		return OptionType.USER;
+		return OptionType.CHANNEL;
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsUser();
+		return optionMapping.getAsGuildChannel();
 	}
 
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		try {
-			return event.getJDA().retrieveUserById(arg).complete();
-		} catch (ErrorResponseException e) {
-			LOGGER.error("Could not resolve user: {}", e.getMeaning());
-			return null;
-		}
-	}
+		Objects.requireNonNull(event.getGuild(), "Can't get a guild from DMs");
 
-	@Nullable
-	@Override
-	public Object resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
-		return event.getTarget();
+		return channelResolver.apply(event.getGuild(), arg);
 	}
 }

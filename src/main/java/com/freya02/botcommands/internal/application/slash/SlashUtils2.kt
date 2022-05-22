@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.application.slash
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
-import com.freya02.botcommands.internal.parameters.channels.ChannelResolver
+import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
