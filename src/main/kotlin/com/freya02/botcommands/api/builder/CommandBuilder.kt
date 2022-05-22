@@ -23,4 +23,6 @@ abstract class CommandBuilder internal constructor(val instance: Any, val path: 
 //    val commandId: String? = null //TODO unneeded, implement via per-guild command construction
 
     lateinit var function: KFunction<*>
+
+    internal fun isFunctionInitialized() = ::function.isInitialized
 }

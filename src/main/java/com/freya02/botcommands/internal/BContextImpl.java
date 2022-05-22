@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
+import com.freya02.botcommands.api.application.ApplicationCommandManager;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
@@ -55,6 +56,7 @@ public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
 
 	private final ApplicationCommandsContextImpl applicationCommandsContext = new ApplicationCommandsContextImpl();
+	private final ApplicationCommandManager applicationCommandManager = new ApplicationCommandManager(this); //TODO merge
 
 	private final List<Long> ownerIds = new ArrayList<>();
 	private final List<String> prefixes = new ArrayList<>();
@@ -568,5 +570,9 @@ public class BContextImpl implements BContext {
 
 	public LocalizationManager getLocalizationManager() {
 		return localizationManager;
+	}
+
+	public ApplicationCommandManager getApplicationCommandManager() {
+		return applicationCommandManager;
 	}
 }

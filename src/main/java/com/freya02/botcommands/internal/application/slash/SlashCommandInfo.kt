@@ -26,20 +26,26 @@ class SlashCommandInfo(
 ) {
     val description = builder.description
 
-    override val parameters: MethodParameters<SlashCommandParameter> = MethodParameters.of(method) { i, parameter ->
-        val type = parameter.type.jvmErasure
-        if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
-            requireUser(isGuildOnly) {
-                "The slash command cannot have a ${type.simpleName} parameter as it is not guild-only"
-            }
-        }
-
-        SlashCommandParameter(parameter, i)
-    }
+    override val parameters: MethodParameters<SlashCommandParameter>
 
     @Suppress("UNCHECKED_CAST")
     override val optionParameters: List<SlashCommandParameter>
         get() = super.optionParameters as List<SlashCommandParameter>
+
+    init {
+        var optionIndex = 0
+
+        parameters = MethodParameters.of(method) { i, parameter ->
+            val type = parameter.type.jvmErasure
+            if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
+                requireUser(isGuildOnly) {
+                    "The slash command cannot have a ${type.simpleName} parameter as it is not guild-only"
+                }
+            }
+
+            SlashCommandParameter(parameter, i)
+        }
+    }
 
     @Throws(Exception::class)
     fun execute(

@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.waiter.EventWaiter
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
@@ -210,8 +209,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 //        }
 
         if (method.hasAnnotation<Declaration>()) {
-            val args = ApplicationCommandManager(context)
-            method.call(ClassInstancer.instantiate(context, clazz), context, args) //TODO injection
+            method.call(ClassInstancer.instantiate(context, clazz), context, context.applicationCommandManager) //TODO injection
 
             return true
         }

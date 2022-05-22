@@ -26,10 +26,9 @@ abstract class ApplicationCommandParameter<RESOLVER : Any>(
     )
 
     init {
-        if (parameter.hasAnnotation<AppOption>()) {
-            _applicationOptionData = ApplicationOptionData(parameter)
-        } else {
-            _applicationOptionData = null
+        _applicationOptionData = when {
+            parameter.hasAnnotation<AppOption>() -> ApplicationOptionData(parameter)
+            else -> null
         }
     }
 

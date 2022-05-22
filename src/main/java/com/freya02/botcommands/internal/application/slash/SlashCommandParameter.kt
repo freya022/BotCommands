@@ -33,6 +33,7 @@ class SlashCommandParameter(
                 index
             )
         }
+
         val longRange = parameter.findAnnotation<LongRange>() //TODO move to annotation module
         if (longRange != null) {
             minValue = longRange.from
