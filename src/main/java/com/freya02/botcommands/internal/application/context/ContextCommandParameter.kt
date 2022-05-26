@@ -1,8 +1,16 @@
 package com.freya02.botcommands.internal.application.context
 
-import com.freya02.botcommands.internal.application.ApplicationCommandParameter
-import kotlin.reflect.KClass
+import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.KParameter
 
-class ContextCommandParameter<T : Any>(resolverType: KClass<T>, parameter: KParameter, index: Int) :
-    ApplicationCommandParameter<T>(resolverType, parameter, index)
+abstract class ContextCommandParameter<R>(
+    parameter: KParameter,
+    val resolver: R
+) : MethodParameter {
+    override val methodParameterType = MethodParameterType.COMMAND
+    override val kParameter = parameter
+    override val name: String
+        get() = throwInternal("Tried to retrieve the name of a context command parameter")
+}

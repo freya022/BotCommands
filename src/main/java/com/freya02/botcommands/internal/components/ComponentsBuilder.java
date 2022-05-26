@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.components;
 
 import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener;
-import com.freya02.botcommands.api.components.ComponentListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -65,6 +64,6 @@ public class ComponentsBuilder {
 	}
 
 	public void postProcess() {
-		context.addEventListeners(new ComponentListener(context, buttonsMap, selectionMenuMap));
+//		context.addEventListeners(new ComponentListener(context, buttonsMap, selectionMenuMap)); //TODO
 	}
 }

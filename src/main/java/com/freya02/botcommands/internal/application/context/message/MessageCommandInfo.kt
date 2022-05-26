@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.context.message
 
+import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
@@ -8,21 +9,21 @@ import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.context.ContextCommandParameter
+import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import java.util.function.Consumer
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
 
 class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
-    override val parameters: MethodParameters<ContextCommandParameter<MessageContextParameterResolver>>
+    override val parameters: MethodParameters
 
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        parameters = MethodParameters.of(method) { i: Int, parameter: KParameter ->
-            ContextCommandParameter(MessageContextParameterResolver::class, parameter, i)
+        parameters = MethodParameters.of<MessageContextParameterResolver>(method, listOf(AppOption::class)) { _, _, kParameter, resolver ->
+            MessageContextCommandParameter(kParameter, resolver)
         }
     }
 
@@ -38,10 +39,18 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
                 method, context, event)
 
         for (parameter in parameters) {
-            objects += when {
-                //no need to check for unresolved parameters, it is impossible to have other arg types other than Message (and custom resolvers)
-                parameter.isOption -> parameter.resolver.resolve(context, this, event)
-                else -> parameter.customResolver.resolve(context, this, event)
+            objects += when (parameter.methodParameterType) {
+                MethodParameterType.COMMAND -> {
+                    parameter as MessageContextCommandParameter
+
+                    parameter.resolver.resolve(context, this, event)
+                }
+                MethodParameterType.CUSTOM -> {
+                    parameter as CustomMethodParameter
+
+                    parameter.resolver.resolve(context, this, event)
+                }
+                else -> TODO()
             }
         }
 

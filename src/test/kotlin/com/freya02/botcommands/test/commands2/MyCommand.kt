@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test.commands2
 
+import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
@@ -16,6 +17,7 @@ fun interface Lol {
 class MyCommand : ApplicationCommand() {
     fun test(t: Lol) {}
 
+    @CommandMarker
     fun executeCommand(event: GuildSlashEvent, @AppOption opt: String) {
         event.reply(opt).queue()
     }
@@ -27,6 +29,8 @@ class MyCommand : ApplicationCommand() {
         manager.slashCommand(CommandPath.of("my_command"), this) {
             scope = CommandScope.GUILD
             description = "mah desc"
+
+            option("opt")
 
             function = ::executeCommand
         }

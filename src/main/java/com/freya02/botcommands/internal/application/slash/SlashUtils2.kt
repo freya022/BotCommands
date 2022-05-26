@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.application.slash
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import net.dv8tion.jda.api.entities.Guild
@@ -17,7 +18,7 @@ import kotlin.reflect.jvm.jvmErasure
 object SlashUtils2 {
     @JvmStatic
     fun ExecutableInteractionInfo.checkDefaultValue(
-        parameter: ApplicationCommandVarArgParameter<*>,
+        parameter: AbstractSlashCommandParameter,
         defaultValue: Any?
     ) {
         requireUser(defaultValue != null || parameter.isOptional) {
@@ -26,7 +27,7 @@ object SlashUtils2 {
 
         if (defaultValue == null) return
 
-        val expectedType: KClass<*> = if (parameter.isVarArg) List::class else parameter.boxedType.jvmErasure
+        val expectedType: KClass<*> = if (parameter.isVarArg) List::class else parameter.type.jvmErasure
 
         requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
             "Default value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
@@ -49,9 +50,14 @@ object SlashUtils2 {
 		for (parameter in parameters) {
             if (!parameter.isOption) continue
 
+            if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+
+            parameter as SlashCommandParameter
+
             i++
 
-            val applicationOptionData = parameter.applicationOptionData
+            val name = parameter.name
+            val description = parameter.description
 
             if (guild != null) {
                 //TODO change to use opaque user data
@@ -60,9 +66,9 @@ object SlashUtils2 {
                     guild,
                     commandId,
                     path,
-                    applicationOptionData.effectiveName,
-                    parameter.parameter.type,
-                    parameter.parameter.type.jvmErasure
+                    parameter.name,
+                    parameter.type,
+                    parameter.type.jvmErasure
                 )
 
                 parameter.defaultOptionSupplierMap.put(guild.idLong, defaultValueSupplier)
@@ -71,9 +77,6 @@ object SlashUtils2 {
                     continue  //Skip option generation since this is a default value
                 }
             }
-
-            val name = parameter.applicationOptionData.effectiveName
-            val description = parameter.applicationOptionData.effectiveDescription
 
             val resolver = parameter.resolver
             val optionType = resolver.optionType
@@ -104,13 +107,13 @@ object SlashUtils2 {
                     else -> {}
                 }
 
-                if (applicationOptionData.hasAutocompletion()) {
-                    requireUser(optionType.canSupportChoices()) {
-                        "Slash command parameter #$i does not support autocompletion"
-                    }
-
-                    data.isAutoComplete = true
-                }
+//                if (applicationOptionData.hasAutocompletion()) { //TODO autocomplete
+//                    requireUser(optionType.canSupportChoices()) {
+//                        "Slash command parameter #$i does not support autocompletion"
+//                    }
+//
+//                    data.isAutoComplete = true
+//                }
 
                 if (optionType.canSupportChoices()) {
                     var choices: Collection<Command.Choice>? = null
@@ -128,9 +131,9 @@ object SlashUtils2 {
                     }
 
                     if (choices != null) {
-                        requireUser(!applicationOptionData.hasAutocompletion()) {
-                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
-                        }
+//                        requireUser(!applicationOptionData.hasAutocompletion()) { //TODO autocomplete
+//                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
+//                        }
 
                         data.addChoices(choices)
                     }

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.AbstractCommandInfo
 import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.requireFirstParam
 import com.freya02.botcommands.internal.throwUser
 import kotlin.reflect.full.valueParameters
@@ -19,10 +20,10 @@ abstract class ApplicationCommandInfo protected constructor(
     val isGuildOnly: Boolean
     val isTestOnly: Boolean
 
-    abstract override val parameters: MethodParameters<out ApplicationCommandParameter<*>>
+    abstract override val parameters: MethodParameters
     @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<ApplicationCommandParameter<*>>
-        get() = super.optionParameters as List<ApplicationCommandParameter<*>>
+    override val optionParameters: List<MethodParameter>
+        get() = super.optionParameters
 
     init {
         scope = builder.scope

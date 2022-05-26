@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete
 
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CompositeKey
-import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import com.freya02.botcommands.internal.application.slash.ApplicationCommandVarArgParameter
+import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.internal.application.slash.AbstractSlashCommandParameter
 import com.freya02.botcommands.internal.isSubclassOfAny
 import net.dv8tion.jda.api.entities.Channel
 import net.dv8tion.jda.api.entities.Member
@@ -14,14 +14,14 @@ import kotlin.reflect.jvm.jvmErasure
 
 class AutocompleteCommandParameter(
     parameter: KParameter,
-    index: Int
-) : ApplicationCommandVarArgParameter<SlashParameterResolver>(
-    SlashParameterResolver::class, parameter, index
+    optionBuilder: SlashCommandOptionBuilder //TODO Not sure about that
+) : AbstractSlashCommandParameter(
+    parameter, optionBuilder
 ) {
     val isCompositeKey = parameter.hasAnnotation<CompositeKey>()
 
     init {
-        if (boxedType.jvmErasure.isSubclassOfAny(User::class, Member::class, Channel::class, Role::class)) {
+        if (type.jvmErasure.isSubclassOfAny(User::class, Member::class, Channel::class, Role::class)) {
             throw IllegalArgumentException("Autocomplete parameters cannot have an entity (User/Member/Channel/Role) as a value")
         }
     }

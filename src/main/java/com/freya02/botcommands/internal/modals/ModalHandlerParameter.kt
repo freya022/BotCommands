@@ -10,9 +10,9 @@ import kotlin.reflect.full.hasAnnotation
 
 class ModalHandlerParameter(
     parameter: KParameter,
-    index: Int
-) : CommandParameter<ModalParameterResolver>(
-    ModalParameterResolver::class, parameter, index
+    val resolver: ModalParameterResolver
+) : CommandParameter(
+    parameter, TODO()
 ) {
     val isModalData: Boolean
     val isModalInput: Boolean
@@ -34,6 +34,4 @@ class ModalHandlerParameter(
         }
     }
 
-    override fun optionAnnotations() = listOf(ModalData::class, ModalInput::class)
-    override fun resolvableAnnotations() = listOf(ModalInput::class)
 }

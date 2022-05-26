@@ -32,7 +32,7 @@ class ApplicationOptionData(parameter: KParameter) {
     }
 
     companion object {
-        private fun getOptionName(parameter: KParameter): String {
+        private fun getOptionName(parameter: KParameter): String { //TODO take
             val name = parameter.name ?: throwUser("Parameter name cannot be deduced as the option's name is not specified on: $parameter")
 
             val optionNameBuilder = StringBuilder(name.length + 10)

@@ -1,12 +1,9 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion;
-import com.freya02.botcommands.internal.ApplicationOptionData;
-import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteCommandParameter;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -43,23 +40,27 @@ public abstract class BaseAutocompletionCache extends AbstractAutocompletionCach
 
 		optionValues.add(event.getFocusedOption().getValue());
 
-		for (final AutocompleteCommandParameter parameter : info.getParameters()) {
-			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
-
-			if (parameter.isOption()) {
-				final String optionName = applicationOptionData.getEffectiveName();
-
-				if (parameter.isCompositeKey()) {
-					final OptionMapping option = event.getOption(optionName);
-
-					if (option == null) {
-						optionValues.add("null");
-					} else if (!event.getFocusedOption().getName().equals(optionName)) { //Only add the options other than the focused one, since it's already there, saves us from an HashSet
-						optionValues.add(option.getAsString());
-					}
-				}
-			}
+		if (true) {
+			throw new UnsupportedOperationException();
 		}
+
+//		for (final AutocompleteCommandParameter parameter : info.getParameters()) { //TODO
+//			final ApplicationOptionData applicationOptionData = parameter.getApplicationOptionData();
+//
+//			if (parameter.isOption()) {
+//				final String optionName = applicationOptionData.getEffectiveName();
+//
+//				if (parameter.isCompositeKey()) {
+//					final OptionMapping option = event.getOption(optionName);
+//
+//					if (option == null) {
+//						optionValues.add("null");
+//					} else if (!event.getFocusedOption().getName().equals(optionName)) { //Only add the options other than the focused one, since it's already there, saves us from an HashSet
+//						optionValues.add(option.getAsString());
+//					}
+//				}
+//			}
+//		}
 
 		return optionValues.toArray(new String[0]);
 	}

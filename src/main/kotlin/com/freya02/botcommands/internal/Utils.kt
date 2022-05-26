@@ -1,12 +1,14 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
+import com.freya02.botcommands.api.annotations.Name
 import com.freya02.botcommands.internal.utils.Utils
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.*
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
@@ -25,9 +27,11 @@ fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, k
     }
 }
 
-fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
 
-fun throwUser(function: KFunction<*>, message: String): Nothing =
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+inline fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${Utils.formatMethodShort(function)} : $message")
 
 fun throwUser(message: String): Nothing =
@@ -60,6 +64,15 @@ val KParameter.isReallyOptional: Boolean
 
 val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
+
+val KParameter.bestName: String
+    get() = this.name ?: "<no-name>"
+
+fun KParameter.findName(): String = when {
+    name != null -> name!!
+    else -> this.findAnnotation<Name>()?.name
+        ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
+}
 
 val KType.simpleName: String
     get() = this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")

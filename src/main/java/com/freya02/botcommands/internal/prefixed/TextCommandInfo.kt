@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.prefixed
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.CommandPath
@@ -9,26 +10,25 @@ import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.AbstractCommandInfo
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.function.Consumer
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
+
+private val LOGGER = Logging.getLogger()
 
 class TextCommandInfo(
     context: BContext,
     builder: TextCommandBuilder
 ) : AbstractCommandInfo(context, builder) {
-    override val parameters: MethodParameters<TextCommandParameter>
-    @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<TextCommandParameter>
-        get() = super.optionParameters as List<TextCommandParameter>
-
-    private val LOGGER = Logging.getLogger()
+    override val parameters: MethodParameters
 
     val aliases: List<CommandPath>
     val description: String
@@ -44,9 +44,9 @@ class TextCommandInfo(
         hidden = builder.hidden
 
         isRegexCommand = method.valueParameters[0].type.jvmErasure.isSuperclassOf(CommandEvent::class)
-        parameters = MethodParameters.of(method) { index: Int, parameter: KParameter ->
+        parameters = MethodParameters.of<RegexParameterResolver>(method, listOf(TextOption::class)) { _, _, parameter, resolver ->
             //TODO check if function isn't fallback
-            TextCommandParameter(RegexParameterResolver::class, parameter, index)
+            TextCommandParameter(parameter, TODO(), resolver) //TODO text option builder
         }
 
         completePattern = if (parameters.optionCount > 0) {
@@ -68,7 +68,9 @@ class TextCommandInfo(
         if (isRegexCommand) {
             var groupIndex = 1
             for (parameter in parameters) {
-                if (parameter.isOption) {
+                if (parameter.methodParameterType == MethodParameterType.COMMAND) {
+                    parameter as TextCommandParameter
+
                     var found = 0
                     val groupCount = parameter.groupCount
                     val groups = arrayOfNulls<String>(groupCount)
@@ -99,13 +101,23 @@ class TextCommandInfo(
                             objects.add(null)
                         }
                     }
+                } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
+                    parameter as CustomMethodParameter
+
+                    objects.add(parameter.resolver.resolve(context, this, event))
                 } else {
-                    objects.add(parameter.customResolver.resolve(context, this, event))
+                    TODO()
                 }
             }
         } else {
             for (parameter in parameters) {
-                objects.add(parameter.customResolver.resolve(context, this, event))
+                if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
+                    parameter as CustomMethodParameter
+
+                    objects.add(parameter.resolver.resolve(context, this, event))
+                } else {
+                    throwInternal("Encountered other types of parameters (${parameter.methodParameterType}) in a fallback text command")
+                }
             }
         }
 

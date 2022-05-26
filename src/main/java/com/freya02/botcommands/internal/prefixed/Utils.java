@@ -197,19 +197,19 @@ public class Utils {
 			}
 		} else {
 			if (boxedType == String.class) {
-				return needsQuote ? "\"" + getParameterName(commandParameter.getParameter(), "string") + "\"" : getParameterName(commandParameter.getParameter(), "string");
+				return needsQuote ? "\"" + getParameterName(commandParameter.getKParameter(), "string") + "\"" : getParameterName(commandParameter.getKParameter(), "string");
 			} else if (boxedType == Emoji.class) {
 				return "unicode emoji/shortcode";
 			} else if (boxedType == Integer.class) {
-				return getParameterName(commandParameter.getParameter(), "integer");
+				return getParameterName(commandParameter.getKParameter(), "integer");
 			} else if (boxedType == Long.class) {
 				if (commandParameter.isId()) {
 					return "Entity ID";
 				} else {
-					return getParameterName(commandParameter.getParameter(), "integer");
+					return getParameterName(commandParameter.getKParameter(), "integer");
 				}
 			} else if (boxedType == Float.class || boxedType == Double.class) {
-				return getParameterName(commandParameter.getParameter(), "decimal");
+				return getParameterName(commandParameter.getKParameter(), "decimal");
 			} else if (boxedType == Emote.class) {
 				return "emote/emote id";
 			} else if (boxedType == Guild.class) {

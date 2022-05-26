@@ -11,7 +11,11 @@ class SlashCommandBuilder internal constructor(
     path: CommandPath
 ) : ApplicationCommandBuilder(instance, path) {
     var description: String = "No description"
-    val optionBuilders: MutableList<SlashCommandOptionBuilder> = mutableListOf()
+    internal val optionBuilders: MutableList<SlashCommandOptionBuilder> = mutableListOf()
+
+    fun option(name: String, block: SlashCommandOptionBuilder.() -> Unit = {}) {
+        optionBuilders.add(SlashCommandOptionBuilder(name).apply(block))
+    }
 
     internal fun build(): SlashCommandInfo {
         if (!isFunctionInitialized()) {
