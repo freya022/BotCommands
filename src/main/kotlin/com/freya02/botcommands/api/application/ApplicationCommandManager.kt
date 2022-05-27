@@ -11,4 +11,8 @@ class ApplicationCommandManager internal constructor(val context: BContextImpl) 
                 .build()
         )
     }
+
+    internal fun slashCommand_(path: CommandPath, userData: Any, builder: SlashCommandBuilder.() -> Unit) {
+        TODO()
+    }
 }

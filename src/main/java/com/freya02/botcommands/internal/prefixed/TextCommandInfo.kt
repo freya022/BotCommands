@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.CommandPath
@@ -44,7 +43,7 @@ class TextCommandInfo(
         hidden = builder.hidden
 
         isRegexCommand = method.valueParameters[0].type.jvmErasure.isSuperclassOf(CommandEvent::class)
-        parameters = MethodParameters.of<RegexParameterResolver>(method, listOf(TextOption::class)) { _, _, parameter, resolver ->
+        parameters = MethodParameters.of<RegexParameterResolver>(method) { _, _, parameter, resolver ->
             //TODO check if function isn't fallback
             TextCommandParameter(parameter, TODO(), resolver) //TODO text option builder
         }

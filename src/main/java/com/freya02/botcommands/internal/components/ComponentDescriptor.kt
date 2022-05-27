@@ -35,7 +35,7 @@ class ComponentDescriptor(
             }
         }
 
-        parameters = MethodParameters.of<ComponentParameterResolver>(method, listOf()) { _, _, parameter, _ ->
+        parameters = MethodParameters.of<ComponentParameterResolver>(method) { _, _, parameter, _ ->
             ComponentHandlerParameter(parameter, TODO()) //TODO take from DSL
         }
     }

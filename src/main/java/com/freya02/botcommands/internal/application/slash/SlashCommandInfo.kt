@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.slash
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
@@ -38,7 +37,7 @@ class SlashCommandInfo(
         get() = super.optionParameters as List<SlashCommandParameter>
 
     init {
-        parameters = MethodParameters.of<SlashParameterResolver>(method, listOf(AppOption::class)) { globalIndex, _, kParameter, resolver ->
+        parameters = MethodParameters.of<SlashParameterResolver>(method) { globalIndex, _, kParameter, resolver ->
             val type = kParameter.type.jvmErasure
             if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
                 requireUser(isGuildOnly) {

@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.context.message
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
@@ -22,7 +21,7 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        parameters = MethodParameters.of<MessageContextParameterResolver>(method, listOf(AppOption::class)) { _, _, kParameter, resolver ->
+        parameters = MethodParameters.of<MessageContextParameterResolver>(method) { _, _, kParameter, resolver ->
             MessageContextCommandParameter(kParameter, resolver)
         }
     }

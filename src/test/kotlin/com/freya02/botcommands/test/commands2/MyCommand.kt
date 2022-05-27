@@ -1,7 +1,6 @@
 package com.freya02.botcommands.test.commands2
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
@@ -18,7 +17,7 @@ class MyCommand : ApplicationCommand() {
     fun test(t: Lol) {}
 
     @CommandMarker
-    fun executeCommand(event: GuildSlashEvent, @AppOption opt: String) {
+    fun executeCommand(event: GuildSlashEvent, opt: String) {
         event.reply(opt).queue()
     }
 

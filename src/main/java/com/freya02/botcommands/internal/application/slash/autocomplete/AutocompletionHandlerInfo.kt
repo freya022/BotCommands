@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion
@@ -94,7 +93,7 @@ class AutocompletionHandlerInfo(
             }
         }
 
-        parameters = MethodParameters.of<SlashParameterResolver>(method, listOf(AppOption::class)) { _, _, kParameter, _ ->
+        parameters = MethodParameters.of<SlashParameterResolver>(method) { _, _, kParameter, _ ->
             AutocompleteCommandParameter(kParameter, TODO())
         }
     }
