@@ -38,7 +38,7 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
                     "Parameter #$globalIndex of type '${paramType.simpleName}' and name '${kParameter.bestName}' does not have any compatible resolver"
                 }
 
-                val parameterName = kParameter.findName()
+                val parameterName = kParameter.findDeclarationName()
                 val parameter = when (resolver) {
                     is R -> parameterSupplier.supply(kParameter, parameterName, resolver)
                     is CustomResolver -> CustomMethodParameter(

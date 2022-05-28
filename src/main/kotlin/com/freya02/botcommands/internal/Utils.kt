@@ -72,10 +72,34 @@ val KParameter.isPrimitive: Boolean
 val KParameter.bestName: String
     get() = this.name ?: "<no-name>"
 
-fun KParameter.findName(): String = when {
-    name != null -> name!!
-    else -> this.findAnnotation<Name>()?.name
-        ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
+fun String.asDiscordString(): String {
+    val sb: StringBuilder = StringBuilder()
+
+    for (c in this) {
+        if (c.isUpperCase()) {
+            sb.append('_').append(c.lowercaseChar())
+        } else {
+            sb.append(c)
+        }
+    }
+
+    return sb.toString()
+}
+
+fun KParameter.findDeclarationName(): String {
+    findAnnotation<Name>()?.let {
+        return it.declaredName
+    }
+
+    return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
+}
+
+fun KParameter.findOptionName(): String {
+    findAnnotation<Name>()?.let {
+        return it.name
+    }
+
+    return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
 }
 
 val KType.simpleName: String

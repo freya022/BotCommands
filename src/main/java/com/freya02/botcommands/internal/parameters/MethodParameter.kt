@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.parameters
 
+import com.freya02.botcommands.internal.asDiscordString
+import com.freya02.botcommands.internal.findOptionName
 import com.freya02.botcommands.internal.isPrimitive
 import com.freya02.botcommands.internal.isReallyOptional
 import kotlin.reflect.KParameter
@@ -9,6 +11,8 @@ interface MethodParameter {
     val methodParameterType: MethodParameterType
     val kParameter: KParameter
     val name: String
+    val discordName: String
+        get() = kParameter.findOptionName().asDiscordString()
 
     val type: KType
         get() = kParameter.type

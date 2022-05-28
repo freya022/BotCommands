@@ -3,6 +3,7 @@ package com.freya02.botcommands.test.commands2
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.Name
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
@@ -17,8 +18,8 @@ class MyCommand : ApplicationCommand() {
     fun test(t: Lol) {}
 
     @CommandMarker
-    fun executeCommand(event: GuildSlashEvent, opt: String, custom: BContext) {
-        event.reply(opt + custom).queue()
+    fun executeCommand(event: GuildSlashEvent, stringOption: String, @Name("number", "notNumberOption") numberOption: Int, custom: BContext) {
+        event.reply(stringOption + numberOption + custom).queue()
     }
 
     @Declaration
@@ -29,7 +30,14 @@ class MyCommand : ApplicationCommand() {
             scope = CommandScope.GUILD
             description = "mah desc"
 
-            option("opt")
+            option("stringOption") {
+                description = "Option description"
+            }
+
+            option("notNumberOption") {
+                description = "A number"
+            }
+
             customOption("custom")
 
             function = ::executeCommand

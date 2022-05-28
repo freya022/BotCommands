@@ -56,7 +56,7 @@ object SlashUtils2 {
 
             i++
 
-            val name = parameter.name
+            val name = parameter.discordName
             val description = parameter.description
 
             if (guild != null) {

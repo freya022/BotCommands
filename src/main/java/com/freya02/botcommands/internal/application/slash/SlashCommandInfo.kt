@@ -81,7 +81,7 @@ class SlashCommandInfo(
                 val arguments = max(1, parameter.varArgs)
                 val objectList: MutableList<Any?> = ArrayList(arguments)
 
-                val optionName = parameter.name
+                val optionName = parameter.discordName
                 for (varArgNum in 0 until arguments) {
                     val varArgName = SlashUtils.getVarArgName(optionName, varArgNum) //TODO extension or infix
                     val optionMapping = event.getOption(varArgName)

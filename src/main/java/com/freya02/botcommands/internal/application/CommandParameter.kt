@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.application
 
 import com.freya02.botcommands.api.application.builder.OptionBuilder
-import com.freya02.botcommands.internal.findName
+import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.throwUser
@@ -15,7 +15,7 @@ abstract class CommandParameter(
     override val name = optionBuilder.name
 
     init {
-        val paramName = kParameter.findName()
+        val paramName = kParameter.findDeclarationName()
         val optionName = optionBuilder.name
         if (paramName != optionName) {
             throwUser("Parameter '$kParameter' does not have the same name as the command declaration: '$optionName'")
