@@ -38,7 +38,7 @@ abstract class AbstractCommandInfo protected constructor(
         userPermissions = builder.userPermissions
         botPermissions = builder.botPermissions
 
-        requireUser(builder.optionBuilders.size == method.valueParameters.size) {
+        requireUser(builder.optionBuilders.size == method.valueParameters.size - 1) {  //-1 for the event
             "Function must have the same number of options declared as on the method"
         }
 

@@ -21,7 +21,7 @@ class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : Applicat
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
-        parameters = MethodParameters.of<UserContextParameterResolver>(method) { _, _, kParameter, resolver ->
+        parameters = MethodParameters.of<UserContextParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
             UserContextCommandParameter(kParameter, resolver)
         }
     }

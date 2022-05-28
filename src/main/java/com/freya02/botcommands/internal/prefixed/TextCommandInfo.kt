@@ -43,7 +43,7 @@ class TextCommandInfo(
         hidden = builder.hidden
 
         isRegexCommand = method.valueParameters[0].type.jvmErasure.isSuperclassOf(CommandEvent::class)
-        parameters = MethodParameters.of<RegexParameterResolver>(method) { _, _, parameter, resolver ->
+        parameters = MethodParameters.of<RegexParameterResolver>(method, builder.optionBuilders) { parameter, paramName, resolver ->
             //TODO check if function isn't fallback
             TextCommandParameter(parameter, TODO(), resolver) //TODO text option builder
         }

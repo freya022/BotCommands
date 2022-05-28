@@ -21,7 +21,7 @@ class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : Appli
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        parameters = MethodParameters.of<MessageContextParameterResolver>(method) { _, _, kParameter, resolver ->
+        parameters = MethodParameters.of<MessageContextParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
             MessageContextCommandParameter(kParameter, resolver)
         }
     }

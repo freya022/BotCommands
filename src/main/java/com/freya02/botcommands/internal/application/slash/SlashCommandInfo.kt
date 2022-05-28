@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
@@ -38,7 +39,7 @@ class SlashCommandInfo(
         get() = super.optionParameters as List<SlashCommandParameter>
 
     init {
-        parameters = MethodParameters.of<SlashParameterResolver>(method) { _, _, kParameter, resolver ->
+        parameters = MethodParameters.of<SlashParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
             val type = kParameter.type.jvmErasure
             if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
                 requireUser(isGuildOnly) {
@@ -46,8 +47,7 @@ class SlashCommandInfo(
                 }
             }
 
-            val paramName = kParameter.findName()
-            val optionBuilder = builder.findOption<SlashCommandOptionBuilder>(paramName)
+            val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
             SlashCommandParameter(kParameter, optionBuilder, resolver)
         }
     }

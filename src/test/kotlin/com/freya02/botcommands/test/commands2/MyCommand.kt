@@ -30,6 +30,7 @@ class MyCommand : ApplicationCommand() {
             description = "mah desc"
 
             option("opt")
+            customOption("custom")
 
             function = ::executeCommand
         }
