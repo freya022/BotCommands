@@ -11,7 +11,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
 
-internal fun interface MethodParameterSupplier<R : Any> {
+internal fun interface InteractionParameterSupplier<R : Any> {
     fun supply(kParameter: KParameter, name: String, resolver: R): MethodParameter
 }
 
@@ -25,7 +25,7 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
         internal inline fun <reified R : Any> of(
             function: KFunction<*>,
             optionBuilders: Map<String, OptionBuilder>,
-            parameterSupplier: MethodParameterSupplier<R>
+            parameterSupplier: InteractionParameterSupplier<R>
         ): MethodParameters {
             val methodParameters: MutableList<MethodParameter> = ArrayList(function.parameters.size)
             val kParameters = function.valueParameters.drop(1)

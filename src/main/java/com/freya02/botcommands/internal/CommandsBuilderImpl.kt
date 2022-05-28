@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.waiter.EventWaiter
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
@@ -27,11 +28,9 @@ import java.util.*
 import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.findAnnotations
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.jvm.jvmErasure
 
 private val LOGGER = Logging.getLogger()
 
@@ -166,7 +165,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
     }
 
     @Throws(InvocationTargetException::class, InstantiationException::class, IllegalAccessException::class)
-    private fun processMethod(clazz: KClass<*>, method: KFunction<*>): Boolean { //TODO pass to method above
+    private fun processMethod(clazz: KClass<*>, function: KFunction<*>): Boolean { //TODO pass to method above
 //        for (annotation in applicationMethodAnnotations) {
 //            val applicationCommand =
 //                tryInstantiateMethod<ApplicationCommand>(annotation, "Application command", method)
@@ -208,8 +207,17 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 //            return true
 //        }
 
-        if (method.hasAnnotation<Declaration>()) {
-            method.call(ClassInstancer.instantiate(context, clazz), context, context.applicationCommandManager) //TODO injection
+        if (function.hasAnnotation<Declaration>()) {
+            val args = function.valueParameters.map {
+                val value = context.getMethodParameterSupplier(it.type.jvmErasure.java).supply()
+                requireUser(value != null, function) {
+                    "Requested a parameter '${it.bestName}' with type '${it.type}' but no method parameter supplier was registered for it"
+                }
+
+                value
+            }.toTypedArray()
+
+            function.call(ClassInstancer.instantiate(context, clazz), *args) //TODO injection
 
             return true
         }
@@ -283,11 +291,15 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 
         context.registerConstructorParameter(BContext::class.java) { context } //TODO maybe unify this stuff ?
         context.registerCommandDependency(BContext::class.java) { context }
-        context.registerCustomResolver(BContext::class.java) { _, _, _ -> context }
+        context.registerCustomResolver(BContext::class.java) { _, _, _ -> context } //TODO merge ?
+        context.registerMethodParameterSupplier(BContext::class.java) { context }
 
         context.registerConstructorParameter(JDA::class.java) { jda }
         context.registerCommandDependency(JDA::class.java) { jda }
         context.registerCustomResolver(JDA::class.java) { _, _, _ -> jda }
+        context.registerMethodParameterSupplier(JDA::class.java) { jda }
+
+        context.registerMethodParameterSupplier(ApplicationCommandManager::class.java) { context.applicationCommandManager }
 
         context.setDefaultMessageProvider(DefaultMessagesFunction())
     }

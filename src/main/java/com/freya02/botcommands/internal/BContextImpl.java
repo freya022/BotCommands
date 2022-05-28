@@ -65,6 +65,7 @@ public class BContextImpl implements BContext {
 	private final Map<Class<?>, InstanceSupplier<?>> instanceSupplierMap = new HashMap<>();
 	private final List<DynamicInstanceSupplier> dynamicInstanceSuppliers = new ArrayList<>();
 	private final Map<Class<?>, Supplier<?>> commandDependencyMap = new HashMap<>();
+	private final Map<Class<?>, MethodParameterSupplier<?>> methodParameterSupplierMap = new HashMap<>();
 
 	private final Map<KClass<?>, Object> classToObjMap = new HashMap<>();
 	private final Map<CommandPath, TextCommandCandidates> textCommandMap = new HashMap<>();
@@ -514,6 +515,14 @@ public class BContextImpl implements BContext {
 
 	public Supplier<?> getCommandDependency(Class<?> fieldType) {
 		return commandDependencyMap.get(fieldType);
+	}
+
+	public <T> void registerMethodParameterSupplier(Class<T> parameterType, MethodParameterSupplier<T> supplier) {
+		methodParameterSupplierMap.put(parameterType, supplier);
+	}
+
+	public MethodParameterSupplier<?> getMethodParameterSupplier(Class<?> parameterType) {
+		return methodParameterSupplierMap.get(parameterType);
 	}
 
 	public ApplicationCommandsCache getApplicationCommandsCache() {
