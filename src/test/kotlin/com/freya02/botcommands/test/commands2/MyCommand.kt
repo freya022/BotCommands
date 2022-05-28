@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import net.dv8tion.jda.api.entities.User
 
 fun interface Lol {
     fun BContext.xd()
@@ -18,8 +19,15 @@ class MyCommand : ApplicationCommand() {
     fun test(t: Lol) {}
 
     @CommandMarker
-    fun executeCommand(event: GuildSlashEvent, stringOption: String, @Name("number", "notNumberOption") numberOption: Int, custom: BContext) {
-        event.reply(stringOption + numberOption + custom).queue()
+    fun executeCommand(
+        event: GuildSlashEvent,
+        stringOption: String,
+        @Name("int", "notIntOption") intOption: Int,
+        @Name(declaredName = "notDoubleOption") doubleOption: Double,
+        @Name(name = "user") userOption: User,
+        custom: BContext
+    ) {
+        event.reply(stringOption + intOption + doubleOption + userOption + custom).queue()
     }
 
     @Declaration
@@ -34,8 +42,16 @@ class MyCommand : ApplicationCommand() {
                 description = "Option description"
             }
 
-            option("notNumberOption") {
-                description = "A number"
+            option("notIntOption") {
+                description = "An integer"
+            }
+
+            option("notDoubleOption") {
+                description = "A double"
+            }
+
+            option("userOption") {
+                description = "An user"
             }
 
             customOption("custom")

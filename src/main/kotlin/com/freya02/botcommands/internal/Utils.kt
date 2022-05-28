@@ -87,16 +87,18 @@ fun String.asDiscordString(): String {
 }
 
 fun KParameter.findDeclarationName(): String {
-    findAnnotation<Name>()?.let {
-        return it.declaredName
+    val annotatedName = findAnnotation<Name>()?.declaredName
+    if (!annotatedName.isNullOrBlank()) {
+        return annotatedName
     }
 
     return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
 }
 
 fun KParameter.findOptionName(): String {
-    findAnnotation<Name>()?.let {
-        return it.name
+    val annotatedName = findAnnotation<Name>()?.name
+    if (!annotatedName.isNullOrBlank()) {
+        return annotatedName
     }
 
     return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
