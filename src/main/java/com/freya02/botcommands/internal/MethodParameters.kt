@@ -38,7 +38,7 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
 
                 when (resolver) {
                     is R -> methodParameters.add(parameterSupplier.supply(globalIndex, ++optionIndex, kParameter, resolver))
-                    is CustomResolver -> methodParameters.add(CustomMethodParameter(kParameter, resolver))
+                    is CustomResolver -> methodParameters.add(CustomMethodParameter(kParameter, resolver)) //TODO maybe use option builder ?
                     else -> throwUser(function, "Expected a resolver of type ${R::class.simpleName!!} but ${resolver.javaClass.simpleName} does not support it")
                 }
             }

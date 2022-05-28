@@ -17,8 +17,8 @@ class MyCommand : ApplicationCommand() {
     fun test(t: Lol) {}
 
     @CommandMarker
-    fun executeCommand(event: GuildSlashEvent, opt: String) {
-        event.reply(opt).queue()
+    fun executeCommand(event: GuildSlashEvent, opt: String, custom: BContext) {
+        event.reply(opt + custom).queue()
     }
 
     @Declaration

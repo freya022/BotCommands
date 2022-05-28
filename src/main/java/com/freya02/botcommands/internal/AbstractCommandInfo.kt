@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.function.Consumer
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.valueParameters
 
 /**
  * @param <T> Command instance type
@@ -36,6 +37,10 @@ abstract class AbstractCommandInfo protected constructor(
         nsfwState = builder.nsfwState
         userPermissions = builder.userPermissions
         botPermissions = builder.botPermissions
+
+        requireUser(builder.optionBuilders.size == method.valueParameters.size) {
+            "Function must have the same number of options declared as on the method"
+        }
 
         methodRunner = object : MethodRunner {
             //TODO replace

@@ -28,13 +28,17 @@ fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, k
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
+
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 inline fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${Utils.formatMethodShort(function)} : $message")
 
-fun throwUser(message: String): Nothing =
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+inline fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
 
 @OptIn(ExperimentalContracts::class)
@@ -82,7 +86,5 @@ val KFunction<*>.isPublic: Boolean
 
 val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
-
-fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
