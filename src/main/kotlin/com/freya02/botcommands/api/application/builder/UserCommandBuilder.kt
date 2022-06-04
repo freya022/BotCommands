@@ -4,8 +4,8 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 
-class UserCommandBuilder internal constructor(private val context: BContextImpl, instance: Any, path: CommandPath) :
-    ApplicationCommandBuilder(instance, path) {
+class UserCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath) :
+    ApplicationCommandBuilder(path) {
 
     override val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf() //TODO user context option builder
 

@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
@@ -24,7 +23,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val LOGGER = Logging.getLogger()
 
 class TextCommandInfo(
-    context: BContext,
+    context: BContextImpl,
     builder: TextCommandBuilder
 ) : AbstractCommandInfo(context, builder) {
     override val parameters: MethodParameters

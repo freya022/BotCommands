@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.slash
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
@@ -13,6 +12,7 @@ import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefau
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isJava
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -20,11 +20,14 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import java.util.function.Consumer
 import kotlin.math.max
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-class SlashCommandInfo(
-    context: BContext,
+class SlashCommandInfo internal constructor(
+    context: BContextImpl,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
@@ -58,8 +61,10 @@ class SlashCommandInfo(
         event: SlashCommandInteractionEvent,
         throwableConsumer: Consumer<Throwable>
     ): Boolean {
-        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
-        objects += if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
+        val objects: MutableMap<KParameter, Any?> = mutableMapOf()
+        objects[method.instanceParameter!!] = instance
+        objects[method.valueParameters.first()] =
+            if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
         for (parameter in parameters) {
             if (parameter.methodParameterType == MethodParameterType.COMMAND) {
@@ -72,7 +77,7 @@ class SlashCommandInfo(
                         val defaultVal = supplier.getDefaultValue(event)
                         checkDefaultValue(parameter, defaultVal)
 
-                        objects.add(defaultVal)
+                        objects[parameter.kParameter] = defaultVal
 
                         continue
                     }
@@ -87,7 +92,10 @@ class SlashCommandInfo(
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
                             objectList += when {
-                                parameter.isPrimitive -> 0
+                                parameter.isPrimitive -> when {
+                                    parameter.kParameter.isJava -> 0
+                                    else -> null
+                                }
                                 else -> null
                             }
 
@@ -129,11 +137,11 @@ class SlashCommandInfo(
                     objectList.add(resolved)
                 }
 
-                objects.add(if (parameter.isVarArg) objectList else objectList[0])
+                objects[parameter.kParameter] = if (parameter.isVarArg) objectList else objectList[0]
             } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
                 parameter as CustomMethodParameter
 
-                objects.add(parameter.resolver.resolve(context, this, event))
+                objects[parameter.kParameter] = parameter.resolver.resolve(context, this, event)
             } else {
                 TODO()
             }
@@ -142,7 +150,7 @@ class SlashCommandInfo(
         applyCooldown(event)
 
         try {
-            method.call(*objects.toTypedArray())
+            method.callBy(objects)
         } catch (e: Throwable) {
             throwableConsumer.accept(e)
         }

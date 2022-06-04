@@ -7,16 +7,21 @@ import com.freya02.botcommands.internal.throwUser
 
 class SlashCommandBuilder internal constructor(
     private val context: BContextImpl,
-    instance: Any,
     path: CommandPath
-) : ApplicationCommandBuilder(instance, path) {
+) : ApplicationCommandBuilder(path) {
     var description: String = "No description"
     override val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 
+    /**
+     * @param name Name of the declared parameter in the [function]
+     */
     fun option(name: String, block: SlashCommandOptionBuilder.() -> Unit = {}) {
         optionBuilders[name] = SlashCommandOptionBuilder(name).apply(block)
     }
 
+    /**
+     * @param name Name of the declared parameter in the [function]
+     */
     fun customOption(name: String, block: CustomOptionBuilder.() -> Unit = {}) {
         optionBuilders[name] = CustomOptionBuilder(name).apply(block)
     }

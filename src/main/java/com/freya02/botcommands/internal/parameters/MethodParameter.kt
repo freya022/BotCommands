@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.parameters
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.findOptionName
 import com.freya02.botcommands.internal.isPrimitive
-import com.freya02.botcommands.internal.isReallyOptional
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
@@ -21,7 +21,7 @@ interface MethodParameter {
     val isOption: Boolean
         get() = methodParameterType != MethodParameterType.CUSTOM
     val isOptional: Boolean
-        get() = kParameter.isReallyOptional
+        get() = kParameter.isNullable
     val isPrimitive: Boolean
         get() = kParameter.isPrimitive
 }

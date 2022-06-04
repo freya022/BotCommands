@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.context.user
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent
@@ -15,7 +14,10 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import java.util.function.Consumer
 import kotlin.reflect.full.valueParameters
 
-class UserCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
+class UserCommandInfo internal constructor(
+    context: BContextImpl,
+    builder: UserCommandBuilder
+) : ApplicationCommandInfo(context, builder) {
     override val parameters: MethodParameters
 
     init {

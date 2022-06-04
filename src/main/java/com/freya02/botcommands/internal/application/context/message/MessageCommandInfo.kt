@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.application.context.message
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
@@ -15,7 +14,10 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import java.util.function.Consumer
 import kotlin.reflect.full.valueParameters
 
-class MessageCommandInfo(context: BContext, builder: UserCommandBuilder) : ApplicationCommandInfo(context, builder) {
+class MessageCommandInfo internal constructor(
+    context: BContextImpl,
+    builder: UserCommandBuilder
+) : ApplicationCommandInfo(context, builder) {
     override val parameters: MethodParameters
 
     init {

@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.internal.runner.MethodRunner
+import com.freya02.botcommands.internal.utils.ClassInstancer
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.function.Consumer
@@ -13,8 +13,8 @@ import kotlin.reflect.full.valueParameters
 /**
  * @param <T> Command instance type
 </T> */
-abstract class AbstractCommandInfo protected constructor(
-    context: BContext,
+abstract class AbstractCommandInfo internal constructor(
+    context: BContextImpl,
     builder: CommandBuilder
 ) : Cooldownable(builder.cooldownStrategy), ExecutableInteractionInfo {
     val path: CommandPath
@@ -29,7 +29,8 @@ abstract class AbstractCommandInfo protected constructor(
     final override val method: KFunction<*>
 
     init {
-        instance = builder.instance
+        instance = ClassInstancer.getFunctionTarget(context, builder.function)
+
         path = builder.path
         method = builder.function
         isOwnerRequired = false //TODO remove ownerRequired from application, move to Text

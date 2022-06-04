@@ -107,10 +107,10 @@ public class ParameterResolvers {
 
 	@Nullable
 	public static ParameterResolver of(@NotNull ParameterType type) {
-		return map.get(type.getType());
+		return map.get(type.ignoreNullability().getType());
 	}
 
 	public static boolean exists(@NotNull ParameterType type) {
-		return map.containsKey(type.getType());
+		return map.containsKey(type.ignoreNullability().getType());
 	}
 }

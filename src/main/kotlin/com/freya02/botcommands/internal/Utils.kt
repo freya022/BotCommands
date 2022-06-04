@@ -1,15 +1,13 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.annotations.api.annotations.Optional
 import com.freya02.botcommands.api.annotations.Name
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.findAnnotation_
 import com.freya02.botcommands.internal.utils.Utils
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.*
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.javaMethod
@@ -28,7 +26,7 @@ fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, k
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
+inline fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
@@ -61,16 +59,11 @@ inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -
     }
 }
 
-val KParameter.isReallyOptional: Boolean
-    get() {
-        return isOptional || hasAnnotation<Optional>() //TODO take into account invisible annotations like Nullable, see ReflectionUtils
-    }
-
 val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
 
 val KParameter.bestName: String
-    get() = this.name ?: "<no-name>"
+    get() = this.name ?: "arg${this.index}"
 
 fun String.asDiscordString(): String {
     val sb: StringBuilder = StringBuilder()
@@ -87,7 +80,7 @@ fun String.asDiscordString(): String {
 }
 
 fun KParameter.findDeclarationName(): String {
-    val annotatedName = findAnnotation<Name>()?.declaredName
+    val annotatedName = findAnnotation_<Name>()?.declaredName
     if (!annotatedName.isNullOrBlank()) {
         return annotatedName
     }
@@ -96,7 +89,7 @@ fun KParameter.findDeclarationName(): String {
 }
 
 fun KParameter.findOptionName(): String {
-    val annotatedName = findAnnotation<Name>()?.name
+    val annotatedName = findAnnotation_<Name>()?.name
     if (!annotatedName.isNullOrBlank()) {
         return annotatedName
     }

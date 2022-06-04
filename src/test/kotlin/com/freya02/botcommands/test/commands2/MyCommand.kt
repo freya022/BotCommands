@@ -23,8 +23,8 @@ class MyCommand : ApplicationCommand() {
         event: GuildSlashEvent,
         stringOption: String,
         @Name("int", "notIntOption") intOption: Int,
-        @Name(declaredName = "notDoubleOption") doubleOption: Double,
         @Name(name = "user") userOption: User,
+        @Name(declaredName = "notDoubleOption") doubleOption: Double?,
         custom: BContext
     ) {
         event.reply(stringOption + intOption + doubleOption + userOption + custom).queue()
@@ -34,29 +34,31 @@ class MyCommand : ApplicationCommand() {
     fun declare(context: BContext, manager: ApplicationCommandManager) {
         test {}
 
-        manager.slashCommand(CommandPath.of("my_command"), this) {
-            scope = CommandScope.GUILD
-            description = "mah desc"
+        for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to MyJavaCommand::cmd)) {
+            manager.slashCommand(CommandPath.of("my_command", subname)) {
+                scope = CommandScope.GUILD
+                description = "mah desc"
 
-            option("stringOption") {
-                description = "Option description"
+                option("stringOption") {
+                    description = "Option description"
+                }
+
+                option("notIntOption") {
+                    description = "An integer"
+                }
+
+                option("notDoubleOption") {
+                    description = "A double"
+                }
+
+                option("userOption") {
+                    description = "An user"
+                }
+
+                customOption("custom")
+
+                function = localFunction
             }
-
-            option("notIntOption") {
-                description = "An integer"
-            }
-
-            option("notDoubleOption") {
-                description = "A double"
-            }
-
-            option("userOption") {
-                description = "An user"
-            }
-
-            customOption("custom")
-
-            function = ::executeCommand
         }
     }
 }

@@ -5,6 +5,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.KTypeProjection
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.full.withNullability
 import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
@@ -31,4 +32,6 @@ class ParameterType private constructor(val type: KType) {
     fun javaType() = type.javaType
 
     fun javaClass() = type.jvmErasure.java
+
+    fun ignoreNullability() = ParameterType(type.withNullability(false))
 }
