@@ -44,7 +44,6 @@ object SlashUtils2 {
     @JvmStatic
     fun SlashCommandInfo.getMethodOptions(context: BContext, guild: Guild?): List<OptionData> {
         val list: MutableList<OptionData> = ArrayList()
-        val optionsChoices = SlashUtils.getOptionChoices(guild, this)
 
         var i = 0
 		for (parameter in parameters) {
@@ -118,11 +117,8 @@ object SlashUtils2 {
                 if (optionType.canSupportChoices()) {
                     var choices: Collection<Command.Choice>? = null
 
-                    //optionChoices might just be empty
-                    // choices of the option might also be empty as an empty list might be generated
-                    // do not add choices if it's empty, to not trigger checks
-                    if (optionsChoices.size >= i && optionsChoices[i - 1].isNotEmpty()) {
-                        choices = optionsChoices[i - 1]
+                    if (parameter.choices != null) {
+                        choices = parameter.choices
                     } else {
                         val predefinedChoices = resolver.getPredefinedChoices(guild)
                         if (predefinedChoices.isNotEmpty()) {
@@ -138,8 +134,6 @@ object SlashUtils2 {
                         data.addChoices(choices)
                     }
                 }
-
-                //If vararg then next arguments are optional
 
                 //If vararg then next arguments are optional
                 data.isRequired = !parameter.isOptional && parameter.isRequiredVararg(varArgNum)

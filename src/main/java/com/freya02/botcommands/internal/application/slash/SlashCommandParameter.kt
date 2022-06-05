@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import gnu.trove.map.TLongObjectMap
 import gnu.trove.map.hash.TLongObjectHashMap
 import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.reflect.KParameter
 
@@ -20,6 +21,8 @@ class SlashCommandParameter(
     val description: String = optionBuilder.description
     override val isOptional: Boolean
     val autocompleteInfo: Any = Any() //TODO autocompleteInfo
+
+    val choices: List<Choice>? = optionBuilder.choices
 
     val minValue: Number //TODO use ClosedRange<*> ?
     val maxValue: Number

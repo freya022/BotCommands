@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.commands.Command
 
 fun interface Lol {
     fun BContext.xd()
@@ -41,6 +42,8 @@ class MyCommand : ApplicationCommand() {
 
                 option("stringOption") {
                     description = "Option description"
+
+                    choices = listOf(Command.Choice("a", "a"), Command.Choice("b", "b"), Command.Choice("c", "c"))
                 }
 
                 option("notIntOption") {
