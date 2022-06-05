@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash
 
+import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes
 import com.freya02.botcommands.api.application.ValueRange
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.findAnnotation
 
 class SlashCommandParameter(
     parameter: KParameter, optionBuilder: SlashCommandOptionBuilder, val resolver: SlashParameterResolver
@@ -26,7 +28,7 @@ class SlashCommandParameter(
     val choices: List<Choice>? = optionBuilder.choices
     val range: ValueRange? = optionBuilder.valueRange
 
-    val channelTypes: EnumSet<ChannelType>
+    val channelTypes: EnumSet<ChannelType>?
     val defaultOptionSupplierMap: TLongObjectMap<DefaultValueSupplier> = TLongObjectHashMap()
 
     init {
@@ -42,6 +44,15 @@ class SlashCommandParameter(
             else -> kParameter.isNullable
         }
 
-        channelTypes = enumSetOf() //TODO option builder
+        val channelTypesAnnotation = kParameter.findAnnotation<ChannelTypes>()
+        if (optionBuilder.channelTypes != null && channelTypesAnnotation != null) {
+            throwUser("Parameter $kParameter has channel types specified in both the annotation and the DSL builder, consider only use one of them")
+        }
+
+        this.channelTypes = when {
+            channelTypesAnnotation != null -> enumSetOf(*channelTypesAnnotation.value)
+            optionBuilder.channelTypes != null -> optionBuilder.channelTypes
+            else -> enumSetOf()
+        }
     }
 }

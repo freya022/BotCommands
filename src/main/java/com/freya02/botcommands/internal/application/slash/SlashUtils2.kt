@@ -89,9 +89,9 @@ object SlashUtils2 {
                     OptionType.CHANNEL -> {
                         //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
                         // Otherwise set the channel types of the parameter, if available
-                        if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
+                        if (parameter.channelTypes == null && resolver is ChannelResolver) {
                             data.setChannelTypes(resolver.channelTypes)
-                        } else if (parameter.channelTypes.isNotEmpty()) {
+                        } else if (parameter.channelTypes != null) {
                             data.setChannelTypes(parameter.channelTypes)
                         }
                     }

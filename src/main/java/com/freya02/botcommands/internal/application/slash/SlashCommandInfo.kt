@@ -123,10 +123,11 @@ class SlashCommandInfo internal constructor(
                     }
 
                     requireUser(parameter.type.jvmErasure.isSuperclassOf(resolved::class)) {
-                        "The parameter '%s' of value '%s' is not a valid type (expected a %s)".format(
+                        "The parameter '%s' of value '%s' is not a valid type (expected a %s, got a %s)".format(
                             parameter.name,
                             optionMapping.asString,
-                            parameter.type.jvmErasure.simpleName
+                            parameter.type.jvmErasure.simpleName,
+                            resolved::class.simpleName
                         )
                     }
 
