@@ -2,10 +2,10 @@ package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.findOptionName
-import com.freya02.botcommands.internal.isPrimitive
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isNullable
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
+import kotlin.reflect.jvm.jvmErasure
 
 interface MethodParameter {
     val methodParameterType: MethodParameterType

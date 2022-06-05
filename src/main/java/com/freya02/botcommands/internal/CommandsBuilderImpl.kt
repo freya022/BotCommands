@@ -20,6 +20,7 @@ import com.freya02.botcommands.internal.prefixed.CommandListener
 import com.freya02.botcommands.internal.prefixed.HelpCommand
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder
 import com.freya02.botcommands.internal.utils.ClassInstancer
+import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -260,7 +261,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 
         setupContext(jda)
 
-        ReflectionUtilsKt.scanAnnotations(classes)
+        ReflectionMetadata.scanAnnotations(classes)
 
         buildClasses()
 

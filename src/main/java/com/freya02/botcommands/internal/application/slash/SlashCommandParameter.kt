@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isNullable
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import gnu.trove.map.TLongObjectMap
 import gnu.trove.map.hash.TLongObjectHashMap
 import net.dv8tion.jda.api.entities.ChannelType
