@@ -110,7 +110,12 @@ internal object ReflectionUtilsKt {
                     }
 
                     _paramMetadataMap[parameter] =
-                        KParameterMetadata(annotationMap, isNullableAnnotated or isNullableMarked, isJavaParameter, kFunction)
+                        KParameterMetadata(
+                            annotationMap,
+                            isNullableAnnotated or isNullableMarked,
+                            isJavaParameter,
+                            kFunction
+                        )
                 }
 
                 _functionMetadataMap[kFunction] = KFunctionMetadata(kFunction, isJavaParameter)
@@ -120,32 +125,31 @@ internal object ReflectionUtilsKt {
         scannedParams = true
     }
 
-    //TODO use api
     internal inline fun <reified A : Annotation> KParameter.hasAnnotation_(): Boolean {
         return (paramMetadataMap[this]
-            ?: throwInternal("Tried to access a KParameter which hasn't been scanned: $this")).annotationMap[A::class] != null
+            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).annotationMap[A::class] != null
     }
 
     internal inline fun <reified A : Annotation> KParameter.findAnnotation_(): A? {
         return (paramMetadataMap[this]
-            ?: throwInternal("Tried to access a KParameter which hasn't been scanned: $this")).annotationMap[A::class] as? A
+            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).annotationMap[A::class] as? A
     }
 
     internal val KParameter.isNullable: Boolean
         get() = (paramMetadataMap[this]
-            ?: throwInternal("Tried to access a KParameter which hasn't been scanned: $this")).isNullable
+            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).isNullable
 
     internal val KParameter.function
         get() = (paramMetadataMap[this]
-            ?: throwInternal("Tried to access a KParameter which hasn't been scanned: $this")).function
+            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).function
 
     internal val KParameter.isJava
         get() = (paramMetadataMap[this]
-            ?: throwInternal("Tried to access a KParameter which hasn't been scanned: $this")).isJava
+            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).isJava
 
     internal val KFunction<*>.isJava
         get() = (functionMetadataMap[this]
-            ?: throwInternal("Tried to access a KFunction which hasn't been scanned: $this")).isJava
+            ?: throwUser("Tried to access a KFunction which hasn't been scanned: $this, the function must be accessible and in the search path")).isJava
 
     internal val KFunction<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }

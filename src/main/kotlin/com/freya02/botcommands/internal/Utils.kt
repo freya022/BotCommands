@@ -1,13 +1,13 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.annotations.Name
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.findAnnotation_
 import com.freya02.botcommands.internal.utils.Utils
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.*
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.javaMethod
@@ -80,7 +80,7 @@ fun String.asDiscordString(): String {
 }
 
 fun KParameter.findDeclarationName(): String {
-    val annotatedName = findAnnotation_<Name>()?.declaredName
+    val annotatedName = findAnnotation<Name>()?.declaredName
     if (!annotatedName.isNullOrBlank()) {
         return annotatedName
     }
@@ -89,7 +89,7 @@ fun KParameter.findDeclarationName(): String {
 }
 
 fun KParameter.findOptionName(): String {
-    val annotatedName = findAnnotation_<Name>()?.name
+    val annotatedName = findAnnotation<Name>()?.name
     if (!annotatedName.isNullOrBlank()) {
         return annotatedName
     }
