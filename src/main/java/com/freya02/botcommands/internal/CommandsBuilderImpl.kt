@@ -218,7 +218,7 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
                 value
             }.toTypedArray()
 
-            function.call(ClassInstancer.instantiate(context, clazz), *args) //TODO injection
+            function.call(ClassInstancer.instantiate(context, clazz), *args)
 
             return true
         }

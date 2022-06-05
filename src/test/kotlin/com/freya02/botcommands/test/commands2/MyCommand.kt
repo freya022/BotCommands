@@ -18,13 +18,7 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.Command
 
-fun interface Lol {
-    fun BContext.xd()
-}
-
 class MyCommand : ApplicationCommand() {
-    fun test(t: Lol) {}
-
     @CommandMarker
     fun executeCommand(
         event: GuildSlashEvent,
@@ -41,8 +35,6 @@ class MyCommand : ApplicationCommand() {
 
     @Declaration
     fun declare(context: BContext, manager: ApplicationCommandManager) {
-        test {}
-
         for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to MyJavaCommand::cmd)) {
             manager.slashCommand(CommandPath.of("my_command", subname)) {
                 scope = CommandScope.GUILD
