@@ -22,6 +22,7 @@ interface MethodParameter {
         get() = methodParameterType != MethodParameterType.CUSTOM
     val isOptional: Boolean
         get() = kParameter.isNullable
+    /** This checks the java primitiveness, not kotlin, kotlin.Double is an object. */
     val isPrimitive: Boolean
-        get() = kParameter.isPrimitive
+        get() = kParameter.type.jvmErasure.java.isPrimitive
 }

@@ -91,10 +91,7 @@ class SlashCommandInfo internal constructor(
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
                             objectList += when {
-                                parameter.isPrimitive -> when {
-                                    parameter.kParameter.isJava -> 0
-                                    else -> null
-                                }
+                                parameter.isPrimitive -> 0
                                 else -> null
                             }
 
