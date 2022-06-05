@@ -96,12 +96,16 @@ object SlashUtils2 {
                         }
                     }
                     OptionType.INTEGER -> {
-                        data.setMinValue(parameter.minValue.toLong())
-                        data.setMaxValue(parameter.maxValue.toLong())
+                        parameter.range?.let {
+                            data.setMinValue(it.min.toLong())
+                            data.setMaxValue(it.max.toLong())
+                        }
                     }
                     OptionType.NUMBER -> {
-                        data.setMinValue(parameter.minValue.toDouble())
-                        data.setMaxValue(parameter.maxValue.toDouble())
+                        parameter.range?.let {
+                            data.setMinValue(it.min.toDouble())
+                            data.setMaxValue(it.max.toDouble())
+                        }
                     }
                     else -> {}
                 }

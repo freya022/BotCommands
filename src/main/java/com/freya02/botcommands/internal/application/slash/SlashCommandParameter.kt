@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash
 
+import com.freya02.botcommands.api.application.ValueRange
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
@@ -23,9 +24,8 @@ class SlashCommandParameter(
     val autocompleteInfo: Any = Any() //TODO autocompleteInfo
 
     val choices: List<Choice>? = optionBuilder.choices
+    val range: ValueRange? = optionBuilder.valueRange
 
-    val minValue: Number //TODO use ClosedRange<*> ?
-    val maxValue: Number
     val channelTypes: EnumSet<ChannelType>
     val defaultOptionSupplierMap: TLongObjectMap<DefaultValueSupplier> = TLongObjectHashMap()
 
@@ -41,9 +41,6 @@ class SlashCommandParameter(
             }
             else -> kParameter.isNullable
         }
-
-        minValue = Int.MIN_VALUE //TODO option builder
-        maxValue = Int.MAX_VALUE //TODO option builder
 
         channelTypes = enumSetOf() //TODO option builder
     }

@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -48,6 +49,8 @@ class MyCommand : ApplicationCommand() {
 
                 option("notIntOption") {
                     description = "An integer"
+
+                    valueRange = 1 range 2
                 }
 
                 option("notDoubleOption") {
