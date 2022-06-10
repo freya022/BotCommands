@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -11,7 +12,7 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermission;
+import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
 import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -236,9 +237,13 @@ public class ApplicationCommandsUpdater {
 
 	private void configureTopLevel(ApplicationCommandInfo info, CommandData rightCommand) {
 		if (info.isDefaultLocked()) {
-			rightCommand.setDefaultPermissions(CommandPermission.DISABLED);
+			rightCommand.setDefaultPermissions(CommandPermissions.DISABLED);
 		} else if (!info.getUserPermissions().isEmpty()) {
-			rightCommand.setDefaultPermissions(CommandPermission.enabledFor(info.getUserPermissions()));
+			rightCommand.setDefaultPermissions(CommandPermissions.enabledFor(info.getUserPermissions()));
+		}
+
+		if (info.getScope() == CommandScope.GLOBAL_NO_DM) {
+			rightCommand.setGuildOnly(true);
 		}
 	}
 

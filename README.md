@@ -1,6 +1,14 @@
-![](https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.5-important)
+[//]: # (![]&#40;https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.5-important&#41;)
+![](https://img.shields.io/badge/JDA%20Version-See_notice-important)
 ![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
+
+
+### Notice
+**This version uses a fork of JDA in order to support permissions V2 and command localization** 
+* Group ID: `com.github.freya022`
+* Artefact ID: `JDA`
+* Version: `6a4891e3cb`
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
