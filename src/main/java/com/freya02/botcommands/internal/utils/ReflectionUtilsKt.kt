@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.utils
 import com.freya02.botcommands.annotations.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.*
+import io.github.classgraph.ClassInfo
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
@@ -10,9 +11,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.memberFunctions
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -50,26 +48,27 @@ internal object ReflectionUtilsKt {
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
-    internal fun isInstantiable(clazz: KClass<*>): Boolean {
+    internal fun isInstantiable(info: ClassInfo): Boolean {
         var canInstantiate = true
-        for (function in clazz.memberFunctions) {
-            if (function.hasAnnotation<ConditionalUse>()) {
-                if (function.isStatic) {
-                    if (function.valueParameters.isEmpty() && function.returnType.jvmErasure == Boolean::class) {
+        for (methodInfo in info.methodInfo) {
+            if (methodInfo.hasAnnotation(ConditionalUse::class.java)) {
+                if (methodInfo.isStatic) {
+                    val function = methodInfo.loadClassAndGetMethod().asKFunction()
+                    if (function.parameters.isEmpty() && function.returnType.jvmErasure == Boolean::class) {
                         requireUser(function.isPublic, function) { "Method must be public" }
                         canInstantiate = function.call() as Boolean
                     } else {
                         LOGGER.warn(
                             "Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)",
-                            clazz.simpleName,
+                            info.simpleName,
                             function.name
                         )
                     }
                 } else {
                     LOGGER.warn(
                         "Method {}#{} is annotated @ConditionalUse but is not static",
-                        clazz.simpleName,
-                        function.name
+                        info.simpleName,
+                        methodInfo.name
                     )
                 }
 

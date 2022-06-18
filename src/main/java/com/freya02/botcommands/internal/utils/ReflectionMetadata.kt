@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.asKFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import io.github.classgraph.ClassGraph
+import io.github.classgraph.ScanResult
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -43,16 +44,14 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(functionMetadataMap_)
     }
 
-    // TODO Transform this to also use CG to scan package classes
-    internal fun scanAnnotations(classes: Collection<KClass<*>>) {
-        if (classes.isEmpty()) return
-        val result = ClassGraph()
-            .acceptClasses(*classes.mapNotNull { it.qualifiedName }.toTypedArray())
-            .enableMethodInfo()
-            .enableAnnotationInfo()
-            .scan()
+    internal fun runScan(packages: Collection<String>): ScanResult = ClassGraph()
+        .acceptPackages(*packages.toTypedArray())
+        .enableMethodInfo()
+        .enableAnnotationInfo()
+        .scan()
 
-        for (classInfo in result.allClasses) {
+    internal fun readAnnotations(scanResult: ScanResult) {
+        for (classInfo in scanResult.allClasses) {
             val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")
 
             for (methodInfo in classInfo.declaredMethodInfo) {

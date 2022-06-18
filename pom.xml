@@ -255,6 +255,11 @@
             <version>3.1.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.minndevelopment</groupId>
+            <artifactId>jda-ktx</artifactId>
+            <version>45f2776868</version>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.11</version>

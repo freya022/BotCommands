@@ -35,7 +35,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 private val LOGGER = Logging.getLogger()
 
-class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGuildIds: List<Long>) {
+class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClasses: Set<Class<*>>, slashGuildIds: List<Long>) {
     private val prefixedCommandsBuilder: PrefixedCommandsBuilder
 
     //	private final EventListenersBuilder eventListenersBuilder; //TODO event listener
@@ -44,21 +44,18 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
     private val modalHandlersBuilder: ModalHandlersBuilder
     private val componentsBuilder: ComponentsBuilder
     private val context: BContextImpl
-    private val classes: MutableList<KClass<*>>
+    private val classes: List<KClass<*>>
     private val usePing: Boolean
     private val ignoredClasses: MutableList<KClass<*>> = ArrayList()
 
     init {
+        this.classes = findClasses(packages, userClasses)
         if (classes.isEmpty()) LOGGER.warn("No classes have been found, make sure you have at least one search path")
         this.context = context
         this.prefixedCommandsBuilder = PrefixedCommandsBuilder(context)
         this.componentsBuilder = ComponentsBuilder(context)
         this.usePing = context.prefixes.isEmpty()
         if (usePing) LOGGER.info("No prefix has been set, using bot ping as prefix")
-
-        this.classes = classes.filter {
-            !(it.isAnonymousClass or it.isHidden or it.isSynthetic)
-        } .map { it.kotlin }.toMutableList()
 
         this.applicationCommandsBuilder = ApplicationCommandsBuilder(context, slashGuildIds)
 
@@ -67,17 +64,22 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
         this.modalHandlersBuilder = ModalHandlersBuilder(context)
     }
 
+    private fun findClasses(packages: Set<String>, userClasses: Set<Class<*>>): List<KClass<*>> {
+        val scanResult = ReflectionMetadata.runScan(packages)
+
+        val classes = scanResult
+            .allClasses
+            .filter(ReflectionUtilsKt::isInstantiable)
+            .loadClasses()
+            .map(Class<*>::kotlin) + userClasses.map(Class<*>::kotlin)
+
+        ReflectionMetadata.readAnnotations(scanResult)
+
+        return classes
+    }
+
     @Throws(Exception::class)
     private fun buildClasses() {
-        classes.removeIf { c ->
-            try {
-                return@removeIf !ReflectionUtilsKt.isInstantiable(c)
-            } catch (e: Exception) {
-                LOGGER.error("An error occurred while trying to find if a class is instantiable", e)
-                throw RuntimeException("An error occurred while trying to find if a class is instantiable", e)
-            }
-        }
-
         for (aClass in classes) {
             processClass(aClass)
         }
@@ -261,11 +263,9 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
 
         setupContext(jda)
 
-        ReflectionMetadata.scanAnnotations(classes)
-
         buildClasses()
 
-        context.addEventListeners(
+        context.addEventListeners( //TODO remove once everything is registered via KTX extensions
             EventWaiter(jda),
             CommandListener(context),
             ApplicationUpdaterListener(context),
@@ -282,11 +282,11 @@ class CommandsBuilderImpl(context: BContextImpl, classes: Set<Class<*>>, slashGu
         ConflictDetector.detectConflicts()
     }
 
-    private fun setupContext(jda: JDA?) {
-        context.setJDA(jda)
+    private fun setupContext(jda: JDA) {
+        context.jda = jda
 
         if (usePing) {
-            context.addPrefix("<@" + jda!!.selfUser.id + "> ")
+            context.addPrefix("<@" + jda.selfUser.id + "> ")
             context.addPrefix("<@!" + jda.selfUser.id + "> ")
         }
 

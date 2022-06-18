@@ -11,7 +11,6 @@ import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
-import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -35,6 +34,7 @@ public final class CommandsBuilder {
 
 	private final BContextImpl context = new BContextImpl();
 
+	private final Set<String> packages = new HashSet<>();
 	private final Set<Class<?>> classes = new HashSet<>();
 
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
@@ -194,7 +194,7 @@ public final class CommandsBuilder {
 	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
 		Utils.requireNonBlank(commandPackageName, "Command package");
 
-		classes.addAll(ReflectionUtils.getPackageClasses(commandPackageName, 3));
+		packages.add(commandPackageName);
 
 		return this;
 	}
@@ -270,7 +270,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
+			new CommandsBuilderImpl(context, packages, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
