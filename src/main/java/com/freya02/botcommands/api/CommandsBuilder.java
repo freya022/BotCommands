@@ -12,11 +12,10 @@ import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.utils.Utils;
+import dev.minn.jda.ktx.events.CoroutineEventManager;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -149,7 +148,7 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Registers a command / application command's class so it can be instantiated later in {@link #build(JDA, String)}<br>
+	 * Registers a command / application command's class<br>
 	 *
 	 * @param clazz The command's class to register
 	 * @return This builder for chaining convenience
@@ -250,27 +249,11 @@ public final class CommandsBuilder {
 	/**
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
-	 * @param jda                The JDA instance of your bot
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
-	 * @throws IOException If an exception occurs when reading the jar path or getting classes
-	 * @see #addSearchPath(String)
+	 * @param manager An optional {@link CoroutineEventManager} if you wish to set one
 	 */
-	@Blocking
-	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
-		addSearchPath(commandPackageName);
-
-		build(jda);
-	}
-
-	/**
-	 * Builds the command listener and automatically registers all listener to the JDA instance
-	 *
-	 * @param jda The JDA instance of your bot
-	 */
-	@Blocking
-	public void build(JDA jda) throws IOException {
+	public void build(@Nullable CoroutineEventManager manager) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, packages, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
+			new CommandsBuilderImpl(context, packages, classes, applicationCommandBuilder.getSlashGuildIds()).build(manager);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
@@ -280,6 +263,10 @@ public final class CommandsBuilder {
 
 			throw new RuntimeException(e);
 		}
+	}
+
+	public void build() throws IOException {
+		build(null);
 	}
 
 	public BContext getContext() {

@@ -63,6 +63,13 @@ fun main() {
         scope.cancel()
     }
 
+    CommandsBuilder.newBuilder()
+        .textCommandBuilder {
+            it.disableHelpCommand { _, _ ->  }
+        }
+        .addSearchPath("com.freya02.botcommands.test.commands2")
+        .build()
+
     //CommandsBuilder would have a "jdaBuilder" method to configure JDABuilder
     // The JDABuilder may: prevent event manager assignment, or, construct a delegate from the set manager + coro manager
     // Build should return a BContext
@@ -71,13 +78,6 @@ fun main() {
         setActivity(Activity.playing("coroutines go brrr"))
         setEventManager(manager)
     }.awaitReady()
-
-    CommandsBuilder.newBuilder()
-        .textCommandBuilder {
-            it.disableHelpCommand { _, _ ->  }
-        }
-        .addSearchPath("com.freya02.botcommands.test.commands2")
-        .build(jda)
 
     println()
 }

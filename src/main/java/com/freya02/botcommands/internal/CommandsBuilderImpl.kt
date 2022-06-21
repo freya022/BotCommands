@@ -22,8 +22,12 @@ import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder
 import com.freya02.botcommands.internal.utils.ClassInstancer
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt
+import dev.minn.jda.ktx.events.CoroutineEventManager
+import dev.minn.jda.ktx.events.getDefaultScope
+import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.events.ShutdownEvent
+import net.dv8tion.jda.api.hooks.IEventManager
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import java.util.function.Function
@@ -32,6 +36,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.time.Duration.Companion.minutes
 
 private val LOGGER = Logging.getLogger()
 
@@ -234,39 +239,48 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
      * @param jda The JDA instance of your bot
      */
     @Throws(Exception::class)
-    fun build(jda: JDA) {
-        var jda = jda
-        if (jda.shardInfo.shardId != 0) {
-            LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...")
-            val manager = jda.shardManager
-                ?: throw IllegalArgumentException("Unable to retrieve Shard 0 as shard manager is null")
-
-            jda = manager.getShardById(0) ?: throwUser("Unable to retrieve Shard 0")
-        }
-
-        if (jda.status != JDA.Status.CONNECTED) {
-            try {
-                LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !")
-                jda.awaitReady()
-            } catch (e: InterruptedException) {
-                throw RuntimeException("CommandsBuilder got interrupted while waiting for JDA to be ready", e)
+    fun build(manager_: CoroutineEventManager?) {
+        val manager: IEventManager = manager_ ?: run {
+            val scope = getDefaultScope()
+            CoroutineEventManager(scope, 1.minutes).apply {
+                listener<ShutdownEvent> {
+                    scope.cancel()
+                }
             }
         }
 
-        val intents = listOf(
-            GatewayIntent.GUILD_MESSAGES
-        )
+//        var jda = jda
+//        if (jda.shardInfo.shardId != 0) {
+//            LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...")
+//            val manager = jda.shardManager
+//                ?: throw IllegalArgumentException("Unable to retrieve Shard 0 as shard manager is null")
+//
+//            jda = manager.getShardById(0) ?: throwUser("Unable to retrieve Shard 0")
+//        }
+//
+//        if (jda.status != JDA.Status.CONNECTED) {
+//            try {
+//                LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !")
+//                jda.awaitReady()
+//            } catch (e: InterruptedException) {
+//                throw RuntimeException("CommandsBuilder got interrupted while waiting for JDA to be ready", e)
+//            }
+//        }
 
-        check(jda.gatewayIntents.containsAll(intents)) {
-            "JDA must have these intents enabled: ${intents.joinToString { it.name }}"
-        }
+//        val intents = listOf(
+//            GatewayIntent.GUILD_MESSAGES
+//        )
+//
+//        check(jda.gatewayIntents.containsAll(intents)) { //TODO move to Shard 0 ReadyEvent
+//            "JDA must have these intents enabled: ${intents.joinToString { it.name }}"
+//        }
 
-        setupContext(jda)
+        setupContext()
 
         buildClasses()
 
         context.addEventListeners( //TODO remove once everything is registered via KTX extensions
-            EventWaiter(jda),
+            EventWaiter(null),
             CommandListener(context),
             ApplicationUpdaterListener(context),
             ApplicationCommandListener(context)
