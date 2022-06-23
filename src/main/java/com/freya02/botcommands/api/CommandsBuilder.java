@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@Deprecated
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 
@@ -89,7 +90,7 @@ public final class CommandsBuilder {
 	 * @param defaultFooterIconSupplier The default icon for the footer
 	 * @return This builder
 	 */
-	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) {
+	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) { //TODO move to text command config
 		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
 		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
 		return this;
@@ -141,7 +142,7 @@ public final class CommandsBuilder {
 	 * @param listeners The {@link RegistrationListener RegistrationListeners} to register
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder addRegistrationListeners(RegistrationListener... listeners) {
+	public CommandsBuilder addRegistrationListeners(RegistrationListener... listeners) { //TODO change to custom BC events
 		context.addRegistrationListeners(listeners);
 
 		return this;
@@ -207,6 +208,10 @@ public final class CommandsBuilder {
 	public CommandsBuilder extensionsBuilder(Consumer<ExtensionsBuilder> consumer) {
 		consumer.accept(extensionsBuilder);
 
+		ReceiverConsumer<ExtensionsBuilder> lol = extensionsBuilder1 -> {
+
+		};
+
 		return this;
 	}
 
@@ -216,7 +221,7 @@ public final class CommandsBuilder {
 	 * @param consumer The consumer to run in order to configure text commands
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) {
+	public CommandsBuilder textCommandBuilder(Consumer<TextCommandsBuilder> consumer) { //TODO move to config
 		consumer.accept(textCommandBuilder);
 
 		return this;
@@ -228,7 +233,7 @@ public final class CommandsBuilder {
 	 * @param consumer The consumer to run in order to configure application commands
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder applicationCommandBuilder(@NotNull Consumer<@NotNull ApplicationCommandsBuilder> consumer) {
+	public CommandsBuilder applicationCommandBuilder(@NotNull Consumer<@NotNull ApplicationCommandsBuilder> consumer) { //TODO move to config
 		consumer.accept(applicationCommandBuilder);
 
 		return this;
@@ -240,7 +245,7 @@ public final class CommandsBuilder {
 	 * @param consumer The consumer to run in order to configure debug features
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder debugBuilder(@NotNull Consumer<@NotNull DebugBuilder> consumer) {
+	public CommandsBuilder debugBuilder(@NotNull Consumer<@NotNull DebugBuilder> consumer) { //TODO move to config
 		consumer.accept(debugBuilder);
 
 		return this;

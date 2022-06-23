@@ -55,6 +55,8 @@ import java.util.function.Supplier;
 public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
 
+	private final BConfig config = new BConfig();
+
 	private final ApplicationCommandsContextImpl applicationCommandsContext = new ApplicationCommandsContextImpl();
 	private final ApplicationCommandManager applicationCommandManager = new ApplicationCommandManager(this); //TODO merge
 

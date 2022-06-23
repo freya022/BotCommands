@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test
 
+import com.freya02.botcommands.api.BConfig
 import com.freya02.botcommands.api.CommandsBuilder
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
@@ -61,6 +62,10 @@ fun main() {
     val manager = CoroutineEventManager(scope, 1.minutes)
     manager.listener<ShutdownEvent> {
         scope.cancel()
+    }
+
+    BConfig().apply {
+        settingsProvider
     }
 
     CommandsBuilder.newBuilder()

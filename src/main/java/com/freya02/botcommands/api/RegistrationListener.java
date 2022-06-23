@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
-public abstract class RegistrationListener {
+public abstract class RegistrationListener { //TODO change to custom BC events
 	/**
 	 * Fired when a regular command is registered
 	 *

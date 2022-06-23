@@ -10,9 +10,6 @@ import java.util.function.Consumer
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-/**
- * @param <T> Command instance type
-</T> */
 abstract class AbstractCommandInfo internal constructor(
     context: BContextImpl,
     builder: CommandBuilder
