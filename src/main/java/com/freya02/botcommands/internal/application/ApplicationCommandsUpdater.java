@@ -145,6 +145,8 @@ public class ApplicationCommandsUpdater {
 	}
 
 	public boolean shouldUpdatePrivileges() throws IOException {
+		if (true) return false; //300 IQ move by Discord
+
 		if (guild == null) return false;
 
 		//TODO rework when i can finally work out privileges for global commands in a guild context
@@ -199,6 +201,8 @@ public class ApplicationCommandsUpdater {
 
 	@Blocking
 	public void updatePrivileges() {
+		if (true) return; //300 IQ move by Discord
+
 		if (guild == null) {
 			return;
 		}
