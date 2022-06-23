@@ -163,6 +163,8 @@ public class ApplicationCommandsUpdater {
 	}
 
 	public boolean shouldUpdatePrivileges() throws IOException {
+		if (true) return false; //300 IQ move by Discord
+
 		if (guild == null) return false;
 
 		//TODO rework with perms v2
@@ -216,6 +218,8 @@ public class ApplicationCommandsUpdater {
 
 	@Blocking
 	public void updatePrivileges() {
+		if (true) return; //300 IQ move by Discord
+
 		if (guild == null) {
 			return;
 		}
