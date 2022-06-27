@@ -9,23 +9,26 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
 class EventDispatcher internal constructor(private val context: BContextImpl) {
-    private val map: MutableMap<KClass<*>, MutableList<KFunction<*>>> = hashMapOf()
+    private val map: MutableMap<KClass<*>, MutableList<EventListenerFunction>> = hashMapOf()
 
     init {
-        for (function in context.classPathContainer
+        for (classPathFunc in context.classPathContainer
             .functionsWithAnnotation<BEventListener>()
+            .requireNonStatic()
             .requireFirstArg(GenericEvent::class, BEvent::class)) {
 
-            val parameters = function.nonInstanceParameters
-            getEventFunctionArgs(parameters) //Checks if parameters are resolved
+            val function = classPathFunc.function
 
-            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(function)
+            val parameters = function.nonInstanceParameters
+            val args = context.serviceContainer.getParameters(
+                parameters.drop(1).map { it.type.jvmErasure }
+            )
+            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(EventListenerFunction(classPathFunc.instance, function, args.toTypedArray()))
         }
 
         context.eventManager.listener<Event> {
@@ -36,19 +39,15 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
     suspend fun dispatchEvent(event: Any) {
         when (event) {
             is GenericEvent, is BEvent -> {
-                map[event::class]?.forEach { function ->
-                    val parameters = function.parameters
-                    val args = context.serviceContainer.getParameters(
-                        parameters.map { it.type.jvmErasure },
-                        mapOf(event::class to event)
-                    )
-                    function.callSuspend(*args.toTypedArray())
+                map[event::class]?.forEach { eventListener ->
+                    val function = eventListener.function
+
+                    function.callSuspend(eventListener.instance, *eventListener.parameters, event)
                 }
             }
             else -> throwUser("Unrecognized event: ${event::class.jvmName}")
         }
     }
 
-    private fun getEventFunctionArgs(parameters: List<KParameter>) =
-        context.serviceContainer.getParameters(parameters.drop(1).map { it.type.jvmErasure })
+    inner class EventListenerFunction(val instance: Any, val function: KFunction<*>, val parameters: Array<Any>)
 }
