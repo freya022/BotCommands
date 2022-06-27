@@ -13,7 +13,7 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
-class EventDispatcher internal constructor(private val context: BContextImpl) {
+class EventDispatcher internal constructor(context: BContextImpl) {
     private val map: MutableMap<KClass<*>, MutableList<EventListenerFunction>> = hashMapOf()
 
     init {
