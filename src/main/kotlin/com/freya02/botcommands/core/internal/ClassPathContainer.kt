@@ -12,7 +12,7 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
-internal class ClassPathContainer(bConfig: BConfig) {
+internal class ClassPathContainer(bConfig: BConfig, serviceContainer: ServiceContainer) {
     private val classes: List<Any>
     private val functions: List<KFunction<*>>
 
@@ -31,6 +31,10 @@ internal class ClassPathContainer(bConfig: BConfig) {
             .map(Class<*>::kotlin)
 
         this.functions = classes.flatMap(KClass<out Any>::declaredMemberFunctions)
+
+        for (any in classes) {
+            serviceContainer.putService(any)
+        }
     }
 
     inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.hasAnnotation<T>() }

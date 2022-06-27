@@ -14,21 +14,21 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
 
     companion object {
         @JvmStatic
-        fun newBuilder(manager: CoroutineEventManager?, configConsumer: ReceiverConsumer<BConfig>) {
+        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager = getDefaultManager()) {
             BBuilder(configConsumer).build(manager)
         }
-    }
 
-    private fun build(manager_: CoroutineEventManager?) {
-        val manager: CoroutineEventManager = manager_ ?: run {
+        private fun getDefaultManager(): CoroutineEventManager {
             val scope = getDefaultScope()
-            CoroutineEventManager(scope, 1.minutes).apply {
+            return CoroutineEventManager(scope, 1.minutes).apply {
                 listener<ShutdownEvent> {
                     scope.cancel()
                 }
             }
         }
+    }
 
+    private fun build(manager: CoroutineEventManager) {
         val context = BContextImpl(config, manager)
 
         println()

@@ -37,8 +37,12 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
         when (event) {
             is GenericEvent, is BEvent -> {
                 map[event::class]?.forEach { function ->
-                    val parameters = function.nonInstanceParameters
-                    function.callSuspend(getEventFunctionArgs(parameters))
+                    val parameters = function.parameters
+                    val args = context.serviceContainer.getParameters(
+                        parameters.map { it.type.jvmErasure },
+                        mapOf(event::class to event)
+                    )
+                    function.callSuspend(*args.toTypedArray())
                 }
             }
             else -> throwUser("Unrecognized event: ${event::class.jvmName}")

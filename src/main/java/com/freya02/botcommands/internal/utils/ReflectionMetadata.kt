@@ -58,7 +58,7 @@ internal object ReflectionMetadata {
             for (methodInfo in classInfo.declaredMethodInfo) {
                 val kFunction = methodInfo.loadClassAndGetMethod().asKFunction()
                 val parameters = kFunction.nonInstanceParameters
-                for ((j, parameterInfo) in methodInfo.parameterInfo.withIndex()) {
+                for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
                     val parameter = parameters[j]
 
                     val annotationMap: MutableMap<KClass<*>, Annotation> = hashMapOf()
