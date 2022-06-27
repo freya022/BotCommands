@@ -44,8 +44,9 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(functionMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>): ScanResult = ClassGraph()
+    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): ScanResult = ClassGraph()
         .acceptPackages(*packages.toTypedArray())
+        .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
         .enableMethodInfo()
         .enableAnnotationInfo()
         .scan()

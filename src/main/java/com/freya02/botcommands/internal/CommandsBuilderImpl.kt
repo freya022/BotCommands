@@ -9,7 +9,6 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.waiter.EventWaiter
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener
@@ -20,14 +19,10 @@ import com.freya02.botcommands.internal.prefixed.CommandListener
 import com.freya02.botcommands.internal.prefixed.HelpCommand
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder
 import com.freya02.botcommands.internal.utils.ClassInstancer
-import com.freya02.botcommands.internal.utils.ReflectionMetadata
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.ShutdownEvent
-import net.dv8tion.jda.api.hooks.IEventManager
 import java.lang.reflect.InvocationTargetException
 import java.util.*
 import java.util.function.Function
@@ -70,17 +65,17 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
     }
 
     private fun findClasses(packages: Set<String>, userClasses: Set<Class<*>>): List<KClass<*>> {
-        val scanResult = ReflectionMetadata.runScan(packages)
+//        val scanResult = ReflectionMetadata.runScan(packages)
+//
+//        val classes = scanResult
+//            .allClasses
+//            .filter(ReflectionUtilsKt::isInstantiable)
+//            .loadClasses()
+//            .map(Class<*>::kotlin) + userClasses.map(Class<*>::kotlin)
+//
+//        ReflectionMetadata.readAnnotations(scanResult)
 
-        val classes = scanResult
-            .allClasses
-            .filter(ReflectionUtilsKt::isInstantiable)
-            .loadClasses()
-            .map(Class<*>::kotlin) + userClasses.map(Class<*>::kotlin)
-
-        ReflectionMetadata.readAnnotations(scanResult)
-
-        return classes
+        return listOf()
     }
 
     @Throws(Exception::class)
@@ -240,7 +235,7 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
      */
     @Throws(Exception::class)
     fun build(manager_: CoroutineEventManager?) {
-        val manager: IEventManager = manager_ ?: run {
+        val manager: CoroutineEventManager = manager_ ?: run {
             val scope = getDefaultScope()
             CoroutineEventManager(scope, 1.minutes).apply {
                 listener<ShutdownEvent> {
@@ -249,38 +244,11 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
             }
         }
 
-//        var jda = jda
-//        if (jda.shardInfo.shardId != 0) {
-//            LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...")
-//            val manager = jda.shardManager
-//                ?: throw IllegalArgumentException("Unable to retrieve Shard 0 as shard manager is null")
-//
-//            jda = manager.getShardById(0) ?: throwUser("Unable to retrieve Shard 0")
-//        }
-//
-//        if (jda.status != JDA.Status.CONNECTED) {
-//            try {
-//                LOGGER.warn("JDA should already be ready when you call #build on CommandsBuilder !")
-//                jda.awaitReady()
-//            } catch (e: InterruptedException) {
-//                throw RuntimeException("CommandsBuilder got interrupted while waiting for JDA to be ready", e)
-//            }
-//        }
-
-//        val intents = listOf(
-//            GatewayIntent.GUILD_MESSAGES
-//        )
-//
-//        check(jda.gatewayIntents.containsAll(intents)) { //TODO move to Shard 0 ReadyEvent
-//            "JDA must have these intents enabled: ${intents.joinToString { it.name }}"
-//        }
-
         setupContext()
 
         buildClasses()
 
         context.addEventListeners( //TODO remove once everything is registered via KTX extensions
-            EventWaiter(null),
             CommandListener(context),
             ApplicationUpdaterListener(context),
             ApplicationCommandListener(context)
@@ -296,23 +264,11 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
         ConflictDetector.detectConflicts()
     }
 
-    private fun setupContext(jda: JDA) {
-        context.jda = jda
-
-        if (usePing) {
-            context.addPrefix("<@" + jda.selfUser.id + "> ")
-            context.addPrefix("<@!" + jda.selfUser.id + "> ")
-        }
-
+    private fun setupContext() {
         context.registerConstructorParameter(BContext::class.java) { context } //TODO maybe unify this stuff ?
         context.registerCommandDependency(BContext::class.java) { context }
         context.registerCustomResolver(BContext::class.java) { _, _, _ -> context } //TODO merge ?
         context.registerMethodParameterSupplier(BContext::class.java) { context }
-
-        context.registerConstructorParameter(JDA::class.java) { jda }
-        context.registerCommandDependency(JDA::class.java) { jda }
-        context.registerCustomResolver(JDA::class.java) { _, _, _ -> jda }
-        context.registerMethodParameterSupplier(JDA::class.java) { jda }
 
         context.registerMethodParameterSupplier(ApplicationCommandManager::class.java) { context.applicationCommandManager }
 

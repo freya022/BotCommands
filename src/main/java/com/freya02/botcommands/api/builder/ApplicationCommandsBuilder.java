@@ -37,7 +37,7 @@ public class ApplicationCommandsBuilder {
 	 * @see BContext#addApplicationFilter(ApplicationCommandFilter)
 	 */
 	@NotNull
-	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) {
+	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) { //TODO move to auto service discovery
 		context.addApplicationFilter(commandFilter);
 
 		return this;
@@ -53,7 +53,7 @@ public class ApplicationCommandsBuilder {
 	 * @see BContext#addComponentFilter(ComponentInteractionFilter)
 	 */
 	@NotNull
-	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) {
+	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) { //TODO move to auto service discovery
 		context.addComponentFilter(componentFilter);
 
 		return this;

@@ -14,6 +14,10 @@ import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
+import com.freya02.botcommands.core.api.config.BConfig;
+import com.freya02.botcommands.core.internal.ClassPathContainer;
+import com.freya02.botcommands.core.internal.EventDispatcher;
+import com.freya02.botcommands.core.internal.ServiceContainer;
 import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
@@ -26,6 +30,7 @@ import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
 import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
+import dev.minn.jda.ktx.events.CoroutineEventManager;
 import gnu.trove.TCollections;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -55,7 +60,11 @@ import java.util.function.Supplier;
 public class BContextImpl implements BContext {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private final BConfig config = new BConfig();
+	private final BConfig config;
+	private final CoroutineEventManager eventManager;
+	private final ClassPathContainer classPathContainer;
+	private final ServiceContainer serviceContainer;
+	private final EventDispatcher eventDispatcher;
 
 	private final ApplicationCommandsContextImpl applicationCommandsContext = new ApplicationCommandsContextImpl();
 	private final ApplicationCommandManager applicationCommandManager = new ApplicationCommandManager(this); //TODO merge
@@ -107,6 +116,37 @@ public class BContextImpl implements BContext {
 	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
 	private final LocalizationManager localizationManager = new LocalizationManager();
+
+	public BContextImpl(@NotNull BConfig config, @NotNull CoroutineEventManager eventManager) {
+		this.config = config;
+		this.eventManager = eventManager;
+
+		this.serviceContainer = new ServiceContainer(this.config);
+		serviceContainer.putService(this);
+		serviceContainer.putService(eventManager);
+
+		this.classPathContainer = new ClassPathContainer(this.config);
+		serviceContainer.putService(classPathContainer);
+
+		this.eventDispatcher = new EventDispatcher(this);
+		serviceContainer.putService(eventDispatcher);
+	}
+
+	public BConfig getConfig() {
+		return config;
+	}
+
+	public CoroutineEventManager getEventManager() {
+		return eventManager;
+	}
+
+	public ServiceContainer getServiceContainer() {
+		return serviceContainer;
+	}
+
+	public ClassPathContainer getClassPathContainer() {
+		return classPathContainer;
+	}
 
 	@Override
 	@NotNull

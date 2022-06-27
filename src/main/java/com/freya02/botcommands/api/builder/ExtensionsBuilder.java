@@ -29,7 +29,7 @@ public class ExtensionsBuilder {
 	 * @param resolver Your own ParameterResolver to register
 	 * @return This builder for chaining convenience
 	 */
-	public ExtensionsBuilder registerParameterResolver(ParameterResolver resolver) {
+	public ExtensionsBuilder registerParameterResolver(ParameterResolver resolver) {  //TODO move to auto service discovery
 		ParameterResolvers.register(resolver);
 
 		return this;
@@ -43,7 +43,7 @@ public class ExtensionsBuilder {
 	 * @param parameterSupplier The supplier for this parameter
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
+	public <T> ExtensionsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {  //TODO move to auto service discovery
 		if (context.getParameterSupplier(parameterType) != null)
 			throw new IllegalStateException("Parameter supplier already exists for parameter of type " + parameterType.getName());
 
@@ -61,7 +61,7 @@ public class ExtensionsBuilder {
 	 * @param instanceSupplier Instance supplier for this command
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
+	public <T> ExtensionsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {  //TODO move to auto service discovery
 		if (context.getInstanceSupplier(classType) != null)
 			throw new IllegalStateException("Instance supplier already exists for class " + classType.getName());
 
@@ -79,7 +79,7 @@ public class ExtensionsBuilder {
 	 *
 	 * @return This builder for chaining convenience
 	 */
-	public ExtensionsBuilder registerDynamicInstanceSupplier(DynamicInstanceSupplier dynamicInstanceSupplier) {
+	public ExtensionsBuilder registerDynamicInstanceSupplier(DynamicInstanceSupplier dynamicInstanceSupplier) {  //TODO move to auto service discovery
 		context.registerDynamicInstanceSupplier(dynamicInstanceSupplier);
 
 		return this;
@@ -93,7 +93,7 @@ public class ExtensionsBuilder {
 	 * @param supplier  Field supplier for this type
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
+	public <T> ExtensionsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {  //TODO move to auto service discovery
 		if (context.getCommandDependency(fieldType) != null)
 			throw new IllegalStateException("Command dependency already exists for fields of type " + fieldType.getName());
 
@@ -110,7 +110,7 @@ public class ExtensionsBuilder {
 	 * @param <T>           Type of the parameter
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {
+	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {  //TODO move to auto service discovery
 		if (ParameterResolvers.exists(ParameterType.ofClass(parameterType)))
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
 
@@ -128,7 +128,7 @@ public class ExtensionsBuilder {
 	 * @param <T>                       Type of the List generic element type
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) {
+	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) { //TODO move to auto service discovery
 		context.registerAutocompletionTransformer(type, autocompletionTransformer);
 
 		return this;
@@ -142,7 +142,7 @@ public class ExtensionsBuilder {
 	 * @param factory The {@link MethodRunnerFactory} to set
 	 * @return This builder for chaining convenience
 	 */
-	public ExtensionsBuilder setMethodRunnerFactory(@NotNull MethodRunnerFactory factory) {
+	public ExtensionsBuilder setMethodRunnerFactory(@NotNull MethodRunnerFactory factory) { //TODO remove
 		Checks.notNull(factory, "Method runner factory");
 
 		context.setMethodRunnerFactory(factory);

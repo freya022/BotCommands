@@ -1,30 +1,27 @@
-package com.freya02.botcommands.api
+package com.freya02.botcommands.core.api.config
 
 import com.freya02.botcommands.annotations.api.annotations.RequireOwner
-import com.freya02.botcommands.api.builder.ExtensionsBuilder
+import com.freya02.botcommands.api.ExceptionHandler
+import com.freya02.botcommands.api.ExceptionHandlerAdapter
+import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.components.DefaultComponentManager
-import com.freya02.botcommands.internal.MethodParameterSupplier
 import com.freya02.botcommands.internal.notNull
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.interactions.Interaction
-import java.util.function.Supplier
 import kotlin.properties.Delegates
 
-class BConfig {
-    private val packages: MutableSet<String> = HashSet()
-    private val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
+//TODO immutable config
+class BConfig internal constructor() {
+    internal val packages: MutableSet<String> = HashSet()
+    internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
     private val ownerIds: MutableSet<Long> = HashSet()
     private val prefixes: MutableSet<String> = HashSet()
 
-    private val parameterSupplierMap: MutableMap<Class<*>, ConstructorParameterSupplier<*>> = HashMap()
-    private val instanceSupplierMap: MutableMap<Class<*>, InstanceSupplier<*>> = HashMap()
-    private val dynamicInstanceSuppliers: MutableList<DynamicInstanceSupplier> = ArrayList()
-    private val commandDependencyMap: MutableMap<Class<*>, Supplier<*>> = HashMap()
-    private val methodParameterSupplierMap: MutableMap<Class<*>, MethodParameterSupplier<*>> = HashMap()
+    val serviceConfig = BServiceConfig()
 
-    private val extensionsBuilder: ExtensionsBuilder = ExtensionsBuilder()
+    val applicationConfig = BApplicationConfig()
 
     /**
      * Used to take guild-specific settings such as prefixes
@@ -85,15 +82,5 @@ class BConfig {
      */
     fun addSearchPath(commandPackageName: String) {
         packages.add(commandPackageName)
-    }
-
-    /**
-     * Configures some settings related to framework extensions
-     *
-     * @param consumer The consumer to run in order to configure extension settings
-     * @return This builder for chaining convenience
-     */
-    fun extensionsBuilder(consumer: ReceiverConsumer<ExtensionsBuilder>) {
-        consumer.applyTo(extensionsBuilder)
     }
 }

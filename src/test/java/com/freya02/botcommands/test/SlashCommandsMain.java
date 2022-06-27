@@ -100,7 +100,7 @@ public class SlashCommandsMain {
 //							System.err.println("ERR");
 //						}
 //					})
-					.build(jda);
+					.build(null);
 
 			LOGGER.info("Finished building");
 		} catch (Exception e) {

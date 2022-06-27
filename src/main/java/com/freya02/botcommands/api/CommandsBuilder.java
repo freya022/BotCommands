@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 public final class CommandsBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 
-	private final BContextImpl context = new BContextImpl();
+	private final BContextImpl context = new BContextImpl(null, null);
 
 	private final Set<String> packages = new HashSet<>();
 	private final Set<Class<?>> classes = new HashSet<>();
@@ -205,7 +205,7 @@ public final class CommandsBuilder {
 	 * @param consumer The consumer to run in order to configure extension settings
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder extensionsBuilder(Consumer<ExtensionsBuilder> consumer) {
+	public CommandsBuilder extensionsBuilder(Consumer<ExtensionsBuilder> consumer) {  //TODO move to auto service discovery
 		consumer.accept(extensionsBuilder);
 
 		ReceiverConsumer<ExtensionsBuilder> lol = extensionsBuilder1 -> {
