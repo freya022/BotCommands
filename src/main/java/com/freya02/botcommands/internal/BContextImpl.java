@@ -124,7 +124,6 @@ public class BContextImpl implements BContext {
 		this.classPathContainer = new ClassPathContainer(this);
 
 		this.serviceContainer = new ServiceContainer(this);
-		serviceContainer.putService(this);
 		serviceContainer.putService(eventManager);
 		serviceContainer.putService(classPathContainer);
 

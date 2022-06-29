@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.internal
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BServiceConfig
@@ -25,6 +26,7 @@ class ServiceContainer internal constructor(context: BContextImpl) {
 
     init {
         putService(this)
+        putServiceAs<BContext>(context)
 
         context.classPathContainer.classes.forEach {
             if (it.hasAnnotation<BService>()) {
@@ -61,6 +63,10 @@ class ServiceContainer internal constructor(context: BContextImpl) {
 
     fun <T : Any> putService(t: T) {
         serviceMap[t::class] = t
+    }
+
+    internal inline fun <reified T : Any> putServiceAs(t: T) {
+        serviceMap[T::class] = t
     }
 
     fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
