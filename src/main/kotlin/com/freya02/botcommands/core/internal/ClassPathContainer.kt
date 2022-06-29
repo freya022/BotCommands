@@ -1,44 +1,52 @@
 package com.freya02.botcommands.core.internal
 
-import com.freya02.botcommands.core.api.config.BConfig
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.isStatic
 import com.freya02.botcommands.internal.isSubclassOfAny
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
-internal class ClassPathFunction(val instance: Any, val function: KFunction<*>)
+internal class InstanceDelegate(private val getter: () -> Any) {
+    operator fun getValue(thisRef: Any, property: KProperty<*>): Any {
+        return getter()
+    }
+}
 
-internal class ClassPathContainer(bConfig: BConfig, serviceContainer: ServiceContainer) {
-    val classes: List<Any>
-    val functions: List<ClassPathFunction>
+internal class ClassPathFunction(instanceProvider: InstanceDelegate, val function: KFunction<*>) {
+    val instance: Any by instanceProvider
+}
+
+internal class ClassPathContainer(private val context: BContextImpl) {
+    val classes: List<KClass<*>>
+    val functions: List<ClassPathFunction> by lazy {
+        return@lazy retrieveClassFunctions()
+    }
 
     init {
-        val packages = bConfig.packages
-        val userClasses = bConfig.classes
+        val packages = context.config.packages
+        val userClasses = context.config.classes
 
         val scanResult = ReflectionMetadata.runScan(packages, userClasses)
 
         ReflectionMetadata.readAnnotations(scanResult)
 
-        this.classes = scanResult
-            .allClasses
-            .filter(ReflectionUtilsKt::isInstantiable)
-            .loadClasses()
-            .map(Class<*>::kotlin)
-
-        this.functions = classes
-            .associate { serviceContainer.getService(it)!! to it.declaredMemberFunctions }
-            .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
+        this.classes = scanResult.loadClasses().map(Class<*>::kotlin)
     }
 
     inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.function.hasAnnotation<T>() }
+
+    private fun retrieveClassFunctions(): List<ClassPathFunction> {
+        return classes
+            .associate { InstanceDelegate { context.serviceContainer.getService(it)!! } to it.declaredMemberFunctions }
+            .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
+    }
 }
 
 internal fun List<ClassPathFunction>.withReturnType(vararg types: KClass<*>) =

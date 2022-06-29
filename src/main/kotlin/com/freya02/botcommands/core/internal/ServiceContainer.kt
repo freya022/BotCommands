@@ -1,8 +1,10 @@
 package com.freya02.botcommands.core.internal
 
-import com.freya02.botcommands.core.api.config.BConfig
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BServiceConfig
 import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -13,14 +15,24 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
-class ServiceContainer internal constructor(config: BConfig) {
-    private val serviceConfig: BServiceConfig = config.serviceConfig
+private val LOGGER = Logging.getLogger()
+
+class ServiceContainer internal constructor(context: BContextImpl) {
+    private val serviceConfig: BServiceConfig = context.config.serviceConfig
     private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
 
     private val localBeingCreatedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
 
     init {
         putService(this)
+
+        context.classPathContainer.classes.forEach {
+            if (it.hasAnnotation<BService>()) {
+                LOGGER.debug("Loaded service: ${it.simpleName}")
+
+                getService(it)
+            }
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -40,7 +52,7 @@ class ServiceContainer internal constructor(config: BConfig) {
 
                 return@synchronized instance as T?
             } catch (e: Exception) {
-                throw RuntimeException("Unable to create service ${clazz.simpleName}")
+                throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
             } finally {
                 beingCreatedSet.clear()
             }

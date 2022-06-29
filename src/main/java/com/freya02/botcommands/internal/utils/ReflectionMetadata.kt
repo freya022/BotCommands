@@ -3,16 +3,19 @@ package com.freya02.botcommands.internal.utils
 import com.freya02.botcommands.annotations.api.annotations.Optional
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.asKFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.tryAsKFunction
+import io.github.classgraph.ArrayTypeSignature
 import io.github.classgraph.ClassGraph
-import io.github.classgraph.ScanResult
+import io.github.classgraph.ClassInfoList
+import io.github.classgraph.TypeVariableSignature
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 
 internal object ReflectionMetadata {
     internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean)
@@ -44,49 +47,64 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(functionMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): ScanResult = ClassGraph()
+    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): ClassInfoList = ClassGraph()
         .acceptPackages(*packages.toTypedArray())
         .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
         .enableMethodInfo()
         .enableAnnotationInfo()
         .scan()
+        .allStandardClasses
+        .filter {
+            it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
+                return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
+            }
+            return@filter true
+        }
+        .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isInnerClass || it.isEnum || it.isAbstract) }
+        .filter(ReflectionUtilsKt::isInstantiable)
 
-    internal fun readAnnotations(scanResult: ScanResult) {
-        for (classInfo in scanResult.allClasses) {
-            val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")
+    internal fun readAnnotations(classInfoList: ClassInfoList) {
+        for (classInfo in classInfoList) {
+            try {
+                val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")
 
-            for (methodInfo in classInfo.declaredMethodInfo) {
-                val kFunction = methodInfo.loadClassAndGetMethod().asKFunction()
-                val parameters = kFunction.nonInstanceParameters
-                for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
-                    val parameter = parameters[j]
+                for (methodInfo in classInfo.declaredMethodInfo) {
+                    if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue //Don't inspect methods with generics
 
-                    val annotationMap: MutableMap<KClass<*>, Annotation> = hashMapOf()
+                    val kFunction = methodInfo.loadClassAndGetMethod().tryAsKFunction() ?: continue
+                    val parameters = kFunction.nonInstanceParameters
+                    for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
+                        val parameter = parameters[j]
 
-                    for (annotationInfo in parameterInfo.annotationInfo) {
-                        @Suppress("UNCHECKED_CAST")
-                        annotationMap[annotationInfo.classInfo.loadClass().kotlin] =
-                            parameter.findAnnotations(annotationInfo.classInfo.loadClass().kotlin as KClass<out Annotation>)
-                                .firstOrNull() ?: annotationInfo.loadClassAndInstantiate()
+                        val annotationMap: MutableMap<KClass<*>, Annotation> = hashMapOf()
+
+                        for (annotationInfo in parameterInfo.annotationInfo) {
+                            @Suppress("UNCHECKED_CAST")
+                            annotationMap[annotationInfo.classInfo.loadClass().kotlin] =
+                                parameter.findAnnotations(annotationInfo.classInfo.loadClass().kotlin as KClass<out Annotation>)
+                                    .firstOrNull() ?: annotationInfo.loadClassAndInstantiate()
+                        }
+
+                        val isNullableAnnotated =
+                            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") } or parameter.hasAnnotation<Optional>()
+                        val isNullableMarked = parameter.type.isMarkedNullable
+                        if (!isJavaParameter && isNullableAnnotated && !isNullableMarked) {
+                            throwUser("Parameter $parameter is annotated as being nullable/optional but runtime checks from annotations will prevent this from being nullable")
+                        }
+
+                        paramMetadataMap_[parameter] =
+                            KParameterMetadata(
+                                annotationMap,
+                                isNullableAnnotated or isNullableMarked,
+                                isJavaParameter,
+                                kFunction
+                            )
                     }
 
-                    val isNullableAnnotated =
-                        parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") } or parameter.hasAnnotation<Optional>()
-                    val isNullableMarked = parameter.type.isMarkedNullable
-                    if (!isJavaParameter && isNullableAnnotated && !isNullableMarked) {
-                        throwUser("Parameter $parameter is annotated as being nullable/optional but runtime checks from annotations will prevent this from being nullable")
-                    }
-
-                    paramMetadataMap_[parameter] =
-                        KParameterMetadata(
-                            annotationMap,
-                            isNullableAnnotated or isNullableMarked,
-                            isJavaParameter,
-                            kFunction
-                        )
+                    functionMetadataMap_[kFunction] = KFunctionMetadata(kFunction, isJavaParameter)
                 }
-
-                functionMetadataMap_[kFunction] = KFunctionMetadata(kFunction, isJavaParameter)
+            } catch (e: Throwable) {
+                throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
         }
 

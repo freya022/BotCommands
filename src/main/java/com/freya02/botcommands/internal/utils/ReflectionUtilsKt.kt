@@ -19,6 +19,10 @@ private val LOGGER = Logging.getLogger()
 internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
+    internal fun Method.tryAsKFunction(): KFunction<*>? {
+        return this.kotlinFunction
+    }
+
     internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }

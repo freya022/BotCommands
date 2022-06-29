@@ -8,7 +8,6 @@ import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParam
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
@@ -28,7 +27,7 @@ class EventDispatcher internal constructor(context: BContextImpl) {
             val args = context.serviceContainer.getParameters(
                 parameters.drop(1).map { it.type.jvmErasure }
             )
-            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(EventListenerFunction(classPathFunc.instance, function, args.toTypedArray()))
+            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(EventListenerFunction(classPathFunc, args.toTypedArray()))
         }
 
         context.eventManager.listener<Event> {
@@ -40,14 +39,14 @@ class EventDispatcher internal constructor(context: BContextImpl) {
         when (event) {
             is GenericEvent, is BEvent -> {
                 map[event::class]?.forEach { eventListener ->
-                    val function = eventListener.function
+                    val classPathFunction = eventListener.classPathFunction
 
-                    function.callSuspend(eventListener.instance, *eventListener.parameters, event)
+                    classPathFunction.function.callSuspend(classPathFunction.instance, *eventListener.parameters, event)
                 }
             }
             else -> throwUser("Unrecognized event: ${event::class.jvmName}")
         }
     }
 
-    inner class EventListenerFunction(val instance: Any, val function: KFunction<*>, val parameters: Array<Any>)
+    internal inner class EventListenerFunction(val classPathFunction: ClassPathFunction, val parameters: Array<Any>)
 }

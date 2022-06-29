@@ -83,4 +83,8 @@ class BConfig internal constructor() {
     fun addSearchPath(commandPackageName: String) {
         packages.add(commandPackageName)
     }
+
+    fun addClass(clazz: Class<*>) {
+        classes.add(clazz)
+    }
 }

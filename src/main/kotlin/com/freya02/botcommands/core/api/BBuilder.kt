@@ -29,6 +29,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
     }
 
     private fun build(manager: CoroutineEventManager) {
+        config.addSearchPath("com.freya02.botcommands")
+
         val context = BContextImpl(config, manager)
 
         println()

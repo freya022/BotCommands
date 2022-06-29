@@ -121,11 +121,11 @@ public class BContextImpl implements BContext {
 		this.config = config;
 		this.eventManager = eventManager;
 
-		this.serviceContainer = new ServiceContainer(this.config);
+		this.classPathContainer = new ClassPathContainer(this);
+
+		this.serviceContainer = new ServiceContainer(this);
 		serviceContainer.putService(this);
 		serviceContainer.putService(eventManager);
-
-		this.classPathContainer = new ClassPathContainer(this.config, serviceContainer);
 		serviceContainer.putService(classPathContainer);
 
 		this.eventDispatcher = new EventDispatcher(this);
