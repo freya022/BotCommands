@@ -5,7 +5,6 @@ import com.freya02.botcommands.core.internal.annotations.BInternalClass
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.tryAsKFunction
 import io.github.classgraph.ArrayTypeSignature
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfoList
@@ -17,6 +16,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
+import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionMetadata {
     internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean)
@@ -79,7 +79,7 @@ internal object ReflectionMetadata {
                 for (methodInfo in classInfo.declaredMethodInfo) {
                     if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue //Don't inspect methods with generics
 
-                    val kFunction = methodInfo.loadClassAndGetMethod().tryAsKFunction() ?: continue
+                    val kFunction = methodInfo.loadClassAndGetMethod().kotlinFunction ?: continue
                     val parameters = kFunction.nonInstanceParameters
                     for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
                         val parameter = parameters[j]
