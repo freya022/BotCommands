@@ -11,8 +11,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <kotlin.version>1.6.21</kotlin.version>
-        <kotlin.coroutine.version>1.6.1</kotlin.coroutine.version>
+        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.coroutine.version>1.6.2</kotlin.coroutine.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     </properties>
 
