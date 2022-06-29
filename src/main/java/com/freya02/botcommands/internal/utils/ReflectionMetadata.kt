@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
+import com.freya02.botcommands.core.internal.annotations.BInternalClass
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -48,12 +49,19 @@ internal object ReflectionMetadata {
     }
 
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): ClassInfoList = ClassGraph()
-        .acceptPackages(*packages.toTypedArray())
+        .acceptPackages(*packages.toTypedArray(), "com.freya02.botcommands")
         .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
         .enableMethodInfo()
         .enableAnnotationInfo()
         .scan()
         .allStandardClasses
+        .filter {
+            if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
+                return@filter it.hasAnnotation(BInternalClass::class.java.name)
+            }
+
+            return@filter true
+        }
         .filter {
             it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
                 return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
