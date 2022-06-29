@@ -2,10 +2,12 @@ package com.freya02.botcommands.core.api
 
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.core.api.config.BConfig
+import com.freya02.botcommands.core.internal.events.LoadEvent
 import com.freya02.botcommands.internal.BContextImpl
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
@@ -29,7 +31,11 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
     }
 
     private fun build(manager: CoroutineEventManager) {
-        val context = BContextImpl(config, manager)
+        runBlocking(manager.coroutineContext) {
+            val context = BContextImpl(config, manager)
+
+            context.eventDispatcher.dispatchEvent(LoadEvent())
+        }
 
         println()
     }

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@BService
 public class MentionableResolver extends ParameterResolver implements SlashParameterResolver {
 	public MentionableResolver() {
 		super(ParameterType.ofClass(IMentionable.class));

@@ -3,13 +3,13 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.parameters.CustomResolver
-import com.freya02.botcommands.api.parameters.ParameterResolvers
-import com.freya02.botcommands.api.parameters.ParameterType
+import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 internal fun interface InteractionParameterSupplier<R : Any> {
     fun supply(kParameter: KParameter, name: String, resolver: R): MethodParameter
@@ -23,6 +23,7 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
 
     companion object {
         internal inline fun <reified R : Any> of(
+            context: BContextImpl,
             function: KFunction<*>,
             optionBuilders: Map<String, OptionBuilder>,
             parameterSupplier: InteractionParameterSupplier<R>
@@ -32,7 +33,7 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
 
             for ((globalIndex, kParameter) in kParameters.withIndex()) {
                 val paramType = kParameter.type
-                val resolver = ParameterResolvers.of(ParameterType.ofType(paramType))
+                val resolver = context.serviceContainer.getService(ResolverContainer::class).getResolver(paramType.jvmErasure) //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
 
                 requireUser(resolver != null, function) {
                     "Parameter #$globalIndex of type '${paramType.simpleName}' and name '${kParameter.bestName}' does not have any compatible resolver"

@@ -28,18 +28,20 @@ internal object ReflectionUtilsKt {
             throwUser(this, "Function must not be static")
         }
 
-        return reflectedMap.computeIfAbsent(this) {
-            return@computeIfAbsent when (this) { //Try to match the original function
-                is CallableReference -> {
-                    (owner as KClass<*>).declaredMemberFunctions.find {//Don't use bound receiver, might be null somehow
-                        it.name == name
-                                && it.nonInstanceParameters.zip(nonInstanceParameters).all { param ->
-                            param.first.name == param.second.name
-                                    && param.first.type == param.second.type
-                        }
-                    } ?: throwInternal("Unable to reflect function reference: $this")
+        synchronized(reflectedMap) {
+            return reflectedMap.computeIfAbsent(this) {
+                return@computeIfAbsent when (this) { //Try to match the original function
+                    is CallableReference -> {
+                        (owner as KClass<*>).declaredMemberFunctions.find {//Don't use bound receiver, might be null somehow
+                            it.name == name
+                                    && it.nonInstanceParameters.zip(nonInstanceParameters).all { param ->
+                                param.first.name == param.second.name
+                                        && param.first.type == param.second.type
+                            }
+                        } ?: throwInternal("Unable to reflect function reference: $this")
+                    }
+                    else -> this
                 }
-                else -> this
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ConsumerEx
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.MethodParameters
@@ -10,7 +10,7 @@ import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
 class ComponentDescriptor(
-    context: BContext,
+    context: BContextImpl,
     override val instance: Any,
     override val method: KFunction<*>
 ) : ExecutableInteractionInfo {
@@ -35,7 +35,7 @@ class ComponentDescriptor(
             }
         }
 
-        parameters = MethodParameters.of<ComponentParameterResolver>(method, mapOf()) { parameter, paramName, _ -> //TODO pass builders
+        parameters = MethodParameters.of<ComponentParameterResolver>(context, method, mapOf()) { parameter, paramName, _ -> //TODO pass builders
             ComponentHandlerParameter(parameter, TODO()) //TODO take from DSL
         }
     }

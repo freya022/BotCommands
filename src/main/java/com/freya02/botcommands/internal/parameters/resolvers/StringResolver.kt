@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.parameters.resolvers
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.api.parameters.ParameterType.Companion.ofKClass
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo
@@ -16,6 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 import java.util.regex.Pattern
 
+@BService
 class StringResolver : ParameterResolver(ofKClass(String::class)), RegexParameterResolver,
     QuotableRegexParameterResolver,
     SlashParameterResolver, ComponentParameterResolver, ModalParameterResolver {

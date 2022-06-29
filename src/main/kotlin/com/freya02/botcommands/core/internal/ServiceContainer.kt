@@ -18,7 +18,7 @@ import kotlin.reflect.jvm.jvmName
 
 private val LOGGER = Logging.getLogger()
 
-class ServiceContainer internal constructor(context: BContextImpl) {
+class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
     private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
 
@@ -26,37 +26,45 @@ class ServiceContainer internal constructor(context: BContextImpl) {
 
     init {
         putService(this)
+        putService(context)
         putServiceAs<BContext>(context)
 
         context.classPathContainer.classes.forEach {
             if (it.hasAnnotation<BService>()) {
-                LOGGER.debug("Loaded service: ${it.simpleName}")
-
                 getService(it)
+
+                LOGGER.trace("Loaded service: ${it.simpleName}")
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getService(clazz: KClass<T>): T? {
-        return (serviceMap[clazz] as T?) ?: synchronized(serviceMap) {
-            val beingCreatedSet = localBeingCreatedSet.get()
-            try {
-                if (!beingCreatedSet.add(clazz)) {
-                    throw IllegalStateException("Circular dependency detected, list of the services being created : [${beingCreatedSet.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
+    fun <T : Any> getService(clazz: KClass<T>): T {
+        synchronized(serviceMap) {
+            return (serviceMap[clazz] as T?) ?: run {
+                //Don't autoload here as it could chain into loading stuff like BContextImpl or ApplicationCommandManager, which you shouldn't create automatically
+                if (!context.classPathContainer.classes.contains(clazz)) {
+                    throwUser("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
                 }
 
-                val instance = constructInstance(clazz)
+                val beingCreatedSet = localBeingCreatedSet.get()
+                try {
+                    if (!beingCreatedSet.add(clazz)) {
+                        throw IllegalStateException("Circular dependency detected, list of the services being created : [${beingCreatedSet.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
+                    }
 
-                beingCreatedSet.remove(clazz)
+                    val instance = constructInstance(clazz)
 
-                serviceMap[clazz] = instance
+                    beingCreatedSet.remove(clazz)
 
-                return@synchronized instance as T?
-            } catch (e: Exception) {
-                throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
-            } finally {
-                beingCreatedSet.clear()
+                    serviceMap[clazz] = instance
+
+                    return instance as T
+                } catch (e: Exception) {
+                    throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
+                } finally {
+                    beingCreatedSet.clear()
+                }
             }
         }
     }
@@ -71,7 +79,7 @@ class ServiceContainer internal constructor(context: BContextImpl) {
 
     fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
         return types.map {
-            map[it] ?: getService(it) ?: throwUser("Found no service for class '${it.jvmName}'")
+            map[it] ?: getService(it)
         }
     }
 

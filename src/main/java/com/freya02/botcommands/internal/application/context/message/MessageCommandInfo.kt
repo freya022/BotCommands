@@ -23,7 +23,11 @@ class MessageCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        parameters = MethodParameters.of<MessageContextParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
+        parameters = MethodParameters.of<MessageContextParameterResolver>(
+            context,
+            method,
+            builder.optionBuilders
+        ) { kParameter, paramName, resolver ->
             MessageContextCommandParameter(kParameter, resolver)
         }
     }

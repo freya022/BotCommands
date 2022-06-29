@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
+@BService
 public class EmoteResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
 	public EmoteResolver() {
 		super(ParameterType.ofClass(Emote.class));

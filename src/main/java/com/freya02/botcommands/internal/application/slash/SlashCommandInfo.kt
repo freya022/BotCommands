@@ -41,7 +41,11 @@ class SlashCommandInfo internal constructor(
         get() = super.optionParameters as List<SlashCommandParameter>
 
     init {
-        parameters = MethodParameters.of<SlashParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
+        parameters = MethodParameters.of<SlashParameterResolver>(
+            context,
+            method,
+            builder.optionBuilders
+        ) { kParameter, paramName, resolver ->
             val type = kParameter.type.jvmErasure
             if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
                 requireUser(isGuildOnly) {

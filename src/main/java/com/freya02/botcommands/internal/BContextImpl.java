@@ -139,6 +139,10 @@ public class BContextImpl implements BContext {
 		return eventManager;
 	}
 
+	public EventDispatcher getEventDispatcher() {
+		return eventDispatcher;
+	}
+
 	public ServiceContainer getServiceContainer() {
 		return serviceContainer;
 	}

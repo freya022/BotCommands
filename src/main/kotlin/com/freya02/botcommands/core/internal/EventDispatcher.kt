@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.internal
 
+import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BEventListener
 import com.freya02.botcommands.core.api.events.BEvent
 import com.freya02.botcommands.internal.BContextImpl
@@ -11,6 +12,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
+
+private val LOGGER = Logging.getLogger()
 
 class EventDispatcher internal constructor(context: BContextImpl) {
     private val map: MutableMap<KClass<*>, MutableList<EventListenerFunction>> = hashMapOf()
@@ -39,9 +42,13 @@ class EventDispatcher internal constructor(context: BContextImpl) {
         when (event) {
             is GenericEvent, is BEvent -> {
                 map[event::class]?.forEach { eventListener ->
-                    val classPathFunction = eventListener.classPathFunction
+                    try {
+                        val classPathFunction = eventListener.classPathFunction
 
-                    classPathFunction.function.callSuspend(classPathFunction.instance, *eventListener.parameters, event)
+                        classPathFunction.function.callSuspend(classPathFunction.instance, event, *eventListener.parameters)
+                    } catch (e: Throwable) {
+                        LOGGER.error("An exception occurred while dispatching an event for ${eventListener.classPathFunction.function}", e)
+                    }
                 }
             }
             else -> throwUser("Unrecognized event: ${event::class.jvmName}")

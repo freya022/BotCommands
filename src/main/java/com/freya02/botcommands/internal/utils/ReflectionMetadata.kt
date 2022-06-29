@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.annotations.BInternalClass
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -57,7 +58,7 @@ internal object ReflectionMetadata {
         .allStandardClasses
         .filter {
             if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
-                return@filter it.hasAnnotation(BInternalClass::class.java.name)
+                return@filter it.hasAnnotation(BService::class.java.name) || it.hasAnnotation(BInternalClass::class.java.name)
             }
 
             return@filter true

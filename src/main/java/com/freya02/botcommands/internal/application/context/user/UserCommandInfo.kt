@@ -23,7 +23,11 @@ class UserCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
-        parameters = MethodParameters.of<UserContextParameterResolver>(method, builder.optionBuilders) { kParameter, paramName, resolver ->
+        parameters = MethodParameters.of<UserContextParameterResolver>(
+            context,
+            method,
+            builder.optionBuilders
+        ) { kParameter, paramName, resolver ->
             UserContextCommandParameter(kParameter, resolver)
         }
     }
