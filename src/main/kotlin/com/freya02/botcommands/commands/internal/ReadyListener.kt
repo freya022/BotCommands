@@ -1,29 +1,23 @@
 package com.freya02.botcommands.commands.internal
 
-import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.core.api.annotations.BEventListener
-import com.freya02.botcommands.core.internal.ClassPathContainer
-import com.freya02.botcommands.core.internal.ServiceContainer
+import com.freya02.botcommands.core.internal.EventDispatcher
 import com.freya02.botcommands.core.internal.annotations.BInternalClass
+import com.freya02.botcommands.core.internal.events.FirstReadyEvent
+import dev.minn.jda.ktx.events.CoroutineEventManager
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
-import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 @BInternalClass
-internal class ReadyListener(private val classPathContainer: ClassPathContainer, private val serviceContainer: ServiceContainer) {
+internal class ReadyListener {
     private var ready = false
 
     @BEventListener
-    internal fun onGuildReadyEvent(event: GuildReadyEvent) {
+    internal suspend fun onGuildReadyEvent(event: GuildReadyEvent, eventDispatcher: EventDispatcher, coroutineEventManager: CoroutineEventManager) {
         synchronized(this) {
             if (ready) return
             ready = true
-
-            for (classPathFunction in classPathContainer.functionsWithAnnotation<Declaration>()) {
-                val function = classPathFunction.function
-                val args = serviceContainer.getParameters(function.valueParameters.map { it.type.jvmErasure }).toTypedArray()
-                function.call(classPathFunction.instance, *args)
-            }
         }
+
+        eventDispatcher.dispatchEvent(FirstReadyEvent(event))
     }
 }

@@ -122,13 +122,8 @@ public class BContextImpl implements BContext {
 		this.eventManager = eventManager;
 
 		this.classPathContainer = new ClassPathContainer(this);
-
-		this.serviceContainer = new ServiceContainer(this);
-		serviceContainer.putService(eventManager);
-		serviceContainer.putService(classPathContainer);
-
-		this.eventDispatcher = new EventDispatcher(this);
-		serviceContainer.putService(eventDispatcher);
+		this.serviceContainer = new ServiceContainer(this); //Puts itself, ctx, cem and cpc
+		this.eventDispatcher = new EventDispatcher(this); //Service put in ctor
 	}
 
 	public BConfig getConfig() {

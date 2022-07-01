@@ -27,6 +27,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     init {
         putService(this)
         putService(context)
+        putService(context.eventManager)
+        putService(context.classPathContainer)
         putServiceAs<BContext>(context)
 
         context.classPathContainer.classes.forEach {

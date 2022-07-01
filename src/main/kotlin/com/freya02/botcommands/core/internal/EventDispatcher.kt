@@ -16,9 +16,11 @@ import kotlin.reflect.jvm.jvmName
 private val LOGGER = Logging.getLogger()
 
 class EventDispatcher internal constructor(context: BContextImpl) {
-    private val map: MutableMap<KClass<*>, MutableList<EventListenerFunction>> = hashMapOf()
+    private val map: MutableMap<KClass<*>, MutableList<PreboundFunction>> = hashMapOf()
 
     init {
+        context.serviceContainer.putService(this)
+
         for (classPathFunc in context.classPathContainer
             .functionsWithAnnotation<BEventListener>()
             .requireNonStatic()
@@ -30,7 +32,7 @@ class EventDispatcher internal constructor(context: BContextImpl) {
             val args = context.serviceContainer.getParameters(
                 parameters.drop(1).map { it.type.jvmErasure }
             )
-            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(EventListenerFunction(classPathFunc, args.toTypedArray()))
+            map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(PreboundFunction(classPathFunc, args.toTypedArray()))
         }
 
         context.eventManager.listener<Event> {
@@ -41,19 +43,17 @@ class EventDispatcher internal constructor(context: BContextImpl) {
     suspend fun dispatchEvent(event: Any) {
         when (event) {
             is GenericEvent, is BEvent -> {
-                map[event::class]?.forEach { eventListener ->
+                map[event::class]?.forEach { preboundFunction ->
                     try {
-                        val classPathFunction = eventListener.classPathFunction
+                        val classPathFunction = preboundFunction.classPathFunction
 
-                        classPathFunction.function.callSuspend(classPathFunction.instance, event, *eventListener.parameters)
+                        classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
                     } catch (e: Throwable) {
-                        LOGGER.error("An exception occurred while dispatching an event for ${eventListener.classPathFunction.function}", e)
+                        LOGGER.error("An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function}", e)
                     }
                 }
             }
             else -> throwUser("Unrecognized event: ${event::class.jvmName}")
         }
     }
-
-    internal inner class EventListenerFunction(val classPathFunction: ClassPathFunction, val parameters: Array<Any>)
 }
