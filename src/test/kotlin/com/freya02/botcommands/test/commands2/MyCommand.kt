@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.annotations.Name
 import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.enumSetOf
@@ -34,7 +34,7 @@ class MyCommand : ApplicationCommand() {
     }
 
     @Declaration
-    fun declare(context: BContext, manager: ApplicationCommandManager) {
+    fun declare(manager: GlobalApplicationCommandManager) {
         for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to MyJavaCommand::cmd)) {
             manager.slashCommand(CommandPath.of("my_command", subname)) {
                 scope = CommandScope.GUILD

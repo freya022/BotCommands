@@ -12,6 +12,7 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.system.measureNanoTime
 
 internal class InstanceDelegate(private val getter: () -> Any) {
     operator fun getValue(thisRef: Any, property: KProperty<*>): Any {
@@ -33,11 +34,15 @@ internal class ClassPathContainer(private val context: BContextImpl) {
         val packages = context.config.packages
         val userClasses = context.config.classes
 
-        val scanResult = ReflectionMetadata.runScan(packages, userClasses)
+        val nano = measureNanoTime {
+            val scanResult = ReflectionMetadata.runScan(packages, userClasses)
 
-        ReflectionMetadata.readAnnotations(scanResult)
+            ReflectionMetadata.readAnnotations(scanResult)
 
-        this.classes = scanResult.loadClasses().map(Class<*>::kotlin)
+            this.classes = scanResult.loadClasses().map(Class<*>::kotlin)
+        }
+
+        println("Reflection took ${nano / 1000000.0} ms")
     }
 
     inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.function.hasAnnotation<T>() }

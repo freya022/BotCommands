@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.annotations.Name
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
@@ -13,12 +13,12 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
-inline fun <reified T : Enum<T>> enumSetOf(): EnumSet<T> = EnumSet.noneOf(T::class.java)
-inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSetOf<T>().apply { addAll(elems) }
+internal inline fun <reified T : Enum<T>> enumSetOf(): EnumSet<T> = EnumSet.noneOf(T::class.java)
+internal inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSetOf<T>().apply { addAll(elems) }
 
-fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
+internal fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 
-fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
+internal fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
     val firstParameter = kParameters.firstOrNull() ?: throwUser("First argument should be a ${klass.simpleName}")
     requireUser(klass.isSuperclassOf(firstParameter.type.jvmErasure)) {
         "First argument should be a ${klass.simpleName}"
@@ -26,21 +26,21 @@ fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, k
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-inline fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
+internal inline fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
+internal inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-inline fun throwUser(function: KFunction<*>, message: String): Nothing =
-    throw IllegalArgumentException("${Utils.formatMethodShort(function)} : $message")
+internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
+    throw IllegalArgumentException("${function.shortSignature} : $message")
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-inline fun throwUser(message: String): Nothing =
+internal inline fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
 
 @OptIn(ExperimentalContracts::class)
-inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
+internal inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
@@ -49,7 +49,7 @@ inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: ()
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -> String) {
+internal inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }

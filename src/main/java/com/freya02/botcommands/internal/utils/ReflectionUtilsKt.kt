@@ -11,6 +11,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -48,6 +50,15 @@ internal object ReflectionUtilsKt {
 
     internal val KFunction<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+
+    internal val KFunction<*>.shortSignature: String
+        get() {
+            val declaringClassName = this.javaMethod?.declaringClass?.simpleName ?: "<no-java-method>"
+            val methodName = this.name
+            val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleName }
+            val returnType = this.returnType.simpleName
+            return "$declaringClassName#$methodName($parameters): $returnType"
+        }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
     internal fun isInstantiable(info: ClassInfo): Boolean {
