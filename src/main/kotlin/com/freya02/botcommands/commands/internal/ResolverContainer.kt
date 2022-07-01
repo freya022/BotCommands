@@ -5,9 +5,9 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.core.api.annotations.BEventListener
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ServiceContainer
-import com.freya02.botcommands.core.internal.annotations.BInternalClass
 import com.freya02.botcommands.core.internal.events.LoadEvent
 import com.freya02.botcommands.internal.BContextImpl
 import kotlin.reflect.KClass
@@ -16,7 +16,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 private val LOGGER = Logging.getLogger()
 
-@BInternalClass
+@BService
 internal class ResolverContainer(context: BContextImpl, classPathContainer: ClassPathContainer, serviceContainer: ServiceContainer) {
     private val map: MutableMap<KClass<*>, Any> = hashMapOf()
 

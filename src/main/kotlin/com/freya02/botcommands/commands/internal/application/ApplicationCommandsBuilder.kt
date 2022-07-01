@@ -8,7 +8,6 @@ import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.PreboundFunction
 import com.freya02.botcommands.core.internal.ServiceContainer
-import com.freya02.botcommands.core.internal.annotations.BInternalClass
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import kotlin.reflect.full.valueParameters
@@ -17,7 +16,6 @@ import kotlin.reflect.jvm.jvmErasure
 private val LOGGER = Logging.getLogger()
 
 @BService
-@BInternalClass
 internal class ApplicationCommandsBuilder(classPathContainer: ClassPathContainer, serviceContainer: ServiceContainer) {
     private val declarationFunctions: MutableList<PreboundFunction> = arrayListOf()
 
