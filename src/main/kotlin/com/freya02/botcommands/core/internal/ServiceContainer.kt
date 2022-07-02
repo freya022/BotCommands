@@ -40,6 +40,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    fun <T : Any> getService(clazz: Class<T>): T {
+        return getService(clazz.kotlin)
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getService(clazz: KClass<T>): T {
         synchronized(serviceMap) {

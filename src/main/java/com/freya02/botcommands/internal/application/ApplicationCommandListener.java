@@ -7,6 +7,8 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationFilteringData;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.core.api.annotations.BEventListener;
+import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.Usability;
@@ -31,6 +33,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+@BService
 public final class ApplicationCommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;
@@ -49,6 +52,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		this.context = context;
 	}
 
+	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
@@ -68,6 +72,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
+	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
@@ -87,6 +92,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
+	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -94,7 +100,10 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
+			SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
+			if (slashCommand == null) { //TODO wtf this worked before ??
+				slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(null, CommandPath.of(event.getCommandPath()));
+			}
 
 			if (slashCommand == null) {
 				throw new IllegalArgumentException("A slash command could not be found: " + event.getCommandPath());

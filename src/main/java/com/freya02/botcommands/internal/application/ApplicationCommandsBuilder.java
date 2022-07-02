@@ -138,7 +138,7 @@ public final class ApplicationCommandsBuilder {
 	public void postProcess() throws IOException {
 		context.getJDA().setRequiredScopes("applications.commands");
 
-		context.setApplicationCommandsCache(new ApplicationCommandsCache(context));
+		context.setApplicationCommandsCache(new ApplicationCommandsCache(context.getJDA()));
 
 		es.submit(() -> {
 			try {

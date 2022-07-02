@@ -149,7 +149,7 @@ public class BContextImpl implements BContext {
 	@Override
 	@NotNull
 	public JDA getJDA() {
-		return jda;
+		return serviceContainer.getService(JDA.class);
 	}
 
 	@Override

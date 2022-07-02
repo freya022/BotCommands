@@ -1,11 +1,12 @@
 package com.freya02.botcommands.internal.application;
 
-import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.diff.DiffLogger;
 import com.google.gson.Gson;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,8 +18,8 @@ import java.util.Map;
 public class ApplicationCommandsCache {
 	private final Path cachePath;
 
-	ApplicationCommandsCache(BContextImpl context) throws IOException {
-		cachePath = Path.of(System.getProperty("java.io.tmpdir"), context.getJDA().getSelfUser().getId() + "slashcommands");
+	public ApplicationCommandsCache(@NotNull JDA jda) throws IOException {
+		cachePath = Path.of(System.getProperty("java.io.tmpdir"), jda.getSelfUser().getId() + "slashcommands");
 
 		Files.createDirectories(cachePath);
 	}
