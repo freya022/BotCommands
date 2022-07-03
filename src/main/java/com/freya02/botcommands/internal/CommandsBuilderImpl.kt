@@ -4,7 +4,6 @@ import com.freya02.botcommands.annotations.api.application.context.annotations.J
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommandManager
@@ -25,7 +24,6 @@ import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.events.ShutdownEvent
 import java.lang.reflect.InvocationTargetException
 import java.util.*
-import java.util.function.Function
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
@@ -273,14 +271,6 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
         context.registerMethodParameterSupplier(ApplicationCommandManager::class.java) { context.applicationCommandManager }
 
         context.setDefaultMessageProvider(DefaultMessagesFunction())
-    }
-
-    private class DefaultMessagesFunction : Function<Locale, DefaultMessages> {
-        private val localeDefaultMessagesMap: MutableMap<Locale, DefaultMessages> = HashMap()
-
-        override fun apply(locale: Locale): DefaultMessages {
-            return localeDefaultMessagesMap.computeIfAbsent(locale, ::DefaultMessages)
-        }
     }
 
     companion object {

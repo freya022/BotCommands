@@ -121,6 +121,8 @@ public class BContextImpl implements BContext {
 		this.config = config;
 		this.eventManager = eventManager;
 
+		this.defaultMessageProvider = new DefaultMessagesFunction();
+
 		this.classPathContainer = new ClassPathContainer(this);
 		this.serviceContainer = new ServiceContainer(this); //Puts itself, ctx, cem and cpc
 		this.eventDispatcher = new EventDispatcher(this); //Service put in ctor
