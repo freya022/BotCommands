@@ -11,7 +11,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import java.util.function.Consumer
+import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.valueParameters
 
 class UserCommandInfo internal constructor(
@@ -33,10 +33,9 @@ class UserCommandInfo internal constructor(
     }
 
     @Throws(Exception::class)
-    fun execute(
+    suspend fun execute(
         context: BContextImpl,
-        event: UserContextInteractionEvent,
-        throwableConsumer: Consumer<Throwable>
+        event: UserContextInteractionEvent
     ): Boolean {
         val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
         objects +=
@@ -60,11 +59,7 @@ class UserCommandInfo internal constructor(
 
         applyCooldown(event)
 
-        try {
-            method.call(*objects.toTypedArray())
-        } catch (e: Throwable) {
-            throwableConsumer.accept(e)
-        }
+        method.callSuspend(*objects.toTypedArray())
 
         return true
     }

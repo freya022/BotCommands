@@ -66,7 +66,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, userCommand)) return;
 
-			userCommand.execute(context, event, throwableConsumer);
+			throw new UnsupportedOperationException("User command have been moved");
+//			userCommand.execute(context, event);
 		}, throwableConsumer);
 	}
 
@@ -85,7 +86,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, messageCommand)) return;
 
-			messageCommand.execute(context, event, throwableConsumer);
+			throw new UnsupportedOperationException("Message command have been moved");
+//			messageCommand.execute(context, event, throwableConsumer);
 		}, throwableConsumer);
 	}
 

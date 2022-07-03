@@ -10,7 +10,9 @@ import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 import java.util.*
 
@@ -19,7 +21,7 @@ private val LOGGER = Logging.getLogger()
 @BService
 internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
     @BEventListener
-    suspend fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
+    suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         LOGGER.trace("Received slash command: {}", reconstructCommand(event))
 
         try {
@@ -31,6 +33,42 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
 
             if (!canRun(event, slashCommand)) return
             slashCommand.execute(context, event)
+        } catch (e: Throwable) {
+            handleException(e, event)
+        }
+    }
+
+    @BEventListener
+    suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
+        LOGGER.trace("Received user context command: {}", reconstructCommand(event))
+
+        try {
+            val userCommand = event.name.let {
+                context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
+                    ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
+                    ?: throwUser("A user context command could not be found: ${event.commandPath}")
+            }
+
+            if (!canRun(event, userCommand)) return
+            userCommand.execute(context, event)
+        } catch (e: Throwable) {
+            handleException(e, event)
+        }
+    }
+
+    @BEventListener
+    suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
+        LOGGER.trace("Received message context command: {}", reconstructCommand(event))
+
+        try {
+            val messageCommand = event.name.let {
+                context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
+                    ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
+                    ?: throwUser("A message context command could not be found: ${event.commandPath}")
+            }
+
+            if (!canRun(event, messageCommand)) return
+            messageCommand.execute(context, event)
         } catch (e: Throwable) {
             handleException(e, event)
         }
