@@ -111,3 +111,9 @@ val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
+
+tailrec fun Throwable.getDeepestCause(): Throwable {
+    if (cause == null) return this
+
+    return cause!!.getDeepestCause()
+}

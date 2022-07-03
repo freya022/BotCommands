@@ -9,10 +9,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -43,12 +41,7 @@ public final class Utils {
 	}
 
 	public static void printExceptionString(String message, Throwable e) {
-		final CharArrayWriter out = new CharArrayWriter(1024);
-		out.append(message).append("\n");
-		final PrintWriter printWriter = new PrintWriter(out);
-		e.printStackTrace(printWriter);
-
-		LOGGER.error(out.toString());
+		LOGGER.error(message, e);
 	}
 
 	/**

@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationFilteringData;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.core.api.annotations.BEventListener;
 import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -52,7 +51,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		this.context = context;
 	}
 
-	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
@@ -72,7 +70,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
-	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
@@ -92,7 +89,6 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}, throwableConsumer);
 	}
 
-	@BEventListener
 	@SubscribeEvent
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -111,7 +107,8 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			if (!canRun(event, slashCommand)) return;
 
-			slashCommand.execute(context, event, throwableConsumer);
+			throw new UnsupportedOperationException("Slash command have been moved");
+//			slashCommand.execute(context, event, throwableConsumer);
 		}, throwableConsumer);
 	}
 

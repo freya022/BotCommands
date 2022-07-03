@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import java.util.function.Consumer
 import kotlin.math.max
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
@@ -58,11 +58,9 @@ class SlashCommandInfo internal constructor(
         }
     }
 
-    @Throws(Exception::class)
-    fun execute(
+    suspend fun execute(
         context: BContextImpl,
-        event: SlashCommandInteractionEvent,
-        throwableConsumer: Consumer<Throwable>
+        event: SlashCommandInteractionEvent
     ): Boolean {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
@@ -150,11 +148,7 @@ class SlashCommandInfo internal constructor(
 
         applyCooldown(event)
 
-        try {
-            method.callBy(objects)
-        } catch (e: Throwable) {
-            throwableConsumer.accept(e)
-        }
+        method.callSuspendBy(objects)
 
         return true
     }
