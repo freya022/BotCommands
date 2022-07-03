@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.application.builder
 
+import com.freya02.botcommands.api.application.AutocompleteInfo
 import com.freya02.botcommands.api.application.ValueRange
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
@@ -12,4 +13,11 @@ class SlashCommandOptionBuilder(name: String): ApplicationCommandOptionBuilder(n
 
     var valueRange: ValueRange? = null
     var channelTypes: EnumSet<ChannelType>? = null
+
+    var autocompleteInfo: AutocompleteInfo? = null
+        private set
+
+    fun autocomplete(block: AutocompleteInfoBuilder.() -> Unit) {
+        autocompleteInfo = AutocompleteInfoBuilder().apply(block).build()
+    }
 }

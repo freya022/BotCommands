@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.ValueRange
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
@@ -17,13 +18,16 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
 class SlashCommandParameter(
-    parameter: KParameter, optionBuilder: SlashCommandOptionBuilder, val resolver: SlashParameterResolver
+    slashCommandInfo: SlashCommandInfo, parameter: KParameter, optionBuilder: SlashCommandOptionBuilder, val resolver: SlashParameterResolver
 ) : AbstractSlashCommandParameter(
     parameter, optionBuilder
 ) {
     val description: String = optionBuilder.description
     override val isOptional: Boolean
-    val autocompleteInfo: Any = Any() //TODO autocompleteInfo
+    val autocompleteHandler: AutocompleteHandler? = when {
+        optionBuilder.autocompleteInfo != null -> AutocompleteHandler(slashCommandInfo, optionBuilder.autocompleteInfo!!)
+        else -> null
+    }
 
     val choices: List<Choice>? = optionBuilder.choices
     val range: ValueRange? = optionBuilder.valueRange
@@ -55,4 +59,6 @@ class SlashCommandParameter(
             else -> enumSetOf()
         }
     }
+
+    fun hasAutocomplete() = autocompleteHandler != null
 }

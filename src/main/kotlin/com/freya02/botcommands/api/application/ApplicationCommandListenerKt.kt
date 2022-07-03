@@ -32,7 +32,7 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
             }
 
             if (!canRun(event, slashCommand)) return
-            slashCommand.execute(context, event)
+            slashCommand.execute(event)
         } catch (e: Throwable) {
             handleException(e, event)
         }

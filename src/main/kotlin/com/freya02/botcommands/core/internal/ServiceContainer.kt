@@ -6,13 +6,16 @@ import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BServiceConfig
 import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.isStatic
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
@@ -72,6 +75,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     beingCreatedSet.clear()
                 }
             }
+        }
+    }
+
+    fun getFunctionService(function: KFunction<Any>): Any {
+        return when {
+            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
+            else -> getService(function.javaMethod!!.declaringClass)
         }
     }
 

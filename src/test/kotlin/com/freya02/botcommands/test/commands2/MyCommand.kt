@@ -16,7 +16,8 @@ import net.dv8tion.jda.api.entities.Category
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.interactions.commands.Command
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 class MyCommand : ApplicationCommand() {
     @CommandMarker
@@ -27,10 +28,25 @@ class MyCommand : ApplicationCommand() {
         @Name(name = "user") userOption: User,
         @ChannelTypes(ChannelType.CATEGORY) channelOptionAnnot: Category,
         channelOption: TextChannel,
+        autocompleteStr: String,
         @Name(declaredName = "notDoubleOption") doubleOption: Double?,
         custom: BContext
     ) {
-        event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOptionAnnot + channelOption).queue()
+        event.reply("""
+                    event: $event
+                    string: $stringOption
+                    int: $intOption
+                    user: $userOption
+                    category: $channelOptionAnnot
+                    text channel: $channelOption
+                    autocomplete string: $autocompleteStr
+                    double: $doubleOption
+                    custom: $custom
+        """.trimIndent()).queue()
+    }
+
+    fun runAutocomplete(event: CommandAutoCompleteInteractionEvent): Collection<Choice> {
+        return listOf(Choice("lol name", "lol value"))
     }
 
     @Declaration
@@ -43,13 +59,15 @@ class MyCommand : ApplicationCommand() {
                 option("stringOption") {
                     description = "Option description"
 
-                    choices = listOf(Command.Choice("a", "a"), Command.Choice("b", "b"), Command.Choice("c", "c"))
+                    choices = listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
                 }
 
                 option("notIntOption") {
                     description = "An integer"
 
                     valueRange = 1 range 2
+
+                    choices = listOf(Choice("1", 1L), Choice("2", 2L))
                 }
 
                 option("notDoubleOption") {
@@ -67,6 +85,14 @@ class MyCommand : ApplicationCommand() {
                 }
 
                 customOption("custom")
+
+                option("autocompleteStr") {
+                    description = "Autocomplete !"
+
+                    autocomplete {
+                        function = ::runAutocomplete
+                    }
+                }
 
                 function = localFunction
             }

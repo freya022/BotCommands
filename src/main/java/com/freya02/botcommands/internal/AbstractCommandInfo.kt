@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.internal.runner.MethodRunner
-import com.freya02.botcommands.internal.utils.ClassInstancer
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.function.Consumer
@@ -26,7 +25,7 @@ abstract class AbstractCommandInfo internal constructor(
     final override val method: KFunction<*>
 
     init {
-        instance = ClassInstancer.getFunctionTarget(context, builder.function)
+        instance = context.serviceContainer.getFunctionService(builder.function)
 
         path = builder.path
         method = builder.function

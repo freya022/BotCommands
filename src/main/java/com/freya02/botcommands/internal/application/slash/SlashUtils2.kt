@@ -110,13 +110,13 @@ object SlashUtils2 {
                     else -> {}
                 }
 
-//                if (applicationOptionData.hasAutocompletion()) { //TODO autocomplete
-//                    requireUser(optionType.canSupportChoices()) {
-//                        "Slash command parameter #$i does not support autocompletion"
-//                    }
-//
-//                    data.isAutoComplete = true
-//                }
+                if (parameter.hasAutocomplete()) {
+                    requireUser(optionType.canSupportChoices()) {
+                        "Slash command parameter #$i does not support autocompletion"
+                    }
+
+                    data.isAutoComplete = true
+                }
 
                 if (optionType.canSupportChoices()) {
                     var choices: Collection<Command.Choice>? = null
@@ -131,9 +131,9 @@ object SlashUtils2 {
                     }
 
                     if (choices != null) {
-//                        requireUser(!applicationOptionData.hasAutocompletion()) { //TODO autocomplete
-//                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
-//                        }
+                        requireUser(!parameter.hasAutocomplete()) { //TODO autocomplete
+                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
+                        }
 
                         data.addChoices(choices)
                     }

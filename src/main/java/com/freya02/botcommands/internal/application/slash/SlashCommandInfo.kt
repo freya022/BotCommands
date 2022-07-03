@@ -4,19 +4,21 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
+import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.math.max
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -26,7 +28,7 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 class SlashCommandInfo internal constructor(
-    context: BContextImpl,
+    val context: BContextImpl,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
@@ -37,10 +39,12 @@ class SlashCommandInfo internal constructor(
     override val parameters: MethodParameters
 
     @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<MethodParameter>
+    override val optionParameters: List<SlashCommandParameter>
         get() = super.optionParameters as List<SlashCommandParameter>
 
     init {
+        requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
+
         parameters = MethodParameters.of<SlashParameterResolver>(
             context,
             method,
@@ -54,20 +58,31 @@ class SlashCommandInfo internal constructor(
             }
 
             val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
-            SlashCommandParameter(kParameter, optionBuilder, resolver)
+            SlashCommandParameter(this, kParameter, optionBuilder, resolver)
         }
     }
 
-    suspend fun execute(
-        context: BContextImpl,
-        event: SlashCommandInteractionEvent
-    ): Boolean {
+    suspend fun execute(event: SlashCommandInteractionEvent): Boolean {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
             if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
-        for (parameter in parameters) {
+        putSlashOptions(event, objects)
+
+        applyCooldown(event)
+
+        method.callSuspendBy(objects)
+
+        return true
+    }
+
+    internal fun <T> putSlashOptions(
+        event: T,
+        objects: MutableMap<KParameter, Any?>
+    ) where T : CommandInteractionPayload,
+            T : Event {
+        parameterLoop@for (parameter in parameters) {
             if (parameter.methodParameterType == MethodParameterType.COMMAND) {
                 parameter as SlashCommandParameter
 
@@ -85,7 +100,7 @@ class SlashCommandInfo internal constructor(
                 }
 
                 val arguments = max(1, parameter.varArgs)
-                val objectList: MutableList<Any?> = ArrayList(arguments)
+                val objectList: MutableList<Any?> = arrayOfSize(arguments)
 
                 val optionName = parameter.discordName
                 for (varArgNum in 0 until arguments) {
@@ -99,19 +114,23 @@ class SlashCommandInfo internal constructor(
 
                             continue
                         } else {
+                            if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop
+
                             throwUser("Slash parameter couldn't be resolved at parameter " + parameter.name + " (" + varArgName + ")")
                         }
 
                     val resolved = parameter.resolver.resolve(context, this, event, optionMapping)
                     if (resolved == null) {
-                        event.reply(
-                            context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                parameter.name,
-                                parameter.type.jvmErasure.simpleName
+                        if (event is SlashCommandInteractionEvent) {
+                            event.reply(
+                                context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
+                                    parameter.name,
+                                    parameter.type.jvmErasure.simpleName
+                                )
                             )
-                        )
-                            .setEphemeral(true)
-                            .queue()
+                                .setEphemeral(true)
+                                .queue()
+                        }
 
                         //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
                         LOGGER.trace(
@@ -121,7 +140,7 @@ class SlashCommandInfo internal constructor(
                             parameter.type.jvmErasure.simpleName
                         )
 
-                        return false
+                        return
                     }
 
                     requireUser(parameter.type.jvmErasure.isSuperclassOf(resolved::class)) {
@@ -145,29 +164,10 @@ class SlashCommandInfo internal constructor(
                 TODO()
             }
         }
-
-        applyCooldown(event)
-
-        method.callSuspendBy(objects)
-
-        return true
     }
 
     fun getAutocompletionHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
-        return null //TODO autocomplete
-//        val autoCompleteQuery = event.focusedOption
-//        for (parameter in parameters) {
-//            val applicationOptionData = parameter.applicationOptionData
-//            if (parameter.methodParameterType == MethodParameterType.COMMAND) {
-//                parameter as SlashCommandParameter
-//
-//                val optionName = parameter.name
-//                if (optionName == autoCompleteQuery.name) {
-//                    return parameter.auto
-//                }
-//            }
-//        }
-//        return null
+        throw UnsupportedOperationException()
     }
 
     companion object {

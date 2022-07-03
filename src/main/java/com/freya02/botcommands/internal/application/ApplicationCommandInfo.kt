@@ -2,10 +2,11 @@ package com.freya02.botcommands.internal.application
 
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.AbstractCommandInfo
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.parameters.MethodParameter
-import kotlin.reflect.full.valueParameters
+import com.freya02.botcommands.internal.throwUser
 
 abstract class ApplicationCommandInfo internal constructor(
     context: BContextImpl,
@@ -26,8 +27,6 @@ abstract class ApplicationCommandInfo internal constructor(
         isDefaultLocked = builder.defaultLocked
         isGuildOnly = context.applicationCommandsContext.isForceGuildCommandsEnabled || scope.isGuildOnly
         isTestOnly = builder.testOnly
-
-        requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 
         if(isTestOnly && scope != CommandScope.GUILD) {
             throwUser("Application command annotated with @Test must have the GUILD scope")

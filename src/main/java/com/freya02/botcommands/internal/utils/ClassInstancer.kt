@@ -2,16 +2,12 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.Dependency
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.isStatic
-import com.freya02.botcommands.internal.throwInternal
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
 internal object ClassInstancer {
@@ -21,13 +17,6 @@ internal object ClassInstancer {
         return when {
             Modifier.isStatic(method.modifiers) -> null
             else -> instantiate(context, method.declaringClass.kotlin)
-        }
-    }
-
-    fun getFunctionTarget(context: BContextImpl, function: KFunction<*>): Any {
-        return when {
-            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
-            else -> instantiate(context, function.javaMethod!!.declaringClass.kotlin)
         }
     }
 
