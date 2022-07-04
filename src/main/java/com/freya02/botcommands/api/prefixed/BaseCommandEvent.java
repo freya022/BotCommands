@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 public abstract class BaseCommandEvent extends MessageReceivedEvent implements GuildLocalizable, Localizable {
 	private final EventLocalizer localizer;
 
-	public BaseCommandEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull Message message) {
+	public BaseCommandEvent(@NotNull BContextImpl context, @Nullable KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
 
 		this.localizer = new EventLocalizer(context, function, message.isFromGuild() ? message.getGuild().getLocale() : null, null);

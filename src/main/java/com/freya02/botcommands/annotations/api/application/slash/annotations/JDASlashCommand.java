@@ -5,12 +5,12 @@ import com.freya02.botcommands.annotations.api.annotations.Cooldown;
 import com.freya02.botcommands.annotations.api.annotations.UserPermissions;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.CommandScope;
-import com.freya02.botcommands.api.entities.Emoji;
-import com.freya02.botcommands.api.entities.EmojiOrEmote;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -56,8 +56,6 @@ import java.lang.annotation.Target;
  *     <li>double</li>
  *
  *     <li>{@linkplain Emoji}</li>
- *     <li>{@linkplain Emote}</li>
- *     <li>{@linkplain EmojiOrEmote}</li>
  *
  *     <li>{@linkplain IMentionable}</li>
  *     <li>{@linkplain Role}</li>

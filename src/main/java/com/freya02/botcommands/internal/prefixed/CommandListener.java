@@ -168,7 +168,7 @@ public final class CommandListener extends ListenerAdapter {
 				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
 						candidates.first().getPath());
 			} else if (context.getHelpConsumer() != null) {
-				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, args), candidates.first().getPath());
+				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, null, event, args), candidates.first().getPath());
 			}
 		}, throwableConsumer);
 	}

@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -12,10 +13,9 @@ import com.freya02.botcommands.internal.application.slash.SlashUtils2;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermission;
-import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
@@ -71,9 +71,8 @@ public class ApplicationCommandsUpdater {
 
 		//Apply localization
 		final LocalizationFunction localizationFunction = new BCLocalizationFunction(context);
-		final LocalizationMapper localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
 		for (CommandData commandData : allCommandData) {
-			commandData.setLocalizationMapper(localizationMapper);
+			commandData.setLocalizationFunction(localizationFunction);
 		}
 	}
 
@@ -236,9 +235,13 @@ public class ApplicationCommandsUpdater {
 
 	private void configureTopLevel(ApplicationCommandInfo info, CommandData rightCommand) {
 		if (info.isDefaultLocked()) {
-			rightCommand.setDefaultPermissions(CommandPermission.DISABLED);
+			rightCommand.setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 		} else if (!info.getUserPermissions().isEmpty()) {
-			rightCommand.setDefaultPermissions(CommandPermission.enabledFor(info.getUserPermissions()));
+			rightCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(info.getUserPermissions()));
+		}
+
+		if (info.getScope() == CommandScope.GLOBAL_NO_DM) {
+			rightCommand.setGuildOnly(true);
 		}
 	}
 

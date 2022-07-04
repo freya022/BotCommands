@@ -1,13 +1,12 @@
 package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.entities.Emoji;
-import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -166,8 +165,6 @@ public class Utils {
 				}
 			} else if (boxedType == Float.class || boxedType == Double.class) {
 				return String.valueOf(ThreadLocalRandom.current().nextDouble(50));
-			} else if (boxedType == Emote.class) {
-				return "<:kekw:673277564034482178>";
 			} else if (boxedType == Guild.class) {
 				return "331718482485837825";
 			} else if (boxedType == Role.class) {
@@ -178,8 +175,6 @@ public class Utils {
 				return "<@222046562543468545>";
 			} else if (boxedType == TextChannel.class) {
 				return "331718482485837825";
-			} else if (boxedType == EmojiOrEmote.class) {
-				return ":flushed:";
 			} else {
 				return "?";
 			}
@@ -199,7 +194,7 @@ public class Utils {
 			if (boxedType == String.class) {
 				return needsQuote ? "\"" + getParameterName(commandParameter.getKParameter(), "string") + "\"" : getParameterName(commandParameter.getKParameter(), "string");
 			} else if (boxedType == Emoji.class) {
-				return "unicode emoji/shortcode";
+				return "unicode emoji/shortcode/emote/emote id";
 			} else if (boxedType == Integer.class) {
 				return getParameterName(commandParameter.getKParameter(), "integer");
 			} else if (boxedType == Long.class) {
@@ -210,8 +205,6 @@ public class Utils {
 				}
 			} else if (boxedType == Float.class || boxedType == Double.class) {
 				return getParameterName(commandParameter.getKParameter(), "decimal");
-			} else if (boxedType == Emote.class) {
-				return "emote/emote id";
 			} else if (boxedType == Guild.class) {
 				return "guild id";
 			} else if (boxedType == Role.class) {
@@ -222,8 +215,6 @@ public class Utils {
 				return "member mention/member id";
 			} else if (boxedType == TextChannel.class) {
 				return "text channel mention/text channel id";
-			} else if (boxedType == EmojiOrEmote.class) {
-				return "emoji/emote";
 			} else {
 				LOGGER.warn("Unknown type: {}", boxedType);
 				return "?";

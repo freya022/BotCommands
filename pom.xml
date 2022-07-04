@@ -192,9 +192,9 @@
             <version>${kotlin.coroutine.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.freya022</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>b9edcecbe4</version>
+            <version>6e8c030fbe</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -252,7 +252,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.1.0</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
@@ -268,7 +268,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.4</version>
+            <version>42.3.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
