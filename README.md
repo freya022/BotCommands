@@ -6,9 +6,9 @@
 
 ### Notice
 **This version uses a fork of JDA in order to support permissions V2 and command localization** 
-* Group ID: `com.github.freya022`
+* Group ID: `com.github.DV8FromTheWorld`
 * Artefact ID: `JDA`
-* Version: `6a4891e3cb`
+* Version: `6e8c030fbe`
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
