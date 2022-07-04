@@ -29,7 +29,7 @@ public class Usability {
 			msgChannel = threadChannel.getParentMessageChannel();
 		}
 
-		if (msgChannel instanceof BaseGuildMessageChannel channel) {
+		if (msgChannel instanceof StandardGuildMessageChannel channel) {
 			//If guild NSFW is not enabled, and we are in a guild channel
 			if (!nsfwState.isEnabledInGuild()) {
 				unusableReasons.add(NSFW_DISABLED);

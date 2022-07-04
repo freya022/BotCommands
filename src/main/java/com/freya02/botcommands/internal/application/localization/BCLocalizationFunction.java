@@ -5,7 +5,8 @@ import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import com.freya02.botcommands.internal.BContextImpl;
-import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -24,8 +25,8 @@ public class BCLocalizationFunction implements LocalizationFunction {
 
 	@NotNull
 	@Override
-	public Map<Locale, String> apply(@NotNull String localizationKey) {
-		final Map<Locale, String> map = new HashMap<>();
+	public Map<DiscordLocale, String> apply(@NotNull String localizationKey) {
+		final Map<DiscordLocale, String> map = new HashMap<>();
 
 		baseNameToLocalesMap.forEach((baseName, locales) -> {
 			for (Locale locale : locales) {
@@ -39,7 +40,7 @@ public class BCLocalizationFunction implements LocalizationFunction {
 
 					final LocalizationTemplate template = instance.get(localizationKey);
 					if (template != null) {
-						map.put(locale, template.localize());
+						map.put(DiscordLocale.from(locale), template.localize());
 					} else if (DebugBuilder.isLogMissingLocalizationEnabled()) {
 						if (Logging.tryLog(baseName, locale.toLanguageTag(), localizationKey)) {
 							LOGGER.warn("Localization template '{}' could not be found in bundle '{}' with locale '{}' or below", localizationKey, baseName, locale);

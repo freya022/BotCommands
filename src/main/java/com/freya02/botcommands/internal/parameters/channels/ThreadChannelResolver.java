@@ -30,7 +30,7 @@ public class ThreadChannelResolver extends ParameterResolver implements SlashPar
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsThreadChannel();
+		return optionMapping.getAsChannel();
 	}
 
 	@Override

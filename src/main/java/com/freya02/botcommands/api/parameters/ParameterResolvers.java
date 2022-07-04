@@ -1,12 +1,11 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.entities.Emoji;
-import com.freya02.botcommands.api.entities.EmojiOrEmote;
 import com.freya02.botcommands.internal.parameters.*;
 import com.freya02.botcommands.internal.parameters.channels.*;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -29,8 +28,6 @@ import java.util.stream.Collectors;
  *     <li>double</li>
  *
  *     <li>{@linkplain Emoji}</li>
- *     <li>{@linkplain Emote}</li>
- *     <li>{@linkplain EmojiOrEmote}</li>
  *
  *     <li>{@linkplain Role}</li>
  *     <li>{@linkplain User}</li>
@@ -55,9 +52,7 @@ public class ParameterResolvers {
 	static {
 		register(new BooleanResolver());
 		register(new DoubleResolver());
-		register(new EmojiOrEmoteResolver());
 		register(new EmojiResolver());
-		register(new EmoteResolver());
 		register(new GuildResolver());
 		register(new LongResolver());
 		register(new IntegerResolver());

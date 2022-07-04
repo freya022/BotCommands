@@ -12,10 +12,9 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
-import net.dv8tion.jda.api.interactions.commands.LocalizationFunction;
-import net.dv8tion.jda.api.interactions.commands.LocalizationMapper;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
@@ -72,9 +71,8 @@ public class ApplicationCommandsUpdater {
 
 		//Apply localization
 		final LocalizationFunction localizationFunction = new BCLocalizationFunction(context);
-		final LocalizationMapper localizationMapper = LocalizationMapper.fromFunction(localizationFunction);
 		for (CommandData commandData : allCommandData) {
-			commandData.setLocalizationMapper(localizationMapper);
+			commandData.setLocalizationFunction(localizationFunction);
 		}
 	}
 
@@ -237,9 +235,9 @@ public class ApplicationCommandsUpdater {
 
 	private void configureTopLevel(ApplicationCommandInfo info, CommandData rightCommand) {
 		if (info.isDefaultLocked()) {
-			rightCommand.setDefaultPermissions(CommandPermissions.DISABLED);
+			rightCommand.setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 		} else if (!info.getUserPermissions().isEmpty()) {
-			rightCommand.setDefaultPermissions(CommandPermissions.enabledFor(info.getUserPermissions()));
+			rightCommand.setDefaultPermissions(DefaultMemberPermissions.enabledFor(info.getUserPermissions()));
 		}
 
 		if (info.getScope() == CommandScope.GLOBAL_NO_DM) {

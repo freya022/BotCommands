@@ -50,7 +50,7 @@ public class RichTextFinder extends EmojiParser {
 		if (getIMentionable) {
 			findAllMentions(RichTextType.USER, RichTextType.USER.getPattern());
 			findAllMentions(RichTextType.CHANNEL, RichTextType.CHANNEL.getPattern());
-			findAllMentions(RichTextType.EMOTE, RichTextType.EMOTE.getPattern());
+			findAllMentions(RichTextType.EMOJI, RichTextType.EMOJI.getPattern());
 			findAllMentions(RichTextType.ROLE, RichTextType.ROLE.getPattern());
 		}
 
@@ -126,7 +126,7 @@ public class RichTextFinder extends EmojiParser {
 
 				final int beginIndex = last;
 
-				final boolean isInsideCustomEmote = normalMentionMap.values().stream().filter(r -> r.type == RichTextType.EMOTE).anyMatch(r -> {
+				final boolean isInsideCustomEmote = normalMentionMap.values().stream().filter(r -> r.type == RichTextType.EMOJI).anyMatch(r -> {
 					final List<String> aliases = alias.emoji.getAliases();
 					for (String aliasItem : aliases) {
 						final boolean customEmoteHasEmoji = r.substring.startsWith(':' + aliasItem + ':', 1);

@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.ButtonConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
