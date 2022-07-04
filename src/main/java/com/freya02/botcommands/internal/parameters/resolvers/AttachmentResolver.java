@@ -1,7 +1,8 @@
-package com.freya02.botcommands.internal.parameters;
+package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Message;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class AttachmentResolver extends ParameterResolver implements SlashParameterResolver {
 	public AttachmentResolver() {
-		super(Message.Attachment.class);
+		super(ParameterType.ofClass(Message.Attachment.class));
 	}
 
 	@Override

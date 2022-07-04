@@ -20,10 +20,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.CommandPermission
-import net.dv8tion.jda.api.interactions.commands.LocalizationFunction
-import net.dv8tion.jda.api.interactions.commands.LocalizationMapper
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
 import net.dv8tion.jda.api.interactions.commands.build.*
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Files
 import java.util.function.Function
 
@@ -55,9 +54,8 @@ internal class ApplicationCommandsUpdaterKt private constructor(
 
         //Apply localization
         val localizationFunction: LocalizationFunction = BCLocalizationFunction(context)
-        val localizationMapper = LocalizationMapper.fromFunction(localizationFunction)
         for (commandData in allCommandData) {
-            commandData.setLocalizationMapper(localizationMapper)
+            commandData.setLocalizationFunction(localizationFunction)
         }
     }
 
@@ -196,9 +194,9 @@ internal class ApplicationCommandsUpdaterKt private constructor(
 
     private fun configureTopLevel(info: ApplicationCommandInfo, rightCommand: CommandData) {
         if (info.isDefaultLocked) {
-            rightCommand.defaultPermissions = CommandPermission.DISABLED
+            rightCommand.defaultPermissions = DefaultMemberPermissions.DISABLED
         } else if (info.userPermissions.isNotEmpty()) {
-            rightCommand.defaultPermissions = CommandPermission.enabledFor(info.userPermissions)
+            rightCommand.defaultPermissions = DefaultMemberPermissions.enabledFor(info.userPermissions)
         }
     }
 

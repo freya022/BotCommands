@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.text;
 
+import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 public class TextEmoji extends TextCommand {
