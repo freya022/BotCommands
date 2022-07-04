@@ -71,6 +71,8 @@ public class ParameterResolvers {
 
 		register(new UserResolver());
 		register(new MessageResolver());
+
+		register(new AttachmentResolver());
 	}
 
 	public static void register(@NotNull ParameterResolver resolver) {
