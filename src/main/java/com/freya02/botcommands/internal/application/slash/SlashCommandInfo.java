@@ -12,9 +12,6 @@ import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
@@ -47,18 +44,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
-		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, i) -> {
-			final Class<?> type = parameter.getType();
-
-			if (Member.class.isAssignableFrom(type)
-					|| Role.class.isAssignableFrom(type)
-					|| GuildChannel.class.isAssignableFrom(type)) {
-				if (!isGuildOnly())
-					throw new IllegalArgumentException("The slash command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
-			}
-
-			return new SlashCommandParameter(parameter, i);
-		});
+		this.commandParameters = MethodParameters.of(context, commandMethod, SlashCommandParameter::new);
 
 		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())
 			throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
