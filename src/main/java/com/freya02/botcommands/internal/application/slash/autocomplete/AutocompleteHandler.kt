@@ -72,6 +72,10 @@ internal class AutocompleteHandler(
 
         slashCommandInfo.putSlashOptions(event, objects, methodParameters)
 
+        if (objects.size - 2 < methodParameters.size) {
+            return emptyList() //Autocomplete was triggered without all the required parameters being present
+        }
+
         val actualChoices: MutableList<Choice> = arrayOfSize(25)
         val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.method.callSuspendBy(objects))
         val autoCompleteQuery = event.focusedOption
