@@ -16,9 +16,11 @@ internal sealed class AbstractAutocompleteCache {
     companion object {
         //In case more caches are to come
         fun fromMode(handler: AutocompleteHandler): AbstractAutocompleteCache {
-            return when (handler.autocompleteInfo.cacheMode) {
+            val autocompleteCache = handler.autocompleteInfo.autocompleteCache ?: return NoCacheAutocomplete
+
+            return when (autocompleteCache.cacheMode) {
                 AutocompletionCacheMode.NO_CACHE -> NoCacheAutocomplete
-                AutocompletionCacheMode.CONSTANT_BY_KEY -> ConstantByKeyAutocompleteCache(handler)
+                AutocompletionCacheMode.CONSTANT_BY_KEY -> ConstantByKeyAutocompleteCache(handler, autocompleteCache)
             }
         }
     }

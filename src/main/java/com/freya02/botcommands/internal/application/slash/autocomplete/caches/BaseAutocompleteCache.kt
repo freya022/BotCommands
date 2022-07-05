@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches
 
-import com.freya02.botcommands.api.application.AutocompleteInfo
+import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteCommandParameter
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey
@@ -9,12 +9,12 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 
 private typealias EntityCacheFunction = (CommandAutoCompleteInteractionEvent) -> Long
 
-internal sealed class BaseAutocompleteCache(info: AutocompleteInfo) : AbstractAutocompleteCache() {
+internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : AbstractAutocompleteCache() {
     private val guildFunction: EntityCacheFunction =
-        getEntityCacheFunction(info.guildLocal) { if (it.guild != null) it.guild!!.idLong else 0 }
+        getEntityCacheFunction(cacheInfo.guildLocal) { if (it.guild != null) it.guild!!.idLong else 0 }
     private val channelFunction: EntityCacheFunction =
-        getEntityCacheFunction(info.channelLocal) { if (it.channel != null) it.channel!!.idLong else 0 }
-    private val userFunction: EntityCacheFunction = getEntityCacheFunction(info.userLocal) { it.user.idLong }
+        getEntityCacheFunction(cacheInfo.channelLocal) { if (it.channel != null) it.channel!!.idLong else 0 }
+    private val userFunction: EntityCacheFunction = getEntityCacheFunction(cacheInfo.userLocal) { it.user.idLong }
 
     private fun getCompositeOptionValues(
         autocompleteHandler: AutocompleteHandler,

@@ -100,7 +100,9 @@ class MyCommand : ApplicationCommand() {
                     autocomplete {
                         function = ::runAutocomplete
 
-                        cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY
+                        cache {
+                            cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY
+                        }
                     }
                 }
 

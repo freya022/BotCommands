@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches
 
+import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey
 import com.github.benmanes.caffeine.cache.Cache
@@ -14,10 +15,11 @@ import kotlin.time.Duration.Companion.minutes
 //private val LOGGER = Logging.getLogger()
 
 internal class ConstantByKeyAutocompleteCache(
-    private val handler: AutocompleteHandler
-) : BaseAutocompleteCache(handler.autocompleteInfo) {
+    private val handler: AutocompleteHandler,
+    cacheInfo: AutocompleteCacheInfo
+) : BaseAutocompleteCache(cacheInfo) {
     private val cache: Cache<CompositeAutocompletionKey, List<Command.Choice>>
-    private val maxWeight: Long = handler.autocompleteInfo.cacheSize * 1024
+    private val maxWeight: Long = cacheInfo.cacheSize * 1024
     private val lock = Mutex()
 
     init {
