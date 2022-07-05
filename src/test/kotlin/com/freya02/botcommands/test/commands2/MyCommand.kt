@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.Category
 import net.dv8tion.jda.api.entities.ChannelType
@@ -51,6 +52,8 @@ class MyCommand : ApplicationCommand() {
         stringOption: String,
         @Name(declaredName = "notDoubleOption") doubleOption: Double?
     ): Collection<Choice> {
+        println("ran")
+
         return listOf(Choice("lol name + $stringOption + $doubleOption", "lol value + $stringOption + $doubleOption"))
     }
 
@@ -96,6 +99,8 @@ class MyCommand : ApplicationCommand() {
 
                     autocomplete {
                         function = ::runAutocomplete
+
+                        cacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY
                     }
                 }
 

@@ -61,16 +61,8 @@ class AutocompleteHandler(
         cache = AbstractAutocompleteCache.fromMode(this)
     }
 
-    suspend fun handle(event: CommandAutoCompleteInteractionEvent): Collection<Choice> {
-        return cache.retrieveAndCall(event) { key: CompositeAutocompletionKey? ->
-            val choices = generateChoices(event)
-
-            if (key != null) {
-                cache.put(key, choices)
-            }
-
-            return@retrieveAndCall choices
-        }
+    suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Choice> {
+        return cache.retrieveAndCall(event, this::generateChoices)
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Choice> {

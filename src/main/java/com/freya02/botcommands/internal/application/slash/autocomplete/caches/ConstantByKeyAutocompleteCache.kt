@@ -4,8 +4,12 @@ import com.freya02.botcommands.internal.application.slash.autocomplete.Autocompl
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
+import kotlin.time.Duration.Companion.minutes
 
 //private val LOGGER = Logging.getLogger()
 
@@ -14,6 +18,7 @@ internal class ConstantByKeyAutocompleteCache(
 ) : BaseAutocompleteCache(handler.autocompleteInfo) {
     private val cache: Cache<CompositeAutocompletionKey, List<Command.Choice>>
     private val maxWeight: Long = handler.autocompleteInfo.cacheSize * 1024
+    private val lock = Mutex()
 
     init {
         cache = Caffeine.newBuilder()
@@ -31,18 +36,20 @@ internal class ConstantByKeyAutocompleteCache(
     private fun getEntrySize(key: CompositeAutocompletionKey, choices: List<Command.Choice>): Int =
         key.length() + choices.sumOf { c -> c.name.length + c.asString.length }
 
-    @Throws(Exception::class)
     override suspend fun retrieveAndCall(
         event: CommandAutoCompleteInteractionEvent,
-        valueComputer: suspend (CompositeAutocompletionKey?) -> List<Command.Choice>
+        valueComputer: suspend (CommandAutoCompleteInteractionEvent) -> List<Command.Choice>
     ): List<Command.Choice> {
         val compositeKey = getCompositeKey(handler, event)
-        return cache.getIfPresent(compositeKey)
-            ?: valueComputer(compositeKey) //Choice callback is called by valueComputer
-    }
 
-    override fun put(key: CompositeAutocompletionKey, choices: List<Command.Choice>) {
-        cache.put(key, choices)
+        lock.withLock(this) {
+            return cache.getIfPresent(compositeKey)
+                ?: withTimeout(1.minutes) {
+                    return@withTimeout valueComputer(event).also { computedChoices ->
+                        cache.put(compositeKey, computedChoices)
+                    }
+                }
+        }
     }
 
     override fun invalidate() {
