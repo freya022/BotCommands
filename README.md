@@ -153,11 +153,11 @@ commandsBuilder.build(
 ```
 
 ## How do I make commands ?
-See the [wiki](https://github.com/freya022/BotCommands/wiki), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
+See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-slash-commands/Slash-commands/), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
 
 ## Some debugging tools
 
-- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://github.com/freya022/BotCommands/wiki/Logging)
+- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/Logging)
 - There are also some switches in `DebugBuilder`, if you ever need them
 - To test your application commands you can use the `@Test` annotation
 
