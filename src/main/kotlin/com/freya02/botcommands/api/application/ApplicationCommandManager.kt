@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.BContextImpl
 class ApplicationCommandManager internal constructor(val context: BContextImpl) {
     fun slashCommand(path: CommandPath, builder: SlashCommandBuilder.() -> Unit) {
         context.addSlashCommand(
-            SlashCommandBuilder(context, path)
+            SlashCommandBuilder(context, path, TODO())
                 .apply(builder)
                 .build()
         )

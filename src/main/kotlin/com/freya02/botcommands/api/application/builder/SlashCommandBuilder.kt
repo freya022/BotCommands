@@ -1,14 +1,16 @@
 package com.freya02.botcommands.api.application.builder
 
 import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.throwUser
 
 class SlashCommandBuilder internal constructor(
     private val context: BContextImpl,
-    path: CommandPath
-) : ApplicationCommandBuilder(path) {
+    path: CommandPath,
+    scope: CommandScope
+) : ApplicationCommandBuilder(path, scope) {
     var description: String = "No description"
     override val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 

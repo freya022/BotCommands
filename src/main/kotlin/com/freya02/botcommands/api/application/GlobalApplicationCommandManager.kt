@@ -3,12 +3,18 @@ package com.freya02.botcommands.api.application
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.throwUser
 
 class GlobalApplicationCommandManager internal constructor(val context: BContextImpl): IApplicationCommandManager {
     override val guildApplicationCommands: ArrayList<ApplicationCommandInfo> = arrayListOf()
 
-    override fun slashCommand(path: CommandPath, builder: SlashCommandBuilder.() -> Unit) {
-        guildApplicationCommands += SlashCommandBuilder(context, path)
+    @JvmOverloads
+    fun slashCommand(path: CommandPath, scope: CommandScope = CommandScope.GLOBAL, builder: SlashCommandBuilder.() -> Unit) {
+        if (!scope.isGlobal) {
+            throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
+        }
+
+        guildApplicationCommands += SlashCommandBuilder(context, path, scope)
             .apply(builder)
             .build()
     }

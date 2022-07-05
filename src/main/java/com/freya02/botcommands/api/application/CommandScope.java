@@ -16,24 +16,32 @@ public enum CommandScope {
 	 * <br>Can be filtered with {@link ApplicationCommand#getGuildsForCommandId(BContext, String, CommandPath)} and {@link SettingsProvider#getGuildCommands(Guild)}
 	 * <br>Can be forced with {@link ApplicationCommandsBuilder#forceCommandsAsGuildOnly(boolean)} and {@link Test}
 	 */
-	GUILD(true),
+	GUILD(false, true),
 	/**
 	 * The global command scope, pushes this command to the first shard
 	 *
 	 * <p>Cannot be filtered on a per-guild basis
 	 */
-	GLOBAL(false),
+	GLOBAL(true, false),
 	/**
 	 * The global command scope, but with DMs disabled, pushes this command to the first shard
 	 * <br>This might be useful to have guild commands but without having to push them on every guild
 	 *
 	 * <p>Cannot be filtered on a per-guild basis
 	 */
-	GLOBAL_NO_DM(true);
+	GLOBAL_NO_DM(true, true);
 
+	private final boolean isGlobal;
 	private final boolean guildOnly;
 
-	CommandScope(boolean guildOnly) {this.guildOnly = guildOnly;}
+	CommandScope(boolean isGlobal, boolean guildOnly) {
+		this.isGlobal = isGlobal;
+		this.guildOnly = guildOnly;
+	}
+
+	public boolean isGlobal() {
+		return isGlobal;
+	}
 
 	public boolean isGuildOnly() {
 		return guildOnly;

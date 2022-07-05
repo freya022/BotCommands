@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.entities.Guild
 class GuildApplicationCommandManager internal constructor(val context: BContextImpl, val guild: Guild): IApplicationCommandManager {
     override val guildApplicationCommands: ArrayList<ApplicationCommandInfo> = arrayListOf()
 
-    override fun slashCommand(path: CommandPath, builder: SlashCommandBuilder.() -> Unit) {
-        guildApplicationCommands += SlashCommandBuilder(context, path)
+    fun slashCommand(path: CommandPath, builder: SlashCommandBuilder.() -> Unit) {
+        guildApplicationCommands += SlashCommandBuilder(context, path, CommandScope.GUILD)
             .apply(builder)
             .build()
     }
