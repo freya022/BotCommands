@@ -44,7 +44,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
 * Paginators and menus of different types (using buttons !)
 * Flexible constructors for your commands and injectable fields
 
-Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
+Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://jda.wiki/using-jda/using-restaction/) 
 
 ## Getting Started
 You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
