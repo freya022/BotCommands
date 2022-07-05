@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.throwUser
 class AutocompleteInfoBuilder internal constructor() : BuilderFunctionHolder<Collection<*>>() {
     var mode: AutocompletionMode = AutocompletionMode.FUZZY //TODO impl
     var showUserInput: Boolean = false //TODO impl
-    var cacheMode: AutocompletionCacheMode = AutocompletionCacheMode.CONSTANT_BY_KEY //TODO impl
+    var cacheMode: AutocompletionCacheMode = AutocompletionCacheMode.NO_CACHE //TODO impl
     var cacheSize: Long = 2048 //TODO impl
     var guildLocal: Boolean = false //TODO impl
     var userLocal: Boolean = false //TODO impl

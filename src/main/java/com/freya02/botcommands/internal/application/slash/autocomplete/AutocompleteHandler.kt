@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.application.slash.autocomplete.Autocompletion
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.arrayOfSize
 import com.freya02.botcommands.internal.isSubclassOfAny
@@ -30,6 +31,7 @@ class AutocompleteHandler(
 
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
+    private val cache: AbstractAutocompleteCache
 
     init {
         methodParameters = MethodParameters.of<SlashParameterResolver>(slashCommandInfo.context, autocompleteInfo.method, slashCommandInfo.builder.optionBuilders) { parameter, name, resolver ->
@@ -55,9 +57,23 @@ class AutocompleteHandler(
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
+
+        cache = AbstractAutocompleteCache.fromMode(this)
     }
 
     suspend fun handle(event: CommandAutoCompleteInteractionEvent): Collection<Choice> {
+        return cache.retrieveAndCall(event) { key: CompositeAutocompletionKey? ->
+            val choices = generateChoices(event)
+
+            if (key != null) {
+                cache.put(key, choices)
+            }
+
+            return@retrieveAndCall choices
+        }
+    }
+
+    private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Choice> {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[autocompleteInfo.method.instanceParameter!!] = instance
         objects[autocompleteInfo.method.valueParameters.first()] = event
@@ -70,12 +86,11 @@ class AutocompleteHandler(
 
         //If something is typed but there are no choices, don't display user input
         if (autocompleteInfo.showUserInput && autoCompleteQuery.value.isNotBlank() && suppliedChoices.isNotEmpty()) {
-            val choice = autoCompleteQuery.value.asChoice(autoCompleteQuery.type)
-
-            //Could be null if option mapping is malformed
-            if (choice != null) {
-                actualChoices.add(choice)
-            }
+            autoCompleteQuery.value
+                .asChoice(autoCompleteQuery.type)
+                ?.let { //Could be null if option mapping is malformed
+                    actualChoices.add(it)
+                }
         }
 
         //Fill with choices until max
