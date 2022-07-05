@@ -60,6 +60,27 @@ class SlashCommandInfo internal constructor(
             val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
             SlashCommandParameter(this, kParameter, optionBuilder, resolver)
         }
+
+        //On every autocomplete handler, check if their method parameters match up with the slash command
+        parameters.forEach { slashParam ->
+            if (slashParam.methodParameterType == MethodParameterType.COMMAND) {
+                slashParam as SlashCommandParameter
+
+                slashParam.autocompleteHandler?.let { handler ->
+                    handler.methodParameters.forEach { autocompleteParam ->
+                        val param = parameters.find { it.name == autocompleteParam.name }
+                            ?: throwUser(
+                                handler.autocompleteInfo.method,
+                                "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
+                            )
+
+                        requireUser(param.kParameter.checkTypeEquals(autocompleteParam.kParameter), handler.autocompleteInfo.method) {
+                            "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
+                        }
+                    }
+                }
+            }
+        }
     }
 
     suspend fun execute(event: SlashCommandInteractionEvent): Boolean {
@@ -68,7 +89,7 @@ class SlashCommandInfo internal constructor(
         objects[method.valueParameters.first()] =
             if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
-        putSlashOptions(event, objects)
+        putSlashOptions(event, objects, parameters)
 
         applyCooldown(event)
 
@@ -79,12 +100,13 @@ class SlashCommandInfo internal constructor(
 
     internal fun <T> putSlashOptions(
         event: T,
-        objects: MutableMap<KParameter, Any?>
+        objects: MutableMap<KParameter, Any?>,
+        methodParameters: MethodParameters
     ) where T : CommandInteractionPayload,
             T : Event {
-        parameterLoop@for (parameter in parameters) {
+        parameterLoop@ for (parameter in methodParameters) {
             if (parameter.methodParameterType == MethodParameterType.COMMAND) {
-                parameter as SlashCommandParameter
+                parameter as AbstractSlashCommandParameter
 
                 val guild = event.guild
                 if (guild != null) {

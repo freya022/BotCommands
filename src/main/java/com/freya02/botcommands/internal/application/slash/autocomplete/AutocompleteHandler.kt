@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
+import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.*
@@ -21,19 +22,20 @@ import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 
 class AutocompleteHandler(
-    private val slashCommandInfo: SlashCommandInfo,
-    private val autocompleteInfo: AutocompleteInfo
+    private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
+    internal val autocompleteInfo: AutocompleteInfo
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.method)
-    private val methodParameters: MethodParameters
+    internal val methodParameters: MethodParameters
 
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        methodParameters = MethodParameters.of<AutocompleteCommandParameter>(slashCommandInfo.context, autocompleteInfo.method, slashCommandInfo.builder.optionBuilders) { parameter, name, resolver ->
+        methodParameters = MethodParameters.of<SlashParameterResolver>(slashCommandInfo.context, autocompleteInfo.method, slashCommandInfo.builder.optionBuilders) { parameter, name, resolver ->
             val optionBuilder = slashCommandInfo.builder.optionBuilders.findOption<SlashCommandOptionBuilder>(name)
-            AutocompleteCommandParameter(parameter, optionBuilder)
+
+            AutocompleteCommandParameter(parameter, optionBuilder, resolver)
         }
 
         //accommodate for user input
@@ -60,7 +62,7 @@ class AutocompleteHandler(
         objects[autocompleteInfo.method.instanceParameter!!] = instance
         objects[autocompleteInfo.method.valueParameters.first()] = event
 
-        slashCommandInfo.putSlashOptions(event, objects)
+        slashCommandInfo.putSlashOptions(event, objects, methodParameters)
 
         val actualChoices: MutableList<Choice> = arrayOfSize(25)
         val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.method.callSuspendBy(objects))

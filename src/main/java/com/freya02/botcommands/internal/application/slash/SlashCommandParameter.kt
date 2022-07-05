@@ -3,14 +3,11 @@ package com.freya02.botcommands.internal.application.slash
 import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes
 import com.freya02.botcommands.api.application.ValueRange
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
-import gnu.trove.map.TLongObjectMap
-import gnu.trove.map.hash.TLongObjectHashMap
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
@@ -18,14 +15,20 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
 class SlashCommandParameter(
-    slashCommandInfo: SlashCommandInfo, parameter: KParameter, optionBuilder: SlashCommandOptionBuilder, val resolver: SlashParameterResolver
+    slashCommandInfo: SlashCommandInfo,
+    parameter: KParameter,
+    optionBuilder: SlashCommandOptionBuilder,
+    resolver: SlashParameterResolver
 ) : AbstractSlashCommandParameter(
-    parameter, optionBuilder
+    parameter, optionBuilder, resolver
 ) {
     val description: String = optionBuilder.description
     override val isOptional: Boolean
     val autocompleteHandler: AutocompleteHandler? = when {
-        optionBuilder.autocompleteInfo != null -> AutocompleteHandler(slashCommandInfo, optionBuilder.autocompleteInfo!!)
+        optionBuilder.autocompleteInfo != null -> AutocompleteHandler(
+            slashCommandInfo,
+            optionBuilder.autocompleteInfo!!
+        )
         else -> null
     }
 
@@ -33,7 +36,6 @@ class SlashCommandParameter(
     val range: ValueRange? = optionBuilder.valueRange
 
     val channelTypes: EnumSet<ChannelType>?
-    val defaultOptionSupplierMap: TLongObjectMap<DefaultValueSupplier> = TLongObjectHashMap()
 
     init {
         val optionOptional = optionBuilder.optional

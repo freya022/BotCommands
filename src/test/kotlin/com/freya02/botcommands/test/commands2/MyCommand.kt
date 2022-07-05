@@ -45,8 +45,13 @@ class MyCommand : ApplicationCommand() {
         """.trimIndent()).queue()
     }
 
-    fun runAutocomplete(event: CommandAutoCompleteInteractionEvent): Collection<Choice> {
-        return listOf(Choice("lol name", "lol value"))
+    @CommandMarker
+    fun runAutocomplete(
+        event: CommandAutoCompleteInteractionEvent,
+        stringOption: String,
+        @Name(declaredName = "notDoubleOption") doubleOption: Double?
+    ): Collection<Choice> {
+        return listOf(Choice("lol name + $stringOption + $doubleOption", "lol value + $stringOption + $doubleOption"))
     }
 
     @Declaration

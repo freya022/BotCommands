@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.annotations.Name
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.lang.reflect.Modifier
 import java.util.*
@@ -102,7 +103,10 @@ fun KParameter.findOptionName(): String {
 }
 
 val KType.simpleName: String
-    get() = this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")
+    get() = (this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")) + if (this.isMarkedNullable) "?" else ""
+
+fun KParameter.checkTypeEquals(param: KParameter): Boolean =
+    this.type.jvmErasure == param.type.jvmErasure && this.isNullable == param.isNullable
 
 val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC
