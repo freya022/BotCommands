@@ -29,7 +29,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 class SlashCommandInfo internal constructor(
     val context: BContextImpl,
-    builder: SlashCommandBuilder
+    val builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
     builder

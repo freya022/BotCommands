@@ -11,10 +11,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandParameter
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache
-import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierChoices
-import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringContinuity
-import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierStringFuzzy
-import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.ChoiceSupplierTransformer
+import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.runner.MethodRunner
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -83,13 +80,13 @@ class AutocompletionHandlerInfo(
         choiceSupplier = when {
             collectionReturnType.isSubclassOfAny(String::class, Long::class, Double::class) ->
                 generateSupplierFromStrings(autocompletionMode)
-            Command.Choice::class.isSuperclassOf(collectionReturnType) -> ChoiceSupplierChoices(this)
+            Command.Choice::class.isSuperclassOf(collectionReturnType) -> ChoiceSupplierChoices(maxChoices)
             else -> {
                 @Suppress("UNCHECKED_CAST")
                 val transformer =
                     context.getAutocompletionTransformer(collectionReturnType.starProjectedType) as? AutocompletionTransformer<Any>
                         ?: throwUser("No autocompletion transformer has been register for objects of type '${collectionReturnType.simpleName}', you may also check the docs for ${AutocompletionHandler::class.java.simpleName}")
-                ChoiceSupplierTransformer(this, transformer)
+                ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
 
@@ -192,9 +189,9 @@ class AutocompletionHandlerInfo(
 
     private fun generateSupplierFromStrings(autocompletionMode: AutocompletionMode): ChoiceSupplier {
         return if (autocompletionMode == AutocompletionMode.FUZZY) {
-            ChoiceSupplierStringFuzzy(this)
+            ChoiceSupplierStringFuzzy(maxChoices)
         } else {
-            ChoiceSupplierStringContinuity(this)
+            ChoiceSupplierStringContinuity(maxChoices)
         }
     }
 
@@ -218,10 +215,10 @@ class AutocompletionHandlerInfo(
         slashCommand: SlashCommandInfo,
         event: CommandAutoCompleteInteractionEvent,
         throwableConsumer: Consumer<Throwable>,
-        choiceCallback: ConsumerEx<List<Command.Choice?>>
+        choiceCallback: ConsumerEx<List<Command.Choice>>
     ) {
-        invokeAutocompletionHandler(slashCommand, event, throwableConsumer) { collection: Collection<*>? ->
-            val actualChoices: MutableList<Command.Choice?> = ArrayList(25)
+        invokeAutocompletionHandler(slashCommand, event, throwableConsumer) { collection: Collection<*> ->
+            val actualChoices: MutableList<Command.Choice> = ArrayList(25)
             val suppliedChoices = choiceSupplier.apply(event, collection)
             val autoCompleteQuery = event.focusedOption
 
