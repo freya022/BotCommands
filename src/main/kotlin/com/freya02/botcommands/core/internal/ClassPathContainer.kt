@@ -32,11 +32,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
         val userClasses = context.config.classes
 
         val nano = measureNanoTime {
-            val scanResult = ReflectionMetadata.runScan(packages, userClasses)
-
-            ReflectionMetadata.readAnnotations(scanResult)
-
-            this.classes = scanResult.loadClasses().map(Class<*>::kotlin)
+            this.classes = ReflectionMetadata.runScan(packages, userClasses).map(Class<*>::kotlin)
         }
 
         println("Reflection took ${nano / 1000000.0} ms")

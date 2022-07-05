@@ -39,7 +39,7 @@ internal class ResolverContainer(context: BContextImpl, classPathContainer: Clas
         if (map.isEmpty()) {
             LOGGER.trace("Found no resolvers")
         } else {
-            LOGGER.trace("Found resolvers:\n${map.entries.joinToString("\n") { it.key.java.simpleName }}")
+            LOGGER.trace("Found resolvers: [${map.entries.joinToString { it.key.java.simpleName }}]")
         }
     }
 

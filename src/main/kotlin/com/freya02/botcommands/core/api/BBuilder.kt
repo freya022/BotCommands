@@ -36,7 +36,5 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
 
             context.eventDispatcher.dispatchEvent(LoadEvent())
         }
-
-        println()
     }
 }

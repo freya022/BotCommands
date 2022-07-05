@@ -24,7 +24,7 @@ class SlashCommandParameter(
 ) {
     val description: String = optionBuilder.description
     override val isOptional: Boolean
-    val autocompleteHandler: AutocompleteHandler? = when {
+    internal val autocompleteHandler: AutocompleteHandler? = when {
         optionBuilder.autocompleteInfo != null -> AutocompleteHandler(
             slashCommandInfo,
             optionBuilder.autocompleteInfo!!

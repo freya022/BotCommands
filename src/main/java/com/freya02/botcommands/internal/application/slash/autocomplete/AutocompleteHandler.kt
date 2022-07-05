@@ -22,7 +22,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 
-class AutocompleteHandler(
+internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
     internal val autocompleteInfo: AutocompleteInfo
 ) {

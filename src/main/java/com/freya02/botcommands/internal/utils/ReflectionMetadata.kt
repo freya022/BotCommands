@@ -48,30 +48,39 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(functionMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): ClassInfoList = ClassGraph()
+    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> = ClassGraph()
         .acceptPackages(*packages.toTypedArray(), "com.freya02.botcommands")
         .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
         .enableMethodInfo()
         .enableAnnotationInfo()
         .scan()
-        .allStandardClasses
-        .filter {
-            if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
-                return@filter it.hasAnnotation(BService::class.java.name)
-            }
+        .let { scanResult ->
+            val list = scanResult.allStandardClasses
+                .filter {
+                    if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
+                        return@filter it.hasAnnotation(BService::class.java.name)
+                    }
 
-            return@filter true
-        }
-        .filter {
-            it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
-                return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
-            }
-            return@filter true
-        }
-        .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isInnerClass || it.isEnum || it.isAbstract) }
-        .filter(ReflectionUtilsKt::isInstantiable)
+                    return@filter true
+                }
+                .filter {
+                    it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
+                        return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
+                    }
+                    return@filter true
+                }
+                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isInnerClass || it.isEnum || it.isAbstract) }
+                .filter(ReflectionUtilsKt::isInstantiable)
+                .also { readAnnotations(it) }
+                .loadClasses()
 
-    internal fun readAnnotations(classInfoList: ClassInfoList) {
+            scanResult.close()
+
+            list
+        }
+
+
+    private fun readAnnotations(classInfoList: ClassInfoList) {
         for (classInfo in classInfoList) {
             try {
                 val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")
