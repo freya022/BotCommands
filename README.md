@@ -44,14 +44,15 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
 * Paginators and menus of different types (using buttons !)
 * Flexible constructors for your commands and injectable fields
 
-Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://github.com/DV8FromTheWorld/JDA/wiki/7%29-Using-RestAction) 
+Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://jda.wiki/using-jda/using-restaction/) 
 
 ## Getting Started
 You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
-[OpenJDK 16+](https://adoptium.net/releases.html?variant=openjdk16&jvmVariant=hotspot) <br>
-An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it will be useful to gain time with Live Templates)
+* An [OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) installation
+* Enable preview features in your compiler with `--enable-preview`, [How I enable it](https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81), [IntelliJ w/ Maven tutorial](https://www.baeldung.com/java-preview-features#intellij-idea), [Gradle tutorial](https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle)
+* An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
 
 ## Getting the library
 ### Installing with Jitpack
@@ -152,11 +153,11 @@ commandsBuilder.build(
 ```
 
 ## How do I make commands ?
-See the [wiki](https://github.com/freya022/BotCommands/wiki), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
+See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-slash-commands/Slash-commands/), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
 
 ## Some debugging tools
 
-- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://github.com/freya022/BotCommands/wiki/Logging)
+- Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/Logging)
 - There are also some switches in `DebugBuilder`, if you ever need them
 - To test your application commands you can use the `@Test` annotation
 
