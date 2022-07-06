@@ -12,9 +12,6 @@ import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import net.dv8tion.jda.api.entities.GuildChannel
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -50,13 +47,6 @@ class SlashCommandInfo internal constructor(
             method,
             builder.optionBuilders
         ) { kParameter, paramName, resolver ->
-            val type = kParameter.type.jvmErasure
-            if (type.isSubclassOfAny(Member::class, Role::class, GuildChannel::class)) {
-                requireUser(isGuildOnly) {
-                    "The slash command cannot have a ${type.simpleName} parameter as it is not guild-only"
-                }
-            }
-
             val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
             SlashCommandParameter(this, kParameter, optionBuilder, resolver)
         }
