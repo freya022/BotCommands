@@ -3,6 +3,8 @@ package com.freya02.botcommands.internal.utils
 import com.freya02.botcommands.annotations.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import io.github.classgraph.ClassInfo
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -57,7 +59,18 @@ internal object ReflectionUtilsKt {
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleName }
             val returnType = this.returnType.simpleName
-            return "$declaringClassName#$methodName($parameters): $returnType"
+            val source = this.javaMethod.let { method ->
+                return@let when {
+                    method != null && this.lineNumber != 0 -> {
+                        val sourceFile = method.declaringClass.simpleName + if (this.isJava) ".java" else ".kt"
+                        val lineNumber = this.lineNumber
+
+                        "$sourceFile:$lineNumber"
+                    }
+                    else -> "<no-source>"
+                }
+            }
+            return "$declaringClassName#$methodName($parameters): $returnType ($source)"
         }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)

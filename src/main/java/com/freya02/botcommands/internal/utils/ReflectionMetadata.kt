@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionMetadata {
-    internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean)
+    internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean, val line: Int)
 
     internal class KParameterMetadata(
         annotationMap: Map<KClass<*>, Annotation>,
@@ -118,7 +118,7 @@ internal object ReflectionMetadata {
                             )
                     }
 
-                    functionMetadataMap_[kFunction] = KFunctionMetadata(kFunction, isJavaParameter)
+                    functionMetadataMap_[kFunction] = KFunctionMetadata(kFunction, isJavaParameter, methodInfo.minLineNum)
                 }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
@@ -153,4 +153,8 @@ internal object ReflectionMetadata {
     internal val KFunction<*>.isJava
         get() = (functionMetadataMap[this]
             ?: throwUser("Tried to access a KFunction which hasn't been scanned: $this, the function must be accessible and in the search path")).isJava
+
+    internal val KFunction<*>.lineNumber
+        get() = (functionMetadataMap[this]
+            ?: throwUser("Tried to access a KFunction which hasn't been scanned: $this, the function must be accessible and in the search path")).line
 }

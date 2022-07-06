@@ -4,8 +4,10 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BEventListener
 import com.freya02.botcommands.core.api.events.BEvent
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import kotlin.reflect.KClass
@@ -49,7 +51,7 @@ class EventDispatcher internal constructor(context: BContextImpl) {
 
                         classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
                     } catch (e: Throwable) {
-                        LOGGER.error("An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function}", e)
+                        LOGGER.error("An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}", e.getDeepestCause())
                     }
                 }
             }
