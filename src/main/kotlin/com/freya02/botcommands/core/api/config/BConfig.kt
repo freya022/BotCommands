@@ -6,18 +6,21 @@ import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.components.DefaultComponentManager
-import com.freya02.botcommands.internal.notNull
+import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.properties.Delegates
 
-//TODO immutable config
 class BConfig internal constructor() {
-    internal val packages: MutableSet<String> = HashSet()
+    internal var locked = false
+        private set
+
+    internal val packages: MutableSet<String> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
+    //TODO backed collection as mutable, exposed collection as immutable
     internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
-    private val ownerIds: MutableSet<Long> = HashSet()
-    private val prefixes: MutableSet<String> = HashSet()
+    private val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
+    private val prefixes: MutableSet<String> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
 
     val serviceConfig = BServiceConfig()
 
@@ -26,7 +29,7 @@ class BConfig internal constructor() {
     /**
      * Used to take guild-specific settings such as prefixes
      */
-    var settingsProvider: SettingsProvider by Delegates.notNull("")
+    var settingsProvider: SettingsProvider by Delegates.lockableNotNull(this, "Settings provider needs to be set !")
 
     /**
      * Used by the thread pools such of command handlers / components
@@ -36,14 +39,14 @@ class BConfig internal constructor() {
      * @see Utils.getException
      * @see ExceptionHandlerAdapter
      */
-    var uncaughtExceptionHandler: ExceptionHandler by Delegates.notNull("")
+    var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
 
     /**
      * Used to handle storing/retrieving persistent/lambda components handlers
      *
      * @see DefaultComponentManager
      */
-    var componentManager: ComponentManager by Delegates.notNull("")
+    var componentManager: ComponentManager by Delegates.lockableNotNull(this, "Component manager needs to be set !")
 
     /**
      * Adds owners, they can access the commands annotated with [RequireOwner]
@@ -86,5 +89,9 @@ class BConfig internal constructor() {
 
     fun addClass(clazz: Class<*>) {
         classes.add(clazz)
+    }
+
+    internal fun lock() {
+        locked = true
     }
 }
