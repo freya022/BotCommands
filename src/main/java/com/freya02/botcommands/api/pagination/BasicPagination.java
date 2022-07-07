@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.pagination;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.MessageBuilder;
@@ -31,7 +32,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	@Nullable protected final TimeoutInfo<T> timeout;
 
 	protected final MessageBuilder messageBuilder = new MessageBuilder();
-	protected final PaginatorComponents components = new PaginatorComponents();
+	protected final PaginatorComponents components = new PaginatorComponents(); //TODO rename
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -39,6 +40,9 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	@Nullable private Message message;
 
 	private boolean timeoutPassed = false;
+
+	//TODO rename
+	protected Components componentss; //TODO Instance should be supplied in the constructor, by the builder, which will receive the instance via a dependency injected factory
 
 	protected BasicPagination(@NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
 		this.constraints = constraints;

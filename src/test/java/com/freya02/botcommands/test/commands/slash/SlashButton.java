@@ -15,14 +15,14 @@ public class SlashButton extends ApplicationCommand {
 	private static final String HANDLER_NAME = "leBouton";
 
 	@JDASlashCommand(name = "button")
-	public void button(GuildSlashEvent event) {
+	public void button(GuildSlashEvent event, Components components) {
 		event.reply("Button")
 				.addActionRow(
-						Components.primaryButton(HANDLER_NAME, System.currentTimeMillis())
+						components.primaryButton(HANDLER_NAME, System.currentTimeMillis())
 								.oneUse()
 								.timeout(1, TimeUnit.MINUTES)
 								.build("Le bouton"),
-						Components.primaryButton(btnEvt -> {
+						components.primaryButton(btnEvt -> {
 									btnEvt.deferEdit().queue();
 								})
 								.oneUse()

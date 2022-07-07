@@ -19,21 +19,21 @@ import java.util.concurrent.TimeUnit;
 
 public class SlashPaginator extends ApplicationCommand {
 	@JDASlashCommand(name = "paginator", subcommand = "user")
-	public void paginatorUser(GuildSlashEvent event, BContext context) {
-		replyPaginator(event, context, InteractionConstraints.ofUsers(event.getUser()));
+	public void paginatorUser(GuildSlashEvent event, BContext context, Components components) {
+		replyPaginator(event, context, InteractionConstraints.ofUsers(event.getUser()), components);
 	}
 
 	@JDASlashCommand(name = "paginator", subcommand = "role")
-	public void paginatorRole(GuildSlashEvent event, BContext context, @AppOption Role role) {
-		replyPaginator(event, context, InteractionConstraints.ofRoles(role));
+	public void paginatorRole(GuildSlashEvent event, BContext context, @AppOption Role role, Components components) {
+		replyPaginator(event, context, InteractionConstraints.ofRoles(role), components);
 	}
 
 	@JDASlashCommand(name = "paginator", subcommand = "permissions")
-	public void paginatorPermissions(GuildSlashEvent event, BContext context) {
-		replyPaginator(event, context, InteractionConstraints.ofPermissions(Permission.MANAGE_THREADS));
+	public void paginatorPermissions(GuildSlashEvent event, BContext context, Components components) {
+		replyPaginator(event, context, InteractionConstraints.ofPermissions(Permission.MANAGE_THREADS), components);
 	}
 
-	private void replyPaginator(GuildSlashEvent event, BContext context, InteractionConstraints constraints) {
+	private void replyPaginator(GuildSlashEvent event, BContext context, InteractionConstraints constraints, Components componentss) {
 		final PaginatorBuilder builder = new PaginatorBuilder()
 				.setConstraints(constraints)
 				.useDeleteButton(true)
@@ -52,13 +52,13 @@ public class SlashPaginator extends ApplicationCommand {
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
 				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
-					components.addComponents(1, Components.primaryButton(btnEvt -> {
+					components.addComponents(1, componentss.primaryButton(btnEvt -> {
 						paginator.setPage(2); //Pages starts at 0
 
 						btnEvt.editMessage(paginator.get()).queue();
 					}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
 
-					components.addComponents(1, Components.primaryButton(btnEvt -> {
+					components.addComponents(1, componentss.primaryButton(btnEvt -> {
 						paginator.setPage(4); //Pages starts at 0
 
 						btnEvt.editMessage(paginator.get()).queue();

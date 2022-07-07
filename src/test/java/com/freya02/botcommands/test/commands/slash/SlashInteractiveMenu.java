@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 public class SlashInteractiveMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "interactive")
-	public void interactiveMenu(GuildSlashEvent event) {
+	public void interactiveMenu(GuildSlashEvent event, Components componentss) {
 		final InteractiveMenu menu = new InteractiveMenuBuilder()
 				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), (interactiveMenu, messageBuilder, components) -> {
 					components.addComponents(1,
-							Components.dangerButton(buttonEvent -> {
+							componentss.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
 								interactiveMenu.cancelTimeout();
@@ -27,7 +27,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 								interactiveMenu.cleanup(event.getContext());
 							}).build("Delete"),
 
-							Components.secondaryButton(buttonEvent -> {
+							componentss.secondaryButton(buttonEvent -> {
 								interactiveMenu.setSelectedItem("Grin");
 
 								buttonEvent.editMessage(interactiveMenu.get()).queue();
@@ -37,7 +37,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 				})
 				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), (interactiveMenu, messageBuilder, components) -> {
 					components.addComponents(1,
-							Components.dangerButton(buttonEvent -> {
+							componentss.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
 								interactiveMenu.cancelTimeout();
@@ -45,7 +45,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 								interactiveMenu.cleanup(event.getContext());
 							}).build("Delete"),
 
-							Components.secondaryButton(buttonEvent -> {
+							componentss.secondaryButton(buttonEvent -> {
 								interactiveMenu.setSelectedItem(0);
 
 								buttonEvent.editMessage(interactiveMenu.get()).queue();

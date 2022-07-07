@@ -13,14 +13,14 @@ import kotlin.system.measureTimeMillis
 @CommandMarker
 class TextDelay : TextCommand() {
     @JDATextCommand(name = "delay")
-    suspend fun runDelay(event: BaseCommandEvent) {
+    suspend fun runDelay(event: BaseCommandEvent, components: Components) {
         val millis = measureTimeMillis {
             delay(1000)
         }
 
         event.message.reply("delayed after $millis ms")
                 .setActionRow(
-                        Components.primaryButton("delayButton").build("Delay")
+                        components.primaryButton("delayButton").build("Delay")
                 )
                 .queue()
 

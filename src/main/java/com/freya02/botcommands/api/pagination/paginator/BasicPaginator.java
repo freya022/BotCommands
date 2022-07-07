@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
@@ -39,25 +38,25 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = Components.primaryButton(e -> {
+		firstButton = componentss.primaryButton(e -> {
 			page = 0;
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(firstContent);
 
-		previousButton = Components.primaryButton(e -> {
+		previousButton = componentss.primaryButton(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(previousContent);
 
-		nextButton = Components.primaryButton(e -> {
+		nextButton = componentss.primaryButton(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(nextContent);
 
-		lastButton = Components.primaryButton(e -> {
+		lastButton = componentss.primaryButton(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
@@ -65,7 +64,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = Components.dangerButton(this::onDeleteClicked)
+			this.deleteButton = componentss.dangerButton(this::onDeleteClicked)
 					.setConstraints(constraints)
 					.oneUse()
 					.build(deleteContent);

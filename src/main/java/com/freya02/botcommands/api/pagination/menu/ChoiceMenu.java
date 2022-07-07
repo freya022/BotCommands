@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.ButtonContentSupplier;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -57,7 +56,7 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 		for (int i = 0; i < entries.size(); i++) {
 			final E item = entries.get(i);
 			final ButtonContent content = buttonContentSupplier.apply(item, i);
-			final Button choiceButton = Components.primaryButton(event -> {
+			final Button choiceButton = componentss.primaryButton(event -> {
 				this.cleanup(event.getContext());
 
 				callback.accept(event, item);

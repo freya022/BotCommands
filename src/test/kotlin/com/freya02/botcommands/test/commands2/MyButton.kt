@@ -7,13 +7,14 @@ import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
 
 private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyJavaCommand: TestButton"
 
 class MyButton : ApplicationCommand() {
     @CommandMarker
-    fun onSlashButton(event: GlobalSlashEvent) {
+    fun onSlashButton(event: GlobalSlashEvent, components: Components) {
 
     }
 

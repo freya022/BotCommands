@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
@@ -35,7 +34,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 
 	@NotNull
 	private SelectMenu buildSelectMenu() {
-		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+		final LambdaSelectionMenuBuilder builder = componentss.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
 		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {

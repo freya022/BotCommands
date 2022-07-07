@@ -257,7 +257,7 @@
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>45f2776868</version>
+            <version>d5c5d9d2da</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
