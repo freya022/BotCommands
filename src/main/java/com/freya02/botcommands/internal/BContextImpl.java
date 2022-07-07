@@ -126,6 +126,8 @@ public class BContextImpl implements BContext {
 		this.classPathContainer = new ClassPathContainer(this);
 		this.serviceContainer = new ServiceContainer(this); //Puts itself, ctx, cem and cpc
 		this.eventDispatcher = new EventDispatcher(this); //Service put in ctor
+
+		serviceContainer.preloadServices$BotCommands();
 	}
 
 	public BConfig getConfig() {
@@ -461,7 +463,7 @@ public class BContextImpl implements BContext {
 	@Override
 	@Nullable
 	public ComponentManager getComponentManager() {
-		return componentManager;
+		return config.getComponentManager();
 	}
 
 	public void setComponentManager(ComponentManager componentManager) {

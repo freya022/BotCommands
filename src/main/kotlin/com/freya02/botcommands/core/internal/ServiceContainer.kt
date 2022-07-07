@@ -34,7 +34,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         putService(context.eventManager)
         putService(context.classPathContainer)
         putServiceAs<BContext>(context)
+        putServiceAs(context.config.componentManager)
+    }
 
+    internal fun preloadServices() {
         context.classPathContainer.classes.forEach {
             if (it.hasAnnotation<BService>()) {
                 getService(it)

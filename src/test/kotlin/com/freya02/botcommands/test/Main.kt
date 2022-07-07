@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test
 
+import com.freya02.botcommands.api.components.DefaultComponentManager
 import com.freya02.botcommands.core.api.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
@@ -12,6 +13,7 @@ import kotlin.time.Duration.Companion.minutes
 
 fun main() {
     val config = Config.readConfig()
+    val testDB = TestDB(config.dbConfig)
 
     val scope = getDefaultScope()
     val manager = CoroutineEventManager(scope, 1.minutes)
@@ -21,9 +23,9 @@ fun main() {
 
     BBuilder.newBuilder({
         addSearchPath("com.freya02.botcommands.test.commands2")
-    }, manager)
 
-    println()
+        componentManager = DefaultComponentManager(testDB.connectionSupplier)
+    }, manager)
 
     light(config.token, enableCoroutines = false) {
         enableIntents(GatewayIntent.GUILD_MEMBERS)

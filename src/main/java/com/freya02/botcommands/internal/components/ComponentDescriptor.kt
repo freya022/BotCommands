@@ -1,12 +1,16 @@
 package com.freya02.botcommands.internal.components
 
+import com.freya02.botcommands.api.application.builder.CustomOptionBuilder
+import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver
+import com.freya02.botcommands.api.parameters.CustomResolver
+import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.ConsumerEx
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.runner.MethodRunner
-import java.util.function.Consumer
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KFunction
 
 class ComponentDescriptor(
@@ -14,29 +18,24 @@ class ComponentDescriptor(
     override val instance: Any,
     override val method: KFunction<*>
 ) : ExecutableInteractionInfo {
-    override val methodRunner: MethodRunner
     override val parameters: MethodParameters
 
+    override val methodRunner: MethodRunner
+        get() = TODO("To be removed")
+
     init {
-        methodRunner = object : MethodRunner {
-            //TODO replace
-            @Suppress("UNCHECKED_CAST")
-            override fun <R> invoke(
-                args: Array<Any>,
-                throwableConsumer: Consumer<Throwable>,
-                successCallback: ConsumerEx<R>
-            ) {
-                try {
-                    val call = method.call(*args)
-                    successCallback.accept(call as R)
-                } catch (e: Throwable) {
-                    throwableConsumer.accept(e)
-                }
+        val optionMap = method.nonInstanceParameters.drop(1).associate {
+            val name = it.findDeclarationName()
+
+            when (context.serviceContainer.getService(ResolverContainer::class).getResolver(it)) {
+                is ComponentParameterResolver -> name to object : OptionBuilder(name) {}
+                is CustomResolver -> name to CustomOptionBuilder(name)
+                else -> TODO("Not implemented yet")
             }
         }
 
-        parameters = MethodParameters.of<ComponentParameterResolver>(context, method, mapOf()) { parameter, paramName, _ -> //TODO pass builders
-            ComponentHandlerParameter(parameter, TODO()) //TODO take from DSL
+        parameters = MethodParameters.of<ComponentParameterResolver>(context, method, optionMap) { parameter, paramName, resolver ->
+            ComponentHandlerParameter(parameter, optionMap[paramName]!!, resolver)
         }
     }
 }

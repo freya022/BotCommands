@@ -9,7 +9,6 @@ import com.freya02.botcommands.internal.parameters.MethodParameter
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 internal fun interface InteractionParameterSupplier<R : Any> {
     fun supply(kParameter: KParameter, name: String, resolver: R): MethodParameter
@@ -31,13 +30,10 @@ class MethodParameters private constructor(methodParameters: List<MethodParamete
             val methodParameters: MutableList<MethodParameter> = ArrayList(function.parameters.size)
             val kParameters = function.valueParameters.drop(1)
 
-            for ((globalIndex, kParameter) in kParameters.withIndex()) {
-                val paramType = kParameter.type
-                val resolver = context.serviceContainer.getService(ResolverContainer::class).getResolver(paramType.jvmErasure) //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
-
-                requireUser(resolver != null, function) {
-                    "Parameter #$globalIndex of type '${paramType.simpleName}' and name '${kParameter.bestName}' does not have any compatible resolver"
-                }
+            val resolverContainer = context.serviceContainer.getService(ResolverContainer::class)
+            for (kParameter in kParameters) {
+                //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
+                val resolver = resolverContainer.getResolver(kParameter)
 
                 val parameterName = kParameter.findDeclarationName()
                 val parameter = when (resolver) {
