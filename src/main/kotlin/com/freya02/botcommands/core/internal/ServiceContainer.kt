@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BServiceConfig
+import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.isStatic
@@ -45,6 +46,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     fun <T : Any> getService(clazz: Class<T>): T {
         return getService(clazz.kotlin)
+    }
+
+    fun <T : Any> tryGetService(clazz: KClass<T>): Result<T> {
+        return try {
+            Result.success(getService(clazz))
+        } catch (e: ServiceException) {
+            Result.failure(e)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
