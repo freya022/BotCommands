@@ -9,28 +9,40 @@ import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
+import java.util.concurrent.TimeUnit
 
-private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyJavaCommand: TestButton"
+private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 
+@CommandMarker
 class MyButton : ApplicationCommand() {
     @CommandMarker
     fun onSlashButton(event: GlobalSlashEvent, components: Components) {
-        val lol = components.primaryButton {
-            it.reply_("Button pressed", ephemeral = true).queue()
-        }.build("Test")
+        val ephemeral = components
+            .primaryButton {
+                it.reply_("Button pressed", ephemeral = true).queue()
+            }
+            .timeout(5, TimeUnit.SECONDS) { event.hook.editOriginalComponents().queue() }
+            .addUsers(event.user)
+            .build("Test ephemeral")
+
+        val persistent = components.primaryButton(TEST_BUTTON_BUTTON_LISTENER_NAME, "Custom content")
+            .timeout(5, TimeUnit.SECONDS)
+            .addUsers(event.user)
+            .build("Test persistent")
 
         event.reply_(
             "Buttons !",
-            ephemeral = true,
-            components = listOf(row(lol))
+//            ephemeral = true,
+            components = listOf(row(ephemeral, persistent))
         ).queue()
     }
 
     @JDAButtonListener(name = TEST_BUTTON_BUTTON_LISTENER_NAME)
-    fun onTestButtonClick(event: ButtonEvent) {
-
+    suspend fun onTestButtonClick(event: ButtonEvent, content: String) {
+        event.reply_(content, ephemeral = true).await()
     }
 
     @Declaration
