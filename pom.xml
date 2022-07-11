@@ -4,6 +4,7 @@
 
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
+    <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
     <version>2.4.1-SNAPSHOT</version>
     <name>BotCommands</name>
 
