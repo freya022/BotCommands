@@ -1,6 +1,6 @@
 [//]: # (![]&#40;https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.5-important&#41;)
+![](https://img.shields.io/badge/Version-See_releases-important)
 ![](https://img.shields.io/badge/JDA%20Version-See_notice-important)
-![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 
 
