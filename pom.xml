@@ -213,10 +213,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Good resources:
+            https://github.com/classgraph/classgraph/blob/e81f793faba16ed102aeba4760fa0b5cd6e260d2/pom.xml
+            https://central.sonatype.org/publish/publish-maven/
+             -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.12</version>
+                <version>1.6.12</version> <!-- Updated for Java 16+ -->
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -241,14 +245,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M5</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <releaseProfiles>ossrh</releaseProfiles>
-                    <goals>deploy</goals>
-                </configuration>
+                <version>3.0.0-M5</version> <!-- Updated -->
+<!--                <configuration> &lt;!&ndash; TODO test if this is needed &ndash;&gt;-->
+<!--                    <autoVersionSubmodules>true</autoVersionSubmodules>-->
+<!--                    <useReleaseProfile>false</useReleaseProfile>-->
+<!--                    <releaseProfiles>ossrh</releaseProfiles>-->
+<!--                    <goals>deploy</goals>-->
+<!--                </configuration>-->
             </plugin>
+            <!-- Update plugin versions -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
