@@ -48,6 +48,10 @@ public class ApplicationCommandsCache {
 
 	@SuppressWarnings("SuspiciousMethodCalls")
 	private static boolean checkDiff(Object oldObj, Object newObj, DiffLogger logger, int indent) {
+		if (oldObj == null && newObj == null) {
+			return true;
+		}
+
 		if (oldObj == null) {
 			logger.trace(indent, "oldObj is null");
 

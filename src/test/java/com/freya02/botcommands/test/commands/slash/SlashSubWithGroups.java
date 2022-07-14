@@ -1,12 +1,15 @@
 package com.freya02.botcommands.test.commands.slash;
 
+import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 
 import java.util.concurrent.TimeUnit;
 
+@UserPermissions(Permission.MANAGE_SERVER)
 public class SlashSubWithGroups extends ApplicationCommand {
 	@JDASlashCommand(name = "tag", subcommand = "send")
 	public void onSlashTag(GuildSlashEvent event) {reply(event);}
