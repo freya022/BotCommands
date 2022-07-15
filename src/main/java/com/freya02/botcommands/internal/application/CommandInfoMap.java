@@ -46,6 +46,25 @@ public class CommandInfoMap<T extends ApplicationCommandInfo> implements Map<Com
 	@Nullable
 	@Override
 	public T put(CommandPath key, T value) {
+		//Check if commands with the same name as their entire path are present
+		// For example, trying to insert /tag create while /tag already exists
+		for (Map.Entry<CommandPath, T> entry : entrySet()) {
+			final CommandPath commandPath = entry.getKey();
+			final T mapInfo = entry.getValue();
+
+			if (key.getFullPath().equals(commandPath.getName())) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
+						key, Utils.formatMethodShort(value.getMethod()),
+						commandPath, Utils.formatMethodShort(mapInfo.getMethod())));
+			}
+
+			if (commandPath.getFullPath().equals(key.getName())) {
+				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)",
+						key, Utils.formatMethodShort(value.getMethod()),
+						commandPath, Utils.formatMethodShort(mapInfo.getMethod())));
+			}
+		}
+
 		final T oldInfo = map.put(key, value);
 		if (oldInfo != null) {
 			throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)",

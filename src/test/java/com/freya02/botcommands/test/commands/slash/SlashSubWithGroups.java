@@ -11,8 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 @UserPermissions(Permission.MANAGE_SERVER)
 public class SlashSubWithGroups extends ApplicationCommand {
+//	@JDASlashCommand(name = "tag")
+//	public void onSlashTag(GuildSlashEvent event) {reply(event);}
+
 	@JDASlashCommand(name = "tag", subcommand = "send")
-	public void onSlashTag(GuildSlashEvent event) {reply(event);}
+	public void onSlashTagSend(GuildSlashEvent event) {reply(event);}
 
 	@JDASlashCommand(name = "tag", group = "manage", subcommand = "create")
 	public void onSlashTagCreate(GuildSlashEvent event) {reply(event);}
