@@ -4,8 +4,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
-
-import java.util.Locale;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
@@ -30,7 +29,7 @@ public class SlashLocalization extends ApplicationCommand {
 				.queue();
 
 		event.getChannel()
-				.sendMessage("German localized:\n" + event.localize(Locale.GERMAN, "commands.localization.response",
+				.sendMessage("German localized:\n" + event.localize(DiscordLocale.GERMAN, "commands.localization.response",
 						entry("guild_users", event.getGuild().getMemberCount()),
 						entry("uptime", 3.141519)))
 				.queue();

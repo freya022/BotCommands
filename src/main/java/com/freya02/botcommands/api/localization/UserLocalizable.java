@@ -1,8 +1,7 @@
 package com.freya02.botcommands.api.localization;
 
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 /**
  * Enables the subclass to localize strings with the current guild locale
@@ -14,7 +13,7 @@ public interface UserLocalizable extends Localizable {
 	 * @return The Locale of the user
 	 */
 	@NotNull
-	Locale getUserLocale();
+	DiscordLocale getUserLocale();
 
 	/**
 	 * Localizes the provided path, in the specified bundle, with the user's locale

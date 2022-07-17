@@ -8,10 +8,10 @@ import com.freya02.botcommands.api.localization.UserLocalizable;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
 
 public class GlobalMessageEvent extends MessageContextInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
 	private final EventLocalizer localizer;
@@ -48,7 +48,7 @@ public class GlobalMessageEvent extends MessageContextInteractionEvent implement
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
@@ -56,7 +56,7 @@ public class GlobalMessageEvent extends MessageContextInteractionEvent implement
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
 
 	@Override
 	@NotNull

@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -138,8 +139,8 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
-	public DefaultMessages getDefaultMessages(@NotNull Locale locale) {
-		return defaultMessageProvider.apply(locale);
+	public DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale) {
+		return defaultMessageProvider.apply(Locale.forLanguageTag(locale.getLocale()));
 	}
 
 	public void setDefaultMessageProvider(@NotNull Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider) {

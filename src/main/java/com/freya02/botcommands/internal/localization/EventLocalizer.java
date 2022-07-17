@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.localization.*;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.LocalizationManager;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +15,10 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 	private final BContextImpl context;
 	private final Method method;
 
-	private final Locale guildLocale;
-	private final Locale userLocale;
+	private final DiscordLocale guildLocale;
+	private final DiscordLocale userLocale;
 
-	public EventLocalizer(@NotNull BContextImpl context, @Nullable Method method, @Nullable Locale guildLocale, @Nullable Locale userLocale) {
+	public EventLocalizer(@NotNull BContextImpl context, @Nullable Method method, @Nullable DiscordLocale guildLocale, @Nullable DiscordLocale userLocale) {
 		this.context = context;
 		this.method = method;
 
@@ -27,10 +28,10 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
 		final LocalizationManager localizationManager = context.getLocalizationManager();
 
-		final Localization instance = Localization.getInstance(localizationBundle, locale);
+		final Localization instance = Localization.getInstance(localizationBundle, Locale.forLanguageTag(locale.getLocale()));
 
 		if (instance == null) {
 			throw new IllegalArgumentException("Found no localization instance for bundle '%s' and locale '%s'".formatted(localizationBundle, locale));
@@ -66,13 +67,13 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 		} else if (guildLocale != null) {
 			return localizeGuild(localizationPath, localizationBundle, entries);
 		} else {
-			return localize(Locale.getDefault(), localizationBundle, localizationPath, entries);
+			return localize(DiscordLocale.ENGLISH_US, localizationBundle, localizationPath, entries);
 		}
 	}
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
 		return localize(locale, getLocalizationBundle(), localizationPath, entries);
 	}
 
@@ -84,7 +85,7 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 		} else if (guildLocale != null) {
 			return localizeGuild(localizationPath, entries);
 		} else {
-			return localize(Locale.getDefault(), localizationPath, entries);
+			return localize(DiscordLocale.ENGLISH_US, localizationPath, entries);
 		}
 	}
 
@@ -106,7 +107,7 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 	@Override
 	@NotNull
-	public Locale getGuildLocale() {
+	public DiscordLocale getGuildLocale() {
 		if (guildLocale == null)
 			throw new IllegalStateException("Cannot guild localize on an event which doesn't provide guild localization");
 
@@ -115,7 +116,7 @@ public class EventLocalizer implements UserLocalizable, GuildLocalizable, Locali
 
 	@Override
 	@NotNull
-	public Locale getUserLocale() {
+	public DiscordLocale getUserLocale() {
 		if (userLocale == null)
 			throw new IllegalStateException("Cannot guild localize on an event which doesn't provide guild localization");
 
