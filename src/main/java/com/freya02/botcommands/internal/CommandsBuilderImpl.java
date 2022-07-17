@@ -42,7 +42,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -251,10 +250,11 @@ public final class CommandsBuilderImpl {
 		}
 
 		final List<GatewayIntent> intents = List.of(
-				GatewayIntent.GUILD_MESSAGES
+				GatewayIntent.GUILD_MESSAGES,
+				GatewayIntent.MESSAGE_CONTENT
 		);
 		if (!jda.getGatewayIntents().containsAll(intents)) {
-			throw new IllegalStateException("JDA must have these intents enabled: " + intents.stream().map(Enum::name).collect(Collectors.joining(", ")));
+			LOGGER.info("Text commands might not work as expected as gateway intents such as GUILD_MESSAGES and/or MESSAGE_CONTENT are missing");
 		}
 
 		setupContext(jda);
