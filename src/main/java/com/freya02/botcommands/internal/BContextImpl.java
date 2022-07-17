@@ -90,7 +90,7 @@ public class BContextImpl implements BContext {
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
-	private Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider;
+	private Function<@NotNull DiscordLocale, @NotNull DefaultMessages> defaultMessageProvider;
 	private ExceptionHandler uncaughtExceptionHandler;
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
@@ -140,10 +140,10 @@ public class BContextImpl implements BContext {
 	@Override
 	@NotNull
 	public DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale) {
-		return defaultMessageProvider.apply(Locale.forLanguageTag(locale.getLocale()));
+		return defaultMessageProvider.apply(locale);
 	}
 
-	public void setDefaultMessageProvider(@NotNull Function<@NotNull Locale, @NotNull DefaultMessages> defaultMessageProvider) {
+	public void setDefaultMessageProvider(@NotNull Function<@NotNull DiscordLocale, @NotNull DefaultMessages> defaultMessageProvider) {
 		this.defaultMessageProvider = defaultMessageProvider;
 	}
 

@@ -292,6 +292,7 @@ public interface BContext {
 	 *
 	 * @return The {@link DiscordLocale} of the {@link Guild}
 	 */
+	@NotNull
 	default DiscordLocale getEffectiveLocale(@Nullable Guild guild) {
 		if (guild != null && guild.getFeatures().contains("COMMUNITY")) {
 			return guild.getLocale();

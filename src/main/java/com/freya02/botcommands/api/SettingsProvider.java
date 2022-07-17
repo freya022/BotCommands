@@ -51,7 +51,10 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 */
 	@NotNull
 	default DiscordLocale getLocale(@Nullable Guild guild) {
-		return guild != null ? guild.getLocale() : DiscordLocale.ENGLISH_US; //Discord default locale is US english
+		if (guild != null) return guild.getLocale();
+
+		//Discord default locale is US english
+		return DiscordLocale.ENGLISH_US;
 	}
 
 	/**
