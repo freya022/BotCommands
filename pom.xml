@@ -22,6 +22,13 @@
                 <maven.javadoc.skip>true</maven.javadoc.skip>
             </properties>
         </profile>
+        <profile>
+            <id>check-docs</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
+        </profile>
     </profiles>
 
     <build>
@@ -112,6 +119,25 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/kotlin</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.1</version>
@@ -178,9 +204,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.freya022</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>014f4e119b</version>
+            <version>6e8c030fbe</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -227,7 +253,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.143</version>
+            <version>4.8.149</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -238,7 +264,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.0.6</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -249,7 +275,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.3</version>
+            <version>42.3.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>

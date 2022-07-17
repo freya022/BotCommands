@@ -70,6 +70,9 @@ public class SlashCommandsMain {
 							.enableOnlineAppCommandCheck()
 							.addLocalizations("MyCommands", Locale.US, Locale.UK, Locale.FRENCH)
 					)
+					.debugBuilder(debugBuilder -> {
+						debugBuilder.setLogApplicationDiffs(true);
+					})
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.addSearchPath("com.freya02.botcommands.test.commands.guild_specific")
 					.addSearchPath("com.freya02.botcommands.test.commands.varargs")

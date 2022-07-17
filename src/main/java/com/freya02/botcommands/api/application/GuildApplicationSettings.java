@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,23 +36,10 @@ public interface GuildApplicationSettings {
 	 *
 	 * @return The list of choices for this slash command's options
 	 *
-	 * @see SlashParameterResolver#getPredefinedChoices()
+	 * @see SlashParameterResolver#getPredefinedChoices(Guild)
 	 */
 	@NotNull
 	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
-		return Collections.emptyList();
-	}
-
-	/**
-	 * Returns the list of {@linkplain CommandPrivilege command privileges} for the given <b>base command name (most left name), no group, no subcommand</b>
-	 *
-	 * @param cmdBaseName Base name (top level) of the command to get the permissions of
-	 * @param guild       The guild of the command
-	 *
-	 * @return An empty Collection if the permissions should be cleared, or the privileges to apply to it.
-	 */
-	@NotNull
-	default List<CommandPrivilege> getCommandPrivileges(@NotNull Guild guild, @NotNull String cmdBaseName) {
 		return Collections.emptyList();
 	}
 

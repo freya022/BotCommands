@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
-import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import org.jetbrains.annotations.NotNull;
 

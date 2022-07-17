@@ -3,9 +3,9 @@ package com.freya02.botcommands.api.application.context.annotations;
 import com.freya02.botcommands.api.annotations.BotPermissions;
 import com.freya02.botcommands.api.annotations.Cooldown;
 import com.freya02.botcommands.api.annotations.UserPermissions;
+import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent;
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
@@ -31,11 +31,23 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface JDAUserCommand {
 	/**
-	 * Whether this application command should only work in a {@linkplain Guild}
+	 * Specified the application command scope for this command
 	 *
-	 * @return <code>true</code> if the application command only works in a {@linkplain Guild}
+	 * @return Scope of the command
+	 *
+	 * @see CommandScope
 	 */
-	boolean guildOnly() default true;
+	CommandScope scope() default CommandScope.GUILD;
+
+	/**
+	 * Specifies whether the application command is disabled by default, so that administrators can further configure the command
+	 * <br><b>If this is used in coordination with {@link UserPermissions} then they will be cleared if this is default locked</b>,
+	 * as to allow discord to lock the command for everyone, until an admin configures it.
+	 * <br>This does NOT affect administrators.
+	 *
+	 * @return <code>true</code> if the command should be disabled by default
+	 */
+	boolean defaultLocked() default false;
 
 	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>

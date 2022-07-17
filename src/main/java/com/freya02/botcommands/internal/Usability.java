@@ -29,7 +29,7 @@ public class Usability {
 			msgChannel = threadChannel.getParentMessageChannel();
 		}
 
-		if (msgChannel instanceof BaseGuildMessageChannel channel) {
+		if (msgChannel instanceof StandardGuildMessageChannel channel) {
 			//If guild NSFW is not enabled, and we are in a guild channel
 			if (!nsfwState.isEnabledInGuild()) {
 				unusableReasons.add(NSFW_DISABLED);
@@ -80,7 +80,7 @@ public class Usability {
 	public static Usability of(BContext context, Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 
-		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) {
+		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) { //Should not happen anymore
 			unusableReasons.add(GUILD_ONLY);
 		}
 

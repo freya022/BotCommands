@@ -90,8 +90,7 @@ public class ApplicationCommandsBuilder {
 	}
 
 	/**
-	 * Enables the library to do network calls to Discord in order to check if application commands / permissions need to be updated
-	 * <br><b>Permissions are not online checked yet, waiting for Discord to add native localisation</b>
+	 * Enables the library to do network calls to Discord in order to check if application commands need to be updated
 	 * <br>It's better to leave it disk-based, it is faster and doesn't require any request to Discord
 	 * <br><b>Online checks are to be avoided on production environments</b>, I strongly recommend you have a separate bot for tests purpose
 	 * <p>
@@ -109,7 +108,7 @@ public class ApplicationCommandsBuilder {
 	}
 
 	/**
-	 * Sets whether all application commands should be guild-only, regardless of the guild-only switch on the annotation
+	 * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation
 	 *
 	 * @param force <code>true</code> to make all application commands as guild-only
 	 *

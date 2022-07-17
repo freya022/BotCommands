@@ -35,7 +35,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 			long id = Long.parseLong(args[0]);
 
 			return Utils.findEntity(id,
-					event.getMessage().getMentionedUsers(),
+					event.getMessage().getMentions().getUsers(),
 					() -> event.getJDA().retrieveUserById(id).complete());
 		} catch (ErrorResponseException e) {
 			return null;

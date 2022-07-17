@@ -82,7 +82,7 @@ public class Localization {
 	}
 
 	/**
-	 * Invalidates the localization bundles with the specified base name & locale
+	 * Invalidates the localization bundles with the specified base name and locale
 	 *
 	 * @param baseName The base name of the bundles to invalidate
 	 * @param locale   The locale of the bundle to invalidate
