@@ -258,7 +258,7 @@ public final class CommandsBuilderImpl {
 
 		if (jda.getGatewayIntents().contains(GatewayIntent.GUILD_MESSAGES)) {
 			if (jda.getGatewayIntents().contains(GatewayIntent.MESSAGE_CONTENT) || usePing) {
-				context.addEventListeners(new CommandListener(context));
+				context.addEventListeners(new CommandListener(context, usePing));
 			} else {
 				LOGGER.info("Text commands will not work as the MESSAGE_CONTENT intent is missing and ping-as-prefix is not enabled");
 			}
