@@ -250,23 +250,25 @@ public final class CommandsBuilderImpl {
 			}
 		}
 
-		final List<GatewayIntent> intents = List.of(
-				GatewayIntent.GUILD_MESSAGES,
-				GatewayIntent.MESSAGE_CONTENT
-		);
-		if (!jda.getGatewayIntents().containsAll(intents)) {
-			LOGGER.info("Text commands might not work as expected as gateway intents such as GUILD_MESSAGES and/or MESSAGE_CONTENT are missing");
-		}
-
 		setupContext(jda);
 
 		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 
+		if (jda.getGatewayIntents().contains(GatewayIntent.GUILD_MESSAGES)) {
+			if (jda.getGatewayIntents().contains(GatewayIntent.MESSAGE_CONTENT) || usePing) {
+				context.addEventListeners(new CommandListener(context));
+			} else {
+				LOGGER.info("Text commands will not work as the MESSAGE_CONTENT intent is missing and ping-as-prefix is not enabled");
+			}
+		} else {
+			LOGGER.info("Text commands will not work as the GUILD_MESSAGES intent is missing");
+		}
+
+
 		context.addEventListeners(
 				new EventWaiter(jda),
-				new CommandListener(context),
 				new ApplicationUpdaterListener(context),
 				new ApplicationCommandListener(context)
 		);
