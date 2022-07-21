@@ -20,13 +20,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -92,7 +92,7 @@ public interface BContext {
 	}
 
 	@NotNull
-	DefaultMessages getDefaultMessages(@NotNull Locale locale);
+	DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale);
 
 	/**
 	 * Returns the {@link DefaultMessages} instance for this Guild's locale
@@ -179,6 +179,14 @@ public interface BContext {
 	 */
 	@NotNull
 	Supplier<InputStream> getDefaultFooterIconSupplier();
+
+	/**
+	 * Sends an exception message to the unique bot owner, retrieved via {@link JDA#retrieveApplicationInfo()}
+	 *
+	 * @param message The message describing the context
+	 * @param t       An optional exception
+	 */
+	void dispatchException(@NotNull String message, @Nullable Throwable t);
 
 	/**
 	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
@@ -286,19 +294,20 @@ public interface BContext {
 	SettingsProvider getSettingsProvider();
 
 	/**
-	 * Returns the {@link Locale} for the specified {@link Guild}
+	 * Returns the {@link DiscordLocale} for the specified {@link Guild}
 	 *
-	 * @param guild The {@link Guild} in which to take the {@link Locale} from
-	 * @return The {@link Locale} of the {@link Guild}
+	 * @param guild The {@link Guild} in which to take the {@link DiscordLocale} from
+	 *
+	 * @return The {@link DiscordLocale} of the {@link Guild}
 	 */
 	@NotNull
-	default Locale getEffectiveLocale(@Nullable Guild guild) {
+	default DiscordLocale getEffectiveLocale(@Nullable Guild guild) {
 		if (guild != null && guild.getFeatures().contains("COMMUNITY")) {
 			return guild.getLocale();
 		}
 
 		final SettingsProvider provider = getSettingsProvider();
-		if (provider == null) return Locale.getDefault();
+		if (provider == null) return DiscordLocale.ENGLISH_US; //Discord default
 
 		return provider.getLocale(guild);
 	}

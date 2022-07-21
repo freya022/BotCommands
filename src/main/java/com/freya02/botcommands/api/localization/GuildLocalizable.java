@@ -1,23 +1,22 @@
 package com.freya02.botcommands.api.localization;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 /**
  * Enables the subclass to localize strings with the current guild locale
  */
 public interface GuildLocalizable extends Localizable {
 	/**
-	 * Returns the Locale of the guild
+	 * Returns the DiscordLocale of the guild
+	 *
+	 * @return the DiscordLocale of the guild
 	 *
 	 * @throws IllegalStateException If the event did not happen in a Guild
-	 *
-	 * @return the Locale of the guild
 	 */
 	@NotNull
-	Locale getGuildLocale();
+	DiscordLocale getGuildLocale();
 
 	/**
 	 * Localizes the provided path, in the specified bundle, with the guild's locale

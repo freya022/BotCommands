@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.GuildApplicationSettings;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,8 +50,11 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 * @see DefaultMessages
 	 */
 	@NotNull
-	default Locale getLocale(@Nullable Guild guild) {
-		return Locale.getDefault(Locale.Category.DISPLAY);
+	default DiscordLocale getLocale(@Nullable Guild guild) {
+		if (guild != null) return guild.getLocale();
+
+		//Discord default locale is US english
+		return DiscordLocale.ENGLISH_US;
 	}
 
 	/**

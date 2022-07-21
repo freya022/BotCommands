@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,6 @@ import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -323,7 +323,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements G
 
 	@Override
 	@NotNull
-	public Locale getGuildLocale() {
+	public DiscordLocale getGuildLocale() {
 		return getGuild().getLocale();
 	}
 
@@ -337,7 +337,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements G
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
@@ -345,7 +345,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements G
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
 
 	@Override
 	@NotNull

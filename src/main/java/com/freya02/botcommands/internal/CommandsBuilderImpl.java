@@ -30,6 +30,7 @@ import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +43,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -250,22 +250,25 @@ public final class CommandsBuilderImpl {
 			}
 		}
 
-		final List<GatewayIntent> intents = List.of(
-				GatewayIntent.GUILD_MESSAGES
-		);
-		if (!jda.getGatewayIntents().containsAll(intents)) {
-			throw new IllegalStateException("JDA must have these intents enabled: " + intents.stream().map(Enum::name).collect(Collectors.joining(", ")));
-		}
-
 		setupContext(jda);
 
 		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 
+		if (jda.getGatewayIntents().contains(GatewayIntent.GUILD_MESSAGES)) {
+			if (jda.getGatewayIntents().contains(GatewayIntent.MESSAGE_CONTENT) || usePing) {
+				context.addEventListeners(new CommandListener(context, usePing));
+			} else {
+				LOGGER.info("Text commands will not work as the MESSAGE_CONTENT intent is missing and ping-as-prefix is not enabled");
+			}
+		} else {
+			LOGGER.info("Text commands will not work as the GUILD_MESSAGES intent is missing");
+		}
+
+
 		context.addEventListeners(
 				new EventWaiter(jda),
-				new CommandListener(context),
 				new ApplicationUpdaterListener(context),
 				new ApplicationCommandListener(context)
 		);
@@ -298,12 +301,12 @@ public final class CommandsBuilderImpl {
 		context.setDefaultMessageProvider(new DefaultMessagesFunction());
 	}
 
-	private static class DefaultMessagesFunction implements Function<Locale, DefaultMessages> {
-		private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
+	private static class DefaultMessagesFunction implements Function<DiscordLocale, DefaultMessages> {
+		private final Map<DiscordLocale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
 
 		@Override
-		public DefaultMessages apply(@NotNull Locale locale) {
-			return localeDefaultMessagesMap.computeIfAbsent(locale, DefaultMessages::new);
+		public DefaultMessages apply(@NotNull DiscordLocale locale) {
+			return localeDefaultMessagesMap.computeIfAbsent(locale, locale1 -> new DefaultMessages(Locale.forLanguageTag(locale.getLocale())));
 		}
 	}
 }
