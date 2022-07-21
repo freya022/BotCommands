@@ -5,7 +5,7 @@
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>2.4.1-SNAPSHOT</version>
+    <version>2.4.1</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps developing your bots fast</description>
@@ -54,7 +54,7 @@
         <connection>scm:git:https://github.com/freya022/BotCommands.git</connection>
         <developerConnection>scm:git:https://github.com/freya022/BotCommands.git</developerConnection>
         <url>https://github.com/freya022/BotCommands</url>
-      <tag>HEAD</tag>
+      <tag>BotCommands-2.4.1</tag>
   </scm>
 
     <distributionManagement>
