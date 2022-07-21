@@ -9,7 +9,7 @@ import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.isStatic
 import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -65,7 +65,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             return (serviceMap[clazz] as T?) ?: run {
                 //Don't autoload here as it could chain into loading stuff like BContextImpl or ApplicationCommandManager, which you shouldn't create automatically
                 if (!context.classPathContainer.classes.contains(clazz)) {
-                    throwUser("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
+                    throwService("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
                 }
 
                 val beingCreatedSet = localBeingCreatedSet.get()
@@ -125,7 +125,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                runSupplierFunction(instanceSupplier) ?: throwUser("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                runSupplierFunction(instanceSupplier) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
             }
             else -> {
                 val constructors = clazz.constructors
@@ -146,9 +146,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             .filter { it.hasAnnotation<Supplier>() }
 
         if (suppliers.size > 1) {
-            throwUser("Class ${supplier::class.jvmName} should have only one supplier function")
+            throwService("Class ${supplier::class.jvmName} should have only one supplier function")
         } else if (suppliers.isEmpty()) {
-            throwUser("Class ${supplier::class.jvmName} should have one supplier function")
+            throwService("Class ${supplier::class.jvmName} should have one supplier function")
         }
 
         val supplierFunction = suppliers.first()
@@ -156,7 +156,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             ?: throwInternal("Supplier annotation should have been checked but was not found")
 
         if (supplierFunction.returnType.jvmErasure != annotation.type) {
-            throwUser(supplierFunction, "Function should return the type declared in @Supplier")
+            throwService("Function should return the type declared in @Supplier", supplierFunction)
         }
 
         val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())

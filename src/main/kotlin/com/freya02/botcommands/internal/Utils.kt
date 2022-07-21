@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.annotations.Name
+import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.lang.reflect.Modifier
@@ -43,6 +44,12 @@ internal inline fun rethrowUser(function: KFunction<*>, message: String, e: Thro
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
+
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+internal inline fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
+    null -> throw ServiceException(message)
+    else -> throw ServiceException("${function.shortSignature} : $message")
+}
 
 @OptIn(ExperimentalContracts::class)
 internal inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
