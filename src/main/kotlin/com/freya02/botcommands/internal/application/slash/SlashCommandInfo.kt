@@ -9,18 +9,17 @@ import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.math.max
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.full.valueParameters
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 
 class SlashCommandInfo internal constructor(
@@ -40,6 +39,14 @@ class SlashCommandInfo internal constructor(
 
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
+
+        if (scope.isGuildOnly) {
+            if (method.valueParameters.first().type.jvmErasure.isSubclassOf(GlobalSlashEvent::class)) {
+                LOGGER.warn("${method.shortSignature} : First parameter could be a GuildSlashEvent as to benefit from non-null getters")
+            }
+        } else if (method.valueParameters.first().type.jvmErasure.isSubclassOf(GuildSlashEvent::class)) {
+            throwUser("Cannot use ${GuildSlashEvent::class.simpleName} on a global application command")
+        }
 
         parameters = MethodParameters.of<SlashParameterResolver>(
             context,
