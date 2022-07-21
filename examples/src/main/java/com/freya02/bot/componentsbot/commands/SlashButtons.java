@@ -2,6 +2,7 @@ package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
@@ -18,7 +19,7 @@ public class SlashButtons extends ApplicationCommand {
 	private static final String PRIMARY_HANDLER_NAME = "primaryHandler";
 
 	@JDASlashCommand(
-			guildOnly = false,
+			scope = CommandScope.GLOBAL,
 			name = "buttons",
 			description = "Shows how buttons works"
 	)
