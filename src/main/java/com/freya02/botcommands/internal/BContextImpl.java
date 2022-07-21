@@ -29,7 +29,9 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -42,8 +44,6 @@ import org.slf4j.Logger;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -95,8 +95,7 @@ public class BContextImpl implements BContext {
 
 	private final Map<Class<?>, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
 
-	private final ScheduledExecutorService exceptionTimeoutService = Executors.newSingleThreadScheduledExecutor();
-	private final List<Long> alreadyNotifiedList = new ArrayList<>();
+	private long nextExceptionDispatch = 0;
 	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
 	private final LocalizationManager localizationManager = new LocalizationManager();
@@ -313,25 +312,19 @@ public class BContextImpl implements BContext {
 				.getAllApplicationCommandsView();
 	}
 
-	public void dispatchException(String message, Throwable e) {
-		for (Long ownerId : getOwnerIds()) {
-			synchronized (alreadyNotifiedList) {
-				if (alreadyNotifiedList.contains(ownerId)) {
-					continue;
-				}
+	@Override
+	public void dispatchException(@NotNull String message, @Nullable Throwable t) {
+		if (nextExceptionDispatch < System.currentTimeMillis()) {
+			nextExceptionDispatch = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
 
-				alreadyNotifiedList.add(ownerId);
-				exceptionTimeoutService.schedule(() -> {
-					synchronized (alreadyNotifiedList) {
-						alreadyNotifiedList.remove(ownerId);
-					}
-				}, 10, TimeUnit.MINUTES);
-			}
+			String exceptionStr = t == null ? "" : "\nException : \n%s".formatted(Utils.getException(t));
 
-			getJDA().openPrivateChannelById(ownerId)
-					.flatMap(channel -> channel.sendMessage(message + ", exception : \n" + Utils.getException(e) + "\n\n Please check the logs for more detail and possible exceptions"))
+			jda.retrieveApplicationInfo()
+					.map(ApplicationInfo::getOwner)
+					.flatMap(User::openPrivateChannel)
+					.flatMap(channel -> channel.sendMessage("%s%s\n\nPlease check the logs for more detail and possible exceptions".formatted(message, exceptionStr)))
 					.queue(null, new ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER,
-							t -> LOGGER.warn("Could not send exception DM to owner of ID {}", ownerId)));
+							x -> LOGGER.warn("Could not send exception DM to owner")));
 		}
 	}
 

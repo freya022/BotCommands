@@ -181,6 +181,14 @@ public interface BContext {
 	Supplier<InputStream> getDefaultFooterIconSupplier();
 
 	/**
+	 * Sends an exception message to the unique bot owner, retrieved via {@link JDA#retrieveApplicationInfo()}
+	 *
+	 * @param message The message describing the context
+	 * @param t       An optional exception
+	 */
+	void dispatchException(@NotNull String message, @Nullable Throwable t);
+
+	/**
 	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
 	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
 	 * <br>Command overloads are also not executed
