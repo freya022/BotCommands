@@ -113,7 +113,7 @@ You can now build the framework
 ```java
 commandsBuilder.build(
     jda,                        // The JDA instance you just built 
-    "com.freya02.bot.commands"  // This is the package name with contains all your commands / handlers...
+    "com.freya02.bot.commands"  // This is the package name which contains all your commands / handlers...
 ); 
 ```
 
