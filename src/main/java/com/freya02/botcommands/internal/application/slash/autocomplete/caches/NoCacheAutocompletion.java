@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.caches;
 
 import com.freya02.botcommands.internal.ConsumerEx;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -11,7 +10,7 @@ import java.util.function.Consumer;
 
 public class NoCacheAutocompletion extends AbstractAutocompletionCache {
 	@Override
-	public void retrieveAndCall(SlashCommandInfo slashCommand, CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {
+	public void retrieveAndCall(CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {
 		valueComputer.accept(null); //Always compute the value, the result gets replied by the computer
 	}
 

@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.context.message.GlobalMessageEven
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent;
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.context.ContextCommandParameter;
@@ -21,9 +22,10 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 	private final MethodParameters<ContextCommandParameter<MessageContextParameterResolver>> commandParameters;
 
 	public MessageCommandInfo(BContext context, ApplicationCommand instance, Method method) {
-		super(context, instance, method.getAnnotation(JDAMessageCommand.class),
+		super(context, instance,
+				method.getAnnotation(JDAMessageCommand.class),
 				method,
-				method.getAnnotation(JDAMessageCommand.class).name());
+				JDAMessageCommand::name);
 
 		final Class<?>[] parameterTypes = method.getParameterTypes();
 		
@@ -39,12 +41,12 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 		});
 	}
 
-	public boolean execute(BContext context, MessageContextInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
+	public boolean execute(BContextImpl context, MessageContextInteractionEvent event, Consumer<Throwable> throwableConsumer) throws Exception {
 		final Object[] objects = new Object[commandParameters.size() + 1];
 		if (guildOnly) {
-			objects[0] = new GuildMessageEvent(context, event);
+			objects[0] = new GuildMessageEvent(getMethod(), context, event);
 		} else {
-			objects[0] = new GlobalMessageEvent(context, event);
+			objects[0] = new GlobalMessageEvent(getMethod(), context, event);
 		}
 
 		for (int i = 0, commandParametersLength = commandParameters.size(); i < commandParametersLength; i++) {

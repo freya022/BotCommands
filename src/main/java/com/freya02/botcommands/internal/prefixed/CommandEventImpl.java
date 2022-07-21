@@ -1,14 +1,15 @@
 package com.freya02.botcommands.internal.prefixed;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
 import com.freya02.botcommands.api.utils.RichTextFinder;
 import com.freya02.botcommands.api.utils.RichTextType;
-import com.freya02.botcommands.internal.entities.EmojiImpl;
+import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -16,6 +17,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +33,8 @@ public class CommandEventImpl extends CommandEvent {
 	private final List<Object> arguments = new ArrayList<>();
 	private final MessageReceivedEvent event;
 
-	public CommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
-		super(context, event, arguments);
+	public CommandEventImpl(@NotNull BContextImpl context, @NotNull Method method, MessageReceivedEvent event, String arguments) {
+		super(method, context, event, arguments);
 
 		this.event = event;
 
@@ -131,18 +133,18 @@ public class CommandEventImpl extends CommandEvent {
 					//Fastpath for mentioned entities passed in the message
 
 					mentionable = Utils.findEntity(id,
-							event.getMessage().getMentionedUsers(),
+							event.getMessage().getMentions().getUsers(),
 							() -> getJDA().retrieveUserById(id).complete());
 				} else if (clazz == Member.class) {
 					//Fastpath for mentioned entities passed in the message
 
 					mentionable = Utils.findEntity(id,
-							event.getMessage().getMentionedMembers(),
+							event.getMessage().getMentions().getMembers(),
 							() -> getGuild().retrieveMemberById(id).complete());
 				} else if (clazz == TextChannel.class) {
 					mentionable = getGuild().getTextChannelById(id);
-				} else if (clazz == Emote.class) {
-					mentionable = getJDA().getEmoteById(id);
+				} else if (clazz == CustomEmoji.class) {
+					mentionable = getJDA().getEmojiById(id);
 				} else {
 					throw new IllegalArgumentException(clazz.getSimpleName() + " is not a valid IMentionable class");
 				}
@@ -172,16 +174,16 @@ public class CommandEventImpl extends CommandEvent {
 			Object mentionable = null;
 
 			if (type == RichTextType.UNICODE_EMOTE) {
-				mentionable = new EmojiImpl(substring);
+				mentionable = Emoji.fromUnicode(substring);
 			} else if (mentionType == Message.MentionType.ROLE) {
 				mentionable = tryGetId(substring, id -> getGuild().getRoleById(id));
 			} else if (mentionType == Message.MentionType.CHANNEL) {
 				mentionable = tryGetId(substring, id -> getGuild().getTextChannelById(id));
-			} else if (mentionType == Message.MentionType.EMOTE) {
-				final Matcher matcher = Message.MentionType.EMOTE.getPattern().matcher(substring);
+			} else if (mentionType == Message.MentionType.EMOJI) {
+				final Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(substring);
 				if (matcher.find()) {
 					String id = matcher.group(2);
-					mentionable = getGuild().getEmoteById(id);
+					mentionable = getGuild().getEmojiById(id);
 				}
 			} else if (mentionType == Message.MentionType.USER) {
 				mentionable = tryGetId(substring, id -> getJDA().getUserById(id));

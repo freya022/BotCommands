@@ -144,7 +144,12 @@ public final class Utils {
 		}
 	}
 
-	public static boolean startsWithIgnoreCase(@NotNull String original, @NotNull String input) {
-		return original.regionMatches(true, 0, input, 0, input.length());
+	@Contract(value = "null -> fail; !null -> param1", pure = true)
+	@NotNull
+	public static <T> T checkGuild(T t) {
+		if (t == null)
+			throw new IllegalArgumentException("Guild-only object was null, so the interaction may not have happened in a Guild");
+
+		return t;
 	}
 }

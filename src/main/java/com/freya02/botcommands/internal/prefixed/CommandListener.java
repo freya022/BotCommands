@@ -46,6 +46,8 @@ public final class CommandListener extends ListenerAdapter {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 
 	private final BContextImpl context;
+	private boolean pingAsPrefix;
+	private final TextCommandInfo helpInfo;
 
 	private final HelpCommand helpCommand;
 
@@ -59,15 +61,17 @@ public final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public CommandListener(BContextImpl context) {
+	public CommandListener(BContextImpl context, boolean pingAsPrefix) {
 		this.context = context;
+		this.pingAsPrefix = pingAsPrefix;
 
 		if (context.isHelpDisabled()) {
 			LOGGER.debug("Help command not loaded");
 
+			this.helpInfo = null;
 			this.helpCommand = null;
 		} else {
-			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
+			this.helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
 
 			if (helpInfo == null) throw new IllegalStateException("Help command is not disabled but help command has not been loaded");
 			if (!(helpInfo.getInstance() instanceof HelpCommand helpCmd)) throw new IllegalStateException("Help command is not disabled but help command is not of correct type");
@@ -121,6 +125,10 @@ public final class CommandListener extends ListenerAdapter {
 			return;
 		}
 
+		if (pingAsPrefix && !event.getMessage().getMentions().isMentioned(event.getJDA().getSelfUser())) {
+			return;
+		}
+
 		final String msg = event.getMessage().getContentRaw();
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event, msg);
 		runCommand(() -> {
@@ -163,10 +171,10 @@ public final class CommandListener extends ListenerAdapter {
 			}
 
 			if (helpCommand != null) {
-				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, event, ""),
+				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
 						candidates.first().getPath());
 			} else if (context.getHelpConsumer() != null) {
-				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, event, args), candidates.first().getPath());
+				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, null, event, args), candidates.first().getPath());
 			}
 		}, throwableConsumer);
 	}
@@ -214,7 +222,7 @@ public final class CommandListener extends ListenerAdapter {
 					missingBuilder.add(botPermission.getName());
 				}
 
-				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
+				reply(event, this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(missingBuilder.toString()));
 				return STOP;
 			}
 		}
@@ -224,13 +232,13 @@ public final class CommandListener extends ListenerAdapter {
 			if (cooldown > 0) {
 				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
 				if (candidate.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getUserCooldownMsg(cooldown / 1000.0));
 					return STOP;
 				} else if (candidate.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getGuildCooldownMsg(cooldown / 1000.0));
 					return STOP;
 				} else /*if (commandInfo.getCooldownScope() == CooldownScope.CHANNEL) {*/ //Implicit condition
-					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getChannelCooldownMsg(cooldown / 1000.0));
 					return STOP;
 				//}
 			}
@@ -253,7 +261,7 @@ public final class CommandListener extends ListenerAdapter {
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {
-			reply(event, String.format(context.getDefaultMessages(event.getGuild()).getCommandNotFoundMsg(), "**" + String.join("**, **", suggestions) + "**"));
+			reply(event, context.getDefaultMessages(event.getGuild()).getCommandNotFoundMsg("**" + String.join("**, **", suggestions) + "**"));
 		}
 	}
 
@@ -312,7 +320,7 @@ public final class CommandListener extends ListenerAdapter {
 
 			message.addReaction(BaseCommandEventImpl.ERROR).queue();
 			if (message.getGuildChannel().canTalk()) {
-				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getCommandErrorMsg()).queue();
+				message.getChannel().sendMessage(context.getDefaultMessages(message.getGuild()).getGeneralErrorMsg()).queue();
 			}
 
 			context.dispatchException(msg, baseEx);

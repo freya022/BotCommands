@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public enum RichTextType {
 	USER(MentionType.USER),
-	EMOTE(MentionType.EMOTE),
+	EMOJI(MentionType.EMOJI),
 	CHANNEL(MentionType.CHANNEL),
 	ROLE(MentionType.ROLE),
 	EVERYONE(MentionType.EVERYONE),

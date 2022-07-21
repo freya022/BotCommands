@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.prefixed.BaseCommandEventImpl;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,8 +23,8 @@ import java.util.NoSuchElementException;
  * @see BaseCommandEvent
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
-	public CommandEvent(BContext context, MessageReceivedEvent event, String args) {
-		super(context, event, args);
+	public CommandEvent(@NotNull Method method, BContextImpl context, MessageReceivedEvent event, String args) {
+		super(context, method, event, args);
 	}
 
 	/**

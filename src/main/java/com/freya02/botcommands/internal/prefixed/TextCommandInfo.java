@@ -47,11 +47,11 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 	public TextCommandInfo(BContext context, TextCommand instance, Method commandMethod) {
 		super(context, instance,
+				commandMethod.getAnnotation(JDATextCommand.class),
 				commandMethod,
-				commandMethod.getAnnotation(JDATextCommand.class).name(),
-				commandMethod.getAnnotation(JDATextCommand.class).group(),
-				commandMethod.getAnnotation(JDATextCommand.class).subcommand()
-				);
+				JDATextCommand::name,
+				JDATextCommand::group,
+				JDATextCommand::subcommand);
 
 		final JDATextCommand jdaCommand = commandMethod.getAnnotation(JDATextCommand.class);
 
@@ -121,9 +121,9 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	public ExecutionResult execute(BContextImpl context, MessageReceivedEvent event, String args, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
 		List<Object> objects = new ArrayList<>(parameters.size() + 1) {{
 			if (isRegexCommand()) {
-				add(new BaseCommandEventImpl(context, event, args));
+				add(new BaseCommandEventImpl(context, getMethod(), event, args));
 			} else {
-				add(new CommandEventImpl(context, event, args));
+				add(new CommandEventImpl(context, getMethod(), event, args));
 			}
 		}};
 

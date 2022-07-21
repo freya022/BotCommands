@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
@@ -65,7 +66,7 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAUserCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAUserCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class))
 				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
 
@@ -80,12 +81,12 @@ public final class ApplicationCommandsBuilder {
 
 		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding user command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addUserCommand(info);
+		final CommandPath effectivePath = context.addUserCommand(info);
+		LOGGER.debug("Added user command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAMessageCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDAMessageCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class))
 				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
 
@@ -100,12 +101,12 @@ public final class ApplicationCommandsBuilder {
 
 		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding message command {} for method {}", info.getPath().getName(), Utils.formatMethodShort(method));
-		context.addMessageCommand(info);
+		final CommandPath effectivePath = context.addMessageCommand(info);
+		LOGGER.debug("Added message command {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDASlashCommand.class).guildOnly()) {
+		if (method.getAnnotation(JDASlashCommand.class).scope().isGuildOnly()) {
 			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class))
 				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
 
@@ -120,8 +121,8 @@ public final class ApplicationCommandsBuilder {
 
 		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
 
-		LOGGER.debug("Adding slash command path {} for method {}", info.getPath(), Utils.formatMethodShort(method));
-		context.addSlashCommand(info);
+		final CommandPath effectivePath = context.addSlashCommand(info);
+		LOGGER.debug("Added slash command path {} for method {}", effectivePath, Utils.formatMethodShort(method));
 	}
 
 	private String getCheckTypeString() {
@@ -146,6 +147,8 @@ public final class ApplicationCommandsBuilder {
 				} else {
 					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
+
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getGuildApplicationCommands()));
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
 			}
@@ -195,7 +198,7 @@ public final class ApplicationCommandsBuilder {
 	@NotNull
 	public CompletableFuture<CommandUpdateResult> scheduleApplicationCommandsUpdate(Guild guild, boolean force, boolean onlineCheck) {
 		if (!slashGuildIds.isEmpty() && !slashGuildIds.contains(guild.getIdLong()))
-			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false, false));
+			return CompletableFuture.completedFuture(new CommandUpdateResult(guild, false));
 
 		return CompletableFuture.supplyAsync(() -> {
 			final ReentrantLock lock;
@@ -208,7 +211,7 @@ public final class ApplicationCommandsBuilder {
 
 				final ApplicationCommandsUpdater updater = ApplicationCommandsUpdater.ofGuild(context, guild, onlineCheck);
 
-				boolean updatedCommands = false, updatedPrivileges = false;
+				boolean updatedCommands = false;
 
 				if (force || updater.shouldUpdateCommands()) {
 					updater.updateCommands();
@@ -220,17 +223,9 @@ public final class ApplicationCommandsBuilder {
 					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
-				if (force || updater.shouldUpdatePrivileges()) {
-					updater.updatePrivileges();
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(guild, ApplicationCommandInfoMap.fromCommandList(updater.getGuildApplicationCommands()));
 
-					updatedPrivileges = true;
-
-					LOGGER.debug("Guild '{}' ({}) commands privileges were{} updated ({})", guild.getName(), guild.getId(), force ? " force" : "", "Local disk check");
-				} else { //TODO change prints once privileges can be checked online
-					LOGGER.debug("Guild '{}' ({}) commands privileges does not have to be updated ({})", guild.getName(), guild.getId(), "Local disk check");
-				}
-
-				return new CommandUpdateResult(guild, updatedCommands, updatedPrivileges);
+				return new CommandUpdateResult(guild, updatedCommands);
 			} catch (Throwable e) {
 				throw new RuntimeException("An exception occurred while updating guild commands for guild '" + guild.getName() + "' (" + guild.getId() + ")", e);
 			} finally {

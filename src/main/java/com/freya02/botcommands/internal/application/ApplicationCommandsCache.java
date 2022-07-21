@@ -5,9 +5,7 @@ import com.freya02.botcommands.internal.application.diff.DiffLogger;
 import com.google.gson.Gson;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,20 +30,6 @@ public class ApplicationCommandsCache {
 		return json.toJson();
 	}
 
-	static byte[] getPrivilegesBytes(Map<String, Collection<CommandPrivilege>> cmdBaseNameToPrivilegesMap) {
-		//Reference at net.dv8tion.jda.internal.entities.GuildImpl.updateCommandPrivileges
-		//Except this time we bind permissions to base names
-		DataArray array = DataArray.empty();
-		cmdBaseNameToPrivilegesMap.forEach((cmdBaseName, list) -> {
-			DataObject entry = DataObject.empty();
-			entry.put("cmdBaseName", cmdBaseName);
-			entry.put("permissions", DataArray.fromCollection(list));
-			array.add(entry);
-		});
-
-		return array.toJson();
-	}
-
 	public static boolean isJsonContentSame(byte[] oldContentBytes, byte[] newContentBytes) {
 		final String oldContent = new String(oldContentBytes);
 		final String newContent = new String(newContentBytes);
@@ -64,6 +48,10 @@ public class ApplicationCommandsCache {
 
 	@SuppressWarnings("SuspiciousMethodCalls")
 	private static boolean checkDiff(Object oldObj, Object newObj, DiffLogger logger, int indent) {
+		if (oldObj == null && newObj == null) {
+			return true;
+		}
+
 		if (oldObj == null) {
 			logger.trace(indent, "oldObj is null");
 
@@ -151,9 +139,5 @@ public class ApplicationCommandsCache {
 
 	Path getGuildCommandsPath(Guild guild) {
 		return cachePath.resolve(guild.getId()).resolve("commands.json");
-	}
-
-	Path getGuildPrivilegesPath(Guild guild) {
-		return cachePath.resolve(guild.getId()).resolve("privileges.json");
 	}
 }

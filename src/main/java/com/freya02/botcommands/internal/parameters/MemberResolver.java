@@ -36,7 +36,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 			long id = Long.parseLong(args[0]);
 
 			return Utils.findEntity(id,
-					event.getMessage().getMentionedMembers(),
+					event.getMessage().getMentions().getMembers(),
 					() -> event.getGuild().retrieveMemberById(id).complete());
 		} catch (ErrorResponseException e) {
 			LOGGER.debug("Could not resolve member in {} ({}): {} (regex command, may not be an error)", event.getGuild().getName(), event.getGuild().getIdLong(), e.getMeaning());

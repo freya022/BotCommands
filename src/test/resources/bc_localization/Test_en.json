@@ -1,0 +1,6 @@
+{
+    "key1": "{user}: utilisateur",
+    "key2": "{myNumber} {myNumber, choice, -1#is negative| 0#is zero or fraction | 1#is one |1.0<is 1+ |2#is two |2<is more than 2.}",
+    "key3": "pi: {pi, number}",
+    "commands.localization.response": "There are {guild_users} {guild_users, choice, 0#users|1#user|2<users} and my up-time is {uptime, number} ms"
+}

@@ -2,10 +2,16 @@ package com.freya02.botcommands.api.prefixed;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandsBuilder;
+import com.freya02.botcommands.api.localization.GuildLocalizable;
+import com.freya02.botcommands.api.localization.Localizable;
+import com.freya02.botcommands.api.localization.Localization;
+import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.internal.localization.EventLocalizer;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -26,9 +33,16 @@ import java.util.function.Supplier;
  *     <li>Adding a reaction to indicate command success/failure</li>
  * </ul>
  */
-public abstract class BaseCommandEvent extends MessageReceivedEvent {
-	public BaseCommandEvent(@NotNull JDA api, long responseNumber, @NotNull Message message) {
+public abstract class BaseCommandEvent extends MessageReceivedEvent implements GuildLocalizable, Localizable {
+	private final EventLocalizer localizer;
+
+	public BaseCommandEvent(@NotNull BContextImpl context, @Nullable Method method, @NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
+
+		this.localizer = new EventLocalizer(context,
+				method,
+				message.isFromGuild() ? message.getGuild().getLocale() : null,
+				null);
 	}
 
 	public abstract BContext getContext();
@@ -306,4 +320,38 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	@CheckReturnValue
 	@NotNull
 	public abstract RestAction<Message> indicateError(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+
+	@Override
+	@NotNull
+	public DiscordLocale getGuildLocale() {
+		return getGuild().getLocale();
+	}
+
+	@Override
+	@NotNull
+	public String localizeGuild(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationBundle, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localizeGuild(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localizeGuild(localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationBundle, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(localizationPath, entries);}
+
+	@Override
+	@NotNull
+	public String getLocalizationBundle() {return localizer.getLocalizationBundle();}
 }

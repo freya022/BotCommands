@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.freya02</groupId>
+    <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
-    <version>2.3.0-SNAPSHOT</version>
+    <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
+    <version>2.4.2-SNAPSHOT</version>
+    <name>BotCommands</name>
+
+    <description>A JDA command framework (&amp; much more) which helps developing your bots fast</description>
+
+    <url>https://github.com/freya022/BotCommands</url>
+
+    <developers>
+        <developer>
+            <name>freya022</name>
+            <email>41875020+freya022@users.noreply.github.com</email>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <kotlin.version>1.6.10</kotlin.version>
-        <kotlin.compiler.jvmTarget>16</kotlin.compiler.jvmTarget>
+        <kotlin.version>1.6.20</kotlin.version>
+        <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     </properties>
 
     <profiles>
@@ -22,7 +33,40 @@
                 <maven.javadoc.skip>true</maven.javadoc.skip>
             </properties>
         </profile>
+        <profile>
+            <id>check-docs</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
+        </profile>
     </profiles>
+
+    <licenses>
+        <license>
+            <name>Mozilla Public License 2.0</name>
+            <url>https://opensource.org/licenses/MPL-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/freya022/BotCommands.git</connection>
+        <developerConnection>scm:git:https://github.com/freya022/BotCommands.git</developerConnection>
+        <url>https://github.com/freya022/BotCommands</url>
+      <tag>HEAD</tag>
+  </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -65,10 +109,11 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>16</source>
-                    <target>16</target>
+                    <source>17</source>
+                    <target>17</target>
                     <compilerArgs>
                         <compilerArg>-parameters</compilerArg>
+                        <compilerArg>--enable-preview</compilerArg>
                     </compilerArgs>
                 </configuration>
                 <executions>
@@ -111,17 +156,20 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>add-source</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.name}</finalName>
+                            <sources>
+                                <source>src/main/kotlin</source>
+                            </sources>
                         </configuration>
                     </execution>
                 </executions>
@@ -134,7 +182,7 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -147,6 +195,7 @@
                     <release>17</release>
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                        <additionalJOption>--enable-preview</additionalJOption>
                     </additionalJOptions>
                     <links>
                         <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -165,8 +214,70 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Good resources:
+            https://github.com/classgraph/classgraph/blob/e81f793faba16ed102aeba4760fa0b5cd6e260d2/pom.xml
+            https://central.sonatype.org/publish/publish-maven/
+             -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.12</version> <!-- Updated for Java 16+ -->
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.0.0-M5</version> <!-- Updated -->
+<!--                <configuration> &lt;!&ndash; TODO test if this is needed &ndash;&gt;-->
+<!--                    <autoVersionSubmodules>true</autoVersionSubmodules>-->
+<!--                    <useReleaseProfile>false</useReleaseProfile>-->
+<!--                    <releaseProfiles>ossrh</releaseProfiles>-->
+<!--                    <goals>deploy</goals>-->
+<!--                </configuration>-->
+            </plugin>
+            <!-- Update plugin versions -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>3.0.0-M2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.0.0-M1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.12.0</version>
+            </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
             <id>dv8tion</id>
@@ -182,7 +293,7 @@
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-core</artifactId>
-            <version>1.6.0-native-mt</version>
+            <version>1.6.1-native-mt</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -194,7 +305,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>5.0.0-alpha.16</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -207,7 +318,7 @@
 <!--        <dependency>-->
 <!--            <groupId>net.dv8tion</groupId>-->
 <!--            <artifactId>JDA</artifactId>-->
-<!--            <version>4.3.0_DEV</version>-->
+<!--            <version>5.0.0-alpha.11_DEV</version>-->
 <!--            <exclusions>-->
 <!--                <exclusion>-->
 <!--                    <groupId>club.minnced</groupId>-->
@@ -241,7 +352,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.140</version>
+            <version>4.8.149</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -252,7 +363,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.0.5</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -263,7 +374,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.3</version>
+            <version>42.3.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>

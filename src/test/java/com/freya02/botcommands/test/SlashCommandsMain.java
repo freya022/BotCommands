@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 public class SlashCommandsMain {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -28,6 +29,8 @@ public class SlashCommandsMain {
 					.setActivity(Activity.playing("application commands"))
 					.build()
 					.awaitReady();
+
+//			jda.getGuildCache().forEach(g -> g.updateCommands().complete());
 
 			CommandsBuilder.newBuilder(config.getOwnerId())
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
@@ -64,9 +67,15 @@ public class SlashCommandsMain {
 								return canRun;
 							})
 							.addTestGuilds(config.getTestGuildId())
-//							.enableOnlineAppCommandCheck()
+							.enableOnlineAppCommandCheck()
+							.addLocalizations("MyCommands", Locale.US, Locale.UK, Locale.FRENCH)
 					)
+					.debugBuilder(debugBuilder -> {
+						debugBuilder.setLogApplicationDiffs(true);
+					})
 					.addSearchPath("com.freya02.botcommands.test.commands")
+					.addSearchPath("com.freya02.botcommands.test.commands.guild_specific")
+					.addSearchPath("com.freya02.botcommands.test.commands.varargs")
 					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
 					.setSettingsProvider(new BasicSettingsProvider())
 //					.setUncaughtExceptionHandler(new ExceptionHandlerAdapter() {

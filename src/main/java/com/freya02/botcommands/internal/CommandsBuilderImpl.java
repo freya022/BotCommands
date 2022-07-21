@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.application.context.annotations.JDAMessageCom
 import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.waiter.EventWaiter;
@@ -20,6 +21,7 @@ import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
+import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
 import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
@@ -28,7 +30,7 @@ import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
@@ -41,16 +43,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class CommandsBuilderImpl {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final List<Class<? extends Annotation>> applicationMethodAnnotations = List.of(JDASlashCommand.class, JDAMessageCommand.class, JDAUserCommand.class);
 
 	private final PrefixedCommandsBuilder prefixedCommandsBuilder;
-	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final EventListenersBuilder eventListenersBuilder;
+
+	private final ApplicationCommandsBuilder applicationCommandsBuilder;
 	private final AutocompletionHandlersBuilder autocompletionHandlersBuilder;
+	private final ModalHandlersBuilder modalHandlersBuilder;
 
 	private final ComponentsBuilder componentsBuilder;
 
@@ -77,6 +80,7 @@ public final class CommandsBuilderImpl {
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
 		this.autocompletionHandlersBuilder = new AutocompletionHandlersBuilder(context);
+		this.modalHandlersBuilder = new ModalHandlersBuilder(context);
 	}
 
 	private void buildClasses() throws Exception {
@@ -128,6 +132,8 @@ public final class CommandsBuilderImpl {
 		eventListenersBuilder.postProcess();
 
 		autocompletionHandlersBuilder.postProcess();
+
+		modalHandlersBuilder.postProcess();
 
 		context.getRegistrationListeners().forEach(RegistrationListener::onBuildComplete);
 
@@ -207,6 +213,13 @@ public final class CommandsBuilderImpl {
 			return true;
 		}
 
+		final Object modalHandler = tryInstantiateMethod(ModalHandler.class, Object.class, "Modal handler", method);
+		if (modalHandler != null) {
+			modalHandlersBuilder.processHandler(modalHandler, method);
+
+			return true;
+		}
+
 		return false;
 	}
 
@@ -237,22 +250,25 @@ public final class CommandsBuilderImpl {
 			}
 		}
 
-		final List<GatewayIntent> intents = List.of(
-				GatewayIntent.GUILD_MESSAGES
-		);
-		if (!jda.getGatewayIntents().containsAll(intents)) {
-			throw new IllegalStateException("JDA must have these intents enabled: " + intents.stream().map(Enum::name).collect(Collectors.joining(", ")));
-		}
-
 		setupContext(jda);
 
 		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 
+		if (jda.getGatewayIntents().contains(GatewayIntent.GUILD_MESSAGES)) {
+			if (jda.getGatewayIntents().contains(GatewayIntent.MESSAGE_CONTENT) || usePing) {
+				context.addEventListeners(new CommandListener(context, usePing));
+			} else {
+				LOGGER.info("Text commands will not work as the MESSAGE_CONTENT intent is missing and ping-as-prefix is not enabled");
+			}
+		} else {
+			LOGGER.info("Text commands will not work as the GUILD_MESSAGES intent is missing");
+		}
+
+
 		context.addEventListeners(
 				new EventWaiter(jda),
-				new CommandListener(context),
 				new ApplicationUpdaterListener(context),
 				new ApplicationCommandListener(context)
 		);
@@ -282,15 +298,15 @@ public final class CommandsBuilderImpl {
 		context.registerCommandDependency(JDA.class, () -> jda);
 		context.registerCustomResolver(JDA.class, (x, y, ignored) -> jda);
 
-		context.setDefaultMessageProvider(new Function<>() {
-			private final Map<Locale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
+		context.setDefaultMessageProvider(new DefaultMessagesFunction());
+	}
 
-			@Override
-			public DefaultMessages apply(Guild guild) {
-				final Locale effectiveLocale = context.getEffectiveLocale(guild);
+	private static class DefaultMessagesFunction implements Function<DiscordLocale, DefaultMessages> {
+		private final Map<DiscordLocale, DefaultMessages> localeDefaultMessagesMap = new HashMap<>();
 
-				return localeDefaultMessagesMap.computeIfAbsent(effectiveLocale, DefaultMessages::new);
-			}
-		});
+		@Override
+		public DefaultMessages apply(@NotNull DiscordLocale locale) {
+			return localeDefaultMessagesMap.computeIfAbsent(locale, locale1 -> new DefaultMessages(Locale.forLanguageTag(locale.getLocale())));
+		}
 	}
 }

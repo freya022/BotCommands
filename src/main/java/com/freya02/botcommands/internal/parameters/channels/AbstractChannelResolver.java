@@ -69,7 +69,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel> extends Pa
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsGuildChannel();
+		return optionMapping.getAsChannel();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -20,13 +21,14 @@ import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class BaseCommandEventImpl extends BaseCommandEvent {
-	public static final String SUCCESS = EmojiUtils.resolveEmojis(":white_check_mark:");
-	public static final String ERROR = EmojiUtils.resolveEmojis(":x:");
+	public static final Emoji SUCCESS = EmojiUtils.resolveJDAEmoji(":white_check_mark:");
+	public static final Emoji ERROR = EmojiUtils.resolveJDAEmoji(":x:");
 	private static final Logger LOGGER = Logging.getLogger();
 
 	protected final BContext context;
@@ -34,8 +36,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	protected final GuildMessageChannel channel;
 
-	public BaseCommandEventImpl(BContext context, MessageReceivedEvent event, String arguments) {
-		super(event.getJDA(), event.getResponseNumber(), event.getMessage());
+	public BaseCommandEventImpl(@NotNull BContextImpl context, @Nullable Method method, MessageReceivedEvent event, String arguments) {
+		super(context, method, event.getJDA(), event.getResponseNumber(), event.getMessage());
 
 		this.context = context;
 		this.argumentsStr = arguments;
@@ -65,7 +67,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> LOGGER.error("Could not send message to channel : {}", message));
 
-		((BContextImpl) context).dispatchException(message, e);
+		context.dispatchException(message, e);
 	}
 
 	@Override

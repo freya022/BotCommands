@@ -56,11 +56,10 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final UserCommandInfo userCommand = context.findUserCommand(event.getCommandPath());
+			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findLiveUserCommand(event.getGuild(), event.getCommandPath());
 
 			if (userCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("An user context command could not be found: " + event.getName());
 			}
 
 			if (!canRun(event, userCommand)) return;
@@ -76,11 +75,10 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final MessageCommandInfo messageCommand = context.findMessageCommand(event.getCommandPath());
+			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findLiveMessageCommand(event.getGuild(), event.getCommandPath());
 
 			if (messageCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("A message context command could not be found: " + event.getName());
 			}
 
 			if (!canRun(event, messageCommand)) return;
@@ -96,11 +94,10 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final SlashCommandInfo slashCommand = context.findSlashCommand(CommandPath.of(event.getCommandPath()));
+			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandNotFoundMsg()).queue();
-				return;
+				throw new IllegalArgumentException("A slash command could not be found: " + event.getCommandPath());
 			}
 
 			if (!canRun(event, slashCommand)) return;
@@ -133,23 +130,23 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
 			if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getOwnerOnlyErrorMsg());
+				reply(event, this.context.getDefaultMessages(event).getOwnerOnlyErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNsfwDisabledErrorMsg());
+				reply(event, this.context.getDefaultMessages(event).getNsfwDisabledErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWOnlyErrorMsg());
+				reply(event, this.context.getDefaultMessages(event).getNSFWOnlyErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getNSFWDMDeniedErrorMsg());
+				reply(event, this.context.getDefaultMessages(event).getNSFWDMDeniedErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-				reply(event, this.context.getDefaultMessages(event.getGuild()).getUserPermErrorMsg());
+				reply(event, this.context.getDefaultMessages(event).getUserPermErrorMsg());
 
 				return false;
 			} else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
@@ -165,7 +162,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 					missingBuilder.add(botPermission.getName());
 				}
 
-				reply(event, String.format(this.context.getDefaultMessages(event.getGuild()).getBotPermErrorMsg(), missingBuilder));
+				reply(event, this.context.getDefaultMessages(event).getBotPermErrorMsg(missingBuilder.toString()));
 
 				return false;
 			}
@@ -174,13 +171,13 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (isNotOwner) {
 			final long cooldown = applicationCommand.getCooldown(event, event::getName);
 			if (cooldown > 0) {
-				final DefaultMessages messages = this.context.getDefaultMessages(event.getGuild());
+				final DefaultMessages messages = this.context.getDefaultMessages(event);
 				if (applicationCommand.getCooldownScope() == CooldownScope.USER) {
-					reply(event, String.format(messages.getUserCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getUserCooldownMsg(cooldown / 1000.0));
 				} else if (applicationCommand.getCooldownScope() == CooldownScope.GUILD) {
-					reply(event, String.format(messages.getGuildCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getGuildCooldownMsg(cooldown / 1000.0));
 				} else { //Implicit channel
-					reply(event, String.format(messages.getChannelCooldownMsg(), cooldown / 1000.0));
+					reply(event, messages.getChannelCooldownMsg(cooldown / 1000.0));
 				}
 
 				return false;
@@ -213,9 +210,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 			Utils.printExceptionString("Unhandled exception in thread '" + Thread.currentThread().getName() + "' while executing an application command '" + reconstructCommand(event) + "'", baseEx);
 			if (event.isAcknowledged()) {
-				event.getHook().sendMessage(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.getHook().sendMessage(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 			} else {
-				event.reply(context.getDefaultMessages(event.getGuild()).getApplicationCommandErrorMsg()).setEphemeral(true).queue();
+				event.reply(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
 			}
 
 			context.dispatchException("Exception in application command '" + reconstructCommand(event) + "'", baseEx);

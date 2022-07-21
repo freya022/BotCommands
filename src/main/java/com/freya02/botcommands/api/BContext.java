@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
-import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
+import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.CommandUpdateResult;
 import com.freya02.botcommands.api.application.annotations.Test;
@@ -12,10 +12,6 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
-import com.freya02.botcommands.internal.application.CommandInfoMap;
-import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
@@ -24,13 +20,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -96,7 +92,31 @@ public interface BContext {
 	}
 
 	@NotNull
-	DefaultMessages getDefaultMessages(@Nullable Guild guild);
+	DefaultMessages getDefaultMessages(@NotNull DiscordLocale locale);
+
+	/**
+	 * Returns the {@link DefaultMessages} instance for this Guild's locale
+	 *
+	 * @param guild The Guild to take the locale from
+	 *
+	 * @return The {@link DefaultMessages} instance with the Guild's locale
+	 */
+	@NotNull
+	default DefaultMessages getDefaultMessages(@Nullable Guild guild) {
+		return getDefaultMessages(getEffectiveLocale(guild));
+	}
+
+	/**
+	 * Returns the {@link DefaultMessages} instance for this user's locale
+	 *
+	 * @param interaction The Interaction to take the user's locale from
+	 *
+	 * @return The {@link DefaultMessages} instance with the user's locale
+	 */
+	@NotNull
+	default DefaultMessages getDefaultMessages(@NotNull Interaction interaction) {
+		return getDefaultMessages(interaction.getUserLocale());
+	}
 
 	/**
 	 * Returns the first occurrence of {@link TextCommandInfo} of the specified command name, the name can be an alias too
@@ -135,78 +155,12 @@ public interface BContext {
 	List<TextCommandCandidates> findTextSubcommands(CommandPath path);
 
 	/**
-	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name
+	 * Returns the application commands context, this is for user/message/slash commands and related methods
 	 *
-	 * @param name Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
-	 * @return The {@link SlashCommandInfo} object of the slash command
-	 */
-	@Nullable
-	SlashCommandInfo findSlashCommand(@NotNull CommandPath name);
-
-	/**
-	 * Returns the {@link UserCommandInfo} object of the specified user context command name
-	 *
-	 * @param name Name of the user context command
-	 * @return The {@link UserCommandInfo} object of the user context command
-	 */
-	@Nullable
-	UserCommandInfo findUserCommand(@NotNull String name);
-
-	/**
-	 * Returns the {@link MessageCommandInfo} object of the specified message context command name
-	 *
-	 * @param name Name of the message context command
-	 * @return The {@link MessageCommandInfo} object of the message context command
-	 */
-	@Nullable
-	MessageCommandInfo findMessageCommand(@NotNull String name);
-
-	/**
-	 * Returns a view for all the registered application commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the application commands
+	 * @return The {@link ApplicationCommandsContext} object
 	 */
 	@NotNull
-	@UnmodifiableView
-	ApplicationCommandInfoMapView getApplicationCommandInfoMapView();
-
-	/**
-	 * Returns a view for all the registered slash commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the slash commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView();
-
-	/**
-	 * Returns a view for all the registered user context commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the user context commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	CommandInfoMap<UserCommandInfo> getUserCommandsMapView();
-
-	/**
-	 * Returns a view for all the registered message context commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the message context commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView();
-
-	/**
-	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
-	 *
-	 * @return A list of the application commands paths
-	 */
-	List<CommandPath> getSlashCommandsPaths();
+	ApplicationCommandsContext getApplicationCommandsContext();
 
 	/**
 	 * Returns the default {@linkplain EmbedBuilder} supplier
@@ -225,6 +179,14 @@ public interface BContext {
 	 */
 	@NotNull
 	Supplier<InputStream> getDefaultFooterIconSupplier();
+
+	/**
+	 * Sends an exception message to the unique bot owner, retrieved via {@link JDA#retrieveApplicationInfo()}
+	 *
+	 * @param message The message describing the context
+	 * @param t       An optional exception
+	 */
+	void dispatchException(@NotNull String message, @Nullable Throwable t);
 
 	/**
 	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
@@ -332,15 +294,20 @@ public interface BContext {
 	SettingsProvider getSettingsProvider();
 
 	/**
-	 * Returns the {@link Locale} for the specified {@link Guild}
+	 * Returns the {@link DiscordLocale} for the specified {@link Guild}
 	 *
-	 * @param guild The {@link Guild} in which to take the {@link Locale} from
-	 * @return The {@link Locale} of the {@link Guild}
+	 * @param guild The {@link Guild} in which to take the {@link DiscordLocale} from
+	 *
+	 * @return The {@link DiscordLocale} of the {@link Guild}
 	 */
 	@NotNull
-	default Locale getEffectiveLocale(@Nullable Guild guild) {
+	default DiscordLocale getEffectiveLocale(@Nullable Guild guild) {
+		if (guild != null && guild.getFeatures().contains("COMMUNITY")) {
+			return guild.getLocale();
+		}
+
 		final SettingsProvider provider = getSettingsProvider();
-		if (provider == null) return Locale.getDefault();
+		if (provider == null) return DiscordLocale.ENGLISH_US; //Discord default
 
 		return provider.getLocale(guild);
 	}
@@ -353,16 +320,15 @@ public interface BContext {
 	Consumer<EmbedBuilder> getHelpBuilderConsumer();
 
 	/**
-	 * Updates the application commands and their permissions in the specified guilds <br><br>
+	 * Updates the application commands in the specified guilds <br><br>
 	 * Why you could call this method:
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
 	 * @param guilds Iterable collection of the guilds to update
-	 * @param force  Whether the commands and permissions should be updated no matter what
+	 * @param force  Whether the commands should be updated no matter what
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
@@ -370,16 +336,15 @@ public interface BContext {
 	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
 
 	/**
-	 * Updates the application commands and their permissions in the specified guild <br><br>
+	 * Updates the application commands in the specified guild <br><br>
 	 * Why you could call this method:
 	 * <ul>
 	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
-	 *     <li>An admin changes the permissions of a guild application-command in your bot</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
 	 * @param guild The guild which needs to be updated
-	 * @param force Whether the commands and permissions should be updated no matter what
+	 * @param force Whether the commands should be updated no matter what
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
 	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
 	 */

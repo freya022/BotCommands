@@ -2,9 +2,12 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.ID;
+import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.application.CommandParameter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
+import java.util.List;
 
 public class TextCommandParameter extends CommandParameter<RegexParameterResolver> {
 	private final int groupCount;
@@ -22,6 +25,11 @@ public class TextCommandParameter extends CommandParameter<RegexParameterResolve
 
 		this.data = new TextParameterData(parameter);
 		this.isId = parameter.isAnnotationPresent(ID.class);
+	}
+
+	@Override
+	protected List<Class<? extends Annotation>> getOptionAnnotations() {
+		return List.of(TextOption.class);
 	}
 
 	public TextParameterData getData() {

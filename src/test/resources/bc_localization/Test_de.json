@@ -1,0 +1,23 @@
+{
+    "commands": {
+        "ban": {
+            "name": "ban",
+            "description": "Bannis un utilisateur",
+            "options": {
+                "user": {
+                    "name": "utilisateur",
+                    "description": "Utilisateur a ban"
+                },
+                "delDays": {
+                    "name": "sup_messages",
+                    "description": "Nb jours à supprimer"
+                },
+                "reason": {
+                    "name": "raison",
+                    "description": "La raison"
+                }
+            }
+        }
+    },
+    "commands.localization.response": "There are {guild_users} {guild_users, choice, 0#users|1#user|2<users} and my up-time is {uptime, number} BRUH"
+}

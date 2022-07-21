@@ -7,8 +7,8 @@ import java.util.function.Function;
 public enum ComponentErrorReason {
 	NOT_ALLOWED(DefaultMessages::getComponentNotAllowedErrorMsg),
 	EXPIRED(DefaultMessages::getComponentExpiredErrorMsg),
-	NOT_FOUND(DefaultMessages::getComponentNotFoundErrorMsg),
-	INVALID_DATA(DefaultMessages::getComponentInvalidDataErrorMsg);
+	NOT_FOUND(null),
+	INVALID_DATA(null);
 
 	private final Function<DefaultMessages, String> reasonProvider;
 

@@ -1,8 +1,10 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.GuildApplicationSettings;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +27,7 @@ public interface SettingsProvider extends GuildApplicationSettings {
 
 	/**
 	 * Returns the list of guild commands usable in that Guild
-	 * <br><i>You can have a list of command names if needed in {@link BContext#getSlashCommandsPaths()} ()}</i>
+	 * <br><i>You can have a list of command names if needed in {@link ApplicationCommandsContext#getSlashCommandsPaths()} ()}</i>
 	 *
 	 * @return A CommandList of this guild's commands
 	 * @see CommandList#all()
@@ -48,8 +50,11 @@ public interface SettingsProvider extends GuildApplicationSettings {
 	 * @see DefaultMessages
 	 */
 	@NotNull
-	default Locale getLocale(@Nullable Guild guild) {
-		return Locale.getDefault();
+	default DiscordLocale getLocale(@Nullable Guild guild) {
+		if (guild != null) return guild.getLocale();
+
+		//Discord default locale is US english
+		return DiscordLocale.ENGLISH_US;
 	}
 
 	/**

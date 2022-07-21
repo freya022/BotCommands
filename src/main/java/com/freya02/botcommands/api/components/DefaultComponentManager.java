@@ -103,10 +103,10 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	private <CONSUMER extends ComponentConsumer<EVENT>,EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
-																									SQLFetchResult fetchResult,
-	                                                                                                Consumer<ComponentErrorReason> onError,
-	                                                                                                Consumer<DATA> dataConsumer,
-	                                                                                                Map<Long, CONSUMER> map, Function<CONSUMER, DATA> eventFunc) {
+	                                                                                                                                          SQLFetchResult fetchResult,
+	                                                                                                                                          Consumer<ComponentErrorReason> onError,
+	                                                                                                                                          Consumer<DATA> dataConsumer,
+	                                                                                                                                          Map<Long, CONSUMER> map, Function<CONSUMER, DATA> eventFunc) {
 
 		try {
 			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
@@ -137,11 +137,7 @@ public class DefaultComponentManager implements ComponentManager {
 			}
 
 			if (consumer == null) {
-				onError.accept(ComponentErrorReason.NOT_FOUND);
-
-				LOGGER.warn("Could not find a consumer for handler id {} on component {}", handlerId, event.getComponentId());
-
-				return;
+				throw new IllegalArgumentException("Could not find a consumer for handler id %s on component %s".formatted(handlerId, event.getComponentId()));
 			}
 
 			dataConsumer.accept(eventFunc.apply(consumer));
