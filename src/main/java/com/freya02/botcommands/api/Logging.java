@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api;
 
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -19,6 +20,7 @@ public class Logging {
 	 *
 	 * @return The {@link Logger} for the class which calls this method
 	 */
+	@NotNull
 	public static Logger getLogger() {
 		return JDALogger.getLog(WALKER.getCallerClass());
 	}
@@ -29,7 +31,8 @@ public class Logging {
 	 *
 	 * @return The {@link Logger} for the class of this object
 	 */
-	public static Logger getLogger(Object obj) {
+	@NotNull
+	public static Logger getLogger(@NotNull Object obj) {
 		return JDALogger.getLog(obj.getClass());
 	}
 

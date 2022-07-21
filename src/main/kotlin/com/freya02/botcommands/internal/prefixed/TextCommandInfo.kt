@@ -65,7 +65,12 @@ class TextCommandInfo(
         throwableConsumer: Consumer<Throwable>
     ): ExecutionResult {
         val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
-        objects += if (isRegexCommand) BaseCommandEventImpl(context, method, event, args) else CommandEventImpl(context, method, event, args)
+        objects += if (isRegexCommand) BaseCommandEventImpl(context, method, event, args) else CommandEventImpl(
+            context,
+            method,
+            event,
+            args
+        )
 
         if (isRegexCommand) {
             var groupIndex = 1

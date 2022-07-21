@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.interactions.commands.Command.Choice
+import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
@@ -32,7 +32,7 @@ class SlashCommandParameter(
         else -> null
     }
 
-    val choices: List<Choice>? = optionBuilder.choices
+    val choices: List<Command.Choice>? = optionBuilder.choices
     val range: ValueRange? = optionBuilder.valueRange
 
     val channelTypes: EnumSet<ChannelType>?

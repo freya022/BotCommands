@@ -14,7 +14,7 @@ import kotlin.reflect.KType
  * @see MessageContextParameterResolver
  * @see UserContextParameterResolver
  */
-abstract class ParameterResolver {
+abstract class ParameterResolver { //TODO convert back to java
     @JvmField
     protected val LOGGER: Logger
 

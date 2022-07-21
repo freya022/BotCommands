@@ -15,7 +15,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaMethod
 
-@OptIn(ExperimentalStdlibApi::class)
 object AnnotationUtils {
     //List order is from deepest to most effective
     //aka class --> method

@@ -15,7 +15,7 @@ import com.freya02.botcommands.internal.arrayOfSize
 import com.freya02.botcommands.internal.isSubclassOfAny
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.Command.Choice
+import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KParameter
@@ -34,7 +34,11 @@ internal class AutocompleteHandler(
     private val cache: AbstractAutocompleteCache
 
     init {
-        methodParameters = MethodParameters.of<SlashParameterResolver>(slashCommandInfo.context, autocompleteInfo.method, slashCommandInfo.builder.optionBuilders) { parameter, name, resolver ->
+        methodParameters = MethodParameters.of<SlashParameterResolver>(
+            slashCommandInfo.context,
+            autocompleteInfo.method,
+            slashCommandInfo.builder.optionBuilders
+        ) { parameter, name, resolver ->
             val optionBuilder = slashCommandInfo.builder.optionBuilders.findOption<SlashCommandOptionBuilder>(name)
 
             AutocompleteCommandParameter(parameter, optionBuilder, resolver)
@@ -48,7 +52,7 @@ internal class AutocompleteHandler(
         choiceSupplier = when {
             collectionReturnType.isSubclassOfAny(String::class, Long::class, Double::class) ->
                 generateSupplierFromStrings(autocompleteInfo.mode)
-            Choice::class.isSuperclassOf(collectionReturnType) -> ChoiceSupplierChoices(maxChoices)
+            Command.Choice::class.isSuperclassOf(collectionReturnType) -> ChoiceSupplierChoices(maxChoices)
             else -> {
                 @Suppress("UNCHECKED_CAST")
                 val transformer =
@@ -61,11 +65,11 @@ internal class AutocompleteHandler(
         cache = AbstractAutocompleteCache.fromMode(this)
     }
 
-    suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Choice> {
+    suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         return cache.retrieveAndCall(event, this::generateChoices)
     }
 
-    private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Choice> {
+    private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[autocompleteInfo.method.instanceParameter!!] = instance
         objects[autocompleteInfo.method.valueParameters.first()] = event
@@ -76,7 +80,7 @@ internal class AutocompleteHandler(
             return emptyList() //Autocomplete was triggered without all the required parameters being present
         }
 
-        val actualChoices: MutableList<Choice> = arrayOfSize(25)
+        val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
         val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.method.callSuspendBy(objects))
         val autoCompleteQuery = event.focusedOption
 
@@ -104,19 +108,19 @@ internal class AutocompleteHandler(
     }
 
     internal companion object {
-        internal fun String.asChoice(type: OptionType): Choice? {
+        internal fun String.asChoice(type: OptionType): Command.Choice? {
             return when (type) {
-                OptionType.STRING -> Choice(this, this)
+                OptionType.STRING -> Command.Choice(this, this)
                 OptionType.INTEGER -> {
                     try {
-                        Choice(this, toLong())
+                        Command.Choice(this, toLong())
                     } catch (e: NumberFormatException) {
                         null
                     }
                 }
                 OptionType.NUMBER -> {
                     try {
-                        Choice(this, toDouble())
+                        Command.Choice(this, toDouble())
                     } catch (e: NumberFormatException) {
                         null
                     }

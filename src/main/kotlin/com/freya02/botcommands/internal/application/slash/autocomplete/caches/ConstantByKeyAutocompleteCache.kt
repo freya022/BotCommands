@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import kotlin.time.Duration.Companion.minutes
 
-//private val LOGGER = Logging.getLogger()
-
 internal class ConstantByKeyAutocompleteCache(
     private val handler: AutocompleteHandler,
     cacheInfo: AutocompleteCacheInfo
