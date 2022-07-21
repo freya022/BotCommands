@@ -3,10 +3,9 @@
 This is a bot that you can take as an example, it has a `/ban` command which accepts a User, a number of days of messages to be deleted and a reason for the ban.
 This also contains a text command `exit` to shut down the bot
 
-## Requirements
+## Additional requirements
 
-* Java 16
-* A SQL database such as PostgreSQL
+* A PostgreSQL database
 * Your bot token
 
 ## How to run it
