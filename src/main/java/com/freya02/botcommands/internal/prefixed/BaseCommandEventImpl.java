@@ -67,7 +67,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	public void reportError(String message, Throwable e) {
 		channel.sendMessage(message).queue(null, t -> LOGGER.error("Could not send message to channel : {}", message));
 
-		((BContextImpl) context).dispatchException(message, e);
+		context.dispatchException(message, e);
 	}
 
 	@Override

@@ -10,10 +10,9 @@ import com.freya02.botcommands.internal.localization.EventLocalizer;
 import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
 
 public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
 	private final EventLocalizer localizer;
@@ -44,7 +43,7 @@ public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent impl
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationBundle, localizationPath, entries);}
 
 	@Override
 	@NotNull
@@ -52,7 +51,7 @@ public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent impl
 
 	@Override
 	@NotNull
-	public String localize(@NotNull Locale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
+	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {return localizer.localize(locale, localizationPath, entries);}
 
 	@Override
 	@NotNull

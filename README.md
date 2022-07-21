@@ -1,14 +1,7 @@
-[//]: # (![]&#40;https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.5-important&#41;)
-![](https://img.shields.io/badge/JDA%20Version-See_notice-important)
-![](https://img.shields.io/badge/Version-Use_latest_commit-informational)
+[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](#getting-the-library)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.16-important)](https://github.com/DV8FromTheWorld/JDA/releases)
 [![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
-
-
-### Notice
-**This version uses a fork of JDA in order to support permissions V2 and command localization** 
-* Group ID: `com.github.DV8FromTheWorld`
-* Artefact ID: `JDA`
-* Version: `6e8c030fbe`
+[![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
@@ -55,57 +48,29 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 * An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
 
 ## Getting the library
-### Installing with Jitpack
-
-<details>
-<summary>With Maven</summary>
-
-You can add the following to your pom.xml
+### Maven
 ```xml
-<repositories>
-  <repository>
-      <id>jitpack</id>
-      <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-
-...
-
 <dependencies>
   <dependency>
-    <groupId>com.github.freya022</groupId>
+    <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <version>VERSION</version>
   </dependency>
 </dependencies>
 ```
-</details>
 
-<details>
-<summary>With Gradle</summary>
-
-You can add the following to your pom.xml
+### Gradle
 ```gradle
 dependencies {
-    implementation 'com.github.freya022:BotCommands:VERSION'
-    ...
-}
-
-...
-
-repositories {
-    maven {
-        name 'jitpack'
-        url 'https://jitpack.io'
-    }
-    ...
+    implementation 'io.github.freya022:BotCommands:VERSION'
 }
 ```
-</details>
+
+Alternatively, you can use jitpack to use snapshot versions, you can refer to [this wiki](https://jda.wiki/using-jda/using-new-features/) for more information
 
 ### Building / Installing manually
 
-See [BUILDING.md](BUILDING.md)
+While I don't recommend, you can see [BUILDING.md](BUILDING.md)
 
 **You're now ready to start coding!**
 

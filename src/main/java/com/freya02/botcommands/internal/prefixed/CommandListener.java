@@ -46,6 +46,7 @@ public final class CommandListener extends ListenerAdapter {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 
 	private final BContextImpl context;
+	private boolean pingAsPrefix;
 	private final TextCommandInfo helpInfo;
 
 	private final HelpCommand helpCommand;
@@ -60,8 +61,9 @@ public final class CommandListener extends ListenerAdapter {
 		return thread;
 	});
 
-	public CommandListener(BContextImpl context) {
+	public CommandListener(BContextImpl context, boolean pingAsPrefix) {
 		this.context = context;
+		this.pingAsPrefix = pingAsPrefix;
 
 		if (context.isHelpDisabled()) {
 			LOGGER.debug("Help command not loaded");
@@ -120,6 +122,10 @@ public final class CommandListener extends ListenerAdapter {
 
 		if (member == null) {
 			LOGGER.error("Command caller member is null ! This shouldn't happen if the message isn't a webhook, or is the docs wrong ?");
+			return;
+		}
+
+		if (pingAsPrefix && !event.getMessage().getMentions().isMentioned(event.getJDA().getSelfUser())) {
 			return;
 		}
 
