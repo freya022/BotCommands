@@ -247,7 +247,7 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
         buildClasses()
 
         context.addEventListeners( //TODO remove once everything is registered via KTX extensions
-            CommandListener(context),
+            CommandListener(context, usePing),
             ApplicationUpdaterListener(context),
             ApplicationCommandListener(context)
         )
