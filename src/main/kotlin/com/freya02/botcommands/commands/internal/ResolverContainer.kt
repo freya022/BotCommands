@@ -21,7 +21,7 @@ import kotlin.reflect.jvm.jvmErasure
 private val LOGGER = Logging.getLogger()
 
 @BService
-internal class ResolverContainer(
+internal class ResolverContainer( //TODO Should this be part of the base module ?
     context: BContextImpl,
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
