@@ -20,8 +20,8 @@ public class Usability {
 	}
 
 	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo cmdInfo) {
-		final NSFWState nsfwState = cmdInfo.getNsfwState();
-		if (nsfwState == null) return;
+		final NSFWStrategy nsfwStrategy = cmdInfo.getNsfwStrategy();
+		if (nsfwStrategy == null) return;
 
 		//The command is indeed marked NSFW, but where is the command ran ?
 
@@ -31,13 +31,13 @@ public class Usability {
 
 		if (msgChannel instanceof StandardGuildMessageChannel channel) {
 			//If guild NSFW is not enabled, and we are in a guild channel
-			if (!nsfwState.isEnabledInGuild()) {
+			if (!nsfwStrategy.getAllowedInGuilds()) {
 				unusableReasons.add(NSFW_DISABLED);
 			} else if (!channel.isNSFW()) { //If we are in a non-nsfw channel
 				unusableReasons.add(NSFW_ONLY);
 			}
 		} else if (msgChannel instanceof PrivateChannel channel) {
-			if (!nsfwState.isEnabledInDMs()) {
+			if (!nsfwStrategy.getAllowInDMs()) {
 				unusableReasons.add(NSFW_DISABLED);
 			} else {
 				final SettingsProvider provider = context.getSettingsProvider();
