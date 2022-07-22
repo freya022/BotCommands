@@ -16,7 +16,6 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 object SlashUtils2 {
-    @JvmStatic
     fun ExecutableInteractionInfo.checkDefaultValue(
         parameter: AbstractSlashCommandParameter,
         defaultValue: Any?

@@ -40,11 +40,12 @@ class SlashCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 
+        val firstParamKlass = method.valueParameters.first().type.jvmErasure
         if (scope.isGuildOnly) {
-            if (method.valueParameters.first().type.jvmErasure.isSubclassOf(GlobalSlashEvent::class)) {
+            if (!firstParamKlass.isSubclassOf(GuildSlashEvent::class)) {
                 LOGGER.warn("${method.shortSignature} : First parameter could be a GuildSlashEvent as to benefit from non-null getters")
             }
-        } else if (method.valueParameters.first().type.jvmErasure.isSubclassOf(GuildSlashEvent::class)) {
+        } else if (firstParamKlass.isSubclassOf(GuildSlashEvent::class)) {
             throwUser("Cannot use ${GuildSlashEvent::class.simpleName} on a global application command")
         }
 
