@@ -11,7 +11,8 @@ public class InternalModals {
 
 	private InternalModals() {}
 
-	static void setContext(BContextImpl context) {
+	//TODO transform to service
+	public static void setContext(BContextImpl context) {
 		InternalModals.context = context;
 	}
 

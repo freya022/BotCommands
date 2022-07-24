@@ -37,6 +37,6 @@ public class ModalHandlersBuilder {
 	}
 
 	public void postProcess() {
-		context.addEventListeners(new ModalListener(context));
+//		context.addEventListeners(new ModalListener(context));
 	}
 }

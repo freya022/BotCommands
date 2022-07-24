@@ -1,37 +1,13 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.parameters.ModalParameterResolver
-import com.freya02.botcommands.internal.application.CommandParameter
+import com.freya02.botcommands.internal.findDeclarationName
+import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
 
-class ModalHandlerParameter(
-    parameter: KParameter,
-    val resolver: ModalParameterResolver
-) : CommandParameter(
-    parameter, TODO()
-) {
-    val isModalData: Boolean
-    val isModalInput: Boolean
-    var modalInputName: String? = null
-
-    init {
-        val modalInput = parameter.findAnnotation<ModalInput>()
-
-        isModalData = parameter.hasAnnotation<ModalData>()
-        isModalInput = modalInput != null
-
-        require(isModalData xor isModalInput) {
-            "Parameter #$index cannot be both modal data and modal input"
-        }
-
-        modalInputName = when {
-            modalInput != null -> modalInput.name
-            else -> null
-        }
-    }
-
+abstract class ModalHandlerParameter(
+    override val kParameter: KParameter
+) : MethodParameter {
+    override val methodParameterType = MethodParameterType.COMMAND
+    override val name by lazy { this.kParameter.findDeclarationName() }
 }
