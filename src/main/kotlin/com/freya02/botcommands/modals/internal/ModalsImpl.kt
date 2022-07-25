@@ -1,5 +1,8 @@
-package com.freya02.botcommands.api.modals
+package com.freya02.botcommands.modals.internal
 
+import com.freya02.botcommands.api.modals.ModalBuilder
+import com.freya02.botcommands.api.modals.Modals
+import com.freya02.botcommands.api.modals.TextInputBuilder
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.BContextImpl
