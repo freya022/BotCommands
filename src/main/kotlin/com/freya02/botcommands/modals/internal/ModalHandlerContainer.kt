@@ -6,7 +6,6 @@ import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.modals.InternalModals
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
@@ -15,8 +14,6 @@ internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: 
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 
     init {
-        InternalModals.setContext(context)
-
         classPathContainer.functionsWithAnnotation<ModalHandler>()
             .requireNonStatic()
             .requireFirstArg(ModalInteractionEvent::class)

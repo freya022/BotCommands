@@ -20,11 +20,11 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 @CommandMarker
 class SlashModal : ApplicationCommand() {
     @CommandMarker
-    fun onSlashModal(event: GuildSlashEvent) {
-        val input = Modals.createTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text", TextInputStyle.SHORT)
+    fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
+        val input = modals.createTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text", TextInputStyle.SHORT)
             .build()
 
-        val modal = Modals.create("Title", SLASH_MODAL_MODAL_HANDLER, "User data", 420)
+        val modal = modals.create("Title", SLASH_MODAL_MODAL_HANDLER, "User data", 420)
             .setTimeout(30, TimeUnit.SECONDS) {
                 println("Timeout")
             }
@@ -52,6 +52,8 @@ class SlashModal : ApplicationCommand() {
     @Declaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
         globalApplicationCommandManager.slashCommand("modal") {
+            customOption("modals")
+
             function = ::onSlashModal
         }
     }

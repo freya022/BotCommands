@@ -22,12 +22,12 @@ public class SlashModal extends ApplicationCommand {
 			name = "modal",
 			description = "Test modal"
 	)
-	public void onSlashModal(GuildSlashEvent event) {
-		final Modal modal = Modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
+	public void onSlashModal(GuildSlashEvent event, Modals modals) {
+		final Modal modal = modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
 				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
 				.setTitle("Formatting !")
 				.addActionRow(
-						Modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
+						modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
 								.setRequired(false)
 								.build()
 				)
