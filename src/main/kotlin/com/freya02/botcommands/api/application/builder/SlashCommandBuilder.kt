@@ -24,8 +24,8 @@ class SlashCommandBuilder internal constructor(
     /**
      * @param name Name of the declared parameter in the [function]
      */
-    fun customOption(name: String, block: CustomOptionBuilder.() -> Unit = {}) {
-        optionBuilders[name] = CustomOptionBuilder(name).apply(block)
+    fun customOption(name: String) {
+        optionBuilders[name] = CustomOptionBuilder(name)
     }
 
     internal fun build(): SlashCommandInfo {
