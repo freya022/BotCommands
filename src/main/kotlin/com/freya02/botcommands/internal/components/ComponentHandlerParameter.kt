@@ -1,14 +1,15 @@
 package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver
-import com.freya02.botcommands.internal.application.CommandParameter
+import com.freya02.botcommands.internal.findDeclarationName
+import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import kotlin.reflect.KParameter
 
 class ComponentHandlerParameter(
-    parameter: KParameter,
-    optionBuilder: OptionBuilder,
+    override val kParameter: KParameter,
     val resolver: ComponentParameterResolver
-) : CommandParameter(
-    parameter, optionBuilder
-)
+) : MethodParameter {
+    override val methodParameterType = MethodParameterType.COMMAND
+    override val name by lazy { this.kParameter.findDeclarationName() }
+}

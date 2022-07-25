@@ -25,8 +25,7 @@ class MessageCommandInfo internal constructor(
 
         parameters = MethodParameters.of<MessageContextParameterResolver>(
             context,
-            method,
-            builder.optionBuilders
+            method
         ) { kParameter, paramName, resolver ->
             MessageContextCommandParameter(kParameter, resolver)
         }

@@ -91,7 +91,7 @@ class AutocompletionHandlerInfo(
         }
 
         parameters =
-            MethodParameters.of<SlashParameterResolver>(context, method, mapOf()) { kParameter, paramName, _ -> //TODO pass builders
+            MethodParameters.of<SlashParameterResolver>(context, method) { kParameter, paramName, _ -> //TODO pass builders
                 AutocompleteCommandParameter(kParameter, TODO(), TODO())
             }
     }

@@ -1,13 +1,9 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.application.builder.CustomOptionBuilder
-import com.freya02.botcommands.api.application.builder.OptionBuilder
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
@@ -23,21 +19,9 @@ class MethodParameters internal constructor(methodParameters: List<MethodParamet
         get() = this.count { it.isOption }
 
     companion object {
-        internal fun fakeOptionMap(context: BContextImpl, function: KFunction<*>): Map<String, OptionBuilder> =
-            function.nonInstanceParameters.drop(1).associate {
-                val name = it.findDeclarationName()
-
-                when (context.serviceContainer.getService(ResolverContainer::class).getResolver(it)) {
-                    is ComponentParameterResolver -> name to object : OptionBuilder(name) {}
-                    is CustomResolver -> name to CustomOptionBuilder(name)
-                    else -> TODO("Not implemented yet")
-                }
-            }
-
         internal inline fun <reified R : Any> of(
             context: BContextImpl,
             function: KFunction<*>,
-            optionBuilders: Map<String, OptionBuilder>,
             parameterSupplier: InteractionParameterSupplier<R>
         ): MethodParameters {
             val methodParameters: MutableList<MethodParameter> = ArrayList(function.parameters.size)

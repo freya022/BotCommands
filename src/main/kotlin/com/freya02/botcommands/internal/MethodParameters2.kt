@@ -13,7 +13,14 @@ class MethodParameters2 {
         var optionPredicate: (KParameter) -> Boolean = { false }
         var resolvablePredicate: (KParameter) -> Boolean = { false }
 
+        /**
+         * This could be called if either the [optionPredicate] passes, or if none of them passes, as to try to pick the best resolver possible
+         */
         lateinit var optionTransformer: (KParameter, String, R) -> MethodParameter
+
+        /**
+         * Only called if the [resolvablePredicate] passes
+         */
         lateinit var resolvableTransformer: (KParameter) -> MethodParameter
     }
 
@@ -38,12 +45,11 @@ class MethodParameters2 {
                             )
                         }
                     }
-                    config.resolvablePredicate(kParameter) -> {
-                        config.resolvableTransformer(kParameter)
-                    }
+                    config.resolvablePredicate(kParameter) -> config.resolvableTransformer(kParameter)
                     else -> {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                         when (val resolver = resolverContainer.getResolver(kParameter)) {
+                            is R -> config.optionTransformer(kParameter, kParameter.findDeclarationName(), resolver)
                             is CustomResolver -> CustomMethodParameter(kParameter, resolver)
                             else -> throwUser(
                                 function,

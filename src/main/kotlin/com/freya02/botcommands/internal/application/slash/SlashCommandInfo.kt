@@ -51,8 +51,7 @@ class SlashCommandInfo internal constructor(
 
         parameters = MethodParameters.of<SlashParameterResolver>(
             context,
-            method,
-            builder.optionBuilders
+            method
         ) { kParameter, paramName, resolver ->
             val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
             SlashCommandParameter(this, kParameter, optionBuilder, resolver)

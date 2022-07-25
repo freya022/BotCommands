@@ -36,8 +36,7 @@ internal class AutocompleteHandler(
     init {
         methodParameters = MethodParameters.of<SlashParameterResolver>(
             slashCommandInfo.context,
-            autocompleteInfo.method,
-            slashCommandInfo.builder.optionBuilders
+            autocompleteInfo.method
         ) { parameter, name, resolver ->
             val optionBuilder = slashCommandInfo.builder.optionBuilders.findOption<SlashCommandOptionBuilder>(name)
 

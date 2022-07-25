@@ -25,8 +25,7 @@ class UserCommandInfo internal constructor(
 
         parameters = MethodParameters.of<UserContextParameterResolver>(
             context,
-            method,
-            builder.optionBuilders
+            method
         ) { kParameter, paramName, resolver ->
             UserContextCommandParameter(kParameter, resolver)
         }
