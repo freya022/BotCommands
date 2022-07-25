@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -103,9 +102,7 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public CommandsBuilder setSettingsProvider(SettingsProvider provider) {
-		context.setSettingsProvider(Objects.requireNonNull(provider, "Settings provider cannot be null"));
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -131,9 +128,7 @@ public final class CommandsBuilder {
 	 * @see DefaultComponentManager
 	 */
 	public CommandsBuilder setComponentManager(ComponentManager componentManager) {
-		context.setComponentManager(Objects.requireNonNull(componentManager, "Component manager cannot be null"));
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

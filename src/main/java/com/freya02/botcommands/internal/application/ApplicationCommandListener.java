@@ -124,7 +124,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 	}
 
 	private boolean canRun(@NotNull GenericCommandInteractionEvent event, ApplicationCommandInfo applicationCommand) {
-		for (ApplicationCommandFilter applicationFilter : context.getApplicationFilters()) {
+		for (ApplicationCommandFilter applicationFilter : context.getApplicationFilters$BotCommands()) {
 			if (!applicationFilter.isAccepted(new ApplicationFilteringData(context, event, applicationCommand))) {
 				LOGGER.trace("Cancelled application commands due to filter");
 

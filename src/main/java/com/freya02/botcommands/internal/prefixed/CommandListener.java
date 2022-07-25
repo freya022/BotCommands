@@ -181,7 +181,7 @@ public final class CommandListener extends ListenerAdapter {
 
 	private ExecutionResult tryExecute(MessageReceivedEvent event, Member member, boolean isNotOwner, String args, TextCommandInfo candidate, Matcher matcher, Consumer<Throwable> throwableConsumer) throws Exception {
 		final TextFilteringData filteringData = new TextFilteringData(context, event, candidate, args);
-		for (TextCommandFilter filter : context.getTextFilters()) {
+		for (TextCommandFilter filter : context.getTextFilters$BotCommands()) {
 			if (!filter.isAccepted(filteringData)) {
 				LOGGER.trace("Cancelled prefixed commands due to filter");
 
