@@ -5,7 +5,6 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.MethodParameters2
-import com.freya02.botcommands.internal.runner.MethodRunner
 import kotlin.reflect.KFunction
 
 class ComponentDescriptor(
@@ -14,9 +13,6 @@ class ComponentDescriptor(
     override val method: KFunction<*>
 ) : ExecutableInteractionInfo {
     override val parameters: MethodParameters
-
-    override val methodRunner: MethodRunner
-        get() = TODO("To be removed")
 
     init {
         @Suppress("RemoveExplicitTypeArguments")

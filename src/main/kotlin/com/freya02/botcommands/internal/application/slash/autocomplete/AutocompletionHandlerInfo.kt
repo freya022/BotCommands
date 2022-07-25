@@ -13,7 +13,6 @@ import com.freya02.botcommands.internal.application.slash.SlashCommandParameter
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompletionCache
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.runner.MethodRunner
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -37,7 +36,6 @@ class AutocompletionHandlerInfo(
     override val instance: Any,
     override val method: KFunction<Collection<*>>
 ) : ExecutableInteractionInfo { //TODO see how this could be done, this class uses full reflection but should be bound to a slash command
-    override val methodRunner: MethodRunner
     override val parameters: MethodParameters
 
     private val showUserInput: Boolean
@@ -48,23 +46,6 @@ class AutocompletionHandlerInfo(
     val maxChoices: Int
 
     init {
-        methodRunner = object : MethodRunner {
-            //TODO replace
-            @Suppress("UNCHECKED_CAST")
-            override fun <R> invoke(
-                args: Array<Any>,
-                throwableConsumer: Consumer<Throwable>,
-                successCallback: ConsumerEx<R>
-            ) {
-                try {
-                    val call = method.call(*args)
-                    successCallback.accept(call as R)
-                } catch (e: Throwable) {
-                    throwableConsumer.accept(e)
-                }
-            }
-        }
-
         val annotation = method.findAnnotation<AutocompletionHandler>()!! //TODO change for normal code
         val autocompletionMode: AutocompletionMode = annotation.mode
         val cacheAutocompletion = method.findAnnotation<CacheAutocompletion>()!!

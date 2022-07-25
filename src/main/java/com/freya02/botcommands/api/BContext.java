@@ -14,7 +14,6 @@ import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -40,13 +39,6 @@ public interface BContext {
 	 */
 	@NotNull
 	JDA getJDA();
-
-	/**
-	 * Return the {@link MethodRunnerFactory} for this context
-	 *
-	 * @return The {@link MethodRunnerFactory}
-	 */
-	MethodRunnerFactory getMethodRunnerFactory();
 
 	/**
 	 * Returns the full list of prefixes used to trigger the bot

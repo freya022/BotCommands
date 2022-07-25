@@ -27,8 +27,6 @@ import com.freya02.botcommands.internal.modals.ModalMaps;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates;
-import com.freya02.botcommands.internal.runner.JavaMethodRunnerFactory;
-import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import com.freya02.botcommands.internal.utils.Utils;
 import dev.minn.jda.ktx.events.CoroutineEventManager;
 import gnu.trove.TCollections;
@@ -113,7 +111,6 @@ public class BContextImpl implements BContext {
 	private final Map<KType, AutocompletionTransformer<?>> autocompletionTransformers = new HashMap<>();
 
 	private long nextExceptionDispatch = 0;
-	private MethodRunnerFactory methodRunnerFactory = new JavaMethodRunnerFactory();
 
 	private final LocalizationManager localizationManager = new LocalizationManager();
 
@@ -154,15 +151,6 @@ public class BContextImpl implements BContext {
 	@NotNull
 	public JDA getJDA() {
 		return serviceContainer.getService(JDA.class);
-	}
-
-	@Override
-	public MethodRunnerFactory getMethodRunnerFactory() {
-		return methodRunnerFactory;
-	}
-
-	public void setMethodRunnerFactory(@NotNull MethodRunnerFactory methodRunnerFactory) {
-		this.methodRunnerFactory = methodRunnerFactory;
 	}
 
 	public void setJDA(JDA jda) {

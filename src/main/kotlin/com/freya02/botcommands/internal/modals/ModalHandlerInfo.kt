@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.runner.MethodRunner
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -20,8 +19,6 @@ class ModalHandlerInfo(
     override val instance: Any,
     override val method: KFunction<*>
 ) : ExecutableInteractionInfo {
-    override val methodRunner: MethodRunner
-        get() = TODO()
 
     override val parameters: MethodParameters
 

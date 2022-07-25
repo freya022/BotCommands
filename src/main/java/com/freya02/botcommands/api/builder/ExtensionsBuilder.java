@@ -8,10 +8,7 @@ import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.runner.MethodRunnerFactory;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -130,22 +127,6 @@ public class ExtensionsBuilder {
 	 */
 	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) { //TODO move to auto service discovery
 		context.registerAutocompletionTransformer(type, autocompletionTransformer);
-
-		return this;
-	}
-
-	/**
-	 * Sets the method runner factory, which allows methods to be reflectively executed
-	 * <br>A method runner factory is already set for pure java methods,
-	 * but you can set a <code>KotlinMethodRunnerFactory</code> (see class) to support <code>suspend</code> functions
-	 *
-	 * @param factory The {@link MethodRunnerFactory} to set
-	 * @return This builder for chaining convenience
-	 */
-	public ExtensionsBuilder setMethodRunnerFactory(@NotNull MethodRunnerFactory factory) { //TODO remove
-		Checks.notNull(factory, "Method runner factory");
-
-		context.setMethodRunnerFactory(factory);
 
 		return this;
 	}
