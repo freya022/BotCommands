@@ -8,10 +8,12 @@ import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
@@ -120,6 +122,8 @@ val KFunction<*>.isPublic: Boolean
 
 val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
+
+inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
 
