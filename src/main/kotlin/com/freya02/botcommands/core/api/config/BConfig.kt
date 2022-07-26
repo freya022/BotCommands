@@ -9,6 +9,8 @@ import com.freya02.botcommands.api.components.DefaultComponentManager
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.interactions.Interaction
+import java.sql.Connection
+import java.util.function.Supplier
 import kotlin.properties.Delegates
 
 class BConfig internal constructor() {
@@ -40,6 +42,8 @@ class BConfig internal constructor() {
      * @see ExceptionHandlerAdapter
      */
     var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
+
+    var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
 
     /**
      * Used to handle storing/retrieving persistent/lambda components handlers
