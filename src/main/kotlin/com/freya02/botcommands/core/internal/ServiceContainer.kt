@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BServiceConfig
+import com.freya02.botcommands.core.api.events.PreloadServiceEvent
 import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.BContextImpl
@@ -11,6 +12,7 @@ import com.freya02.botcommands.internal.isStatic
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
@@ -35,10 +37,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         putService(context.classPathContainer)
         putServiceAs<BContext>(context)
         putServiceAs(context.config)
-        putServiceAs(context.config.componentManager)
     }
 
     internal fun preloadServices() {
+        runBlocking {
+            getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
+        }
+
         context.classPathContainer.classes.forEach {
             if (it.hasAnnotation<BService>()) {
                 getService(it)
@@ -48,8 +53,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    fun <T : Any> getService(clazz: Class<T>): T {
-        return getService(clazz.kotlin)
+    @JvmOverloads
+    fun <T : Any> getService(clazz: Class<T>, useNonClasspath: Boolean = false): T {
+        return getService(clazz.kotlin, useNonClasspath)
     }
 
     fun <T : Any> tryGetService(clazz: KClass<T>): Result<T> {
@@ -61,11 +67,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getService(clazz: KClass<T>): T {
+    fun <T : Any> getService(clazz: KClass<T>, useNonClasspath: Boolean = false): T {
         synchronized(serviceMap) {
             return (serviceMap[clazz] as T?) ?: run {
                 //Don't autoload here as it could chain into loading stuff like BContextImpl or ApplicationCommandManager, which you shouldn't create automatically
-                if (!context.classPathContainer.classes.contains(clazz)) {
+                if (!useNonClasspath && !context.classPathContainer.classes.contains(clazz)) {
                     throwService("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
                 }
 
@@ -75,7 +81,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                         throw IllegalStateException("Circular dependency detected, list of the services being created : [${beingCreatedSet.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
                     }
 
-                    val instance = constructInstance(clazz)
+                    val instance = constructInstance(clazz, useNonClasspath)
 
                     beingCreatedSet.remove(clazz)
 
@@ -106,15 +112,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         serviceMap[T::class] = t
     }
 
-    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
+    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf(), useNonClasspath: Boolean = false): List<Any> {
         return types.map {
-            map[it] ?: getService(it)
+            map[it] ?: getService(it, useNonClasspath)
         }
     }
 
-    private fun constructInstance(clazz: KClass<*>): Any {
+    private fun constructInstance(clazz: KClass<*>, useNonClasspath: Boolean): Any {
         for (dynamicInstanceSupplier in serviceConfig.dynamicInstanceSuppliers) {
-            val instance = runSupplierFunction(dynamicInstanceSupplier)
+            val instance = runSupplierFunction(dynamicInstanceSupplier, useNonClasspath)
             if (instance != null) {
                 return instance
             }
@@ -126,7 +132,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                runSupplierFunction(instanceSupplier) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                runSupplierFunction(instanceSupplier, useNonClasspath) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
             }
             else -> {
                 val constructors = clazz.constructors
@@ -135,13 +141,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                 val constructor = constructors.first()
 
-                val params = getParameters(constructor.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
+                val params = getParameters(constructor.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), useNonClasspath)
                 constructor.call(*params.toTypedArray())
             }
         }
     }
 
-    private fun runSupplierFunction(supplier: Any): Any? {
+    private fun runSupplierFunction(supplier: Any, useNonClasspath: Boolean): Any? {
         val suppliers = supplier::class
             .declaredMemberFunctions
             .filter { it.hasAnnotation<Supplier>() }
@@ -160,7 +166,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             throwService("Function should return the type declared in @Supplier", supplierFunction)
         }
 
-        val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
+        val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), useNonClasspath)
 
         return supplierFunction.call(*params.toTypedArray())
     }
