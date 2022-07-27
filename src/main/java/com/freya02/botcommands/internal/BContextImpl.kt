@@ -312,7 +312,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     }
 
     override fun getComponentManager(): ComponentManager {
-        return config.componentManager
+        return serviceContainer.getService(config.componentManagerStrategy)
     }
 
     fun getClassInstance(clazz: KClass<*>): Any? {

@@ -2,13 +2,13 @@ package com.freya02.botcommands.api.components;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.builder.*;
+import com.freya02.botcommands.core.internal.db.Database;
 import com.freya02.botcommands.internal.components.HandleComponentResult;
 import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
 import com.freya02.botcommands.internal.components.sql.*;
-import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -22,34 +22,35 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+/**
+ * Default implementation using a Postgresql database
+ * <br><b>The database needs to be setup before usage, and upgraded if necessary</b>, the framework should exit and indicate instructions if the version isn't correct.
+ */
 public class DefaultComponentManager implements ComponentManager {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final String LATEST_VERSION = "2";
 
 	private final ScheduledExecutorService timeoutService = Executors.newSingleThreadScheduledExecutor();
 
-	private final Supplier<Connection> connectionSupplier;
+	private final Database database;
 
 	private final Map<Long, ButtonConsumer> buttonLambdaMap = new HashMap<>();
 	private final Map<Long, SelectionConsumer> selectionMenuLambdaMap = new HashMap<>();
 
-	public DefaultComponentManager(@NotNull Supplier<Connection> connectionSupplier) {
-		this.connectionSupplier = connectionSupplier;
+	public DefaultComponentManager(@NotNull Database database) throws SQLException {
+		this.database = database;
 
-		try {
-			setupTables();
-		} catch (SQLException e) {
-			LOGGER.error("Unable to create DefaultComponentManager", e);
-
-			throw new RuntimeException("Unable to create DefaultComponentManager", e);
+		try (Connection connection = getConnection()) {
+			try (PreparedStatement statement = connection.prepareStatement(
+					"delete from componentdata using lambdacomponentdata where type in (1, 3);"
+			)) {
+				statement.executeUpdate();
+			}
 		}
 	}
 
@@ -372,73 +373,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@NotNull
 	private Connection getConnection() {
-		return connectionSupplier.get();
-	}
-
-	private void setupTables() throws SQLException {
-		final String setupVersionSql = Utils.readResource("setupVersion.sql");
-		try (Connection connection = getConnection();
-		     PreparedStatement setupVersionStatement = connection.prepareStatement(
-				     setupVersionSql
-		     );
-		     PreparedStatement readVersionStatement = connection.prepareStatement(
-				     "select version from version limit 1;"
-		     )) {
-			setupVersionStatement.execute();
-
-			final ResultSet set = readVersionStatement.executeQuery();
-
-			if (set.next()) {
-				final String currentVersion = set.getString("version");
-
-				if (!currentVersion.equals(LATEST_VERSION)) {
-					askUpdate(connection, currentVersion);
-				} else {
-					LOGGER.trace("Running version {} of the components database", currentVersion);
-				}
-			} else { //If no version try to see if table exist
-				try (PreparedStatement detectDbStatement = connection.prepareStatement("select table_name from information_schema.tables where table_name = 'componentdata' limit 1;")) {
-					if (detectDbStatement.executeQuery().next()) {
-						askUpdate(connection, "1");
-					} else { //No version and no table
-						resetTables(connection);
-
-						LOGGER.trace("Running version {} of the components database", LATEST_VERSION);
-					}
-				}
-			}
-
-			final String setupSql = Utils.readResource("setup.sql");
-
-			try (PreparedStatement setupStatement = connection.prepareStatement(setupSql)) {
-				setupStatement.execute();
-			}
-		}
-	}
-
-	private void askUpdate(Connection connection, String currentVersion) throws SQLException {
-		LOGGER.warn("Database is at version {} but should be at version {}, do you wish to upgrade ?", currentVersion, LATEST_VERSION);
-		LOGGER.warn("This will delete all the component tables, other tables are not modified.");
-		LOGGER.warn("Enter 'yes' in order to continue, or anything else to abort");
-
-		final Scanner scanner = new Scanner(System.in);
-		final String line = scanner.nextLine();
-
-		if (line.equalsIgnoreCase("yes")) {
-			resetTables(connection);
-		} else {
-			LOGGER.error("Database is outdated, aborting");
-
-			throw new IllegalStateException("Database is at version " + currentVersion + " but should be at version " + LATEST_VERSION);
-		}
-	}
-
-	private void resetTables(Connection connection) throws SQLException {
-		try (PreparedStatement resetTablesStatement = connection.prepareStatement(
-				Utils.readResource("resetTables.sql")
-		)) {
-			resetTablesStatement.execute();
-		}
+		return database.fetchConnection();
 	}
 
 	@NotNull

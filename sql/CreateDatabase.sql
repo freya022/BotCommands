@@ -1,3 +1,15 @@
+drop table if exists version, componentdata, lambdacomponentdata, persistentcomponentdata cascade;
+drop sequence if exists group_seq cascade;
+
+create table Version
+(
+    oneRow  bool primary key default true check (oneRow),
+    version text not null
+);
+
+insert into Version
+values (true, '2');
+
 create sequence if not exists group_seq as bigint;
 
 create table if not exists ComponentData
@@ -22,8 +34,3 @@ create table if not exists PersistentComponentData
     handlerName text not null,
     args        text not null
 );
-
-delete
-from componentdata
-    USING lambdacomponentdata
-WHERE type in (1, 3);

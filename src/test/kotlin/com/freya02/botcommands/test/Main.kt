@@ -24,7 +24,8 @@ fun main() {
     BBuilder.newBuilder({
         addSearchPath("com.freya02.botcommands.test.commands2")
 
-        componentManager = DefaultComponentManager(testDB.connectionSupplier)
+        connectionProvider = testDB.connectionSupplier
+        componentManagerStrategy = DefaultComponentManager::class.java
     }, manager)
 
     light(config.token, enableCoroutines = false) {

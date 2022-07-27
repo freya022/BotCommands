@@ -3,7 +3,6 @@ package com.freya02.botcommands.test;
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.components.DefaultComponentManager;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -74,7 +73,7 @@ public class SlashCommandsMain {
 					.addSearchPath("com.freya02.botcommands.test.commands")
 					.addSearchPath("com.freya02.botcommands.test.commands.guild_specific")
 					.addSearchPath("com.freya02.botcommands.test.commands.varargs")
-					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
+//					.setComponentManager(new DefaultComponentManager(new TestDB(config.getDbConfig()).getConnectionSupplier()))
 					.setSettingsProvider(new BasicSettingsProvider())
 //					.setUncaughtExceptionHandler(new ExceptionHandlerAdapter() {
 //						@Override

@@ -46,11 +46,12 @@ class BConfig internal constructor() {
     var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
 
     /**
+     * Sets the type of the service to use as a component manager
      * Used to handle storing/retrieving persistent/lambda components handlers
      *
      * @see DefaultComponentManager
      */
-    var componentManager: ComponentManager by Delegates.lockableNotNull(this, "Component manager needs to be set !")
+    var componentManagerStrategy: Class<out ComponentManager> by Delegates.lockableNotNull(this, "Component manager needs to be set !")
 
     /**
      * Adds owners, they can access the commands annotated with [RequireOwner]
