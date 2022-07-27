@@ -6,7 +6,9 @@ import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.components.DefaultComponentManager
+import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
+import com.freya02.botcommands.internal.toDelegate
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.interactions.Interaction
 import java.sql.Connection
@@ -44,6 +46,7 @@ class BConfig internal constructor() {
     var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
 
     var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
+    fun hasConnectionProvider() = ::connectionProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Sets the type of the service to use as a component manager
@@ -52,6 +55,7 @@ class BConfig internal constructor() {
      * @see DefaultComponentManager
      */
     var componentManagerStrategy: Class<out ComponentManager> by Delegates.lockableNotNull(this, "Component manager needs to be set !")
+    fun hasComponentManagerStrategy() = ::componentManagerStrategy.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Adds owners, they can access the commands annotated with [RequireOwner]
