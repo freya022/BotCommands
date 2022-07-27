@@ -11,17 +11,18 @@ import com.freya02.botcommands.core.internal.events.FirstReadyEvent
 import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.runInitialization
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class ComponentsHandlerContainer() {
+internal class ComponentsHandlerContainer {
     private val buttonMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
 
     @BEventListener
-    internal fun onFirstReady(event: FirstReadyEvent, context: BContextImpl, classPathContainer: ClassPathContainer) {
+    internal fun onFirstReady(event: FirstReadyEvent, context: BContextImpl, classPathContainer: ClassPathContainer) = runInitialization {
         classPathContainer.functionsWithAnnotation<JDAButtonListener>()
             .requireNonStatic()
             .requireFirstArg(ButtonEvent::class)

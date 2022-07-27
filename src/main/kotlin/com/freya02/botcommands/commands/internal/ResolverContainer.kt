@@ -12,6 +12,7 @@ import com.freya02.botcommands.core.internal.events.LoadEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.rethrowUser
+import com.freya02.botcommands.internal.runInitialization
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -42,7 +43,7 @@ internal class ResolverContainer( //TODO Should this be part of the base module 
     }
 
     @BEventListener
-    fun onLoad(event: LoadEvent) {
+    fun onLoad(event: LoadEvent) = runInitialization {
         LOGGER.debug("ResolverContainer loaded")
         if (map.isEmpty()) {
             LOGGER.trace("Found no resolvers")

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.annotations.Name
+import com.freya02.botcommands.core.api.exceptions.InitializationException
 import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
@@ -131,4 +132,12 @@ tailrec fun Throwable.getDeepestCause(): Throwable {
     if (cause == null) return this
 
     return cause!!.getDeepestCause()
+}
+
+inline fun <R> runInitialization(block: () -> R): R {
+    try {
+        return block()
+    } catch (e: Throwable) {
+        throw InitializationException("An exception occurred while building the framework", e)
+    }
 }
