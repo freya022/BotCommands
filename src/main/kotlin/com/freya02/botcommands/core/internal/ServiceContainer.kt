@@ -64,6 +64,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    //TODO see replacing useNonClasspath with usage of @ConditionalService (rename to @LateService), have an error message in LateService in case the service isn't found
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getService(clazz: KClass<T>, useNonClasspath: Boolean = false): T {
         synchronized(serviceMap) {

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.internal.db
 
+import com.freya02.botcommands.core.api.annotations.ConditionalService
 import com.freya02.botcommands.core.api.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
@@ -7,6 +8,7 @@ import java.sql.Connection
 private const val latestVersion = "2"
 
 //@BService //The service should not be eagerly initialized, as modules which depend on it should only be activated if necessary
+@ConditionalService
 internal class Database internal constructor(private val config: BConfig) {
     init {
         config.connectionProvider.get().use { conn ->
