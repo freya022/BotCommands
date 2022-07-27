@@ -5,14 +5,14 @@ import com.freya02.botcommands.core.api.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
-private const val latestVersion = "2"
+private const val latestVersion = "3.0.0" // Change in CreateDatabase.sql too
 
 //@BService //The service should not be eagerly initialized, as modules which depend on it should only be activated if necessary
 @ConditionalService
 internal class Database internal constructor(private val config: BConfig) {
     init {
         config.connectionProvider.get().use { conn ->
-            conn.prepareStatement("select version from version").use {
+            conn.prepareStatement("select version from bc_version").use {
                 it.executeQuery().use { rs ->
                     if (!rs.next())
                         throw IllegalStateException("No version found, please create the BotCommands tables with the 'sql/CreateDatabase.sql' file")

@@ -54,12 +54,12 @@ public class SQLPersistentComponentData extends SQLComponentData {
 	@NotNull
 	private static SQLPersistentComponentData fromResult(ResultSet resultSet) throws SQLException {
 		return new SQLPersistentComponentData(
-				resultSet.getString("componentId"),
-				resultSet.getLong("groupId"),
-				resultSet.getBoolean("oneUse"),
+				resultSet.getString("component_id"),
+				resultSet.getLong("group_id"),
+				resultSet.getBoolean("one_use"),
 				InteractionConstraints.fromJson(resultSet.getString("constraints")),
-				resultSet.getLong("expirationTimestamp"),
-				resultSet.getString("handlerName"),
+				resultSet.getLong("expiration_timestamp"),
+				resultSet.getString("handler_name"),
 				readStringArray(resultSet.getString("args"))
 		);
 	}
@@ -67,7 +67,7 @@ public class SQLPersistentComponentData extends SQLComponentData {
 	@Nullable
 	public static SQLPersistentComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
-				"select * from persistentcomponentdata join componentdata using(componentid) where componentid = ?"
+				"select * from bc_persistent_component_data join bc_component_data using(component_id) where component_id = ?"
 		)) {
 			preparedStatement.setString(1, componentId);
 
@@ -90,8 +90,8 @@ public class SQLPersistentComponentData extends SQLComponentData {
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"insert into componentdata (type, componentid, oneuse, constraints, expirationtimestamp) values (?, ?, ?, ?, ?);\n" +
-							"insert into persistentcomponentdata (componentid, handlername, args) values (?, ?, ?);"
+					"insert into bc_component_data (type, component_id, one_use, constraints, expiration_timestamp) values (?, ?, ?, ?, ?);\n" +
+							"insert into bc_persistent_component_data (component_id, handler_name, args) values (?, ?, ?);"
 			)) {
 				preparedStatement.setInt(1, type.getKey());
 				preparedStatement.setString(2, randomId);
@@ -127,7 +127,7 @@ public class SQLPersistentComponentData extends SQLComponentData {
 	@Override
 	public String toString() {
 		return "SqlPersistentComponentData{" +
-				"handlerName='" + handlerName + '\'' +
+				"handler_name='" + handlerName + '\'' +
 				", args=" + Arrays.toString(args) +
 				"} " + super.toString();
 	}

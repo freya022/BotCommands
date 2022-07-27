@@ -28,7 +28,7 @@ public abstract class SQLComponentData {
 	public void delete(Connection con) throws SQLException {
 		if (getGroupId() > 0) {
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"delete from componentdata where groupid = ?;"
+					"delete from bc_component_data where group_id = ?;"
 			)) {
 				preparedStatement.setLong(1, getGroupId());
 
@@ -38,7 +38,7 @@ public abstract class SQLComponentData {
 			}
 		} else {
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"delete from componentdata where componentid = ?;"
+					"delete from bc_component_data where component_id = ?;"
 			)) {
 				preparedStatement.setString(1, getComponentId());
 
@@ -54,11 +54,11 @@ public abstract class SQLComponentData {
 	@Override
 	public String toString() {
 		return "SqlComponentData{" +
-				"componentId='" + componentId + '\'' +
-				", groupId=" + groupId +
-				", oneUse=" + oneUse +
+				"component_id='" + componentId + '\'' +
+				", group_id=" + groupId +
+				", one_use=" + oneUse +
 				", componentConstraints=" + interactionConstraints +
-				", expirationTimestamp=" + expirationTimestamp +
+				", expiration_timestamp=" + expirationTimestamp +
 				'}';
 	}
 

@@ -31,19 +31,19 @@ public class SQLLambdaComponentData extends SQLComponentData {
 	@NotNull
 	private static SQLLambdaComponentData fromResult(ResultSet resultSet) throws SQLException {
 		return new SQLLambdaComponentData(
-				resultSet.getString("componentId"),
-				resultSet.getLong("groupId"),
-				resultSet.getBoolean("oneUse"),
+				resultSet.getString("component_id"),
+				resultSet.getLong("group_id"),
+				resultSet.getBoolean("one_use"),
 				InteractionConstraints.fromJson(resultSet.getString("constraints")),
-				resultSet.getLong("expirationTimestamp"),
-				resultSet.getLong("handlerId")
+				resultSet.getLong("expiration_timestamp"),
+				resultSet.getLong("handler_id")
 		);
 	}
 
 	@Nullable
 	public static SQLLambdaComponentData read(Connection con, String componentId) throws SQLException {
 		try (PreparedStatement preparedStatement = con.prepareStatement(
-				"select * from lambdacomponentdata join componentdata using(componentid) where componentid = ? limit 1;"
+				"select * from bc_lambda_component_data join bc_component_data using(component_id) where component_id = ? limit 1;"
 		)) {
 			preparedStatement.setString(1, componentId);
 
@@ -66,7 +66,7 @@ public class SQLLambdaComponentData extends SQLComponentData {
 			String randomId = Utils.randomId(64);
 
 			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"insert into componentdata (type, componentid, oneuse, constraints, expirationtimestamp) values (?, ?, ?, ?, ?);"
+					"insert into bc_component_data (type, component_id, one_use, constraints, expiration_timestamp) values (?, ?, ?, ?, ?);"
 			)) {
 				preparedStatement.setInt(1, type.getKey());
 				preparedStatement.setString(2, randomId);
@@ -76,12 +76,12 @@ public class SQLLambdaComponentData extends SQLComponentData {
 
 				preparedStatement.execute();
 
-				try (PreparedStatement preparedStatement1 = con.prepareStatement("insert into lambdacomponentdata (componentid) values (?) returning handlerid;")) {
+				try (PreparedStatement preparedStatement1 = con.prepareStatement("insert into bc_lambda_component_data (component_id) values (?) returning handler_id;")) {
 					preparedStatement1.setString(1, randomId);
 
 					try (ResultSet resultSet = preparedStatement1.executeQuery()) {
 						if (resultSet.next()) {
-							return new SQLLambdaCreateResult(randomId, resultSet.getLong("handlerId"));
+							return new SQLLambdaCreateResult(randomId, resultSet.getLong("handler_id"));
 						} else {
 							throw new IllegalStateException("Lambda component insert into didn't return the handler id");
 						}
@@ -104,7 +104,7 @@ public class SQLLambdaComponentData extends SQLComponentData {
 	@Override
 	public String toString() {
 		return "SqlLambdaComponentData{" +
-				"handlerId=" + handlerId +
+				"handler_id=" + handlerId +
 				"} " + super.toString();
 	}
 }

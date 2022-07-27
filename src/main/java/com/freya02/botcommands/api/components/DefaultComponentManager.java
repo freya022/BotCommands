@@ -47,7 +47,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 		try (Connection connection = getConnection()) {
 			try (PreparedStatement statement = connection.prepareStatement(
-					"delete from componentdata using lambdacomponentdata where type in (1, 3);"
+					"delete from bc_component_data using bc_lambda_component_data where type in (1, 3);"
 			)) {
 				statement.executeUpdate();
 			}
@@ -62,10 +62,10 @@ public class DefaultComponentManager implements ComponentManager {
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(
 					"select * " +
-							"from componentdata " +
-							"left join lambdacomponentdata using (componentid) " +
-							"left join persistentcomponentdata using (componentid)" +
-							"where componentid = ? " +
+							"from bc_component_data " +
+							"left join bc_lambda_component_data using (component_id) " +
+							"left join bc_persistent_component_data using (component_id)" +
+							"where component_id = ? " +
 							"limit 1;"
 			);
 			preparedStatement.setString(1, id);
@@ -319,8 +319,8 @@ public class DefaultComponentManager implements ComponentManager {
 	public void registerGroup(Collection<String> ids) {
 		try (Connection connection = getConnection();
 		     PreparedStatement updateGroupsStatement = connection.prepareStatement(
-				     "select nextval('group_seq');\n" +
-						     "update componentdata set groupid = currval('group_seq') where componentid = any(?);"
+				     "select nextval('bc_component_group_seq');\n" +
+						     "update bc_component_data set group_id = currval('bc_component_group_seq') where component_id = any(?);"
 		     )) {
 			updateGroupsStatement.setArray(1, connection.createArrayOf("text", ids.toArray()));
 
@@ -340,14 +340,14 @@ public class DefaultComponentManager implements ComponentManager {
 			final Object[] idArray = ids.toArray();
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(
-					"delete from lambdacomponentdata where componentid = any(?) returning handlerid;"
+					"delete from bc_lambda_component_data where component_id = any(?) returning handler_id;"
 			)) {
 				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
 
 				final ResultSet resultSet = preparedStatement.executeQuery();
 
 				while (resultSet.next()) {
-					final long handlerId = resultSet.getLong("handlerId");
+					final long handlerId = resultSet.getLong("handler_id");
 
 					//handler id is actually a shared sequence so there can't be duplicates even if we merged both maps
 					if (buttonLambdaMap.remove(handlerId) == null) {
@@ -358,7 +358,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 			try (PreparedStatement preparedStatement = connection.prepareStatement(
 					//should be a cascade delete, see table declaration
-					"delete from componentdata where componentid = any(?);"
+					"delete from bc_component_data where component_id = any(?);"
 			)) {
 				preparedStatement.setArray(1, connection.createArrayOf("text", idArray));
 
