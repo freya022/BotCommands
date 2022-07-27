@@ -1,13 +1,12 @@
 package com.freya02.botcommands.core.internal.db
 
-import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
 private const val latestVersion = 3
 
-@BService //TODO conditional service instancing
+//@BService //The service should not be eagerly initialized, as modules which depend on it should only be activated if necessary
 internal class Database internal constructor(private val config: BConfig) {
     init {
         config.connectionProvider.get().use { conn ->
@@ -18,7 +17,7 @@ internal class Database internal constructor(private val config: BConfig) {
                 val version = it.resultSet.getInt("version")
 
                 if (version != latestVersion) {
-                    throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts")
+                    throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed")
                 }
             }
         }
