@@ -15,6 +15,7 @@ import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import gnu.trove.set.TLongSet;
+import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -32,6 +33,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface BContext {
+	//TODO docs
+	<T> T getService(KClass<T> clazz);
+
+	//TODO docs
+	<T> T getService(Class<T> clazz);
+
 	/**
 	 * Returns the JDA instance associated with this context
 	 *

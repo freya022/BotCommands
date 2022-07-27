@@ -27,7 +27,7 @@ class MethodParameters internal constructor(methodParameters: List<MethodParamet
             val methodParameters: MutableList<MethodParameter> = ArrayList(function.parameters.size)
             val kParameters = function.valueParameters.drop(1)
 
-            val resolverContainer = context.serviceContainer.getService(ResolverContainer::class)
+            val resolverContainer = context.getService(ResolverContainer::class)
             for (kParameter in kParameters) {
                 //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                 val resolver = resolverContainer.getResolver(kParameter)

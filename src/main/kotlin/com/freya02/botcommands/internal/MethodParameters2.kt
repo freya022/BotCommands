@@ -30,7 +30,7 @@ class MethodParameters2 {
             function: KFunction<*>,
             configurationBlock: Configuration<R>.() -> Unit
         ): MethodParameters {
-            val resolverContainer = context.serviceContainer.getService(ResolverContainer::class)
+            val resolverContainer = context.getService(ResolverContainer::class)
             val config = Configuration<R>().apply(configurationBlock)
 
             return MethodParameters(function.valueParameters.drop(1).map { kParameter ->

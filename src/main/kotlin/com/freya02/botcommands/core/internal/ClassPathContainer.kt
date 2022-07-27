@@ -42,7 +42,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 
     private fun retrieveClassFunctions(): List<ClassPathFunction> {
         return classes
-            .associate { InstanceDelegate { context.serviceContainer.getService(it) } to it.declaredMemberFunctions }
+            .associate { InstanceDelegate { context.getService(it) } to it.declaredMemberFunctions }
             .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
     }
 }

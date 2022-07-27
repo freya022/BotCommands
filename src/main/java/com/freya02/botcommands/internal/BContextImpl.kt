@@ -107,6 +107,14 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         serviceContainer.preloadServices()
     }
 
+    override fun <T : Any> getService(clazz: KClass<T>): T {
+        return serviceContainer.getService(clazz)
+    }
+
+    override fun <T : Any> getService(clazz: Class<T>): T {
+        return serviceContainer.getService(clazz)
+    }
+
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
     }

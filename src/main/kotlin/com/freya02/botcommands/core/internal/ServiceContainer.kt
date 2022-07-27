@@ -47,8 +47,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         context.classPathContainer.classes.forEach {
             if (it.hasAnnotation<BService>()) {
                 getService(it)
-
-                LOGGER.trace("Loaded service: ${it.simpleName}")
             }
         }
     }
@@ -86,6 +84,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     beingCreatedSet.remove(clazz)
 
                     serviceMap[clazz] = instance
+
+                    LOGGER.trace("Loaded service: ${clazz.simpleName}")
 
                     return instance as T
                 } catch (e: Exception) {
