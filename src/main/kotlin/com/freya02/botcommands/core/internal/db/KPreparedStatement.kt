@@ -36,16 +36,24 @@ internal class KPreparedStatement(val database: Database, val preparedStatement:
 
         val result = timedValue.value
         val duration = timedValue.duration
-        database.fetchConnection().prepareStatement("insert into ")
+        database.fetchConnection().use { conn ->
+            conn.prepareStatement("insert into bc_statement_result (query, success, time_nanos) values (?, ?, ?)").use { statement ->
+                statement.setString(1, this.toSQLString())
+                statement.setInt(2, if (result.isFailure) 0 else 1)
+                statement.setLong(3, duration.inWholeNanoseconds)
+                statement.executeUpdate()
+            }
+        }
 
         return result.getOrThrow()
     }
 
     private fun toSQLString(): String {
         val str = preparedStatement.toString()
-        val index = str.indexOf(" wrapping ")
+        val indexMarker = " wrapping "
+        val index = str.indexOf(indexMarker)
 
-        return preparedStatement.toString().substring(index)
+        return preparedStatement.toString().substring(index + indexMarker.length)
             .lines()
             .joinToString(" ") { it.trim() }
     }

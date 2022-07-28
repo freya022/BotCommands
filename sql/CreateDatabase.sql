@@ -3,7 +3,7 @@ drop sequence if exists bc_component_group_seq cascade;
 
 create table bc_version
 (
-    one_row  bool primary key default true check (one_row),
+    one_row bool primary key default true check (one_row),
     version text not null
 );
 
@@ -31,7 +31,14 @@ create table bc_lambda_component_data
 create table bc_persistent_component_data
 (
     component_id text not null references bc_component_data on delete cascade,
-    handler_name  text not null,
+    handler_name text not null,
     args         text not null
 );
 
+create table bc_statement_result
+(
+    id         serial   not null primary key,
+    query      text     not null,
+    success    smallint not null,
+    time_nanos bigint   not null
+);
