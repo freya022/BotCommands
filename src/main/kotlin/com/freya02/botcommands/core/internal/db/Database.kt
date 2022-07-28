@@ -29,7 +29,7 @@ internal class Database internal constructor(private val config: BConfig) {
 
     fun fetchConnection(): Connection = config.connectionProvider.get()
 
-    suspend fun <R> transactional(block: suspend Transaction.() -> R): R {
+    inline fun <R> transactional(block: Transaction.() -> R): R {
         val connection = fetchConnection()
 
         try {
