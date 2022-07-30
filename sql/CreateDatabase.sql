@@ -42,3 +42,12 @@ create table bc_statement_result
     success    smallint not null,
     time_nanos bigint   not null
 );
+
+create table bc_data
+(
+    id                   text     not null primary key check (length(id) = 64),
+    data                 text     not null,
+    lifetime_type        smallint not null,        -- This is only a hint to do a startup cleanup, as to minimize scheduling needs
+    expiration_timestamp timestamp with time zone, -- Don't ask me why it needs a timezone, but it works.
+    timeout_handler_id   text     not null
+);
