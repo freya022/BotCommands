@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.internal.data
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.ConditionalService
 import com.freya02.botcommands.core.internal.db.Database
@@ -7,11 +8,18 @@ import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.*
 import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @ConditionalService
-internal class DataStoreService(private val database: Database, private val handlerContainer: DataStoreHandlerContainer) {
+internal class DataStoreService(
+    private val database: Database,
+    private val handlerContainer: DataStoreHandlerContainer,
+    private val context: BContext
+) {
     private val logger = Logging.getLogger()
 
     init {
@@ -48,7 +56,7 @@ internal class DataStoreService(private val database: Database, private val hand
     suspend fun putData(entity: PartialDataEntity): String {
         for (count in 1 .. 10) {
             try {
-                return database.transactional {
+                return database.transactional<String> {
                     val id = Utils.randomId(64)
 
                     preparedStatement(
@@ -64,6 +72,14 @@ internal class DataStoreService(private val database: Database, private val hand
                             entity.timeoutHandlerId
                         ).readOnce()!!["id"]
                     }
+                }.also { dataId ->
+                    entity.expirationTimestamp?.let {
+                        CoroutineScope(currentCoroutineContext()).scheduleDataTimeout(
+                            dataId,
+                            entity.expirationTimestamp.toEpochSecond(ZoneOffset.UTC).seconds - LocalDateTime.now()
+                                .toEpochSecond(ZoneOffset.UTC).seconds
+                        )
+                    }
                 }
             } catch (e: Throwable) {
                 if (count == 10) throw e
@@ -77,11 +93,21 @@ internal class DataStoreService(private val database: Database, private val hand
         delay(delay)
 
         when (val data = getData(dataId)) {
-            null -> logger.warn("Data not found for ID '$dataId'")
+            null -> logger.trace("Data not found for ID '$dataId'") //Might be normal if it was cleanup up by the user
             else -> data.let { dataEntity ->
-                val timeoutHandler = handlerContainer.timeoutHandlers["timeout_handler_id"] ?: return@launch
+                val timeoutHandler = handlerContainer.timeoutHandlers[data.timeoutHandlerId] ?: let {
+                    logger.warn("No timeout handler found for '${data.timeoutHandlerId}'")
 
-                timeoutHandler.execute(dataEntity)
+                    return@launch
+                }
+
+                runCatching {
+                    timeoutHandler.execute(dataEntity)
+                }.onFailure { e ->
+                    logger.error("An exception occurred while running a data entity timeout handler, '$dataId'", e)
+
+                    context.dispatchException("An exception occurred while running a data entity timeout handler", e)
+                }
             }
         }
     }
