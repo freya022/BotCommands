@@ -60,7 +60,7 @@ internal class DataStoreService(private val database: Database, private val hand
                             id,
                             entity.data,
                             entity.lifetimeType.id,
-                            Timestamp.valueOf(entity.expirationTimestamp),
+                            entity.expirationTimestamp?.let { Timestamp.valueOf(it) },
                             entity.timeoutHandlerId
                         ).readOnce()!!["id"]
                     }

@@ -8,7 +8,7 @@ import kotlin.time.toJavaDuration
 open class PartialDataEntity protected constructor(
     val data: String,
     val lifetimeType: LifetimeType,
-    val expirationTimestamp: LocalDateTime,
+    val expirationTimestamp: LocalDateTime?,
     val timeoutHandlerId: String
 ) {
     inline fun <reified R> decodeData(gson: Gson = defaultGson): R {
@@ -17,8 +17,12 @@ open class PartialDataEntity protected constructor(
 
     companion object {
         val defaultGson = Gson()
-//TODO nullable timeout
-        fun ofEphemeral(data: String, timeoutAfter: Duration, timeoutHandlerId: String) =
-            PartialDataEntity(data, LifetimeType.EPHEMERAL, LocalDateTime.now().plus(timeoutAfter.toJavaDuration()), timeoutHandlerId)
+        fun ofEphemeral(data: String, timeoutAfter: Duration?, timeoutHandlerId: String) =
+            PartialDataEntity(
+                data,
+                LifetimeType.EPHEMERAL,
+                timeoutAfter?.let { LocalDateTime.now().plus(timeoutAfter.toJavaDuration()) },
+                timeoutHandlerId
+            )
     }
 }

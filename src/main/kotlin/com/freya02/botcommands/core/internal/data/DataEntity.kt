@@ -8,7 +8,7 @@ class DataEntity(
     val id: String,
     data: String,
     lifetimeType: LifetimeType,
-    expirationTimestamp: LocalDateTime,
+    expirationTimestamp: LocalDateTime?,
     timeoutHandlerId: String
 ): PartialDataEntity(data, lifetimeType, expirationTimestamp, timeoutHandlerId) {
     companion object {
@@ -16,7 +16,7 @@ class DataEntity(
             rs["id"],
             rs["data"],
             LifetimeType.fromId(rs["lifetime_type"]),
-            rs.get<Timestamp>("expiration_timestamp").toLocalDateTime(),
+            rs.get<Timestamp?>("expiration_timestamp")?.toLocalDateTime(),
             rs["timeout_handler_id"],
         )
     }

@@ -10,13 +10,12 @@ import com.freya02.botcommands.core.internal.data.PartialDataEntity
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
-import kotlin.time.Duration.Companion.seconds
 
 @CommandMarker
 class SlashDataStore : ApplicationCommand() {
     @CommandMarker //Just a test
     internal suspend fun onSlashDataStorePut(event: GuildSlashEvent, dataStore: DataStoreService) {
-        val id = dataStore.putData(PartialDataEntity.ofEphemeral("""{"bruh": 42}""", 30.seconds, "timeout_handler1"))
+        val id = dataStore.putData(PartialDataEntity.ofEphemeral("""{"bruh": 42}""", null, "timeout_handler1"))
 
         event.reply_("id: $id", ephemeral = true).queue()
     }
