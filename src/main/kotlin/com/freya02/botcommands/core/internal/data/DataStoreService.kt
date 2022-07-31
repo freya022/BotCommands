@@ -7,12 +7,11 @@ import com.freya02.botcommands.core.internal.db.Database
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.*
+import kotlinx.datetime.Clock
+import kotlinx.datetime.toJavaInstant
 import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @ConditionalService
 internal class DataStoreService(
@@ -68,7 +67,7 @@ internal class DataStoreService(
                             id,
                             entity.data,
                             entity.lifetimeType.id,
-                            entity.expirationTimestamp?.let { Timestamp.valueOf(it) },
+                            entity.expirationTimestamp?.let { Timestamp.from(it.toJavaInstant()) },
                             entity.timeoutHandlerId
                         ).readOnce()!!["id"]
                     }
@@ -76,8 +75,7 @@ internal class DataStoreService(
                     entity.expirationTimestamp?.let {
                         CoroutineScope(currentCoroutineContext()).scheduleDataTimeout(
                             dataId,
-                            entity.expirationTimestamp.toEpochSecond(ZoneOffset.UTC).seconds - LocalDateTime.now()
-                                .toEpochSecond(ZoneOffset.UTC).seconds
+                            entity.expirationTimestamp - Clock.System.now()
                         )
                     }
                 }
@@ -105,7 +103,6 @@ internal class DataStoreService(
                     timeoutHandler.execute(dataEntity)
                 }.onFailure { e ->
                     logger.error("An exception occurred while running a data entity timeout handler, '$dataId'", e)
-
                     context.dispatchException("An exception occurred while running a data entity timeout handler", e)
                 }
             }

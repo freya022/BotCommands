@@ -1,14 +1,14 @@
 package com.freya02.botcommands.core.internal.data
 
 import com.google.gson.Gson
-import java.time.LocalDateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
-import kotlin.time.toJavaDuration
 
 open class PartialDataEntity protected constructor(
     val data: String,
     val lifetimeType: LifetimeType,
-    val expirationTimestamp: LocalDateTime?,
+    val expirationTimestamp: Instant?,
     val timeoutHandlerId: String
 ) {
     inline fun <reified R> decodeData(gson: Gson = defaultGson): R {
@@ -21,7 +21,7 @@ open class PartialDataEntity protected constructor(
             PartialDataEntity(
                 data,
                 LifetimeType.EPHEMERAL,
-                timeoutAfter?.let { LocalDateTime.now().plus(timeoutAfter.toJavaDuration()) },
+                timeoutAfter?.let { Clock.System.now().plus(timeoutAfter) },
                 timeoutHandlerId
             )
     }

@@ -1,14 +1,15 @@
 package com.freya02.botcommands.core.internal.data
 
 import com.freya02.botcommands.core.internal.db.DBResult
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
 import java.sql.Timestamp
-import java.time.LocalDateTime
 
 class DataEntity(
     val id: String,
     data: String,
     lifetimeType: LifetimeType,
-    expirationTimestamp: LocalDateTime?,
+    expirationTimestamp: Instant?,
     timeoutHandlerId: String
 ): PartialDataEntity(data, lifetimeType, expirationTimestamp, timeoutHandlerId) {
     companion object {
@@ -16,7 +17,7 @@ class DataEntity(
             rs["id"],
             rs["data"],
             LifetimeType.fromId(rs["lifetime_type"]),
-            rs.get<Timestamp?>("expiration_timestamp")?.toLocalDateTime(),
+            rs.get<Timestamp?>("expiration_timestamp")?.toInstant()?.toKotlinInstant(),
             rs["timeout_handler_id"],
         )
     }
