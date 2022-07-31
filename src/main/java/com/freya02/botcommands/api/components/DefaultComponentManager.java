@@ -475,6 +475,10 @@ public class DefaultComponentManager implements ComponentManager {
 				}
 			}
 
+			if (event.getGuild() != null && constraints.getRoleList().contains(event.getGuild().getIdLong())) {
+				return true; //Everyone role
+			}
+
 			for (Role role : member.getRoles()) {
 				boolean hasRole = constraints.getRoleList().contains(role.getIdLong());
 
