@@ -93,6 +93,17 @@ internal class DataStoreService(
         when (val data = getData(dataId)) {
             null -> logger.trace("Data not found for ID '$dataId'") //Might be normal if it was cleanup up by the user
             else -> data.let { dataEntity ->
+                runCatching {
+                    database.transactional {
+                        preparedStatement("delete from bc_data where id = ?") {
+                            executeUpdate(*arrayOf(dataId))
+                        }
+                    }
+                }.onFailure { e ->
+                    logger.error("An exception occurred while deleting a data entity, '$dataId'", e)
+                    context.dispatchException("An exception occurred while deleting a data entity", e)
+                }
+
                 val timeoutHandler = handlerContainer.timeoutHandlers[data.timeoutHandlerId] ?: let {
                     logger.warn("No timeout handler found for '${data.timeoutHandlerId}'")
 
