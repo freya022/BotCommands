@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.pagination.interactive.InteractiveMenuBuilder
 import com.freya02.botcommands.api.pagination.interactive.SelectContent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -61,6 +62,6 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 				})
 				.build();
 
-		event.reply(menu.get()).setEphemeral(false).queue();
+		event.reply(MessageCreateData.fromEditData(menu.get())).setEphemeral(false).queue();
 	}
 }

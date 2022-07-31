@@ -14,6 +14,7 @@ import com.freya02.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +72,7 @@ public class SlashPaginator extends ApplicationCommand {
 
 		final Paginator paginator = builder.build();
 
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(false)
 				.queue();
 	}

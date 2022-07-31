@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -107,7 +107,7 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@CheckReturnValue
 	public RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException) {
 		if (iconStream != null) {
-			return channel.sendTyping().flatMap(v -> channel.sendFile(iconStream, "icon.jpg").setEmbeds(embed));
+			return channel.sendTyping().flatMap(v -> channel.sendFiles(FileUpload.fromData(iconStream, "icon.jpg")).setEmbeds(embed));
 		} else {
 			return channel.sendTyping().flatMap(v -> channel.sendMessageEmbeds(embed));
 		}
@@ -145,14 +145,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 
 	@NotNull
 	@Override
-	public RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendFile(data, fileName, options);
-	}
-
-	@NotNull
-	@Override
-	public RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendFile(data, fileName, options);
+	public RestAction<Message> respondFile(@NotNull FileUpload... fileUploads) {
+		return channel.sendFiles(fileUploads);
 	}
 
 	@Override
@@ -179,15 +173,8 @@ public class BaseCommandEventImpl extends BaseCommandEvent {
 	@Override
 	@CheckReturnValue
 	@NotNull
-	public RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendTyping().flatMap(v -> getMessage().reply(data, fileName, options));
-	}
-
-	@Override
-	@CheckReturnValue
-	@NotNull
-	public RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options) {
-		return channel.sendTyping().flatMap(v -> getMessage().reply(data, fileName, options));
+	public RestAction<Message> replyFile(@NotNull FileUpload... fileUploads) {
+		return channel.sendTyping().flatMap(v -> getMessage().replyFiles(fileUploads));
 	}
 
 	@NotNull

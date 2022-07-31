@@ -6,10 +6,10 @@ import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -104,14 +104,14 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	}
 
 	@Override
-	public Message get() {
+	public MessageEditData get() {
 		onPreGet();
 
 		components.addComponents(0, buildSelectMenu());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, messageBuilder, components);
 		messageBuilder.setEmbeds(embed);
-		messageBuilder.setActionRows(components.getActionRows());
+		messageBuilder.setComponents(components.getActionRows());
 
 		onPostGet();
 
