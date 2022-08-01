@@ -57,13 +57,13 @@ internal class DataStoreService(
     suspend fun putData(entity: PartialDataEntity): String {
         for (count in 1 .. 10) {
             try {
-                return database.transactional<String> {
+                return database.transactional {
                     val id = Utils.randomId(64)
 
                     preparedStatement(
                         """
                         insert into bc_data (id, data, lifetime_type, expiration_timestamp, timeout_handler_id)
-                        VALUES (?, ?, ?, ?, ?) returning id;""".trimIndent()
+                        VALUES (?, ?, ?, ?, ?);""".trimIndent()
                     ) {
                         executeQuery(
                             id,
@@ -71,8 +71,10 @@ internal class DataStoreService(
                             entity.lifetimeType.id,
                             entity.expirationTimestamp?.let { Timestamp.from(it.toJavaInstant()) },
                             entity.timeoutHandlerId
-                        ).readOnce()!!["id"]
+                        )
                     }
+
+                    return@transactional id
                 }.also { dataId ->
                     entity.expirationTimestamp?.let {
                         CoroutineScope(currentCoroutineContext()).scheduleDataTimeout(
