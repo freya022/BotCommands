@@ -4,11 +4,13 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.ConditionalService
 import com.freya02.botcommands.core.internal.db.Database
+import com.freya02.botcommands.core.internal.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
+import java.sql.SQLException
 import java.sql.Timestamp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -79,8 +81,11 @@ internal class DataStoreService(
                         )
                     }
                 }
-            } catch (e: Throwable) {
-                if (count == 10) throw e
+            } catch (e: SQLException) {
+                when {
+                    e.isUniqueViolation() -> if (count == 10) throw e
+                    else -> throw e
+                }
             }
         }
 
