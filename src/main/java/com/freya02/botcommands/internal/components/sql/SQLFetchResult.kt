@@ -1,37 +1,21 @@
-package com.freya02.botcommands.internal.components.sql;
+package com.freya02.botcommands.internal.components.sql
 
-import com.freya02.botcommands.api.components.FetchResult;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.components.FetchResult
+import java.sql.Connection
 
-import java.sql.Connection;
+class SQLFetchResult(val fetchedComponent: SQLFetchedComponent?, private val connection: Connection) : FetchResult(fetchedComponent) {
+    private var closed = false
 
-public class SQLFetchResult extends FetchResult {
-	private final Connection connection;
-	private boolean closed;
+    fun getConnection(): Connection {
+        check(!closed) { "Cannot get Connection from SQLFetchedComponent as it has been closed" }
 
-	public SQLFetchResult(@Nullable SQLFetchedComponent fetchedComponent, @NotNull Connection connection) {
-		super(fetchedComponent);
+        return connection
+    }
 
-		this.connection = connection;
-	}
+    @Throws(Exception::class)
+    override fun close() {
+        closed = true
 
-	public Connection getConnection() {
-		if (closed) throw new IllegalStateException("Cannot get Connection from SQLFetchedComponent as it has been closed");
-
-		return connection;
-	}
-
-	@Override
-	@Nullable
-	public SQLFetchedComponent getFetchedComponent() {
-		return (SQLFetchedComponent) super.getFetchedComponent();
-	}
-
-	@Override
-	public void close() throws Exception {
-		closed = true;
-
-		connection.close();
-	}
+        connection.close()
+    }
 }
