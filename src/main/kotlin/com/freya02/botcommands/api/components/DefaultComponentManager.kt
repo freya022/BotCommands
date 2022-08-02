@@ -243,7 +243,6 @@ internal class DefaultComponentManager(private val database: Database, private v
         try {
             database.transactional {
                 val componentId = SQLPersistentComponentData.create(
-                    connection,
                     type,
                     builder.isOneUse,
                     builder.interactionConstraints,
