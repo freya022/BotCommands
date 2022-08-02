@@ -108,7 +108,7 @@ internal class DefaultComponentManager(private val database: Database, private v
 
         val handlerId = componentData.handlerId
         val consumer = when {
-            result.shouldDelete -> consumerMap.remove(handlerId).also { componentData.delete(fetchResult.getConnection()) }
+            result.shouldDelete -> consumerMap.remove(handlerId).also { componentData.delete(fetchResult.transaction) }
             else -> consumerMap[handlerId]
         } ?: throwUser("Could not find a consumer for handler id '$handlerId' on component ${event.componentId}")
 
@@ -155,7 +155,7 @@ internal class DefaultComponentManager(private val database: Database, private v
         }
 
         if (result.shouldDelete) {
-            componentData.delete(fetchResult.getConnection())
+            componentData.delete(fetchResult.transaction)
         }
 
         consumerHandler(componentData.handlerName, componentData.args)
@@ -177,10 +177,10 @@ internal class DefaultComponentManager(private val database: Database, private v
     private fun scheduleLambdaTimeout(map: MutableMap<Long, *>, timeout: LambdaComponentTimeoutInfo, handlerId: Long, componentId: String) {
         scheduleTimeout(timeout.timeout, timeout.timeoutUnit) {
             database.transactional {
-                val componentData = SQLLambdaComponentData.read(connection, componentId) ?: return@scheduleTimeout //TODO use transaction
+                val componentData = SQLLambdaComponentData.read(componentId) ?: return@scheduleTimeout
 
                 map.remove(handlerId)
-                componentData.delete(connection) //TODO use transaction
+                componentData.delete(this@transactional)
                 timeout.timeoutCallback.run()
             }
         }
@@ -189,8 +189,8 @@ internal class DefaultComponentManager(private val database: Database, private v
     private fun schedulePersistentTimeout(timeout: PersistentComponentTimeoutInfo, componentId: String) {
         scheduleTimeout(timeout.timeout, timeout.timeoutUnit) {
             database.transactional {
-                val componentData = SQLLambdaComponentData.read(connection, componentId) ?: return@scheduleTimeout //TODO use transaction
-                componentData.delete(connection) //TODO use transaction
+                val componentData = SQLPersistentComponentData.read(componentId) ?: return@scheduleTimeout
+                componentData.delete(this@transactional)
             }
         }
     }
@@ -214,7 +214,6 @@ internal class DefaultComponentManager(private val database: Database, private v
         try {
             database.transactional {
                 val result = SQLLambdaComponentData.create(
-                    connection, //TODO transaction
                     componentType,
                     builder.isOneUse,
                     builder.interactionConstraints,

@@ -1,3 +1,3 @@
-package com.freya02.botcommands.internal.components.sql;
+package com.freya02.botcommands.internal.components.sql
 
-public record SQLLambdaCreateResult(String componentId, long handlerId) {}
+internal class SQLLambdaCreateResult(val componentId: String, val handlerId: Long)

@@ -1,32 +1,19 @@
-package com.freya02.botcommands.internal.components.sql;
+package com.freya02.botcommands.internal.components.sql
 
-import com.freya02.botcommands.api.components.ComponentType;
-import com.freya02.botcommands.api.components.FetchedComponent;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.components.ComponentType
+import com.freya02.botcommands.api.components.FetchedComponent
+import com.freya02.botcommands.core.internal.db.DBResult
+import com.freya02.botcommands.internal.throwInternal
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+internal class SQLFetchedComponent(val resultSet: DBResult) : FetchedComponent {
+    private val type: ComponentType
 
-public class SQLFetchedComponent implements FetchedComponent {
-	private final ComponentType type;
-	private final ResultSet resultSet;
+    init {
+        val typeRaw: Int = resultSet["type"]
+        type = ComponentType.fromKey(typeRaw) ?: throwInternal("Couldn't get type for $typeRaw")
+    }
 
-	public SQLFetchedComponent(ResultSet resultSet) throws SQLException {
-		this.resultSet = resultSet;
-
-		final int typeRaw = resultSet.getInt("type");
-		this.type = ComponentType.fromKey(typeRaw);
-
-		if (this.type == null) throw new IllegalArgumentException("Couldn't get type for " + typeRaw);
-	}
-
-	public ResultSet getResultSet() {
-		return resultSet;
-	}
-
-	@Override
-	@NotNull
-	public ComponentType getType() {
-		return type;
-	}
+    override fun getType(): ComponentType {
+        return type
+    }
 }

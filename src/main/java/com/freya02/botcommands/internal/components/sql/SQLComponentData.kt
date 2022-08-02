@@ -1,136 +1,113 @@
-package com.freya02.botcommands.internal.components.sql;
+package com.freya02.botcommands.internal.components.sql
 
-import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.ComponentErrorReason;
-import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.internal.components.HandleComponentResult;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.components.ComponentErrorReason
+import com.freya02.botcommands.api.components.ComponentType
+import com.freya02.botcommands.api.components.InteractionConstraints
+import com.freya02.botcommands.api.components.builder.ComponentTimeoutInfo
+import com.freya02.botcommands.core.internal.db.Transaction
+import com.freya02.botcommands.core.internal.db.isUniqueViolation
+import com.freya02.botcommands.internal.components.HandleComponentResult
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.Utils
+import kotlinx.coroutines.runBlocking
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import java.sql.SQLException
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+internal abstract class SQLComponentData(
+    private val componentId: String,
+    private val groupId: Long,
+    private val isOneUse: Boolean,
+    private val interactionConstraints: InteractionConstraints,
+    private val expirationTimestamp: Long
+) {
+    fun delete(transaction: Transaction) = runBlocking {
+        with(transaction) {
+            when {
+                groupId > 0 -> preparedStatement("delete from bc_component_data where group_id = ?;") {
+                    val i = executeUpdate(groupId)
+                    logger.trace("Deleted {} components from group {}", i, groupId)
+                }
+                else -> preparedStatement("delete from bc_component_data where component_id = ?;") {
+                    executeUpdate(componentId)
+                }
+            }
+        }
+    }
 
-public abstract class SQLComponentData {
-	private static final Logger LOGGER = Logging.getLogger();
+    fun handleComponentData(event: GenericComponentInteractionCreateEvent): HandleComponentResult {
+        val oneUse = isOneUse || groupId > 0
 
-	private final String componentId;
-	private final long groupId;
-	private final boolean oneUse;
-	private final InteractionConstraints interactionConstraints;
-	private final long expirationTimestamp;
+        if (expirationTimestamp > 0 && System.currentTimeMillis() > expirationTimestamp) {
+            return HandleComponentResult(ComponentErrorReason.EXPIRED, true)
+        }
 
-	public SQLComponentData(String componentId, long groupId, boolean oneUse, InteractionConstraints interactionConstraints, long expirationTimestamp) {
-		this.componentId = componentId;
-		this.groupId = groupId;
-		this.oneUse = oneUse;
-		this.interactionConstraints = interactionConstraints;
-		this.expirationTimestamp = expirationTimestamp;
-	}
+        return when {
+            checkConstraints(event, interactionConstraints) -> HandleComponentResult(null, oneUse)
+            else -> HandleComponentResult(ComponentErrorReason.NOT_ALLOWED, false)
+        }
+    }
 
-	public void delete(Connection con) throws SQLException {
-		if (getGroupId() > 0) {
-			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"delete from bc_component_data where group_id = ?;"
-			)) {
-				preparedStatement.setLong(1, getGroupId());
+    private fun checkConstraints(event: GenericComponentInteractionCreateEvent, constraints: InteractionConstraints): Boolean {
+        if (constraints.isEmpty) return true
 
-				final int i = preparedStatement.executeUpdate();
+        if (event.user.idLong in constraints.userList) return true
 
-				LOGGER.trace("Deleted {} components from group {}", i, groupId);
-			}
-		} else {
-			try (PreparedStatement preparedStatement = con.prepareStatement(
-					"delete from bc_component_data where component_id = ?;"
-			)) {
-				preparedStatement.setString(1, getComponentId());
+        val member = event.member
+        if (member != null) {
+            if (constraints.permissions.isNotEmpty()) {
+                if (member.hasPermission(event.guildChannel, constraints.permissions)) {
+                    return true
+                }
+            }
 
-				final int i = preparedStatement.executeUpdate();
+            //If the member has any of these roles
+            if (member.roles.any { it.idLong in constraints.roleList }) {
+                return true
+            }
+        }
 
-				if (i > 1) {
-					LOGGER.warn("Deleted {} one-use component(s), this should have been only one, component IDs should be unique", i);
-				}
-			}
-		}
-	}
+        return false
+    }
 
-	@Override
-	public String toString() {
-		return "SqlComponentData{" +
-				"component_id='" + componentId + '\'' +
-				", group_id=" + groupId +
-				", one_use=" + oneUse +
-				", componentConstraints=" + interactionConstraints +
-				", expiration_timestamp=" + expirationTimestamp +
-				'}';
-	}
+    override fun toString(): String {
+        return "SQLComponentData(componentId='$componentId', groupId=$groupId, isOneUse=$isOneUse, interactionConstraints=$interactionConstraints, expirationTimestamp=$expirationTimestamp)"
+    }
 
-	public String getComponentId() {
-		return componentId;
-	}
+    companion object {
+        private val logger = Logging.getLogger()
 
-	public long getGroupId() {
-		return groupId;
-	}
+        context(Transaction)
+        @JvmStatic
+        protected suspend fun allocateComponent(
+            type: ComponentType,
+            oneUse: Boolean,
+            constraints: InteractionConstraints,
+            timeout: ComponentTimeoutInfo
+        ): String {
+            val timeoutMillis = timeout.toMillis()
+            val expirationTimestamp = if (timeoutMillis == 0L) 0 else System.currentTimeMillis() + timeoutMillis
 
-	public boolean isOneUse() {
-		return oneUse;
-	}
+            for (count in 1..10) {
+                val randomId = Utils.randomId(64)
 
-	public InteractionConstraints getInteractionConstraints() {
-		return interactionConstraints;
-	}
+                try {
+                    preparedStatement(
+                        """
+                        insert into bc_component_data (type, component_id, one_use, constraints, expiration_timestamp)
+                        values (?, ?, ?, ?, ?);""".trimIndent()
+                    ) {
+                        execute(type.key, randomId, oneUse, constraints.toJson(), expirationTimestamp)
+                    }
+                } catch (ex: SQLException) {
+                    when {
+                        !ex.isUniqueViolation() -> {} //ID already exists
+                        else -> throw ex
+                    }
+                }
+            }
 
-	public long getExpirationTimestamp() {
-		return expirationTimestamp;
-	}
-
-	@NotNull
-	public HandleComponentResult handleComponentData(GenericComponentInteractionCreateEvent event) {
-		final boolean oneUse = this.isOneUse() || this.getGroupId() > 0;
-		final InteractionConstraints constraints = this.getInteractionConstraints();
-		final long expirationTimestamp = this.getExpirationTimestamp();
-
-		if (expirationTimestamp > 0 && System.currentTimeMillis() > expirationTimestamp) {
-			return new HandleComponentResult(ComponentErrorReason.EXPIRED, true);
-		}
-
-		boolean allowed = checkConstraints(event, constraints);
-
-		if (!allowed) {
-			return new HandleComponentResult(ComponentErrorReason.NOT_ALLOWED, false);
-		}
-
-		return new HandleComponentResult(null, oneUse);
-	}
-
-	private boolean checkConstraints(GenericComponentInteractionCreateEvent event, InteractionConstraints constraints) {
-		if (constraints.isEmpty()) return true;
-
-		if (constraints.getUserList().contains(event.getUser().getIdLong())) {
-			return true;
-		}
-
-		final Member member = event.getMember();
-		if (member != null) {
-			if (!constraints.getPermissions().isEmpty()) {
-				if (member.hasPermission(event.getGuildChannel(), constraints.getPermissions())) {
-					return true;
-				}
-			}
-
-			for (Role role : member.getRoles()) {
-				boolean hasRole = constraints.getRoleList().contains(role.getIdLong());
-
-				if (hasRole) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
+            throwUser("Unable to generate a component ID, this may indicate that there are no more IDs left")
+        }
+    }
 }

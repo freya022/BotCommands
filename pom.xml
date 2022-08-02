@@ -81,6 +81,7 @@
                         <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
                         <arg>-Xjvm-default=all</arg>
+                        <arg>-Xcontext-receivers</arg>
                     </args>
                 </configuration>
                 <executions>
