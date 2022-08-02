@@ -29,7 +29,7 @@ internal abstract class SQLComponentData(
                     logger.trace("Deleted {} components from group {}", i, groupId)
                 }
                 else -> preparedStatement("delete from bc_component_data where component_id = ?;") {
-                    executeUpdate(componentId)
+                    executeUpdate(*arrayOf(componentId))
                 }
             }
         }
@@ -105,6 +105,8 @@ internal abstract class SQLComponentData(
                         else -> throw ex
                     }
                 }
+
+                return randomId
             }
 
             throwUser("Unable to generate a component ID, this may indicate that there are no more IDs left")
