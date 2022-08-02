@@ -14,11 +14,11 @@ create sequence bc_component_group_seq as bigint;
 
 create table bc_component_data
 (
-    component_id         text not null primary key check (length(component_id) = 64),
-    type                 int  not null check ( type >= 0 and type <= 3 ),
-    group_id             bigint,
-    one_use              bool not null,
-    constraints          text not null,
+    component_id         text     not null primary key check (length(component_id) = 64),
+    type                 smallint not null check ( type >= 0 and type <= 3 ),
+    group_id             bigint   not null default 0,
+    one_use              bool     not null,
+    constraints          text     not null,
     expiration_timestamp bigint
 );
 
