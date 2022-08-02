@@ -1,26 +1,11 @@
-package com.freya02.botcommands.internal.components;
+package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.api.components.ComponentErrorReason;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.components.ComponentErrorReason
 
-public class HandleComponentResult {
-	private final ComponentErrorReason errorReason;
-	private final boolean shouldDelete;
-
-	public HandleComponentResult(ComponentErrorReason errorReason, boolean shouldDelete) {
-		this.errorReason = errorReason;
-		this.shouldDelete = shouldDelete;
-	}
-
-	/**
-	 * Whether additional resources (such as the components handler maps) should get cleaned up
-	 */
-	public boolean shouldDelete() {
-		return shouldDelete;
-	}
-
-	@Nullable
-	public ComponentErrorReason getErrorReason() {
-		return errorReason;
-	}
-}
+class HandleComponentResult(
+    val errorReason: ComponentErrorReason?,
+    /**
+     * Whether additional resources (such as the components handler maps) should get cleaned up
+     */
+    val shouldDelete: Boolean
+)

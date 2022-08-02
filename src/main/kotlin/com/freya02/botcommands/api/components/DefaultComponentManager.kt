@@ -108,7 +108,7 @@ internal class DefaultComponentManager(private val database: Database, private v
 
         val handlerId = componentData.handlerId
         val consumer = when {
-            result.shouldDelete() -> consumerMap.remove(handlerId).also { componentData.delete(fetchResult.getConnection()) }
+            result.shouldDelete -> consumerMap.remove(handlerId).also { componentData.delete(fetchResult.getConnection()) }
             else -> consumerMap[handlerId]
         } ?: throwUser("Could not find a consumer for handler id '$handlerId' on component ${event.componentId}")
 
@@ -154,7 +154,7 @@ internal class DefaultComponentManager(private val database: Database, private v
             return
         }
 
-        if (result.shouldDelete()) {
+        if (result.shouldDelete) {
             componentData.delete(fetchResult.getConnection())
         }
 
