@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class LambdaSelectionMenuBuilder extends SelectMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder>, LambdaComponentBuilder<LambdaSelectionMenuBuilder> {
+public class LambdaSelectionMenuBuilder extends SelectMenu.Builder implements ComponentBuilder<LambdaSelectionMenuBuilder>, LambdaComponentBuilder<LambdaSelectionMenuBuilder, SelectionConsumer> {
 	private final BContext context;
 	private final SelectionConsumer consumer;
 
@@ -25,6 +25,7 @@ public class LambdaSelectionMenuBuilder extends SelectMenu.Builder implements Co
 		this.consumer = consumer;
 	}
 
+	@Override
 	public SelectionConsumer getConsumer() {
 		return consumer;
 	}

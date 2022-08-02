@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.components.builder;
 
 import java.util.concurrent.TimeUnit;
 
-public interface PersistentComponentBuilder<T extends PersistentComponentBuilder<T>> {
+public interface PersistentComponentBuilder<T extends PersistentComponentBuilder<T>> extends ComponentBuilder<T> {
 	String getHandlerName();
 
 	String[] getArgs();

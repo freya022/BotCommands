@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 
-public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder> {
+public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder, ButtonConsumer> {
 	private final BContext context;
 	private final ButtonConsumer consumer;
 	private final ButtonStyle buttonStyle;
@@ -21,6 +21,7 @@ public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaBu
 		this.buttonStyle = buttonStyle;
 	}
 
+	@Override
 	public ButtonConsumer getConsumer() {
 		return consumer;
 	}
