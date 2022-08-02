@@ -46,13 +46,15 @@ internal class ComponentListener(
     }
 
     private suspend fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
+        val ctx = currentCoroutineContext()
+
         try {
             //TODO component filters
-            componentsManager.fetchComponent(event.componentId).use { fetchResult ->
+            componentsManager.fetchComponent(event.componentId) { fetchResult ->
                 val fetchedComponent = fetchResult.fetchedComponent ?: run {
                     event.reply_(context.getDefaultMessages(event).componentNotFoundErrorMsg, ephemeral = true).queue()
 
-                    return
+                    return@fetchComponent
                 }
 
                 val idType = fetchedComponent.type
@@ -64,7 +66,6 @@ internal class ComponentListener(
                     throwInternal("Received a selection menu id type but event is not a SelectMenuInteractionEvent")
                 }
 
-                val ctx = currentCoroutineContext()
                 when (idType) {
                     ComponentType.PERSISTENT_BUTTON -> {
                         componentsManager.handlePersistentButton(event, fetchResult, { onError(event, it) }) {

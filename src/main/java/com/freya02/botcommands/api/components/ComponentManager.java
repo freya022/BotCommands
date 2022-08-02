@@ -21,8 +21,7 @@ import java.util.function.Consumer;
  * The button id is supposed to be fully treated before returning data, if it is indicated it is one use, the id must be deleted before returning for example
  */
 public interface ComponentManager {
-	@NotNull
-	FetchResult fetchComponent(String id);
+	void fetchComponent(String id, Consumer<FetchResult> resultCallback);
 
 	void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer);
 
@@ -44,7 +43,7 @@ public interface ComponentManager {
 	@NotNull
 	String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder);
 
-	void registerGroup(Collection<String> builders);
+	void registerGroup(Collection<String> ids);
 
 	int deleteIds(Collection<String> ids);
 
