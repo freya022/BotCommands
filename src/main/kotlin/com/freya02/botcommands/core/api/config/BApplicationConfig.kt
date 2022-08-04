@@ -3,14 +3,16 @@ package com.freya02.botcommands.core.api.config
 import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
+import com.freya02.botcommands.internal.lockableNotNull
 import net.dv8tion.jda.api.entities.Guild
 import java.util.*
+import kotlin.properties.Delegates
 
-class BApplicationConfig internal constructor() {
+class BApplicationConfig internal constructor(config: BConfig) {
     private val slashGuildIds: MutableList<Long> = mutableListOf()
     private val testGuildIds: MutableList<Long> = mutableListOf()
-    private var onlineAppCommandCheckEnabled: Boolean = false
-    private var forceGuildCommands: Boolean = false
+    private var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+    private var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
     private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 

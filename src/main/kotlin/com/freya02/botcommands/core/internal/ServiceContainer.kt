@@ -148,7 +148,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private fun runSupplierFunction(supplier: Any, useNonClasspath: Boolean): Any? {
+    private fun runSupplierFunction(supplier: Any, useNonClasspath: Boolean): Any? { //TODO test supplier func
         val suppliers = supplier::class
             .declaredMemberFunctions
             .filter { it.hasAnnotation<Supplier>() }
