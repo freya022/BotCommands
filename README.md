@@ -134,7 +134,7 @@ The provided implementation could just do nothing (such as `e -> {}`) if you wan
 
 ## Examples
 
-You can find example bots in the [examples](Examples) folder
+You can find example bots in the [examples](examples) folder
 
 ## Template bot
 
