@@ -28,7 +28,9 @@ class BConfig internal constructor() {
 
     val serviceConfig = BServiceConfig()
 
-    val applicationConfig = BApplicationConfig()
+    val applicationConfig = BApplicationConfig(this)
+
+    val coroutineScopesConfig = BCoroutineScopesConfig(this)
 
     /**
      * Used to take guild-specific settings such as prefixes
