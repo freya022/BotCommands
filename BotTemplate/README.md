@@ -9,5 +9,6 @@ This also contains a text command `exit` to shut down the bot
 * Your bot token
 
 ## How to run it
-You need to Copy the `ConfigTemplate.json` to `Config.json`, in `src/main/resources/com/freya02/bot`, with your bot token, prefix, owner ID and the database details
+You need to copy the `ConfigTemplate.json` to `Config.json`, in the root folder of the project (where the template already is), with your bot token, prefix, owner ID and the database details
+
 You can then just run the `Main` class
