@@ -40,6 +40,8 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 					//Edit the message with a Message so everything is replaced, instead of just the content
 					btnEvt.editMessage(new MessageBuilder("You chose the guild '" + guild.getName() + "' !").build()).queue();
 				})
+				//This determines what the buttons look like
+				.setButtonContentSupplier((item, index) -> ButtonContent.withString(String.valueOf(index + 1)))
 				.build();
 
 		//You must send the menu as a message
