@@ -43,9 +43,10 @@ Note that text-based commands, slash commands and component handlers are running
 You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
-* An [OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) installation
-* Enable preview features in your compiler with `--enable-preview`, [How I enable it](https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81), [IntelliJ w/ Maven tutorial](https://www.baeldung.com/java-preview-features#intellij-idea), [Gradle tutorial](https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle)
+* An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
 * An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
+
+[//]: # (* Enable preview features in your compiler with `--enable-preview`, [How I enable it]&#40;https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81&#41;, [IntelliJ w/ Maven tutorial]&#40;https://www.baeldung.com/java-preview-features#intellij-idea&#41;, [Gradle tutorial]&#40;https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle&#41;)
 
 ## Getting the library
 ### Maven
