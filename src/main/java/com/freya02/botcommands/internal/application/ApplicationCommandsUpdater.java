@@ -43,7 +43,7 @@ public class ApplicationCommandsUpdater {
 
 	private final ApplicationCommandDataMap map = new ApplicationCommandDataMap();
 	private final Map<String, SubcommandGroupData> subcommandGroupDataMap = new HashMap<>();
-	private final List<ApplicationCommandInfo> guildApplicationCommands;
+	private final List<ApplicationCommandInfo> updatableApplicationCommands;
 
 	private final List<Command> commands = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class ApplicationCommandsUpdater {
 		Files.createDirectories(commandsCachePath.getParent());
 
 		final CommandIdProcessor commandIdProcessor = guild == null ? null : new CommandIdProcessor(context);
-		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
+		this.updatableApplicationCommands = this.context.getApplicationCommandsContext()
 				.getApplicationCommandInfoMap()
 				.filterByGuild(this.context, this.guild, commandIdProcessor);
 
@@ -84,8 +84,19 @@ public class ApplicationCommandsUpdater {
 		return new ApplicationCommandsUpdater(context, guild, onlineCheck);
 	}
 
-	public List<ApplicationCommandInfo> getGuildApplicationCommands() {
-		return guildApplicationCommands;
+	public List<ApplicationCommandInfo> getScopeApplicationCommands() {
+		if (guild != null) {
+			//In a guild, both global and guild commands are available
+			// This does not mean all commands are available !
+			final List<ApplicationCommandInfo> list = new ArrayList<>(updatableApplicationCommands);
+			list.addAll(this.context.getApplicationCommandsContext()
+					.getApplicationCommandInfoMap()
+					.filterByGuild(context, null, null));
+
+			return list;
+		} else {
+			return updatableApplicationCommands;
+		}
 	}
 
 	@Nullable
@@ -145,11 +156,11 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void computeCommands() {
-		computeSlashCommands(guildApplicationCommands);
+		computeSlashCommands(updatableApplicationCommands);
 
-		computeContextCommands(guildApplicationCommands, UserCommandInfo.class, Command.Type.USER);
+		computeContextCommands(updatableApplicationCommands, UserCommandInfo.class, Command.Type.USER);
 
-		computeContextCommands(guildApplicationCommands, MessageCommandInfo.class, Command.Type.MESSAGE);
+		computeContextCommands(updatableApplicationCommands, MessageCommandInfo.class, Command.Type.MESSAGE);
 	}
 
 	private void computeSlashCommands(List<ApplicationCommandInfo> guildApplicationCommands) {
