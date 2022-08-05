@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
