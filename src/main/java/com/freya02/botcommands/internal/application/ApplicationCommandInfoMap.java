@@ -17,12 +17,16 @@ public class ApplicationCommandInfoMap extends ApplicationCommandInfoMapView {
 		final ApplicationCommandInfoMap map = new ApplicationCommandInfoMap();
 
 		for (ApplicationCommandInfo info : guildApplicationCommands) {
-			final Command.Type type = switch(info) {
-				case MessageCommandInfo ignored -> Command.Type.MESSAGE;
-				case UserCommandInfo ignored -> Command.Type.USER;
-				case SlashCommandInfo ignored -> Command.Type.SLASH;
-				default -> throw new IllegalArgumentException("Unknown application command info type: " + info.getClass().getName());
-			};
+			final Command.Type type;
+			if (info instanceof MessageCommandInfo) {
+				type = Command.Type.MESSAGE;
+			} else if (info instanceof UserCommandInfo) {
+				type = Command.Type.USER;
+			} else if (info instanceof SlashCommandInfo) {
+				type = Command.Type.SLASH;
+			} else {
+				throw new IllegalArgumentException("Unknown application command info type: " + info.getClass().getName());
+			}
 
 			map.getTypeMap(type).put(info.getPath(), info);
 		}

@@ -47,7 +47,7 @@ public class SlashPaginator extends ApplicationCommand {
 					//Disable all components on timeout, more expensive
 //					event.getHook()
 //							.retrieveOriginal()
-//							.flatMap(m -> m.editMessageComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
+//							.flatMap(m -> event.getHook().editOriginalComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
 //							.queue();
 				})
 				.setMaxPages(5)
