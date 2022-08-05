@@ -25,7 +25,7 @@ public class SlashCommandsMain {
 //			debug();
 
 			final JDA jda = JDABuilder.createLight(config.getToken())
-					.enableIntents(GatewayIntent.GUILD_MEMBERS)
+					.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
 					.setActivity(Activity.playing("application commands"))
 					.build()
 					.awaitReady();
@@ -36,9 +36,6 @@ public class SlashCommandsMain {
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
 							.addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L || data.event().getChannel().getIdLong() == 930384760298164235L)
-							.disableHelpCommand((event, path) -> {
-								event.respond("u need help ? " + path).queue();
-							})
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())

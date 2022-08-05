@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
-import com.freya02.botcommands.api.prefixed.HelpConsumer;
+import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -250,20 +249,6 @@ public interface BContext {
 	void removeComponentFilter(ComponentInteractionFilter filter);
 
 	/**
-	 * Overrides the default help given for text commands
-	 *
-	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
-	 */
-	void overrideHelp(HelpConsumer helpConsumer);
-
-	/**
-	 * Returns the help consumer used when commands are found but not understood
-	 *
-	 * @return Consumer which should output help
-	 */
-	HelpConsumer getHelpConsumer();
-
-	/**
 	 * Returns an immutable list of the registration listeners
 	 *
 	 * @return Immutable list of the registration listeners
@@ -317,7 +302,7 @@ public interface BContext {
 	 *
 	 * @return The help builder consumer
 	 */
-	Consumer<EmbedBuilder> getHelpBuilderConsumer();
+	HelpBuilderConsumer getHelpBuilderConsumer();
 
 	/**
 	 * Updates the application commands in the specified guilds <br><br>
