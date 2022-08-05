@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
+import com.freya02.botcommands.api.prefixed.IHelpCommand;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.BContextImpl;
 
@@ -26,7 +27,7 @@ public final class TextCommandsBuilder {
 
 	/**
 	 * Disables the built-in help command for prefixed commands.
-	 * <br>This still lets you implement a custom help command.
+	 * <br>This still lets you implement a custom help command with the help of {@link IHelpCommand}.
 	 *
 	 * @param isHelpDisabled <code>true</code> to disable the built-in help command
 	 * @return This builder for chaining convenience
