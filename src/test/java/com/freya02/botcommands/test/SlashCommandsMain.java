@@ -36,6 +36,7 @@ public class SlashCommandsMain {
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
 							.addPrefix(config.getPrefix())
 							.addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L || data.event().getChannel().getIdLong() == 930384760298164235L)
+							.setHelpBuilderConsumer((builder, isGlobal, candidates) -> builder.setFooter("Custom help footer"))
 					)
 					.extensionsBuilder(extensionsBuilder -> extensionsBuilder
 							.registerConstructorParameter(LocalDateTime.class, ignored -> LocalDateTime.now())
