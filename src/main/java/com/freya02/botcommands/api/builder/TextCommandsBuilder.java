@@ -1,13 +1,10 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.prefixed.HelpConsumer;
+import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
+import com.freya02.botcommands.api.prefixed.IHelpCommand;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.BContextImpl;
-import net.dv8tion.jda.api.EmbedBuilder;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Consumer;
 
 public final class TextCommandsBuilder {
 	private final BContextImpl context;
@@ -29,25 +26,26 @@ public final class TextCommandsBuilder {
 	}
 
 	/**
-	 * Disables the help command for prefixed commands and replaces the implementation when incorrect syntax is detected<br>
-	 * <b>You can provide an empty implementation if you wish to just disable all the help stuff completely</b>
+	 * Disables the built-in help command for prefixed commands.
+	 * <br>This still lets you implement a custom help command with the help of {@link IHelpCommand}.
 	 *
-	 * @param helpConsumer Consumer used to show help when a command is detected but their syntax is invalid, can do nothing
+	 * @param isHelpDisabled <code>true</code> to disable the built-in help command
 	 * @return This builder for chaining convenience
 	 */
-	public TextCommandsBuilder disableHelpCommand(@NotNull HelpConsumer helpConsumer) {
-		this.context.overrideHelp(helpConsumer);
+	public TextCommandsBuilder disableHelpCommand(boolean isHelpDisabled) {
+		this.context.disableHelp(isHelpDisabled);
 
 		return this;
 	}
 
 	/**
 	 * Sets the help builder consumer, it allows you to add stuff in the help embeds when they are created.
+	 * <br>This is called everytime a help embed is generated, when using the default help command
 	 *
 	 * @param builderConsumer The help builder consumer, modifies the EmbedBuilder
 	 * @return This builder for chaining convenience
 	 */
-	public TextCommandsBuilder setHelpBuilderConsumer(Consumer<EmbedBuilder> builderConsumer) {
+	public TextCommandsBuilder setHelpBuilderConsumer(HelpBuilderConsumer builderConsumer) {
 		context.setHelpBuilderConsumer(builderConsumer);
 
 		return this;

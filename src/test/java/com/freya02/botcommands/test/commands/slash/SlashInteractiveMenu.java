@@ -18,8 +18,8 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "interactive")
 	public void interactiveMenu(GuildSlashEvent event) {
 		final InteractiveMenu menu = new InteractiveMenuBuilder()
-				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), (interactiveMenu, messageBuilder, components) -> {
-					components.addComponents(1,
+				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
@@ -34,10 +34,10 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 								buttonEvent.editMessage(interactiveMenu.get()).queue();
 							}).build("Go to 'Grin'"));
 
-					return new EmbedBuilder().setTitle("This sparks joy").build();
+					return new EmbedBuilder().setTitle("This sparks joy").setDescription("Page #" + pageNumber).build();
 				})
-				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), (interactiveMenu, messageBuilder, components) -> {
-					components.addComponents(1,
+				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
@@ -52,7 +52,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 								buttonEvent.editMessage(interactiveMenu.get()).queue();
 							}).build("Go to 'Joy'"));
 
-					return new EmbedBuilder().setTitle("This does not spark joy").build();
+					return new EmbedBuilder().setTitle("This does not spark joy").setDescription("Page #" + pageNumber).build();
 				})
 				.setConstraints(InteractionConstraints.ofUsers(event.getUser()))
 				.setTimeout(5, TimeUnit.SECONDS, (interactiveMenu, msg) -> {

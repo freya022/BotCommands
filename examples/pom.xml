@@ -65,7 +65,7 @@
         <dependency> <!-- Needed for components, otherwise optional - I use PGSQL but you can use any SQL database -->
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.6</version>
+            <version>42.4.1</version>
         </dependency>
         <dependency> <!-- Needed to pool SQL connections, optional if you don't use components -->
             <groupId>com.zaxxer</groupId>

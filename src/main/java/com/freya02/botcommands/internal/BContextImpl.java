@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolver;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
-import com.freya02.botcommands.api.prefixed.HelpConsumer;
+import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.application.*;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
@@ -45,7 +45,6 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -81,12 +80,12 @@ public class BContextImpl implements BContext {
 	private Supplier<EmbedBuilder> defaultEmbedSupplier = EmbedBuilder::new;
 	private Supplier<InputStream> defaultFooterIconSupplier = () -> null;
 
-	private HelpConsumer helpConsumer;
+	private boolean isHelpDisabled;
 	private ComponentManager componentManager;
 	private SettingsProvider settingProvider;
 
 	private final List<RegistrationListener> registrationListeners = new ArrayList<>();
-	private Consumer<EmbedBuilder> helpBuilderConsumer;
+	private HelpBuilderConsumer helpBuilderConsumer;
 
 	private ApplicationCommandsBuilder slashCommandsBuilder;
 	private ApplicationCommandsCache applicationCommandsCache;
@@ -382,16 +381,8 @@ public class BContextImpl implements BContext {
 		return componentFilters;
 	}
 
-	@Override
-	public void overrideHelp(HelpConsumer helpConsumer) {
-		Checks.notNull(helpConsumer, "Help replacement consumer");
-
-		this.helpConsumer = helpConsumer;
-	}
-
-	@Override
-	public HelpConsumer getHelpConsumer() {
-		return helpConsumer;
+	public void disableHelp(boolean isHelpDisabled) {
+		this.isHelpDisabled = isHelpDisabled;
 	}
 
 	@Override
@@ -440,11 +431,11 @@ public class BContextImpl implements BContext {
 		return settingProvider;
 	}
 
-	public void setHelpBuilderConsumer(Consumer<EmbedBuilder> builderConsumer) {
+	public void setHelpBuilderConsumer(HelpBuilderConsumer builderConsumer) {
 		this.helpBuilderConsumer = builderConsumer;
 	}
 
-	public Consumer<EmbedBuilder> getHelpBuilderConsumer() {
+	public HelpBuilderConsumer getHelpBuilderConsumer() {
 		return helpBuilderConsumer;
 	}
 
@@ -514,7 +505,7 @@ public class BContextImpl implements BContext {
 	}
 
 	public boolean isHelpDisabled() {
-		return helpConsumer != null;
+		return isHelpDisabled;
 	}
 
 	public void setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {

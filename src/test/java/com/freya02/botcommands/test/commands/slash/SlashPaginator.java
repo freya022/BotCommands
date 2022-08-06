@@ -53,17 +53,19 @@ public class SlashPaginator extends ApplicationCommand {
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
 				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
-					components.addComponents(1, Components.primaryButton(btnEvt -> {
-						paginator.setPage(2); //Pages starts at 0
+					components.addComponents(
+							Components.primaryButton(btnEvt -> {
+								paginator.setPage(2); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))),
 
-					components.addComponents(1, Components.primaryButton(btnEvt -> {
-						paginator.setPage(4); //Pages starts at 0
+							Components.primaryButton(btnEvt -> {
+								paginator.setPage(4); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")))
+					);
 
 					return new EmbedBuilder()
 							.setTitle("Page #" + (page + 1)) //Pages starts at 0
