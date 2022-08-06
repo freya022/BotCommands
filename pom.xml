@@ -303,7 +303,7 @@
         <dependency>
             <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>e12fac61f6</version>
+            <version>c252302508</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
