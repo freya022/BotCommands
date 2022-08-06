@@ -13,6 +13,8 @@ public interface IHelpCommand {
 	/**
 	 * Is fired when a command is recognized, but the arguments cannot be resolved on any of the command variants.
 	 *
+	 * <p><b>Be aware: </b>Localization annotations cannot be applied on this method
+	 *
 	 * @param event               The event of the current command invocation
 	 * @param executedCommandPath The command path of the command which tried to be used
 	 */

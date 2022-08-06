@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @see #get(BasicInteractiveMenu, int, MessageBuilder, PaginatorComponents)
+ * @see #get(T, int, MessageBuilder, PaginatorComponents)
  */
 public interface InteractiveMenuSupplier<T extends BasicInteractiveMenu<T>> {
 	/**
