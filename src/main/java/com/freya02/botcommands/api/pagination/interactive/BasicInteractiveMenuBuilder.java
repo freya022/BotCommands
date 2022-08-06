@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
-import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
+import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ import java.util.List;
  * @param <R> Type of the implementor {@link #build()} return type
  */
 @SuppressWarnings("unchecked")
-public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenuBuilder<T, R>, R extends BasicInteractiveMenu<R>> extends BasicPaginationBuilder<T, R> {
+public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenuBuilder<T, R>, R extends BasicInteractiveMenu<R>> extends BasicPaginatorBuilder<T, R> {
 	protected final List<InteractiveMenuItem<R>> items = new ArrayList<>();
 
 	/**
@@ -25,8 +25,8 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 * @return This builder for chaining convenience
 	 * @see SelectContent#of(String, String, Emoji)
 	 */
-	public T addMenu(@NotNull SelectContent content, @NotNull InteractiveMenuSupplier<R> supplier) {
-		items.add(new InteractiveMenuItem<>(content, supplier));
+	public T addMenu(@NotNull SelectContent content, int maxPages, @NotNull InteractiveMenuSupplier<R> supplier) {
+		items.add(new InteractiveMenuItem<>(content, maxPages, supplier));
 
 		return (T) this;
 	}

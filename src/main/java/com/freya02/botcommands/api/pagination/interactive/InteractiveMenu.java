@@ -2,9 +2,9 @@ package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -14,7 +14,9 @@ import java.util.List;
  * <br><i>This does not provide pagination for each embed</i> (no arrow buttons, only the selection menu)
  */
 public final class InteractiveMenu extends BasicInteractiveMenu<InteractiveMenu> {
-	InteractiveMenu(@NotNull List<InteractiveMenuItem<InteractiveMenu>> items, InteractionConstraints constraints, @Nullable TimeoutInfo<InteractiveMenu> timeout) {
-		super(items, constraints, timeout);
+	InteractiveMenu(InteractionConstraints constraints, TimeoutInfo<InteractiveMenu> timeout, boolean hasDeleteButton,
+	                ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
+	                @NotNull List<InteractiveMenuItem<InteractiveMenu>> items) {
+		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items);
 	}
 }

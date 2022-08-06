@@ -27,8 +27,8 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
 	protected final PaginatorSupplier<T> supplier;
-	private final int maxPages;
 	private final Button deleteButton;
+	protected int maxPages;
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
@@ -74,6 +74,10 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		}
 	}
 
+	public int getMaxPages() {
+		return maxPages;
+	}
+
 	public int getPage() {
 		return page;
 	}
@@ -92,6 +96,10 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		this.page = page;
 
 		return (T) this;
+	}
+
+	protected void setMaxPages(int maxPages) {
+		this.maxPages = maxPages;
 	}
 
 	private void onDeleteClicked(ButtonEvent e) {
