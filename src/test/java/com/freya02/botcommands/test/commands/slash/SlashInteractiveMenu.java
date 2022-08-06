@@ -18,7 +18,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 	public void interactiveMenu(GuildSlashEvent event) {
 		final InteractiveMenu menu = new InteractiveMenuBuilder()
 				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
-					components.addComponents(2,
+					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
@@ -36,7 +36,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 					return new EmbedBuilder().setTitle("This sparks joy").setDescription("Page #" + pageNumber).build();
 				})
 				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
-					components.addComponents(2,
+					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 

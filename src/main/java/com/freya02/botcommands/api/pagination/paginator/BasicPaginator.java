@@ -164,7 +164,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		}
 
 		if (deleteButton != null) {
-			components.addComponents(0,
+			components.addComponents(
 					firstButton,
 					previousButton,
 					nextButton,
@@ -172,7 +172,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 					deleteButton
 			);
 		} else {
-			components.addComponents(0,
+			components.addComponents(
 					firstButton,
 					previousButton,
 					nextButton,

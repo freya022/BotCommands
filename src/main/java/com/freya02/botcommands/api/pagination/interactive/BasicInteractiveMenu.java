@@ -114,10 +114,9 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 		onPreGet();
 
 		//TODO disable-able pagination bar
-		// Will require index-less rows
 		putComponents();
 
-		components.addComponents(1, buildSelectMenu());
+		components.addComponents(buildSelectMenu());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
 		messageBuilder.setEmbeds(embed);
