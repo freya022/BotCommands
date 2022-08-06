@@ -18,7 +18,11 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "interactive")
 	public void interactiveMenu(GuildSlashEvent event) {
 		final InteractiveMenu menu = new InteractiveMenuBuilder()
-				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+				.usePaginator(true)
+				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, editBuilder, components) -> {
+					editBuilder.setContent(":joy:");
+					editBuilder.setReplace(true);
+
 					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
@@ -36,7 +40,9 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 
 					return new EmbedBuilder().setTitle("This sparks joy").setDescription("Page #" + pageNumber).build();
 				})
-				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, editBuilder, components) -> {
+//					editBuilder.setReplace(true);
+
 					components.addComponents(
 							Components.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
