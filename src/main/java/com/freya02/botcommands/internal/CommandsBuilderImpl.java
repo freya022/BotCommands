@@ -25,7 +25,6 @@ import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
 import com.freya02.botcommands.internal.prefixed.HelpCommand;
 import com.freya02.botcommands.internal.prefixed.PrefixedCommandsBuilder;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -98,18 +97,14 @@ public final class CommandsBuilderImpl {
 			processClass(aClass);
 		}
 
-		if (!context.isHelpDisabled()) {
-			if (context.findFirstCommand(CommandPath.of("help")) != null) {
-				throw new IllegalStateException("Help command was detected before build, and default help is not disabled, consider disabling it with TextCommandsBuilder#disableHelpCommand");
+		if (context.findFirstCommand(CommandPath.ofName("help")) == null) { //No help command yet
+			if (context.isHelpDisabled()) {
+				LOGGER.debug("Using no 'help' text command implementation");
+			} else {
+				processClass(HelpCommand.class);
 			}
-
-			processClass(HelpCommand.class);
-
-			final TextCommandInfo helpInfo = context.findFirstCommand(CommandPath.of("help"));
-			if (helpInfo == null) throw new IllegalStateException("HelpCommand did not build properly");
-
-			final HelpCommand help = (HelpCommand) helpInfo.getInstance();
-			help.generate();
+		} else {
+			LOGGER.debug("Using a custom 'help' text command implementation");
 		}
 
 		prefixedCommandsBuilder.postProcess();

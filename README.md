@@ -129,9 +129,7 @@ See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-
 
 ## Replacing help content
 
-You can disable the prefixed help command, these methods are in `TextCommandsBuilder`, if you do disable prefixed help commands you need to supply your own implementation when commands are detected, but their syntax is invalid
-
-The provided implementation could just do nothing (such as `e -> {}`) if you want to just remove any form of help message
+See the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Prefixed-commands/#replacing-help-content)
 
 ## Examples
 
