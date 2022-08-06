@@ -19,12 +19,12 @@ public interface InteractiveMenuSupplier<T extends BasicInteractiveMenu<T>> {
 	 *                          <li>Delete the menu, cancel the timeout and cleanup the components when a button is clicked</li>
 	 *                        </ul>
 	 * @param pageNumber      The page number of the currently displayed menu
-	 * @param messageBuilder  The {@link MessageEditBuilder} for this interactive menu, you can mostly ignore it but can use it to add attachments for examples, to use them in your embeds
+	 * @param editBuilder     The {@link MessageEditBuilder} for this interactive menu, you can mostly ignore it but can use it to add attachments for examples, to use them in your embeds
 	 * @param components      The {@link PaginatorComponents} for this interactive menu's page, this allows you to add components on this page
 	 *                        <br><b>Do not use {@link MessageEditBuilder#setComponents(LayoutComponent...)} and such, these will be overridden by the menu</b>
 	 *
 	 * @return A {@link MessageEmbed} for this interactive menu's page
 	 */
 	@NotNull
-	MessageEmbed get(@NotNull T interactiveMenu, int pageNumber, @NotNull MessageEditBuilder messageBuilder, @NotNull PaginatorComponents components);
+	MessageEmbed get(@NotNull T interactiveMenu, int pageNumber, @NotNull MessageEditBuilder editBuilder, @NotNull PaginatorComponents components);
 }
