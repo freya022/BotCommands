@@ -10,7 +10,7 @@ public final class InteractiveMenuBuilder extends BasicInteractiveMenuBuilder<In
 	@Override
 	@NotNull
 	public InteractiveMenu build() {
-		return new InteractiveMenu(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items);
+		return new InteractiveMenu(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
 	}
 
 	@Override

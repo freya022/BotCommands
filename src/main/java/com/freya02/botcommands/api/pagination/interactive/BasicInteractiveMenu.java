@@ -25,14 +25,16 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	protected final List<InteractiveMenuItem<T>> items;
 
 	protected int selectedItem = 0;
+	protected final boolean usePaginator;
 
 	protected BasicInteractiveMenu(InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
 	                               ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-	                               @NotNull List<InteractiveMenuItem<T>> items) {
+	                               @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
 		super(constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 
 		if (items.isEmpty()) throw new IllegalStateException("No interactive menu items has been added");
 
+		this.usePaginator = usePaginator;
 		this.items = items;
 		setSelectedItem(0);
 	}
@@ -113,8 +115,9 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	public Message get() {
 		onPreGet();
 
-		//TODO disable-able pagination bar
-		putComponents();
+		if (usePaginator) {
+			putComponents();
+		}
 
 		components.addComponents(buildSelectMenu());
 

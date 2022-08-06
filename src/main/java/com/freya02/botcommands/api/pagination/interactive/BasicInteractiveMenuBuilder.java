@@ -15,6 +15,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenuBuilder<T, R>, R extends BasicInteractiveMenu<R>> extends BasicPaginatorBuilder<T, R> {
 	protected final List<InteractiveMenuItem<R>> items = new ArrayList<>();
+	protected boolean usePaginator = false;
 
 	/**
 	 * Adds a menu to this {@link InteractiveMenu}
@@ -29,5 +30,15 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 		items.add(new InteractiveMenuItem<>(content, maxPages, supplier));
 
 		return (T) this;
+	}
+
+	/**
+	 * Sets whether the paginator buttons (previous, next, delete, etc...) should appear with this interactive menu
+	 * <br>This is disabled by default
+	 *
+	 * @param usePaginator <code>true</code> to use the paginator buttons
+	 */
+	public void usePaginator(boolean usePaginator) {
+		this.usePaginator = usePaginator;
 	}
 }

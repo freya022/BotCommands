@@ -16,7 +16,7 @@ import java.util.List;
 public final class InteractiveMenu extends BasicInteractiveMenu<InteractiveMenu> {
 	InteractiveMenu(InteractionConstraints constraints, TimeoutInfo<InteractiveMenu> timeout, boolean hasDeleteButton,
 	                ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-	                @NotNull List<InteractiveMenuItem<InteractiveMenu>> items) {
-		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items);
+	                @NotNull List<InteractiveMenuItem<InteractiveMenu>> items, boolean usePaginator) {
+		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
 	}
 }
