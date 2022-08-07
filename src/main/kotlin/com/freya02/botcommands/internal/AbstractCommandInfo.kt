@@ -10,7 +10,7 @@ import kotlin.reflect.full.valueParameters
 abstract class AbstractCommandInfo internal constructor(
     context: BContextImpl,
     builder: CommandBuilder
-) : Cooldownable(builder.cooldownStrategy), ExecutableInteractionInfo {
+) : Cooldownable(context, builder.cooldownStrategy), ExecutableInteractionInfo {
     val path: CommandPath
     val isOwnerRequired: Boolean
     val userPermissions: EnumSet<Permission>

@@ -12,6 +12,7 @@ open class BCoroutineScopesConfig internal constructor(private val config: BConf
     var defaultScopeSupplier: () -> CoroutineScope = { getDefaultScope() }
 
     var eventDispatcherScope: CoroutineScope by ScopeDelegate()
+    var cooldownScope: CoroutineScope by ScopeDelegate()
     var textCommandsScope: CoroutineScope by ScopeDelegate()
     var applicationCommandsScope: CoroutineScope by ScopeDelegate()
     var componentsScope: CoroutineScope by ScopeDelegate()
