@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.modals.internal.ModalHandlerContainer
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
@@ -30,7 +31,9 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                 return
             }
 
-            modalHandler.execute(context, modalData, event)
+            withContext(context.config.coroutineScopesConfig.modalsScope.coroutineContext) {
+                modalHandler.execute(context, modalData, event)
+            }
         } catch (e: Throwable) {
             context.uncaughtExceptionHandler?.let { handler ->
                 handler.onException(context, event, e)
