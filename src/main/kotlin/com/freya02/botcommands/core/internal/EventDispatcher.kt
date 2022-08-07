@@ -6,20 +6,19 @@ import com.freya02.botcommands.core.api.events.BEvent
 import com.freya02.botcommands.core.api.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.jvmName
 
 private val LOGGER = Logging.getLogger()
 
-class EventDispatcher internal constructor(context: BContextImpl) {
+class EventDispatcher internal constructor(private val context: BContextImpl) {
     private val map: MutableMap<KClass<*>, MutableList<PreboundFunction>> = hashMapOf()
 
     init {
@@ -45,31 +44,30 @@ class EventDispatcher internal constructor(context: BContextImpl) {
     }
 
     suspend fun dispatchEvent(event: Any) {
-        when (event) {
-            is GenericEvent, is BEvent -> {
-                map[event::class]?.forEach { preboundFunction ->
-                    try {
-                        val classPathFunction = preboundFunction.classPathFunction
+        // Try not to switch context on non-handled events
+        // No need to check for `event` type as if it's in the map, then it's recognized
+        val handlers = map[event::class] ?: return
 
-                        classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
-                    } catch (e: InvocationTargetException) {
-                        if (e.cause is InitializationException) {
-                            throw e.cause!!
-                        } else {
-                            LOGGER.error(
-                                "An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}",
-                                e.getDeepestCause()
-                            )
-                        }
-                    } catch (e: Throwable) {
-                        LOGGER.error(
-                            "An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}",
-                            e.getDeepestCause()
-                        )
+        withContext(context.config.coroutineScopesConfig.eventDispatcherScope.coroutineContext) {
+            handlers.forEach { preboundFunction ->
+                try {
+                    val classPathFunction = preboundFunction.classPathFunction
+
+                    classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
+                } catch (e: InvocationTargetException) {
+                    when (e.cause) {
+                        is InitializationException -> throw e.cause!!
+                        else -> printException(preboundFunction, e)
                     }
+                } catch (e: Throwable) {
+                    printException(preboundFunction, e)
                 }
             }
-            else -> throwUser("Unrecognized event: ${event::class.jvmName}")
         }
     }
+
+    private fun printException(preboundFunction: PreboundFunction, e: Throwable) = LOGGER.error(
+        "An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}",
+        e.getDeepestCause()
+    )
 }
