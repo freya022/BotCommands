@@ -17,8 +17,7 @@ import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
@@ -36,17 +35,17 @@ internal class ComponentListener(
     private val componentsManager: ComponentManager
 ) {
     @BEventListener
-    internal suspend fun onButtonClick(event: ButtonInteractionEvent) {
+    internal fun onButtonClick(event: ButtonInteractionEvent) {
         onComponentInteraction(event)
     }
 
     @BEventListener
-    internal suspend fun onSelectMenuInteraction(event: SelectMenuInteractionEvent) {
+    internal fun onSelectMenuInteraction(event: SelectMenuInteractionEvent) {
         onComponentInteraction(event)
     }
 
-    private suspend fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
-        val ctx = currentCoroutineContext()
+    private fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
+        val scope = context.config.coroutineScopesConfig.componentsScope
 
         try {
             //TODO component filters
@@ -72,7 +71,7 @@ internal class ComponentListener(
                             val descriptor = componentsHandlerContainer.getButtonDescriptor(it.handlerName)
                                 ?: throwUser("No component descriptor found for component handler '${it.handlerName}'")
 
-                            runBlocking(ctx) {
+                            scope.launch {
                                 handlePersistentComponent(event, descriptor, it.args) {
                                     ButtonEvent(descriptor.method, context, event as ButtonInteractionEvent)
                                 }
@@ -81,7 +80,9 @@ internal class ComponentListener(
                     }
                     ComponentType.LAMBDA_BUTTON -> {
                         componentsManager.handleLambdaButton(event, fetchResult, { onError(event, it) }) {
-                            it.consumer.accept(ButtonEvent(null, context, event as ButtonInteractionEvent))
+                            scope.launch { //The scope is used for consuming the event asynchronously, as to free the ongoing transaction
+                                it.consumer.accept(ButtonEvent(null, context, event as ButtonInteractionEvent))
+                            }
                         }
                     }
                     ComponentType.PERSISTENT_SELECTION_MENU -> {
@@ -89,7 +90,7 @@ internal class ComponentListener(
                             val descriptor = componentsHandlerContainer.getSelectMenuDescriptor(it.handlerName)
                                 ?: throwUser("No component descriptor found for component handler '${it.handlerName}'")
 
-                            runBlocking(ctx) {
+                            scope.launch {
                                 handlePersistentComponent(event, descriptor, it.args) {
                                     SelectionEvent(descriptor.method, context, event as SelectMenuInteractionEvent)
                                 }
@@ -98,7 +99,9 @@ internal class ComponentListener(
                     }
                     ComponentType.LAMBDA_SELECTION_MENU -> {
                         componentsManager.handleLambdaSelectMenu(event, fetchResult, { onError(event, it) }) {
-                            it.consumer.accept(SelectionEvent(null, context, event as SelectMenuInteractionEvent))
+                            scope.launch { //The scope is used for consuming the event asynchronously, as to free the ongoing transaction
+                                it.consumer.accept(SelectionEvent(null, context, event as SelectMenuInteractionEvent))
+                            }
                         }
                     }
                 }
