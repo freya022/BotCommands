@@ -12,13 +12,13 @@ import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
-internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer) {
+internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer, private val modalMaps: ModalMaps) {
     private val logger = Logging.getLogger()
 
     @BEventListener
     suspend fun onModalEvent(event: ModalInteractionEvent) {
         try {
-            val modalData = context.modalMaps.consumeModal(event.modalId)
+            val modalData = modalMaps.consumeModal(event.modalId)
 
             if (modalData == null) { //Probably the modal expired
                 event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()

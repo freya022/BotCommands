@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.modals;
 
 import com.freya02.botcommands.internal.modals.InputData;
-import com.freya02.botcommands.internal.modals.ModalData;
 import com.freya02.botcommands.internal.modals.ModalMaps;
+import com.freya02.botcommands.internal.modals.PartialModalData;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Modal;
@@ -83,7 +83,7 @@ public class ModalBuilder extends Modal.Builder {
 			for (ActionComponent actionComponent : row.getActionComponents()) {
 				final String id = actionComponent.getId();
 
-				final InputData data = modalMaps.removeInput(id);
+				final InputData data = modalMaps.consumeInput(id);
 				if (data == null)
 					throw new IllegalStateException("Modal component with id '%s' could not be found in the inputs created with the '%s' class".formatted(id, Modals.class.getSimpleName()));
 
@@ -91,7 +91,7 @@ public class ModalBuilder extends Modal.Builder {
 			}
 		}
 
-		final String actualId = modalMaps.insertModal(new ModalData(handlerName, userData, inputDataMap, timeoutInfo), getId());
+		final String actualId = modalMaps.insertModal(new PartialModalData(handlerName, userData, inputDataMap, timeoutInfo), getId());
 
 		setId(actualId);
 

@@ -26,7 +26,6 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo
-import com.freya02.botcommands.internal.modals.ModalMaps
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
@@ -95,7 +94,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
-    val modalMaps = ModalMaps()
     private val autocompleteHandlersMap: MutableMap<String, AutocompletionHandlerInfo> = hashMapOf()
     private val testGuildIds = TCollections.synchronizedSet(TLongHashSet())
 

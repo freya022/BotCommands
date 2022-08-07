@@ -5,20 +5,20 @@ import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.api.modals.TextInputBuilder
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ServiceContainer
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.modals.ModalMaps
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
 @BService
-internal class ModalsImpl(private val context: BContextImpl, serviceContainer: ServiceContainer) : Modals {
+internal class ModalsImpl(serviceContainer: ServiceContainer, private val modalMaps: ModalMaps) : Modals {
     init {
         serviceContainer.putServiceAs<Modals>(this)
     }
 
     override fun create(title: String, handlerName: String, vararg userData: Any?): ModalBuilder {
-        return ModalBuilder(context.modalMaps, title, handlerName, userData)
+        return ModalBuilder(modalMaps, title, handlerName, userData)
     }
 
     override fun createTextInput(inputName: String, label: String, style: TextInputStyle): TextInputBuilder {
-        return TextInputBuilder(context.modalMaps, inputName, label, style)
+        return TextInputBuilder(modalMaps, inputName, label, style)
     }
 }
