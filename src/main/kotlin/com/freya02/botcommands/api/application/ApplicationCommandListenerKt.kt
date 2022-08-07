@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.utils.Utils
+import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -32,7 +33,9 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
             }
 
             if (!canRun(event, slashCommand)) return
-            slashCommand.execute(event)
+            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                slashCommand.execute(event)
+            }
         } catch (e: Throwable) {
             handleException(e, event)
         }
@@ -50,7 +53,9 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
             }
 
             if (!canRun(event, userCommand)) return
-            userCommand.execute(context, event)
+            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                userCommand.execute(context, event)
+            }
         } catch (e: Throwable) {
             handleException(e, event)
         }
@@ -68,7 +73,9 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
             }
 
             if (!canRun(event, messageCommand)) return
-            messageCommand.execute(context, event)
+            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                messageCommand.execute(context, event)
+            }
         } catch (e: Throwable) {
             handleException(e, event)
         }
