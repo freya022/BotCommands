@@ -159,7 +159,7 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
         }
 
         if (isNotOwner) {
-            val cooldown = applicationCommand.getCooldown(event) { event.name }
+            val cooldown = applicationCommand.getCooldown(event)
             if (cooldown > 0) {
                 val messages = context.getDefaultMessages(event)
 

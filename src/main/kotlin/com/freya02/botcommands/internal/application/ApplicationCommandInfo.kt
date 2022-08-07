@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.application
 
+import com.freya02.botcommands.api.CooldownScope
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.AbstractCommandInfo
@@ -27,6 +28,10 @@ abstract class ApplicationCommandInfo internal constructor(
         isDefaultLocked = builder.defaultLocked
         isGuildOnly = context.applicationCommandsContext.isForceGuildCommandsEnabled || scope.isGuildOnly
         isTestOnly = builder.testOnly
+
+        if (builder.cooldownStrategy.scope != CooldownScope.USER && !scope.isGuildOnly) {
+            throwUser("Application command cannot have a ${builder.cooldownStrategy.scope} cooldown scope with a global slash command")
+        }
 
         if(isTestOnly && scope != CommandScope.GUILD) {
             throwUser("Application command annotated with @Test must have the GUILD scope")
