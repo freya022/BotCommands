@@ -63,7 +63,7 @@ public class ApplicationCommandsUpdater {
 
 		final CommandIdProcessor commandIdProcessor = guild == null ? null : new CommandIdProcessor(context);
 		this.guildApplicationCommands = this.context.getApplicationCommandsContext()
-				.getApplicationCommandInfoMap()
+				.getMutableApplicationCommandMap()
 				.filterByGuild(this.context, this.guild, commandIdProcessor);
 
 		computeCommands();

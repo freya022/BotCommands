@@ -9,10 +9,10 @@ import java.util.*
 import kotlin.properties.Delegates
 
 class BApplicationConfig internal constructor(config: BConfig) {
-    private val slashGuildIds: MutableList<Long> = mutableListOf()
-    private val testGuildIds: MutableList<Long> = mutableListOf()
-    private var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
-    private var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+    val slashGuildIds: MutableList<Long> = mutableListOf()
+    val testGuildIds: MutableList<Long> = mutableListOf()
+    var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+    var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
     private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 

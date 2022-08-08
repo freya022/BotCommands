@@ -115,7 +115,7 @@ public class ApplicationCommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public ApplicationCommandsBuilder forceCommandsAsGuildOnly(boolean force) {
-		context.getApplicationCommandsContext().setForceGuildCommands(force);
+//		context.getApplicationCommandsContext().setForceGuildCommands(force);
 
 		return this;
 	}

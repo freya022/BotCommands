@@ -6,7 +6,6 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder
@@ -268,8 +267,6 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
         context.registerCommandDependency(BContext::class.java) { context }
         context.registerCustomResolver(BContext::class.java) { _, _, _ -> context } //TODO merge ?
         context.registerMethodParameterSupplier(BContext::class.java) { context }
-
-        context.registerMethodParameterSupplier(ApplicationCommandManager::class.java) { context.applicationCommandManager }
 
         context.setDefaultMessageProvider(DefaultMessagesFunction())
     }

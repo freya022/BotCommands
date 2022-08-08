@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.application;
 
-import com.freya02.botcommands.internal.application.CommandInfoMap;
+import com.freya02.botcommands.internal.application.CommandMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -21,7 +21,7 @@ public interface ApplicationCommandsContext {
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	SlashCommandInfo findLiveSlashCommand(@NotNull Guild guild, @NotNull CommandPath path);
+	SlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path);
 
 	/**
 	 * Returns the {@link UserCommandInfo} object of the specified user context command name, in the specific guild
@@ -31,7 +31,7 @@ public interface ApplicationCommandsContext {
 	 * @return The {@link UserCommandInfo} object of the user context command
 	 */
 	@Nullable
-	UserCommandInfo findLiveUserCommand(@NotNull Guild guild, @NotNull String name);
+	UserCommandInfo findLiveUserCommand(@Nullable Guild guild, @NotNull String name);
 
 	/**
 	 * Returns the {@link MessageCommandInfo} object of the specified message context command name, in the specific guild
@@ -41,7 +41,7 @@ public interface ApplicationCommandsContext {
 	 * @return The {@link MessageCommandInfo} object of the message context command
 	 */
 	@Nullable
-	MessageCommandInfo findLiveMessageCommand(@NotNull Guild guild, @NotNull String name);
+	MessageCommandInfo findLiveMessageCommand(@Nullable Guild guild, @NotNull String name);
 
 	/**
 	 * Returns a view for all the registered application commands
@@ -51,7 +51,7 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	@UnmodifiableView
-	ApplicationCommandInfoMapView getApplicationCommandInfoMapView();
+	ApplicationCommandMap getApplicationCommandMap();
 
 	/**
 	 * Returns a view for all the registered slash commands
@@ -61,7 +61,9 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	@UnmodifiableView
-	CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView();
+	default CommandMap<SlashCommandInfo> getSlashCommandsMap() {
+		return getApplicationCommandMap().getSlashCommands();
+	}
 
 	/**
 	 * Returns a view for all the registered user context commands
@@ -71,7 +73,9 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	@UnmodifiableView
-	CommandInfoMap<UserCommandInfo> getUserCommandsMapView();
+	default CommandMap<UserCommandInfo> getUserCommandsMap() {
+		return getApplicationCommandMap().getUserCommands();
+	}
 
 	/**
 	 * Returns a view for all the registered message context commands
@@ -81,29 +85,31 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	@UnmodifiableView
-	CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView();
+	default CommandMap<MessageCommandInfo> getMessageCommandsMap() {
+		return getApplicationCommandMap().getMessageCommands();
+	}
 
 	/**
 	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
 	 *
 	 * @return A list of the application commands paths
 	 */
-	List<CommandPath> getSlashCommandsPaths();
+	default List<CommandPath> getSlashCommandsPaths() {
+		return getApplicationCommandMap()
+				.getSlashCommands()
+				.values()
+				.stream()
+				.map(SlashCommandInfo::getPath)
+				.toList();
+	}
 
 	/**
 	 * Returns the live application commands for the specific guild
 	 *
 	 * @param guild The guild in which to query the commands, can be <code>null</code> for global commands
-	 * @return The {@link ApplicationCommandInfoMapView} of the specific guild
+	 * @return The {@link ApplicationCommandMap} of the specific guild
 	 */
-	@NotNull ApplicationCommandInfoMapView getLiveApplicationCommandsMap(@Nullable Guild guild);
-
-	/**
-	 * Returns whether all application commands should be guild-only, regardless of the command scope on the annotation
-	 *
-	 * @return <code>true</code> if all application commands should be guild-only
-	 */
-	boolean isForceGuildCommandsEnabled();
+	@NotNull ApplicationCommandMap getLiveApplicationCommandsMap(@Nullable Guild guild);
 
 	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
 

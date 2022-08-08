@@ -2,11 +2,11 @@ package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.CommandStatus;
-import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.application.CommandIdProcessor;
-import com.freya02.botcommands.internal.application.CommandInfoMap;
+import com.freya02.botcommands.internal.application.CommandMap;
+import com.freya02.botcommands.internal.application.MutableCommandMap;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -17,18 +17,16 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
-import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class ApplicationCommandInfoMapView {
-	private static final Logger LOGGER = Logging.getLogger();
-	protected final Map<Command.Type, CommandInfoMap<? extends ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(Command.Type.class));
+public abstract class ApplicationCommandMap {
+	private final Map<Command.Type, CommandMap<ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(Command.Type.class));
 
 	@UnmodifiableView
-	public Collection<? extends ApplicationCommandInfo> getAllApplicationCommandsView() {
+	public Collection<? extends ApplicationCommandInfo> getAllApplicationCommands() {
 		return typeMap.values()
 				.stream()
 				.flatMap(map -> map.values().stream())
@@ -46,44 +44,38 @@ public abstract class ApplicationCommandInfoMapView {
 	}
 
 	@UnmodifiableView
-	public CommandInfoMap<SlashCommandInfo> getSlashCommandsView() {
-		final CommandInfoMap<SlashCommandInfo> typeMap = getTypeMap(Command.Type.SLASH);
-
-		return typeMap.unmodifiable();
+	public CommandMap<SlashCommandInfo> getSlashCommands() {
+		return getTypeMap(Command.Type.SLASH);
 	}
 
 	@UnmodifiableView
-	public CommandInfoMap<UserCommandInfo> getUserCommandsView() {
-		final CommandInfoMap<UserCommandInfo> map = getTypeMap(Command.Type.USER);
-
-		return map.unmodifiable();
+	public CommandMap<UserCommandInfo> getUserCommands() {
+		return getTypeMap(Command.Type.USER);
 	}
 
 	@UnmodifiableView
-	public CommandInfoMap<MessageCommandInfo> getMessageCommandsView() {
-		final CommandInfoMap<MessageCommandInfo> map = getTypeMap(Command.Type.MESSAGE);
-
-		return map.unmodifiable();
+	public CommandMap<MessageCommandInfo> getMessageCommands() {
+		return getTypeMap(Command.Type.MESSAGE);
 	}
 
 	@Nullable
 	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
-		return this.getSlashCommandsView().get(path);
+		return this.getSlashCommands().get(path);
 	}
 
 	@Nullable
 	public UserCommandInfo findUserCommand(@NotNull String name) {
-		return this.getUserCommandsView().get(CommandPath.ofName(name));
+		return this.getUserCommands().get(CommandPath.ofName(name));
 	}
 
 	@Nullable
 	public MessageCommandInfo findMessageCommand(@NotNull String name) {
-		return this.getMessageCommandsView().get(CommandPath.ofName(name));
+		return this.getMessageCommands().get(CommandPath.ofName(name));
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T extends ApplicationCommandInfo> CommandInfoMap<T> getTypeMap(Command.Type type) {
-		return (CommandInfoMap<T>) typeMap.computeIfAbsent(type, x -> new CommandInfoMap<>());
+	public <T extends ApplicationCommandInfo> CommandMap<T> getTypeMap(Command.Type type) {
+		return (CommandMap<T>) typeMap.computeIfAbsent(type, x -> new MutableCommandMap<>());
 	}
 
 	public List<ApplicationCommandInfo> filterByGuild(@NotNull BContext context, @Nullable Guild guild, @Nullable CommandIdProcessor commandIdProcessor) {

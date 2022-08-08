@@ -151,7 +151,7 @@ public final class ApplicationCommandsBuilder {
 					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
 				}
 
-				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getGuildApplicationCommands()));
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, MutableApplicationCommandMap.fromCommandList(globalUpdater.getGuildApplicationCommands()));
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
 			}
@@ -226,7 +226,7 @@ public final class ApplicationCommandsBuilder {
 					LOGGER.debug("Guild '{}' ({}) commands does not have to be updated ({})", guild.getName(), guild.getId(), getCheckTypeString());
 				}
 
-				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(guild, ApplicationCommandInfoMap.fromCommandList(updater.getGuildApplicationCommands()));
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(guild, MutableApplicationCommandMap.fromCommandList(updater.getGuildApplicationCommands()));
 
 				return new CommandUpdateResult(guild, updatedCommands);
 			} catch (Throwable e) {

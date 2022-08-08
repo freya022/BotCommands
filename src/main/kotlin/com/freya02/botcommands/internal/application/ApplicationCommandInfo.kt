@@ -26,7 +26,7 @@ abstract class ApplicationCommandInfo internal constructor(
     init {
         scope = builder.scope
         isDefaultLocked = builder.defaultLocked
-        isGuildOnly = context.applicationCommandsContext.isForceGuildCommandsEnabled || scope.isGuildOnly
+        isGuildOnly = context.config.applicationConfig.forceGuildCommands || scope.isGuildOnly
         isTestOnly = builder.testOnly
 
         if (builder.cooldownStrategy.scope != CooldownScope.USER && !scope.isGuildOnly) {

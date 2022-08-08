@@ -1,143 +1,52 @@
-package com.freya02.botcommands.internal.application;
+package com.freya02.botcommands.internal.application
 
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.utils.Utils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.Utils
+import java.util.*
 
-import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>
 
-@SuppressWarnings({"EqualsWhichDoesntCheckParameterClass", "SuspiciousMethodCalls"})
-public class CommandInfoMap<T extends ApplicationCommandInfo> implements Map<CommandPath, T> {
-	private final Map<CommandPath, T> map;
+class MutableCommandMap<T : ApplicationCommandInfo>(
+    private val map: MutableMap<CommandPath, T> = Collections.synchronizedMap(
+        mutableMapOf()
+    )
+) : CommandMap<T>, MutableMap<CommandPath, T> by map {
+    override fun put(key: CommandPath, value: T): T? {
+        //Check if commands with the same name as their entire path are present
+        // For example, trying to insert /tag create while /tag already exists
+        for ((commandPath, mapInfo) in this) {
+            if (key.fullPath == commandPath.name) {
+                throwUser(
+                    "Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)".format(
+                        key, Utils.formatMethodShort(value.method),
+                        commandPath, Utils.formatMethodShort(mapInfo.method)
+                    )
+                )
+            }
 
-	public CommandInfoMap() {
-		map = Collections.synchronizedMap(new HashMap<>());
-	}
+            if (commandPath.fullPath == key.name) {
+                throwUser(
+                    "Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)".format(
+                        key, Utils.formatMethodShort(value.method),
+                        commandPath, Utils.formatMethodShort(mapInfo.method)
+                    )
+                )
+            }
+        }
 
-	public CommandInfoMap(Map<CommandPath, T> map) {
-		this.map = map;
-	}
+        val oldInfo = map.put(key, value)
+        if (oldInfo != null) {
+            throwUser(
+                "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
+                    key,
+                    Utils.formatMethodShort(value.method),
+                    oldInfo.path,
+                    Utils.formatMethodShort(oldInfo.method)
+                )
+            )
+        }
 
-	@UnmodifiableView
-	public CommandInfoMap<T> unmodifiable() {
-		return new CommandInfoMap<>(Collections.unmodifiableMap(map));
-	}
-
-	@Override
-	public int size() {return map.size();}
-
-	@Override
-	public boolean isEmpty() {return map.isEmpty();}
-
-	@Override
-	public boolean containsKey(Object key) {return map.containsKey(key);}
-
-	@Override
-	public boolean containsValue(Object value) {return map.containsValue(value);}
-
-	@Override
-	public T get(Object key) {return map.get(key);}
-
-	@Nullable
-	@Override
-	public T put(CommandPath key, T value) {
-		//Check if commands with the same name as their entire path are present
-		// For example, trying to insert /tag create while /tag already exists
-		for (Map.Entry<CommandPath, T> entry : entrySet()) {
-			final CommandPath commandPath = entry.getKey();
-			final T mapInfo = entry.getValue();
-
-			if (key.getFullPath().equals(commandPath.getName())) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)",
-						key, Utils.formatMethodShort(value.getMethod()),
-						commandPath, Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-
-			if (commandPath.getFullPath().equals(key.getName())) {
-				throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)",
-						key, Utils.formatMethodShort(value.getMethod()),
-						commandPath, Utils.formatMethodShort(mapInfo.getMethod())));
-			}
-		}
-
-		final T oldInfo = map.put(key, value);
-		if (oldInfo != null) {
-			throw new IllegalStateException(String.format("Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)",
-					key,
-					Utils.formatMethodShort(value.getMethod()),
-					oldInfo.getPath(),
-					Utils.formatMethodShort(oldInfo.getMethod())));
-		}
-
-		return null; //oldInfo is always null
-	}
-
-	@Override
-//	public T remove(Object key) {return map.remove(key);}
-	public T remove(Object key) {throw new UnsupportedOperationException();}
-
-	@Override
-	public void putAll(@NotNull Map<? extends CommandPath, ? extends T> m) {map.putAll(m);}
-
-	@Override
-//	public void clear() {map.clear();}
-	public void clear() {throw new UnsupportedOperationException();}
-
-	@NotNull
-	@Override
-	public Set<CommandPath> keySet() {return new HashSet<>(map.keySet());}
-
-	@NotNull
-	@Override
-	public Collection<T> values() {return new ArrayList<>(map.values());}
-
-	@NotNull
-	@Override
-	public Set<Entry<CommandPath, T>> entrySet() {return new HashSet<>(map.entrySet());}
-
-	@Override
-	public boolean equals(Object o) {return map.equals(o);}
-
-	@Override
-	public int hashCode() {return map.hashCode();}
-
-	@Override
-	public T getOrDefault(Object key, T defaultValue) {return map.getOrDefault(key, defaultValue);}
-
-	@Override
-	public void forEach(BiConsumer<? super CommandPath, ? super T> action) {map.forEach(action);}
-
-	@Override
-	public void replaceAll(BiFunction<? super CommandPath, ? super T, ? extends T> function) {map.replaceAll(function);}
-
-	@Nullable
-	@Override
-	public T putIfAbsent(CommandPath key, T value) {return map.putIfAbsent(key, value);}
-
-	@Override
-	public boolean remove(Object key, Object value) {return map.remove(key, value);}
-
-	@Override
-	public boolean replace(CommandPath key, T oldValue, T newValue) {return map.replace(key, oldValue, newValue);}
-
-	@Nullable
-	@Override
-	public T replace(CommandPath key, T value) {return map.replace(key, value);}
-
-	@Override
-	public T computeIfAbsent(CommandPath key, @NotNull Function<? super CommandPath, ? extends T> mappingFunction) {return map.computeIfAbsent(key, mappingFunction);}
-
-	@Override
-	public T computeIfPresent(CommandPath key, @NotNull BiFunction<? super CommandPath, ? super T, ? extends T> remappingFunction) {return map.computeIfPresent(key, remappingFunction);}
-
-	@Override
-	public T compute(CommandPath key, @NotNull BiFunction<? super CommandPath, ? super T, ? extends T> remappingFunction) {return map.compute(key, remappingFunction);}
-
-	@Override
-	public T merge(CommandPath key, @NotNull T value, @NotNull BiFunction<? super T, ? super T, ? extends T> remappingFunction) {return map.merge(key, value, remappingFunction);}
+        return null //oldInfo is always null
+    }
 }

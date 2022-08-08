@@ -1,172 +1,56 @@
-package com.freya02.botcommands.internal.application;
+package com.freya02.botcommands.internal.application
 
-import com.freya02.botcommands.api.application.ApplicationCommandInfoMapView;
-import com.freya02.botcommands.api.application.ApplicationCommandsContext;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
-import com.freya02.botcommands.internal.utils.Utils;
-import gnu.trove.TCollections;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
+import com.freya02.botcommands.api.application.ApplicationCommandMap
+import com.freya02.botcommands.api.application.ApplicationCommandsContext
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo
+import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import gnu.trove.TCollections
+import gnu.trove.map.hash.TLongObjectHashMap
+import net.dv8tion.jda.api.entities.Guild
+import java.util.*
 
-import java.util.*;
-import java.util.stream.Collectors;
+class ApplicationCommandsContextImpl : ApplicationCommandsContext {
+    val mutableApplicationCommandMap = MutableApplicationCommandMap()
 
-public class ApplicationCommandsContextImpl implements ApplicationCommandsContext {
-	private boolean forceGuildCommands;
+    private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
+    internal val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 
-	private final ApplicationCommandInfoMap applicationCommandInfoMap = new ApplicationCommandInfoMap();
-	private final TLongObjectMap<ApplicationCommandInfoMapView> liveApplicationCommandInfoMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
+    override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
+        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findSlashCommand(path)
 
-	private final Map<String, ModalHandlerInfo> modalHandlersMap = new HashMap<>();
+    override fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo? =
+        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findUserCommand(name)
 
-	private final Map<String, List<Locale>> baseNameToLocalesMap = new HashMap<>();
+    override fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo? =
+        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findMessageCommand(name)
 
-	private long getGuildKey(@Nullable Guild guild) {
-		return guild == null ? 0 : guild.getIdLong();
-	}
+    override fun getApplicationCommandMap(): ApplicationCommandMap {
+        return mutableApplicationCommandMap
+    }
 
-	@Nullable
-	@Override
-	public SlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path) {
-		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
-		if (view == null) return null;
+    override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap {
+        return liveApplicationCommandInfoMap[getGuildKey(guild)]
+    }
 
-		return view.findSlashCommand(path);
-	}
+    fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap) {
+        liveApplicationCommandInfoMap.put(getGuildKey(guild), map)
+    }
 
-	@Nullable
-	@Override
-	public UserCommandInfo findLiveUserCommand(@Nullable Guild guild, @NotNull String name) {
-		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
-		if (view == null) return null;
+    override fun addLocalizations(bundleName: String, locales: List<Locale>) {
+        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() }.addAll(locales)
+    }
 
-		return view.findUserCommand(name);
-	}
+    override fun removeLocalizations(bundleName: String, locales: List<Locale>) {
+        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() }.removeAll(locales)
+    }
 
-	@Nullable
-	@Override
-	public MessageCommandInfo findLiveMessageCommand(@Nullable Guild guild, @NotNull String name) {
-		final ApplicationCommandInfoMapView view = liveApplicationCommandInfoMap.get(getGuildKey(guild));
-		if (view == null) return null;
+    override fun removeLocalizations(bundleName: String) {
+        baseNameToLocalesMap.remove(bundleName)
+    }
 
-		return view.findMessageCommand(name);
-	}
-
-	@NotNull
-	public ApplicationCommandInfoMap getApplicationCommandInfoMap() {
-		return applicationCommandInfoMap;
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public ApplicationCommandInfoMapView getApplicationCommandInfoMapView() {
-		return applicationCommandInfoMap;
-	}
-
-	@NotNull
-	public CommandInfoMap<SlashCommandInfo> getSlashCommandsMap() {
-		return getApplicationCommandInfoMap().getSlashCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<SlashCommandInfo> getSlashCommandsMapView() {
-		return getApplicationCommandInfoMapView().getSlashCommandsView();
-	}
-
-	@NotNull
-	public CommandInfoMap<UserCommandInfo> getUserCommandsMap() {
-		return getApplicationCommandInfoMap().getUserCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<UserCommandInfo> getUserCommandsMapView() {
-		return getApplicationCommandInfoMapView().getUserCommandsView();
-	}
-
-	@NotNull
-	public CommandInfoMap<MessageCommandInfo> getMessageCommandsMap() {
-		return getApplicationCommandInfoMap().getMessageCommands();
-	}
-
-	@Override
-	@NotNull
-	@UnmodifiableView
-	public CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView() {
-		return getApplicationCommandInfoMapView().getMessageCommandsView();
-	}
-
-	@Override
-	public List<CommandPath> getSlashCommandsPaths() {
-		return getSlashCommandsMap().values()
-				.stream()
-				.map(SlashCommandInfo::getPath)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	@NotNull
-	public ApplicationCommandInfoMapView getLiveApplicationCommandsMap(@Nullable Guild guild) {
-		return liveApplicationCommandInfoMap.get(getGuildKey(guild));
-	}
-
-	@Override
-	public boolean isForceGuildCommandsEnabled() {
-		return forceGuildCommands;
-	}
-
-	public void setForceGuildCommands(boolean forceGuildCommands) {
-		this.forceGuildCommands = forceGuildCommands;
-	}
-
-	public void putLiveApplicationCommandsMap(@Nullable Guild guild, @NotNull ApplicationCommandInfoMap map) {
-		liveApplicationCommandInfoMap.put(getGuildKey(guild), map);
-	}
-
-	public void addModalHandler(ModalHandlerInfo handlerInfo) {
-		final ModalHandlerInfo oldHandler = modalHandlersMap.put(handlerInfo.getHandlerName(), handlerInfo);
-
-		if (oldHandler != null) {
-			throw new IllegalArgumentException("Tried to register modal handler '%s' at %s but it was already registered at %s".formatted(handlerInfo.getHandlerName(),
-					Utils.formatMethodShort(handlerInfo.getMethod()),
-					Utils.formatMethodShort(oldHandler.getMethod()))
-			);
-		}
-	}
-
-	@Nullable
-	public ModalHandlerInfo getModalHandler(String handlerName) {
-		return modalHandlersMap.get(handlerName);
-	}
-
-	@Override
-	public void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
-		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).addAll(locales);
-	}
-
-	@Override
-	public void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
-		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).removeAll(locales);
-	}
-
-	@Override
-	public void removeLocalizations(@NotNull String bundleName) {
-		baseNameToLocalesMap.remove(bundleName);
-	}
-
-	public Map<String, List<Locale>> getBaseNameToLocalesMap() {
-		return baseNameToLocalesMap;
-	}
+    private fun getGuildKey(guild: Guild?): Long {
+        return guild?.idLong ?: 0
+    }
 }

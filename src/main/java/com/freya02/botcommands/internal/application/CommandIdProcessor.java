@@ -28,8 +28,8 @@ public class CommandIdProcessor {
 
 	private void processCommandIds() {
 		for (ApplicationCommandInfo info : context.getApplicationCommandsContext()
-				.getApplicationCommandInfoMapView()
-				.getAllApplicationCommandsView()) {
+				.getApplicationCommandMap()
+				.getAllApplicationCommands()) {
 			final String commandId = info.getCommandId();
 
 			if (commandId == null) continue;

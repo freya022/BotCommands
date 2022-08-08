@@ -7,6 +7,8 @@ import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
@@ -19,7 +21,15 @@ internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: 
             .requireFirstArg(ModalInteractionEvent::class)
             .forEach {
                 val handlerInfo = ModalHandlerInfo(context, it.instance, it.function)
-                handlers[handlerInfo.handlerName] = handlerInfo
+                val oldHandler = handlers.put(handlerInfo.handlerName, handlerInfo)
+
+                if (oldHandler != null) {
+                    throwUser("Tried to register modal handler '%s' at %s but it was already registered at %s".format(
+                        handlerInfo.handlerName,
+                        handlerInfo.method.shortSignature,
+                        oldHandler.method.shortSignature
+                    ))
+                }
             }
     }
 

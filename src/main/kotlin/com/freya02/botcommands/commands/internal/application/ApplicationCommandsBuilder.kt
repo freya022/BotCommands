@@ -9,7 +9,7 @@ import com.freya02.botcommands.core.api.annotations.BEventListener
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.*
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.application.ApplicationCommandInfoMap
+import com.freya02.botcommands.internal.application.MutableApplicationCommandMap
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
@@ -94,7 +94,7 @@ internal class ApplicationCommandsBuilder(
 
                 context.applicationCommandsContext.putLiveApplicationCommandsMap(
                     event.guild,
-                    ApplicationCommandInfoMap.fromCommandList(guildUpdater.guildApplicationCommands)
+                    MutableApplicationCommandMap.fromCommandList(guildUpdater.guildApplicationCommands)
                 )
             } catch (e: Exception) {
                 LOGGER.error("An error occurred while updating global commands", e)
@@ -131,7 +131,7 @@ internal class ApplicationCommandsBuilder(
 
             context.applicationCommandsContext.putLiveApplicationCommandsMap(
                 null,
-                ApplicationCommandInfoMap.fromCommandList(globalUpdater.guildApplicationCommands)
+                MutableApplicationCommandMap.fromCommandList(globalUpdater.guildApplicationCommands)
             )
         } catch (e: Exception) {
             LOGGER.error("An error occurred while updating global commands", e)

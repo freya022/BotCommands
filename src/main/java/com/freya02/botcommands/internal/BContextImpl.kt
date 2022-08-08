@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.application.ApplicationCommandFilter
-import com.freya02.botcommands.api.application.ApplicationCommandManager
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandUpdateResult
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
@@ -22,14 +21,10 @@ import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder
 import com.freya02.botcommands.internal.application.ApplicationCommandsCache
 import com.freya02.botcommands.internal.application.ApplicationCommandsContextImpl
-import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import gnu.trove.TCollections
 import gnu.trove.set.TLongSet
@@ -84,7 +79,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl()
-    @Deprecated("To be removed") val applicationCommandManager = ApplicationCommandManager(this) //TODO merge
     var isOnlineAppCommandCheckEnabled = false
         private set
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
@@ -207,39 +201,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    private fun getEffectivePath(commandInfo: AbstractCommandInfo): CommandPath = when (commandInfo.commandId) {
-        null -> commandInfo.path
-        else -> CommandPath.of(commandInfo.commandId)
-    }
-
-    fun addSlashCommand(commandInfo: SlashCommandInfo): CommandPath {
-        val path = getEffectivePath(commandInfo)
-        getApplicationCommandsContext().slashCommandsMap[path] = commandInfo
-
-        return path
-    }
-
-    fun addUserCommand(commandInfo: UserCommandInfo): CommandPath {
-        val path = getEffectivePath(commandInfo)
-        getApplicationCommandsContext().userCommandsMap[path] = commandInfo
-
-        return path
-    }
-
-    fun addMessageCommand(commandInfo: MessageCommandInfo): CommandPath {
-        val path = getEffectivePath(commandInfo)
-        getApplicationCommandsContext().messageCommandsMap[path] = commandInfo
-
-        return path
-    }
-
-    fun addAutocompletionHandler(handlerInfo: AutocompletionHandlerInfo) {
-        val oldHandler = autocompleteHandlersMap.put(handlerInfo.handlerName, handlerInfo)
-        if(oldHandler != null) {
-            throwUser("Tried to register autocompletion handler '${handlerInfo.handlerName}' at ${handlerInfo.method.shortSignature} was already registered at ${oldHandler.method.shortSignature}")
-        }
-    }
-
     fun getAutocompletionHandler(autocompletionHandlerName: String): AutocompletionHandlerInfo? {
         return autocompleteHandlersMap[autocompletionHandlerName]
     }
@@ -255,8 +216,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     val applicationCommandsView: Collection<ApplicationCommandInfo>
         get() = getApplicationCommandsContext()
-            .applicationCommandInfoMap
-            .allApplicationCommandsView
+            .mutableApplicationCommandMap
+            .allApplicationCommands
 
     override fun dispatchException(message: String, t: Throwable?) {
         if (nextExceptionDispatch < System.currentTimeMillis()) {
