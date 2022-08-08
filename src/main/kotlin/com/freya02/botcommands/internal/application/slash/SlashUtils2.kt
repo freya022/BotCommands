@@ -1,18 +1,25 @@
 package com.freya02.botcommands.internal.application.slash
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.math.max
 import kotlin.reflect.KClass
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 object SlashUtils2 {
@@ -146,5 +153,17 @@ object SlashUtils2 {
         }
 
         return list
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    internal inline fun ApplicationCommandInfo.checkEventScope(guildEventClass: KClass<out GenericCommandInteractionEvent>) {
+        val firstParamKlass = method.valueParameters.first().type.jvmErasure
+        if (scope.isGuildOnly) {
+            if (!firstParamKlass.isSubclassOf(guildEventClass)) {
+                Logging.getLogger().warn("${method.shortSignature} : First parameter could be a ${guildEventClass.simpleName} as to benefit from non-null getters")
+            }
+        } else if (firstParamKlass.isSubclassOf(guildEventClass)) {
+            throwUser("Cannot use ${guildEventClass.simpleName} on a global application command")
+        }
     }
 }
