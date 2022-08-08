@@ -1,69 +1,49 @@
-package com.freya02.botcommands.internal.application;
+package com.freya02.botcommands.internal.application
 
-import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.internal.BContextImpl;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.hooks.SubscribeEvent;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.commands.internal.application.ApplicationCommandsBuilder
+import com.freya02.botcommands.core.api.annotations.BEventListener
+import com.freya02.botcommands.core.api.annotations.BService
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.events.guild.GuildAvailableEvent
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
+import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent
+import java.util.*
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+@BService
+internal class ApplicationUpdaterListener(private val applicationCommandsBuilder: ApplicationCommandsBuilder) {
+    private val logger = Logging.getLogger()
 
-//TODO reimplement
-public class ApplicationUpdaterListener extends ListenerAdapter {
-	private static final Logger LOGGER = Logging.getLogger();
+    private val failedGuilds: MutableSet<Long> = Collections.synchronizedSet(hashSetOf())
 
-	private final BContextImpl context;
-	private final Set<Long> failedGuilds = Collections.synchronizedSet(new HashSet<>());
+    @BEventListener
+    suspend fun onGuildAvailable(event: GuildAvailableEvent) {
+        logger.trace("Trying to force update commands due to an unavailable guild becoming available")
+        tryUpdate(event.guild, force = true)
+    }
 
-	public ApplicationUpdaterListener(BContextImpl context) {
-		this.context = context;
-	}
+    @BEventListener
+    suspend fun onGuildJoin(event: GuildJoinEvent) {
+        logger.trace("Trying to force update commands due to a joined guild")
+        tryUpdate(event.guild, force = true)
+    }
 
-	@SubscribeEvent
-	@Override
-	public void onGuildAvailable(@NotNull GuildAvailableEvent event) {
-		LOGGER.trace("Trying to force update commands due to an unavailable guild becoming available");
+    //Use this as a mean to detect OAuth scope changes
+    @BEventListener
+    suspend fun onGuildMemberUpdate(event: GuildMemberUpdateEvent) {
+        if (event.member.idLong == event.jda.selfUser.idLong) {
+            logger.trace("Trying to update commands due to a self member update")
+            tryUpdate(event.guild, force = false)
+        }
+    }
 
-		tryUpdate(event.getGuild(), true, true);
-	}
-
-	@SubscribeEvent
-	@Override
-	public void onGuildJoin(@NotNull GuildJoinEvent event) {
-		LOGGER.trace("Trying to force update commands due to a joined guild");
-
-		tryUpdate(event.getGuild(), true, true);
-	}
-
-	//Use this as a mean to detect OAuth scope changes
-	@SubscribeEvent
-	@Override
-	public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
-		if (event.getMember().getIdLong() == event.getJDA().getSelfUser().getIdLong()) {
-			LOGGER.trace("Trying to update commands due to a self member update");
-
-			tryUpdate(event.getGuild(), false, true);
-		}
-	}
-
-	private void tryUpdate(Guild guild, boolean force, boolean onlineCheck) {
-		final boolean hadFailed = failedGuilds.remove(guild.getIdLong());
-
-		context.getSlashCommandsBuilder()
-				.scheduleApplicationCommandsUpdate(guild, force || hadFailed, onlineCheck)
-				.whenComplete((commandUpdateResult, e) -> {
-			if (e != null) {
-				failedGuilds.add(guild.getIdLong());
-
-				context.getSlashCommandsBuilder().handleApplicationUpdateException(guild, e);
-			}
-		});
-	}
+    private suspend fun tryUpdate(guild: Guild, force: Boolean) {
+        try {
+            val hadFailed = failedGuilds.remove(guild.idLong)
+            applicationCommandsBuilder.updateGuildCommands(guild, force = force || hadFailed)
+        } catch (e: Throwable) {
+            failedGuilds.add(guild.idLong)
+            applicationCommandsBuilder.handleGuildCommandUpdateException(guild, e)
+        }
+    }
 }

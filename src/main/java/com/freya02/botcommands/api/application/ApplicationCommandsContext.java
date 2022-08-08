@@ -11,13 +11,15 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 public interface ApplicationCommandsContext {
 	/**
 	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild
 	 *
 	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param path Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 * @param path  Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 *
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
@@ -27,7 +29,8 @@ public interface ApplicationCommandsContext {
 	 * Returns the {@link UserCommandInfo} object of the specified user context command name, in the specific guild
 	 *
 	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param name Name of the user context command
+	 * @param name  Name of the user context command
+	 *
 	 * @return The {@link UserCommandInfo} object of the user context command
 	 */
 	@Nullable
@@ -37,7 +40,8 @@ public interface ApplicationCommandsContext {
 	 * Returns the {@link MessageCommandInfo} object of the specified message context command name, in the specific guild
 	 *
 	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param name Name of the message context command
+	 * @param name  Name of the message context command
+	 *
 	 * @return The {@link MessageCommandInfo} object of the message context command
 	 */
 	@Nullable
@@ -107,9 +111,37 @@ public interface ApplicationCommandsContext {
 	 * Returns the live application commands for the specific guild
 	 *
 	 * @param guild The guild in which to query the commands, can be <code>null</code> for global commands
+	 *
 	 * @return The {@link ApplicationCommandMap} of the specific guild
 	 */
 	@NotNull ApplicationCommandMap getLiveApplicationCommandsMap(@Nullable Guild guild);
+
+	/**
+	 * Updates the application commands for the global scope <br><br>
+	 *
+	 * @param force Whether the commands should be updated no matter what
+	 *
+	 * @return A {@link CompletableFuture CompletableFuture}&lt;{@link CommandUpdateResult}&gt;
+	 */
+	@NotNull
+	CompletableFuture<CommandUpdateResult> updateGlobalApplicationCommands(boolean force);
+
+	/**
+	 * Updates the application commands in the specified guild
+	 *
+	 * <p>Why you could call this method:
+	 * <ul>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
+	 * </ul>
+	 *
+	 * @param guild The guild which needs to be updated
+	 * @param force Whether the commands should be updated no matter what
+	 *
+	 * @return A {@link CompletableFuture CompletableFuture}&lt;{@link CommandUpdateResult}&gt;
+	 */
+	@NotNull
+	CompletableFuture<CommandUpdateResult> updateGuildApplicationCommands(@NotNull Guild guild, boolean force);
 
 	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
 

@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.CommandUpdateResult
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
@@ -32,7 +31,6 @@ import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.PrivateChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.ErrorHandler
@@ -40,7 +38,6 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.*
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.function.Function
@@ -78,7 +75,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
-    private val applicationCommandsContext = ApplicationCommandsContextImpl()
+    private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
     var isOnlineAppCommandCheckEnabled = false
         private set
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
@@ -191,7 +188,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
                 }
             }
         }
-        for (alias in aliases) {
+        for (alias in aliases) { //TODO replace by a loop in the annotation processor
             textCommandMap.compute(alias) { _: CommandPath, v: TextCommandCandidates? ->
                 when {
                     v != null -> v.also { it.add(commandInfo) }
@@ -309,22 +306,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     override fun getHelpBuilderConsumer(): Consumer<EmbedBuilder> {
         return helpBuilderConsumer!!
-    }
-
-    override fun scheduleApplicationCommandsUpdate(
-        guilds: Iterable<Guild>,
-        force: Boolean,
-        onlineCheck: Boolean
-    ): Map<Guild, CompletableFuture<CommandUpdateResult>> {
-        TODO()
-    }
-
-    override fun scheduleApplicationCommandsUpdate(
-        guild: Guild,
-        force: Boolean,
-        onlineCheck: Boolean
-    ): CompletableFuture<CommandUpdateResult> {
-        TODO()
     }
 
     override fun <T> registerCustomResolver(parameterType: Class<T>, function: CustomResolverFunction<T>) {

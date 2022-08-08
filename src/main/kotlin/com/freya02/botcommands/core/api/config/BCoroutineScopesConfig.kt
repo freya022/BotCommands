@@ -11,6 +11,7 @@ import kotlin.reflect.KProperty
 open class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
     var defaultScopeSupplier: () -> CoroutineScope = { getDefaultScope() }
 
+    var miscScope: CoroutineScope by ScopeDelegate()
     var eventDispatcherScope: CoroutineScope by ScopeDelegate()
     var cooldownScope: CoroutineScope by ScopeDelegate()
     var textCommandsScope: CoroutineScope by ScopeDelegate()

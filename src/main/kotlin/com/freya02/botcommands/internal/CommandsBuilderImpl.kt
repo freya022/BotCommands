@@ -9,7 +9,6 @@ import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder
-import com.freya02.botcommands.internal.application.ApplicationUpdaterListener
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder
 import com.freya02.botcommands.internal.components.ComponentsBuilder
 import com.freya02.botcommands.internal.modals.ModalHandlersBuilder
@@ -248,7 +247,7 @@ class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClas
 
         context.addEventListeners( //TODO remove once everything is registered via KTX extensions
             CommandListener(context, usePing),
-            ApplicationUpdaterListener(context),
+//            ApplicationUpdaterListener(context),
             ApplicationCommandListener(context)
         )
 
