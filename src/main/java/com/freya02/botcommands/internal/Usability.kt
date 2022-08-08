@@ -1,191 +1,133 @@
-package com.freya02.botcommands.internal;
+package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.Interaction;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.internal.Usability.UnusableReason.*
+import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import java.util.*
 
-import java.util.EnumSet;
-import java.util.Objects;
+class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>) {
+    /**
+     * @return `true` if the command is **not** executable
+     */
+    val isUnusable: Boolean by lazy {
+        unusableReasons.any { !it.isUsable }
+    }
 
-import static com.freya02.botcommands.internal.Usability.UnusableReason.*;
+    /**
+     * @return `true` if the command is executable
+     */
+    val isUsable: Boolean
+        get() = !isUnusable
 
-public class Usability {
-	private final EnumSet<UnusableReason> unusableReasons;
+    /**
+     * @return `true` if the command is **not** showable (in help command for example)
+     */
+    val isNotShowable: Boolean by lazy {
+        unusableReasons.any { !it.isShowable }
+    }
 
-	private Usability(EnumSet<UnusableReason> unusableReasons) {
-		this.unusableReasons = unusableReasons;
-	}
+    /**
+     * @return `true` if the command is showable (in help command for example)
+     */
+    val isShowable: Boolean
+        get() = !isNotShowable
 
-	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo cmdInfo) {
-		final NSFWStrategy nsfwStrategy = cmdInfo.getNsfwStrategy();
-		if (nsfwStrategy == null) return;
+    enum class UnusableReason(
+        /**
+         * @return `true` if the command is showable (in help command for example)
+         */
+        val isShowable: Boolean,
+        /**
+         * @return `true` if the command is executable
+         */
+        val isUsable: Boolean
+    ) {
+        HIDDEN(false, false),
+        OWNER_ONLY(false, false),
+        USER_PERMISSIONS(false, false),
+        BOT_PERMISSIONS(true, false),
+        GUILD_ONLY(false, false),
+        NSFW_DISABLED(false, false),
+        NSFW_ONLY(false, false),
+        NSFW_DM_DENIED(false, false);
+    }
 
-		//The command is indeed marked NSFW, but where is the command ran ?
+    companion object {
+        private fun checkNSFW(
+            context: BContext,
+            unusableReasons: EnumSet<UnusableReason>,
+            channel: MessageChannel,
+            cmdInfo: AbstractCommandInfo
+        ) {
+            val nsfwStrategy = cmdInfo.nsfwStrategy ?: return
 
-		if (msgChannel instanceof ThreadChannel threadChannel) {
-			msgChannel = threadChannel.getParentMessageChannel();
-		}
+            //The command is indeed marked NSFW, but where is the command ran ?
+            if (channel is ThreadChannel) {
+               checkNSFW(context, unusableReasons, channel.parentMessageChannel, cmdInfo)
+               return
+            }
 
-		if (msgChannel instanceof StandardGuildMessageChannel channel) {
-			//If guild NSFW is not enabled, and we are in a guild channel
-			if (!nsfwStrategy.getAllowedInGuilds()) {
-				unusableReasons.add(NSFW_DISABLED);
-			} else if (!channel.isNSFW()) { //If we are in a non-nsfw channel
-				unusableReasons.add(NSFW_ONLY);
-			}
-		} else if (msgChannel instanceof PrivateChannel channel) {
-			if (!nsfwStrategy.getAllowInDMs()) {
-				unusableReasons.add(NSFW_DISABLED);
-			} else {
-				final SettingsProvider provider = context.getSettingsProvider();
+            if (channel is StandardGuildMessageChannel) {
+                //If guild NSFW is not enabled, and we are in a guild channel
+                if (!nsfwStrategy.allowedInGuilds) {
+                    unusableReasons.add(NSFW_DISABLED)
+                } else if (!channel.isNSFW) { //If we are in a non-nsfw channel
+                    unusableReasons.add(NSFW_ONLY)
+                }
+            } else if (channel is PrivateChannel) {
+                if (!nsfwStrategy.allowInDMs) {
+                    unusableReasons.add(NSFW_DISABLED)
+                } else {
+                    val provider = context.settingsProvider
 
-				//If provider is null then assume there is no consent
-				if (provider == null) {
-					unusableReasons.add(NSFW_DM_DENIED);
+                    //If provider is null then assume there is no consent
+                    if (provider == null) {
+                        unusableReasons.add(NSFW_DM_DENIED)
 
-					//If the user does not consent
-				} else if (!provider.doesUserConsentNSFW(channel.getUser())) {
-					unusableReasons.add(NSFW_DM_DENIED);
-				}
-			}
-		}
-	}
+                        //If the user does not consent
+                    } else if (!provider.doesUserConsentNSFW(channel.user!!)) {
+                        unusableReasons.add(NSFW_DM_DENIED)
+                    }
+                }
+            }
+        }
 
-	public static Usability of(BContext context, TextCommandInfo cmdInfo, Member member, GuildMessageChannel channel, boolean isNotOwner) {
-		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
-		if (isNotOwner && cmdInfo.getHidden()) {
-			unusableReasons.add(HIDDEN);
-		}
+        @JvmStatic
+        fun of(context: BContext, cmdInfo: TextCommandInfo, member: Member, channel: GuildMessageChannel, isNotOwner: Boolean): Usability {
+            with(EnumSet.noneOf(UnusableReason::class.java)) {
+                if (isNotOwner && cmdInfo.hidden) add(HIDDEN)
+                if (isNotOwner && cmdInfo.isOwnerRequired) add(OWNER_ONLY)
 
-		if (isNotOwner && cmdInfo.isOwnerRequired()) {
-			unusableReasons.add(OWNER_ONLY);
-		}
+                checkNSFW(context, this, channel, cmdInfo)
 
-		checkNSFW(context, unusableReasons, channel, cmdInfo);
+                if (isNotOwner && !member.hasPermission(channel, cmdInfo.userPermissions)) add(USER_PERMISSIONS)
+                if (!channel.guild.selfMember.hasPermission(channel, cmdInfo.botPermissions)) add(BOT_PERMISSIONS)
 
-		if (isNotOwner && !member.hasPermission(channel, cmdInfo.getUserPermissions())) {
-			unusableReasons.add(USER_PERMISSIONS);
-		}
+                return Usability(this)
+            }
+        }
 
-		if (!channel.getGuild().getSelfMember().hasPermission(channel, cmdInfo.getBotPermissions())) {
-			unusableReasons.add(BOT_PERMISSIONS);
-		}
+        @JvmStatic
+        fun of(context: BContext, event: GenericCommandInteractionEvent, cmdInfo: ApplicationCommandInfo, isNotOwner: Boolean): Usability {
+            with(EnumSet.noneOf(UnusableReason::class.java)) {
+                if (!event.isFromGuild && cmdInfo.isGuildOnly) add(GUILD_ONLY)
 
-		return new Usability(unusableReasons);
-	}
+                checkNSFW(context, this, event.messageChannel, cmdInfo)
 
-	public static Usability of(BContext context, Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
-		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
+                if (!event.isFromGuild) return Usability(this)
 
-		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) { //Should not happen anymore
-			unusableReasons.add(GUILD_ONLY);
-		}
+                val channel = event.guildChannel
+                val guild = event.guild ?: throwInternal("Guild shouldn't be null as this code path is guild-only")
+                val member = event.member ?: throwInternal("Member shouldn't be null as this code path is guild-only")
 
-		checkNSFW(context, unusableReasons, event.getMessageChannel(), cmdInfo);
+                if (!guild.selfMember.hasPermission(channel, cmdInfo.botPermissions)) add(BOT_PERMISSIONS)
+                if (isNotOwner && !member.hasPermission(channel, cmdInfo.userPermissions)) add(USER_PERMISSIONS)
 
-		if (!event.isFromGuild()) {
-			return new Usability(unusableReasons);
-		}
-
-		final GuildChannel channel = event.getGuildChannel();
-		final Guild guild = Objects.requireNonNull(event.getGuild(), "Guild shouldn't be null as this code path is guild-only");
-		final Member member = Objects.requireNonNull(event.getMember(), "Member shouldn't be null as this code path is guild-only");
-		if (!guild.getSelfMember().hasPermission(channel, cmdInfo.getBotPermissions())) {
-			unusableReasons.add(BOT_PERMISSIONS);
-		}
-
-		if (isNotOwner && cmdInfo.isOwnerRequired()) {
-			unusableReasons.add(OWNER_ONLY);
-		}
-
-		if (isNotOwner && !member.hasPermission(channel, cmdInfo.getUserPermissions())) {
-			unusableReasons.add(USER_PERMISSIONS);
-		}
-
-		return new Usability(unusableReasons);
-	}
-
-	/**
-	 * @return <code>true</code> if the command is <b>not</b> executable
-	 */
-	public boolean isUnusable() {
-		for (UnusableReason reason : unusableReasons) {
-			if (!reason.isUsable()) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return <code>true</code> if the command is executable
-	 */
-	public boolean isUsable() {
-		return !isUnusable();
-	}
-
-	/**
-	 * @return <code>true</code> if the command is <b>not</b> showable (in help command for example)
-	 */
-	public boolean isNotShowable() {
-		for (UnusableReason reason : unusableReasons) {
-			if (!reason.isShowable()) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
-	 * @return <code>true</code> if the command is showable (in help command for example)
-	 */
-	public boolean isShowable() {
-		return !isNotShowable();
-	}
-
-	public EnumSet<UnusableReason> getUnusableReasons() {
-		return unusableReasons;
-	}
-
-	public enum UnusableReason {
-		HIDDEN(false, false),
-		OWNER_ONLY(false, false),
-		USER_PERMISSIONS(false, false),
-		BOT_PERMISSIONS(true, false),
-		GUILD_ONLY(false, false),
-		NSFW_DISABLED(false, false),
-		NSFW_ONLY(false, false),
-		NSFW_DM_DENIED(false, false);
-
-		private final boolean showable;
-		private final boolean usable;
-
-		/**
-		 * @param showable If <code>true</code>, will not show the command in some contexts <b>if the reason is present</b>
-		 * @param usable If <code>true</code>, will not allow execution of the command <b>if the reason is present</b>
-		 */
-		UnusableReason(boolean showable, boolean usable) {
-			this.showable = showable;
-			this.usable = usable;
-		}
-
-		/**
-		 * @return <code>true</code> if the command is showable (in help command for example)
-		 */
-		public boolean isShowable() {
-			return showable;
-		}
-
-		/**
-		 * @return <code>true</code> if the command is executable
-		 */
-		public boolean isUsable() {
-			return usable;
-		}
-	}
+                return Usability(this)
+            }
+        }
+    }
 }
