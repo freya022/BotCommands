@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.components
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.components.builder.*
 import com.freya02.botcommands.api.components.data.LambdaButtonData
@@ -9,20 +8,23 @@ import com.freya02.botcommands.api.components.data.PersistentButtonData
 import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData
 import com.freya02.botcommands.core.api.annotations.ConditionalService
 import com.freya02.botcommands.core.internal.db.Database
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.sql.SQLFetchResult
 import com.freya02.botcommands.internal.components.sql.SQLFetchedComponent
 import com.freya02.botcommands.internal.components.sql.SQLLambdaComponentData
 import com.freya02.botcommands.internal.components.sql.SQLPersistentComponentData
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import kotlin.time.Duration.Companion.milliseconds
 
 @ConditionalService
-internal class DefaultComponentManager(private val database: Database, private val context: BContext) : ComponentManager {
+internal class DefaultComponentManager(private val database: Database, private val context: BContextImpl) : ComponentManager {
     private val logger = Logging.getLogger()
 
     private val buttonLambdaMap: MutableMap<Long, ButtonConsumer> = hashMapOf()
@@ -161,9 +163,8 @@ internal class DefaultComponentManager(private val database: Database, private v
         consumerHandler(componentData.handlerName, componentData.args)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun scheduleTimeout(timeout: Long, timeoutUnit: TimeUnit, block: suspend () -> Unit) {
-        GlobalScope.launch { //TODO replace with component scope
+        context.config.coroutineScopesConfig.componentsScope.launch {
             try {
                 delay(timeoutUnit.toMillis(timeout).milliseconds)
                 block()
