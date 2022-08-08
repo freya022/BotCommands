@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.modals
 
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.api.config.BConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -12,6 +13,7 @@ private const val MAX_ID = Long.MAX_VALUE
 //Same amount of digits except every digit is 0 but the first one is 1
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
+@BService
 internal class ModalMaps(private val config: BConfig) {
     private val modalMap: MutableMap<String, ModalData> = hashMapOf()
 
