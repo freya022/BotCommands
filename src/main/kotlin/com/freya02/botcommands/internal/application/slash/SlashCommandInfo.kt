@@ -43,7 +43,7 @@ class SlashCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 
-        checkEventScope(GuildSlashEvent::class)
+        checkEventScope<GuildSlashEvent>()
 
         parameters = MethodParameters.of<SlashParameterResolver>(
             context,

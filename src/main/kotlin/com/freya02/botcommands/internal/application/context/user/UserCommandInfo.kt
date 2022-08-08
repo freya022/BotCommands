@@ -26,7 +26,7 @@ class UserCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
-        checkEventScope(GuildUserEvent::class)
+        checkEventScope<GuildUserEvent>()
 
         parameters = MethodParameters.of<UserContextParameterResolver>(
             context,

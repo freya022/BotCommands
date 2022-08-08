@@ -11,7 +11,6 @@ import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -155,15 +154,14 @@ object SlashUtils2 {
         return list
     }
 
-    @Suppress("NOTHING_TO_INLINE")
-    internal inline fun ApplicationCommandInfo.checkEventScope(guildEventClass: KClass<out GenericCommandInteractionEvent>) {
+    internal inline fun <reified T> ApplicationCommandInfo.checkEventScope() {
         val firstParamKlass = method.valueParameters.first().type.jvmErasure
         if (scope.isGuildOnly) {
-            if (!firstParamKlass.isSubclassOf(guildEventClass)) {
-                Logging.getLogger().warn("${method.shortSignature} : First parameter could be a ${guildEventClass.simpleName} as to benefit from non-null getters")
+            if (!firstParamKlass.isSubclassOf(T::class)) {
+                Logging.getLogger().warn("${method.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
             }
-        } else if (firstParamKlass.isSubclassOf(guildEventClass)) {
-            throwUser("Cannot use ${guildEventClass.simpleName} on a global application command")
+        } else if (firstParamKlass.isSubclassOf(T::class)) {
+            throwUser("Cannot use ${T::class.simpleName} on a global application command")
         }
     }
 }

@@ -26,7 +26,7 @@ class MessageCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        checkEventScope(GuildMessageEvent::class)
+        checkEventScope<GuildMessageEvent>()
 
         parameters = MethodParameters.of<MessageContextParameterResolver>(
             context,
