@@ -33,6 +33,7 @@ import kotlin.time.Duration.Companion.minutes
 
 private val LOGGER = Logging.getLogger()
 
+@Deprecated("To be removed")
 class CommandsBuilderImpl(context: BContextImpl, packages: Set<String>, userClasses: Set<Class<*>>, slashGuildIds: List<Long>) {
     private val prefixedCommandsBuilder: PrefixedCommandsBuilder
 

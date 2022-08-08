@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 
+@Deprecated
 public class ModalHandlersBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 

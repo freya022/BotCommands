@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class ComponentsBuilder {
 	private final Map<String, ComponentDescriptor> buttonsMap = new HashMap<>();
 	private final Map<String, ComponentDescriptor> selectionMenuMap = new HashMap<>();

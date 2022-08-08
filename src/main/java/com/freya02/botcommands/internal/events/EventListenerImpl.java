@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+@Deprecated
 class EventListenerImpl implements EventListener {
 	private final BContextImpl context;
 	private final Map<Class<?>, List<EventConsumer>> eventListeners;

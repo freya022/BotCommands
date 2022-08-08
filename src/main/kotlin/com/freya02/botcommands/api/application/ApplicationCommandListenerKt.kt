@@ -7,7 +7,6 @@ import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.ApplicationCommandListener
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -92,7 +91,7 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
 
         LOGGER.error(
             "Unhandled exception in thread '${Thread.currentThread().name}' while executing an application command '${
-                ApplicationCommandListener.reconstructCommand(event)
+                reconstructCommand(event)
             }'", baseEx
         )
 
@@ -103,7 +102,7 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
         }
 
         context.dispatchException(
-            "Exception in application command '${ApplicationCommandListener.reconstructCommand(event)}'", baseEx
+            "Exception in application command '${reconstructCommand(event)}'", baseEx
         )
     }
 

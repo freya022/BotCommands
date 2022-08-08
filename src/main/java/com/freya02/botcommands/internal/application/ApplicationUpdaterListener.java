@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+//TODO reimplement
 public class ApplicationUpdaterListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 

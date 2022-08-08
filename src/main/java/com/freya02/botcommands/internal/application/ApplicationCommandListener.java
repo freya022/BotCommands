@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationFilteringData;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.Usability;
@@ -32,7 +31,7 @@ import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-@BService
+@Deprecated
 public final class ApplicationCommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
 	private final BContextImpl context;

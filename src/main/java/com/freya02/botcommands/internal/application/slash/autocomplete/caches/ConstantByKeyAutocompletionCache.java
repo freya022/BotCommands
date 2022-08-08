@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Deprecated
 public class ConstantByKeyAutocompletionCache extends BaseAutocompletionCache {
 	private final AutocompletionHandlerInfo handlerInfo;
 	private final Cache<CompositeAutocompletionKey, List<Command.Choice>> cache;

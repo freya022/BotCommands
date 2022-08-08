@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Deprecated
 public class NoCacheAutocompletion extends AbstractAutocompletionCache {
 	@Override
 	public void retrieveAndCall(CommandAutoCompleteInteractionEvent event, Consumer<List<Command.Choice>> choiceCallback, ConsumerEx<CompositeAutocompletionKey> valueComputer) throws Exception {

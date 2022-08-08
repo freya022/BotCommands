@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
 
+@Deprecated
 public class AutocompletionHandlersBuilder {
 	private static final Logger LOGGER = Logging.getLogger();
 

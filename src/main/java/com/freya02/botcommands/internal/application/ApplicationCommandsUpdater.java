@@ -32,6 +32,7 @@ import java.util.function.Function;
 
 import static com.freya02.botcommands.internal.application.slash.SlashUtils.appendCommands;
 
+@Deprecated
 public class ApplicationCommandsUpdater {
 	private static final Logger LOGGER = Logging.getLogger();
 

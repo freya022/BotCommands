@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
+@Deprecated
 public class AutocompletionListener implements EventListener {
 	private static final Logger LOGGER = Logging.getLogger();
 

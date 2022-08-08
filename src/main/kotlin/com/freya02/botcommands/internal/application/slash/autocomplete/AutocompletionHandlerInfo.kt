@@ -31,6 +31,7 @@ private val LOGGER = Logging.getLogger()
 //      String -> Choice(String, String)
 //      Choice -> keep the same choice
 //      Object -> Transformer -> Choice
+@Deprecated("To be removed")
 class AutocompletionHandlerInfo(
     private val context: BContextImpl,
     override val instance: Any,

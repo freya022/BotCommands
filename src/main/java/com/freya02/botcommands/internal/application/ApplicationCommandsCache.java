@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+//TODO move functions
 public class ApplicationCommandsCache {
 	private final Path cachePath;
 

@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Deprecated
 public abstract class AbstractAutocompletionCache {
 	public static AbstractAutocompletionCache fromMode(AutocompletionHandlerInfo handlerInfo, CacheAutocompletion cacheAutocompletion) {
 		if (cacheAutocompletion == null) return new NoCacheAutocompletion();
