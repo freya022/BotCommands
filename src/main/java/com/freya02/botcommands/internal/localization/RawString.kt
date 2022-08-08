@@ -1,13 +1,5 @@
-package com.freya02.botcommands.internal.localization;
+package com.freya02.botcommands.internal.localization
 
-public class RawString implements LocalizableString {
-	private final String string;
-
-	public RawString(String string) {
-		this.string = string;
-	}
-
-	public String get() {
-		return string;
-	}
+class RawString(private val string: String) : LocalizableString {
+    fun get() = string
 }

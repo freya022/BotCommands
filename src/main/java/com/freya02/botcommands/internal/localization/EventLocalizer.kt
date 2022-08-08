@@ -1,125 +1,71 @@
-package com.freya02.botcommands.internal.localization;
+package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle;
-import com.freya02.botcommands.api.localization.*;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.LocalizationManager;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle
+import com.freya02.botcommands.api.localization.GuildLocalizable
+import com.freya02.botcommands.api.localization.Localizable
+import com.freya02.botcommands.api.localization.Localization
+import com.freya02.botcommands.api.localization.UserLocalizable
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.throwUser
+import net.dv8tion.jda.api.interactions.DiscordLocale
+import java.util.*
+import kotlin.reflect.KFunction
 
-import java.util.Locale;
+internal class EventLocalizer(
+    private val context: BContextImpl,
+    private val function: KFunction<*>?,
+    private val guildLocale: DiscordLocale?,
+    private val userLocale: DiscordLocale?
+) : UserLocalizable, GuildLocalizable, Localizable {
+    override fun localize(
+        locale: DiscordLocale,
+        localizationBundle: String,
+        localizationPath: String,
+        vararg entries: Localization.Entry
+    ): String {
+        val localizationManager = context.localizationManager
+        val instance = Localization.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
+            ?: throwUser("Found no localization instance for bundle '$localizationBundle' and locale '$locale'")
 
-public class EventLocalizer implements UserLocalizable, GuildLocalizable, Localizable {
-	private final BContextImpl context;
-	private final KFunction<?> function;
+        val effectivePath = when {
+            function != null -> when (val localizationPrefix = localizationManager.getLocalizationPrefix(function)) {
+                null -> localizationPath
+                else -> "$localizationPrefix.$localizationPath"
+            }
+            else -> localizationPath
+        }
 
-	private final DiscordLocale guildLocale;
-	private final DiscordLocale userLocale;
+        val template = instance[effectivePath]
+            ?: throwUser("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${instance.effectiveLocale}')")
 
-	public EventLocalizer(@NotNull BContextImpl context, @Nullable KFunction<?> function, @Nullable DiscordLocale guildLocale, @Nullable DiscordLocale userLocale) {
-		this.context = context;
-		this.function = function;
+        return template.localize(*entries)
+    }
 
-		this.guildLocale = guildLocale;
-		this.userLocale = userLocale;
-	}
+    override fun localize(localizationBundle: String, localizationPath: String, vararg entries: Localization.Entry): String = when {
+        userLocale != null -> localizeUser(localizationPath, localizationBundle, *entries)
+        guildLocale != null -> localizeGuild(localizationPath, localizationBundle, *entries)
+        else -> localize(DiscordLocale.ENGLISH_US, localizationBundle, localizationPath, *entries)
+    }
 
-	@Override
-	@NotNull
-	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
-		final LocalizationManager localizationManager = context.getLocalizationManager();
+    override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String =
+        localize(locale, localizationBundle, localizationPath, *entries)
 
-		final Localization instance = Localization.getInstance(localizationBundle, Locale.forLanguageTag(locale.getLocale()));
+    override fun localize(localizationPath: String, vararg entries: Localization.Entry): String = when {
+        userLocale != null -> localizeUser(localizationPath, *entries)
+        guildLocale != null -> localizeGuild(localizationPath, *entries)
+        else -> localize(DiscordLocale.ENGLISH_US, localizationPath, *entries)
+    }
 
-		if (instance == null) {
-			throw new IllegalArgumentException("Found no localization instance for bundle '%s' and locale '%s'".formatted(localizationBundle, locale));
-		}
+    override fun getLocalizationBundle(): String {
+        checkNotNull(function) { "Cannot use predefined localization bundles in this event" }
 
-		final String effectivePath;
-		if (function != null) {
-			final String localizationPrefix = localizationManager.getLocalizationPrefix(function);
+        return context.localizationManager.getLocalizationBundle(function)
+            ?: throwUser(function, "You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle::class.simpleName)
+    }
 
-			if (localizationPrefix == null) {
-				effectivePath = localizationPath;
-			} else {
-				effectivePath = localizationPrefix + "." + localizationPath;
-			}
-		} else {
-			effectivePath = localizationPath;
-		}
+    override fun getGuildLocale(): DiscordLocale =
+        guildLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
 
-		final LocalizationTemplate template = instance.get(effectivePath);
-
-		if (template == null) {
-			throw new IllegalArgumentException("Found no localization template for '%s' (in bundle '%s' with locale '%s')".formatted(effectivePath, localizationBundle, instance.getEffectiveLocale()));
-		}
-
-		return template.localize(entries);
-	}
-
-	@Override
-	@NotNull
-	public String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
-		if (userLocale != null) {
-			return localizeUser(localizationPath, localizationBundle, entries);
-		} else if (guildLocale != null) {
-			return localizeGuild(localizationPath, localizationBundle, entries);
-		} else {
-			return localize(DiscordLocale.ENGLISH_US, localizationBundle, localizationPath, entries);
-		}
-	}
-
-	@Override
-	@NotNull
-	public String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
-		return localize(locale, getLocalizationBundle(), localizationPath, entries);
-	}
-
-	@Override
-	@NotNull
-	public String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries) {
-		if (userLocale != null) {
-			return localizeUser(localizationPath, entries);
-		} else if (guildLocale != null) {
-			return localizeGuild(localizationPath, entries);
-		} else {
-			return localize(DiscordLocale.ENGLISH_US, localizationPath, entries);
-		}
-	}
-
-	@Override
-	@NotNull
-	public String getLocalizationBundle() {
-		if (function == null) {
-			throw new IllegalStateException("Cannot use predefined localization bundles in this event");
-		}
-
-		final String localizationBundle = context.getLocalizationManager().getLocalizationBundle(function);
-
-		if (localizationBundle == null) {
-			throw new IllegalArgumentException("You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle.class.getSimpleName());
-		}
-
-		return localizationBundle;
-	}
-
-	@Override
-	@NotNull
-	public DiscordLocale getGuildLocale() {
-		if (guildLocale == null)
-			throw new IllegalStateException("Cannot guild localize on an event which doesn't provide guild localization");
-
-		return guildLocale;
-	}
-
-	@Override
-	@NotNull
-	public DiscordLocale getUserLocale() {
-		if (userLocale == null)
-			throw new IllegalStateException("Cannot guild localize on an event which doesn't provide guild localization");
-
-		return userLocale;
-	}
+    override fun getUserLocale(): DiscordLocale =
+        userLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
 }
