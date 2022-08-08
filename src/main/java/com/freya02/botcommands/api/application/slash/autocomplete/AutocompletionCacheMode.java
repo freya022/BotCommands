@@ -4,7 +4,10 @@ package com.freya02.botcommands.api.application.slash.autocomplete;
  * See values
  */
 public enum AutocompletionCacheMode {
-	NO_CACHE, //TODO docs
+	/**
+	 * No autocomplete choices will be cached, choices will be computed on every user request
+	 */
+	NO_CACHE,
 
 	/**
 	 * The autocompletion choice list will be computed for each <b>new</b> key
