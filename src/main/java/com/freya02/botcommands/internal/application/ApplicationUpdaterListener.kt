@@ -28,6 +28,12 @@ internal class ApplicationUpdaterListener(private val applicationCommandsBuilder
         tryUpdate(event.guild, force = true)
     }
 
+    //TODO Scope is now granted with the "bot" scope
+    // We can't abuse member updates anymore to detect non up-to-date command sets
+    // This isn't grave if the bot uses global commands
+    // This will cause issues if the bot joins a guild while it is offline, tho
+    // One solution could be storing the guild IDs in a database, with the bot's join date.
+    // On mismatch, update commands.
     //Use this as a mean to detect OAuth scope changes
     @BEventListener
     suspend fun onGuildMemberUpdate(event: GuildMemberUpdateEvent) {

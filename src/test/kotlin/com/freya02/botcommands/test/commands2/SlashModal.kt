@@ -6,7 +6,8 @@ import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
+import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.modals.Modals
 import dev.minn.jda.ktx.messages.reply_
@@ -50,8 +51,8 @@ class SlashModal : ApplicationCommand() {
     }
 
     @Declaration
-    fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("modal") {
+    fun declare(applicationCommandManager: GuildApplicationCommandManager) {
+        applicationCommandManager.slashCommand("modal", scope = CommandScope.GUILD) {
             customOption("modals")
 
             function = ::onSlashModal
