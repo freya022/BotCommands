@@ -1,32 +1,37 @@
 package com.freya02.botcommands.internal.application.context.message
 
-import com.freya02.botcommands.api.application.builder.UserCommandBuilder
+import com.freya02.botcommands.api.application.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
-import kotlin.reflect.full.callSuspend
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
 class MessageCommandInfo internal constructor(
     context: BContextImpl,
-    builder: UserCommandBuilder
+    builder: MessageCommandBuilder
 ) : ApplicationCommandInfo(context, builder) {
     override val parameters: MethodParameters
 
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
+        checkEventScope(GuildMessageEvent::class)
+
         parameters = MethodParameters.of<MessageContextParameterResolver>(
             context,
             method
-        ) { kParameter, paramName, resolver ->
+        ) { kParameter, _, resolver ->
             MessageContextCommandParameter(kParameter, resolver)
         }
     }
@@ -36,13 +41,13 @@ class MessageCommandInfo internal constructor(
         context: BContextImpl,
         event: MessageContextInteractionEvent
     ): Boolean {
-        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
-        objects +=
-            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(
-                method, context, event)
+        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
+        arguments[method.instanceParameter!!] = instance
+        arguments[method.valueParameters.first()] =
+            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(method, context, event)
 
         for (parameter in parameters) {
-            objects += when (parameter.methodParameterType) {
+            arguments[parameter.kParameter] = when (parameter.methodParameterType) {
                 MethodParameterType.COMMAND -> {
                     parameter as MessageContextCommandParameter
 
@@ -59,7 +64,7 @@ class MessageCommandInfo internal constructor(
 
         applyCooldown(event)
 
-        method.callSuspend(*objects.toTypedArray())
+        method.callSuspendBy(arguments)
 
         return true
     }

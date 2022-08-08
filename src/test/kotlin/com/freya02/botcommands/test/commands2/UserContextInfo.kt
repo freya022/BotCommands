@@ -10,7 +10,8 @@ import net.dv8tion.jda.api.entities.User
 
 @CommandMarker
 class UserContextInfo : ApplicationCommand() {
-    private fun onUserContextInfo(event: GlobalUserEvent, user: User) {
+    @CommandMarker
+    fun onUserContextInfo(event: GlobalUserEvent, user: User) {
         event.reply_("User: ${user.asTag}", ephemeral = true).queue()
     }
 

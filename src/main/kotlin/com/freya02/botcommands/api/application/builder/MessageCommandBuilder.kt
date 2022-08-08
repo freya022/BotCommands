@@ -3,9 +3,9 @@ package com.freya02.botcommands.api.application.builder
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo
 
-class UserCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath, scope: CommandScope) :
+class MessageCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath, scope: CommandScope) :
     ApplicationCommandBuilder(path, scope) {
 
     override val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
@@ -14,7 +14,7 @@ class UserCommandBuilder internal constructor(private val context: BContextImpl,
      * @param name Name of the declared parameter in the [function]
      */
     fun option(name: String) {
-        optionBuilders[name] = UserCommandOptionBuilder(name)
+        optionBuilders[name] = MessageCommandOptionBuilder(name)
     }
 
     /**
@@ -24,5 +24,5 @@ class UserCommandBuilder internal constructor(private val context: BContextImpl,
         optionBuilders[name] = CustomOptionBuilder(name)
     }
 
-    internal fun build() = UserCommandInfo(context, this)
+    internal fun build() = MessageCommandInfo(context, this)
 }

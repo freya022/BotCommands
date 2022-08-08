@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.application
 
+import com.freya02.botcommands.api.application.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
@@ -21,6 +22,14 @@ class GlobalApplicationCommandManager internal constructor(val context: BContext
         if (!scope.isGlobal) throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
 
         guildApplicationCommands += UserCommandBuilder(context, CommandPath.ofName(name), scope)
+            .apply(builder)
+            .build()
+    }
+
+    override fun messageCommand0(name: String, scope: CommandScope, builder: MessageCommandBuilder.() -> Unit) {
+        if (!scope.isGlobal) throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
+
+        guildApplicationCommands += MessageCommandBuilder(context, CommandPath.ofName(name), scope)
             .apply(builder)
             .build()
     }
