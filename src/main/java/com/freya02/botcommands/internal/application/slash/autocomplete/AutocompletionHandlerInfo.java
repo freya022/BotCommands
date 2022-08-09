@@ -130,7 +130,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 		for (final AutocompleteCommandParameter parameter : autocompleteParameters) {
 			final Guild guild = event.getGuild();
 
-			if (guild != null) {
+			if (guild != null && parameter.isOption()) {
 				//Resolve the target slash command parameter, so we can retrieve its default value
 				final SlashCommandParameter slashParameter = slashCommand.getParameters()
 						.stream()
