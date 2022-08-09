@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.components
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.components.ComponentErrorReason
+import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.components.ComponentType
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -45,10 +46,15 @@ internal class ComponentListener(
     }
 
     private fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
-        val scope = context.config.coroutineScopesConfig.componentsScope
-
         try {
-            //TODO component filters
+            for (componentFilter in context.componentFilters) {
+                if (!componentFilter.isAccepted(ComponentFilteringData(context, event))) {
+                    return
+                }
+            }
+
+            val scope = context.config.coroutineScopesConfig.componentsScope
+
             componentsManager.fetchComponent(event.componentId) { fetchResult ->
                 val fetchedComponent = fetchResult.fetchedComponent ?: run {
                     event.reply_(context.getDefaultMessages(event).componentNotFoundErrorMsg, ephemeral = true).queue()
