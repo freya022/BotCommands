@@ -17,7 +17,6 @@ import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.EventDispatcher
 import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder
 import com.freya02.botcommands.internal.application.ApplicationCommandsCache
 import com.freya02.botcommands.internal.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo
@@ -80,7 +79,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         private set
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
     private val autocompletionTransformers: MutableMap<KType, AutocompletionTransformer<*>> = hashMapOf()
-    @Deprecated("To be removed") var slashCommandsBuilder: ApplicationCommandsBuilder? = null
     @Deprecated("To be removed") var applicationCommandsCache: ApplicationCommandsCache? = null
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()

@@ -120,7 +120,7 @@ internal class ApplicationCommandsBuilder(
             runDeclarationFunction(classPathFunction, serviceContainer, manager)
         }
 
-        val globalUpdater = ApplicationCommandsUpdaterKt.ofGlobal(context, manager)
+        val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
         val needsUpdate = force || globalUpdater.shouldUpdateCommands()
         if (needsUpdate) {
             globalUpdater.updateCommands()
@@ -142,7 +142,7 @@ internal class ApplicationCommandsBuilder(
                 runDeclarationFunction(classPathFunction, serviceContainer, manager)
             }
 
-            val guildUpdater = ApplicationCommandsUpdaterKt.ofGuild(context, guild, manager)
+            val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
             val needsUpdate = force || guildUpdater.shouldUpdateCommands()
             if (needsUpdate) {
                 guildUpdater.updateCommands()

@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.utils.Utils;
 import dev.minn.jda.ktx.events.CoroutineEventManager;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -253,7 +252,7 @@ public final class CommandsBuilder {
 	 */
 	public void build(@Nullable CoroutineEventManager manager) throws IOException {
 		try {
-			new CommandsBuilderImpl(context, packages, classes, applicationCommandBuilder.getSlashGuildIds()).build(manager);
+			throw new UnsupportedOperationException();
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 

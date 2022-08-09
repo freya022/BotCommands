@@ -28,7 +28,7 @@ import java.util.function.Function
 
 private val LOGGER = Logging.getLogger()
 
-internal class ApplicationCommandsUpdaterKt private constructor(
+internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
     manager: IApplicationCommandManager
@@ -243,12 +243,12 @@ internal class ApplicationCommandsUpdaterKt private constructor(
     }
 
     companion object {
-        fun ofGlobal(context: BContextImpl, manager: GlobalApplicationCommandManager): ApplicationCommandsUpdaterKt {
-            return ApplicationCommandsUpdaterKt(context, null, manager)
+        fun ofGlobal(context: BContextImpl, manager: GlobalApplicationCommandManager): ApplicationCommandsUpdater {
+            return ApplicationCommandsUpdater(context, null, manager)
         }
 
-        fun ofGuild(context: BContextImpl, guild: Guild, manager: GuildApplicationCommandManager): ApplicationCommandsUpdaterKt {
-            return ApplicationCommandsUpdaterKt(context, guild, manager)
+        fun ofGuild(context: BContextImpl, guild: Guild, manager: GuildApplicationCommandManager): ApplicationCommandsUpdater {
+            return ApplicationCommandsUpdater(context, guild, manager)
         }
     }
 }
