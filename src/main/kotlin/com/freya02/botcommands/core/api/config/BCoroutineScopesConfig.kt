@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.api.config
 
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.lockable
 import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.events.getDefaultScope
@@ -8,7 +9,8 @@ import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-open class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
+@LateService
+class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
     var defaultScopeSupplier: () -> CoroutineScope = { getDefaultScope() }
 
     var miscScope: CoroutineScope by ScopeDelegate()

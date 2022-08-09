@@ -4,6 +4,8 @@ import com.freya02.botcommands.annotations.api.annotations.RequireOwner
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
+import com.freya02.botcommands.core.api.annotations.LateService
+import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.toDelegate
@@ -13,6 +15,7 @@ import java.sql.Connection
 import java.util.function.Supplier
 import kotlin.properties.Delegates
 
+@LateService
 class BConfig internal constructor() {
     internal var locked = false
         private set
@@ -95,6 +98,13 @@ class BConfig internal constructor() {
 
     fun components(block: BComponentsConfig.() -> Unit) {
         block(componentsConfig)
+    }
+
+    internal fun putConfigInServices(serviceContainer: ServiceContainer) {
+        serviceContainer.putService(serviceConfig)
+        serviceContainer.putService(applicationConfig)
+        serviceContainer.putService(componentsConfig)
+        serviceContainer.putService(coroutineScopesConfig)
     }
 
     internal fun lock() {

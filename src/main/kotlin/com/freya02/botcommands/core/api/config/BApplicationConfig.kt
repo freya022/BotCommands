@@ -3,11 +3,13 @@ package com.freya02.botcommands.core.api.config
 import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.lockableNotNull
 import net.dv8tion.jda.api.entities.Guild
 import java.util.*
 import kotlin.properties.Delegates
 
+@LateService
 class BApplicationConfig internal constructor(config: BConfig) {
     val slashGuildIds: MutableList<Long> = mutableListOf()
     val testGuildIds: MutableList<Long> = mutableListOf()
