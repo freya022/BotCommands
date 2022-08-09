@@ -12,9 +12,9 @@ import com.freya02.botcommands.internal.runInitialization
 internal class ComponentStartupListener {
     @BEventListener
     fun onPreloadService(event: PreloadServiceEvent, config: BConfig, serviceContainer: ServiceContainer) = runInitialization {
-        if (config.hasConnectionProvider() && config.hasComponentManagerStrategy()) {
+        if (config.hasConnectionProvider() && config.componentsConfig.hasComponentManagerStrategy()) {
             @Suppress("RemoveExplicitTypeArguments")
-            serviceContainer.putServiceAs<ComponentManager>(serviceContainer.getService(config.componentManagerStrategy, useNonClasspath = true))
+            serviceContainer.putServiceAs<ComponentManager>(serviceContainer.getService(config.componentsConfig.componentManagerStrategy, useNonClasspath = true))
         }
     }
 }

@@ -240,20 +240,12 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         applicationFilters.add(filter)
     }
 
-    override fun addComponentFilter(filter: ComponentInteractionFilter) {
-        componentFilters.add(filter)
-    }
-
     override fun removeTextFilter(filter: TextCommandFilter) {
         textFilters.remove(filter)
     }
 
     override fun removeApplicationFilter(filter: ApplicationCommandFilter) {
         applicationFilters.remove(filter)
-    }
-
-    override fun removeComponentFilter(filter: ComponentInteractionFilter) {
-        componentFilters.remove(filter)
     }
 
     override fun overrideHelp(helpConsumer: HelpConsumer) {
@@ -273,7 +265,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     }
 
     override fun getComponentManager(): ComponentManager {
-        return serviceContainer.getService(config.componentManagerStrategy)
+        return serviceContainer.getService(config.componentsConfig.componentManagerStrategy)
     }
 
     fun getClassInstance(clazz: KClass<*>): Any? {

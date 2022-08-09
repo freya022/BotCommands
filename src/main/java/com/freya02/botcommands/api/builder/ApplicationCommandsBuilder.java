@@ -37,7 +37,7 @@ public class ApplicationCommandsBuilder {
 	 * @see BContext#addApplicationFilter(ApplicationCommandFilter)
 	 */
 	@NotNull
-	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) { //TODO move to auto service discovery
+	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) { //TODO move to respective config
 		context.addApplicationFilter(commandFilter);
 
 		return this;
@@ -49,14 +49,10 @@ public class ApplicationCommandsBuilder {
 	 * @param componentFilter The component interaction filter to add
 	 *
 	 * @return This builder for chaining convenience
-	 *
-	 * @see BContext#addComponentFilter(ComponentInteractionFilter)
 	 */
 	@NotNull
-	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) { //TODO move to auto service discovery
-		context.addComponentFilter(componentFilter);
-
-		return this;
+	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) { //TODO move to respective config
+		throw new UnsupportedOperationException();
 	}
 
 	/**

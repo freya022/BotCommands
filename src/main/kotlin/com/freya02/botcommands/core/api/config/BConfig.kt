@@ -4,8 +4,6 @@ import com.freya02.botcommands.annotations.api.annotations.RequireOwner
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
-import com.freya02.botcommands.api.components.ComponentManager
-import com.freya02.botcommands.api.components.DefaultComponentManager
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.toDelegate
@@ -30,6 +28,8 @@ class BConfig internal constructor() {
 
     val applicationConfig = BApplicationConfig(this)
 
+    val componentsConfig = BComponentsConfig(this)
+
     val coroutineScopesConfig = BCoroutineScopesConfig(this)
 
     /**
@@ -49,15 +49,6 @@ class BConfig internal constructor() {
 
     var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
     fun hasConnectionProvider() = ::connectionProvider.toDelegate<LockableVar<*>>().hasValue()
-
-    /**
-     * Sets the type of the service to use as a component manager
-     * Used to handle storing/retrieving persistent/lambda components handlers
-     *
-     * @see DefaultComponentManager
-     */
-    var componentManagerStrategy: Class<out ComponentManager> by Delegates.lockableNotNull(this, "Component manager needs to be set !")
-    fun hasComponentManagerStrategy() = ::componentManagerStrategy.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Adds owners, they can access the commands annotated with [RequireOwner]
@@ -100,6 +91,10 @@ class BConfig internal constructor() {
 
     fun addClass(clazz: Class<*>) {
         classes.add(clazz)
+    }
+
+    fun components(block: BComponentsConfig.() -> Unit) {
+        block(componentsConfig)
     }
 
     internal fun lock() {

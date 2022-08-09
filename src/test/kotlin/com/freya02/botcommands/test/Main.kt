@@ -25,7 +25,10 @@ fun main() {
         addSearchPath("com.freya02.botcommands.test.commands2")
 
         connectionProvider = testDB.connectionSupplier
-        componentManagerStrategy = DefaultComponentManager::class.java
+
+        components {
+            componentManagerStrategy = DefaultComponentManager::class.java
+        }
     }, manager)
 
     light(config.token, enableCoroutines = false) {
