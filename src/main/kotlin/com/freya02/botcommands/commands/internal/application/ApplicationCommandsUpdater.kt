@@ -6,10 +6,10 @@ import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.IApplicationCommandManager
 import com.freya02.botcommands.api.builder.DebugBuilder
+import com.freya02.botcommands.commands.internal.application.ApplicationCommandsCache.Companion.toJsonBytes
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandDataMap
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.ApplicationCommandsCache
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction
@@ -33,7 +33,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: IApplicationCommandManager
 ) {
-    private val commandsCache = context.getService(ApplicationCommandsCacheKt::class)
+    private val commandsCache = context.getService(ApplicationCommandsCache::class)
     private val onlineCheck = context.isOnlineAppCommandCheckEnabled
 
     private val commandsCachePath = when (guild) {
@@ -63,10 +63,10 @@ internal class ApplicationCommandsUpdater private constructor(
         val oldBytes = when {
             onlineCheck -> {
                 (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
-                    .await()
-                    .map { CommandData.fromCommand(it) }
-                    .let { ApplicationCommandsCacheKt.getCommandsBytes(it) }
+                .await()
+                .map { CommandData.fromCommand(it) }.toJsonBytes()
             }
+
             else -> {
                 if (Files.notExists(commandsCachePath)) {
                     LOGGER.trace("Updating commands because cache file does not exists")
@@ -79,7 +79,7 @@ internal class ApplicationCommandsUpdater private constructor(
             }
         }
 
-        val newBytes = ApplicationCommandsCacheKt.getCommandsBytes(allCommandData)
+        val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
                 LOGGER.trace("Updating commands because content is not equal")
@@ -212,7 +212,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
     private fun saveCommandData(guild: Guild?) {
         try {
-            commandsCachePath.overwriteBytes(ApplicationCommandsCacheKt.getCommandsBytes(allCommandData))
+            commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
         } catch (e: Exception) {
             LOGGER.error(
                 "An exception occurred while temporarily saving {} commands in '{}'",

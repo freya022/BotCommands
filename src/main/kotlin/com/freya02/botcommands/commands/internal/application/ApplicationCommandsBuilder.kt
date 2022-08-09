@@ -169,7 +169,7 @@ internal class ApplicationCommandsBuilder(
 
         jda.setRequiredScopes("applications.commands")
 
-        context.serviceContainer.putService(ApplicationCommandsCacheKt(jda))
+        context.serviceContainer.putService(ApplicationCommandsCache(jda))
 
         try {
             updateGlobalCommands()
