@@ -122,33 +122,31 @@ internal class ApplicationCommandsUpdater private constructor(
                     when (commandPath.nameCount) {
                         1 -> {
                             //Standard command
-                            val rightCommand = Commands.slash(commandPath.name, description)
-                            map.put(Command.Type.SLASH, commandPath, rightCommand)
-                            rightCommand.addOptions(methodOptions)
-                            configureTopLevel(info, rightCommand)
+                            map[Command.Type.SLASH, commandPath] = Commands.slash(commandPath.name, description).also { commandData ->
+                                commandData.addOptions(methodOptions)
+                                configureTopLevel(info, commandData)
+                            }
                         }
                         2 -> {
                             val commandData = map.computeIfAbsent(Command.Type.SLASH, commandPath) {
-                                val tmpData = Commands.slash(commandPath.name, "No description (base name)")
-                                configureTopLevel(info, tmpData)
-                                tmpData
+                                Commands.slash(commandPath.name, "No description (base name)").also { commandData ->
+                                    configureTopLevel(info, commandData)
+                                }
                             } as SlashCommandData
 
-                            val subname =
-                                commandPath.subname ?: throwInternal("Command path subname should have not been null")
+                            val subname = commandPath.subname ?: throwInternal("Command path subname should have not been null")
                             val subcommandData = SubcommandData(subname, description)
                             subcommandData.addOptions(methodOptions)
                             commandData.addSubcommands(subcommandData)
                         }
                         3 -> {
                             val groupData = getSubcommandGroup(map, Command.Type.SLASH, commandPath) {
-                                val commandData = Commands.slash(commandPath.name, "No description (base name)")
-                                configureTopLevel(info, commandData)
-                                commandData
+                                Commands.slash(commandPath.name, "No description (base name)").also { commandData ->
+                                    configureTopLevel(info, commandData)
+                                }
                             }
 
-                            val subname =
-                                commandPath.subname ?: throwInternal("Command path subname should have not been null")
+                            val subname = commandPath.subname ?: throwInternal("Command path subname should have not been null")
                             val subcommandData = SubcommandData(subname, description)
                             subcommandData.addOptions(methodOptions)
                             groupData.addSubcommands(subcommandData)
@@ -176,9 +174,10 @@ internal class ApplicationCommandsUpdater private constructor(
                 try {
                     if (commandPath.nameCount == 1) {
                         //Standard command
-                        val rightCommand = Commands.context(type, commandPath.name)
-                        map.put(type, commandPath, rightCommand)
-                        configureTopLevel(info, rightCommand)
+                        Commands.context(type, commandPath.name).also { commandData ->
+                            configureTopLevel(info, commandData)
+                            map[type, commandPath] = commandData
+                        }
                     } else {
                         throw IllegalStateException("A " + type.name + " command with more than 1 path component got registered")
                     }

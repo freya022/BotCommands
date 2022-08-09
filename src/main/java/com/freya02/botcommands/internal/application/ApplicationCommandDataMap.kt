@@ -1,34 +1,29 @@
-package com.freya02.botcommands.internal.application;
+package com.freya02.botcommands.internal.application
 
-import com.freya02.botcommands.api.application.CommandPath;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.internal.enumMapOf
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import java.util.function.Function
+import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
+internal class ApplicationCommandDataMap {
+    //The String is CommandPath's base name
+    private val typeMap: MutableMap<CommandType, MutableMap<String, CommandData>> = enumMapOf()
 
-public class ApplicationCommandDataMap {
-	//The String is CommandPath's base name
-	private final EnumMap<Command.Type, Map<String, CommandData>> typeMap = new EnumMap<>(Command.Type.class);
-	
-	public Collection<CommandData> getAllCommandData() {
-		return typeMap.values()
-				.stream()
-				.flatMap(map -> map.values().stream()).toList();
-	}
-	
-	public CommandData computeIfAbsent(Command.Type type, CommandPath path, Function<String, CommandData> mappingFunction) {
-		return getTypeMap(type).computeIfAbsent(path.getName(), mappingFunction);
-	}
+    val allCommandData: Collection<CommandData>
+        get() = typeMap
+            .values
+            .flatMap { it.values }
 
-	public CommandData put(Command.Type type, CommandPath path, CommandData value) {
-		return getTypeMap(type).put(path.getName(), value);
-	}
+    fun computeIfAbsent(type: CommandType, path: CommandPath, mappingFunction: Function<String, CommandData>): CommandData {
+        return getTypeMap(type).computeIfAbsent(path.name, mappingFunction)
+    }
 
-	private Map<String, CommandData> getTypeMap(Command.Type type) {
-		return typeMap.computeIfAbsent(type, x -> new HashMap<>());
-	}
+    operator fun set(type: CommandType, path: CommandPath, value: CommandData) {
+        getTypeMap(type)[path.name] = value
+    }
+
+    private fun getTypeMap(type: CommandType): MutableMap<String, CommandData> {
+        return typeMap.computeIfAbsent(type) { hashMapOf() }
+    }
 }
