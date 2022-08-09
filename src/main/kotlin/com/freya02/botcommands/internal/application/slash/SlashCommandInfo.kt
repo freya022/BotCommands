@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
+import com.freya02.botcommands.internal.application.slash.SlashUtils2.toVarArgName
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.Event
@@ -118,7 +119,7 @@ class SlashCommandInfo internal constructor(
 
                 val optionName = parameter.discordName
                 for (varArgNum in 0 until arguments) {
-                    val varArgName = SlashUtils.getVarArgName(optionName, varArgNum) //TODO extension or infix
+                    val varArgName = optionName.toVarArgName(varArgNum)
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
                             objectList += when {

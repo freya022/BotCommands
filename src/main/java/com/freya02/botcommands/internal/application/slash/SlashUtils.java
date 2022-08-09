@@ -24,15 +24,6 @@ public class SlashUtils {
 	}
 
 	@NotNull
-	public static String getVarArgName(@NotNull String name, int varArgNum) {
-		if (varArgNum == 0) {
-			return name;
-		 } else {
-			return name + "_" + varArgNum;
-		}
-	}
-
-	@NotNull
 	public static List<List<Command.Choice>> getOptionChoices(@Nullable Guild guild, ApplicationCommandInfo info) {
 		List<List<Command.Choice>> optionsChoices = new ArrayList<>();
 

@@ -18,7 +18,7 @@ import com.freya02.botcommands.core.internal.EventDispatcher
 import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandsContextImpl
-import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlerInfo
+import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
@@ -81,7 +81,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
-    private val autocompleteHandlersMap: MutableMap<String, AutocompletionHandlerInfo> = hashMapOf()
     private val testGuildIds = TCollections.synchronizedSet(TLongHashSet())
 
     init {
@@ -194,14 +193,16 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    fun getAutocompletionHandler(autocompletionHandlerName: String): AutocompletionHandlerInfo? {
-        return autocompleteHandlersMap[autocompletionHandlerName]
+    internal fun getAutocompleteHandler(autocompletionHandlerName: String): AutocompleteHandler? {
+//        return getService(AutocompleteListener)
+        TODO()
     }
 
     override fun invalidateAutocompletionCache(autocompletionHandlerName: String) {
-        val handler = getAutocompletionHandler(autocompletionHandlerName)
-            ?: throwUser("Autocompletion handler name not found for '$autocompletionHandlerName'")
-        handler.invalidate()
+//        val handler = getAutocompleteHandler(autocompletionHandlerName)
+//            ?: throwUser("Autocompletion handler name not found for '$autocompletionHandlerName'")
+//        handler.invalidate()
+        TODO()
     }
 
     val commands: Collection<TextCommandCandidates>

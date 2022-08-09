@@ -86,7 +86,7 @@ object SlashUtils2 {
             val optionType = resolver.optionType
 
             for (varArgNum in 0 until max(1, parameter.varArgs)) {
-                val varArgName = SlashUtils.getVarArgName(name, varArgNum)
+                val varArgName = name.toVarArgName(varArgNum)
 
                 val data = OptionData(optionType, varArgName, description)
 
@@ -163,5 +163,10 @@ object SlashUtils2 {
         } else if (firstParamKlass.isSubclassOf(T::class)) {
             throwUser("Cannot use ${T::class.simpleName} on a global application command")
         }
+    }
+
+    internal fun String.toVarArgName(varArgNum: Int) = when (varArgNum) {
+        0 -> this
+        else -> "${this}_$varArgNum"
     }
 }
