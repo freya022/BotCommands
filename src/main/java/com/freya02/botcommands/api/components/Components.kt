@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.components.builder.*
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.SelectionEvent
-import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -45,7 +45,7 @@ private val LOGGER = Logging.getLogger()
  * 	.queue();
  * ```
  */
-@BService
+@LateService
 class Components internal constructor(private val context: BContextImpl, private val componentManager: ComponentManager) {
     /**
      * Registers the IDs of these components as one group.

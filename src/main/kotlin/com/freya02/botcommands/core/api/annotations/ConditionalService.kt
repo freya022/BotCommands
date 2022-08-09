@@ -7,4 +7,5 @@ package com.freya02.botcommands.core.api.annotations
  *
  * Has no use other than static analysis
  */
-annotation class ConditionalService //TODO message on error ?
+@Target(AnnotationTarget.CLASS)
+annotation class ConditionalService(val message: String = "Conditional object") //Error message may be useful here in case the requested object is an interface

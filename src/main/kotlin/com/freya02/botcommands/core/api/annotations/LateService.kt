@@ -5,4 +5,5 @@ package com.freya02.botcommands.core.api.annotations
  *
  * Has no use other than static analysis
  */
+@Target(AnnotationTarget.CLASS)
 annotation class LateService

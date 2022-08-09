@@ -2,6 +2,9 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.core.api.annotations.ConditionalService
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
@@ -13,6 +16,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -22,6 +26,9 @@ private val LOGGER = Logging.getLogger()
 
 internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
+
+    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, LateService::class)
+    private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
@@ -104,4 +111,7 @@ internal object ReflectionUtilsKt {
 
         return canInstantiate
     }
+
+    internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
+    internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
 }

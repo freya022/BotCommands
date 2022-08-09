@@ -3,18 +3,19 @@ package com.freya02.botcommands.core.internal
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.core.api.annotations.ConditionalService
+import com.freya02.botcommands.core.api.annotations.ConditionalServiceCheck
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.core.api.config.BServiceConfig
 import com.freya02.botcommands.core.api.events.PreloadServiceEvent
 import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.core.api.suppliers.annotations.Supplier
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.isStatic
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwService
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -45,7 +46,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         context.classPathContainer.classes.forEach {
-            if (it.hasAnnotation<BService>()) {
+            if (it.hasAnnotation<BService>() || it.hasAnnotation<ConditionalService>()) {
                 getService(it)
             }
         }
@@ -64,14 +65,19 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    //TODO see replacing useNonClasspath with usage of @ConditionalService (rename to @LateService), have an error message in LateService in case the service isn't found
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getService(clazz: KClass<T>, useNonClasspath: Boolean = false): T {
         synchronized(serviceMap) {
             return (serviceMap[clazz] as T?) ?: run {
                 //Don't autoload here as it could chain into loading stuff like BContextImpl or ApplicationCommandManager, which you shouldn't create automatically
-                if (!useNonClasspath && !context.classPathContainer.classes.contains(clazz)) {
-                    throwService("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
+                //Cannot load if the class isn't in the class path or the loading isn't forced
+                //Still load late services if they're requested
+                if (!useNonClasspath && !context.classPathContainer.classes.contains(clazz) && !clazz.hasAnnotation<LateService>()) {
+                    if (clazz.hasAnnotation<ConditionalService>()) {
+                        throwService("Cannot auto-load ${clazz.jvmName}: ${clazz.findAnnotation<ConditionalService>()!!.message}")
+                    } else {
+                        throwService("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
+                    }
                 }
 
                 val beingCreatedSet = localBeingCreatedSet.get()
@@ -80,7 +86,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                         throw IllegalStateException("Circular dependency detected, list of the services being created : [${beingCreatedSet.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
                     }
 
-                    val instance = constructInstance(clazz, useNonClasspath)
+                    checkConditions(clazz)
+
+                    val instance = constructInstance(clazz, false)
 
                     beingCreatedSet.remove(clazz)
 
@@ -95,6 +103,26 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     beingCreatedSet.clear()
                 }
             }
+        }
+    }
+
+    private fun <T : Any> checkConditions(clazz: KClass<T>) {
+        val companionObj = clazz.companionObjectInstance ?: return
+
+        val checks = companionObj::class.declaredMemberFunctions.filter { it.hasAnnotation<ConditionalServiceCheck>() }
+        if (checks.isEmpty()) return
+        if (checks.size > 1) throwUser("Class ${clazz.jvmName} has more than one ConditionalServiceCheck function")
+
+        val func = checks.single()
+        if (!func.isPublic) throwUser(func, "Function should be public")
+        if (func.returnType.jvmErasure != String::class) throwUser(func, "Function should return a 'String?'")
+        if (!func.returnType.isMarkedNullable) throwUser(func, "Function should return a 'String?'")
+
+        val params = getParameters(func.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), false)
+        val message: String? = func.call(companionObj, *params.toTypedArray()) as String?
+
+        if (message != null) {
+            throwService("Cannot auto-load ${clazz.simpleName}: $message")
         }
     }
 

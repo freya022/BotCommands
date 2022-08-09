@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
-import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import io.github.classgraph.ArrayTypeSignature
 import io.github.classgraph.ClassGraph
@@ -58,7 +58,7 @@ internal object ReflectionMetadata {
             val list = scanResult.allStandardClasses
                 .filter {
                     if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
-                        return@filter it.hasAnnotation(BService::class.java.name)
+                        return@filter it.isService() || it.outerClasses.any { outer -> outer.isService() }
                     }
 
                     return@filter true
@@ -69,7 +69,7 @@ internal object ReflectionMetadata {
                     }
                     return@filter true
                 }
-                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isInnerClass || it.isEnum || it.isAbstract) }
+                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
                 .filter(ReflectionUtilsKt::isInstantiable)
                 .also { readAnnotations(it) }
                 .loadClasses()

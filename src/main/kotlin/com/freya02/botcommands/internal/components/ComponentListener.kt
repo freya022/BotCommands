@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.components.ComponentType
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.SelectionEvent
 import com.freya02.botcommands.core.api.annotations.BEventListener
-import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
@@ -29,7 +29,7 @@ import kotlin.reflect.full.valueParameters
 
 private val LOGGER = Logging.getLogger()
 
-@BService
+@LateService
 internal class ComponentListener(
     private val context: BContextImpl,
     private val componentsHandlerContainer: ComponentsHandlerContainer,

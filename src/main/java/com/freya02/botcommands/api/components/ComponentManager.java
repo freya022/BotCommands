@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.components.data.LambdaButtonData;
 import com.freya02.botcommands.api.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.api.components.data.PersistentButtonData;
 import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData;
+import com.freya02.botcommands.core.api.annotations.ConditionalService;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 /**
  * The button id is supposed to be fully treated before returning data, if it is indicated it is one use, the id must be deleted before returning for example
  */
+@ConditionalService(message = "A component manager strategy needs to be set")
 public interface ComponentManager {
 	void fetchComponent(String id, Consumer<FetchResult> resultCallback);
 

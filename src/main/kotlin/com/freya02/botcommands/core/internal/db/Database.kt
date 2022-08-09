@@ -1,13 +1,13 @@
 package com.freya02.botcommands.core.internal.db
 
 import com.freya02.botcommands.core.api.annotations.ConditionalService
+import com.freya02.botcommands.core.api.annotations.ConditionalServiceCheck
 import com.freya02.botcommands.core.api.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
 private const val latestVersion = "3.0.0" // Change in CreateDatabase.sql too
 
-//@BService //The service should not be eagerly initialized, as modules which depend on it should only be activated if necessary
 @ConditionalService
 internal class Database internal constructor(private val config: BConfig) {
     init {
@@ -47,5 +47,16 @@ internal class Database internal constructor(private val config: BConfig) {
 
     suspend fun <R> preparedStatement(@Language("PostgreSQL") sql: String, block: suspend KPreparedStatement.() -> R): R {
         return fetchConnection().use { connection -> block(KPreparedStatement(this, connection.prepareStatement(sql))) }
+    }
+
+    companion object {
+        @ConditionalServiceCheck
+        fun check(config: BConfig): String? {
+            if (!config.hasConnectionProvider()) {
+                return "BConfig#connectionProvider needs to be set"
+            }
+
+            return null
+        }
     }
 }

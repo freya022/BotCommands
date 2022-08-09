@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.data.LambdaButtonData
 import com.freya02.botcommands.api.components.data.LambdaSelectionMenuData
 import com.freya02.botcommands.api.components.data.PersistentButtonData
 import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData
-import com.freya02.botcommands.core.api.annotations.ConditionalService
+import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.db.Database
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.sql.SQLFetchResult
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import kotlin.time.Duration.Companion.milliseconds
 
-@ConditionalService
+@BService
 internal class DefaultComponentManager(private val database: Database, private val context: BContextImpl) : ComponentManager {
     private val logger = Logging.getLogger()
 
