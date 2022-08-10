@@ -17,8 +17,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import org.jetbrains.annotations.Contract
 
-private val LOGGER = Logging.getLogger()
-
 /**
  * The only class you will have to use to create smart components such as [buttons][Button] and [selection menus][SelectMenu]
  *
@@ -47,6 +45,8 @@ private val LOGGER = Logging.getLogger()
  */
 @LateService
 class Components internal constructor(private val context: BContextImpl, private val componentManager: ComponentManager) {
+    private val logger = Logging.getLogger()
+
     /**
      * Registers the IDs of these components as one group.
      *
@@ -223,7 +223,7 @@ class Components internal constructor(private val context: BContextImpl, private
     private fun checkCapturedVars(consumer: Any) {
         for (field in consumer.javaClass.declaredFields) {
             if (IMentionable::class.java.isAssignableFrom(field.type)) {
-                LOGGER.warn(
+                logger.warn(
                     "A component consumer has a field of type {}, these objects could be invalid when the action is called. Consider having IDs of the objects you need, see https://github.com/DV8FromTheWorld/JDA/wiki/19%29-Troubleshooting#cannot-get-reference-as-it-has-already-been-garbage-collected",
                     field.type
                 )

@@ -60,7 +60,10 @@ internal class EventLocalizer(
         checkNotNull(function) { "Cannot use predefined localization bundles in this event" }
 
         return context.localizationManager.getLocalizationBundle(function)
-            ?: throwUser(function, "You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle::class.simpleName)
+            ?: throwUser(
+                function,
+                "You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle::class.simpleName
+            )
     }
 
     override fun getGuildLocale(): DiscordLocale =
