@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands2
+package com.freya02.botcommands.test.commands_kt
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalData

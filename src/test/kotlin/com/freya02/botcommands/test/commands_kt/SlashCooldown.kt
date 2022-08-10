@@ -1,28 +1,31 @@
-package com.freya02.botcommands.test.commands2
+package com.freya02.botcommands.test.commands_kt
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
+import com.freya02.botcommands.api.CooldownScope
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import dev.minn.jda.ktx.messages.reply_
+import java.util.concurrent.TimeUnit
 
 @CommandMarker
-class SlashNsfw : ApplicationCommand() {
+class SlashCooldown : ApplicationCommand() {
     @CommandMarker
-    fun onSlashNsfw(event: GuildSlashEvent) {
+    fun onSlashCooldown(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }
 
     @Declaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("nsfw") {
-            nsfw {
-                allowInGuild = true
-                allowInDMs = true
+        globalApplicationCommandManager.slashCommand("cooldown") {
+            cooldown {
+                cooldown = 5
+                unit = TimeUnit.SECONDS
+                scope = CooldownScope.GUILD
             }
 
-            function = ::onSlashNsfw
+            function = ::onSlashCooldown
         }
     }
 }
