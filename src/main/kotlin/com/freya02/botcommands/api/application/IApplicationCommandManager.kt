@@ -8,9 +8,9 @@ import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 sealed class IApplicationCommandManager {
     internal abstract val guildApplicationCommands: List<ApplicationCommandInfo>
 
-    internal abstract fun slashCommand0(path: CommandPath, scope: CommandScope, builder: SlashCommandBuilder.() -> Unit)
-    internal abstract fun userCommand0(name: String, scope: CommandScope, builder: UserCommandBuilder.() -> Unit)
-    internal abstract fun messageCommand0(name: String, scope: CommandScope, builder: MessageCommandBuilder.() -> Unit)
+    protected abstract fun slashCommand0(path: CommandPath, scope: CommandScope, builder: SlashCommandBuilder.() -> Unit)
+    protected abstract fun userCommand0(name: String, scope: CommandScope, builder: UserCommandBuilder.() -> Unit)
+    protected abstract fun messageCommand0(name: String, scope: CommandScope, builder: MessageCommandBuilder.() -> Unit)
 
     @JvmOverloads
     fun slashCommand(path: CommandPath, scope: CommandScope = CommandScope.GLOBAL_NO_DM, builder: SlashCommandBuilder.() -> Unit) {
