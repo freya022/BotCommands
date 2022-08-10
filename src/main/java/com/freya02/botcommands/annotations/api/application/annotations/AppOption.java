@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-public @interface AppOption {
+public @interface AppOption { //TODO separate this into specialised options, why use AppOption for things that don't support descriptions / autocomplete ?
 	/**
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
