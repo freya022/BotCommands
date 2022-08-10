@@ -2,8 +2,8 @@ package com.freya02.botcommands.api.application;
 
 import com.freya02.botcommands.annotations.api.annotations.CommandId;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
+import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
@@ -62,12 +62,12 @@ public interface GuildApplicationSettings {
 	 * 		<br>This returns <code>null</code> by default
 	 */
 	@Nullable
-	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
+	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) { //TODO remove superfluous parameters
 		return null;
 	}
 
 	/**
-	 * Returns the default value supplier of an {@link AppOption}, for slash commands only
+	 * Returns the default value supplier of an {@link GeneratedOption}, for slash commands only
 	 * <br>This method is called only if your option is annotated
 	 * <p>This method will only be called once per command option per guild
 	 *
@@ -76,12 +76,12 @@ public interface GuildApplicationSettings {
 	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
-	 * @param parameterType The <b>boxed</b> type of the command option, or the item type of the parameter is annotated with {@link VarArgs}
+	 * @param parameterType The <b>boxed</b> type of the command option
 	 *
 	 * @return A {@link DefaultValueSupplier} if the option can be substituted with an object
 	 */
 	@Nullable //TODO might be worth using a custom class to hold KType and KClass, as to allow java users to access Class without needing another parameter
-	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
+	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild, //TODO remove superfluous parameters
 	                                                     @Nullable String commandId, @NotNull CommandPath commandPath,
 	                                                     @NotNull String optionName, @NotNull KType parameterType, @NotNull KClass<?> erasedType) {
 		return null;
