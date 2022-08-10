@@ -1,151 +1,82 @@
-package com.freya02.botcommands.internal.application;
+package com.freya02.botcommands.internal.application
 
-import com.freya02.botcommands.api.application.CommandPath;
-import net.dv8tion.jda.internal.utils.Checks;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.application.CommandPath
+import net.dv8tion.jda.internal.utils.Checks
+import kotlin.math.min
 
-import java.util.Objects;
-import java.util.StringJoiner;
+class CommandPathImpl(private val name: String, private val group: String?, private val subname: String?) : CommandPath {
+    private val path: String
+    private val count: Int
 
-public class CommandPathImpl implements CommandPath {
-	private final String name;
-	private final String group;
-	private final String subname;
-	private final String path;
-	private final int count;
+    init {
+        if (group != null) Checks.notBlank(group, "Subcommand group name")
+        if (subname != null) Checks.notBlank(subname, "Subcommand name")
 
-	public CommandPathImpl(@NotNull String name, @Nullable String group, @Nullable String subname) {
-		Checks.notBlank(name, "Command base name");
-		if (group != null) Checks.notBlank(group, "Subcommand group name");
-		if (subname != null) Checks.notBlank(subname, "Subcommand name");
-		
-		this.name = name;
-		this.group = group;
-		this.subname = subname;
-		
-		final StringJoiner joiner = new StringJoiner("/");
+        val components = listOfNotNull(name, group, subname)
 
-		joiner.add(name);
+        this.path = components.joinToString("/")
+        this.count = components.size
+    }
 
-		if (group != null)
-			joiner.add(group);
+    override fun getName(): String = name
+    override fun getGroup(): String? = group
+    override fun getSubname(): String? = subname
 
-		if (subname != null)
-			joiner.add(subname);
+    override fun getNameCount(): Int = count
 
-		this.path = joiner.toString();
+    override fun getParent(): CommandPath? = when {
+        group != null && subname != null -> CommandPath.of(name, group) // /name group sub
+        group != null -> CommandPath.of(name)  // /name group
+        subname != null -> CommandPath.of(name)  // /name sub
+        else -> null // /name
+    }
 
-		int count = 1;
-		if (group != null) count++;
-		if (subname != null) count++;
-		
-		this.count = count;
-	}
 
-	@NotNull
-	@Override
-	public String getName() {
-		return name;
-	}
+    override fun getFullPath(): String {
+        return path
+    }
 
-	@Nullable
-	@Override
-	public String getGroup() {
-		return group;
-	}
+    override fun getLastName(): String = when {
+        group != null -> subname!! //If a group exist, a subname exists, otherwise it's a bug.
+        subname != null -> subname
+        else -> name
+    }
 
-	@Nullable
-	@Override
-	public String getSubname() {
-		return subname;
-	}
+    override fun getNameAt(i: Int): String? = when (i) {
+        0 -> name
+        1 ->
+            group ?: // /name group subname
+            subname // /name subname
+        2 -> subname
+        else -> throw IllegalArgumentException("Invalid name count: $i")
+    }
 
-	@Override
-	public int getNameCount() {
-		return count;
-	}
+    override fun startsWith(o: CommandPath): Boolean {
+        if (o.nameCount > nameCount) return false
+        for (i in 0 until min(nameCount, o.nameCount)) {
+            if (o.getNameAt(i) != getNameAt(i)) {
+                return false
+            }
+        }
+        return true
+    }
 
-	@Nullable
-	@Override
-	public CommandPath getParent() {
-		if (group != null && subname != null) { // /name group sub
-			return CommandPath.of(name, group);
-		} else if (group != null /*&& subname == null*/) { // /name group
-			return CommandPath.of(name);
-		} else if (subname != null) { // /name sub
-			return CommandPath.of(name);
-		} else { // /name
-			return null;
-		}
-	}
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+        other as CommandPathImpl
 
-		CommandPathImpl that = (CommandPathImpl) o;
+        if (path != other.path) return false
 
-		return path.equals(that.path);
-	}
+        return true
+    }
 
-	@Override
-	public int hashCode() {
-		return path.hashCode();
-	}
+    override fun hashCode(): Int {
+        return path.hashCode()
+    }
 
-	@Override
-	public String getFullPath() {
-		return path;
-	}
-
-	@NotNull
-	@Override
-	public String getLastName() {
-		if (group != null) { //If a group exist, a subname exists, otherwise it's a bug.
-			return subname;
-		} else if (subname != null) {
-			return subname;
-		}
-
-		return name;
-	}
-
-	@Override
-	@Nullable
-	public String getNameAt(int i) {
-		switch (i) {
-			case 0:
-				return name;
-			case 1:
-				if (group != null) { // /name group subname
-					return group;
-				} else { // /name subname
-					return subname;
-				}
-			case 2:
-				return subname;
-			default:
-				throw new IllegalArgumentException("Invalid name count: " + i);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return path;
-	}
-
-	@Override
-	public boolean startsWith(CommandPath o) {
-		if (o.getNameCount() > getNameCount()) return false;
-
-		for (int i = 0; i < Math.min(getNameCount(), o.getNameCount()); i++) {
-			if (!Objects.equals(o.getNameAt(i), getNameAt(i))) {
-				return false;
-			}
-		}
-
-		return true;
-	}
+    override fun toString(): String {
+        return path
+    }
 }

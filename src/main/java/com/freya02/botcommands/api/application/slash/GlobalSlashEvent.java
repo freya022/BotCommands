@@ -11,13 +11,13 @@ import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
-import net.dv8tion.jda.internal.interactions.command.SlashCommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class GlobalSlashEvent extends SlashCommandInteractionEvent implements GuildLocalizable, UserLocalizable, Localizable {
 	private final EventLocalizer localizer;
 
-	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteractionImpl interaction) {
+	public GlobalSlashEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull SlashCommandInteraction interaction) {
 		super(api, responseNumber, interaction);
 
 		this.localizer = new EventLocalizer(context, function, isFromGuild() ? interaction.getGuildLocale() : null, interaction.getUserLocale());
