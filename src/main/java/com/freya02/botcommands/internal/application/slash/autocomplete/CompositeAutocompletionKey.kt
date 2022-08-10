@@ -1,58 +1,45 @@
-package com.freya02.botcommands.internal.application.slash.autocomplete;
+package com.freya02.botcommands.internal.application.slash.autocomplete
 
-import java.util.Arrays;
+class CompositeAutocompletionKey(
+    private val keys: Array<String>,
+    private val guildId: Long,
+    private val channelId: Long,
+    private val userId: Long
+) {
+    private val length: Int
+    private val hashCode: Int
 
-public class CompositeAutocompletionKey {
-	private final String[] keys;
-	private final long guildId;
-	private final long channelId;
-	private final long userId;
+    init {
+        this.length = keys.sumOf { it.length }
+        this.hashCode = let {
+            var hashCode = keys.contentHashCode()
+            hashCode = 31 * hashCode + guildId.hashCode()
+            hashCode = 31 * hashCode + channelId.hashCode()
+            hashCode = 31 * hashCode + userId.hashCode()
 
-	private final int length;
-	private final int hashCode;
+            return@let hashCode
+        }
+    }
 
-	public CompositeAutocompletionKey(String[] keys, long guildId, long channelId, long userId) {
-		this.keys = keys;
+    fun length(): Int {
+        return length
+    }
 
-		this.guildId = guildId;
-		this.channelId = channelId;
-		this.userId = userId;
+    override fun hashCode(): Int {
+        return hashCode
+    }
 
-		int length = 0;
-		for (String key : keys) {
-			length += key.length();
-		}
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-		this.length = length;
+        other as CompositeAutocompletionKey
 
-		int hashCode = Arrays.hashCode(keys);
-		hashCode = 31 * hashCode + (int) (guildId ^ (guildId >>> 32));
-		hashCode = 31 * hashCode + (int) (channelId ^ (channelId >>> 32));
-		hashCode = 31 * hashCode + (int) (userId ^ (userId >>> 32));
+        if (!keys.contentEquals(other.keys)) return false
+        if (guildId != other.guildId) return false
+        if (channelId != other.channelId) return false
+        if (userId != other.userId) return false
 
-		this.hashCode = hashCode;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		CompositeAutocompletionKey that = (CompositeAutocompletionKey) o;
-
-		if (guildId != that.guildId) return false;
-		if (channelId != that.channelId) return false;
-		if (userId != that.userId) return false;
-		// Probably incorrect - comparing Object[] arrays with Arrays.equals
-		return Arrays.equals(keys, that.keys);
-	}
-
-	@Override
-	public int hashCode() {
-		return hashCode;
-	}
-
-	public int length() {
-		return length;
-	}
+        return true
+    }
 }
