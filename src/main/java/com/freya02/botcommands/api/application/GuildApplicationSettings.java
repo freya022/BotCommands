@@ -62,7 +62,7 @@ public interface GuildApplicationSettings {
 	 * 		<br>This returns <code>null</code> by default
 	 */
 	@Nullable
-	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @Nullable String commandId, @NotNull CommandPath commandPath) {
+	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
 		return null;
 	}
 

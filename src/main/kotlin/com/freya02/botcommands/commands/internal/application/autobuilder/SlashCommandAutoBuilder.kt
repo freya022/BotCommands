@@ -10,6 +10,7 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
@@ -35,7 +36,7 @@ import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
+internal class SlashCommandAutoBuilder(private val context: BContext, classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
     private val autocompleteFunctions: Map<String, ClassPathFunction>
 
@@ -92,8 +93,20 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             "Declaring class must extend ${ApplicationCommand::class.simpleName}"
         )
 
-        //TODO don't call function if command ID is excluded for current guild
-        manager.slashCommand(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty(), annotation.scope) {
+        val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
+
+        //TODO test
+        val commandId = func.findAnnotation<CommandId>()?.value?.also {
+            if (manager is GuildApplicationCommandManager) {
+                val guildIds = instance.getGuildsForCommandId(context, it, path) ?: return@also
+
+                if (manager.guild.idLong !in guildIds) {
+                    return //Don't push command if it isn't allowed
+                }
+            }
+        }
+
+        manager.slashCommand(path, annotation.scope) {
             defaultLocked = annotation.defaultLocked
             description = annotation.description
 
@@ -117,12 +130,9 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
             testOnly = AnnotationUtils.getEffectiveTestState(func)
 
-            commandId = func.findAnnotation<CommandId>()?.value
+            this.commandId = commandId
 
-            processOptions(
-                func,
-                instance
-            )
+            processOptions(func, instance)
 
             @Suppress("UNCHECKED_CAST")
             function = func as KFunction<Any>
