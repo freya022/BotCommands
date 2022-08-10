@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal
 
+import com.freya02.botcommands.api.application.builder.OptionBuilder
+import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.commands.internal.ResolverContainer
+import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import kotlin.reflect.KFunction
@@ -28,6 +31,7 @@ class MethodParameters2 {
         internal inline fun <reified R : Any> transform(
             context: BContextImpl,
             function: KFunction<*>,
+            options: Map<String, OptionBuilder> = mapOf(),
             configurationBlock: Configuration<R>.() -> Unit
         ): MethodParameters {
             val resolverContainer = context.getService(ResolverContainer::class)
@@ -35,6 +39,7 @@ class MethodParameters2 {
 
             return MethodParameters(function.valueParameters.drop(1).map { kParameter ->
                 return@map when {
+                    options[kParameter.findDeclarationName()] is GeneratedOptionBuilder -> GeneratedMethodParameter(kParameter, options[kParameter.findDeclarationName()] as GeneratedOptionBuilder)
                     config.optionPredicate(kParameter) -> {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                         when (val resolver = resolverContainer.getResolver(kParameter)) {

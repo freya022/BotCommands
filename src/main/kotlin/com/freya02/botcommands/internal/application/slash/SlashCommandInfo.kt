@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
-import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
@@ -50,11 +49,9 @@ class SlashCommandInfo internal constructor(
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         parameters = MethodParameters2.transform<SlashParameterResolver>(
             context,
-            method
+            method,
+            builder.optionBuilders
         ) {
-            resolvablePredicate = { builder.optionBuilders[it.findDeclarationName()] is GeneratedOptionBuilder }
-            resolvableTransformer = { GeneratedMethodParameter(it, builder.optionBuilders.findOption<GeneratedOptionBuilder>(it.findDeclarationName())) }
-
             optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
             optionTransformer = { kParameter, paramName, resolver ->
                 val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
