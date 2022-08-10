@@ -6,6 +6,5 @@ import com.freya02.botcommands.api.builder.CommandBuilder
 
 abstract class ApplicationCommandBuilder internal constructor(path: CommandPath, internal val scope: CommandScope) : CommandBuilder(path) {
     var defaultLocked = false
-    var guildOnly = false
     var testOnly = false
 }

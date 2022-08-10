@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode
 
 class AutocompleteCacheInfoBuilder internal constructor() {
-    fun build() = AutocompleteCacheInfo(this)
+    internal fun build() = AutocompleteCacheInfo(this)
 
     var cacheMode: AutocompletionCacheMode = AutocompletionCacheMode.NO_CACHE
     var cacheSize: Long = 2048

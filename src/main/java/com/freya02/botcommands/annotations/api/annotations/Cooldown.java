@@ -19,7 +19,7 @@ public @interface Cooldown {
 	 *
 	 * @return Cooldown time {@link #unit in the specified unit}
 	 */
-	int cooldown() default 0;
+	long cooldown() default 0;
 
 	/**
 	 * The time unit of the cooldown
