@@ -4,6 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandId
 import com.freya02.botcommands.annotations.api.annotations.Cooldown
 import com.freya02.botcommands.annotations.api.annotations.NSFW
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
+import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes
 import com.freya02.botcommands.annotations.api.application.slash.annotations.DoubleRange
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
@@ -21,14 +22,13 @@ import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
 import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
-import com.freya02.botcommands.internal.enumSetOf
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -132,7 +132,7 @@ internal class SlashCommandAutoBuilder(private val context: BContext, classPathC
 
             this.commandId = commandId
 
-            processOptions(func, instance)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance)
 
             @Suppress("UNCHECKED_CAST")
             function = func as KFunction<Any>
@@ -145,13 +145,33 @@ internal class SlashCommandAutoBuilder(private val context: BContext, classPathC
     }
 
     private fun SlashCommandBuilder.processOptions(
+        guild: Guild?,
         func: KFunction<*>,
         instance: ApplicationCommand
     ) {
         var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
-                null -> customOption(kParameter.findDeclarationName())
+                null -> when (kParameter.findAnnotation<GeneratedOption>()) {
+                    null -> customOption(kParameter.findDeclarationName())
+                    else -> {
+                        //TODO should this condition be removed as to make the function below take a nullable guild ?
+                        // Could be useful for global_no_dm commands
+                        if (guild == null) throwUser(func, "Cannot have generated options in non guild-only commands")
+
+                        val supplier = instance.getDefaultValueSupplier(
+                            context,
+                            guild,
+                            commandId,
+                            path,
+                            kParameter.findOptionName().asDiscordString(),
+                            kParameter.type,
+                            kParameter.type.jvmErasure
+                        ) ?: throwUser(func, "Parameter '${kParameter.name}' is a generated option but no default value supplier has been given") //TODO fix message when DVS is renamed
+
+                        generatedOption(kParameter.findDeclarationName(), supplier)
+                    }
+                }
                 else -> option(optionAnnotation.name) { //TODO default values
                     description = optionAnnotation.description
                     optional = kParameter.isNullable

@@ -2,6 +2,8 @@ package com.freya02.botcommands.api.application.builder
 
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.application.slash.DefaultValueSupplier
+import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.throwUser
@@ -26,6 +28,13 @@ class SlashCommandBuilder internal constructor(
      */
     fun customOption(name: String) {
         optionBuilders[name] = CustomOptionBuilder(name)
+    }
+
+    /**
+     * @param name Name of the declared parameter in the [function]
+     */
+    fun generatedOption(name: String, defaultValueSupplier: DefaultValueSupplier) {
+        optionBuilders[name] = GeneratedOptionBuilder(name, defaultValueSupplier)
     }
 
     internal fun build(): SlashCommandInfo {

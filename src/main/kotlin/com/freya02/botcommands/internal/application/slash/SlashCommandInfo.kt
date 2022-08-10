@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
@@ -46,12 +47,19 @@ class SlashCommandInfo internal constructor(
 
         checkEventScope<GuildSlashEvent>()
 
-        parameters = MethodParameters.of<SlashParameterResolver>(
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        parameters = MethodParameters2.transform<SlashParameterResolver>(
             context,
             method
-        ) { kParameter, paramName, resolver ->
-            val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
-            SlashCommandParameter(this, kParameter, optionBuilder, resolver)
+        ) {
+            resolvablePredicate = { builder.optionBuilders[it.findDeclarationName()] is GeneratedOptionBuilder }
+            resolvableTransformer = { GeneratedMethodParameter(it, builder.optionBuilders.findOption<GeneratedOptionBuilder>(it.findDeclarationName())) }
+
+            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
+            optionTransformer = { kParameter, paramName, resolver ->
+                val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
+                SlashCommandParameter(this@SlashCommandInfo, kParameter, optionBuilder, resolver)
+            }
         }
 
         //On every autocomplete handler, check if their method parameters match up with the slash command
@@ -175,6 +183,10 @@ class SlashCommandInfo internal constructor(
                 parameter as CustomMethodParameter
 
                 objects[parameter.kParameter] = parameter.resolver.resolve(context, this, event)
+            } else if (parameter.methodParameterType == MethodParameterType.COMPUTED) {
+                parameter as GeneratedMethodParameter
+
+                objects[parameter.kParameter] = parameter.generatedOptionBuilder.defaultValueSupplier.getDefaultValue(event)
             } else {
                 TODO()
             }
