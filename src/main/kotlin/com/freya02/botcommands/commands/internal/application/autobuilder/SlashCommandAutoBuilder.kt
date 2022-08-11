@@ -172,8 +172,8 @@ internal class SlashCommandAutoBuilder(private val context: BContext, classPathC
                         generatedOption(kParameter.findDeclarationName(), supplier)
                     }
                 }
-                else -> option(optionAnnotation.name) { //TODO default values
-                    description = optionAnnotation.description
+                else -> option(optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()) {
+                    description = optionAnnotation.description.nullIfEmpty() ?: "No description"
                     optional = kParameter.isNullable
 
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
