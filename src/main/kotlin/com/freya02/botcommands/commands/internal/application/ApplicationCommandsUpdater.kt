@@ -118,7 +118,7 @@ internal class ApplicationCommandsUpdater private constructor(
                 val commandPath = info.path
                 val description = info.description
                 try {
-                    val methodOptions = info.getMethodOptions(context, guild)
+                    val methodOptions = info.getMethodOptions(guild)
                     when (commandPath.nameCount) {
                         1 -> {
                             //Standard command

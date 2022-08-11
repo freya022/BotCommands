@@ -106,19 +106,6 @@ class SlashCommandInfo internal constructor(
             if (parameter.methodParameterType == MethodParameterType.COMMAND) {
                 parameter as AbstractSlashCommandParameter
 
-                val guild = event.guild
-                if (guild != null) {
-                    val supplier = parameter.defaultOptionSupplierMap[guild.idLong]
-                    if (supplier != null) {
-                        val defaultVal = supplier.getDefaultValue(event)
-                        checkDefaultValue(parameter, defaultVal)
-
-                        objects[parameter.kParameter] = defaultVal
-
-                        continue
-                    }
-                }
-
                 val arguments = max(1, parameter.varArgs)
                 val objectList: MutableList<Any?> = arrayOfSize(arguments)
 
@@ -183,7 +170,10 @@ class SlashCommandInfo internal constructor(
             } else if (parameter.methodParameterType == MethodParameterType.COMPUTED) {
                 parameter as GeneratedMethodParameter
 
-                objects[parameter.kParameter] = parameter.generatedOptionBuilder.defaultValueSupplier.getDefaultValue(event)
+                val defaultVal = parameter.generatedOptionBuilder.defaultValueSupplier.getDefaultValue(event)
+                checkDefaultValue(parameter, defaultVal)
+
+                objects[parameter.kParameter] = defaultVal
             } else {
                 TODO()
             }

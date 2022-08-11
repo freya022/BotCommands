@@ -1,8 +1,6 @@
 package com.freya02.botcommands.internal.application.slash
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -23,7 +21,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 object SlashUtils2 {
     fun ExecutableInteractionInfo.checkDefaultValue(
-        parameter: AbstractSlashCommandParameter,
+        parameter: GeneratedMethodParameter,
         defaultValue: Any?
     ) {
         requireUser(defaultValue != null || parameter.isOptional) {
@@ -32,22 +30,15 @@ object SlashUtils2 {
 
         if (defaultValue == null) return
 
-        val expectedType: KClass<*> = if (parameter.isVarArg) List::class else parameter.type.jvmErasure
+        val expectedType: KClass<*> = parameter.type.jvmErasure
 
         requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
             "Default value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
         }
-
-        if (parameter.isVarArg && defaultValue is List<*>) {
-            //Check if first parameter exists
-            requireUser(defaultValue.firstOrNull() != null) {
-                "Default value supplier for parameter #${parameter.index} in %s has returned either an empty list or a list with the first element being null"
-            }
-        }
     }
 
     @JvmStatic
-    fun SlashCommandInfo.getMethodOptions(context: BContext, guild: Guild?): List<OptionData> {
+    fun SlashCommandInfo.getMethodOptions(guild: Guild?): List<OptionData> {
         val list: MutableList<OptionData> = ArrayList()
 
         var i = 0
@@ -62,25 +53,6 @@ object SlashUtils2 {
 
             val name = parameter.discordName
             val description = parameter.description
-
-            if (guild != null) {
-                //TODO change to use opaque user data
-                val defaultValueSupplier = (instance as ApplicationCommand).getDefaultValueSupplier(
-                    context,
-                    guild,
-                    commandId,
-                    path,
-                    parameter.name,
-                    parameter.type,
-                    parameter.type.jvmErasure
-                )
-
-                parameter.defaultOptionSupplierMap.put(guild.idLong, defaultValueSupplier)
-
-                if (defaultValueSupplier != null) {
-                    continue  //Skip option generation since this is a default value
-                }
-            }
 
             val resolver = parameter.resolver
             val optionType = resolver.optionType
