@@ -22,7 +22,8 @@ public class MyJavaCommand extends ApplicationCommand {
 	                TextChannel channelOption,
 					String autocompleteStr,
 	                @Name(declaredName = "notDoubleOption") @Optional double doubleOption,
-	                BContext custom) {
-		event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOptionAnnot + channelOption + autocompleteStr).queue();
+	                BContext custom,
+	                String guildName) {
+		event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOptionAnnot + channelOption + autocompleteStr + guildName).queue();
 	}
 }

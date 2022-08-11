@@ -30,7 +30,8 @@ class MyCommand : ApplicationCommand() {
         channelOption: TextChannel,
         autocompleteStr: String,
         @Name(declaredName = "notDoubleOption") doubleOption: Double?,
-        custom: BContext
+        custom: BContext,
+        guildName: String
     ) {
         event.reply("""
                     event: $event
@@ -42,6 +43,7 @@ class MyCommand : ApplicationCommand() {
                     autocomplete string: $autocompleteStr
                     double: $doubleOption
                     custom: $custom
+                    [generated] guild name: $guildName
         """.trimIndent()).queue()
     }
 
@@ -102,6 +104,10 @@ class MyCommand : ApplicationCommand() {
                             cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY
                         }
                     }
+                }
+
+                generatedOption("guildName") {
+                    it.guild!!.name
                 }
 
                 function = localFunction
