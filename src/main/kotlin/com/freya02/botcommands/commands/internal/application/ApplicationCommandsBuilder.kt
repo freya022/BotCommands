@@ -160,7 +160,7 @@ internal class ApplicationCommandsBuilder(
     private fun getForceString(force: Boolean): String = if (force) " force" else ""
 
     private fun getCheckTypeString(): String =
-        if (context.isOnlineAppCommandCheckEnabled) "Online check" else "Local disk check"
+        if (context.config.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
 
     private fun List<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 

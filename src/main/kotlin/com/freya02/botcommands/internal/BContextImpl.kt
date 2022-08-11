@@ -74,8 +74,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
-    var isOnlineAppCommandCheckEnabled = false
-        private set
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
     private val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
 
@@ -364,10 +362,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     //TODO use KType
     fun <T> registerAutocompleteTransformer(type: Class<T>, autocompleteTransformer: AutocompleteTransformer<T>) {
         autocompleteTransformers[ofClass(type).type] = autocompleteTransformer
-    }
-
-    fun enableOnlineAppCommandCheck() {
-        isOnlineAppCommandCheckEnabled = true
     }
 
     companion object {

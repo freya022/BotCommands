@@ -29,6 +29,10 @@ fun main() {
         components {
             componentManagerStrategy = DefaultComponentManager::class.java
         }
+
+        applicationCommands {
+            onlineAppCommandCheckEnabled = true
+        }
     }, manager)
 
     light(config.token, enableCoroutines = false) {

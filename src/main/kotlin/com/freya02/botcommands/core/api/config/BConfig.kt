@@ -96,6 +96,10 @@ class BConfig internal constructor() {
         classes.add(clazz)
     }
 
+    fun applicationCommands(block: BApplicationConfig.() -> Unit) {
+        block(applicationConfig)
+    }
+
     fun components(block: BComponentsConfig.() -> Unit) {
         block(componentsConfig)
     }
