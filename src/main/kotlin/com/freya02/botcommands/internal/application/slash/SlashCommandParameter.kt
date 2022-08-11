@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.application.slash
 
 import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes
 import com.freya02.botcommands.api.application.ValueRange
+import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
@@ -16,6 +17,7 @@ import kotlin.reflect.full.findAnnotation
 
 class SlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
+    slashCmdOptionBuilders: Map<String, OptionBuilder>,
     parameter: KParameter,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver
@@ -27,6 +29,7 @@ class SlashCommandParameter(
     internal val autocompleteHandler: AutocompleteHandler? = when {
         optionBuilder.autocompleteInfo != null -> AutocompleteHandler(
             slashCommandInfo,
+            slashCmdOptionBuilders,
             optionBuilder.autocompleteInfo!!
         )
         else -> null

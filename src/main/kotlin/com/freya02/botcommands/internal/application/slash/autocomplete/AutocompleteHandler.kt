@@ -2,18 +2,16 @@ package com.freya02.botcommands.internal.application.slash.autocomplete
 
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
 import com.freya02.botcommands.api.application.AutocompleteInfo
+import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.application.slash.autocomplete.suppliers.*
-import com.freya02.botcommands.internal.arrayOfSize
-import com.freya02.botcommands.internal.isSubclassOfAny
-import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -24,6 +22,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
+    slashCmdOptionBuilders: Map<String, OptionBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.method)
@@ -34,13 +33,17 @@ internal class AutocompleteHandler(
     private val cache: AbstractAutocompleteCache
 
     init {
-        methodParameters = MethodParameters.of<SlashParameterResolver>(
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        methodParameters = MethodParameters2.transform<SlashParameterResolver>( //Same transform method as in SlashCommandInfo, but option transformer is different
             slashCommandInfo.context,
-            autocompleteInfo.method
-        ) { parameter, name, resolver ->
-            val optionBuilder = slashCommandInfo.builder.optionBuilders.findOption<SlashCommandOptionBuilder>(name)
-
-            AutocompleteCommandParameter(parameter, optionBuilder, resolver)
+            autocompleteInfo.method,
+            slashCmdOptionBuilders
+        ) {
+            optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
+            optionTransformer = { kParameter, paramName, resolver ->
+                val optionBuilder = slashCmdOptionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
+                AutocompleteCommandParameter(kParameter, optionBuilder, resolver)
+            }
         }
 
         //accommodate for user input
