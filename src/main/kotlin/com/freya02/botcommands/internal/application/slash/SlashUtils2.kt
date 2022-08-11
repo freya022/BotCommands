@@ -126,7 +126,7 @@ object SlashUtils2 {
                 if (optionType.canSupportChoices()) {
                     var choices: Collection<Command.Choice>? = null
 
-                    if (parameter.choices != null) {
+                    if (!parameter.choices.isNullOrEmpty()) {
                         choices = parameter.choices
                     } else {
                         val predefinedChoices = resolver.getPredefinedChoices(guild)
