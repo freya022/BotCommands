@@ -17,6 +17,7 @@ import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
@@ -159,15 +160,13 @@ internal class SlashCommandAutoBuilder(private val context: BContext, classPathC
                         // Could be useful for global_no_dm commands
                         if (guild == null) throwUser(func, "Cannot have generated options in non guild-only commands")
 
-                        val supplier = instance.getDefaultValueSupplier(
-                            context,
+                        val supplier = instance.getGeneratedValueSupplier(
                             guild,
                             commandId,
                             path,
                             kParameter.findOptionName().asDiscordString(),
-                            kParameter.type,
-                            kParameter.type.jvmErasure
-                        ) ?: throwUser(func, "Parameter '${kParameter.name}' is a generated option but no default value supplier has been given") //TODO fix message when DVS is renamed
+                            ParameterType.ofType(kParameter.type)
+                        ) ?: throwUser(func, "Parameter '${kParameter.name}' is a generated option but no generated value supplier has been given") //TODO fix message when DVS is renamed
 
                         generatedOption(kParameter.findDeclarationName(), supplier)
                     }

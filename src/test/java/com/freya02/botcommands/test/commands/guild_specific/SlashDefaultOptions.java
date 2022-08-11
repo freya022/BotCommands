@@ -3,13 +3,11 @@ package com.freya02.botcommands.test.commands.guild_specific;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
+import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import kotlin.reflect.KClass;
-import kotlin.reflect.KType;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +21,9 @@ public class SlashDefaultOptions extends ApplicationCommand {
 
 	@Override
 	@Nullable
-	public DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild,
-	                                                    @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                    @NotNull String optionName, @NotNull KType type, @NotNull KClass<?> parameterType) {
+	public GeneratedValueSupplier getGeneratedValueSupplier(@NotNull Guild guild,
+	                                                        @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                        @NotNull String optionName, @NotNull ParameterType type) {
 		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild
 			if (commandPath.toString().equals("default")) {
 				if (optionName.equals("defaulted_string")) {
@@ -34,7 +32,7 @@ public class SlashDefaultOptions extends ApplicationCommand {
 			}
 		}
 
-		return super.getDefaultValueSupplier(context, guild, commandId, commandPath, optionName, type, parameterType);
+		return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, type);
 	}
 
 	@JDASlashCommand(name = "default")

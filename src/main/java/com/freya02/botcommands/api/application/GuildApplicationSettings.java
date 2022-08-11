@@ -6,10 +6,9 @@ import com.freya02.botcommands.annotations.api.application.annotations.Generated
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
+import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import kotlin.reflect.KClass;
-import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
@@ -67,23 +66,22 @@ public interface GuildApplicationSettings {
 	}
 
 	/**
-	 * Returns the default value supplier of an {@link GeneratedOption}, for slash commands only
+	 * Returns the generated value supplier of an {@link GeneratedOption}, for slash commands only
 	 * <br>This method is called only if your option is annotated
 	 * <p>This method will only be called once per command option per guild
 	 *
-	 * @param context       The current BotCommands context
 	 * @param guild         The {@link Guild} in which to add the default value
 	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
 	 * @param parameterType The <b>boxed</b> type of the command option
 	 *
-	 * @return A {@link DefaultValueSupplier} if the option can be substituted with an object
+	 * @return A {@link GeneratedValueSupplier} if the option can be substituted with an object
 	 */
-	@Nullable //TODO might be worth using a custom class to hold KType and KClass, as to allow java users to access Class without needing another parameter
-	default DefaultValueSupplier getDefaultValueSupplier(@NotNull BContext context, @NotNull Guild guild, //TODO remove superfluous parameters
-	                                                     @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                     @NotNull String optionName, @NotNull KType parameterType, @NotNull KClass<?> erasedType) {
+	@Nullable
+	default GeneratedValueSupplier getGeneratedValueSupplier(@NotNull Guild guild,
+	                                                         @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                         @NotNull String optionName, @NotNull ParameterType parameterType) {
 		return null;
 	}
 }

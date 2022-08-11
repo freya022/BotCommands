@@ -25,7 +25,7 @@ object SlashUtils2 {
         defaultValue: Any?
     ) {
         requireUser(defaultValue != null || parameter.isOptional) {
-            "Default value supplier for parameter #${parameter.index} has returned a null value but parameter is not optional"
+            "Generated value supplier for parameter #${parameter.index} has returned a null value but parameter is not optional"
         }
 
         if (defaultValue == null) return
@@ -33,7 +33,7 @@ object SlashUtils2 {
         val expectedType: KClass<*> = parameter.type.jvmErasure
 
         requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
-            "Default value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
+            "Generated value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
         }
     }
 
