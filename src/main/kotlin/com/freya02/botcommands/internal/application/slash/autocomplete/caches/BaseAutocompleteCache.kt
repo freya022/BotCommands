@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.application.slash.autocomplete.caches
 import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteCommandParameter
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey
+import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompleteKey
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
@@ -51,9 +51,9 @@ internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : 
     protected fun getCompositeKey(
         handler: AutocompleteHandler,
         event: CommandAutoCompleteInteractionEvent
-    ): CompositeAutocompletionKey {
+    ): CompositeAutocompleteKey {
         val compositeOptionValues: Array<String> = getCompositeOptionValues(handler, event)
-        return CompositeAutocompletionKey(
+        return CompositeAutocompleteKey(
             compositeOptionValues,
             guildFunction(event),
             channelFunction(event),

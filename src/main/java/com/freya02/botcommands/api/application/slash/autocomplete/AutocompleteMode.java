@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * See values
  */
-public enum AutocompletionMode {
+public enum AutocompleteMode {
 	/**
 	 * Sorts the strings by fuzzy search score
 	 * <br>This shows the most relevant results most of the time, regardless of if the user did a few mistakes when typing

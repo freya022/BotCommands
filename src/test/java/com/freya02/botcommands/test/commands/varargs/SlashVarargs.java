@@ -3,7 +3,7 @@ package com.freya02.botcommands.test.commands.varargs;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.VarArgs;
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
@@ -41,7 +41,7 @@ public class SlashVarargs extends ApplicationCommand {
 				.queue();
 	}
 
-	@AutocompletionHandler(name = STR_AUTOCOMPLETE_NAME)
+	@AutocompleteHandler(name = STR_AUTOCOMPLETE_NAME)
 	public Collection<String> onStrAutocomplete(CommandAutoCompleteInteractionEvent event, @AppOption(name = "number") @VarArgs(3) List<Long> longs, @AppOption String string) {
 		return List.of(
 				string + "_" + "str1" + "_" + longs.get(0),

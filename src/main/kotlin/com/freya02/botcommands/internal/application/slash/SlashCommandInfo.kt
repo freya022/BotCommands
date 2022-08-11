@@ -180,7 +180,7 @@ class SlashCommandInfo internal constructor(
         }
     }
 
-    fun getAutocompletionHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
+    fun getAutocompleteHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
         throw UnsupportedOperationException()
     }
 

@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete
 
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.application.AutocompleteInfo
 import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.builder.findOption
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
@@ -58,8 +58,8 @@ internal class AutocompleteHandler(
             else -> {
                 @Suppress("UNCHECKED_CAST")
                 val transformer =
-                    slashCommandInfo.context.getAutocompletionTransformer(collectionReturnType.starProjectedType) as? AutocompletionTransformer<Any>
-                        ?: throwUser("No autocompletion transformer has been register for objects of type '${collectionReturnType.simpleName}', you may also check the docs for ${AutocompletionHandler::class.java.simpleName}")
+                    slashCommandInfo.context.getAutocompleteTransformer(collectionReturnType.starProjectedType) as? AutocompleteTransformer<Any>
+                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionReturnType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.java.simpleName}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
@@ -101,8 +101,8 @@ internal class AutocompleteHandler(
         return actualChoices
     }
 
-    private fun generateSupplierFromStrings(autocompletionMode: AutocompletionMode): ChoiceSupplier {
-        return if (autocompletionMode == AutocompletionMode.FUZZY) {
+    private fun generateSupplierFromStrings(autocompleteMode: AutocompleteMode): ChoiceSupplier {
+        return if (autocompleteMode == AutocompleteMode.FUZZY) {
             ChoiceSupplierStringFuzzy(maxChoices)
         } else {
             ChoiceSupplierStringContinuity(maxChoices)
@@ -127,7 +127,7 @@ internal class AutocompleteHandler(
                         null
                     }
                 }
-                else -> throw IllegalArgumentException("Invalid autocompletion option type: $type")
+                else -> throw IllegalArgumentException("Invalid autocomplete option type: $type")
             }
         }
     }

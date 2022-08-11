@@ -9,8 +9,8 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.Cha
 import com.freya02.botcommands.annotations.api.application.slash.annotations.DoubleRange
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocompletion
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.*
@@ -192,12 +192,12 @@ internal class SlashCommandAutoBuilder(private val context: BContext, private va
                 @Suppress("UNCHECKED_CAST")
                 this@autocomplete.function = autocompleteFunction as KFunction<Collection<*>>
 
-                val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompletionHandler>()!!
+                val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
                 mode = autocompleteHandlerAnnotation.mode
                 showUserInput = autocompleteHandlerAnnotation.showUserInput
 
-                autocompleteFunction.findAnnotation<CacheAutocompletion>()?.let { autocompleteCacheAnnotation ->
+                autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
                     cache {
                         cacheMode = autocompleteCacheAnnotation.cacheMode
                         cacheSize = autocompleteCacheAnnotation.cacheSize

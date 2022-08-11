@@ -5,7 +5,7 @@ import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -117,16 +117,16 @@ public class ExtensionsBuilder {
 	}
 
 	/**
-	 * Registers an autocompletion transformer
-	 * <br>If your autocompletion handler return a {@code List<YourObject>}, you will have to register an {@code AutocompletionTransformer<YourObject>}
+	 * Registers an autocomplete transformer
+	 * <br>If your autocomplete handler return a {@code List<YourObject>}, you will have to register an {@code AutocompleteTransformer<YourObject>}
 	 *
 	 * @param type                      Type of the List generic element type
-	 * @param autocompletionTransformer The transformer which transforms a {@link List} element into a {@link Command.Choice choice}
+	 * @param autocompleteTransformer The transformer which transforms a {@link List} element into a {@link Command.Choice choice}
 	 * @param <T>                       Type of the List generic element type
 	 * @return This builder for chaining convenience
 	 */
-	public <T> ExtensionsBuilder registerAutocompletionTransformer(Class<T> type, AutocompletionTransformer<T> autocompletionTransformer) { //TODO move to auto service discovery
-		context.registerAutocompletionTransformer(type, autocompletionTransformer);
+	public <T> ExtensionsBuilder registerAutocompleteTransformer(Class<T> type, AutocompleteTransformer<T> autocompleteTransformer) { //TODO move to auto service discovery
+		context.registerAutocompleteTransformer(type, autocompleteTransformer);
 
 		return this;
 	}

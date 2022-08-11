@@ -25,7 +25,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
     * Which means `!ban @someone 42 Foobar` should be valid
 * Application commands
   * Slash commands with **automatic & customizable argument parsing** (see wiki to add parsers)
-    * Also supports choices, min/max values, channel types and autocompletion
+    * Also supports choices, min/max values, channel types and autocomplete
   * Context menu commands (User / Message)
   * Application commands are **automatically registered on Discord on startup**
     * This also includes command permissions

@@ -2,16 +2,16 @@ package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.util.*;
 
-public class SlashAutocompletion extends ApplicationCommand {
+public class SlashAutocomplete extends ApplicationCommand {
 	@JDASlashCommand(name = "auto")
 	public void auto(GuildSlashEvent event,
 	                 @AppOption(autocomplete = "autoStr") String str,
@@ -21,7 +21,7 @@ public class SlashAutocompletion extends ApplicationCommand {
 		event.reply(str).queue();
 	}
 
-	@AutocompletionHandler(name = "autoStr", mode = AutocompletionMode.CONTINUITY, showUserInput = false)
+	@AutocompleteHandler(name = "autoStr", mode = AutocompleteMode.CONTINUITY, showUserInput = false)
 	public Queue<String> autoStr(CommandAutoCompleteInteractionEvent event) {
 		System.out.println(event.getFocusedOption().getValue());
 
@@ -59,14 +59,14 @@ public class SlashAutocompletion extends ApplicationCommand {
 				"Winnipeg Jets"));
 	}
 
-	@AutocompletionHandler(name = "autoInt")
+	@AutocompleteHandler(name = "autoInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
 	                          @AppOption(name = "str") String autoStr,
 	                          @AppOption long integer) {
 		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
-	@AutocompletionHandler(name = "autoDou")
+	@AutocompleteHandler(name = "autoDou")
 	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
 	                                  @AppOption String str,
 	                                  JDA jda,

@@ -89,7 +89,7 @@ object SlashUtils2 {
 
                 if (parameter.hasAutocomplete()) {
                     requireUser(optionType.canSupportChoices()) {
-                        "Slash command parameter #$i does not support autocompletion"
+                        "Slash command parameter #$i does not support autocomplete"
                     }
 
                     data.isAutoComplete = true
@@ -108,8 +108,8 @@ object SlashUtils2 {
                     }
 
                     if (choices != null) {
-                        requireUser(!parameter.hasAutocomplete()) { //TODO autocomplete
-                            "Slash command parameter #$i cannot have autocompletion and choices at the same time"
+                        requireUser(!parameter.hasAutocomplete()) {
+                            "Slash command parameter #$i cannot have autocomplete and choices at the same time"
                         }
 
                         data.addChoices(choices)

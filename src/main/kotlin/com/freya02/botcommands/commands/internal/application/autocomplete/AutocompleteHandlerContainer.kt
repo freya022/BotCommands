@@ -1,6 +1,6 @@
 package com.freya02.botcommands.commands.internal.application.autocomplete
 
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
@@ -18,7 +18,7 @@ internal class AutocompleteHandlerContainer(classPathContainer: ClassPathContain
     private val autocompleteFunctions: Map<String, ClassPathFunction>
 
     init {
-        autocompleteFunctions = classPathContainer.functionsWithAnnotation<AutocompletionHandler>()
+        autocompleteFunctions = classPathContainer.functionsWithAnnotation<AutocompleteHandler>()
             .requireNonStatic()
             .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
             .onEach {
@@ -28,7 +28,7 @@ internal class AutocompleteHandlerContainer(classPathContainer: ClassPathContain
                     "Autocomplete handler needs to return a Collection"
                 )
             }
-            .associateBy { it.function.findAnnotation<AutocompletionHandler>()!!.name }
+            .associateBy { it.function.findAnnotation<AutocompleteHandler>()!!.name }
     }
 
     operator fun get(handlerName: String): ClassPathFunction? = autocompleteFunctions[handlerName]

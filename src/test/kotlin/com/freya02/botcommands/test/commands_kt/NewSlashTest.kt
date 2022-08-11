@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
@@ -43,7 +43,7 @@ class NewSlashTest : ApplicationCommand() {
         event.reply_("woo in $guildName ($guildNickname)", ephemeral = true).queue()
     }
 
-    @AutocompletionHandler(name = guildNicknameAutocompleteName)
+    @AutocompleteHandler(name = guildNicknameAutocompleteName)
     fun onSlashTestGuildNicknameAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         guildName: String, //Generated
