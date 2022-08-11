@@ -18,6 +18,7 @@ import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.parameters.ParameterType
+import com.freya02.botcommands.commands.internal.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
@@ -26,37 +27,20 @@ import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
-import com.freya02.botcommands.internal.utils.ReflectionUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class SlashCommandAutoBuilder(private val context: BContext, classPathContainer: ClassPathContainer) {
+internal class SlashCommandAutoBuilder(private val context: BContext, private val autocompleteHandlerContainer: AutocompleteHandlerContainer, classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
-    private val autocompleteFunctions: Map<String, ClassPathFunction>
 
     init {
         functions = classPathContainer.functionsWithAnnotation<JDASlashCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalSlashEvent::class)
-
-        autocompleteFunctions = classPathContainer.functionsWithAnnotation<AutocompletionHandler>()
-            .requireNonStatic()
-            .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
-            .onEach {
-                val returnType = it.function.returnType
-                ReflectionUtils.getCollectionReturnType(returnType.jvmErasure.java, returnType.javaType) ?: throwUser(
-                    it.function,
-                    "Autocomplete handler needs to return a Collection"
-                )
-            }
-            .associateBy { it.function.findAnnotation<AutocompletionHandler>()!!.name }
     }
 
     @Declaration
@@ -200,7 +184,7 @@ internal class SlashCommandAutoBuilder(private val context: BContext, classPathC
     ) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {
             autocomplete {
-                val autocompleteFunction = autocompleteFunctions[optionAnnotation.autocomplete]?.function ?: throwUser(
+                val autocompleteFunction = autocompleteHandlerContainer[optionAnnotation.autocomplete]?.function ?: throwUser(
                     func,
                     "Autocomplete handler '${optionAnnotation.autocomplete}' was not found"
                 )
