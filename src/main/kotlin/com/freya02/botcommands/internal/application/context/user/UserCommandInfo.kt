@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -60,6 +61,11 @@ class UserCommandInfo internal constructor(
                     parameter as CustomMethodParameter
 
                     parameter.resolver.resolve(context, this, event)
+                }
+                MethodParameterType.COMPUTED -> {
+                    parameter as GeneratedMethodParameter
+
+                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
                 }
                 else -> TODO()
             }
