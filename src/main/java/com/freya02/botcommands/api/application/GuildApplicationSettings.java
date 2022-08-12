@@ -66,8 +66,9 @@ public interface GuildApplicationSettings {
 	}
 
 	/**
-	 * Returns the generated value supplier of an {@link GeneratedOption}, for slash commands only
-	 * <br>This method is called only if your option is annotated
+	 * Returns the generated value supplier of an {@link GeneratedOption}
+	 * <br>This method is called only if your option is annotated with {@link GeneratedOption}
+	 *
 	 * <p>This method will only be called once per command option per guild
 	 *
 	 * @param guild         The {@link Guild} in which to add the default value, <code>null</code> if the scope is <b>not</b> {@link CommandScope#GUILD}
