@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
+import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Message
@@ -19,8 +19,8 @@ class MessageContextRaw : ApplicationCommand() {
     }
 
     @Declaration
-    fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD) {
+    fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
+        guildApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD) {
             option("message")
 
             generatedOption("rawContent") {

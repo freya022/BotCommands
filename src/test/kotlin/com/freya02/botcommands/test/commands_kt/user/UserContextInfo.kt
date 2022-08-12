@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
+import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.User
@@ -18,8 +18,8 @@ class UserContextInfo : ApplicationCommand() {
     }
 
     @Declaration
-    fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.userCommand("User info", CommandScope.GUILD) {
+    fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
+        guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD) {
             option("user")
 
             generatedOption("userTag") {
