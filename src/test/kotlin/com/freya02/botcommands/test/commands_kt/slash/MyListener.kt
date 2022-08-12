@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands_kt
+package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.core.api.annotations.BEventListener
 import net.dv8tion.jda.api.events.ReadyEvent
