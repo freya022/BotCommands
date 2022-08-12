@@ -23,7 +23,7 @@ class NewUserContextInfo : ApplicationCommand() {
         commandPath: CommandPath,
         optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier? {
+    ): GeneratedValueSupplier {
         if (optionName == "user_tag") {
             return GeneratedValueSupplier {
                 it as UserContextInteractionEvent

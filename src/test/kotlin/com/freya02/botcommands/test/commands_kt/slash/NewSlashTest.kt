@@ -24,7 +24,7 @@ class NewSlashTest : ApplicationCommand() {
         guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier? {
+    ): GeneratedValueSupplier {
         if (commandPath.fullPath == "test") {
             if (optionName == "guild_name") {
                 return GeneratedValueSupplier { it.guild!!.name }

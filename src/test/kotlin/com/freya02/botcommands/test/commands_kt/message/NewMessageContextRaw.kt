@@ -24,7 +24,7 @@ class NewMessageContextRaw : ApplicationCommand() {
         commandPath: CommandPath,
         optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier? {
+    ): GeneratedValueSupplier {
         if (optionName == "raw_content") {
             return GeneratedValueSupplier {
                 it as MessageContextInteractionEvent

@@ -184,18 +184,17 @@ internal class ContextCommandAutoBuilder(private val context: BContext, classPat
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> customOption(kParameter.findDeclarationName())
-                    else -> {
-                        val supplier = instance.getGeneratedValueSupplier(
+                    else -> generatedOption(
+                        kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
                             guild,
                             commandId,
                             path,
                             kParameter.findOptionName().asDiscordString(),
                             ParameterType.ofType(kParameter.type)
-                        ) ?: throwUser(func, "Parameter '${kParameter.name}' is a generated option but no generated value supplier has been given") //TODO fix message when DVS is renamed
-
-                        generatedOption(kParameter.findDeclarationName(), supplier)
-                    }
+                        )
+                    )
                 }
+
                 else -> when (this) {
                     is UserCommandBuilder -> option(optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName())
                     is MessageCommandBuilder -> option(optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName())

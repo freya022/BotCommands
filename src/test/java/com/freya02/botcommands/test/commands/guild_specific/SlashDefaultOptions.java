@@ -20,10 +20,9 @@ public class SlashDefaultOptions extends ApplicationCommand {
 	private static final String STR_AUTOCOMPLETE_NAME = "SlashDefaultOptions: str";
 
 	@Override
-	@Nullable
-	public GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
-	                                                        @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                        @NotNull String optionName, @NotNull ParameterType type) {
+	public @NotNull GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
+	                                                                 @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                                 @NotNull String optionName, @NotNull ParameterType type) {
 		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild
 			if (commandPath.toString().equals("default")) {
 				if (optionName.equals("defaulted_string")) {

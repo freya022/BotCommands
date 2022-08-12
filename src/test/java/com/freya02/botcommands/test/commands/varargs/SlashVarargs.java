@@ -21,10 +21,9 @@ public class SlashVarargs extends ApplicationCommand {
 	private static final String STR_AUTOCOMPLETE_NAME = "SlashVarargs: str";
 
 	@Override
-	@Nullable
-	public GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
-	                                                        @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                        @NotNull String optionName, @NotNull ParameterType type) {
+	public @NotNull GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
+	                                                                 @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                                 @NotNull String optionName, @NotNull ParameterType type) {
 //		if (optionName.equals("number")) {
 //			return e -> List.of(42L, 43L, 44L);
 //		}
