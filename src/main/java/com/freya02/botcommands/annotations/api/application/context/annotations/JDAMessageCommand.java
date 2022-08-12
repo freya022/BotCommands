@@ -35,7 +35,7 @@ public @interface JDAMessageCommand {
 	 *
 	 * @see CommandScope
 	 */
-	CommandScope scope() default CommandScope.GUILD;
+	CommandScope scope() default CommandScope.GLOBAL_NO_DM;
 
 	/**
 	 * Specifies whether the application command is disabled by default, so that administrators can further configure the command
