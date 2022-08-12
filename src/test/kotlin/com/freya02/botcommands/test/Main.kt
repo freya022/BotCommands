@@ -36,7 +36,7 @@ fun main() {
     }, manager)
 
     light(config.token, enableCoroutines = false) {
-        enableIntents(GatewayIntent.GUILD_MEMBERS)
+        enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
         setActivity(Activity.playing("coroutines go brrr"))
         setEventManager(manager)
     }

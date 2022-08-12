@@ -2,6 +2,8 @@ package com.freya02.botcommands.api.application.builder
 
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 
@@ -22,6 +24,13 @@ class UserCommandBuilder internal constructor(private val context: BContextImpl,
      */
     fun customOption(name: String) {
         optionBuilders[name] = CustomOptionBuilder(name)
+    }
+
+    /**
+     * @param name Name of the declared parameter in the [function]
+     */
+    fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier) {
+        optionBuilders[name] = GeneratedOptionBuilder(name, generatedValueSupplier)
     }
 
     internal fun build() = UserCommandInfo(context, this)
