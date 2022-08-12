@@ -5,7 +5,6 @@ import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -20,10 +19,6 @@ import java.util.List;
 
 /**
  * Interface providing getters for settings commands stuff on a per-guild basis
- *
- * <h2>Implementation note:</h2>
- * These settings are looked first in {@link ApplicationCommand} and then again in {@link SettingsProvider}
- * <br>This provides the user either a clean enough look in SettingsProvider (no boilerplate in every SlashCommand) or an easy-to-use method in {@link ApplicationCommand}(s)
  */
 public interface GuildApplicationSettings {
 	/**
