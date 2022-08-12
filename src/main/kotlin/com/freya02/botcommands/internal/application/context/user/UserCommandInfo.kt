@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
+import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
 import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -65,7 +66,7 @@ class UserCommandInfo internal constructor(
                 MethodParameterType.COMPUTED -> {
                     parameter as GeneratedMethodParameter
 
-                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
+                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
                 }
                 else -> TODO()
             }
