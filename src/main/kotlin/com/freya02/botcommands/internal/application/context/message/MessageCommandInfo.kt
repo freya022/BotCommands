@@ -64,7 +64,7 @@ class MessageCommandInfo internal constructor(
 
                     parameter.resolver.resolve(context, this, event)
                 }
-                MethodParameterType.COMPUTED -> {
+                MethodParameterType.GENERATED -> {
                     parameter as GeneratedMethodParameter
 
                     parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
