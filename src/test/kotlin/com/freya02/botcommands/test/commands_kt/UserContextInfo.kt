@@ -7,18 +7,25 @@ import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @CommandMarker
 class UserContextInfo : ApplicationCommand() {
     @CommandMarker
-    fun onUserContextInfo(event: GlobalUserEvent, user: User) {
-        event.reply_("User: ${user.asTag}", ephemeral = true).queue()
+    fun onUserContextInfo(event: GlobalUserEvent, user: User, userTag: String) {
+        event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()
     }
 
     @Declaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
         globalApplicationCommandManager.userCommand("User info") {
             option("user")
+
+            generatedOption("userTag") {
+                it as UserContextInteractionEvent
+
+                it.target.asTag
+            }
 
             function = ::onUserContextInfo
         }
