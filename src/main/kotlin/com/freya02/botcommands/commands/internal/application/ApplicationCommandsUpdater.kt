@@ -42,13 +42,13 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private val subcommandGroupDataMap: MutableMap<String, SubcommandGroupData> = hashMapOf()
-    val guildApplicationCommands: List<ApplicationCommandInfo>
+    val applicationCommands: List<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
 
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        guildApplicationCommands = manager.guildApplicationCommands
+        applicationCommands = manager.applicationCommands
 
         allCommandData = computeCommands().allCommandData
 
@@ -103,9 +103,9 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun computeCommands() = ApplicationCommandDataMap().also { map ->
-        computeSlashCommands(guildApplicationCommands, map)
-        computeContextCommands(guildApplicationCommands, map, UserCommandInfo::class.java, Command.Type.USER)
-        computeContextCommands(guildApplicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
+        computeSlashCommands(applicationCommands, map)
+        computeContextCommands(applicationCommands, map, UserCommandInfo::class.java, Command.Type.USER)
+        computeContextCommands(applicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
     }
 
     private fun computeSlashCommands(

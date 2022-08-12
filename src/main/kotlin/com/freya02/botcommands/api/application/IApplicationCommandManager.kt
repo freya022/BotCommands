@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 
 sealed class IApplicationCommandManager {
-    internal abstract val guildApplicationCommands: List<ApplicationCommandInfo>
+    internal abstract val applicationCommands: List<ApplicationCommandInfo>
 
     protected abstract fun slashCommand0(path: CommandPath, scope: CommandScope, builder: SlashCommandBuilder.() -> Unit)
     protected abstract fun userCommand0(name: String, scope: CommandScope, builder: UserCommandBuilder.() -> Unit)
