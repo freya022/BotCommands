@@ -21,13 +21,13 @@ private const val guildNicknameAutocompleteName = "NewSlashTest: guildNickname"
 @CommandMarker
 class NewSlashTest : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
-        guild: Guild, commandId: String?,
+        guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,
         parameterType: ParameterType
     ): GeneratedValueSupplier? {
         if (commandPath.fullPath == "test") {
             if (optionName == "guild_name") {
-                return GeneratedValueSupplier { guild.name }
+                return GeneratedValueSupplier { it.guild!!.name }
             }
         }
 

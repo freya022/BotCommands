@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer
 @CommandMarker
 class NewMessageContextRaw : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
-        guild: Guild,
+        guild: Guild?,
         commandId: String?,
         commandPath: CommandPath,
         optionName: String,

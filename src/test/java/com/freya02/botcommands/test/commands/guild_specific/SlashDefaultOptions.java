@@ -21,7 +21,7 @@ public class SlashDefaultOptions extends ApplicationCommand {
 
 	@Override
 	@Nullable
-	public GeneratedValueSupplier getGeneratedValueSupplier(@NotNull Guild guild,
+	public GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
 	                                                        @Nullable String commandId, @NotNull CommandPath commandPath,
 	                                                        @NotNull String optionName, @NotNull ParameterType type) {
 		if (guild.getIdLong() != 722891685755093072L) { //Push default values only outside the test guild

@@ -185,10 +185,6 @@ internal class ContextCommandAutoBuilder(private val context: BContext, classPat
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> customOption(kParameter.findDeclarationName())
                     else -> {
-                        //TODO should this condition be removed as to make the function below take a nullable guild ?
-                        // Could be useful for global_no_dm commands
-                        if (guild == null) throwUser(func, "Cannot have generated options in non guild-only commands")
-
                         val supplier = instance.getGeneratedValueSupplier(
                             guild,
                             commandId,

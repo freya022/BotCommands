@@ -70,7 +70,7 @@ public interface GuildApplicationSettings {
 	 * <br>This method is called only if your option is annotated
 	 * <p>This method will only be called once per command option per guild
 	 *
-	 * @param guild         The {@link Guild} in which to add the default value
+	 * @param guild         The {@link Guild} in which to add the default value, <code>null</code> if the scope is <b>not</b> {@link CommandScope#GUILD}
 	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
@@ -79,7 +79,7 @@ public interface GuildApplicationSettings {
 	 * @return A {@link GeneratedValueSupplier} if the option can be substituted with an object
 	 */
 	@Nullable
-	default GeneratedValueSupplier getGeneratedValueSupplier(@NotNull Guild guild,
+	default GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
 	                                                         @Nullable String commandId, @NotNull CommandPath commandPath,
 	                                                         @NotNull String optionName, @NotNull ParameterType parameterType) {
 		return null;

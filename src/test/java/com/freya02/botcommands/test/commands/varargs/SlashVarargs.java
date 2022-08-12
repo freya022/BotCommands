@@ -22,7 +22,7 @@ public class SlashVarargs extends ApplicationCommand {
 
 	@Override
 	@Nullable
-	public GeneratedValueSupplier getGeneratedValueSupplier(@NotNull Guild guild,
+	public GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
 	                                                        @Nullable String commandId, @NotNull CommandPath commandPath,
 	                                                        @NotNull String optionName, @NotNull ParameterType type) {
 //		if (optionName.equals("number")) {
