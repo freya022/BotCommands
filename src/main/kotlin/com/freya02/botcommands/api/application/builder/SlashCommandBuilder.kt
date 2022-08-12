@@ -14,7 +14,6 @@ class SlashCommandBuilder internal constructor(
     scope: CommandScope
 ) : ApplicationCommandBuilder(path, scope) {
     var description: String = "No description"
-    override val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 
     /**
      * @param name Name of the declared parameter in the [function]
@@ -26,14 +25,14 @@ class SlashCommandBuilder internal constructor(
     /**
      * @param name Name of the declared parameter in the [function]
      */
-    fun customOption(name: String) {
+    override fun customOption(name: String) {
         optionBuilders[name] = CustomOptionBuilder(name)
     }
 
     /**
      * @param name Name of the declared parameter in the [function]
      */
-    fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier) {
+    override fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier) {
         optionBuilders[name] = GeneratedOptionBuilder(name, generatedValueSupplier)
     }
 

@@ -23,7 +23,7 @@ abstract class CommandBuilder internal constructor(val path: CommandPath) : Buil
         private set
 //    val commandId: String? = null //TODO unneeded, implement via per-guild command construction
 
-    internal abstract val optionBuilders: Map<String, OptionBuilder>
+    internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 
     fun cooldown(block: CooldownStrategyBuilder.() -> Unit) {
         cooldownStrategy = CooldownStrategyBuilder().apply(block).build()
