@@ -5,18 +5,10 @@ import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.application.context.user.GuildUserEvent
-import dev.minn.jda.ktx.messages.reply_
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @CommandMarker
 class UserContextInfo : ApplicationCommand() {
-    @CommandMarker
-    fun onUserContextInfo(event: GuildUserEvent, user: User, userTag: String) {
-        event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()
-    }
-
     @Declaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
         guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD) {
@@ -28,7 +20,7 @@ class UserContextInfo : ApplicationCommand() {
                 it.target.asTag
             }
 
-            function = ::onUserContextInfo
+            function = UserContextInfoAnnotated::onUserContextInfo
         }
     }
 }
