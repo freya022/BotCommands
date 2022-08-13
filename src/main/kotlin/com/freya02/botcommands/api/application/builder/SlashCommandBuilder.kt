@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
 import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.throwUser
 
 class SlashCommandBuilder internal constructor(
@@ -16,24 +17,24 @@ class SlashCommandBuilder internal constructor(
     var description: String = "No description"
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    fun option(name: String, block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        optionBuilders[name] = SlashCommandOptionBuilder(name).apply(block)
+    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
+        optionBuilders[declaredName] = SlashCommandOptionBuilder(declaredName, optionName).apply(block)
     }
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    override fun customOption(name: String) {
-        optionBuilders[name] = CustomOptionBuilder(name)
+    override fun customOption(declaredName: String) {
+        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
     }
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    override fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier) {
-        optionBuilders[name] = GeneratedOptionBuilder(name, generatedValueSupplier)
+    override fun generatedOption(declaredName: String, generatedValueSupplier: GeneratedValueSupplier) {
+        optionBuilders[declaredName] = GeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
     internal fun build(): SlashCommandInfo {

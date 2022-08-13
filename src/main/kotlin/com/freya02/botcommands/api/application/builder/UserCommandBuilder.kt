@@ -11,24 +11,24 @@ class UserCommandBuilder internal constructor(private val context: BContextImpl,
     ApplicationCommandBuilder(path, scope) {
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    fun option(name: String) {
-        optionBuilders[name] = UserCommandOptionBuilder(name)
+    fun option(declaredName: String) {
+        optionBuilders[declaredName] = UserCommandOptionBuilder(declaredName)
     }
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    override fun customOption(name: String) {
-        optionBuilders[name] = CustomOptionBuilder(name)
+    override fun customOption(declaredName: String) {
+        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
     }
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    override fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier) {
-        optionBuilders[name] = GeneratedOptionBuilder(name, generatedValueSupplier)
+    override fun generatedOption(declaredName: String, generatedValueSupplier: GeneratedValueSupplier) {
+        optionBuilders[declaredName] = GeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
     internal fun build() = UserCommandInfo(context, this)

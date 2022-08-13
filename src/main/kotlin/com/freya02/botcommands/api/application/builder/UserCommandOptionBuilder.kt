@@ -1,3 +1,3 @@
 package com.freya02.botcommands.api.application.builder
 
-class UserCommandOptionBuilder(name: String): ApplicationCommandOptionBuilder(name)
+class UserCommandOptionBuilder(declaredName: String) : ApplicationCommandOptionBuilder(declaredName, declaredName)

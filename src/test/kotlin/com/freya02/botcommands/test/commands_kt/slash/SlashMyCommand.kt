@@ -10,7 +10,6 @@ import com.freya02.botcommands.annotations.api.application.slash.autocomplete.an
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.annotations.Name
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
@@ -23,8 +22,6 @@ import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
-
-private const val autocompleteHandlerName = "MyCommand: autocompleteStr"
 
 @CommandMarker
 class SlashMyCommand : ApplicationCommand() {
@@ -54,16 +51,16 @@ class SlashMyCommand : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDASlashCommand(name = "my_command_annotated", description = "mah desc")
+    @JDASlashCommand(name = "my_command_annotated", subcommand = "kt", description = "mah desc")
     fun executeCommand(
         event: GuildSlashEvent,
         @AppOption(name = "string_annotated", description = "Option description") stringOption: String,
-        @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) @Name("int", "notIntOption") intOption: Int,
-        @AppOption(name = "user_annotated", description = "An user") @Name(name = "user") userOption: User,
+        @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
+        @AppOption(name = "user_annotated", description = "An user") userOption: User,
         @AppOption(name = "channel_annot_annotated") @ChannelTypes(ChannelType.CATEGORY) channelOptionAnnot: Category,
-        @AppOption(name = "channel_annotated", description = "An integer") channelOption: TextChannel,
+        @AppOption(name = "channel_annotated") channelOption: TextChannel,
         @AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
-        @AppOption(name = "double_annotated", description = "A double") @Name(declaredName = "notDoubleOption") doubleOption: Double?,
+        @AppOption(name = "double_annotated", description = "A double") doubleOption: Double?,
         custom: BContext,
         @GeneratedOption guildName: String
     ) {
@@ -86,7 +83,7 @@ class SlashMyCommand : ApplicationCommand() {
     fun runAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         stringOption: String,
-        @Name(declaredName = "notDoubleOption") doubleOption: Double?
+        doubleOption: Double?
     ): Collection<Choice> {
         println("ran")
 
@@ -99,13 +96,13 @@ class SlashMyCommand : ApplicationCommand() {
             manager.slashCommand(CommandPath.of("my_command", subname)) {
                 description = "mah desc"
 
-                option("stringOption") {
+                option("stringOption", "string") {
                     description = "Option description"
 
                     choices = listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
                 }
 
-                option("notIntOption") {
+                option("intOption", "int") {
                     description = "An integer"
 
                     valueRange = 1 range 2
@@ -113,11 +110,11 @@ class SlashMyCommand : ApplicationCommand() {
                     choices = listOf(Choice("1", 1L), Choice("2", 2L))
                 }
 
-                option("notDoubleOption") {
+                option("doubleOption", "double") {
                     description = "A double"
                 }
 
-                option("userOption") {
+                option("userOption", "user") {
                     description = "An user"
                 }
 
@@ -148,5 +145,9 @@ class SlashMyCommand : ApplicationCommand() {
                 function = localFunction
             }
         }
+    }
+
+    companion object {
+        const val autocompleteHandlerName = "MyCommand: autocompleteStr"
     }
 }

@@ -43,7 +43,7 @@ class SlashCommandParameter(
         this.isOptional = when {
             optionOptional != null -> {
                 if (optionOptional != kParameter.isNullable) {
-                    throwUser("Option '${optionBuilder.name}' does not have the same nullability as it's function parameter")
+                    throwUser("Option '${optionBuilder.declaredName}' does not have the same nullability as it's function parameter")
                 }
 
                 optionOptional

@@ -149,7 +149,7 @@ internal class SlashCommandAutoBuilder(private val context: BContext, private va
                         )
                     )
                 }
-                else -> option(optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()) {
+                else -> option(kParameter.findDeclarationName(), optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
                     optional = kParameter.isNullable
 

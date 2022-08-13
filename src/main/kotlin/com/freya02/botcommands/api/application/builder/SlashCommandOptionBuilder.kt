@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 
-class SlashCommandOptionBuilder(name: String): ApplicationCommandOptionBuilder(name) {
+class SlashCommandOptionBuilder(declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
     var description: String = "No description"
     var optional: Boolean? = null
     var choices: List<Choice>? = null

@@ -10,12 +10,12 @@ abstract class ApplicationCommandBuilder internal constructor(path: CommandPath,
     var testOnly = false
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    abstract fun customOption(name: String)
+    abstract fun customOption(declaredName: String)
 
     /**
-     * @param name Name of the declared parameter in the [function]
+     * @param declaredName Name of the declared parameter in the [function]
      */
-    abstract fun generatedOption(name: String, generatedValueSupplier: GeneratedValueSupplier)
+    abstract fun generatedOption(declaredName: String, generatedValueSupplier: GeneratedValueSupplier)
 }
