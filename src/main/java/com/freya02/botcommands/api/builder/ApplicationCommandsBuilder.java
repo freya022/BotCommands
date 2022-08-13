@@ -61,10 +61,7 @@ public class ApplicationCommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public ApplicationCommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
-		this.slashGuildIds.clear();
-		this.slashGuildIds.addAll(slashGuildIds);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

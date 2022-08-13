@@ -1,14 +1,12 @@
 package com.freya02.botcommands.core.api.config
 
 import com.freya02.botcommands.annotations.api.application.annotations.Test
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.lockableNotNull
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.properties.Delegates
@@ -17,8 +15,10 @@ import kotlin.reflect.KType
 
 @LateService
 class BApplicationConfig internal constructor(config: BConfig) {
-
-    val slashGuildIds: MutableList<Long> = mutableListOf()
+    /**
+     * Enables you to push **annotated** application commands are only updated on these guilds
+     */
+    val slashGuildIds: MutableList<Long> = mutableListOf() //TODO implement
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
@@ -26,39 +26,6 @@ class BApplicationConfig internal constructor(config: BConfig) {
      * @see Test
      */
     val testGuildIds: MutableList<Long> = mutableListOf() //TODO implement usage
-
-    var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
-
-    var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
-
-    val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
-
-    @get:JvmSynthetic
-    internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
-
-    private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
-
-    /**
-     * Debug feature - Makes it so application commands are only updated on these guilds
-     *
-     * @param slashGuildIds IDs of the guilds
-     */
-    fun updateCommandsOnGuildIds(slashGuildIds: List<Long>) {
-        this.slashGuildIds.clear()
-        this.slashGuildIds.addAll(slashGuildIds)
-    }
-
-    /**
-     * Adds test guilds IDs for all commands annotated with [Test]
-     *
-     * @param guildIds The test [Guild] IDs
-     *
-     * @see BContext.getTestGuildIds
-     * @see Test
-     */
-    fun addTestGuilds(guildIds: List<Long>) {
-        this.testGuildIds += guildIds
-    }
 
     /**
      * Enables the library to do network calls to Discord in order to check if application commands need to be updated
@@ -74,18 +41,19 @@ class BApplicationConfig internal constructor(config: BConfig) {
      *
      * This issue is fixed by using online checks
      */
-    fun enableOnlineAppCommandCheck() {
-        this.onlineAppCommandCheckEnabled = true
-    }
+    var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
     /**
      * Sets whether all application commands should be guild-only, regardless of the command scope on the annotation
-     *
-     * @param force `true` to make all application commands as guild-only
      */
-    fun forceCommandsAsGuildOnly(force: Boolean) {
-        this.forceGuildCommands = force
-    }
+    var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+
+    val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
+
+    @get:JvmSynthetic
+    internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
+
+    private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 
     /**
      * Registers an autocomplete transformer
