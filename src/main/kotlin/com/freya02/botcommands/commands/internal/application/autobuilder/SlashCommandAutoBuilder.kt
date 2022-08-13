@@ -11,7 +11,6 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocomplete
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
@@ -34,7 +33,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class SlashCommandAutoBuilder(private val context: BContext, private val autocompleteHandlerContainer: AutocompleteHandlerContainer, classPathContainer: ClassPathContainer) {
+internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer: AutocompleteHandlerContainer, classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
 
     init {
@@ -83,7 +82,7 @@ internal class SlashCommandAutoBuilder(private val context: BContext, private va
         //TODO test
         val commandId = func.findAnnotation<CommandId>()?.value?.also {
             if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(context, it, path) ?: return@also
+                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
 
                 if (manager.guild.idLong !in guildIds) {
                     return //Don't push command if it isn't allowed

@@ -7,7 +7,6 @@ import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAUserCommand
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
@@ -32,7 +31,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class ContextCommandAutoBuilder(private val context: BContext, classPathContainer: ClassPathContainer) {
+internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
     private val messageFunctions: List<ClassPathFunction>
     private val userFunctions: List<ClassPathFunction>
 
@@ -90,7 +89,7 @@ internal class ContextCommandAutoBuilder(private val context: BContext, classPat
         //TODO test
         val commandId = func.findAnnotation<CommandId>()?.value?.also {
             if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(context, it, path) ?: return@also
+                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
 
                 if (manager.guild.idLong !in guildIds) {
                     return //Don't push command if it isn't allowed
@@ -121,7 +120,7 @@ internal class ContextCommandAutoBuilder(private val context: BContext, classPat
         //TODO test
         val commandId = func.findAnnotation<CommandId>()?.value?.also {
             if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(context, it, path) ?: return@also
+                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
 
                 if (manager.guild.idLong !in guildIds) {
                     return //Don't push command if it isn't allowed

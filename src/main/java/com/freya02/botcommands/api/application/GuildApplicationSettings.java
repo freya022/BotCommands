@@ -4,7 +4,6 @@ import com.freya02.botcommands.annotations.api.annotations.CommandId;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -48,7 +47,6 @@ public interface GuildApplicationSettings {
 	 *
 	 * <p>Be very cautious with your command IDs.
 	 *
-	 * @param context     The current BotCommands context
 	 * @param commandId   The ID of the command that has been set with {@link CommandId}
 	 * @param commandPath The {@link CommandPath} of the specified command ID
 	 *
@@ -56,7 +54,7 @@ public interface GuildApplicationSettings {
 	 * 		<br>This returns <code>null</code> by default
 	 */
 	@Nullable
-	default Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) { //TODO remove superfluous parameters
+	default Collection<Long> getGuildsForCommandId(@NotNull String commandId, @NotNull CommandPath commandPath) {
 		return null;
 	}
 
