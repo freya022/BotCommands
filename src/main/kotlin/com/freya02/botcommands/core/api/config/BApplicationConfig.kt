@@ -2,12 +2,17 @@ package com.freya02.botcommands.core.api.config
 
 import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
+import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.internal.lockableNotNull
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.properties.Delegates
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 @LateService
 class BApplicationConfig internal constructor(config: BConfig) {
@@ -15,6 +20,9 @@ class BApplicationConfig internal constructor(config: BConfig) {
     val testGuildIds: MutableList<Long> = mutableListOf()
     var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
     var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+
+    @get:JvmSynthetic
+    internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
 
     private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 
@@ -65,6 +73,21 @@ class BApplicationConfig internal constructor(config: BConfig) {
      */
     fun forceCommandsAsGuildOnly(force: Boolean) {
         this.forceGuildCommands = force
+    }
+
+    /**
+     * Registers an autocomplete transformer
+     *
+     * If your autocomplete handler return a `List<YourObject>`, you will have to register an `AutocompleteTransformer<YourObject>`
+     *
+     * @param type                    Type of the List generic element type
+     * @param autocompleteTransformer The transformer which transforms a [List] element into a [Choice]
+     * @param T                       Type of the List generic element type
+     *
+     * @return This builder for chaining convenience
+     */
+    fun <T : Any> registerAutocompleteTransformer(type: KClass<T>, autocompleteTransformer: AutocompleteTransformer<T>) {
+        autocompleteTransformers[ParameterType.ofKClass(type).type] = autocompleteTransformer
     }
 
     /**

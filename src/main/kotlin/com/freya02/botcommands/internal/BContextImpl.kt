@@ -3,13 +3,11 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
 import com.freya02.botcommands.api.parameters.ParameterResolvers
-import com.freya02.botcommands.api.parameters.ParameterType.Companion.ofClass
 import com.freya02.botcommands.api.prefixed.HelpConsumer
 import com.freya02.botcommands.api.prefixed.TextCommandFilter
 import com.freya02.botcommands.core.api.config.BConfig
@@ -41,7 +39,6 @@ import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     internal val classPathContainer: ClassPathContainer
@@ -75,7 +72,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
-    private val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
@@ -353,15 +349,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     fun addTestGuildIds(vararg ids: Long) {
         testGuildIds.addAll(ids)
-    }
-
-    fun getAutocompleteTransformer(type: KType): AutocompleteTransformer<*> {
-        return autocompleteTransformers[type]!!
-    }
-
-    //TODO use KType
-    fun <T> registerAutocompleteTransformer(type: Class<T>, autocompleteTransformer: AutocompleteTransformer<T>) {
-        autocompleteTransformers[ofClass(type).type] = autocompleteTransformer
     }
 
     companion object {

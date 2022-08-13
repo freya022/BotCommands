@@ -131,8 +131,6 @@ public class ExtensionsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public <T> ExtensionsBuilder registerAutocompleteTransformer(Class<T> type, AutocompleteTransformer<T> autocompleteTransformer) { //TODO move to auto service discovery
-		context.registerAutocompleteTransformer(type, autocompleteTransformer);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 }
