@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import java.util.*
 
 class BCLocalizationFunction(context: BContextImpl) : LocalizationFunction {
-    private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationCommandsContext.baseNameToLocalesMap
+    private val baseNameToLocalesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {
         val map: MutableMap<DiscordLocale, String> = EnumMap(DiscordLocale::class.java)

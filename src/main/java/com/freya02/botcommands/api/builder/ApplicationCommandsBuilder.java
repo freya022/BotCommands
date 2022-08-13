@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -106,9 +105,7 @@ public class ApplicationCommandsBuilder {
 	 * @see DefaultLocalizationMapProvider
 	 */
 	public ApplicationCommandsBuilder addLocalizations(@NotNull String bundleName, @NotNull Locale @NotNull ... locales) {
-		context.getApplicationCommandsContext().addLocalizations(bundleName, Arrays.asList(locales));
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -124,8 +121,6 @@ public class ApplicationCommandsBuilder {
 	 * @see DefaultLocalizationMapProvider
 	 */
 	public ApplicationCommandsBuilder addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
-		context.getApplicationCommandsContext().addLocalizations(bundleName, locales);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 }

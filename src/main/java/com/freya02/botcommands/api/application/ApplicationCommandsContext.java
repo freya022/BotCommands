@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public interface ApplicationCommandsContext {
@@ -142,10 +141,4 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	CompletableFuture<CommandUpdateResult> updateGuildApplicationCommands(@NotNull Guild guild, boolean force);
-
-	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
-
-	void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
-
-	void removeLocalizations(@NotNull String bundleName);
 }

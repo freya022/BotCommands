@@ -13,7 +13,6 @@ import gnu.trove.TCollections
 import gnu.trove.map.hash.TLongObjectHashMap
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 //TODO should be a service ?
@@ -21,7 +20,6 @@ class ApplicationCommandsContextImpl(private val context: BContextImpl) : Applic
     val mutableApplicationCommandMap = MutableApplicationCommandMap()
 
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
-    internal val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 
     override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
         liveApplicationCommandInfoMap[getGuildKey(guild)]?.findSlashCommand(path)
@@ -58,18 +56,6 @@ class ApplicationCommandsContextImpl(private val context: BContextImpl) : Applic
                 it.complete(context.getService(ApplicationCommandsBuilder::class).updateGuildCommands(guild, force))
             }
         }
-    }
-
-    override fun addLocalizations(bundleName: String, locales: List<Locale>) {
-        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() }.addAll(locales)
-    }
-
-    override fun removeLocalizations(bundleName: String, locales: List<Locale>) {
-        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() }.removeAll(locales)
-    }
-
-    override fun removeLocalizations(bundleName: String) {
-        baseNameToLocalesMap.remove(bundleName)
     }
 
     private fun getGuildKey(guild: Guild?): Long {

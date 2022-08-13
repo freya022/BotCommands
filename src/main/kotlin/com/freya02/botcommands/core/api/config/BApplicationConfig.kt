@@ -53,7 +53,8 @@ class BApplicationConfig internal constructor(config: BConfig) {
     @get:JvmSynthetic
     internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
 
-    private val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
+    @get:JvmSynthetic
+    internal val baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
 
     /**
      * Registers an autocomplete transformer
