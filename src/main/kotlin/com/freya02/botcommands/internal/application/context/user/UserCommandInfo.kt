@@ -68,7 +68,7 @@ class UserCommandInfo internal constructor(
 
                     parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
                 }
-                else -> TODO()
+                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
 

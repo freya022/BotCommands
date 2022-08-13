@@ -58,7 +58,7 @@ internal class ResolverContainer( //TODO Should this be part of the base module 
         return map[type] ?: run {
             val serviceResult = serviceContainer.tryGetService(type)
 
-            serviceResult.exceptionOrNull()?.let {
+            serviceResult.onFailure {
                 rethrowUser(
                     parameter.function,
                     "Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.bestName}' does not have any compatible resolver and service loading failed",

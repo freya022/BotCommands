@@ -175,7 +175,7 @@ class SlashCommandInfo internal constructor(
 
                 objects[parameter.kParameter] = defaultVal
             } else {
-                TODO()
+                throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
     }
