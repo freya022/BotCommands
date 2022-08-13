@@ -21,9 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -207,22 +204,6 @@ public interface BContext {
 	 * @see #addTextFilter(TextCommandFilter)
 	 */
 	void removeTextFilter(TextCommandFilter filter);
-
-	/**
-	 * Removes a previously set application command filter
-	 *
-	 * @param filter The filter to remove
-	 * @see #addApplicationFilter(ApplicationCommandFilter)
-	 */
-	void removeApplicationFilter(ApplicationCommandFilter filter);
-
-	/**
-	 * Removes a previously set component interaction filter
-	 *
-	 * @param filter The filter to remove
-	 * @see #addComponentFilter(ComponentInteractionFilter)
-	 */
-	void removeComponentFilter(ComponentInteractionFilter filter);
 
 	/**
 	 * Returns an immutable list of the registration listeners

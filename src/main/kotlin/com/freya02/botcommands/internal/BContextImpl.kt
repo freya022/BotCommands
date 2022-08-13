@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
 import com.freya02.botcommands.api.parameters.ParameterResolvers
-import com.freya02.botcommands.api.prefixed.HelpConsumer
+import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.prefixed.TextCommandFilter
 import com.freya02.botcommands.core.api.config.BConfig
 import com.freya02.botcommands.core.internal.ClassPathContainer
@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -59,8 +58,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     private val prefixes: MutableList<String> = arrayListOf()
     private var defaultEmbedSupplier: Supplier<EmbedBuilder> = Supplier { EmbedBuilder() }
     private var defaultFooterIconSupplier = Supplier<InputStream> { null }
-    private var helpConsumer: HelpConsumer? = null
-    private var helpBuilderConsumer: Consumer<EmbedBuilder>? = null
+    internal var isHelpDisabled: Boolean = false
+    private var helpBuilderConsumer: HelpBuilderConsumer? = null
     private val textCommandMap: MutableMap<CommandPath, TextCommandCandidates> = hashMapOf()
     private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
@@ -225,13 +224,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         textFilters.remove(filter)
     }
 
-    override fun overrideHelp(helpConsumer: HelpConsumer) {
-        this.helpConsumer = helpConsumer
-    }
 
-    override fun getHelpConsumer(): HelpConsumer {
-        return helpConsumer!!
-    }
 
     override fun getRegistrationListeners(): List<RegistrationListener> {
         return Collections.unmodifiableList(registrationListeners)
@@ -266,12 +259,12 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 //        return config.settingsProvider
     }
 
-    fun setHelpBuilderConsumer(builderConsumer: Consumer<EmbedBuilder>?) {
+    fun setHelpBuilderConsumer(builderConsumer: HelpBuilderConsumer) {
         helpBuilderConsumer = builderConsumer
     }
 
-    override fun getHelpBuilderConsumer(): Consumer<EmbedBuilder> {
-        return helpBuilderConsumer!!
+    override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {
+        return helpBuilderConsumer
     }
 
     override fun <T> registerCustomResolver(parameterType: Class<T>, function: CustomResolverFunction<T>) {
@@ -314,15 +307,16 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         return methodParameterSupplierMap[parameterType]!!
     }
 
-    val isHelpDisabled: Boolean
-        get() = helpConsumer != null
-
     fun setUncaughtExceptionHandler(exceptionHandler: ExceptionHandler?) {
         uncaughtExceptionHandler = exceptionHandler
     }
 
     override fun getUncaughtExceptionHandler(): ExceptionHandler? {
         return uncaughtExceptionHandler
+    }
+
+    fun disableHelp(isHelpDisabled: Boolean) {
+        this.isHelpDisabled = isHelpDisabled
     }
 
     companion object {
