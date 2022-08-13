@@ -46,7 +46,16 @@ internal class ResolverContainer( //TODO Should be part of the base module
         if (map.isEmpty()) {
             LOGGER.trace("Found no resolvers")
         } else {
-            LOGGER.trace("Found resolvers: [${map.entries.joinToString { it.key.java.simpleName }}]")
+            val resolversStr = possibleInterfaces.joinToString("\n") { interfaceClass ->
+                buildString {
+                    append(interfaceClass.simpleName).append(":\n")
+                    append(map.entries.filter { it.value::class.isSubclassOf(interfaceClass) }.joinToString("\n") { (type, resolver) ->
+                        "\t- ${resolver::class.simpleName} (${type.simpleName})"
+                    })
+                }
+            }
+
+            LOGGER.trace("Found resolvers:\n$resolversStr")
         }
     }
 
