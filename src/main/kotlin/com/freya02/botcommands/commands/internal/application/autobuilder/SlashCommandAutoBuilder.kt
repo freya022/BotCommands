@@ -114,9 +114,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
 
             testOnly = AnnotationUtils.getEffectiveTestState(func)
 
-            this.commandId = commandId
-
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
 
             @Suppress("UNCHECKED_CAST")
             function = func as KFunction<Any>
@@ -131,7 +129,8 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     private fun SlashCommandBuilder.processOptions(
         guild: Guild?,
         func: KFunction<*>,
-        instance: ApplicationCommand
+        instance: ApplicationCommand,
+        commandId: String?
     ) {
         var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->

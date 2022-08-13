@@ -49,9 +49,5 @@ abstract class ApplicationCommandInfo internal constructor(
         if (!isGuildOnly && (userPermissions.isNotEmpty() || botPermissions.isNotEmpty())) {
             throwUser("Application command with permissions should be guild-only")
         }
-
-        if (commandId != null && scope != CommandScope.GUILD) {
-            throwUser("Application command with guild-specific ID must have the GUILD scope")
-        }
     }
 }

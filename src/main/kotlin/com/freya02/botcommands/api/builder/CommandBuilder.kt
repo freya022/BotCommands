@@ -11,17 +11,14 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 abstract class CommandBuilder internal constructor(val path: CommandPath) : BuilderFunctionHolder<Any>() {
-    var commandId: String? = null
-
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
     internal var cooldownStrategy: CooldownStrategy = CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)
         private set
 
-    internal var nsfwStrategy: NSFWStrategy? = null //TODO make DSL
+    internal var nsfwStrategy: NSFWStrategy? = null
         private set
-//    val commandId: String? = null //TODO unneeded, implement via per-guild command construction
 
     internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 

@@ -161,9 +161,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
         testOnly = AnnotationUtils.getEffectiveTestState(func)
 
-        this.commandId = commandId
-
-        processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance)
+        processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
 
         @Suppress("UNCHECKED_CAST")
         function = func as KFunction<Any>
@@ -177,7 +175,8 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
     private fun ApplicationCommandBuilder.processOptions(
         guild: Guild?,
         func: KFunction<*>,
-        instance: ApplicationCommand
+        instance: ApplicationCommand,
+        commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
