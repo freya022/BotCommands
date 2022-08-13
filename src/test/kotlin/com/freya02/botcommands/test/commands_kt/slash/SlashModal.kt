@@ -5,7 +5,6 @@ import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
@@ -19,7 +18,7 @@ private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @CommandMarker
-class SlashModal : ApplicationCommand() {
+class SlashModal {
     @CommandMarker
     fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val input = modals.createTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text", TextInputStyle.SHORT)

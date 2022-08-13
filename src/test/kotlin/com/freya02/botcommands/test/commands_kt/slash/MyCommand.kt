@@ -5,7 +5,6 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.Cha
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.annotations.Name
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.ValueRange.Companion.range
@@ -19,7 +18,8 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
-class MyCommand : ApplicationCommand() {
+@CommandMarker
+class MyCommand {
     @CommandMarker
     fun executeCommand(
         event: GuildSlashEvent,

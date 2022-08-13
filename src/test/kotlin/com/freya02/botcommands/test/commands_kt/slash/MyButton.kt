@@ -3,7 +3,6 @@ package com.freya02.botcommands.test.commands_kt.slash
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
@@ -17,7 +16,7 @@ import java.util.concurrent.TimeUnit
 private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 
 @CommandMarker
-class MyButton : ApplicationCommand() {
+class MyButton {
     @CommandMarker
     fun onSlashButton(event: GlobalSlashEvent, components: Components) {
         val ephemeral = components
