@@ -5,7 +5,7 @@ import com.freya02.botcommands.annotations.api.components.annotations.JDASelecti
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.SelectionEvent
 import dev.minn.jda.ktx.coroutines.await
@@ -18,7 +18,7 @@ private const val TEST_SELECTION_SELECTION_LISTENER_NAME = "MySelectMenu: TestSe
 @CommandMarker
 class MySelectMenu {
     @CommandMarker
-    fun onSlashSelectMenu(event: GlobalSlashEvent, components: Components) {
+    fun onSlashSelectMenu(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .selectionMenu {
                 it.reply_("Selection: ${it.values}", ephemeral = true).queue()

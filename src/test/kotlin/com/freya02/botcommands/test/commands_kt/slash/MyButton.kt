@@ -5,7 +5,7 @@ import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonL
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import dev.minn.jda.ktx.coroutines.await
@@ -18,7 +18,7 @@ private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 @CommandMarker
 class MyButton {
     @CommandMarker
-    fun onSlashButton(event: GlobalSlashEvent, components: Components) {
+    fun onSlashButton(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .primaryButton {
                 it.reply_("Button pressed", ephemeral = true).queue()
