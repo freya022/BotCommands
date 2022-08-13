@@ -32,7 +32,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
 
     fun addResolver(resolver: ParameterResolver) {
         if (!hasCompatibleInterface(resolver)) {
-            throwUser("The resolver should implement at least one of these interfaces: ${possibleInterfaces.joinToString { it.simpleName!! }}")
+            throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
 
         map[resolver.type.jvmErasure]?.let { throwUser("Resolver for ${resolver.type.jvmErasure.qualifiedName} already exists") }
@@ -46,7 +46,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
         if (map.isEmpty()) {
             LOGGER.trace("Found no resolvers")
         } else {
-            val resolversStr = possibleInterfaces.joinToString("\n") { interfaceClass ->
+            val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
                 buildString {
                     append(interfaceClass.simpleName).append(":\n")
                     append(map.entries.filter { it.value::class.isSubclassOf(interfaceClass) }.joinToString("\n") { (type, resolver) ->
@@ -79,11 +79,11 @@ internal class ResolverContainer( //TODO Should be part of the base module
     }
 
     private fun hasCompatibleInterface(resolver: ParameterResolver): Boolean {
-        return resolver::class.isSubclassOfAny(*possibleInterfaces.toTypedArray())
+        return resolver::class.isSubclassOfAny(*compatibleInterfaces.toTypedArray())
     }
 
     companion object {
-        private val possibleInterfaces = listOf(
+        private val compatibleInterfaces = listOf(
             RegexParameterResolver::class,
             SlashParameterResolver::class,
             ComponentParameterResolver::class,
