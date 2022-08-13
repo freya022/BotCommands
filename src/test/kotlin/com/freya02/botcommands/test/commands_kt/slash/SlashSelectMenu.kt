@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 private const val TEST_SELECTION_SELECTION_LISTENER_NAME = "MySelectMenu: TestSelection"
 
 @CommandMarker
-class MySelectMenu {
+class SlashSelectMenu {
     @CommandMarker
     fun onSlashSelectMenu(event: GuildSlashEvent, components: Components) {
         val ephemeral = components

@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @CommandMarker
-class MyCommand {
+class SlashMyCommand {
     @CommandMarker
     fun executeCommand(
         event: GuildSlashEvent,
@@ -60,7 +60,7 @@ class MyCommand {
 
     @Declaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to MyJavaCommand::cmd)) {
+        for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
             manager.slashCommand(CommandPath.of("my_command", subname)) {
                 description = "mah desc"
 

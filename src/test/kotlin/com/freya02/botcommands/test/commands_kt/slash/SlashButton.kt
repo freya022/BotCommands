@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 
 @CommandMarker
-class MyButton {
+class SlashButton {
     @CommandMarker
     fun onSlashButton(event: GuildSlashEvent, components: Components) {
         val ephemeral = components

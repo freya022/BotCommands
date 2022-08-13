@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
-public class MyJavaCommand {
+public class SlashMyJavaCommand {
 	@CommandMarker
 	public void cmd(GuildSlashEvent event,
 	                String stringOption,
