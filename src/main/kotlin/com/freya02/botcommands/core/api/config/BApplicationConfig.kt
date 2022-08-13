@@ -2,6 +2,7 @@ package com.freya02.botcommands.core.api.config
 
 import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import com.freya02.botcommands.api.parameters.ParameterType
@@ -20,6 +21,9 @@ class BApplicationConfig internal constructor(config: BConfig) {
     val testGuildIds: MutableList<Long> = mutableListOf()
     var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
     var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+
+    @get:JvmSynthetic
+    internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     @get:JvmSynthetic
     internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()

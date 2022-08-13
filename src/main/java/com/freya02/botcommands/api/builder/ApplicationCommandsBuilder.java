@@ -38,9 +38,7 @@ public class ApplicationCommandsBuilder {
 	 */
 	@NotNull
 	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) { //TODO move to respective config
-		context.addApplicationFilter(commandFilter);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

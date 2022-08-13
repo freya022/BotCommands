@@ -2,7 +2,6 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.annotations.api.application.annotations.Test;
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
-import com.freya02.botcommands.api.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
@@ -202,29 +201,12 @@ public interface BContext {
 	void addTextFilter(TextCommandFilter filter);
 
 	/**
-	 * Adds a filter for the application command listener, this will check slash commands as well as context commands
-	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
-	 * <br><b>You still have to reply to the interaction !</b>
-	 *
-	 * @param filter The filter to add
-	 */
-	void addApplicationFilter(ApplicationCommandFilter filter);
-
-	/**
 	 * Removes a previously set text command filter
 	 *
 	 * @param filter The filter to remove
 	 * @see #addTextFilter(TextCommandFilter)
 	 */
 	void removeTextFilter(TextCommandFilter filter);
-
-	/**
-	 * Removes a previously set application command filter
-	 *
-	 * @param filter The filter to remove
-	 * @see #addApplicationFilter(ApplicationCommandFilter)
-	 */
-	void removeApplicationFilter(ApplicationCommandFilter filter);
 
 	/**
 	 * Overrides the default help given for text commands

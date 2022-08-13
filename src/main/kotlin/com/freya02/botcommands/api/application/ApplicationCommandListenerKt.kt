@@ -108,7 +108,7 @@ internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
 
     private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
         val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
-        for (applicationFilter in context.applicationFilters) {
+        for (applicationFilter in context.config.applicationConfig.applicationFilters) {
             if (!applicationFilter.isAccepted(applicationFilteringData)) {
                 LOGGER.trace("Cancelled application commands due to filter")
                 return false

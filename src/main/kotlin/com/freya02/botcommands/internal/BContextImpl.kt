@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
-import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
@@ -71,7 +70,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
-    internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
@@ -231,16 +229,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         textFilters.add(filter)
     }
 
-    override fun addApplicationFilter(filter: ApplicationCommandFilter) {
-        applicationFilters.add(filter)
-    }
-
     override fun removeTextFilter(filter: TextCommandFilter) {
         textFilters.remove(filter)
-    }
-
-    override fun removeApplicationFilter(filter: ApplicationCommandFilter) {
-        applicationFilters.remove(filter)
     }
 
     override fun overrideHelp(helpConsumer: HelpConsumer) {
