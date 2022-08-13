@@ -14,7 +14,7 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.getMethodOptions
+import com.freya02.botcommands.internal.application.slash.SlashUtils.getMethodOptions
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

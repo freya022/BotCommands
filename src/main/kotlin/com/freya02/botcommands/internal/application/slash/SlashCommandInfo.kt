@@ -9,9 +9,9 @@ import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.toVarArgName
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkDefaultValue
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.application.slash.SlashUtils.toVarArgName
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.Event

@@ -19,7 +19,7 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-object SlashUtils2 {
+object SlashUtils {
     fun ExecutableInteractionInfo.checkDefaultValue(
         parameter: GeneratedMethodParameter,
         defaultValue: Any?
