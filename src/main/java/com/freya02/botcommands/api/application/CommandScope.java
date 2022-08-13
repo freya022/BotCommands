@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.entities.Guild;
 public enum CommandScope {
 	/**
 	 * The guild command scope, only pushes application commands to the guilds
-	 * <br>Can be filtered with {@link GuildApplicationSettings#getGuildsForCommandId(String, CommandPath)} and {@link SettingsProvider#getGuildCommands(Guild)}
+	 * <br>Can be filtered with {@link ApplicationCommand#getGuildsForCommandId(String, CommandPath)} and {@link SettingsProvider#getGuildCommands(Guild)}
 	 * <br>Can be forced with {@link BApplicationConfig#forceCommandsAsGuildOnly(boolean)} and {@link Test}
 	 */
 	GUILD(false, true),

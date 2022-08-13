@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.GuildApplicationSettings;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -32,7 +32,7 @@ public interface SlashParameterResolver {
 
 	/**
 	 * Returns a constant list of {@link Choice choices} for this slash parameter resolver
-	 * This will be applied to all command parameters of this type, but can still be overridden if there are choices set in {@link GuildApplicationSettings#getOptionChoices(Guild, CommandPath, int)}
+	 * This will be applied to all command parameters of this type, but can still be overridden if there are choices set in {@link ApplicationCommand#getOptionChoices(Guild, CommandPath, int)}
 	 * <br>This could be useful for, say, an enum resolver, or anything where the choices do not change between commands
 	 */
 	@NotNull
