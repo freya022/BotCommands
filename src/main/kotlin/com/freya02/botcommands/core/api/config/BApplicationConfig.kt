@@ -17,9 +17,18 @@ import kotlin.reflect.KType
 
 @LateService
 class BApplicationConfig internal constructor(config: BConfig) {
+
     val slashGuildIds: MutableList<Long> = mutableListOf()
-    val testGuildIds: MutableList<Long> = mutableListOf()
+
+    /**
+     * Test guilds IDs for all commands annotated with [Test]
+     *
+     * @see Test
+     */
+    val testGuildIds: MutableList<Long> = mutableListOf() //TODO implement usage
+
     var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
+
     var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
     val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()

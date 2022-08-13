@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.annotations.api.application.annotations.Test;
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
@@ -10,7 +9,6 @@ import com.freya02.botcommands.api.prefixed.HelpConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import gnu.trove.set.TLongSet;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -295,13 +293,6 @@ public interface BContext {
 	 */
 	@Nullable
 	ExceptionHandler getUncaughtExceptionHandler();
-
-	/**
-	 * Returns the test guilds IDs, slash commands annotated with {@link Test @Test} will only be included in these guilds
-	 *
-	 * @return The set of test guild IDs
-	 */
-	TLongSet getTestGuildIds();
 
 	/**
 	 * Invalides the autocomplete cache of the specified autocomplete handler

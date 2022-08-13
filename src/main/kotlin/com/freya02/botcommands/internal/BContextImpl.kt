@@ -19,9 +19,6 @@ import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import gnu.trove.TCollections
-import gnu.trove.set.TLongSet
-import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
@@ -69,8 +66,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
-
-    private val testGuildIds = TCollections.synchronizedSet(TLongHashSet())
 
     init {
         defaultMessageProvider = DefaultMessagesFunction()
@@ -328,14 +323,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
 
     override fun getUncaughtExceptionHandler(): ExceptionHandler? {
         return uncaughtExceptionHandler
-    }
-
-    override fun getTestGuildIds(): TLongSet {
-        return testGuildIds
-    }
-
-    fun addTestGuildIds(vararg ids: Long) {
-        testGuildIds.addAll(ids)
     }
 
     companion object {

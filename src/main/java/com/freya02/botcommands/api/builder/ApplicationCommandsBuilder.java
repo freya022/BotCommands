@@ -78,9 +78,7 @@ public class ApplicationCommandsBuilder {
 	 * @see Test
 	 */
 	public ApplicationCommandsBuilder addTestGuilds(long... guildIds) {
-		context.addTestGuildIds(guildIds);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	public ApplicationCommandsBuilder enableOnlineAppCommandCheck() {
@@ -95,9 +93,7 @@ public class ApplicationCommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	public ApplicationCommandsBuilder forceCommandsAsGuildOnly(boolean force) {
-//		context.getApplicationCommandsContext().setForceGuildCommands(force);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

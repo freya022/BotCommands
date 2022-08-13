@@ -8,7 +8,7 @@ import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
@@ -29,8 +29,8 @@ object AnnotationUtils {
     }
 
     @JvmStatic
-    fun getEffectiveTestGuildIds(context: BContext, method: KFunction<*>): TLongSet {
-        val testIds: TLongSet = TLongHashSet(context.testGuildIds)
+    fun getEffectiveTestGuildIds(context: BContextImpl, method: KFunction<*>): TLongSet {
+        val testIds: TLongSet = TLongHashSet(context.config.applicationConfig.testGuildIds)
         val effectiveAnnotations = getEffectiveAnnotations(method, Test::class)
         for (test in effectiveAnnotations) {
             val ids: LongArray = test.guildIds
