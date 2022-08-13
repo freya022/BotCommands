@@ -37,7 +37,8 @@ import java.util.stream.Collectors;
  *     <li>{@linkplain Message} (only message context commands)</li>
  * </ul>
  */
-public class ParameterResolvers {
+@Deprecated
+public class ParameterResolvers { //TODO remove
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Map<KType, ParameterResolver> map = new HashMap<>();
 
