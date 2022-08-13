@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 private const val guildNicknameAutocompleteName = "NewSlashTest: guildNickname"
 
 @CommandMarker
-class NewSlashTest : ApplicationCommand() {
+class SlashTestAnnotated : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
         guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,

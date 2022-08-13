@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 
 @CommandMarker
-class NewMessageContextRaw : ApplicationCommand() {
+class MessageContextRawAnnotated : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?,
@@ -36,7 +36,7 @@ class NewMessageContextRaw : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDAMessageCommand(scope = CommandScope.GUILD, name = "Raw content (new)")
+    @JDAMessageCommand(scope = CommandScope.GUILD, name = "Raw content (annotated)")
     fun onMessageContextRaw(
         event: GuildMessageEvent,
         @AppOption message: Message,

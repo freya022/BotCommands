@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @CommandMarker
-class NewUserContextInfo : ApplicationCommand() {
+class UserContextInfoAnnotated : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
         guild: Guild?,
         commandId: String?,
@@ -35,7 +35,7 @@ class NewUserContextInfo : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDAUserCommand(scope = CommandScope.GUILD, name = "User info (new)")
+    @JDAUserCommand(scope = CommandScope.GUILD, name = "User info (annotated)")
     fun onUserContextInfo(
         event: GuildUserEvent,
         @AppOption user: User,
