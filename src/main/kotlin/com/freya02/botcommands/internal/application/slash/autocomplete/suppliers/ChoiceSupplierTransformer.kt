@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete.suppliers
 
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 
 internal class ChoiceSupplierTransformer(
-    private val transformer: AutocompletionTransformer<Any>,
+    private val transformer: AutocompleteTransformer<Any>,
     private val numChoices: Int
 ) : ChoiceSupplier {
     @Throws(Exception::class)

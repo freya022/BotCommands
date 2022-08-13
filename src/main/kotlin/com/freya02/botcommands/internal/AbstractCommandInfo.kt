@@ -16,7 +16,6 @@ abstract class AbstractCommandInfo internal constructor(
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
     val nsfwStrategy: NSFWStrategy?
-    val commandId: String?
 
     final override val instance: Any
     final override val method: KFunction<*>
@@ -27,7 +26,6 @@ abstract class AbstractCommandInfo internal constructor(
         path = builder.path
         method = builder.function
         isOwnerRequired = false //TODO remove ownerRequired from application, move to Text
-        commandId = builder.commandId
         nsfwStrategy = builder.nsfwStrategy
         userPermissions = builder.userPermissions
         botPermissions = builder.botPermissions

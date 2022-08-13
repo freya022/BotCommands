@@ -13,7 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Class which contains the algorithms used by the autocompletion handlers
+ * Class which contains the algorithms used by the autocomplete handlers
  * <br>You might use them if for example you want to provide your own list of choices directly, while still having some sort of relevance sorting
  */
 public class AutocompleteAlgorithms {
@@ -23,7 +23,7 @@ public class AutocompleteAlgorithms {
 	 *
 	 * @param items            The items to sort
 	 * @param toStringFunction The function to transform an item into a String
-	 * @param event            The autocompletion event
+	 * @param event            The autocomplete event
 	 * @param <T>              Type of the items
 	 * @return A list of extract results with the scores of each item
 	 */
@@ -50,7 +50,7 @@ public class AutocompleteAlgorithms {
 	 *
 	 * @param items            The items to sort
 	 * @param toStringFunction The function to transform an item into a String
-	 * @param event            The autocompletion event
+	 * @param event            The autocomplete event
 	 * @param <T>              Type of the items
 	 * @return A list of extract results with the scores of each item
 	 */

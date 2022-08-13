@@ -14,7 +14,7 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.getMethodOptions
+import com.freya02.botcommands.internal.application.slash.SlashUtils.getMethodOptions
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +34,7 @@ internal class ApplicationCommandsUpdater private constructor(
     manager: IApplicationCommandManager
 ) {
     private val commandsCache = context.getService(ApplicationCommandsCache::class)
-    private val onlineCheck = context.isOnlineAppCommandCheckEnabled
+    private val onlineCheck = context.config.applicationConfig.onlineAppCommandCheckEnabled
 
     private val commandsCachePath = when (guild) {
         null -> commandsCache.globalCommandsPath
@@ -42,13 +42,13 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private val subcommandGroupDataMap: MutableMap<String, SubcommandGroupData> = hashMapOf()
-    val guildApplicationCommands: List<ApplicationCommandInfo>
+    val applicationCommands: List<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
 
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        guildApplicationCommands = manager.guildApplicationCommands
+        applicationCommands = manager.applicationCommands
 
         allCommandData = computeCommands().allCommandData
 
@@ -103,9 +103,9 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun computeCommands() = ApplicationCommandDataMap().also { map ->
-        computeSlashCommands(guildApplicationCommands, map)
-        computeContextCommands(guildApplicationCommands, map, UserCommandInfo::class.java, Command.Type.USER)
-        computeContextCommands(guildApplicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
+        computeSlashCommands(applicationCommands, map)
+        computeContextCommands(applicationCommands, map, UserCommandInfo::class.java, Command.Type.USER)
+        computeContextCommands(applicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
     }
 
     private fun computeSlashCommands(
@@ -118,7 +118,7 @@ internal class ApplicationCommandsUpdater private constructor(
                 val commandPath = info.path
                 val description = info.description
                 try {
-                    val methodOptions = info.getMethodOptions(context, guild)
+                    val methodOptions = info.getMethodOptions(guild)
                     when (commandPath.nameCount) {
                         1 -> {
                             //Standard command

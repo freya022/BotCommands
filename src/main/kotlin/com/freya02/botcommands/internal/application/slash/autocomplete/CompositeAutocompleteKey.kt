@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.application.slash.autocomplete
 
-class CompositeAutocompletionKey(
+class CompositeAutocompleteKey(
     private val keys: Array<String>,
     private val guildId: Long,
     private val channelId: Long,
@@ -33,7 +33,7 @@ class CompositeAutocompletionKey(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as CompositeAutocompletionKey
+        other as CompositeAutocompleteKey
 
         if (!keys.contentEquals(other.keys)) return false
         if (guildId != other.guildId) return false

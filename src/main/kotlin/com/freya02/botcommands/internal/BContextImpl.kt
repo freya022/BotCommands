@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.parameters.CustomResolver
@@ -74,10 +74,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
-    var isOnlineAppCommandCheckEnabled = false
-        private set
     internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
-    private val autocompletionTransformers: MutableMap<KType, AutocompletionTransformer<*>> = hashMapOf()
+    private val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
 
     internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
@@ -195,14 +193,13 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    internal fun getAutocompleteHandler(autocompletionHandlerName: String): AutocompleteHandler? {
-//        return getService(AutocompleteListener)
+    internal fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
         TODO()
     }
 
-    override fun invalidateAutocompletionCache(autocompletionHandlerName: String) {
-//        val handler = getAutocompleteHandler(autocompletionHandlerName)
-//            ?: throwUser("Autocompletion handler name not found for '$autocompletionHandlerName'")
+    override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
+//        val handler = getAutocompleteHandler(autocompleteHandlerName)
+//            ?: throwUser("Autocomplete handler name not found for '$autocompleteHandlerName'")
 //        handler.invalidate()
         TODO()
     }
@@ -358,17 +355,13 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         testGuildIds.addAll(ids)
     }
 
-    fun getAutocompletionTransformer(type: KType): AutocompletionTransformer<*> {
-        return autocompletionTransformers[type]!!
+    fun getAutocompleteTransformer(type: KType): AutocompleteTransformer<*> {
+        return autocompleteTransformers[type]!!
     }
 
     //TODO use KType
-    fun <T> registerAutocompletionTransformer(type: Class<T>?, autocompletionTransformer: AutocompletionTransformer<T>) {
-        autocompletionTransformers[ofClass(type!!).type] = autocompletionTransformer
-    }
-
-    fun enableOnlineAppCommandCheck() {
-        isOnlineAppCommandCheckEnabled = true
+    fun <T> registerAutocompleteTransformer(type: Class<T>, autocompleteTransformer: AutocompleteTransformer<T>) {
+        autocompleteTransformers[ofClass(type).type] = autocompleteTransformer
     }
 
     companion object {

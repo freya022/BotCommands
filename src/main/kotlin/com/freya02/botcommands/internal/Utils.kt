@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.annotations.Name
 import com.freya02.botcommands.core.api.exceptions.InitializationException
 import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
@@ -11,7 +10,6 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
@@ -96,21 +94,21 @@ fun String.asDiscordString(): String {
 }
 
 fun KParameter.findDeclarationName(): String {
-    val annotatedName = findAnnotation<Name>()?.declaredName
-    if (!annotatedName.isNullOrBlank()) {
-        return annotatedName
-    }
+//    val annotatedName = findAnnotation<Name>()?.declaredName
+//    if (!annotatedName.isNullOrBlank()) {
+//        return annotatedName
+//    }
 
-    return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
+    return name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 }
 
 fun KParameter.findOptionName(): String {
-    val annotatedName = findAnnotation<Name>()?.name
-    if (!annotatedName.isNullOrBlank()) {
-        return annotatedName
-    }
+//    val annotatedName = findAnnotation<Name>()?.name
+//    if (!annotatedName.isNullOrBlank()) {
+//        return annotatedName
+//    }
 
-    return name ?: throwUser("Parameter '$this' does not have any name information, please use the compiler options to include those (see wiki), or use @${Name::class.simpleName}")
+    return name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 }
 
 val KType.simpleName: String

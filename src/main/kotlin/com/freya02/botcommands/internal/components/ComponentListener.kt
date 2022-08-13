@@ -174,7 +174,7 @@ internal class ComponentListener(
 
                     objects[parameter.kParameter] = resolved
                 }
-                else -> TODO()
+                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
 

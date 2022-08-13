@@ -2,7 +2,7 @@ package com.freya02.botcommands.annotations.api.application.annotations;
 
 import com.freya02.botcommands.annotations.api.annotations.Optional;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.*;
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompletionHandler;
+import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -25,13 +25,13 @@ import java.lang.annotation.Target;
  * @see LongRange @LongRange
  * @see DoubleRange @DoubleRange
  * @see ChannelTypes @ChannelTypes
- * @see AutocompletionHandler @AutocompletionHandler
+ * @see AutocompleteHandler @AutocompleteHandler
  * @see CompositeKey @CompositeKey
  * @see VarArgs @VarArgs
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-public @interface AppOption {
+public @interface AppOption { //TODO separate this into specialised options, why use AppOption for things that don't support descriptions / autocomplete ?
 	/**
 	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
 	 * <p>
@@ -54,7 +54,7 @@ public @interface AppOption {
 	String description() default "";
 
 	/**
-	 * Name of the autocompletion handler, must match a method annotated with {@link AutocompletionHandler} with the same name in it
+	 * Name of the autocomplete handler, must match a method annotated with {@link AutocompleteHandler} with the same name in it
 	 *
 	 * @see CompositeKey
 	 */

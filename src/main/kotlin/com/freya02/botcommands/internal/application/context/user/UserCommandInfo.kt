@@ -1,16 +1,17 @@
 package com.freya02.botcommands.internal.application.context.user
 
 import com.freya02.botcommands.api.application.builder.UserCommandBuilder
+import com.freya02.botcommands.api.application.builder.UserCommandOptionBuilder
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
+import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkDefaultValue
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.requireFirstParam
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -28,11 +29,16 @@ class UserCommandInfo internal constructor(
 
         checkEventScope<GuildUserEvent>()
 
-        parameters = MethodParameters.of<UserContextParameterResolver>(
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        parameters = MethodParameters2.transform<UserContextParameterResolver>(
             context,
-            method
-        ) { kParameter, _, resolver ->
-            UserContextCommandParameter(kParameter, resolver)
+            method,
+            builder.optionBuilders
+        ) {
+            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is UserCommandOptionBuilder }
+            optionTransformer = { kParameter, _, resolver ->
+                UserContextCommandParameter(kParameter, resolver)
+            }
         }
     }
 
@@ -57,7 +63,12 @@ class UserCommandInfo internal constructor(
 
                     parameter.resolver.resolve(context, this, event)
                 }
-                else -> TODO()
+                MethodParameterType.GENERATED -> {
+                    parameter as GeneratedMethodParameter
+
+                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
+                }
+                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
 

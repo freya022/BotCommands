@@ -2,8 +2,8 @@ package com.freya02.botcommands.annotations.api.application.slash.autocomplete.a
 
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionMode;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionTransformer;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode;
+import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Annotation to mark methods as being autocompletion functions for {@link AppOption slash command options}
+ * Annotation to mark methods as being autocomplete functions for {@link AppOption slash command options}
  *
  * <br>Requirements:
  * <ul>
@@ -34,12 +34,12 @@ import java.util.List;
  *
  * <p>
  *
- * You can add more List element types with {@link ExtensionsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
+ * You can add more List element types with {@link ExtensionsBuilder#registerAutocompleteTransformer(Class, AutocompleteTransformer)}
  *
  * <p>
  *
- * <h2>State aware autocompletion</h2>
- * You can also use "state aware autocompletion", this means you can retrieve parameters the user has already entered and use it to make your autocompletion better
+ * <h2>State aware autocomplete</h2>
+ * You can also use "state aware autocomplete", this means you can retrieve parameters the user has already entered and use it to make your autocomplete better
  *
  * <br>The requirements are as follows:
  * <ul>
@@ -58,32 +58,32 @@ import java.util.List;
  * @see AppOption
  * @see JDASlashCommand
  * @see CompositeKey
- * @see CacheAutocompletion
+ * @see CacheAutocomplete
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
-public @interface AutocompletionHandler {
+public @interface AutocompleteHandler {
 	/**
-	 * Sets the name of the autocompletion handler, <b>it must be the same as what you set in {@link AppOption#autocomplete()}</b>
+	 * Sets the name of the autocomplete handler, <b>it must be the same as what you set in {@link AppOption#autocomplete()}</b>
 	 * <br>The name must be unique, another handler cannot share it
 	 *
-	 * @return Name of the autocompletion handler
+	 * @return Name of the autocomplete handler
 	 */
 	String name();
 
 	/**
-	 * Sets the {@link AutocompletionMode autocompletion mode}
+	 * Sets the {@link AutocompleteMode autocomplete mode}
 	 * <br><b>This is only usable on collection return types of String, Double and Long</b>
 	 *
-	 * @return Mode of the autocompletion
-	 * @see AutocompletionMode
+	 * @return Mode of the autocomplete
+	 * @see AutocompleteMode
 	 */
-	AutocompletionMode mode() default AutocompletionMode.FUZZY;
+	AutocompleteMode mode() default AutocompleteMode.FUZZY;
 
 	/**
 	 * Determines if the user input is shown as the first suggestion
 	 * <br>This allows the user to force his own input more easily
-	 * <br><b>This being <code>false</code> does not mean that the bot-provided choices are forced upon the user, autocompletion is never forced, unlike choices</b>
+	 * <br><b>This being <code>false</code> does not mean that the bot-provided choices are forced upon the user, autocomplete is never forced, unlike choices</b>
 	 *
 	 * @return <code>true</code> if the user's input should be shown, <code>false</code> if not
 	 */

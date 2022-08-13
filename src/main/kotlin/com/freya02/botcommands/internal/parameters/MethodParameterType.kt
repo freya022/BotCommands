@@ -4,5 +4,5 @@ enum class MethodParameterType {
     COMMAND,
     CUSTOM,
     CONSTANT, //TODO
-    COMPUTED //TODO
+    GENERATED
 }

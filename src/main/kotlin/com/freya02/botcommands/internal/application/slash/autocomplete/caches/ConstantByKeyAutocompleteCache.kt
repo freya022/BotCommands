@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.application.slash.autocomplete.caches
 
 import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompletionKey
+import com.freya02.botcommands.internal.application.slash.autocomplete.CompositeAutocompleteKey
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import kotlinx.coroutines.sync.Mutex
@@ -16,24 +16,24 @@ internal class ConstantByKeyAutocompleteCache(
     private val handler: AutocompleteHandler,
     cacheInfo: AutocompleteCacheInfo
 ) : BaseAutocompleteCache(cacheInfo) {
-    private val cache: Cache<CompositeAutocompletionKey, List<Command.Choice>>
+    private val cache: Cache<CompositeAutocompleteKey, List<Command.Choice>>
     private val maxWeight: Long = cacheInfo.cacheSize * 1024
     private val lock = Mutex()
 
     init {
         cache = Caffeine.newBuilder()
-//            .evictionListener { key: CompositeAutocompletionKey?, value: List<Command.Choice>?, cause: RemovalCause ->
+//            .evictionListener { key: CompositeAutocompleteKey?, value: List<Command.Choice>?, cause: RemovalCause ->
 //                if (key != null && value != null) {
 //                    LOGGER.trace("Evicted autocomplete key '{}', of size {} for cause {}, maximum weight: {}", key, getEntrySize(key, value), cause.name, maxWeight)
 //                }
 //            }
             .maximumWeight(maxWeight)
-            .weigher { k: CompositeAutocompletionKey, v: List<Command.Choice> -> getEntrySize(k, v) }
+            .weigher { k: CompositeAutocompleteKey, v: List<Command.Choice> -> getEntrySize(k, v) }
             .build()
     }
 
     //Weight by the sum of the choice value lengths
-    private fun getEntrySize(key: CompositeAutocompletionKey, choices: List<Command.Choice>): Int =
+    private fun getEntrySize(key: CompositeAutocompleteKey, choices: List<Command.Choice>): Int =
         key.length() + choices.sumOf { c -> c.name.length + c.asString.length }
 
     override suspend fun retrieveAndCall(

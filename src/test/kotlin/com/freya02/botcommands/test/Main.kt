@@ -22,17 +22,21 @@ fun main() {
     }
 
     BBuilder.newBuilder({
-        addSearchPath("com.freya02.botcommands.test.commands2")
+        addSearchPath("com.freya02.botcommands.test.commands_kt")
 
         connectionProvider = testDB.connectionSupplier
 
         components {
             componentManagerStrategy = DefaultComponentManager::class.java
         }
+
+        applicationCommands {
+            onlineAppCommandCheckEnabled = true
+        }
     }, manager)
 
     light(config.token, enableCoroutines = false) {
-        enableIntents(GatewayIntent.GUILD_MEMBERS)
+        enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
         setActivity(Activity.playing("coroutines go brrr"))
         setEventManager(manager)
     }

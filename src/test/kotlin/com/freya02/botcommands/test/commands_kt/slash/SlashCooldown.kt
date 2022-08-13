@@ -1,6 +1,8 @@
-package com.freya02.botcommands.test.commands2
+package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
+import com.freya02.botcommands.annotations.api.annotations.Cooldown
+import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.CooldownScope
 import com.freya02.botcommands.api.annotations.Declaration
 import com.freya02.botcommands.api.application.ApplicationCommand
@@ -11,7 +13,8 @@ import java.util.concurrent.TimeUnit
 
 @CommandMarker
 class SlashCooldown : ApplicationCommand() {
-    @CommandMarker
+    @JDASlashCommand(name = "cooldown_annotated")
+    @Cooldown(cooldown = 5, unit = TimeUnit.SECONDS, cooldownScope = CooldownScope.GUILD)
     fun onSlashCooldown(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }

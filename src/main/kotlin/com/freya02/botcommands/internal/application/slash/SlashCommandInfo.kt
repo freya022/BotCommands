@@ -1,17 +1,17 @@
 package com.freya02.botcommands.internal.application.slash
 
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkDefaultValue
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.checkEventScope
-import com.freya02.botcommands.internal.application.slash.SlashUtils2.toVarArgName
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkDefaultValue
+import com.freya02.botcommands.internal.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.application.slash.SlashUtils.toVarArgName
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.Event
@@ -28,7 +28,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 class SlashCommandInfo internal constructor(
     val context: BContextImpl,
-    val builder: SlashCommandBuilder
+    builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
     builder
@@ -46,12 +46,17 @@ class SlashCommandInfo internal constructor(
 
         checkEventScope<GuildSlashEvent>()
 
-        parameters = MethodParameters.of<SlashParameterResolver>(
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        parameters = MethodParameters2.transform<SlashParameterResolver>(
             context,
-            method
-        ) { kParameter, paramName, resolver ->
-            val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
-            SlashCommandParameter(this, kParameter, optionBuilder, resolver)
+            method,
+            builder.optionBuilders
+        ) {
+            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
+            optionTransformer = { kParameter, paramName, resolver ->
+                val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
+                SlashCommandParameter(this@SlashCommandInfo, builder.optionBuilders, kParameter, optionBuilder, resolver)
+            }
         }
 
         //On every autocomplete handler, check if their method parameters match up with the slash command
@@ -100,19 +105,6 @@ class SlashCommandInfo internal constructor(
         parameterLoop@ for (parameter in methodParameters) {
             if (parameter.methodParameterType == MethodParameterType.COMMAND) {
                 parameter as AbstractSlashCommandParameter
-
-                val guild = event.guild
-                if (guild != null) {
-                    val supplier = parameter.defaultOptionSupplierMap[guild.idLong]
-                    if (supplier != null) {
-                        val defaultVal = supplier.getDefaultValue(event)
-                        checkDefaultValue(parameter, defaultVal)
-
-                        objects[parameter.kParameter] = defaultVal
-
-                        continue
-                    }
-                }
 
                 val arguments = max(1, parameter.varArgs)
                 val objectList: MutableList<Any?> = arrayOfSize(arguments)
@@ -175,13 +167,20 @@ class SlashCommandInfo internal constructor(
                 parameter as CustomMethodParameter
 
                 objects[parameter.kParameter] = parameter.resolver.resolve(context, this, event)
+            } else if (parameter.methodParameterType == MethodParameterType.GENERATED) {
+                parameter as GeneratedMethodParameter
+
+                val defaultVal = parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
+                checkDefaultValue(parameter, defaultVal)
+
+                objects[parameter.kParameter] = defaultVal
             } else {
-                TODO()
+                throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
     }
 
-    fun getAutocompletionHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
+    fun getAutocompleteHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
         throw UnsupportedOperationException()
     }
 

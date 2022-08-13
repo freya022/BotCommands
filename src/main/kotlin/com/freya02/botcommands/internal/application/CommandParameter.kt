@@ -12,11 +12,12 @@ abstract class CommandParameter(
 ) : MethodParameter {
     override val methodParameterType = MethodParameterType.COMMAND
 
-    override val name = optionBuilder.name
+    override val name = optionBuilder.declaredName
+    override val discordName = optionBuilder.optionName
 
     init {
         val paramName = kParameter.findDeclarationName()
-        val optionName = optionBuilder.name
+        val optionName = optionBuilder.declaredName
         if (paramName != optionName) {
             throwUser("Parameter '$kParameter' does not have the same name as the command declaration: '$optionName'")
         }
