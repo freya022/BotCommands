@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
-import com.freya02.botcommands.api.prefixed.HelpConsumer;
+import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -21,6 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -207,18 +209,20 @@ public interface BContext {
 	void removeTextFilter(TextCommandFilter filter);
 
 	/**
-	 * Overrides the default help given for text commands
+	 * Removes a previously set application command filter
 	 *
-	 * @param helpConsumer Help function to use when a command is recognized but syntax is invalid
+	 * @param filter The filter to remove
+	 * @see #addApplicationFilter(ApplicationCommandFilter)
 	 */
-	void overrideHelp(HelpConsumer helpConsumer);
+	void removeApplicationFilter(ApplicationCommandFilter filter);
 
 	/**
-	 * Returns the help consumer used when commands are found but not understood
+	 * Removes a previously set component interaction filter
 	 *
-	 * @return Consumer which should output help
+	 * @param filter The filter to remove
+	 * @see #addComponentFilter(ComponentInteractionFilter)
 	 */
-	HelpConsumer getHelpConsumer();
+	void removeComponentFilter(ComponentInteractionFilter filter);
 
 	/**
 	 * Returns an immutable list of the registration listeners
@@ -274,7 +278,7 @@ public interface BContext {
 	 *
 	 * @return The help builder consumer
 	 */
-	Consumer<EmbedBuilder> getHelpBuilderConsumer();
+	HelpBuilderConsumer getHelpBuilderConsumer();
 
 	/**
 	 * Register a custom resolver for interaction commands (components / app commands)

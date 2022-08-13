@@ -6,9 +6,7 @@ import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextComma
 import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.prefixed.*;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -19,74 +17,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 @Category("Utils")
 @Description("Gives help about a command")
-public final class HelpCommand extends TextCommand {
+public final class HelpCommand extends TextCommand implements IHelpCommand {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 	private final BContext context;
 
-	private final EmbedBuilder ownerHelpBuilder;
-	private final Map<Long, Map<CommandPath, EmbedBuilder>> memberEmbedMap = new HashMap<>();
-
 	public HelpCommand(BContext context) {
 		this.context = context;
-		this.ownerHelpBuilder = new EmbedBuilder(context.getDefaultEmbedSupplier().get());
-	}
-
-	public void generate() {
-		fillGlobalHelp(ownerHelpBuilder, info -> true);
-	}
-
-	@NotNull
-	private EmbedBuilder getCommandHelpEmbed(BaseCommandEvent event, TextCommandCandidates candidates) {
-		final CommandPath path = candidates.first().getPath();
-
-		final Member member = event.getMember();
-		final long memberId = member.getIdLong();
-
-		final Map<CommandPath, EmbedBuilder> map = memberEmbedMap.computeIfAbsent(memberId, x -> new HashMap<>());
-
-		final EmbedBuilder builder;
-		final EmbedBuilder existingEmbed = map.get(path);
-		if (existingEmbed != null) {
-			builder = new EmbedBuilder(existingEmbed);
-		} else {
-			builder = Utils.generateCommandHelp(candidates, event);
-
-			map.put(path, builder);
-		}
-
-		builder.setTimestamp(Instant.now());
-		builder.setColor(member.getColorRaw());
-
-		return builder;
-	}
-
-	private void fillGlobalHelp(EmbedBuilder builder, Function<TextCommandInfo, Boolean> shouldAddFunc) {
-		final TreeMap<String, StringJoiner> categoryBuilderMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		final Set<String> insertedCommands = new HashSet<>();
-		for (TextCommandCandidates cmds : ((BContextImpl) context).getCommands()) {
-			final TextCommandInfo cmd = cmds.first();
-
-			if (insertedCommands.add(cmd.getPath().getName())) {
-				if (shouldAddFunc.apply(cmd)) {
-					categoryBuilderMap
-							.computeIfAbsent(Utils.getCategory(cmd), s -> new StringJoiner("\n"))
-							.add("**" + cmd.getPath().getName() + "** : " + Utils.getNonBlankDescription(cmd));
-				}
-			}
-		}
-
-		for (Map.Entry<String, StringJoiner> entry : categoryBuilderMap.entrySet()) {
-			builder.addField(entry.getKey(), entry.getValue().toString(), false);
-		}
-
-		final Consumer<EmbedBuilder> helpBuilderConsumer = context.getHelpBuilderConsumer();
-		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder);
 	}
 
 	@JDATextCommand(
@@ -94,7 +34,7 @@ public final class HelpCommand extends TextCommand {
 			description = "Gives help for all commands"
 	)
 	public void execute(CommandEvent event) {
-		getAllHelp(event);
+		sendGlobalHelp(event);
 	}
 
 	@JDATextCommand(
@@ -113,13 +53,13 @@ public final class HelpCommand extends TextCommand {
 		sendCommandHelp(event, CommandPath.of(split));
 	}
 
-	private synchronized void getAllHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = event.getContext().isOwner(event.getAuthor().getIdLong()) ? ownerHelpBuilder : getMemberGlobalHelpContent(event.getMember(), event.getGuildChannel());
+	@Override
+	public void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull CommandPath executedCommandPath) {
+		sendCommandHelp(event, executedCommandPath);
+	}
 
-		builder.setTimestamp(Instant.now());
-		final Member member = event.getMember();
-		builder.setColor(member.getColorRaw());
-		builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n");
+	private void sendGlobalHelp(BaseCommandEvent event) {
+		final EmbedBuilder builder = generateGlobalHelp(event.getMember(), event.getGuildChannel());
 
 		final MessageEmbed embed = builder.build();
 		event.getAuthor().openPrivateChannel().queue(
@@ -130,32 +70,67 @@ public final class HelpCommand extends TextCommand {
 
 	}
 
-	private EmbedBuilder getMemberGlobalHelpContent(Member member, GuildMessageChannel channel) {
-		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
-
-		fillGlobalHelp(builder, info -> Usability.of(context, info, member, channel, !context.isOwner(member.getIdLong())).isShowable());
-
-		return builder;
-	}
-
-	public void sendCommandHelp(BaseCommandEvent event, CommandPath cmdPath) {
-		TextCommandCandidates cmds = event.getContext().findCommands(cmdPath);
-		if (cmds == null) {
+	private void sendCommandHelp(BaseCommandEvent event, CommandPath cmdPath) {
+		TextCommandCandidates candidates = event.getContext().findCommands(cmdPath);
+		if (candidates == null) {
 			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
 			return;
 		}
 
 		final Member member = event.getMember();
 		final GuildMessageChannel channel = event.getGuildChannel();
-		final Usability usability = Usability.of(context, cmds.first(), member, channel, !context.isOwner(member.getIdLong()));
+		final Usability usability = Usability.of(context, candidates.first(), member, channel, !context.isOwner(member.getIdLong()));
 		if (usability.isNotShowable()) {
 			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
 			return;
 		}
 
-		final EmbedBuilder embed = getCommandHelpEmbed(event, cmds);
+		final EmbedBuilder embed = generateCommandHelp(event, candidates);
 
 		event.respond(embed.build()).queue();
+	}
+
+	private EmbedBuilder generateGlobalHelp(Member member, GuildMessageChannel channel) {
+		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
+
+		builder.setTimestamp(Instant.now());
+		builder.setColor(member.getColorRaw());
+		builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n");
+
+		final TreeMap<String, StringJoiner> categoryBuilderMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		final Set<String> insertedCommands = new HashSet<>();
+		for (TextCommandCandidates candidates : ((BContextImpl) context).getCommands()) {
+			final TextCommandInfo cmd = candidates.first();
+
+			if (insertedCommands.add(cmd.getPath().getName())) { //Prevent duplicates since candidates share the same command path
+				if (Usability.of(context, cmd, member, channel, !context.isOwner(member.getIdLong())).isShowable()) {
+					categoryBuilderMap
+							.computeIfAbsent(Utils.getCategory(cmd), s -> new StringJoiner("\n"))
+							.add("**" + cmd.getPath().getName() + "** : " + Utils.getNonBlankDescription(cmd));
+				}
+			}
+		}
+
+		for (Map.Entry<String, StringJoiner> entry : categoryBuilderMap.entrySet()) {
+			builder.addField(entry.getKey(), entry.getValue().toString(), false);
+		}
+
+		final HelpBuilderConsumer helpBuilderConsumer = context.getHelpBuilderConsumer();
+		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder, true, null);
+
+		return builder;
+	}
+
+	@NotNull
+	private EmbedBuilder generateCommandHelp(BaseCommandEvent event, TextCommandCandidates candidates) {
+		final EmbedBuilder builder = Utils.generateCommandHelp(candidates, event);
+		builder.setTimestamp(Instant.now());
+		builder.setColor(event.getMember().getColorRaw());
+
+		final HelpBuilderConsumer helpBuilderConsumer = context.getHelpBuilderConsumer();
+		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder, false, candidates);
+
+		return builder;
 	}
 
 	@NotNull

@@ -19,7 +19,9 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
- * The button id is supposed to be fully treated before returning data, if it is indicated it is one use, the id must be deleted before returning for example
+ * The interface which manages components, this goes from creating components, deleting them, or handling their timeouts
+ *
+ * <p>The default implementation should be used: {@link DefaultComponentManager}
  */
 @ConditionalService(message = "A component manager strategy needs to be set")
 public interface ComponentManager {

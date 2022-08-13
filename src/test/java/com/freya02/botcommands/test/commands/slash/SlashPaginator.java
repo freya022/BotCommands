@@ -46,23 +46,25 @@ public class SlashPaginator extends ApplicationCommand {
 					//Disable all components on timeout, more expensive
 //					event.getHook()
 //							.retrieveOriginal()
-//							.flatMap(m -> m.editMessageComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
+//							.flatMap(m -> event.getHook().editOriginalComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
 //							.queue();
 				})
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
 				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
-					components.addComponents(1, componentss.primaryButton(btnEvt -> {
-						paginator.setPage(2); //Pages starts at 0
+					components.addComponents(
+							componentss.primaryButton(btnEvt -> {
+								paginator.setPage(2); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))),
 
-					components.addComponents(1, componentss.primaryButton(btnEvt -> {
-						paginator.setPage(4); //Pages starts at 0
+							componentss.primaryButton(btnEvt -> {
+								paginator.setPage(4); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")))
+					);
 
 					return new EmbedBuilder()
 							.setTitle("Page #" + (page + 1)) //Pages starts at 0

@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.*;
 import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.prefixed.IHelpCommand;
 import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.api.prefixed.TextFilteringData;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -46,10 +47,10 @@ public final class CommandListener extends ListenerAdapter {
 	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
 
 	private final BContextImpl context;
-	private boolean pingAsPrefix;
-	private final TextCommandInfo helpInfo;
+	private final boolean pingAsPrefix;
 
-	private final HelpCommand helpCommand;
+	private final TextCommandInfo helpInfo;
+	private final IHelpCommand helpCommand;
 
 	private int commandThreadNumber = 0;
 	private final ExecutorService commandService = Utils.createCommandPool(r -> {
@@ -65,17 +66,16 @@ public final class CommandListener extends ListenerAdapter {
 		this.context = context;
 		this.pingAsPrefix = pingAsPrefix;
 
-		if (context.isHelpDisabled()) {
+		final TextCommandInfo helpCommandInfo = context.findFirstCommand(CommandPath.ofName("help"));
+		if (helpCommandInfo == null) {
 			LOGGER.debug("Help command not loaded");
 
 			this.helpInfo = null;
 			this.helpCommand = null;
 		} else {
-			this.helpInfo = context.findFirstCommand(CommandPath.ofName("help"));
+			this.helpInfo = helpCommandInfo;
 
-			if (helpInfo == null) throw new IllegalStateException("Help command is not disabled but help command has not been loaded");
-			if (!(helpInfo.getInstance() instanceof HelpCommand helpCmd)) throw new IllegalStateException("Help command is not disabled but help command is not of correct type");
-
+			if (!(helpInfo.getInstance() instanceof IHelpCommand helpCmd)) throw new IllegalStateException("Help command must implement IHelpCommand");
 			this.helpCommand = helpCmd;
 		}
 	}
@@ -171,10 +171,8 @@ public final class CommandListener extends ListenerAdapter {
 			}
 
 			if (helpCommand != null) {
-				helpCommand.sendCommandHelp(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
+				helpCommand.onInvalidCommand(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
 						candidates.first().getPath());
-			} else if (context.getHelpConsumer() != null) {
-				context.getHelpConsumer().accept(new BaseCommandEventImpl(context, null, event, args), candidates.first().getPath());
 			}
 		}, throwableConsumer);
 	}

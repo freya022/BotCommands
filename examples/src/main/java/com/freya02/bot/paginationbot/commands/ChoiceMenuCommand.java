@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -40,6 +41,8 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 					//Edit the message with a Message so everything is replaced, instead of just the content
 					btnEvt.editMessage(new MessageBuilder("You chose the guild '" + guild.getName() + "' !").build()).queue();
 				})
+				//This determines what the buttons look like
+				.setButtonContentSupplier((item, index) -> ButtonContent.withString(String.valueOf(index + 1)))
 				.build();
 
 		//You must send the menu as a message

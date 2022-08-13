@@ -43,10 +43,11 @@ Note that text-based commands, slash commands and component handlers are running
 You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
 
 ### Prerequisites
-* An [OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) installation
-* Enable preview features in your compiler with `--enable-preview`, [How I enable it](https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81), [IntelliJ w/ Maven tutorial](https://www.baeldung.com/java-preview-features#intellij-idea), [Gradle tutorial](https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle)
+* An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
 * Enable method parameters names, [How I enabled them for Java](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L111-L116), [for Kotlin](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L77-L81), you can also see the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
 * An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
+
+[//]: # (* Enable preview features in your compiler with `--enable-preview`, [How I enable it]&#40;https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81&#41;, [IntelliJ w/ Maven tutorial]&#40;https://www.baeldung.com/java-preview-features#intellij-idea&#41;, [Gradle tutorial]&#40;https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle&#41;)
 
 ## Getting the library
 ### Maven
@@ -114,7 +115,7 @@ You can now build the framework
 ```java
 commandsBuilder.build(
     jda,                        // The JDA instance you just built 
-    "com.freya02.bot.commands"  // This is the package name with contains all your commands / handlers...
+    "com.freya02.bot.commands"  // This is the package name which contains all your commands / handlers...
 ); 
 ```
 
@@ -129,13 +130,11 @@ See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-
 
 ## Replacing help content
 
-You can disable the prefixed help command, these methods are in `TextCommandsBuilder`, if you do disable prefixed help commands you need to supply your own implementation when commands are detected, but their syntax is invalid
-
-The provided implementation could just do nothing (such as `e -> {}`) if you want to just remove any form of help message
+See the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Prefixed-commands/#replacing-help-content)
 
 ## Examples
 
-You can find example bots in the [examples](Examples) folder
+You can find example bots in the [examples](examples) folder
 
 ## Template bot
 
