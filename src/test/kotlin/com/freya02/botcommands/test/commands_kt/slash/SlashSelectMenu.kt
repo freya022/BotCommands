@@ -1,8 +1,10 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
+import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
@@ -16,8 +18,8 @@ import java.util.concurrent.TimeUnit
 private const val TEST_SELECTION_SELECTION_LISTENER_NAME = "MySelectMenu: TestSelection"
 
 @CommandMarker
-class SlashSelectMenu {
-    @CommandMarker
+class SlashSelectMenu : ApplicationCommand() {
+    @JDASlashCommand(name = "selectmenu_annotated")
     fun onSlashSelectMenu(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .selectionMenu {
