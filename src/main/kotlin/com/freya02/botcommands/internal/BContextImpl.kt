@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
@@ -70,8 +69,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
-
-    internal val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
 
     private val testGuildIds = TCollections.synchronizedSet(TLongHashSet())
 

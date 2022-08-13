@@ -22,8 +22,7 @@ class BApplicationConfig internal constructor(config: BConfig) {
     var onlineAppCommandCheckEnabled: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
     var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
-    @get:JvmSynthetic
-    internal val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
+    val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     @get:JvmSynthetic
     internal val autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()

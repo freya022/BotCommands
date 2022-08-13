@@ -47,7 +47,7 @@ internal class ComponentListener(
 
     private fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
         try {
-            for (componentFilter in context.componentFilters) {
+            for (componentFilter in context.config.componentsConfig.componentFilters) {
                 if (!componentFilter.isAccepted(ComponentFilteringData(context, event))) {
                     return
                 }
