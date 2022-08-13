@@ -6,4 +6,5 @@ package com.freya02.botcommands.api.annotations
  */
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
+@Deprecated("For removal, use the appropriate parameters in SlashCommandBuilder#option instead", level = DeprecationLevel.ERROR)
 annotation class Name(val name: String = "", val declaredName: String = "")

@@ -19,6 +19,7 @@ class SlashCommandBuilder internal constructor(
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
+    @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         optionBuilders[declaredName] = SlashCommandOptionBuilder(declaredName, optionName).apply(block)
     }

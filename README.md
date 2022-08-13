@@ -45,6 +45,7 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 ### Prerequisites
 * An [OpenJDK 17](https://adoptium.net/temurin/releases/?version=17) installation
 * Enable preview features in your compiler with `--enable-preview`, [How I enable it](https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81), [IntelliJ w/ Maven tutorial](https://www.baeldung.com/java-preview-features#intellij-idea), [Gradle tutorial](https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle)
+* Enable method parameters names, [How I enabled them for Java](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L111-L116), [for Kotlin](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L77-L81), you can also see the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
 * An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
 
 ## Getting the library
