@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
 import com.freya02.botcommands.api.parameters.ParameterResolvers
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
-import com.freya02.botcommands.api.prefixed.TextCommandFilter
 import com.freya02.botcommands.core.api.config.BConfig
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.EventDispatcher
@@ -62,7 +61,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     private var helpBuilderConsumer: HelpBuilderConsumer? = null
     private val textCommandMap: MutableMap<CommandPath, TextCommandCandidates> = hashMapOf()
     private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
-    internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
@@ -215,16 +213,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
                 )
         }
     }
-
-    override fun addTextFilter(filter: TextCommandFilter) {
-        textFilters.add(filter)
-    }
-
-    override fun removeTextFilter(filter: TextCommandFilter) {
-        textFilters.remove(filter)
-    }
-
-
 
     override fun getRegistrationListeners(): List<RegistrationListener> {
         return Collections.unmodifiableList(registrationListeners)

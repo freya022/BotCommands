@@ -29,6 +29,8 @@ class BConfig internal constructor() {
 
     val serviceConfig = BServiceConfig()
 
+    val textConfig = BTextConfig()
+
     val applicationConfig = BApplicationConfig(this)
 
     val componentsConfig = BComponentsConfig(this)
@@ -94,6 +96,10 @@ class BConfig internal constructor() {
 
     fun addClass(clazz: Class<*>) {
         classes.add(clazz)
+    }
+
+    fun textCommands(block: BTextConfig.() -> Unit) {
+        block(textConfig)
     }
 
     fun applicationCommands(block: BApplicationConfig.() -> Unit) {
