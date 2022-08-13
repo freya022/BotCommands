@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.application.slash.autocomplete
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.application.AutocompleteInfo
 import com.freya02.botcommands.api.application.builder.OptionBuilder
+import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.parameters.SlashParameterResolver

@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.application.slash
 
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.application.builder.findOption
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
