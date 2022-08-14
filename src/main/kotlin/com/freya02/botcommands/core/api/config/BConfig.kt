@@ -41,6 +41,7 @@ class BConfig internal constructor() {
      * Used to take guild-specific settings such as prefixes
      */
     var settingsProvider: SettingsProvider by Delegates.lockableNotNull(this, "Settings provider needs to be set !")
+    fun hasSettingsProvider() = ::settingsProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Used by the thread pools such of command handlers / components

@@ -242,9 +242,9 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    override fun getSettingsProvider(): SettingsProvider? {
-        TODO()
-//        return config.settingsProvider
+    override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
+        if (!config.hasSettingsProvider()) return null
+        return config.settingsProvider
     }
 
     fun setHelpBuilderConsumer(builderConsumer: HelpBuilderConsumer) {
