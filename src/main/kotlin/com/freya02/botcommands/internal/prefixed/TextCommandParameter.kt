@@ -11,6 +11,6 @@ class TextCommandParameter(
     val resolver: RegexParameterResolver
 ) : CommandParameter(parameter, optionBuilder) {
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
-    val data = TextParameterData(parameter)
-    val isId = true //TODO fix
+    val data = TextParameterData(optionBuilder)
+    val isId = optionBuilder.isId
 }
