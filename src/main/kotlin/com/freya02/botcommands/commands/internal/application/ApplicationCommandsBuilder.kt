@@ -1,7 +1,7 @@
 package com.freya02.botcommands.commands.internal.application
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.CommandUpdateResult
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
@@ -43,7 +43,7 @@ internal class ApplicationCommandsBuilder(
 
     init {
         for (classPathFunction in classPathContainer
-            .functionsWithAnnotation<Declaration>()
+            .functionsWithAnnotation<AppDeclaration>()
             .requireNonStatic()
             .requireFirstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class)
         ) {

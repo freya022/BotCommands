@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAUserCommand
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
@@ -46,7 +46,7 @@ class UserContextInfo : ApplicationCommand() {
         event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
         guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD) {
             option("user")

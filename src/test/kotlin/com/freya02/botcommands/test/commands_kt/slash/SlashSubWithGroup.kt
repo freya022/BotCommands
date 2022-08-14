@@ -2,7 +2,7 @@ package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
@@ -25,7 +25,7 @@ class SlashSubWithGroup : ApplicationCommand() {
         event.reply_("ok", ephemeral = true).queue()
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
         globalApplicationCommandManager.slashCommand("tag", subcommand = "send") {
             function = ::onSlashSubWithGroup

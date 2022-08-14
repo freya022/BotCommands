@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
@@ -47,7 +47,7 @@ class MessageContextRaw : ApplicationCommand() {
         event.reply_("Raw for message ID ${message.id}: $rawContent", ephemeral = true).queue()
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
         guildApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD) {
             option("message")

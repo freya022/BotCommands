@@ -7,7 +7,7 @@ import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAUserCommand
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.application.builder.MessageCommandBuilder
@@ -45,10 +45,10 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
             .requireFirstArg(GlobalUserEvent::class)
     }
 
-    @Declaration
+    @AppDeclaration
     fun declareGlobal(manager: GlobalApplicationCommandManager) = declare(manager)
 
-    @Declaration
+    @AppDeclaration
     fun declareGuild(manager: GuildApplicationCommandManager) = declare(manager)
 
     private fun declare(manager: IApplicationCommandManager) {

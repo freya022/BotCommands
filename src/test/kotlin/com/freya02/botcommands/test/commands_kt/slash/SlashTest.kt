@@ -5,7 +5,7 @@ import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
@@ -52,7 +52,7 @@ class SlashTest : ApplicationCommand() {
         return listOf("${guildName}_nick ($guildNickname)").map { Choice(it, it) }
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
         guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD) {
             option("guildNickname")

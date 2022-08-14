@@ -3,7 +3,7 @@ package com.freya02.botcommands.test.commands_kt.slash
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
@@ -52,7 +52,7 @@ class SlashSelectMenu : ApplicationCommand() {
         event.reply_(content + ": ${event.values}", ephemeral = true).await()
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
         manager.slashCommand(CommandPath.of("selectmenu")) {
             customOption("components")

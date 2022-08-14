@@ -9,7 +9,7 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.Lon
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
@@ -90,7 +90,7 @@ class SlashMyCommand : ApplicationCommand() {
         return listOf(Choice("lol name + $stringOption + $doubleOption", "lol value + $stringOption + $doubleOption"))
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
         for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
             manager.slashCommand(CommandPath.of("my_command", subname)) {

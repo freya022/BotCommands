@@ -5,7 +5,7 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
@@ -51,7 +51,7 @@ class SlashModal : ApplicationCommand() {
             """.trimIndent(), ephemeral = true).queue()
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(applicationCommandManager: GuildApplicationCommandManager) {
         applicationCommandManager.slashCommand("modal", scope = CommandScope.GUILD) {
             customOption("modals")

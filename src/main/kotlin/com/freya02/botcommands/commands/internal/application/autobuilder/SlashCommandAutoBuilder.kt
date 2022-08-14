@@ -11,7 +11,7 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.JDA
 import com.freya02.botcommands.annotations.api.application.slash.annotations.LongRange
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.CacheAutocomplete
-import com.freya02.botcommands.api.annotations.Declaration
+import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.application.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
@@ -42,7 +42,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
             .requireFirstArg(GlobalSlashEvent::class)
     }
 
-    @Declaration
+    @AppDeclaration
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         functions.forEach {
             val func = it.function
@@ -54,7 +54,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
         }
     }
 
-    @Declaration
+    @AppDeclaration
     fun declareGuild(manager: GuildApplicationCommandManager) {
         functions.forEach {
             val func = it.function
