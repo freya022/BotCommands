@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
@@ -26,9 +26,9 @@ class MessageContextRaw : ApplicationCommand() {
         commandPath: CommandPath,
         optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier {
+    ): ApplicationGeneratedValueSupplier {
         if (optionName == "raw_content") {
-            return GeneratedValueSupplier {
+            return ApplicationGeneratedValueSupplier {
                 it as MessageContextInteractionEvent
 
                 MarkdownSanitizer.escape(it.target.contentRaw)

@@ -21,7 +21,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 object SlashUtils {
     fun ExecutableInteractionInfo.checkDefaultValue(
-        parameter: GeneratedMethodParameter,
+        parameter: ApplicationGeneratedMethodParameter,
         defaultValue: Any?
     ) {
         requireUser(defaultValue != null || parameter.isOptional) {

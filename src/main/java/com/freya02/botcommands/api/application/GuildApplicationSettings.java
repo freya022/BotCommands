@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.CommandId;
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
@@ -70,12 +70,12 @@ public interface GuildApplicationSettings {
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
 	 * @param parameterType The <b>boxed</b> type of the command option
 	 *
-	 * @return A {@link GeneratedValueSupplier} to generate the option on command execution
+	 * @return A {@link ApplicationGeneratedValueSupplier} to generate the option on command execution
 	 */
 	@NotNull
-	default GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
-	                                                         @Nullable String commandId, @NotNull CommandPath commandPath,
-	                                                         @NotNull String optionName, @NotNull ParameterType parameterType) {
+	default ApplicationGeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
+	                                                                    @Nullable String commandId, @NotNull CommandPath commandPath,
+	                                                                    @NotNull String optionName, @NotNull ParameterType parameterType) {
 		final StringBuilder errorBuilder = new StringBuilder("Option '%s' in command path '%s'".formatted(optionName, commandPath.getFullPath()));
 		if (commandId != null) errorBuilder.append(" (id '%s')".formatted(commandId));
 		if (guild != null) errorBuilder.append(" in guild '%s' (id %s)".formatted(guild.getName(), guild.getId()));

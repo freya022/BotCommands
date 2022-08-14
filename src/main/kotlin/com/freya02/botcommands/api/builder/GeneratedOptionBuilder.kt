@@ -1,10 +1,8 @@
 package com.freya02.botcommands.api.builder
 
-import com.freya02.botcommands.api.application.builder.OptionBuilder
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.internal.GeneratedMethodParameter
+import kotlin.reflect.KParameter
 
-//TODO transform into a GenerateMethodParameter factory
-class GeneratedOptionBuilder(declaredName: String, val generatedValueSupplier: GeneratedValueSupplier) : OptionBuilder(
-    declaredName,
-    declaredName
-)
+interface GeneratedOptionBuilder {
+    fun toGeneratedMethodParameter(parameter: KParameter): GeneratedMethodParameter
+}

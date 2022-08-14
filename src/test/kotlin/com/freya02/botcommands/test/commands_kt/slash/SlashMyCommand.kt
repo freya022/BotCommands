@@ -14,7 +14,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.ValueRange.Companion.range
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.api.parameters.ParameterType
@@ -41,9 +41,9 @@ class SlashMyCommand : ApplicationCommand() {
         commandPath: CommandPath,
         optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier {
+    ): ApplicationGeneratedValueSupplier {
         if (optionName == "guild_name") {
-            return GeneratedValueSupplier {
+            return ApplicationGeneratedValueSupplier {
                 it.guild!!.name
             }
         }

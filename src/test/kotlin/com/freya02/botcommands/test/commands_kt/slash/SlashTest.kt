@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
@@ -26,9 +26,9 @@ class SlashTest : ApplicationCommand() {
         guild: Guild?, commandId: String?,
         commandPath: CommandPath, optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier {
+    ): ApplicationGeneratedValueSupplier {
         if (optionName == "guild_name") {
-            return GeneratedValueSupplier { it.guild!!.name }
+            return ApplicationGeneratedValueSupplier { it.guild!!.name }
         }
 
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)

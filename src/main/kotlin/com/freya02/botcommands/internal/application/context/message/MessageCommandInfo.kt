@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
+import com.freya02.botcommands.internal.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
@@ -65,7 +65,7 @@ class MessageCommandInfo internal constructor(
                     parameter.resolver.resolve(context, this, event)
                 }
                 MethodParameterType.GENERATED -> {
-                    parameter as GeneratedMethodParameter
+                    parameter as ApplicationGeneratedMethodParameter
 
                     parameter.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
                 }

@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.context.user.GuildUserEvent
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
@@ -25,9 +25,9 @@ class UserContextInfo : ApplicationCommand() {
         commandPath: CommandPath,
         optionName: String,
         parameterType: ParameterType
-    ): GeneratedValueSupplier {
+    ): ApplicationGeneratedValueSupplier {
         if (optionName == "user_tag") {
-            return GeneratedValueSupplier {
+            return ApplicationGeneratedValueSupplier {
                 it as UserContextInteractionEvent
 
                 it.target.asTag

@@ -9,7 +9,7 @@ import com.freya02.botcommands.annotations.api.application.slash.annotations.Lon
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.slash.GeneratedValueSupplier;
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.entities.*;
@@ -23,11 +23,11 @@ import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 public class SlashMyJavaCommand extends ApplicationCommand {
 	@Override
 	@NotNull
-	public GeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
-	                                                        @Nullable String commandId,
-	                                                        @NotNull CommandPath commandPath,
-	                                                        @NotNull String optionName,
-	                                                        @NotNull ParameterType parameterType) {
+	public ApplicationGeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,
+	                                                                   @Nullable String commandId,
+	                                                                   @NotNull CommandPath commandPath,
+	                                                                   @NotNull String optionName,
+	                                                                   @NotNull ParameterType parameterType) {
 		if (optionName.equals("guild_name")) {
 			return event -> event.getGuild().getName();
 		}

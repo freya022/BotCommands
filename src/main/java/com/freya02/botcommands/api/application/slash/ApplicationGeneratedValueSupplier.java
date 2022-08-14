@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @FunctionalInterface
-public interface GeneratedValueSupplier {
+public interface ApplicationGeneratedValueSupplier {
 	@Nullable
 	Object getDefaultValue(@NotNull CommandInteractionPayload event);
 }
