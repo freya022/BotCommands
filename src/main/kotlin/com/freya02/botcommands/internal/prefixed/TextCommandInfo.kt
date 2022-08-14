@@ -65,16 +65,18 @@ class TextCommandInfo(
     }
 
     suspend fun execute(
-        event: MessageReceivedEvent,
+        _event: MessageReceivedEvent,
         args: String,
         matcher: Matcher?
     ): ExecutionResult {
+        val event = when {
+            useTokenizedEvent -> CommandEventImpl(context, method, _event, args)
+            else -> BaseCommandEventImpl(context, method, _event, args)
+        }
+
         val objects: MutableMap<KParameter, Any?> = hashMapOf()
         objects[method.instanceParameter!!] = instance
-        objects[method.nonInstanceParameters.first()] = when {
-            useTokenizedEvent -> CommandEventImpl(context, method, event, args)
-            else -> BaseCommandEventImpl(context, method, event, args)
-        }
+        objects[method.nonInstanceParameters.first()] = event
 
         var groupIndex = 1
         for (parameter in parameters) {
