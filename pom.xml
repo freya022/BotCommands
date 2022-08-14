@@ -344,7 +344,7 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>me.xdrop</groupId>
+            <groupId>me.xdrop</groupId> <!-- TODO remove -->
             <artifactId>fuzzywuzzy</artifactId>
             <version>1.4.0</version>
             <scope>compile</scope>
@@ -375,6 +375,11 @@
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
             <version>03b07e7d17</version>
+        </dependency>
+        <dependency>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
