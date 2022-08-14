@@ -166,7 +166,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
                 }
             }
         }
-        for (alias in aliases) { //TODO replace by a loop in the annotation processor
+        for (alias in aliases) {
             textCommandMap.compute(alias) { _: CommandPath, v: TextCommandCandidates? ->
                 when {
                     v != null -> v.also { it.add(commandInfo) }

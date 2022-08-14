@@ -2,15 +2,14 @@ package com.freya02.botcommands.internal.prefixed
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.api.prefixed.CommandEvent
 import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder
-import com.freya02.botcommands.internal.AbstractCommandInfo
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.MethodParameters
+import com.freya02.botcommands.api.prefixed.builder.TextOptionBuilder
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.function.Consumer
@@ -23,11 +22,12 @@ import kotlin.reflect.jvm.jvmErasure
 private val LOGGER = Logging.getLogger()
 
 class TextCommandInfo(
-    context: BContextImpl,
+    private val context: BContextImpl,
     builder: TextCommandBuilder
 ) : AbstractCommandInfo(context, builder) {
     override val parameters: MethodParameters
 
+    val isOwnerRequired: Boolean
     val aliases: List<CommandPath>
     val description: String
     val hidden: Boolean
@@ -36,28 +36,32 @@ class TextCommandInfo(
     val isRegexCommand: Boolean
 
     init {
+        isOwnerRequired = builder.ownerRequired
         aliases = builder.aliases
         description = builder.description
         order = builder.order
         hidden = builder.hidden
 
         isRegexCommand = method.valueParameters[0].type.jvmErasure.isSuperclassOf(CommandEvent::class)
-        parameters = MethodParameters.of<RegexParameterResolver>(
+
+        @Suppress("RemoveExplicitTypeArguments")
+        parameters = MethodParameters2.transform<RegexParameterResolver>(
             context,
-            method
-        ) { parameter, paramName, resolver ->
-            //TODO check if function isn't fallback
-            TextCommandParameter(parameter, TODO(), resolver) //TODO text option builder
+            method,
+            builder.optionBuilders
+        ) {
+            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is TextOptionBuilder }
+            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.optionBuilders.findOption(paramName), resolver) }
         }
 
-        completePattern = if (parameters.optionCount > 0) {
-            CommandPattern.of(this)
-        } else null
+        completePattern = when {
+            parameters.optionCount > 0 -> CommandPattern.of(this)
+            else -> null
+        }
     }
 
     @Throws(Exception::class)
     fun execute(
-        context: BContextImpl,
         event: MessageReceivedEvent,
         args: String,
         matcher: Matcher,

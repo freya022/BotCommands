@@ -242,7 +242,7 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		return candidate.execute(context, event, args, matcher, throwableConsumer);
+		return candidate.execute(event, args, matcher, throwableConsumer);
 	}
 
 	@Nullable

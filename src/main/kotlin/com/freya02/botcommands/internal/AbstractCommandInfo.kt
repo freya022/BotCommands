@@ -12,7 +12,6 @@ abstract class AbstractCommandInfo internal constructor(
     builder: CommandBuilder
 ) : Cooldownable(context, builder.cooldownStrategy), ExecutableInteractionInfo {
     val path: CommandPath
-    val isOwnerRequired: Boolean
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
     val nsfwStrategy: NSFWStrategy?
@@ -25,7 +24,6 @@ abstract class AbstractCommandInfo internal constructor(
 
         path = builder.path
         method = builder.function
-        isOwnerRequired = false //TODO remove ownerRequired from application, move to Text
         nsfwStrategy = builder.nsfwStrategy
         userPermissions = builder.userPermissions
         botPermissions = builder.botPermissions
