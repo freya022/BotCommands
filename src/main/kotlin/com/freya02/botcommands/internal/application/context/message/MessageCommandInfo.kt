@@ -67,7 +67,7 @@ class MessageCommandInfo internal constructor(
                 MethodParameterType.GENERATED -> {
                     parameter as GeneratedMethodParameter
 
-                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
+                    parameter.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
                 }
                 else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }

@@ -170,7 +170,7 @@ class SlashCommandInfo internal constructor(
             } else if (parameter.methodParameterType == MethodParameterType.GENERATED) {
                 parameter as GeneratedMethodParameter
 
-                val defaultVal = parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
+                val defaultVal = parameter.generatedValueSupplier.getDefaultValue(event)
                 checkDefaultValue(parameter, defaultVal)
 
                 objects[parameter.kParameter] = defaultVal

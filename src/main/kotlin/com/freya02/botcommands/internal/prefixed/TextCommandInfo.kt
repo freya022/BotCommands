@@ -127,7 +127,7 @@ class TextCommandInfo(
                 MethodParameterType.GENERATED -> {
                     parameter as TextGeneratedMethodParameter
 
-                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
+                    parameter.generatedValueSupplier.getDefaultValue(event)
                 }
                 else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }

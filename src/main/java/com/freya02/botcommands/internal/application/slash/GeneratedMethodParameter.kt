@@ -5,8 +5,8 @@ import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import kotlin.reflect.KParameter
 
-class GeneratedMethodParameter(override val kParameter: KParameter, val generatedOptionBuilder: GeneratedOptionBuilder) : MethodParameter {
+class GeneratedMethodParameter(override val kParameter: KParameter, generatedOptionBuilder: GeneratedOptionBuilder) : MethodParameter {
     override val methodParameterType = MethodParameterType.GENERATED
 
-    //TODO Put generated value supplier here
+    val generatedValueSupplier = generatedOptionBuilder.generatedValueSupplier
 }
