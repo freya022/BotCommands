@@ -119,8 +119,14 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
+        val slashGuildIds = context.config.applicationConfig.slashGuildIds
+        if (slashGuildIds.isNotEmpty()) {
+            if (guild.idLong in slashGuildIds) {
+                return CommandUpdateResult(guild, false)
+            }
+        }
+
         guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }.withLock {
-            //TODO check if guild is in slash guild IDs, if not and not empty then skip
             val manager = GuildApplicationCommandManager(context, guild)
             guildDeclarationFunctions.forEach { classPathFunction ->
                 runDeclarationFunction(classPathFunction, serviceContainer, manager)
