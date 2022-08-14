@@ -157,7 +157,7 @@ internal class ComponentListener(
         var optionIndex = 0
         parameters.forEach { parameter ->
             when (parameter.methodParameterType) {
-                MethodParameterType.COMMAND -> {
+                MethodParameterType.OPTION -> {
                     parameter as ComponentHandlerParameter
 
                     val buttonArg = buttonArgs[optionIndex++]

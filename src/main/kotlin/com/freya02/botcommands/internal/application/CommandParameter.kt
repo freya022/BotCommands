@@ -10,7 +10,7 @@ import kotlin.reflect.KParameter
 abstract class CommandParameter(
     final override val kParameter: KParameter, optionBuilder: OptionBuilder
 ) : MethodParameter {
-    override val methodParameterType = MethodParameterType.COMMAND
+    override val methodParameterType = MethodParameterType.OPTION
 
     override val name = optionBuilder.declaredName
     override val discordName = optionBuilder.optionName

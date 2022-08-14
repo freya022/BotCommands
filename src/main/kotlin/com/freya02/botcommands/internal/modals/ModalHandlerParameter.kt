@@ -7,5 +7,5 @@ import kotlin.reflect.KParameter
 abstract class ModalHandlerParameter(
     override val kParameter: KParameter
 ) : MethodParameter {
-    override val methodParameterType = MethodParameterType.COMMAND
+    override val methodParameterType = MethodParameterType.OPTION
 }

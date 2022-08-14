@@ -45,7 +45,7 @@ object SlashUtils {
 		for (parameter in parameters) {
             if (!parameter.isOption) continue
 
-            if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+            if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
             parameter as SlashCommandParameter
 

@@ -32,7 +32,7 @@ internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : 
         autocompleteHandler
             .methodParameters
             .asSequence()
-            .filter { it.methodParameterType == MethodParameterType.COMMAND }
+            .filter { it.methodParameterType == MethodParameterType.OPTION }
             .map { it as AutocompleteCommandParameter }
             .filter { it.isCompositeKey }
             .forEach { parameter ->

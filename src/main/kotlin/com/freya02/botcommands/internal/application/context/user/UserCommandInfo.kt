@@ -53,7 +53,7 @@ class UserCommandInfo internal constructor(
 
         for (parameter in parameters) {
             arguments[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.COMMAND -> {
+                MethodParameterType.OPTION -> {
                     parameter as UserContextCommandParameter
 
                     parameter.resolver.resolve(context, this, event)

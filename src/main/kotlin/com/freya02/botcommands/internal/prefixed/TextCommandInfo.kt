@@ -81,7 +81,7 @@ class TextCommandInfo(
         var groupIndex = 1
         for (parameter in parameters) {
             objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.COMMAND -> {
+                MethodParameterType.OPTION -> {
                     matcher ?: throwInternal("No matcher passed for a regex command")
 
                     parameter as TextCommandParameter

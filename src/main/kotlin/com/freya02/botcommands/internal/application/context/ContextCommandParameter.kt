@@ -8,6 +8,6 @@ abstract class ContextCommandParameter<R>(
     parameter: KParameter,
     val resolver: R
 ) : MethodParameter {
-    override val methodParameterType = MethodParameterType.COMMAND
+    override val methodParameterType = MethodParameterType.OPTION
     override val kParameter = parameter
 }

@@ -20,7 +20,7 @@ interface MethodParameter {
     val index: Int
         get() = kParameter.index
     val isOption: Boolean
-        get() = methodParameterType == MethodParameterType.COMMAND //TODO rename to OPTION
+        get() = methodParameterType == MethodParameterType.OPTION
     val isOptional: Boolean
         get() = kParameter.isNullable
     /** This checks the java primitiveness, not kotlin, kotlin.Double is an object. */

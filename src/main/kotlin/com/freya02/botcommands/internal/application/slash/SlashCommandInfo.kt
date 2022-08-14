@@ -61,7 +61,7 @@ class SlashCommandInfo internal constructor(
 
         //On every autocomplete handler, check if their method parameters match up with the slash command
         parameters.forEach { slashParam ->
-            if (slashParam.methodParameterType == MethodParameterType.COMMAND) {
+            if (slashParam.methodParameterType == MethodParameterType.OPTION) {
                 slashParam as SlashCommandParameter
 
                 slashParam.autocompleteHandler?.let { handler ->
@@ -103,7 +103,7 @@ class SlashCommandInfo internal constructor(
     ) where T : CommandInteractionPayload,
             T : Event {
         parameterLoop@ for (parameter in methodParameters) {
-            if (parameter.methodParameterType == MethodParameterType.COMMAND) {
+            if (parameter.methodParameterType == MethodParameterType.OPTION) {
                 parameter as AbstractSlashCommandParameter
 
                 val arguments = max(1, parameter.varArgs)

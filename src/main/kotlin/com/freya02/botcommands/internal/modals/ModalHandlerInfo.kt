@@ -43,7 +43,7 @@ class ModalHandlerInfo(
         if (hasModalData) {
             var sawModalData = false
             for (parameter in parameters) {
-                if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+                if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
                 parameter as ModalHandlerParameter
 
@@ -89,7 +89,7 @@ class ModalHandlerInfo(
         //Insert modal data in the order of appearance, after the event
         for (i in userDatas.indices) {
             val parameter = parameters[i]
-            if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+            if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
             requireUser(parameter is ModalHandlerDataParameter) {
                 """
@@ -111,7 +111,7 @@ class ModalHandlerInfo(
 
         for (parameter in parameters) {
             objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.COMMAND -> {
+                MethodParameterType.OPTION -> {
                     if (parameter !is ModalHandlerInputParameter) continue
 
                     //We have the modal input's ID

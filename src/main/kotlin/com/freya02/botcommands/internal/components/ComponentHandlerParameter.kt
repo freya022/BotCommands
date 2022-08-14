@@ -9,5 +9,5 @@ class ComponentHandlerParameter(
     override val kParameter: KParameter,
     val resolver: ComponentParameterResolver
 ) : MethodParameter {
-    override val methodParameterType = MethodParameterType.COMMAND
+    override val methodParameterType = MethodParameterType.OPTION
 }
