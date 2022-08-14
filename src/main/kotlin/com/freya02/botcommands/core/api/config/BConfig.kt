@@ -29,6 +29,8 @@ class BConfig internal constructor() {
 
     val serviceConfig = BServiceConfig()
 
+    val textConfig = BTextConfig()
+
     val applicationConfig = BApplicationConfig(this)
 
     val componentsConfig = BComponentsConfig(this)
@@ -39,6 +41,7 @@ class BConfig internal constructor() {
      * Used to take guild-specific settings such as prefixes
      */
     var settingsProvider: SettingsProvider by Delegates.lockableNotNull(this, "Settings provider needs to be set !")
+    fun hasSettingsProvider() = ::settingsProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Used by the thread pools such of command handlers / components
@@ -96,6 +99,10 @@ class BConfig internal constructor() {
         classes.add(clazz)
     }
 
+    fun textCommands(block: BTextConfig.() -> Unit) {
+        block(textConfig)
+    }
+
     fun applicationCommands(block: BApplicationConfig.() -> Unit) {
         block(applicationConfig)
     }
@@ -114,4 +121,6 @@ class BConfig internal constructor() {
     internal fun lock() {
         locked = true
     }
+
+    fun isOwner(id: Long) = id in ownerIds
 }

@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
 import com.freya02.botcommands.api.parameters.ParameterResolvers
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
-import com.freya02.botcommands.api.prefixed.TextCommandFilter
 import com.freya02.botcommands.core.api.config.BConfig
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.EventDispatcher
@@ -17,6 +16,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsContextIm
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import net.dv8tion.jda.api.EmbedBuilder
@@ -62,7 +62,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     private var helpBuilderConsumer: HelpBuilderConsumer? = null
     private val textCommandMap: MutableMap<CommandPath, TextCommandCandidates> = hashMapOf()
     private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
-    internal val textFilters: MutableList<TextCommandFilter> = arrayListOf()
+
+    internal val textCommandsContext = TextCommandsContextImpl(this)
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
@@ -168,7 +169,7 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
                 }
             }
         }
-        for (alias in aliases) { //TODO replace by a loop in the annotation processor
+        for (alias in aliases) {
             textCommandMap.compute(alias) { _: CommandPath, v: TextCommandCandidates? ->
                 when {
                     v != null -> v.also { it.add(commandInfo) }
@@ -216,16 +217,6 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    override fun addTextFilter(filter: TextCommandFilter) {
-        textFilters.add(filter)
-    }
-
-    override fun removeTextFilter(filter: TextCommandFilter) {
-        textFilters.remove(filter)
-    }
-
-
-
     override fun getRegistrationListeners(): List<RegistrationListener> {
         return Collections.unmodifiableList(registrationListeners)
     }
@@ -254,9 +245,9 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
         }
     }
 
-    override fun getSettingsProvider(): SettingsProvider? {
-        TODO()
-//        return config.settingsProvider
+    override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
+        if (!config.hasSettingsProvider()) return null
+        return config.settingsProvider
     }
 
     fun setHelpBuilderConsumer(builderConsumer: HelpBuilderConsumer) {

@@ -59,8 +59,6 @@ public final class TextCommandsBuilder {
 	 * @see BContext#addTextFilter(TextCommandFilter)
 	 */
 	public TextCommandsBuilder addTextFilter(TextCommandFilter filter) {
-		context.addTextFilter(filter);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 }

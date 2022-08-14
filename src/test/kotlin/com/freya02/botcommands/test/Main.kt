@@ -30,6 +30,10 @@ fun main() {
             componentManagerStrategy = DefaultComponentManager::class.java
         }
 
+        textCommands {
+            usePingAsPrefix = true
+        }
+
         applicationCommands {
             onlineAppCommandCheckEnabled = true
         }

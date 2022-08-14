@@ -6,14 +6,12 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.api.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
@@ -177,33 +175,6 @@ public interface BContext {
 	 * @param t       An optional exception
 	 */
 	void dispatchException(@NotNull String message, @Nullable Throwable t);
-
-	/**
-	 * Adds a text command filter for the command listener to check on each <b>regular / regex</b> command
-	 * <br>If one of the filters returns <code>false</code>, then the command is not executed
-	 * <br>Command overloads are also not executed
-	 *
-	 * <p>
-	 * <br><b>Example</b>
-	 * <br><b>Restricting the bot to a certain {@link GuildMessageChannel}</b>
-	 * <pre><code>
-	 * CommandsBuilder.newBuilder()
-	 *      .textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
-	 *          .addTextFilter(data -> data.event().getChannel().getIdLong() == 722891685755093076L)
-	 *      )
-	 * </code></pre>
-	 *
-	 * @param filter The filter to add
-	 */
-	void addTextFilter(TextCommandFilter filter);
-
-	/**
-	 * Removes a previously set text command filter
-	 *
-	 * @param filter The filter to remove
-	 * @see #addTextFilter(TextCommandFilter)
-	 */
-	void removeTextFilter(TextCommandFilter filter);
 
 	/**
 	 * Returns an immutable list of the registration listeners

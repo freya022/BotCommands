@@ -36,9 +36,6 @@ abstract class ApplicationCommandInfo internal constructor(
         if(isTestOnly && scope != CommandScope.GUILD) {
             throwUser("Application command annotated with @Test must have the GUILD scope")
         }
-        if (isOwnerRequired) {
-            throwUser("Application commands cannot be marked as owner-only")
-        }
 
         //Administrators manage who can use what, bot doesn't need to check for user mistakes
         // Why would you ask for a permission if the administrators want a less-powerful user to be able to use it ?

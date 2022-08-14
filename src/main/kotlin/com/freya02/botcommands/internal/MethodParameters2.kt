@@ -2,11 +2,13 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
+import com.freya02.botcommands.api.builder.TextGeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.application.slash.GeneratedMethodParameter
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.prefixed.TextGeneratedMethodParameter
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
@@ -40,6 +42,7 @@ class MethodParameters2 {
             return MethodParameters(function.valueParameters.drop(1).map { kParameter ->
                 return@map when {
                     options[kParameter.findDeclarationName()] is GeneratedOptionBuilder -> GeneratedMethodParameter(kParameter, options[kParameter.findDeclarationName()] as GeneratedOptionBuilder)
+                    options[kParameter.findDeclarationName()] is TextGeneratedOptionBuilder -> TextGeneratedMethodParameter(kParameter, options[kParameter.findDeclarationName()] as TextGeneratedOptionBuilder)
                     config.optionPredicate(kParameter) -> {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                         when (val resolver = resolverContainer.getResolver(kParameter)) {

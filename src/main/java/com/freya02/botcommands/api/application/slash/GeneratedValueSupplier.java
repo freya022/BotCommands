@@ -7,5 +7,5 @@ import org.jetbrains.annotations.Nullable;
 @FunctionalInterface
 public interface GeneratedValueSupplier {
 	@Nullable
-	Object getDefaultValue(@NotNull CommandInteractionPayload event);
+	Object getDefaultValue(@NotNull CommandInteractionPayload event);  //TODO use BC event
 }

@@ -32,7 +32,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
             val function = classPathFunc.function
 
             val parameters = function.nonInstanceParameters
-            val args = context.serviceContainer.getParameters(
+            val args = context.serviceContainer.getParameters( //TODO perhaps arguments shouldn't be retrieved eagerly
                 parameters.drop(1).map { it.type.jvmErasure }
             )
             map.getOrPut(parameters.first().type.jvmErasure) { mutableListOf() }.add(PreboundFunction(classPathFunc, args.toTypedArray()))

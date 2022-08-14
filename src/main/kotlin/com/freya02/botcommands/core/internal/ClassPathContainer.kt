@@ -48,18 +48,16 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 }
 
 internal fun List<ClassPathFunction>.withReturnType(vararg types: KClass<*>) =
-    this.map { it.function }.filter { it.returnType.jvmErasure.isSubclassOfAny(*types) }
+    this.filter { it.function.returnType.jvmErasure.isSubclassOfAny(*types) }
 
-internal fun <C : Iterable<ClassPathFunction>> C.requireReturnType(vararg types: KClass<*>): C = this.apply {
-    for (func in this.map { it.function }) {
-        requireUser(func.returnType.jvmErasure.isSubclassOfAny(*types), func) {
-            "Function must return any a superclass of: ${
-                types.joinToString(
-                    prefix = "[",
-                    postfix = "]"
-                ) { it.java.simpleName }
-            }"
-        }
+internal fun <C : Iterable<ClassPathFunction>> C.requireReturnType(vararg types: KClass<*>): C = this.onEach {
+    requireUser(it.function.returnType.jvmErasure.isSubclassOfAny(*types), it.function) {
+        "Function must return any a superclass of: ${
+            types.joinToString(
+                prefix = "[",
+                postfix = "]"
+            ) { type -> type.java.simpleName }
+        }"
     }
 }
 
@@ -71,27 +69,23 @@ private fun hasFirstArg(
     else -> firstParam.type.jvmErasure.isSubclassOfAny(*types)
 }
 
-internal fun List<ClassPathFunction>.withFirstArg(vararg types: KClass<*>) = this.map { it.function }.filter { hasFirstArg(it, types) }
+internal fun List<ClassPathFunction>.withFirstArg(vararg types: KClass<*>) = this.filter { hasFirstArg(it.function, types) }
 
-internal fun <C : Iterable<ClassPathFunction>> C.requireFirstArg(vararg types: KClass<*>): C = this.apply {
-    for (func in this.map { it.function }) {
-        requireUser(hasFirstArg(func, types), func) {
-            "Function must have a first parameter with a superclass of: ${
-                types.joinToString(
-                    prefix = "[",
-                    postfix = "]"
-                ) { it.java.simpleName }
-            }"
-        }
+internal fun <C : Iterable<ClassPathFunction>> C.requireFirstArg(vararg types: KClass<*>): C = this.onEach {
+    requireUser(hasFirstArg(it.function, types), it.function) {
+        "Function must have a first parameter with a superclass of: ${
+            types.joinToString(
+                prefix = "[",
+                postfix = "]"
+            ) { type -> type.java.simpleName }
+        }"
     }
 }
 
-internal fun List<ClassPathFunction>.withNonStatic() = this.map { it.function }.filter { !it.isStatic }
+internal fun List<ClassPathFunction>.withNonStatic() = this.filter { !it.function.isStatic }
 
-internal fun <C : Iterable<ClassPathFunction>> C.requireNonStatic(): C = this.apply {
-    for (func in this.map { it.function }) {
-        requireUser(!func.isStatic, func) {
-            "Function must be static"
-        }
+internal fun <C : Iterable<ClassPathFunction>> C.requireNonStatic(): C = this.onEach {
+    requireUser(!it.function.isStatic, it.function) {
+        "Function must be static"
     }
 }
