@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsContextIm
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import net.dv8tion.jda.api.EmbedBuilder
@@ -61,6 +62,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     private var helpBuilderConsumer: HelpBuilderConsumer? = null
     private val textCommandMap: MutableMap<CommandPath, TextCommandCandidates> = hashMapOf()
     private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
+
+    internal val textCommandsContext = TextCommandsContextImpl(this)
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
