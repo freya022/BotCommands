@@ -242,7 +242,8 @@ public final class CommandListener extends ListenerAdapter {
 			}
 		}
 
-		return candidate.execute(event, args, matcher, throwableConsumer);
+		throw new UnsupportedOperationException();
+//		return candidate.execute(event, args, matcher);
 	}
 
 	@Nullable

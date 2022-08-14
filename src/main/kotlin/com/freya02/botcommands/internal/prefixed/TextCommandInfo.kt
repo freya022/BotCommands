@@ -12,10 +12,10 @@ import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.Consumer
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
@@ -33,7 +33,9 @@ class TextCommandInfo(
     val hidden: Boolean
     val completePattern: Pattern?
     val order: Int
-    val isRegexCommand: Boolean
+
+    private val useTokenizedEvent: Boolean
+    private val hasOptions: Boolean
 
     init {
         isOwnerRequired = builder.ownerRequired
@@ -42,7 +44,8 @@ class TextCommandInfo(
         order = builder.order
         hidden = builder.hidden
 
-        isRegexCommand = method.valueParameters[0].type.jvmErasure.isSuperclassOf(CommandEvent::class)
+        useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
+        hasOptions = builder.optionBuilders.any { it.value is TextOptionBuilder }
 
         @Suppress("RemoveExplicitTypeArguments")
         parameters = MethodParameters2.transform<RegexParameterResolver>(
@@ -55,27 +58,25 @@ class TextCommandInfo(
         }
 
         completePattern = when {
-            parameters.optionCount > 0 -> CommandPattern.of(this)
+            hasOptions -> CommandPattern.of(this)
             else -> null
         }
     }
 
-    @Throws(Exception::class)
-    fun execute(
+    suspend fun execute(
         event: MessageReceivedEvent,
         args: String,
-        matcher: Matcher,
-        throwableConsumer: Consumer<Throwable>
+        matcher: Matcher?
     ): ExecutionResult {
         val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
-        objects += if (isRegexCommand) BaseCommandEventImpl(context, method, event, args) else CommandEventImpl(
-            context,
-            method,
-            event,
-            args
-        )
+        objects += when {
+            useTokenizedEvent -> CommandEventImpl(context, method, event, args)
+            else -> BaseCommandEventImpl(context, method, event, args)
+        }
 
-        if (isRegexCommand) {
+        if (hasOptions) {
+            matcher ?: throwInternal("No matcher passed for a regex command")
+
             var groupIndex = 1
             for (parameter in parameters) {
                 if (parameter.methodParameterType == MethodParameterType.COMMAND) {
@@ -133,11 +134,7 @@ class TextCommandInfo(
 
         applyCooldown(event)
 
-        try {
-            method.call(*objects.toTypedArray())
-        } catch (e: Throwable) {
-            throwableConsumer.accept(e)
-        }
+        method.callSuspend(*objects.toTypedArray())
 
         return ExecutionResult.OK
     }

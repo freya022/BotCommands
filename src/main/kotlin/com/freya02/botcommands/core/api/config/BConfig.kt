@@ -121,4 +121,6 @@ class BConfig internal constructor() {
     internal fun lock() {
         locked = true
     }
+
+    fun isOwner(id: Long) = id in ownerIds
 }
