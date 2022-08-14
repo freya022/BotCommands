@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
 class TextTest : TextCommand() {
     @CommandMarker
     fun onTextTest(event: BaseCommandEvent) {
-
+        event.reply("gud").queue()
     }
 
     @TextDeclaration

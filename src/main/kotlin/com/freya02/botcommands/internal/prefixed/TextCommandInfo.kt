@@ -10,11 +10,14 @@ import com.freya02.botcommands.api.prefixed.builder.TextOptionBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.reflect.full.callSuspend
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -35,7 +38,6 @@ class TextCommandInfo(
     val order: Int
 
     private val useTokenizedEvent: Boolean
-    private val hasOptions: Boolean
 
     init {
         isOwnerRequired = builder.ownerRequired
@@ -45,7 +47,6 @@ class TextCommandInfo(
         hidden = builder.hidden
 
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
-        hasOptions = builder.optionBuilders.any { it.value is TextOptionBuilder }
 
         @Suppress("RemoveExplicitTypeArguments")
         parameters = MethodParameters2.transform<RegexParameterResolver>(
@@ -58,7 +59,7 @@ class TextCommandInfo(
         }
 
         completePattern = when {
-            hasOptions -> CommandPattern.of(this)
+            parameters.any { it.isOption } -> CommandPattern.of(this)
             else -> null
         }
     }
@@ -68,18 +69,19 @@ class TextCommandInfo(
         args: String,
         matcher: Matcher?
     ): ExecutionResult {
-        val objects: MutableList<Any?> = ArrayList(parameters.size + 1)
-        objects += when {
+        val objects: MutableMap<KParameter, Any?> = hashMapOf()
+        objects[method.instanceParameter!!] = instance
+        objects[method.nonInstanceParameters.first()] = when {
             useTokenizedEvent -> CommandEventImpl(context, method, event, args)
             else -> BaseCommandEventImpl(context, method, event, args)
         }
 
-        if (hasOptions) {
-            matcher ?: throwInternal("No matcher passed for a regex command")
+        var groupIndex = 1
+        for (parameter in parameters) {
+            objects[parameter.kParameter] = when (parameter.methodParameterType) {
+                MethodParameterType.COMMAND -> {
+                    matcher ?: throwInternal("No matcher passed for a regex command")
 
-            var groupIndex = 1
-            for (parameter in parameters) {
-                if (parameter.methodParameterType == MethodParameterType.COMMAND) {
                     parameter as TextCommandParameter
 
                     var found = 0
@@ -89,6 +91,7 @@ class TextCommandInfo(
                         groups[j] = matcher.group(groupIndex++)
                         if (groups[j] != null) found++
                     }
+
                     if (found == groupCount) { //Found all the groups
                         val resolved = parameter.resolver.resolve(context, this, event, groups)
                         //Regex matched but could not be resolved
@@ -96,7 +99,8 @@ class TextCommandInfo(
                         if (resolved == null && !parameter.isOptional) {
                             return ExecutionResult.CONTINUE
                         }
-                        objects.add(resolved)
+
+                        resolved
                     } else if (!parameter.isOptional) { //Parameter is not found yet the pattern matched and is not optional
                         LOGGER.warn(
                             "Could not find parameter #{} in {} for input args {}",
@@ -104,37 +108,32 @@ class TextCommandInfo(
                             Utils.formatMethodShort(method),
                             args
                         )
+
                         return ExecutionResult.CONTINUE
                     } else { //Parameter is optional
-                        if (parameter.isPrimitive) {
-                            objects.add(0)
-                        } else {
-                            objects.add(null)
+                        when {
+                            parameter.isPrimitive -> 0
+                            else -> null
                         }
                     }
-                } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
+                }
+                MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
 
-                    objects.add(parameter.resolver.resolve(context, this, event))
-                } else {
-                    TODO()
+                    parameter.resolver.resolve(context, this, event)
                 }
-            }
-        } else {
-            for (parameter in parameters) {
-                if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
-                    parameter as CustomMethodParameter
+                MethodParameterType.GENERATED -> {
+                    parameter as TextGeneratedMethodParameter
 
-                    objects.add(parameter.resolver.resolve(context, this, event))
-                } else {
-                    throwInternal("Encountered other types of parameters (${parameter.methodParameterType}) in a fallback text command")
+                    parameter.generatedOptionBuilder.generatedValueSupplier.getDefaultValue(event)
                 }
+                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
 
-        applyCooldown(event)
+        applyCooldown(event) //TODO cooldown is applied on a per-alternative basis, it should be per command path
 
-        method.callSuspend(*objects.toTypedArray())
+        method.callSuspendBy(objects)
 
         return ExecutionResult.OK
     }
