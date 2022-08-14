@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.GuildMessageChannel
 
 @LateService
 class BTextConfig internal constructor() {
+    var usePingAsPrefix: Boolean = false
+
     val prefixes: MutableList<String> = mutableListOf()
 
     /**
