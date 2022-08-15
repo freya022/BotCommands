@@ -10,7 +10,16 @@ import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
 @CommandMarker
 class TextTest : TextCommand() {
     @CommandMarker
-    fun onTextTest(event: BaseCommandEvent, text: String?, context: BContext, userName: String) {
+    fun onTextTestFallback(event: BaseCommandEvent, context: BContext, userName: String) {
+        event.reply("""
+            text: [fallback]
+            context: $context
+            user name: $userName
+        """.trimIndent()).queue()
+    }
+
+    @CommandMarker
+    fun onTextTest(event: BaseCommandEvent, text: String, context: BContext, userName: String) {
         event.reply("""
             text: $text
             context: $context
@@ -30,6 +39,16 @@ class TextTest : TextCommand() {
             }
 
             function = ::onTextTest
+        }
+
+        textCommandManager.textCommand("test") {
+            customOption("context")
+
+            generatedOption("userName") {
+                it.author.name
+            }
+
+            function = ::onTextTestFallback
         }
     }
 }

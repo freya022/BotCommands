@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.prefixed
 
 import com.freya02.botcommands.api.prefixed.TextCommandsContext
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.throwUser
 
 class TextCommandsContextImpl internal constructor(context: BContextImpl) : TextCommandsContext {
     private val treeRoot = TextCommandTree()
@@ -17,7 +18,9 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
         (commandInfo.aliases + commandInfo.path).forEach { path ->
             val currentTree = tree.children.computeIfAbsent(path.lastName) { TextCommandTree() }
 
-            currentTree.addCommand(path, commandInfo)
+            if (currentTree.exists(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo.path} already exists")
+
+            if (!currentTree.addCommand(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo.path} already exists")
         }
     }
 

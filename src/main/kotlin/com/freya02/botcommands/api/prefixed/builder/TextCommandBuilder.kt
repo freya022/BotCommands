@@ -15,7 +15,7 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     var hidden: Boolean = false
     var aliases: MutableList<CommandPath> = arrayListOf()
     var description = "No description"
-    var order = -1
+    var order = 0
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

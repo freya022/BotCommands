@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
+import kotlin.reflect.cast
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
@@ -29,6 +30,8 @@ class TextCommandInfo(
     builder: TextCommandBuilder
 ) : AbstractCommandInfo(context, builder) {
     override val parameters: MethodParameters
+    override val optionParameters: List<TextCommandParameter>
+        get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
 
     val isOwnerRequired: Boolean
     val aliases: List<CommandPath>

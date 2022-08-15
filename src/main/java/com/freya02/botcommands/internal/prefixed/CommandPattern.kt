@@ -9,8 +9,7 @@ object CommandPattern {
         val patternBuilder = StringBuilder(commandInfo.parameters.optionCount * 16)
         patternBuilder.append('^')
 
-        @Suppress("UNCHECKED_CAST")
-        val optionParameters: List<TextCommandParameter> = commandInfo.optionParameters as List<TextCommandParameter>
+        val optionParameters: List<TextCommandParameter> = commandInfo.optionParameters
         val hasMultipleQuotable = Utils.hasMultipleQuotable(optionParameters)
 
         optionParameters.forEachIndexed { i, parameter ->
