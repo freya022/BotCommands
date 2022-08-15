@@ -126,7 +126,9 @@ internal class ApplicationCommandsBuilder(
             }
         }
 
-        guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }.withLock {
+        synchronized(guildUpdateMutexMap) {
+            guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
+        }.withLock {
             val manager = GuildApplicationCommandManager(context, guild)
             guildDeclarationFunctions.forEach { classPathFunction ->
                 runDeclarationFunction(classPathFunction, serviceContainer, manager)
