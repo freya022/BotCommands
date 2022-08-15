@@ -16,7 +16,7 @@ abstract class AbstractCommandInfo internal constructor(
     val botPermissions: EnumSet<Permission>
     val nsfwStrategy: NSFWStrategy?
 
-    final override val instance: Any
+    override val instance: Any
     final override val method: KFunction<*>
 
     init {

@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.api.prefixed.CommandEvent
+import com.freya02.botcommands.api.prefixed.TextCommand
 import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.prefixed.builder.TextOptionBuilder
 import com.freya02.botcommands.internal.*
@@ -32,6 +33,9 @@ class TextCommandInfo(
     override val parameters: MethodParameters
     override val optionParameters: List<TextCommandParameter>
         get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
+
+    override val instance: TextCommand
+        get() = super.instance as TextCommand
 
     val aliases: List<CommandPath> = builder.aliases
 

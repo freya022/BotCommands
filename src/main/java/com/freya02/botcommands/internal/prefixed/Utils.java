@@ -10,11 +10,11 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Utils {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -26,83 +26,81 @@ public class Utils {
 	}
 
 	public static EmbedBuilder generateCommandHelp(Collection<TextCommandInfo> candidates, BaseCommandEvent event) {
-		throw new UnsupportedOperationException();
+		final EmbedBuilder builder = event.getDefaultEmbed();
 
-//		final EmbedBuilder builder = event.getDefaultEmbed();
-//
-//		final TextCommandInfo commandInfo = candidates.last();
-//		final String name = commandInfo.getPath().getFullPath().replace('/', ' ');
-//
-//		final String description = Utils.getDescription(commandInfo);
-//		final String prefix = event.getContext().getPrefix();
-//
-//		final MessageEmbed.AuthorInfo author = builder.isEmpty() ? null : event.getDefaultEmbed().build().getAuthor();
-//		if (author != null) {
-//			builder.setAuthor(author.getName() + " – '" + name + "' command", author.getUrl(), author.getIconUrl());
-//		} else {
-//			builder.setAuthor('\'' + name + "' command");
-//		}
-//
-//		if (description != null) {
-//			builder.addField("Description", description, false);
-//		}
-//
-//		final ArrayList<TextCommandInfo> reversedCandidates = new ArrayList<>(candidates);
-//		Collections.reverse(reversedCandidates);
-//
-//		int i = 1;
-//		for (TextCommandInfo candidate : reversedCandidates) {
-//			final List<? extends TextCommandParameter> commandParameters = candidate.getOptionParameters();
-//
-//			final StringBuilder syntax = new StringBuilder("**Syntax**: " + prefix + name + ' ');
-//			final StringBuilder example = new StringBuilder("**Example**: " + prefix + name + ' ');
-//
-//			if (candidate.isRegexCommand()) {
-//				final boolean needsQuote = hasMultipleQuotable(commandParameters);
-//
-//				for (TextCommandParameter commandParameter : commandParameters) {
-//					final Class<?> boxedType = commandParameter.getBoxedType();
-//
-//					final String argName = getArgName(needsQuote, commandParameter, boxedType);
-//					final String argExample = getArgExample(needsQuote, commandParameter, boxedType);
-//
-//					final boolean isOptional = commandParameter.isOptional();
-//					syntax.append(isOptional ? '[' : '`').append(argName).append(isOptional ? ']' : '`').append(' ');
-//					example.append(argExample).append(' ');
-//				}
-//			}
-//
-//			final String effectiveCandidateDescription = !candidate.hasDescription()
-//					? ""
-//					: ("**Description**: " + candidate.getDescription() + "\n");
-//			if (candidates.size() == 1) {
-//				builder.addField("Usage", effectiveCandidateDescription + syntax + "\n" + example, false);
-//			} else {
-//				builder.addField("Overload #" + i, effectiveCandidateDescription + syntax + "\n" + example, false);
-//			}
-//
-//			i++;
-//		}
-//
-//		final List<TextCommandCandidates> textSubcommands = event.getContext().findTextSubcommands(commandInfo.getPath());
-//		if (textSubcommands != null) {
-//			final String subcommandHelp = textSubcommands
-//					.stream()
-//					.map(TreeSet::first)
-//					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + Utils.getNonBlankDescription(info))
-//					.collect(Collectors.joining("\n - "));
-//
-//			if (!subcommandHelp.isBlank()) {
-//				builder.addField("Subcommands", subcommandHelp, false);
-//			}
-//		}
-//
-//		final Consumer<EmbedBuilder> descConsumer = commandInfo.getInstance().getDetailedDescription();
-//		if (descConsumer != null) {
-//			descConsumer.accept(builder);
-//		}
-//
-//		return builder;
+		final TextCommandInfo commandInfo = candidates.last();
+		final String name = commandInfo.getPath().getFullPath().replace('/', ' ');
+
+		final String description = commandInfo.getDescription();
+		final String prefix = event.getContext().getPrefix();
+
+		final MessageEmbed.AuthorInfo author = builder.isEmpty() ? null : event.getDefaultEmbed().build().getAuthor();
+		if (author != null) {
+			builder.setAuthor(author.getName() + " – '" + name + "' command", author.getUrl(), author.getIconUrl());
+		} else {
+			builder.setAuthor('\'' + name + "' command");
+		}
+
+		if (description != null) {
+			builder.addField("Description", description, false);
+		}
+
+		final ArrayList<TextCommandInfo> reversedCandidates = new ArrayList<>(candidates);
+		Collections.reverse(reversedCandidates);
+
+		int i = 1;
+		for (TextCommandInfo candidate : reversedCandidates) {
+			final List<? extends TextCommandParameter> commandParameters = candidate.getOptionParameters();
+
+			final StringBuilder syntax = new StringBuilder("**Syntax**: " + prefix + name + ' ');
+			final StringBuilder example = new StringBuilder("**Example**: " + prefix + name + ' ');
+
+			if (!commandParameters.isEmpty()) {
+				final boolean needsQuote = hasMultipleQuotable(commandParameters);
+
+				for (TextCommandParameter commandParameter : commandParameters) {
+					final Class<?> boxedType = commandParameter.getBoxedType();
+
+					final String argName = getArgName(needsQuote, commandParameter, boxedType);
+					final String argExample = getArgExample(needsQuote, commandParameter, boxedType);
+
+					final boolean isOptional = commandParameter.isOptional();
+					syntax.append(isOptional ? '[' : '`').append(argName).append(isOptional ? ']' : '`').append(' ');
+					example.append(argExample).append(' ');
+				}
+			}
+
+			final String effectiveCandidateDescription = candidate.getDescription().equals("No description")
+					? ""
+					: ("**Description**: " + candidate.getDescription() + "\n");
+			if (candidates.size() == 1) {
+				builder.addField("Usage", effectiveCandidateDescription + syntax + "\n" + example, false);
+			} else {
+				builder.addField("Overload #" + i, effectiveCandidateDescription + syntax + "\n" + example, false);
+			}
+
+			i++;
+		}
+
+		final List<TextCommandCandidates> textSubcommands = event.getContext().findTextSubcommands(commandInfo.getPath());
+		if (textSubcommands != null) {
+			final String subcommandHelp = textSubcommands
+					.stream()
+					.map(TreeSet::first)
+					.map(info -> "**" + info.getPath().getNameAt(info.getPath().getNameCount() - commandInfo.getPath().getNameCount()) + "** : " + info.getDescription())
+					.collect(Collectors.joining("\n - "));
+
+			if (!subcommandHelp.isBlank()) {
+				builder.addField("Subcommands", subcommandHelp, false);
+			}
+		}
+
+		final Consumer<EmbedBuilder> descConsumer = commandInfo.getInstance().getDetailedDescription();
+		if (descConsumer != null) {
+			descConsumer.accept(builder);
+		}
+
+		return builder;
 	}
 
 	private static String getArgExample(boolean needsQuote, TextCommandParameter parameter, Class<?> boxedType) {
