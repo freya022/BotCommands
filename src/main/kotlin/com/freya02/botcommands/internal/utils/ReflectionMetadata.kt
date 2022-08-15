@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.Optional
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
@@ -57,7 +58,7 @@ internal object ReflectionMetadata {
                         if (it.packageName.startsWith("com.freya02.botcommands.test")) {
                             return@filter false
                         } else {
-                            return@filter it.isService() || it.outerClasses.any { outer -> outer.isService() }
+                            return@filter it.isService() || it.outerClasses.any { outer -> outer.isService() } || it.hasAnnotation(IncludeClasspath::class.java.name)
                         }
                     })
                 }
