@@ -14,7 +14,7 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     var aliases: MutableList<CommandPath> = arrayListOf()
 
     var category: String = "No category"
-    var description = "No description"
+    var description = defaultDescription
 
     var ownerRequired: Boolean = false
     var hidden: Boolean = false
@@ -50,5 +50,9 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
         }
 
         return TextCommandInfo(context, this)
+    }
+
+    companion object {
+        const val defaultDescription = "No description"
     }
 }

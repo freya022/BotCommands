@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.prefixed
 
+import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.prefixed.CommandEvent
@@ -8,6 +9,7 @@ import com.freya02.botcommands.api.prefixed.TextCommand
 import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
@@ -18,12 +20,15 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
 import java.util.*
 
+@IncludeClasspath
 class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpCommand {
-    suspend fun execute(event: CommandEvent) {
+    @CommandMarker
+    suspend fun onTextHelpFallback(event: CommandEvent) {
         sendGlobalHelp(event)
     }
 
-    suspend fun execute(event: BaseCommandEvent, commandStr: String) {
+    @CommandMarker
+    suspend fun onTextHelpCommand(event: BaseCommandEvent, commandStr: String) {
         val commandInfos = context.textCommandsContext.findTextCommand(SPACE_PATTERN.split(commandStr)).commands
         if (commandInfos.isEmpty()) {
             event.respond("Command '$commandStr' does not exist").await()
@@ -112,10 +117,12 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         return fullPath.replace('/', ' ')
     }
 
-    fun declare(manager: TextCommandManager) {
+    internal fun declare(manager: TextCommandManager) {
 		manager.textCommand("help") {
             category = "Utils"
             description = "Gives help for all commands"
+
+            function = HelpCommand::onTextHelpFallback
         }
 
 		manager.textCommand("help") {
@@ -123,8 +130,10 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
             description = "Gives help for a command"
 
 			option("commandStr", "command path") {
-				example = "help"
+				helpExample = "tag"
 			}
+
+            function = HelpCommand::onTextHelpCommand
 		}
     }
 

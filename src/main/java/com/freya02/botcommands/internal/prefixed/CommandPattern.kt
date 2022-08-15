@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.prefixed
 
+import com.freya02.botcommands.internal.prefixed.Utils.hasMultipleQuotable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.util.regex.Pattern
 
@@ -10,7 +11,7 @@ object CommandPattern {
         patternBuilder.append('^')
 
         val optionParameters: List<TextCommandParameter> = commandInfo.optionParameters
-        val hasMultipleQuotable = Utils.hasMultipleQuotable(optionParameters)
+        val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
 
         optionParameters.forEachIndexed { i, parameter ->
             val pattern = when {

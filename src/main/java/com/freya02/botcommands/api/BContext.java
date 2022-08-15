@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
+import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import kotlin.reflect.KClass;
@@ -51,6 +52,10 @@ public interface BContext {
 	 */
 	@NotNull
 	default String getPrefix() {
+		if (((BContextImpl) this).getConfig().getTextConfig().getUsePingAsPrefix()) {
+			return getJDA().getSelfUser().getAsMention();
+		}
+
 		return getPrefixes().get(0);
 	}
 
