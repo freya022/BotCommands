@@ -34,7 +34,7 @@ import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
-class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+class BContextImpl(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     internal val classPathContainer: ClassPathContainer
     val serviceContainer: ServiceContainer
     val eventDispatcher: EventDispatcher
@@ -84,6 +84,8 @@ class BContextImpl(val config: BConfig, val eventManager: CoroutineEventManager)
     override fun <T : Any> getService(clazz: Class<T>): T {
         return serviceContainer.getService(clazz)
     }
+
+    override fun getConfig(): BConfig = config
 
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
