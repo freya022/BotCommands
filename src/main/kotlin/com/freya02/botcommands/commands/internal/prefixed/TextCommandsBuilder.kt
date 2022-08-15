@@ -8,6 +8,7 @@ import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.*
 import com.freya02.botcommands.core.internal.events.FirstReadyEvent
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.prefixed.HelpCommand
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlin.reflect.full.callSuspend
@@ -17,7 +18,6 @@ private val LOGGER = Logging.getLogger()
 
 @BService
 internal class TextCommandsBuilder(
-    private val context: BContextImpl,
     private val serviceContainer: ServiceContainer,
     classPathContainer: ClassPathContainer
 ) {
@@ -39,11 +39,21 @@ internal class TextCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onFirstRun(event: FirstReadyEvent, context: BContextImpl) {
+    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl) {
         try {
             val manager = TextCommandManager(context)
             declarationFunctions.forEach { classPathFunction ->
                 runDeclarationFunction(classPathFunction, manager)
+            }
+
+            if (manager.textCommands.any { it.path.fullPath == "help" }) {
+                LOGGER.debug("Using a custom 'help' text command implementation");
+            } else {
+                if (context.isHelpDisabled) {
+                    LOGGER.debug("Using no 'help' text command implementation")
+                } else {
+                    context.serviceContainer.getService(HelpCommand::class, useNonClasspath = true).declare(manager)
+                }
             }
 
             manager.textCommands.forEach {

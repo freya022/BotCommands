@@ -172,7 +172,7 @@ public final class CommandListener extends ListenerAdapter {
 
 			if (helpCommand != null) {
 				helpCommand.onInvalidCommand(new BaseCommandEventImpl(context, helpInfo.getMethod(), event, ""),
-						candidates.first().getPath());
+						candidates);
 			}
 		}, throwableConsumer);
 	}

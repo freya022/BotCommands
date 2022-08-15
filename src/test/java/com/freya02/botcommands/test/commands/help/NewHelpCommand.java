@@ -1,11 +1,13 @@
 package com.freya02.botcommands.test.commands.help;
 
 import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.IHelpCommand;
 import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 public class NewHelpCommand extends TextCommand implements IHelpCommand {
 	@JDATextCommand(
@@ -17,7 +19,7 @@ public class NewHelpCommand extends TextCommand implements IHelpCommand {
 	}
 
 	@Override
-	public void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull CommandPath executedCommandPath) {
+	public void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull Collection<TextCommandInfo> commandInfos) {
 		event.reactError().queue();
 	}
 }

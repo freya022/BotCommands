@@ -1,7 +1,9 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 /**
  * Interface which needs to be implemented by the help command.
@@ -15,8 +17,8 @@ public interface IHelpCommand {
 	 *
 	 * <p><b>Be aware: </b>Localization annotations cannot be applied on this method
 	 *
-	 * @param event               The event of the current command invocation
-	 * @param executedCommandPath The command path of the command which tried to be used
+	 * @param event        The event of the current command invocation
+	 * @param commandInfos The command data of the command which the user tried to use, they share the same path, but have different content
 	 */
-	void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull CommandPath executedCommandPath);
+	void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull Collection<TextCommandInfo> commandInfos);
 }

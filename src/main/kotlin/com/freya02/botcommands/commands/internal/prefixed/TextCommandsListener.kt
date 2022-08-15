@@ -106,7 +106,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
             if (helpCommand != null && helpInfo != null) {
                 helpCommand.onInvalidCommand(
                     BaseCommandEventImpl(context, helpInfo.method, event, ""),
-                    result.commands.first().path
+                    result.commands
                 )
             }
         } catch (e: Throwable) {

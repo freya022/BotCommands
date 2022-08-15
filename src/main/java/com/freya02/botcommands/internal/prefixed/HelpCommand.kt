@@ -1,140 +1,136 @@
-package com.freya02.botcommands.internal.prefixed;
+package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Category;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Description;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.prefixed.*;
-import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.Usability;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import org.jetbrains.annotations.NotNull;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Pattern;
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Category
+import com.freya02.botcommands.annotations.api.prefixed.annotations.Description
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.prefixed.CommandEvent
+import com.freya02.botcommands.api.prefixed.IHelpCommand
+import com.freya02.botcommands.api.prefixed.TextCommand
+import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.Usability
+import dev.minn.jda.ktx.coroutines.await
+import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.GuildMessageChannel
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
+import java.time.Instant
+import java.util.*
 
 @Category("Utils")
 @Description("Gives help about a command")
-public final class HelpCommand extends TextCommand implements IHelpCommand {
-	private static final Pattern SPACE_PATTERN = Pattern.compile("\\s+");
-	private final BContext context;
+class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpCommand {
+    suspend fun execute(event: CommandEvent) {
+        sendGlobalHelp(event)
+    }
 
-	public HelpCommand(BContext context) {
-		this.context = context;
-	}
+    suspend fun execute(event: BaseCommandEvent, commandStr: String) {
+        val commandInfos = context.textCommandsContext.findTextCommand(SPACE_PATTERN.split(commandStr)).commands
+        if (commandInfos.isEmpty()) {
+            event.respond("Command '$commandStr' does not exist").await()
+            return
+        }
 
-	@JDATextCommand(
-			name = "help",
-			description = "Gives help for all commands"
-	)
-	public void execute(CommandEvent event) {
-		sendGlobalHelp(event);
-	}
+        sendCommandHelp(event, commandInfos)
+    }
 
-	@JDATextCommand(
-			name = "help",
-			description = "Gives help about a command"
-	)
-	public void execute(BaseCommandEvent event, @TextOption(name = "command path", example = "help") String commandStr) {
-		final String[] split = SPACE_PATTERN.split(commandStr);
+    override fun onInvalidCommand(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>) {
+        context.config.coroutineScopesConfig.textCommandsScope.launch {
+            sendCommandHelp(event, commandInfos)
+        }
+    }
 
-		if (split.length > 3) {
-			event.respond("The command '" + commandStr + "' cannot have more than 3 components").queue();
+    private suspend fun sendGlobalHelp(event: BaseCommandEvent) {
+        val builder = generateGlobalHelp(event.member, event.guildChannel)
+        val embed = builder.build()
 
-			return;
-		}
+        try {
+            event.author
+                .openPrivateChannel()
+                .flatMap { event.sendWithEmbedFooterIcon(it, embed, event.failureReporter("Unable to send help message")) }
+                .await()
 
-		sendCommandHelp(event, CommandPath.of(split));
-	}
+            event.reactSuccess().queue()
+        } catch (e: ErrorResponseException) {
+            when (e.errorResponse) {
+                ErrorResponse.CANNOT_SEND_TO_USER -> event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
+                else -> throw e
+            }
+        }
+    }
 
-	@Override
-	public void onInvalidCommand(@NotNull BaseCommandEvent event, @NotNull CommandPath executedCommandPath) {
-		sendCommandHelp(event, executedCommandPath);
-	}
+    private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>) {
+        val member = event.member
+        val usability = Usability.of(context, commandInfos.first(), member, event.guildChannel, !context.isOwner(member.idLong))
+        if (usability.isNotShowable) {
+            event.respond("Command '" + commandInfos.first().path.getSpacedPath() + "' does not exist").await()
+            return
+        }
 
-	private void sendGlobalHelp(BaseCommandEvent event) {
-		final EmbedBuilder builder = generateGlobalHelp(event.getMember(), event.getGuildChannel());
+        val embed = generateCommandHelp(event, commandInfos)
+        event.respond(embed.build()).queue()
+    }
 
-		final MessageEmbed embed = builder.build();
-		event.getAuthor().openPrivateChannel().queue(
-				privateChannel -> event.sendWithEmbedFooterIcon(privateChannel, embed, event.failureReporter("Unable to send help message")).queue(
-						m -> event.reactSuccess().queue(),
-						t -> event.reactError().queue()),
-				t -> event.getChannel().sendMessage(context.getDefaultMessages(event.getGuild()).getClosedDMErrorMsg()).queue());
+    private fun generateGlobalHelp(member: Member, channel: GuildMessageChannel): EmbedBuilder {
+        val builder = context.defaultEmbedSupplier.get()
+        builder.setTimestamp(Instant.now())
+        builder.setColor(member.colorRaw)
+        builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n")
 
-	}
+        val categoryBuilderMap = TreeMap<String, StringJoiner>(String.CASE_INSENSITIVE_ORDER)
+        val insertedCommands: MutableSet<String> = hashSetOf()
+        for (candidates in context.commands) {
+            val cmd = candidates.first()
+            if (insertedCommands.add(cmd.path.name)) { //Prevent duplicates since candidates share the same command path
+                if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
+                    categoryBuilderMap
+                        .computeIfAbsent(Utils.getCategory(cmd)) { StringJoiner("\n") }
+                        .add("**" + cmd.path.name + "** : " + Utils.getNonBlankDescription(cmd))
+                }
+            }
+        }
 
-	private void sendCommandHelp(BaseCommandEvent event, CommandPath cmdPath) {
-		TextCommandCandidates candidates = event.getContext().findCommands(cmdPath);
-		if (candidates == null) {
-			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
-			return;
-		}
+        for ((key, value) in categoryBuilderMap) {
+            builder.addField(key, value.toString(), false)
+        }
 
-		final Member member = event.getMember();
-		final GuildMessageChannel channel = event.getGuildChannel();
-		final Usability usability = Usability.of(context, candidates.first(), member, channel, !context.isOwner(member.getIdLong()));
-		if (usability.isNotShowable()) {
-			event.respond("Command '" + getSpacedPath(cmdPath) + "' does not exist").queue(null, event.failureReporter("Failed to send help"));
-			return;
-		}
+        context.helpBuilderConsumer?.accept(builder, true, null)
 
-		final EmbedBuilder embed = generateCommandHelp(event, candidates);
+        return builder
+    }
 
-		event.respond(embed.build()).queue();
-	}
+    private fun generateCommandHelp(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>): EmbedBuilder {
+        val builder = Utils.generateCommandHelp(commandInfos, event)
+        builder.setTimestamp(Instant.now())
+        builder.setColor(event.member.colorRaw)
 
-	private EmbedBuilder generateGlobalHelp(Member member, GuildMessageChannel channel) {
-		final EmbedBuilder builder = context.getDefaultEmbedSupplier().get();
+        context.helpBuilderConsumer?.accept(builder, false, commandInfos)
 
-		builder.setTimestamp(Instant.now());
-		builder.setColor(member.getColorRaw());
-		builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n");
+        return builder
+    }
 
-		final TreeMap<String, StringJoiner> categoryBuilderMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		final Set<String> insertedCommands = new HashSet<>();
-		for (TextCommandCandidates candidates : ((BContextImpl) context).getCommands()) {
-			final TextCommandInfo cmd = candidates.first();
+    private fun CommandPath.getSpacedPath(): String {
+        return fullPath.replace('/', ' ')
+    }
 
-			if (insertedCommands.add(cmd.getPath().getName())) { //Prevent duplicates since candidates share the same command path
-				if (Usability.of(context, cmd, member, channel, !context.isOwner(member.getIdLong())).isShowable()) {
-					categoryBuilderMap
-							.computeIfAbsent(Utils.getCategory(cmd), s -> new StringJoiner("\n"))
-							.add("**" + cmd.getPath().getName() + "** : " + Utils.getNonBlankDescription(cmd));
-				}
+    fun declare(manager: TextCommandManager) {
+		manager.textCommand("help") {
+            description = "Gives help for all commands"
+        }
+
+		manager.textCommand("help") {
+            description = "Gives help for all commands"
+
+			option("commandStr", "command path") {
+				example = "help"
 			}
 		}
+    }
 
-		for (Map.Entry<String, StringJoiner> entry : categoryBuilderMap.entrySet()) {
-			builder.addField(entry.getKey(), entry.getValue().toString(), false);
-		}
-
-		final HelpBuilderConsumer helpBuilderConsumer = context.getHelpBuilderConsumer();
-		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder, true, null);
-
-		return builder;
-	}
-
-	@NotNull
-	private EmbedBuilder generateCommandHelp(BaseCommandEvent event, TextCommandCandidates candidates) {
-		final EmbedBuilder builder = Utils.generateCommandHelp(candidates, event);
-		builder.setTimestamp(Instant.now());
-		builder.setColor(event.getMember().getColorRaw());
-
-		final HelpBuilderConsumer helpBuilderConsumer = context.getHelpBuilderConsumer();
-		if (helpBuilderConsumer != null) helpBuilderConsumer.accept(builder, false, candidates);
-
-		return builder;
-	}
-
-	@NotNull
-	private String getSpacedPath(CommandPath cmdPath) {
-		return cmdPath.toString().replace('/', ' ');
-	}
+    companion object {
+        private val SPACE_PATTERN = Regex("\\s+")
+    }
 }

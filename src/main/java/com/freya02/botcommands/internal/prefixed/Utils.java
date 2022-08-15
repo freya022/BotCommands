@@ -61,7 +61,7 @@ public class Utils {
 //		}
 	}
 
-	public static EmbedBuilder generateCommandHelp(TextCommandCandidates candidates, BaseCommandEvent event) {
+	public static EmbedBuilder generateCommandHelp(Collection<TextCommandInfo> candidates, BaseCommandEvent event) {
 		throw new UnsupportedOperationException();
 
 //		final EmbedBuilder builder = event.getDefaultEmbed();
