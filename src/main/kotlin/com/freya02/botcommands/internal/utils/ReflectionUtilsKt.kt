@@ -60,11 +60,16 @@ internal object ReflectionUtilsKt {
     internal val KFunction<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
-    internal val KFunction<*>.shortSignature: String
+    internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
             val declaringClassName = this.javaMethod?.declaringClass?.simpleName ?: "<no-java-method>"
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleName }
+            return "$declaringClassName#$methodName($parameters)"
+        }
+
+    internal val KFunction<*>.shortSignature: String
+        get() {
             val returnType = this.returnType.simpleName
             val source = this.javaMethod.let { method ->
                 return@let when {
@@ -77,7 +82,7 @@ internal object ReflectionUtilsKt {
                     else -> "<no-source>"
                 }
             }
-            return "$declaringClassName#$methodName($parameters): $returnType ($source)"
+            return "$shortSignatureNoSrc: $returnType ($source)"
         }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)

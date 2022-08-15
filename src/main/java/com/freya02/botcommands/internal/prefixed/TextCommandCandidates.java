@@ -7,7 +7,7 @@ import java.util.TreeSet;
 public class TextCommandCandidates extends TreeSet<TextCommandInfo> {
 	//A list of text commands must not be empty
 	public TextCommandCandidates(TextCommandInfo commandInfo) {
-		super(new TextCommandComparator());
+		super(TextCommandComparator.INSTANCE);
 
 		add(commandInfo);
 	}

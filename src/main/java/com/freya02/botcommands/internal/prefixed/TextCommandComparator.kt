@@ -1,55 +1,53 @@
-package com.freya02.botcommands.internal.prefixed;
+package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.api.Logging;
-import org.slf4j.Logger;
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.prefixed.CommandEvent
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
+import kotlin.math.min
+import kotlin.reflect.jvm.jvmErasure
 
-import java.util.Comparator;
+object TextCommandComparator : Comparator<TextCommandInfo> {
+    private val LOGGER = Logging.getLogger()
 
-public class TextCommandComparator implements Comparator<TextCommandInfo> {
-	private static final Logger LOGGER = Logging.getLogger();
+    override fun compare(o1: TextCommandInfo, o2: TextCommandInfo): Int {
+        if (o1.method == o2.method) return 0
 
-	@Override
-	public int compare(TextCommandInfo o1, TextCommandInfo o2) {
-		throw new UnsupportedOperationException();
+        if (o1.method.nonInstanceParameters.first() == BaseCommandEvent::class
+            && o2.method.nonInstanceParameters.first() == CommandEvent::class
+        ) {
+            return -1
+        }
 
-//		final Method o1CommandMethod = o1.getMethod();
-//		final Method o2CommandMethod = o2.getMethod();
-//
-//		if (o1CommandMethod == o2CommandMethod) return 0;
-//
-//		if (o1CommandMethod.getParameterTypes()[0] == BaseCommandEvent.class
-//				&& o2CommandMethod.getParameterTypes()[0] == CommandEvent.class) {
-//			return -1;
-//		}
-//
-//		final int order1 = o1.getOrder();
-//		final int order2 = o2.getOrder();
-//		if (order1 != 0 && order2 != 0) {
-//			if (order1 == order2) {
-//				LOGGER.warn("Method {} and {} have the same order ({})",
-//						Utils.formatMethodShort(o1.getMethod()),
-//						Utils.formatMethodShort(o2.getMethod()),
-//						order1);
-//			}
-//
-//			return Integer.compare(order1, order2);
-//		}
-//
-//		final List<? extends TextCommandParameter> o1Parameters = o1.getOptionParameters();
-//		final List<? extends TextCommandParameter> o2Parameters = o2.getOptionParameters();
-//
-//		for (int i = 0; i < Math.min(o1Parameters.size(), o2Parameters.size()); i++) {
-//			if (o1Parameters.get(i).getBoxedType() == o2Parameters.get(i).getBoxedType()) {
-//				continue;
-//			}
-//
-//			if (o1Parameters.get(i).getBoxedType() == String.class) {
-//				return 1;
-//			} else {
-//				return -1;
-//			}
-//		}
-//
-//		return 1;
-	}
+        val order1 = o1.order
+        val order2 = o2.order
+        if (order1 != 0 && order2 != 0) {
+            if (order1 == order2) {
+                LOGGER.warn(
+                    "Method {} and {} have the same order ({})",
+                    o1.method.shortSignatureNoSrc,
+                    o2.method.shortSignatureNoSrc,
+                    order1
+                )
+            }
+
+            return order1.compareTo(order2)
+        }
+
+        val o1Parameters: List<TextCommandParameter> = o1.optionParameters
+        val o2Parameters: List<TextCommandParameter> = o2.optionParameters
+        for (i in 0 until min(o1Parameters.size, o2Parameters.size)) {
+            if (o1Parameters[i].type == o2Parameters[i].type) {
+                continue
+            }
+
+            return when (o1Parameters[i].type.jvmErasure) {
+                String::class -> 1
+                else -> -1
+            }
+        }
+
+        return 1
+    }
 }
