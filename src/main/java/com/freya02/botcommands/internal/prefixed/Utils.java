@@ -8,12 +8,10 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -25,40 +23,6 @@ public class Utils {
 		if (parameter.getName() != null) {
 			return parameter.getName();
 		} else return defaultName;
-	}
-
-	//Description either on class or method
-	@Nullable
-	public static String getDescription(@NotNull TextCommandInfo info) {
-		throw new UnsupportedOperationException();
-
-//		final Description classDescription = info.getMethod().getDeclaringClass().getAnnotation(Description.class);
-//
-//		if (classDescription != null) {
-//			return classDescription.value();
-//		} else if (!info.getDescription().isBlank()) {
-//			return info.getDescription();
-//		} else {
-//			return null;
-//		}
-	}
-
-	@NotNull
-	public static String getNonBlankDescription(@NotNull TextCommandInfo info) {
-		return Objects.requireNonNullElse(getDescription(info), "No description");
-	}
-
-	//Category only on class
-	public static String getCategory(@NotNull TextCommandInfo info) {
-		throw new UnsupportedOperationException();
-
-//		final Category category = info.getMethod().getDeclaringClass().getAnnotation(Category.class);
-//
-//		if (category != null) {
-//			return category.value();
-//		} else {
-//			return "No category";
-//		}
 	}
 
 	public static EmbedBuilder generateCommandHelp(Collection<TextCommandInfo> candidates, BaseCommandEvent event) {

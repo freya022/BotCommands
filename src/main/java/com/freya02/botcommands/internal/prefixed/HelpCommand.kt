@@ -1,7 +1,5 @@
 package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Category
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Description
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.prefixed.CommandEvent
@@ -20,8 +18,6 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
 import java.util.*
 
-@Category("Utils")
-@Description("Gives help about a command")
 class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpCommand {
     suspend fun execute(event: CommandEvent) {
         sendGlobalHelp(event)
@@ -87,8 +83,8 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
             if (insertedCommands.add(cmd.path.name)) { //Prevent duplicates since candidates share the same command path
                 if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
                     categoryBuilderMap
-                        .computeIfAbsent(Utils.getCategory(cmd)) { StringJoiner("\n") }
-                        .add("**" + cmd.path.name + "** : " + Utils.getNonBlankDescription(cmd))
+                        .computeIfAbsent(cmd.category) { StringJoiner("\n") }
+                        .add("**${cmd.path.name}** : ${cmd.description}")
                 }
             }
         }
@@ -118,11 +114,13 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
 
     fun declare(manager: TextCommandManager) {
 		manager.textCommand("help") {
+            category = "Utils"
             description = "Gives help for all commands"
         }
 
 		manager.textCommand("help") {
-            description = "Gives help for all commands"
+            category = "Utils"
+            description = "Gives help for a command"
 
 			option("commandStr", "command path") {
 				example = "help"

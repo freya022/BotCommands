@@ -33,22 +33,20 @@ class TextCommandInfo(
     override val optionParameters: List<TextCommandParameter>
         get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
 
-    val isOwnerRequired: Boolean
-    val aliases: List<CommandPath>
-    val description: String
-    val hidden: Boolean
+    val aliases: List<CommandPath> = builder.aliases
+
+    val category: String = builder.category
+    val description: String = builder.description
+
+    val isOwnerRequired: Boolean = builder.ownerRequired
+    val hidden: Boolean = builder.hidden
+
     val completePattern: Pattern?
-    val order: Int
+    val order: Int = builder.order
 
     private val useTokenizedEvent: Boolean
 
     init {
-        isOwnerRequired = builder.ownerRequired
-        aliases = builder.aliases
-        description = builder.description
-        order = builder.order
-        hidden = builder.hidden
-
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         @Suppress("RemoveExplicitTypeArguments")

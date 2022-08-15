@@ -11,10 +11,14 @@ import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.throwUser
 
 class TextCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath) : CommandBuilder(path) {
+    var aliases: MutableList<CommandPath> = arrayListOf()
+
+    var category: String = "No category"
+    var description = "No description"
+
     var ownerRequired: Boolean = false
     var hidden: Boolean = false
-    var aliases: MutableList<CommandPath> = arrayListOf()
-    var description = "No description"
+
     var order = 0
 
     /**
