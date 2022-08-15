@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 
 class TextCommandManager internal constructor(private val context: BContextImpl) {
-    @JvmSynthetic
+    @get:JvmSynthetic
     internal val textCommands: MutableList<TextCommandInfo> = arrayListOf()
 
     fun textCommand(path: CommandPath, builder: TextCommandBuilder.() -> Unit) {

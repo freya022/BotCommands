@@ -17,5 +17,6 @@ abstract class BuilderFunctionHolder<R> internal constructor() {
             field = value.reflectReference() as KFunction<R>
         }
 
+    @JvmSynthetic
     internal fun isFunctionInitialized() = function !== NO_FUNCTION
 }

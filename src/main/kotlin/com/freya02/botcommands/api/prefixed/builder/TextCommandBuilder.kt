@@ -39,6 +39,7 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
         optionBuilders[declaredName] = TextGeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
+    @JvmSynthetic
     internal fun build(): TextCommandInfo {
         if (!isFunctionInitialized()) {
             throwUser("A command must have its function set")

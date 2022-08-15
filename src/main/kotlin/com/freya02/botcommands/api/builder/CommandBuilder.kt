@@ -14,9 +14,11 @@ abstract class CommandBuilder internal constructor(val path: CommandPath) : Buil
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 
+    @get:JvmSynthetic
     internal var cooldownStrategy: CooldownStrategy = CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)
         private set
 
+    @get:JvmSynthetic
     internal var nsfwStrategy: NSFWStrategy? = null
         private set
 
