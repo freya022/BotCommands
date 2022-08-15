@@ -46,7 +46,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         context.classPathContainer.classes.forEach {
-            if (it.hasAnnotation<BService>() || it.hasAnnotation<ConditionalService>()) {
+            if (it.hasAnnotation<BService>() || (it.hasAnnotation<ConditionalService>() && !it.hasAnnotation<LateService>())) {
                 getService(it)
             }
         }
