@@ -161,7 +161,7 @@ internal class ComponentListener(
                     parameter as ComponentHandlerParameter
 
                     val buttonArg = buttonArgs[optionIndex++]
-                    val resolved = parameter.resolver.resolve(context, descriptor, event, buttonArg)
+                    val resolved = parameter.resolver.resolveSuspend(context, descriptor, event, buttonArg)
                         ?: throwUser("Component id ${event.componentId}, tried to resolve '${buttonArg}' with option resolver ${parameter.resolver.javaClass.simpleName} on method ${descriptor.method.shortSignature} but result was null")
 
                     objects[parameter.kParameter] = resolved

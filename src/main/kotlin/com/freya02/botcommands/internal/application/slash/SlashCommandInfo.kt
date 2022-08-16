@@ -22,7 +22,6 @@ import kotlin.math.max
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
@@ -148,15 +147,6 @@ class SlashCommandInfo internal constructor(
                         )
 
                         return
-                    }
-
-                    requireUser(parameter.type.jvmErasure.isSuperclassOf(resolved::class)) {
-                        "The parameter '%s' of value '%s' is not a valid type (expected a %s, got a %s)".format(
-                            parameter.name,
-                            optionMapping.asString,
-                            parameter.type.jvmErasure.simpleName,
-                            resolved::class.simpleName
-                        )
                     }
 
                     objectList.add(resolved)

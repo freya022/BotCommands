@@ -122,12 +122,8 @@ class ModalHandlerInfo(
                         ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
                     parameter.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
-                        requireUser(obj != null) {
+                        requireUser(obj != null || parameter.isOptional) {
                             "The parameter '${parameter.name}' of value '${modalMapping.asString}' could not be resolved into a ${parameter.type.simpleName}"
-                        }
-
-                        requireUser(parameter.type.jvmErasure.isSuperclassOf(obj::class)) {
-                            "The parameter '${parameter.name}' of value '${modalMapping.asString}' is not a valid type (expected a ${parameter.type.simpleName})"
                         }
                     }
                 }
