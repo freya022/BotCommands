@@ -100,7 +100,7 @@ class TextCommandInfo(
                     }
 
                     if (found == groupCount) { //Found all the groups
-                        val resolved = parameter.resolver.resolve(context, this, event, groups)
+                        val resolved = parameter.resolver.resolveSuspend(context, this, event, groups)
                         //Regex matched but could not be resolved
                         // if optional then it's ok
                         if (resolved == null && !parameter.isOptional) {

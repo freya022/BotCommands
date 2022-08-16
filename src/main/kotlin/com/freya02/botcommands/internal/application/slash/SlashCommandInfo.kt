@@ -96,7 +96,7 @@ class SlashCommandInfo internal constructor(
         return true
     }
 
-    internal fun <T> putSlashOptions(
+    internal suspend fun <T> putSlashOptions(
         event: T,
         objects: MutableMap<KParameter, Any?>,
         methodParameters: MethodParameters
@@ -126,7 +126,7 @@ class SlashCommandInfo internal constructor(
                             throwUser("Slash parameter couldn't be resolved at parameter " + parameter.name + " (" + varArgName + ")")
                         }
 
-                    val resolved = parameter.resolver.resolve(context, this, event, optionMapping)
+                    val resolved = parameter.resolver.resolveSuspend(context, this, event, optionMapping)
                     if (resolved == null) {
                         if (event is SlashCommandInteractionEvent) {
                             event.reply(

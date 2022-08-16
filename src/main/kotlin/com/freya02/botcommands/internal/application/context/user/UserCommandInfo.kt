@@ -56,7 +56,7 @@ class UserCommandInfo internal constructor(
                 MethodParameterType.OPTION -> {
                     parameter as UserContextCommandParameter
 
-                    parameter.resolver.resolve(context, this, event)
+                    parameter.resolver.resolveSuspend(context, this, event)
                 }
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter

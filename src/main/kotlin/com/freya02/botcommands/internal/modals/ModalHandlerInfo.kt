@@ -121,7 +121,7 @@ class ModalHandlerInfo(
                     val modalMapping = event.getValue(inputId)
                         ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                    parameter.resolver.resolve(context, this, event, modalMapping).also { obj ->
+                    parameter.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
                         requireUser(obj != null) {
                             "The parameter '${parameter.name}' of value '${modalMapping.asString}' could not be resolved into a ${parameter.type.simpleName}"
                         }

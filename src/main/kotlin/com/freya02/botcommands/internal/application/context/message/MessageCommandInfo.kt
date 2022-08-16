@@ -57,7 +57,7 @@ class MessageCommandInfo internal constructor(
                 MethodParameterType.OPTION -> {
                     parameter as MessageContextCommandParameter
 
-                    parameter.resolver.resolve(context, this, event)
+                    parameter.resolver.resolveSuspend(context, this, event)
                 }
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
