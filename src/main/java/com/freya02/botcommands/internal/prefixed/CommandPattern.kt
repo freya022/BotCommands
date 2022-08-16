@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.internal.prefixed.Utils.hasMultipleQuotable
+import com.freya02.botcommands.internal.prefixed.TextUtils.hasMultipleQuotable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.util.regex.Pattern
 

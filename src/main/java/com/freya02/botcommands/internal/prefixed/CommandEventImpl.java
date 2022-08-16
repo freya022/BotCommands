@@ -132,13 +132,13 @@ public class CommandEventImpl extends CommandEvent {
 				} else if (clazz == User.class) {
 					//Fastpath for mentioned entities passed in the message
 
-					mentionable = Utils.findEntity(id,
+					mentionable = TextUtils.findEntity(id,
 							event.getMessage().getMentions().getUsers(),
 							() -> getJDA().retrieveUserById(id).complete());
 				} else if (clazz == Member.class) {
 					//Fastpath for mentioned entities passed in the message
 
-					mentionable = Utils.findEntity(id,
+					mentionable = TextUtils.findEntity(id,
 							event.getMessage().getMentions().getMembers(),
 							() -> getGuild().retrieveMemberById(id).complete());
 				} else if (clazz == TextChannel.class) {

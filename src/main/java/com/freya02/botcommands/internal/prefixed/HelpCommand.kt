@@ -104,7 +104,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
     }
 
     private fun generateCommandHelp(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>): EmbedBuilder {
-        val builder = Utils.generateCommandHelp(commandInfos, event)
+        val builder = TextUtils.generateCommandHelp(commandInfos, event)
         builder.setTimestamp(Instant.now())
         builder.setColor(event.member.colorRaw)
 

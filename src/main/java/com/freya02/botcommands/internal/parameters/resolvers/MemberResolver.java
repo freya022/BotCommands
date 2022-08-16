@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import com.freya02.botcommands.internal.prefixed.Utils;
+import com.freya02.botcommands.internal.prefixed.TextUtils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -37,7 +37,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 			//Fastpath for mentioned entities passed in the message
 			long id = Long.parseLong(args[0]);
 
-			return Utils.findEntity(id,
+			return TextUtils.findEntity(id,
 					event.getMessage().getMentions().getMembers(),
 					() -> event.getGuild().retrieveMemberById(id).complete());
 		} catch (ErrorResponseException e) {

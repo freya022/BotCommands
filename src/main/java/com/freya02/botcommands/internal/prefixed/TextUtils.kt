@@ -11,7 +11,7 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
-object Utils {
+object TextUtils {
     fun generateCommandHelp(candidates: Collection<TextCommandInfo>, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
 
