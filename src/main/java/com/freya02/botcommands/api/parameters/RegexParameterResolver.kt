@@ -23,7 +23,7 @@ interface RegexParameterResolver {
         info: TextCommandInfo,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): Any?
+    ): Any? = TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(

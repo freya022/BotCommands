@@ -13,7 +13,8 @@ interface MessageContextParameterResolver {
      * @param event   The event of this message context interaction
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: MessageCommandInfo, event: MessageContextInteractionEvent): Any?
+    fun resolve(context: BContext, info: MessageCommandInfo, event: MessageContextInteractionEvent): Any? =
+        TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(context: BContext, info: MessageCommandInfo, event: MessageContextInteractionEvent) =

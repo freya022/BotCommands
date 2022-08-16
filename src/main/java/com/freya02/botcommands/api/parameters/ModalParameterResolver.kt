@@ -15,7 +15,8 @@ interface ModalParameterResolver {
      * @param modalMapping The [ModalMapping] to be resolved
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: ModalHandlerInfo, event: ModalInteractionEvent, modalMapping: ModalMapping): Any?
+    fun resolve(context: BContext, info: ModalHandlerInfo, event: ModalInteractionEvent, modalMapping: ModalMapping): Any? =
+        TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(context: BContext, info: ModalHandlerInfo, event: ModalInteractionEvent, modalMapping: ModalMapping) =

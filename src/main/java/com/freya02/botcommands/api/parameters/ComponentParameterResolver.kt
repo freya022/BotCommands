@@ -16,7 +16,8 @@ interface ComponentParameterResolver {
      * @param event      The event of this component interaction
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, descriptor: ComponentDescriptor, event: GenericComponentInteractionCreateEvent, arg: String): Any?
+    fun resolve(context: BContext, descriptor: ComponentDescriptor, event: GenericComponentInteractionCreateEvent, arg: String): Any? =
+        TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(
