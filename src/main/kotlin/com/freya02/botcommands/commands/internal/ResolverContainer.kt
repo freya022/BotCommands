@@ -50,8 +50,12 @@ internal class ResolverContainer( //TODO Should be part of the base module
         } else {
             val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
                 buildString {
-                    append(interfaceClass.simpleName).append(":\n")
-                    append(map.entries.filter { it.value::class.isSubclassOf(interfaceClass) }.joinToString("\n") { (type, resolver) ->
+                    val entriesOfType = map.entries
+                        .filter { it.value::class.isSubclassOf(interfaceClass) }
+                        .sortedBy { (type, _) -> type.simpleName }
+
+                    append(interfaceClass.simpleName).append(" (${entriesOfType.size}):\n")
+                    append(entriesOfType.joinToString("\n") { (type, resolver) ->
                         "\t- ${resolver::class.simpleName} (${type.simpleName})"
                     })
                 }
