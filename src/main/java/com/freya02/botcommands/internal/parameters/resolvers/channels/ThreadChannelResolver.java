@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.parameters.resolvers.channels;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import com.freya02.botcommands.core.api.annotations.BService;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.ThreadChannel;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-@BService
+@IncludeClasspath
 public class ThreadChannelResolver extends ParameterResolver implements SlashParameterResolver, ChannelResolver {
 	private static final EnumSet<ChannelType> THREAD_TYPES = EnumSet.of(ChannelType.GUILD_NEWS_THREAD, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD);
 

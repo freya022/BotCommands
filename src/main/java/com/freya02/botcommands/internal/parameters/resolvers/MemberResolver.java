@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.core.api.annotations.BService;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-@BService
+@IncludeClasspath
 public class MemberResolver
 		extends ParameterResolver<MemberResolver, Member>
 		implements RegexParameterResolver<MemberResolver, Member>,

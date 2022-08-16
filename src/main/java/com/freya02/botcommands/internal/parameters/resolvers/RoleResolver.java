@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import com.freya02.botcommands.core.api.annotations.BService;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-@BService
+@IncludeClasspath
 public class RoleResolver
 		extends ParameterResolver<RoleResolver, Role>
 		implements RegexParameterResolver<RoleResolver, Role>,
