@@ -16,13 +16,13 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = Logging.getLogger()
-
 @BService
 internal class ResolverContainer( //TODO Should be part of the base module
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
+    private val logger = Logging.getLogger()
+
     private val map: MutableMap<KClass<*>, Any> = hashMapOf()
 
     init {
@@ -44,9 +44,9 @@ internal class ResolverContainer( //TODO Should be part of the base module
 
     @BEventListener
     fun onLoad(event: LoadEvent) = runInitialization {
-        LOGGER.debug("ResolverContainer loaded")
+        logger.debug("ResolverContainer loaded")
         if (map.isEmpty()) {
-            LOGGER.trace("Found no resolvers")
+            logger.trace("Found no resolvers")
         } else {
             val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
                 buildString {
@@ -61,7 +61,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
                 }
             }
 
-            LOGGER.trace("Found resolvers:\n$resolversStr")
+            logger.trace("Found resolvers:\n$resolversStr")
         }
     }
 
