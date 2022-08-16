@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.onErrorResponse
 import com.freya02.botcommands.internal.onErrorResponseException
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.prefixed.TextUtils.findEntity
+import com.freya02.botcommands.internal.prefixed.TextUtils.findEntitySuspend
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.coroutines.await
@@ -44,7 +44,7 @@ class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
             //Fastpath for mentioned entities passed in the message
             val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
 
-            findEntity(id, event.message.mentions.members) { event.guild.retrieveMemberById(id).await() }
+            findEntitySuspend(id, event.message.mentions.members) { event.guild.retrieveMemberById(id).await() }
         }.onErrorResponseException { e ->
             LOGGER.debug(
                 "Could not resolve member in {} ({}): {} (regex command, may not be an error)",

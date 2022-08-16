@@ -34,15 +34,19 @@ import java.util.function.Supplier;
  * </ul>
  */
 public abstract class BaseCommandEvent extends MessageReceivedEvent implements GuildLocalizable, Localizable {
+	private final BContext context;
 	private final EventLocalizer localizer;
 
 	public BaseCommandEvent(@NotNull BContextImpl context, @Nullable KFunction<?> function, @NotNull JDA api, long responseNumber, @NotNull Message message) {
 		super(api, responseNumber, message);
 
+		this.context = context;
 		this.localizer = new EventLocalizer(context, function, message.isFromGuild() ? message.getGuild().getLocale() : null, null);
 	}
 
-	public abstract BContext getContext();
+	public BContext getContext() {
+		return context;
+	}
 
 	/**
 	 * Returns the <b>unresolved</b> arguments of the command event

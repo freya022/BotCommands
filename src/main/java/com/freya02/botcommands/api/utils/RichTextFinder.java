@@ -181,6 +181,10 @@ public class RichTextFinder extends EmojiParser {
 		}
 	}
 
+	public Map<Integer, RichText> getNormalMentionMap() {
+		return normalMentionMap;
+	}
+
 	public static class RichText {
 		private final String substring;
 		private final RichTextType type;

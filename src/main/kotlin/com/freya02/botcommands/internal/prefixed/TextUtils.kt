@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import java.util.concurrent.ThreadLocalRandom
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
@@ -121,9 +120,9 @@ object TextUtils {
         count { p: TextCommandParameter -> p.resolver is QuotableRegexParameterResolver } > 1
 
     @JvmStatic
-    fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: Supplier<T>): T =
-        collection.find { user -> user.idLong == id } ?: valueSupplier.get()
+    fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =
+        collection.find { user -> user.idLong == id } ?: valueSupplier()
 
-    suspend fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
+    suspend fun <T : IMentionable> findEntitySuspend(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
 }

@@ -75,7 +75,7 @@ class TextCommandInfo(
         matcher: Matcher?
     ): ExecutionResult {
         val event = when {
-            useTokenizedEvent -> CommandEventImpl(context, method, _event, args)
+            useTokenizedEvent -> CommandEventImpl.create(context, method, _event, args)
             else -> BaseCommandEventImpl(context, method, _event, args)
         }
 

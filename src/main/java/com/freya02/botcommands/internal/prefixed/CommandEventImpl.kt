@@ -1,201 +1,177 @@
-package com.freya02.botcommands.internal.prefixed;
+package com.freya02.botcommands.internal.prefixed
 
-import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
-import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
-import com.freya02.botcommands.api.utils.RichTextFinder;
-import com.freya02.botcommands.api.utils.RichTextType;
-import com.freya02.botcommands.internal.BContextImpl;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.requests.ErrorResponse;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.prefixed.CommandEvent
+import com.freya02.botcommands.api.prefixed.exceptions.BadIdException
+import com.freya02.botcommands.api.prefixed.exceptions.NoIdException
+import com.freya02.botcommands.api.utils.RichTextFinder
+import com.freya02.botcommands.api.utils.RichTextFinder.RichText
+import com.freya02.botcommands.api.utils.RichTextType
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.prefixed.TextUtils.findEntity
+import dev.minn.jda.ktx.coroutines.await
+import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.internal.utils.Helpers
+import kotlin.reflect.KFunction
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+class CommandEventImpl private constructor(
+    context: BContextImpl,
+    function: KFunction<*>,
+    private val event: MessageReceivedEvent,
+    argumentsStr: String?,
+    private val arguments: MutableList<Any>
+) : CommandEvent(function, context, event, argumentsStr) {
+    override fun getArguments(): List<Any> = arguments
 
-public class CommandEventImpl extends CommandEvent {
-	private static final Pattern idPattern = Pattern.compile("(\\d+)");
-	private static final Logger LOGGER = Logging.getLogger();
+    override fun <T> hasNext(clazz: Class<T>): Boolean {
+        if (arguments.isEmpty()) return false
 
-	private final List<Object> arguments = new ArrayList<>();
-	private final MessageReceivedEvent event;
+        val o = arguments.first()
+        return clazz.isAssignableFrom(o.javaClass)
+    }
 
-	public CommandEventImpl(@NotNull BContextImpl context, @NotNull KFunction<?> function, MessageReceivedEvent event, String arguments) {
-		super(function, context, event, arguments);
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> peekArgument(clazz: Class<T>): T {
+        if (arguments.isEmpty()) throw NoSuchElementException()
 
-		this.event = event;
+        val o = arguments.first()
+        return when {
+            clazz.isAssignableFrom(o.javaClass) -> o as T
+            else -> throw NoSuchElementException()
+        }
+    }
 
-		new RichTextFinder(arguments, true, false, true, false).processResults(this::processText);
-	}
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any> nextArgument(clazz: Class<T>): T {
+        if (arguments.isEmpty()) throw NoSuchElementException()
 
-	private static IMentionable tryGetId(String mention, Function<Long, IMentionable> idToMentionableFunc) {
-		Matcher matcher = idPattern.matcher(mention);
-		if (matcher.find()) {
-			return idToMentionableFunc.apply(Long.valueOf(matcher.group()));
-		}
+        val o = arguments.removeFirst()
+        return when {
+            clazz.isAssignableFrom(o.javaClass) -> o as T
+            else -> throw NoSuchElementException()
+        }
+    }
 
-		return null;
-	}
+    @Suppress("UNCHECKED_CAST")
+    @Throws(NoIdException::class, BadIdException::class)
+    override fun <T : IMentionable> resolveNext(vararg classes: Class<*>): T {
+        if (arguments.isEmpty()) {
+            throw NoIdException()
+        }
 
-	@Override
-	public List<Object> getArguments() {
-		return arguments;
-	}
+        val o = arguments.removeFirst()
+        for (c in classes) {
+            if (c.isAssignableFrom(o.javaClass)) {
+                return o as T
+            }
+        }
 
-	@Override
-	public <T> boolean hasNext(Class<T> clazz) {
-		if (arguments.isEmpty()) {
-			return false;
-		}
+        if (o !is String) throw NoIdException()
 
-		Object o = arguments.get(0);
+        for (clazz in classes) {
+            try {
+                //See net.dv8tion.jda.internal.utils.Checks#isSnowflake(String)
+                if (o.length > 20 || !Helpers.isNumeric(o)) {
+                    throw BadIdException()
+                }
 
-		return clazz.isAssignableFrom(o.getClass());
-	}
+                val id = o.toLong()
+                val mentionable = when (clazz) {
+                    Role::class.java -> guild.getRoleById(id)
+                    User::class.java -> findEntity(id, event.message.mentions.users) { jda.retrieveUserById(id).complete() }
+                    Member::class.java -> findEntity(id, event.message.mentions.members) { guild.retrieveMemberById(id).complete() }
+                    TextChannel::class.java -> guild.getTextChannelById(id)
+                    CustomEmoji::class.java -> jda.getEmojiById(id)
+                    else -> throw IllegalArgumentException("${clazz.simpleName} is not a valid IMentionable class")
+                }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T peekArgument(Class<T> clazz) {
-		if (arguments.isEmpty()) {
-			throw new NoSuchElementException();
-		}
+                if (mentionable != null) {
+                    return mentionable as T
+                }
+            } catch (ignored: NumberFormatException) {
+                throw BadIdException()
+            } catch (e: ErrorResponseException) {
+                if (e.errorResponse == ErrorResponse.UNKNOWN_USER || e.errorResponse == ErrorResponse.UNKNOWN_MEMBER) {
+                    throw BadIdException()
+                } else {
+                    throw e
+                }
+            }
+        }
+        throw BadIdException()
+    }
 
-		Object o = arguments.get(0);
+    companion object {
+        private val LOGGER = Logging.getLogger()
+        private val idRegex = Regex("(\\d+)")
 
-		if (clazz.isAssignableFrom(o.getClass())) {
-			return (T) o;
-		} else {
-			throw new NoSuchElementException();
-		}
-	}
+        private operator fun RichText.component1(): String = substring
 
-	@Override
-	@NotNull
-	@SuppressWarnings("unchecked")
-	public <T> T nextArgument(Class<T> clazz) {
-		if (arguments.isEmpty()) {
-			throw new NoSuchElementException();
-		}
+        private suspend fun tryGetId(mention: String, idToMentionableFunc: suspend (Long) -> IMentionable?): IMentionable? {
+            return idRegex.find(mention)
+                ?.value
+                ?.toLong()
+                ?.let { idToMentionableFunc(it) }
+        }
+        private operator fun RichText.component2(): RichTextType = type
 
-		Object o = arguments.remove(0);
+        internal suspend fun create(
+            context: BContextImpl,
+            function: KFunction<*>,
+            event: MessageReceivedEvent,
+            argumentsStr: String?
+        ): CommandEventImpl {
+            val arguments: MutableList<Any> = arrayListOf()
+            RichTextFinder(argumentsStr, true, false, true, false)
+                .normalMentionMap
+                .values
+                .forEach { (substring, type) ->
+                    processText(arguments, event.guild, substring, type)
+                }
 
-		if (clazz.isAssignableFrom(o.getClass())) {
-			return (T) o;
-		} else {
-			throw new NoSuchElementException();
-		}
-	}
+            return CommandEventImpl(context, function, event, argumentsStr, arguments)
+        }
 
-	@Override
-	@NotNull
-	@SuppressWarnings({"unchecked"})
-	public <T extends IMentionable> T resolveNext(Class<?>... classes) throws NoIdException, BadIdException {
-		if (arguments.isEmpty()) {
-			throw new NoIdException();
-		}
+        private suspend fun processText(arguments: MutableList<Any>, guild: Guild, substring: String, type: RichTextType) {
+            if (substring.isBlank()) return
 
-		Object o = arguments.remove(0);
+            val mentionType = type.mentionType
+            if (mentionType != null || type == RichTextType.UNICODE_EMOTE) {
+                val mentionable: Any? = when {
+                    type == RichTextType.UNICODE_EMOTE -> Emoji.fromUnicode(substring)
+                    mentionType == MentionType.ROLE -> tryGetId(substring) { id: Long ->
+                        guild.getRoleById(id)
+                    }
+                    mentionType == MentionType.CHANNEL -> tryGetId(substring) { id: Long ->
+                        guild.getTextChannelById(id)
+                    }
+                    mentionType == MentionType.EMOJI -> MentionType.EMOJI.pattern.toRegex().find(substring)?.let {
+                        it.groups[2]?.value?.let { id -> guild.getEmojiById(id) }
+                    }
+                    mentionType == MentionType.USER -> tryGetId(substring) { id: Long ->
+                        guild.jda.retrieveUserById(id).await()
+                    }
+                    else -> null
+                }
 
-		for (Class<?> c : classes) {
-			if (c.isAssignableFrom(o.getClass())) {
-				return (T) o;
-			}
-		}
-		if (!(o instanceof final String idStr)) throw new NoIdException();
-
-		for (Class<?> clazz : classes) {
-			final IMentionable mentionable;
-
-			try {
-				//See net.dv8tion.jda.internal.utils.Checks#isSnowflake(String)
-				if (idStr.length() > 20 || !Helpers.isNumeric(idStr)) {
-					throw new BadIdException();
-				}
-
-				final long id = Long.parseLong(idStr);
-
-				if (clazz == Role.class) {
-					mentionable = getGuild().getRoleById(id);
-				} else if (clazz == User.class) {
-					//Fastpath for mentioned entities passed in the message
-
-					mentionable = TextUtils.findEntity(id,
-							event.getMessage().getMentions().getUsers(),
-							() -> getJDA().retrieveUserById(id).complete());
-				} else if (clazz == Member.class) {
-					//Fastpath for mentioned entities passed in the message
-
-					mentionable = TextUtils.findEntity(id,
-							event.getMessage().getMentions().getMembers(),
-							() -> getGuild().retrieveMemberById(id).complete());
-				} else if (clazz == TextChannel.class) {
-					mentionable = getGuild().getTextChannelById(id);
-				} else if (clazz == CustomEmoji.class) {
-					mentionable = getJDA().getEmojiById(id);
-				} else {
-					throw new IllegalArgumentException(clazz.getSimpleName() + " is not a valid IMentionable class");
-				}
-
-				if (mentionable != null) {
-					return (T) mentionable;
-				}
-			} catch (NumberFormatException ignored) {
-				throw new BadIdException();
-			} catch (ErrorResponseException e) {
-				if (e.getErrorResponse() == ErrorResponse.UNKNOWN_USER || e.getErrorResponse() == ErrorResponse.UNKNOWN_MEMBER) {
-					throw new BadIdException();
-				} else {
-					throw e;
-				}
-			}
-		}
-
-		throw new BadIdException();
-	}
-
-	private void processText(String substring, RichTextType type) {
-		if (substring.isBlank()) return;
-
-		Message.MentionType mentionType = type.getMentionType();
-		if (mentionType != null || type == RichTextType.UNICODE_EMOTE) {
-			Object mentionable = null;
-
-			if (type == RichTextType.UNICODE_EMOTE) {
-				mentionable = Emoji.fromUnicode(substring);
-			} else if (mentionType == Message.MentionType.ROLE) {
-				mentionable = tryGetId(substring, id -> getGuild().getRoleById(id));
-			} else if (mentionType == Message.MentionType.CHANNEL) {
-				mentionable = tryGetId(substring, id -> getGuild().getTextChannelById(id));
-			} else if (mentionType == Message.MentionType.EMOJI) {
-				final Matcher matcher = Message.MentionType.EMOJI.getPattern().matcher(substring);
-				if (matcher.find()) {
-					String id = matcher.group(2);
-					mentionable = getGuild().getEmojiById(id);
-				}
-			} else if (mentionType == Message.MentionType.USER) {
-				mentionable = tryGetId(substring, id -> getJDA().getUserById(id));
-			}
-
-			if (mentionable != null) {
-				this.arguments.add(mentionable);
-			} else {
-				LOGGER.error("Unresolved mentionable : '{}' of type {}, maybe you haven't enabled a cache flag / intent ?", substring, type.name());
-			}
-		} else if (!substring.isEmpty()) {
-			Collections.addAll(arguments, substring.split(" "));
-		}
-	}
+                if (mentionable != null) {
+                    arguments.add(mentionable)
+                } else {
+                    LOGGER.error(
+                        "Unresolved mentionable : '{}' of type {}, maybe you haven't enabled a cache flag / intent ?",
+                        substring,
+                        type.name
+                    )
+                }
+            } else if (substring.isNotEmpty()) {
+                arguments.addAll(substring.split(' ').dropLastWhile { it.isEmpty() })
+            }
+        }
+    }
 }
