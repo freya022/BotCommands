@@ -169,7 +169,7 @@ internal class ComponentListener(
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
 
-                    val resolved = parameter.resolver.resolve(context, descriptor, event)
+                    val resolved = parameter.resolver.resolveSuspend(context, descriptor, event)
                         ?: throwUser("Component id ${event.componentId}, tried to resolve custom option with ${parameter.resolver.javaClass.simpleName} on method ${descriptor.method.shortSignature} but result was null")
 
                     objects[parameter.kParameter] = resolved

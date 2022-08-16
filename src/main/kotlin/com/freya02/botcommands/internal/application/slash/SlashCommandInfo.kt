@@ -166,7 +166,7 @@ class SlashCommandInfo internal constructor(
             } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
                 parameter as CustomMethodParameter
 
-                objects[parameter.kParameter] = parameter.resolver.resolve(context, this, event)
+                objects[parameter.kParameter] = parameter.resolver.resolveSuspend(context, this, event)
             } else if (parameter.methodParameterType == MethodParameterType.GENERATED) {
                 parameter as ApplicationGeneratedMethodParameter
 

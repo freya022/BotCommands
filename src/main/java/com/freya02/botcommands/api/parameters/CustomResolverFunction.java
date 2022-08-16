@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * @param <R> Type of the returned custom object
  * @see #apply(BContext, ExecutableInteractionInfo, Event)
  */
+@Deprecated
 public interface CustomResolverFunction<R> {
 	/**
 	 * Computes a custom object from this event

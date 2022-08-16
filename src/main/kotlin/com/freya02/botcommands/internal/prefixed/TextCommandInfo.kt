@@ -127,7 +127,7 @@ class TextCommandInfo(
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
 
-                    parameter.resolver.resolve(context, this, event)
+                    parameter.resolver.resolveSuspend(context, this, event)
                 }
                 MethodParameterType.GENERATED -> {
                     parameter as TextGeneratedMethodParameter

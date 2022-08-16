@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
+import kotlin.reflect.KClass;
 import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -40,6 +41,14 @@ public abstract class ParameterResolver {
 	protected final Logger LOGGER = Logging.getLogger(this);
 
 	private final KType type;
+
+	public ParameterResolver(@NotNull Class<?> clazz) {
+		this(ParameterType.ofClass(clazz));
+	}
+
+	public ParameterResolver(@NotNull KClass<?> clazz) {
+		this(ParameterType.ofKClass(clazz));
+	}
 
 	/**
 	 * Constructs a new parameter resolver

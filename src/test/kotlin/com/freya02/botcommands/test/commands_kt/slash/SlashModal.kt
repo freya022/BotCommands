@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.modals.Modals
+import com.freya02.botcommands.test.CustomObject
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
@@ -41,13 +42,15 @@ class SlashModal : ApplicationCommand() {
         event: ModalInteractionEvent,
         @ModalData dataStr: String,
         @ModalData dataInt: Int,
-        @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String
+        @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
+        customObject: CustomObject
     ) {
         event.reply_("""
             Submitted:
             dataStr: $dataStr
             dataInt: $dataInt
             inputStr: $inputStr
+            customObject: $customObject
             """.trimIndent(), ephemeral = true).queue()
     }
 

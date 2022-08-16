@@ -114,12 +114,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {  //TODO move to auto service discovery
-		if (ParameterResolvers.exists(ParameterType.ofClass(parameterType)))
-			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
-
-		ParameterResolvers.register(new CustomResolver(parameterType, function));
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

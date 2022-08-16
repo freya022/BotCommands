@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.application.builder.OptionBuilder
 import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
-import com.freya02.botcommands.api.parameters.CustomResolver
+import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
@@ -54,7 +54,7 @@ class MethodParameters2 {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                         when (val resolver = resolverContainer.getResolver(kParameter)) {
                             is R -> config.optionTransformer(kParameter, kParameter.findDeclarationName(), resolver)
-                            is CustomResolver -> CustomMethodParameter(kParameter, resolver)
+                            is ICustomResolver -> CustomMethodParameter(kParameter, resolver)
                             else -> throwUser(
                                 function,
                                 "Expected a resolver of type ${R::class.simpleName!!} but ${resolver.javaClass.simpleName} does not support it"

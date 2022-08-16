@@ -247,6 +247,7 @@ public interface BContext {
 	 * @param function      Supplier function, may receive interaction events of any type
 	 * @param <T>           Type of the parameter
 	 */
+	@Deprecated
 	<T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function);
 
 	/**

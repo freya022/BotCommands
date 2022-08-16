@@ -23,6 +23,7 @@ fun main() {
 
     BBuilder.newBuilder({
         addSearchPath("com.freya02.botcommands.test.commands_kt")
+        addSearchPath("com.freya02.botcommands.test.resolvers")
 
         connectionProvider = testDB.connectionSupplier
 

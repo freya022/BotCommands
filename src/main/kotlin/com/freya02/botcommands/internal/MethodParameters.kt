@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.parameters.CustomResolver
+import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
@@ -35,7 +35,7 @@ class MethodParameters internal constructor(methodParameters: List<MethodParamet
                 val parameterName = kParameter.findDeclarationName()
                 val parameter = when (resolver) {
                     is R -> parameterSupplier.supply(kParameter, parameterName, resolver)
-                    is CustomResolver -> CustomMethodParameter(
+                    is ICustomResolver -> CustomMethodParameter(
                         kParameter,
                         resolver
                     )

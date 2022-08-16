@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see CustomResolverFunction
  */
+@Deprecated
 public final class CustomResolver extends ParameterResolver {
 	private final CustomResolverFunction<?> function;
 

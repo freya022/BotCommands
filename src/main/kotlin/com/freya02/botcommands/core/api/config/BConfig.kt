@@ -4,8 +4,6 @@ import com.freya02.botcommands.annotations.api.annotations.RequireOwner
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
-import com.freya02.botcommands.api.parameters.CustomResolver
-import com.freya02.botcommands.api.parameters.CustomResolverFunction
 import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.LockableVar
@@ -27,9 +25,6 @@ class BConfig internal constructor() {
     internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
     private val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
-
-    @get:JvmSynthetic
-    internal val customResolvers: MutableSet<CustomResolver> = hashSetOf()
 
     val serviceConfig = BServiceConfig()
 
@@ -67,10 +62,6 @@ class BConfig internal constructor() {
      */
     fun addOwners(vararg ownerIds: Long) {
         this.ownerIds.addAll(ownerIds.asList())
-    }
-
-    fun <R> addCustomResolver(clazz: Class<R>, customResolverFunction: CustomResolverFunction<R>) {
-        this.customResolvers += CustomResolver(clazz, customResolverFunction)
     }
 
     /**

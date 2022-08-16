@@ -133,7 +133,7 @@ class ModalHandlerInfo(
                 }
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
-                    parameter.resolver.resolve(context, this, event)
+                    parameter.resolver.resolveSuspend(context, this, event)
                 }
                 else -> throwInternal("Unexpected MethodParameterType: ${parameter.methodParameterType}")
             }

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.commands.internal
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.core.api.annotations.BEventListener
@@ -9,6 +10,7 @@ import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.core.internal.events.LoadEvent
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
@@ -18,7 +20,6 @@ private val LOGGER = Logging.getLogger()
 
 @BService
 internal class ResolverContainer( //TODO Should be part of the base module
-    context: BContextImpl,
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
@@ -29,10 +30,6 @@ internal class ResolverContainer( //TODO Should be part of the base module
             .classes
             .filter { it.isSubclassOf(ParameterResolver::class) }
             .forEach { clazz -> addResolver(serviceContainer.getService(clazz) as ParameterResolver) }
-
-        context.config.customResolvers.forEach {
-            map[it.type.jvmErasure] = it
-        }
     }
 
     fun addResolver(resolver: ParameterResolver) {
@@ -65,9 +62,9 @@ internal class ResolverContainer( //TODO Should be part of the base module
     }
 
     fun getResolver(parameter: KParameter): Any {
-        val type = parameter.type.jvmErasure
+        val requestedType = parameter.type.jvmErasure
 
-        return map[type] ?: run {
+        return map.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
 
             serviceResult.onFailure {
@@ -79,7 +76,13 @@ internal class ResolverContainer( //TODO Should be part of the base module
             }
 
             val service = serviceResult.getOrThrow()
-            CustomResolver(service.javaClass) { _, _, _ -> service }
+            object : ICustomResolver {
+                override suspend fun resolveSuspend(
+                    context: BContext,
+                    executableInteractionInfo: ExecutableInteractionInfo,
+                    event: Event
+                ) = service
+            }
         }
     }
 
@@ -94,7 +97,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
             ComponentParameterResolver::class,
             UserContextParameterResolver::class,
             MessageContextParameterResolver::class,
-            CustomResolver::class
+            ICustomResolver::class
         )
     }
 }
