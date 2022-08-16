@@ -56,7 +56,7 @@ public interface BContext {
 	@NotNull
 	default String getPrefix() {
 		if (getConfig().getTextConfig().getUsePingAsPrefix()) {
-			return getJDA().getSelfUser().getAsMention();
+			return getJDA().getSelfUser().getAsMention() + " ";
 		}
 
 		return getPrefixes().get(0);
