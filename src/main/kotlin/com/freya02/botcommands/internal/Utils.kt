@@ -4,6 +4,8 @@ import com.freya02.botcommands.core.api.exceptions.InitializationException
 import com.freya02.botcommands.core.api.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.requests.ErrorResponse
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
@@ -139,4 +141,16 @@ inline fun <R> runInitialization(block: () -> R): R {
     } catch (e: Throwable) {
         throw InitializationException("An exception occurred while building the framework", e)
     }
+}
+
+inline fun <T> Result<T>.onErrorResponseException(block: (ErrorResponseException) -> Unit): Result<T> {
+    return also { onFailure { if (it is ErrorResponseException) block(it) } }
+}
+
+inline fun <T> Result<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Result<T> {
+    return onErrorResponseException { block(it.errorResponse) }
+}
+
+inline fun <T> Result<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): Result<T> {
+    return onErrorResponseException { if (it.errorResponse == error) block(it) }
 }

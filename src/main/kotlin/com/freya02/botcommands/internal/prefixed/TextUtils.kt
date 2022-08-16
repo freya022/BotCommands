@@ -123,4 +123,7 @@ object TextUtils {
     @JvmStatic
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: Supplier<T>): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier.get()
+
+    suspend fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
+        collection.find { user -> user.idLong == id } ?: valueSupplier()
 }

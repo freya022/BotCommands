@@ -1,93 +1,71 @@
-package com.freya02.botcommands.internal.parameters.resolvers;
+package com.freya02.botcommands.internal.parameters.resolvers
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.internal.annotations.IncludeClasspath;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.components.ComponentDescriptor;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import com.freya02.botcommands.internal.prefixed.TextUtils;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.regex.Pattern;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.parameters.*
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
+import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.components.ComponentDescriptor
+import com.freya02.botcommands.internal.onErrorResponseException
+import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.prefixed.TextUtils.findEntity
+import com.freya02.botcommands.internal.throwInternal
+import dev.minn.jda.ktx.coroutines.await
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.util.regex.Pattern
 
 @IncludeClasspath
-public class UserResolver
-		extends ParameterResolver<UserResolver, User>
-		implements RegexParameterResolver<UserResolver, User>,
-		           SlashParameterResolver<UserResolver, User>,
-		           ComponentParameterResolver<UserResolver, User>,
-		           UserContextParameterResolver<UserResolver, User> {
+class UserResolver : ParameterResolver<UserResolver, User>(User::class),
+    RegexParameterResolver<UserResolver, User>,
+    SlashParameterResolver<UserResolver, User>,
+    ComponentParameterResolver<UserResolver, User>,
+    UserContextParameterResolver<UserResolver, User> {
 
-	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
+    override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
 
-	public UserResolver() {
-		super(User.class);
-	}
+    override val testExample: String = "<@1234>"
+    override val optionType: OptionType = OptionType.USER
 
-	@Override
-	@Nullable
-	public User resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		try {
-			//Fastpath for mentioned entities passed in the message
-			long id = Long.parseLong(args[0]);
+    override suspend fun resolveSuspend(
+        context: BContext,
+        info: TextCommandInfo,
+        event: MessageReceivedEvent,
+        args: Array<String?>
+    ): User? {
+        return runCatching {
+            //Fastpath for mentioned entities passed in the message
+            val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
 
-			return TextUtils.findEntity(id,
-					event.getMessage().getMentions().getUsers(),
-					() -> event.getJDA().retrieveUserById(id).complete());
-		} catch (ErrorResponseException e) {
-			return null;
-		}
-	}
+            findEntity(id, event.message.mentions.users) { event.jda.retrieveUserById(id).await() }
+        }.onErrorResponseException { e ->
+            LOGGER.error("Could not resolve user: {}", e.meaning)
+        }.getOrNull()
+    }
 
-	@Override
-	@NotNull
-	public Pattern getPattern() {
-		return PATTERN;
-	}
+    override fun resolve(context: BContext, info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): User {
+        return optionMapping.asUser
+    }
 
-	@Override
-	@NotNull
-	public String getTestExample() {
-		return "<@1234>";
-	}
+    override suspend fun resolveSuspend(
+        context: BContext,
+        descriptor: ComponentDescriptor,
+        event: GenericComponentInteractionCreateEvent,
+        arg: String
+    ): User? {
+        return runCatching {
+            event.jda.retrieveUserById(arg).await()
+        }.onErrorResponseException { e ->
+            LOGGER.error("Could not resolve user: {}", e.meaning)
+        }.getOrNull()
+    }
 
-	@Override
-	@NotNull
-	public OptionType getOptionType() {
-		return OptionType.USER;
-	}
-
-	@Override
-	@Nullable
-	public User resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return optionMapping.getAsUser();
-	}
-
-	@Override
-	@Nullable
-	public User resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		try {
-			return event.getJDA().retrieveUserById(arg).complete();
-		} catch (ErrorResponseException e) {
-			LOGGER.error("Could not resolve user: {}", e.getMeaning());
-			return null;
-		}
-	}
-
-	@Nullable
-	@Override
-	public User resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
-		return event.getTarget();
-	}
+    override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): User {
+        return event.target
+    }
 }
