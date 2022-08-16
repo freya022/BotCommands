@@ -47,7 +47,7 @@ class SlashCommandInfo internal constructor(
         checkEventScope<GuildSlashEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters2.transform<SlashParameterResolver>(
+        parameters = MethodParameters2.transform<SlashParameterResolver<*, *>>(
             context,
             method,
             builder.optionBuilders

@@ -15,8 +15,8 @@ class ComponentDescriptor(
     override val parameters: MethodParameters
 
     init {
-        @Suppress("RemoveExplicitTypeArguments")
-        parameters = MethodParameters2.transform<ComponentParameterResolver>(context, method) {
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        parameters = MethodParameters2.transform<ComponentParameterResolver<*, *>>(context, method) {
             optionTransformer = { parameter, _, resolver -> ComponentHandlerParameter(parameter, resolver) }
         }
     }

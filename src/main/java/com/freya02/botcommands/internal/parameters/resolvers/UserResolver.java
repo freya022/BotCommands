@@ -22,7 +22,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class UserResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
+public class UserResolver
+		extends ParameterResolver<UserResolver, User>
+		implements RegexParameterResolver<UserResolver, User>,
+		           SlashParameterResolver<UserResolver, User>,
+		           ComponentParameterResolver<UserResolver, User>,
+		           UserContextParameterResolver<UserResolver, User> {
+
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public UserResolver() {
@@ -31,7 +37,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public User resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		try {
 			//Fastpath for mentioned entities passed in the message
 			long id = Long.parseLong(args[0]);
@@ -64,13 +70,13 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public User resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsUser();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public User resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		try {
 			return event.getJDA().retrieveUserById(arg).complete();
 		} catch (ErrorResponseException e) {
@@ -81,7 +87,7 @@ public class UserResolver extends ParameterResolver implements RegexParameterRes
 
 	@Nullable
 	@Override
-	public Object resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
+	public User resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
 		return event.getTarget();
 	}
 }

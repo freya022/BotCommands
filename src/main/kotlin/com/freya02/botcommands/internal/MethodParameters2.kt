@@ -54,7 +54,7 @@ class MethodParameters2 {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
                         when (val resolver = resolverContainer.getResolver(kParameter)) {
                             is R -> config.optionTransformer(kParameter, kParameter.findDeclarationName(), resolver)
-                            is ICustomResolver -> CustomMethodParameter(kParameter, resolver)
+                            is ICustomResolver<*, *> -> CustomMethodParameter(kParameter, resolver)
                             else -> throwUser(
                                 function,
                                 "Expected a resolver of type ${R::class.simpleName!!} but ${resolver.javaClass.simpleName} does not support it"

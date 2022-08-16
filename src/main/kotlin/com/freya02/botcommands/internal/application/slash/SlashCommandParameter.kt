@@ -18,7 +18,7 @@ class SlashCommandParameter(
     slashCmdOptionBuilders: Map<String, OptionBuilder>,
     parameter: KParameter,
     optionBuilder: SlashCommandOptionBuilder,
-    resolver: SlashParameterResolver
+    resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandParameter(
     parameter, optionBuilder, resolver
 ) {

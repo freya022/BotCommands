@@ -8,7 +8,7 @@ import kotlin.reflect.KParameter
 class TextCommandParameter(
     parameter: KParameter,
     optionBuilder: TextOptionBuilder,
-    val resolver: RegexParameterResolver
+    val resolver: RegexParameterResolver<*, *>
 ) : CommandParameter(parameter, optionBuilder) {
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
     val data = TextParameterData(optionBuilder)

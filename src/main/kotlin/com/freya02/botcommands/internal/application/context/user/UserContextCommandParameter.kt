@@ -6,5 +6,5 @@ import kotlin.reflect.KParameter
 
 class UserContextCommandParameter(
     parameter: KParameter,
-    resolver: UserContextParameterResolver
-) : ContextCommandParameter<UserContextParameterResolver>(parameter, resolver)
+    resolver: UserContextParameterResolver<*, *>
+) : ContextCommandParameter<UserContextParameterResolver<*, *>>(parameter, resolver)

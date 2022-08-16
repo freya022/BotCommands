@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.modals.ModalHandlerInfo
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.modals.ModalMapping
 
-interface ModalParameterResolver {
+interface ModalParameterResolver<T : ParameterResolver<T, R>, R> {
     /**
      * Returns a resolved object for this [ModalMapping]
      *
@@ -15,7 +15,7 @@ interface ModalParameterResolver {
      * @param modalMapping The [ModalMapping] to be resolved
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: ModalHandlerInfo, event: ModalInteractionEvent, modalMapping: ModalMapping): Any? =
+    fun resolve(context: BContext, info: ModalHandlerInfo, event: ModalInteractionEvent, modalMapping: ModalMapping): R? =
         TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic

@@ -7,7 +7,7 @@ import kotlin.reflect.full.findAnnotation
 
 class ModalHandlerInputParameter(
     kParameter: KParameter,
-    val resolver: ModalParameterResolver
+    val resolver: ModalParameterResolver<*, *>
 ) : ModalHandlerParameter(kParameter) {
     val inputName: String
 

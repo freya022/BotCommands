@@ -19,14 +19,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class GuildResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class GuildResolver
+		extends ParameterResolver<GuildResolver, Guild>
+		implements RegexParameterResolver<GuildResolver, Guild>,
+		           SlashParameterResolver<GuildResolver, Guild>,
+		           ComponentParameterResolver<GuildResolver, Guild> {
+
 	public GuildResolver() {
 		super(ParameterType.ofClass(Guild.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Guild resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return resolveGuild(event.getJDA(), args[0]);
 	}
 
@@ -50,13 +55,13 @@ public class GuildResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		throw new UnsupportedOperationException();
+	public Guild resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+		return resolveGuild(event.getJDA(), optionMapping.getAsString());
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Guild resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return resolveGuild(event.getJDA(), arg);
 	}
 

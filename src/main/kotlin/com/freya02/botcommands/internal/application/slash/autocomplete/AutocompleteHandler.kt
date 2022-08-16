@@ -34,7 +34,7 @@ internal class AutocompleteHandler(
 
     init {
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        methodParameters = MethodParameters2.transform<SlashParameterResolver>( //Same transform method as in SlashCommandInfo, but option transformer is different
+        methodParameters = MethodParameters2.transform<SlashParameterResolver<*, *>>( //Same transform method as in SlashCommandInfo, but option transformer is different
             slashCommandInfo.context,
             autocompleteInfo.method,
             slashCmdOptionBuilders

@@ -6,5 +6,5 @@ import kotlin.reflect.KParameter
 
 class MessageContextCommandParameter(
     parameter: KParameter,
-    resolver: MessageContextParameterResolver
-) : ContextCommandParameter<MessageContextParameterResolver>(parameter, resolver)
+    resolver: MessageContextParameterResolver<*, *>
+) : ContextCommandParameter<MessageContextParameterResolver<*, *>>(parameter, resolver)

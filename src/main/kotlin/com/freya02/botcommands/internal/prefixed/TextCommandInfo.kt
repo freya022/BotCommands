@@ -53,8 +53,8 @@ class TextCommandInfo(
     init {
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
-        @Suppress("RemoveExplicitTypeArguments")
-        parameters = MethodParameters2.transform<RegexParameterResolver>(
+        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
+        parameters = MethodParameters2.transform<RegexParameterResolver<*, *>>(
             context,
             method,
             builder.optionBuilders

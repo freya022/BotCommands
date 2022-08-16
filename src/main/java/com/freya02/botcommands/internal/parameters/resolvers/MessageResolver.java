@@ -12,14 +12,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @BService
-public class MessageResolver extends ParameterResolver implements MessageContextParameterResolver {
+public class MessageResolver
+		extends ParameterResolver<MessageResolver, Message>
+		implements MessageContextParameterResolver<MessageResolver, Message> {
+
 	public MessageResolver() {
 		super(ParameterType.ofClass(Message.class));
 	}
 
 	@Nullable
 	@Override
-	public Object resolve(@NotNull BContext context, @NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
+	public Message resolve(@NotNull BContext context, @NotNull MessageCommandInfo info, @NotNull MessageContextInteractionEvent event) {
 		return event.getTarget();
 	}
 }

@@ -36,17 +36,18 @@ import org.slf4j.Logger;
  * @see SlashParameterResolver
  * @see MessageContextParameterResolver
  * @see UserContextParameterResolver
+ * @see ICustomResolver
  */
-public abstract class ParameterResolver {
+public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
 	protected final Logger LOGGER = Logging.getLogger(this);
 
 	private final KType type;
 
-	public ParameterResolver(@NotNull Class<?> clazz) {
+	public ParameterResolver(@NotNull Class<R> clazz) {
 		this(ParameterType.ofClass(clazz));
 	}
 
-	public ParameterResolver(@NotNull KClass<?> clazz) {
+	public ParameterResolver(@NotNull KClass<R> clazz) {
 		this(ParameterType.ofKClass(clazz));
 	}
 

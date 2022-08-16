@@ -17,14 +17,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class BooleanResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class BooleanResolver
+		extends ParameterResolver<BooleanResolver, Boolean>
+		implements RegexParameterResolver<BooleanResolver, Boolean>,
+		           SlashParameterResolver<BooleanResolver, Boolean>,
+		           ComponentParameterResolver<BooleanResolver, Boolean> {
+
 	public BooleanResolver() {
 		super(ParameterType.ofClass(Boolean.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Boolean resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return parseBoolean(args[0]);
 	}
 
@@ -48,18 +53,18 @@ public class BooleanResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Boolean resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsBoolean();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Boolean resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return parseBoolean(arg);
 	}
 
 	@Nullable
-	private Object parseBoolean(String arg) {
+	private Boolean parseBoolean(String arg) {
 		if (arg.equalsIgnoreCase("false")) {
 			return Boolean.FALSE;
 		} else if (arg.equalsIgnoreCase("true")) {

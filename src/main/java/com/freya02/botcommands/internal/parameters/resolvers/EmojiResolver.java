@@ -22,14 +22,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @BService
-public class EmojiResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class EmojiResolver
+		extends ParameterResolver<EmojiResolver, Emoji>
+		implements RegexParameterResolver<EmojiResolver, Emoji>,
+		           SlashParameterResolver<EmojiResolver, Emoji>,
+		           ComponentParameterResolver<EmojiResolver, Emoji> {
+
 	public EmojiResolver() {
 		super(ParameterType.ofClass(Emoji.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Emoji resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return getEmoji(args[0]);
 	}
 
@@ -53,13 +58,13 @@ public class EmojiResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Emoji resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return getEmoji(optionMapping.getAsString());
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Emoji resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return getEmoji(arg);
 	}
 

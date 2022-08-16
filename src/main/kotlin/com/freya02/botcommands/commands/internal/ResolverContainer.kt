@@ -29,10 +29,10 @@ internal class ResolverContainer( //TODO Should be part of the base module
         classPathContainer
             .classes
             .filter { it.isSubclassOf(ParameterResolver::class) }
-            .forEach { clazz -> addResolver(serviceContainer.getService(clazz) as ParameterResolver) }
+            .forEach { clazz -> addResolver(serviceContainer.getService(clazz) as ParameterResolver<*, *>) }
     }
 
-    fun addResolver(resolver: ParameterResolver) {
+    fun addResolver(resolver: ParameterResolver<*, *>) {
         if (!hasCompatibleInterface(resolver)) {
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
@@ -75,19 +75,16 @@ internal class ResolverContainer( //TODO Should be part of the base module
                 )
             }
 
-            val service = serviceResult.getOrThrow()
-            object : ICustomResolver {
-                override suspend fun resolveSuspend(
-                    context: BContext,
-                    executableInteractionInfo: ExecutableInteractionInfo,
-                    event: Event
-                ) = service
-            }
+            ServiceCustomResolver(serviceResult.getOrThrow())
         }
     }
 
-    private fun hasCompatibleInterface(resolver: ParameterResolver): Boolean {
+    private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
         return resolver::class.isSubclassOfAny(*compatibleInterfaces.toTypedArray())
+    }
+
+    private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
+        override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: ExecutableInteractionInfo, event: Event) = o
     }
 
     companion object {

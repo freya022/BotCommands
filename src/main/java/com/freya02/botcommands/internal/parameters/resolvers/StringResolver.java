@@ -20,14 +20,21 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class StringResolver extends ParameterResolver implements RegexParameterResolver, QuotableRegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, ModalParameterResolver {
+public class StringResolver
+		extends ParameterResolver<StringResolver, String>
+		implements RegexParameterResolver<StringResolver, String>,
+		           QuotableRegexParameterResolver,
+		           SlashParameterResolver<StringResolver, String>,
+		           ComponentParameterResolver<StringResolver, String>,
+		           ModalParameterResolver<StringResolver, String> {
+
 	public StringResolver() {
 		super(ParameterType.ofClass(String.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public String resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return args[0];
 	}
 
@@ -57,19 +64,19 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public String resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsString();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public String resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return arg;
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ModalHandlerInfo info, @NotNull ModalInteractionEvent event, @NotNull ModalMapping modalMapping) {
+	public String resolve(@NotNull BContext context, @NotNull ModalHandlerInfo info, @NotNull ModalInteractionEvent event, @NotNull ModalMapping modalMapping) {
 		return modalMapping.getAsString();
 	}
 }

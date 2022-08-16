@@ -29,7 +29,7 @@ class ModalHandlerInfo(
         handlerName = annotation.name
 
         @Suppress("RemoveExplicitTypeArguments") //Kotlin: Could not load module <Error module> --> Type inference is broken
-        parameters = MethodParameters2.transform<ModalParameterResolver>(context, method) {
+        parameters = MethodParameters2.transform<ModalParameterResolver<*, *>>(context, method) {
             optionPredicate = { it.hasAnnotation<ModalInput>() }
             optionTransformer = { parameter, _, resolver -> ModalHandlerInputParameter(parameter, resolver) }
 

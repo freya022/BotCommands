@@ -23,7 +23,13 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 @BService
-public class MemberResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, UserContextParameterResolver {
+public class MemberResolver
+		extends ParameterResolver<MemberResolver, Member>
+		implements RegexParameterResolver<MemberResolver, Member>,
+		           SlashParameterResolver<MemberResolver, Member>,
+		           ComponentParameterResolver<MemberResolver, Member>,
+		           UserContextParameterResolver<MemberResolver, Member> {
+
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public MemberResolver() {
@@ -32,7 +38,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Member resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		try {
 			//Fastpath for mentioned entities passed in the message
 			long id = Long.parseLong(args[0]);
@@ -66,13 +72,13 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Member resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsMember();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Member resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		Objects.requireNonNull(event.getGuild(), "Can't get a member from DMs");
 
 		try {
@@ -85,7 +91,7 @@ public class MemberResolver extends ParameterResolver implements RegexParameterR
 
 	@Nullable
 	@Override
-	public Object resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
+	public Member resolve(@NotNull BContext context, @NotNull UserCommandInfo info, @NotNull UserContextInteractionEvent event) {
 		return event.getTargetMember();
 	}
 }

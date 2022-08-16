@@ -35,7 +35,7 @@ class MethodParameters internal constructor(methodParameters: List<MethodParamet
                 val parameterName = kParameter.findDeclarationName()
                 val parameter = when (resolver) {
                     is R -> parameterSupplier.supply(kParameter, parameterName, resolver)
-                    is ICustomResolver -> CustomMethodParameter(
+                    is ICustomResolver<*, *> -> CustomMethodParameter(
                         kParameter,
                         resolver
                     )

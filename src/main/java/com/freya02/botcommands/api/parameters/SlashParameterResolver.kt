@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 /**
  * Interface which indicates this class can resolve parameters for application commands
  */
-interface SlashParameterResolver {
+interface SlashParameterResolver<T : ParameterResolver<T, R>, R> {
     /**
      * Returns the supported [OptionType] for this slash command parameter
      *
@@ -42,7 +42,7 @@ interface SlashParameterResolver {
      * @param optionMapping The [OptionMapping] to be resolved
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): Any? =
+    fun resolve(context: BContext, info: SlashCommandInfo, event: CommandInteractionPayload, optionMapping: OptionMapping): R? =
         TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic

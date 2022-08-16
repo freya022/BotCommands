@@ -17,14 +17,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class IntegerResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class IntegerResolver
+		extends ParameterResolver<IntegerResolver, Integer>
+		implements RegexParameterResolver<IntegerResolver, Integer>,
+		           SlashParameterResolver<IntegerResolver, Integer>,
+		           ComponentParameterResolver<IntegerResolver, Integer> {
+
 	public IntegerResolver() {
 		super(ParameterType.ofClass(Integer.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Integer resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return Integer.valueOf(args[0]);
 	}
 
@@ -48,7 +53,7 @@ public class IntegerResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Integer resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
 			return optionMapping.getAsInt();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
@@ -58,7 +63,7 @@ public class IntegerResolver extends ParameterResolver implements RegexParameter
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return Long.valueOf(arg);
+	public Integer resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+		return Integer.valueOf(arg);
 	}
 }

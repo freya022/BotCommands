@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 
-interface MessageContextParameterResolver {
+interface MessageContextParameterResolver<T : ParameterResolver<T, R>, R> {
     /**
      * Returns a resolved object from this message context interaction
      *
@@ -13,7 +13,7 @@ interface MessageContextParameterResolver {
      * @param event   The event of this message context interaction
      * @return The resolved option mapping
      */
-    fun resolve(context: BContext, info: MessageCommandInfo, event: MessageContextInteractionEvent): Any? =
+    fun resolve(context: BContext, info: MessageCommandInfo, event: MessageContextInteractionEvent): R? =
         TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic

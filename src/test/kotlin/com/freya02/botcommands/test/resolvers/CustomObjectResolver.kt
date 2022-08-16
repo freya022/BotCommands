@@ -9,8 +9,15 @@ import com.freya02.botcommands.test.CustomObject
 import net.dv8tion.jda.api.events.Event
 
 @CommandMarker
-class CustomObjectResolver : ParameterResolver(CustomObject::class), ICustomResolver {
-    override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: ExecutableInteractionInfo, event: Event): Any {
+class CustomObjectResolver :
+    ParameterResolver<CustomObjectResolver, CustomObject>(CustomObject::class),
+    ICustomResolver<CustomObjectResolver, CustomObject> {
+
+    override suspend fun resolveSuspend(
+        context: BContext,
+        executableInteractionInfo: ExecutableInteractionInfo,
+        event: Event
+    ): CustomObject {
         return CustomObject()
     }
 }

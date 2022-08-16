@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 /**
  * Interface which indicates this class can resolve parameters for regex commands
  */
-interface RegexParameterResolver {
+interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
     /**
      * Returns a resolved object from this text command interaction
      *
@@ -23,7 +23,7 @@ interface RegexParameterResolver {
         info: TextCommandInfo,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): Any? = TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
+    ): R? = TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(

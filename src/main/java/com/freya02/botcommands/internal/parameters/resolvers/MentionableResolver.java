@@ -14,7 +14,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @BService
-public class MentionableResolver extends ParameterResolver implements SlashParameterResolver {
+public class MentionableResolver
+		extends ParameterResolver<MentionableResolver, IMentionable>
+		implements SlashParameterResolver<MentionableResolver, IMentionable> {
+
 	public MentionableResolver() {
 		super(ParameterType.ofClass(IMentionable.class));
 	}
@@ -27,7 +30,7 @@ public class MentionableResolver extends ParameterResolver implements SlashParam
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public IMentionable resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsMentionable();
 	}
 }

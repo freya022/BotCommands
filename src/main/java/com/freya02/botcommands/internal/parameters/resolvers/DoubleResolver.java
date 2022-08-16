@@ -17,14 +17,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.regex.Pattern;
 
 @BService
-public class DoubleResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+public class DoubleResolver
+		extends ParameterResolver<DoubleResolver, Double>
+		implements RegexParameterResolver<DoubleResolver, Double>,
+		           SlashParameterResolver<DoubleResolver, Double>,
+		           ComponentParameterResolver<DoubleResolver, Double> {
+
 	public DoubleResolver() {
 		super(ParameterType.ofClass(Double.class));
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Double resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return Double.valueOf(args[0]);
 	}
 
@@ -48,17 +53,17 @@ public class DoubleResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Double resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
 			return optionMapping.getAsDouble();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
-			return 0;
+			return 0d;
 		}
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Double resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return Double.valueOf(arg);
 	}
 }

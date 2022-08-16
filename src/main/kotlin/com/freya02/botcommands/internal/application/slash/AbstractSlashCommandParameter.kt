@@ -8,7 +8,7 @@ import kotlin.reflect.KParameter
 abstract class AbstractSlashCommandParameter(
     parameter: KParameter,
     optionBuilder: SlashCommandOptionBuilder,
-    val resolver: SlashParameterResolver
+    val resolver: SlashParameterResolver<*, *>
 ) : ApplicationCommandParameter(parameter, optionBuilder) {
     val varArgs: Int
     private val numRequired: Int
