@@ -29,7 +29,7 @@ public class StringResolver
 		           ModalParameterResolver<StringResolver, String> {
 
 	public StringResolver() {
-		super(ParameterType.ofClass(String.class));
+		super(String.class);
 	}
 
 	@Override

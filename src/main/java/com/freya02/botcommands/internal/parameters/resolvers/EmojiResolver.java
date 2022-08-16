@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.RegexParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.api.utils.EmojiUtils;
 import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
@@ -29,7 +32,7 @@ public class EmojiResolver
 		           ComponentParameterResolver<EmojiResolver, Emoji> {
 
 	public EmojiResolver() {
-		super(ParameterType.ofClass(Emoji.class));
+		super(Emoji.class);
 	}
 
 	@Override

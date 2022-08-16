@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.parameters.resolvers;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,7 +16,7 @@ public class MessageResolver
 		implements MessageContextParameterResolver<MessageResolver, Message> {
 
 	public MessageResolver() {
-		super(ParameterType.ofClass(Message.class));
+		super(Message.class);
 	}
 
 	@Nullable

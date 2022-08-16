@@ -32,7 +32,7 @@ public class UserResolver
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public UserResolver() {
-		super(ParameterType.ofClass(User.class));
+		super(User.class);
 	}
 
 	@Override

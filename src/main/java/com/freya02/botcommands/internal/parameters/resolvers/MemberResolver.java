@@ -33,7 +33,7 @@ public class MemberResolver
 	private static final Pattern PATTERN = Pattern.compile("(?:<@!?)?(\\d+)>?");
 
 	public MemberResolver() {
-		super(ParameterType.ofClass(Member.class));
+		super(Member.class);
 	}
 
 	@Override

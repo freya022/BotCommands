@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.RegexParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.core.api.annotations.BService;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
@@ -26,7 +29,7 @@ public class GuildResolver
 		           ComponentParameterResolver<GuildResolver, Guild> {
 
 	public GuildResolver() {
-		super(ParameterType.ofClass(Guild.class));
+		super(Guild.class);
 	}
 
 	@Override
