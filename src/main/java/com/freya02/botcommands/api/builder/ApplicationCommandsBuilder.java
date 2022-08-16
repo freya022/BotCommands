@@ -36,6 +36,7 @@ public class ApplicationCommandsBuilder {
 	 * @see BContext#addApplicationFilter(ApplicationCommandFilter)
 	 */
 	@NotNull
+	@Deprecated
 	public ApplicationCommandsBuilder addApplicationFilter(@NotNull ApplicationCommandFilter commandFilter) { //TODO move to respective config
 		throw new UnsupportedOperationException();
 	}
@@ -48,6 +49,7 @@ public class ApplicationCommandsBuilder {
 	 * @return This builder for chaining convenience
 	 */
 	@NotNull
+	@Deprecated
 	public ApplicationCommandsBuilder addComponentFilter(@NotNull ComponentInteractionFilter componentFilter) { //TODO move to respective config
 		throw new UnsupportedOperationException();
 	}
@@ -59,6 +61,7 @@ public class ApplicationCommandsBuilder {
 	 *
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public ApplicationCommandsBuilder updateCommandsOnGuildIds(List<Long> slashGuildIds) {
 		throw new UnsupportedOperationException();
 	}
@@ -73,10 +76,12 @@ public class ApplicationCommandsBuilder {
 	 * @see BContext#getTestGuildIds()
 	 * @see Test
 	 */
+	@Deprecated
 	public ApplicationCommandsBuilder addTestGuilds(long... guildIds) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	public ApplicationCommandsBuilder enableOnlineAppCommandCheck() {
 		throw new UnsupportedOperationException();
 	}
@@ -88,6 +93,7 @@ public class ApplicationCommandsBuilder {
 	 *
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public ApplicationCommandsBuilder forceCommandsAsGuildOnly(boolean force) {
 		throw new UnsupportedOperationException();
 	}
@@ -104,6 +110,7 @@ public class ApplicationCommandsBuilder {
 	 *
 	 * @see DefaultLocalizationMapProvider
 	 */
+	@Deprecated
 	public ApplicationCommandsBuilder addLocalizations(@NotNull String bundleName, @NotNull Locale @NotNull ... locales) {
 		throw new UnsupportedOperationException();
 	}
@@ -120,6 +127,7 @@ public class ApplicationCommandsBuilder {
 	 *
 	 * @see DefaultLocalizationMapProvider
 	 */
+	@Deprecated
 	public ApplicationCommandsBuilder addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
 		throw new UnsupportedOperationException();
 	}

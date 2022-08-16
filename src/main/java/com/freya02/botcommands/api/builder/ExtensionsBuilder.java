@@ -112,6 +112,7 @@ public class ExtensionsBuilder {
 	 * @param <T>           Type of the parameter
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {  //TODO move to auto service discovery
 		if (ParameterResolvers.exists(ParameterType.ofClass(parameterType)))
 			throw new IllegalStateException("Custom resolver already exists for parameters of type " + parameterType.getName());
@@ -130,6 +131,7 @@ public class ExtensionsBuilder {
 	 * @param <T>                       Type of the List generic element type
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public <T> ExtensionsBuilder registerAutocompleteTransformer(Class<T> type, AutocompleteTransformer<T> autocompleteTransformer) { //TODO move to auto service discovery
 		throw new UnsupportedOperationException();
 	}

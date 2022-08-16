@@ -16,9 +16,9 @@ import kotlin.reflect.KType
 @LateService
 class BApplicationConfig internal constructor(config: BConfig) {
     /**
-     * Enables you to push **annotated** application commands are only updated on these guilds
+     * Enables you to push application commands are only updated on these guilds
      */
-    val slashGuildIds: MutableList<Long> = mutableListOf() //TODO implement
+    val slashGuildIds: MutableList<Long> = mutableListOf()
 
     /**
      * Test guilds IDs for all commands annotated with [Test]
@@ -48,6 +48,11 @@ class BApplicationConfig internal constructor(config: BConfig) {
      */
     var forceGuildCommands: Boolean by Delegates.lockableNotNull(config, defaultVal = false)
 
+    /**
+     * A list of application command filters, if one of them returns false, the command is not executed.
+     *
+     * **You still have to acknowledge to the interaction !**
+     */
     val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     @get:JvmSynthetic
