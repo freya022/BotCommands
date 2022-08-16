@@ -18,6 +18,7 @@ private val LOGGER = Logging.getLogger()
 
 @BService
 internal class ResolverContainer( //TODO Should be part of the base module
+    context: BContextImpl,
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
@@ -28,6 +29,10 @@ internal class ResolverContainer( //TODO Should be part of the base module
             .classes
             .filter { it.isSubclassOf(ParameterResolver::class) }
             .forEach { clazz -> addResolver(serviceContainer.getService(clazz) as ParameterResolver) }
+
+        context.config.customResolvers.forEach {
+            map[it.type.jvmErasure] = it
+        }
     }
 
     fun addResolver(resolver: ParameterResolver) {
