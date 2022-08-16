@@ -31,5 +31,8 @@ class MessageCommandBuilder internal constructor(private val context: BContextIm
         optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
-    internal fun build() = MessageCommandInfo(context, this)
+    internal fun build(): MessageCommandInfo {
+        checkFunction()
+        return MessageCommandInfo(context, this)
+    }
 }

@@ -8,7 +8,6 @@ import com.freya02.botcommands.api.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.throwUser
 
 class TextCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath) : CommandBuilder(path) {
     var aliases: MutableList<CommandPath> = arrayListOf()
@@ -45,10 +44,7 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
 
     @JvmSynthetic
     internal fun build(): TextCommandInfo {
-        if (!isFunctionInitialized()) {
-            throwUser("A command must have its function set")
-        }
-
+        checkFunction()
         return TextCommandInfo(context, this)
     }
 

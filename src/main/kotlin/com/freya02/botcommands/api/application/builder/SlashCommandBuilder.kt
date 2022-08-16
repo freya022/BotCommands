@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.throwUser
 
 class SlashCommandBuilder internal constructor(
     private val context: BContextImpl,
@@ -39,10 +38,7 @@ class SlashCommandBuilder internal constructor(
     }
 
     internal fun build(): SlashCommandInfo {
-        if (!isFunctionInitialized()) {
-            throwUser("A command must have its function set")
-        }
-
+        checkFunction()
         return SlashCommandInfo(context, this)
     }
 }

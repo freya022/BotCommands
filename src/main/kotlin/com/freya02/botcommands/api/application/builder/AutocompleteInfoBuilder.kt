@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.application.AutocompleteCacheInfo
 import com.freya02.botcommands.api.application.AutocompleteInfo
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.builder.BuilderFunctionHolder
-import com.freya02.botcommands.internal.throwUser
 
 class AutocompleteInfoBuilder internal constructor() : BuilderFunctionHolder<Collection<*>>() {
     var mode: AutocompleteMode = AutocompleteMode.FUZZY
@@ -17,10 +16,7 @@ class AutocompleteInfoBuilder internal constructor() : BuilderFunctionHolder<Col
     }
 
     internal fun build(): AutocompleteInfo {
-        if (!isFunctionInitialized()) {
-            throwUser("An autocompleted option must have its function set")
-        }
-
+        checkFunction()
         return AutocompleteInfo(this)
     }
 }

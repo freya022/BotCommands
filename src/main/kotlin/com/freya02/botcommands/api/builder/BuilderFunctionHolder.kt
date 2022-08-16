@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.builder
 
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.reflectReference
 import kotlin.reflect.KFunction
 
@@ -17,6 +18,11 @@ abstract class BuilderFunctionHolder<R> internal constructor() {
             field = value.reflectReference() as KFunction<R>
         }
 
-    @JvmSynthetic
-    internal fun isFunctionInitialized() = function !== NO_FUNCTION
+    private fun isFunctionInitialized() = function !== NO_FUNCTION
+
+    protected fun checkFunction() {
+        if (!isFunctionInitialized()) {
+            throwUser("A command must have its function set")
+        }
+    }
 }

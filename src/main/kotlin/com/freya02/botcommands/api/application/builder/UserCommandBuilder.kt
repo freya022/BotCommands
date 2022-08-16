@@ -31,5 +31,8 @@ class UserCommandBuilder internal constructor(private val context: BContextImpl,
         optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
-    internal fun build() = UserCommandInfo(context, this)
+    internal fun build(): UserCommandInfo {
+        checkFunction()
+        return UserCommandInfo(context, this)
+    }
 }
