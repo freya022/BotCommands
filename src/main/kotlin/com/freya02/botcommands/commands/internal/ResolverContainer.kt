@@ -84,7 +84,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
     }
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {
-        return resolver::class.isSubclassOfAny(*compatibleInterfaces.toTypedArray())
+        return resolver::class.isSubclassOfAny(compatibleInterfaces)
     }
 
     private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
