@@ -37,9 +37,9 @@ internal class ResolverContainer( //TODO Should be part of the base module
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
 
-        map[resolver.type.jvmErasure]?.let { throwUser("Resolver for ${resolver.type.jvmErasure.qualifiedName} already exists") }
+        map[resolver.jvmErasure]?.let { throwUser("Resolver for ${resolver.jvmErasure.qualifiedName} already exists") }
 
-        map[resolver.type.jvmErasure] = resolver
+        map[resolver.jvmErasure] = resolver
     }
 
     @BEventListener

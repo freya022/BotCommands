@@ -14,6 +14,8 @@ class ParameterType private constructor(val type: KType) {
 
     fun javaClass() = type.jvmErasure.java
 
+    fun kotlinErasure() = type.jvmErasure
+
     fun ignoreNullability() = ParameterType(type.withNullability(false))
 
     override fun equals(other: Any?): Boolean {

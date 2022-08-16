@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
 import kotlin.reflect.KClass;
-import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
@@ -42,26 +41,26 @@ import org.slf4j.Logger;
 public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
 	protected final Logger LOGGER = Logging.getLogger(this);
 
-	private final KType type;
+	private final KClass<?> jvmErasure;
 
 	public ParameterResolver(@NotNull Class<R> clazz) {
 		this(ParameterType.ofClass(clazz));
 	}
 
 	public ParameterResolver(@NotNull KClass<R> clazz) {
-		this(ParameterType.ofKClass(clazz));
+		this.jvmErasure = clazz;
 	}
 
 	/**
 	 * Constructs a new parameter resolver
 	 *
-	 * @param type Type of the parameter being resolved
+	 * @param parameterType Type of the parameter being resolved
 	 */
-	public ParameterResolver(@NotNull ParameterType type) {
-		this.type = type.getType();
+	public ParameterResolver(@NotNull ParameterType parameterType) {
+		this.jvmErasure = parameterType.kotlinErasure();
 	}
 
-	public KType getType() {
-		return type;
+	public KClass<?> getJvmErasure() {
+		return jvmErasure;
 	}
 }

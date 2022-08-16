@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.parameters;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.internal.parameters.resolvers.*;
 import com.freya02.botcommands.internal.parameters.resolvers.channels.*;
-import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import kotlin.reflect.KType;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -14,7 +13,6 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Has all the parameter resolvers registered here,
@@ -78,19 +76,7 @@ public class ParameterResolvers { //TODO remove
 	}
 
 	public static void register(@NotNull ParameterResolver resolver) {
-		final boolean isCompatible = hasCompatibleInterface(resolver);
-
-		if (!isCompatible)
-			throw new IllegalArgumentException("The resolver should implement at least one of these interfaces: " + possibleInterfaces.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
-
-		final ParameterResolver oldResolver = map.put(resolver.getType(), resolver);
-
-		if (oldResolver != null) {
-			LOGGER.warn("An old parameter resolver ({}) got overridden by another ({}) at: {}",
-					oldResolver.getClass().getName(),
-					resolver.getClass().getName(),
-					ReflectionUtils.formatCallerMethod());
-		}
+		throw new UnsupportedOperationException();
 	}
 
 	private static boolean hasCompatibleInterface(@NotNull ParameterResolver resolver) {
