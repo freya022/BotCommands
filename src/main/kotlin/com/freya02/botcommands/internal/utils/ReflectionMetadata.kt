@@ -58,7 +58,9 @@ internal object ReflectionMetadata {
                         if (it.packageName.startsWith("com.freya02.botcommands.test")) {
                             return@filter false
                         } else {
-                            return@filter it.isService() || it.outerClasses.any { outer -> outer.isService() } || it.hasAnnotation(IncludeClasspath::class.java.name)
+                            return@filter it.isService()
+                                    || it.outerClasses.any { outer -> outer.isService() }
+                                    || it.hasAnnotation(IncludeClasspath::class.java.name)
                         }
                     })
                 }
