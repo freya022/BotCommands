@@ -28,7 +28,7 @@ class TextTest : TextCommand() {
     }
 
     @CommandMarker
-    fun onTextTestSubcommand(event: BaseCommandEvent, number: Int) {
+    fun onTextTestSubcommand(event: BaseCommandEvent, number: Double) {
         event.reply("""
             number: $number
         """.trimIndent()).queue()

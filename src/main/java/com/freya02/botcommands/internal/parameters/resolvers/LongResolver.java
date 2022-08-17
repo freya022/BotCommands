@@ -33,7 +33,11 @@ public class LongResolver
 	@Override
 	@Nullable
 	public Long resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return Long.valueOf(args[0]);
+		try {
+			return Long.valueOf(args[0]);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@Override

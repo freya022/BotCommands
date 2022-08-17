@@ -33,7 +33,11 @@ public class IntegerResolver
 	@Override
 	@Nullable
 	public Integer resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return Integer.valueOf(args[0]);
+		try {
+			return Integer.valueOf(args[0]);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@Override

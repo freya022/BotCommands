@@ -33,13 +33,17 @@ public class DoubleResolver
 	@Override
 	@Nullable
 	public Double resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return Double.valueOf(args[0]);
+		try {
+			return Double.valueOf(args[0]);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@Override
 	@NotNull
 	public Pattern getPattern() {
-		return Pattern.compile("(\\d+)");
+		return Pattern.compile("([-+]?[0-9]*[.,]?[0-9]+)");
 	}
 
 	@Override
