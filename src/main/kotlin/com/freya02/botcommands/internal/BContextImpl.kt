@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
-import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.parameters.CustomResolver
 import com.freya02.botcommands.api.parameters.CustomResolverFunction
@@ -14,10 +13,7 @@ import com.freya02.botcommands.core.internal.ServiceContainer
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.prefixed.TextCommandCandidates
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.prefixed.TextCommandsContextImpl
-import com.freya02.botcommands.internal.prefixed.TextSubcommandCandidates
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
@@ -60,8 +56,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
     private var defaultFooterIconSupplier = Supplier<InputStream> { null }
     internal var isHelpDisabled: Boolean = false
     private var helpBuilderConsumer: HelpBuilderConsumer? = null
-    private val textCommandMap: MutableMap<CommandPath, TextCommandCandidates> = hashMapOf()
-    private val textSubcommandsMap: MutableMap<CommandPath, TextSubcommandCandidates> = hashMapOf()
 
     internal val textCommandsContext = TextCommandsContextImpl(this)
 
@@ -92,7 +86,7 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
     }
 
     override fun getPrefixes(): List<String> {
-        return prefixes
+        return config.textConfig.prefixes
     }
 
     override fun addPrefix(prefix: String) {
@@ -109,23 +103,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
 
     fun setDefaultMessageProvider(defaultMessageProvider: Function<DiscordLocale, DefaultMessages>) {
         this.defaultMessageProvider = defaultMessageProvider
-    }
-
-    override fun findFirstCommand(path: CommandPath): TextCommandInfo? {
-        val candidates = textCommandMap[path] ?: return null
-        return candidates.findFirst()
-    }
-
-    override fun findCommands(path: CommandPath): TextCommandCandidates? {
-        return textCommandMap[path]
-    }
-
-    override fun findFirstTextSubcommands(path: CommandPath): TextCommandCandidates? {
-        return textSubcommandsMap[path]?.firstOrNull()
-    }
-
-    override fun findTextSubcommands(path: CommandPath): List<TextCommandCandidates>? {
-        return textSubcommandsMap[path]
     }
 
     override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {
@@ -152,35 +129,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         this.defaultFooterIconSupplier = Objects.requireNonNull(defaultFooterIconSupplier, "Default footer icon supplier cannot be null")
     }
 
-    fun addTextCommand(commandInfo: TextCommandInfo) {
-        val path = commandInfo.path
-        val aliases = commandInfo.aliases
-        textCommandMap.compute(path) { _: CommandPath, v: TextCommandCandidates? ->
-            when {
-                v != null -> v.also { it.add(commandInfo) }
-                else -> TextCommandCandidates(commandInfo)
-            }
-        }
-        val parentPath = path.parent
-        if (parentPath != null) { //Add subcommands to cache
-            // If subcommands candidates exist, append, if not then create
-            textSubcommandsMap.compute(parentPath) { _: CommandPath, candidates: TextSubcommandCandidates? ->
-                when (candidates) {
-                    null -> TextSubcommandCandidates(commandInfo)
-                    else -> candidates.addSubcommand(commandInfo)
-                }
-            }
-        }
-        for (alias in aliases) {
-            textCommandMap.compute(alias) { _: CommandPath, v: TextCommandCandidates? ->
-                when {
-                    v != null -> v.also { it.add(commandInfo) }
-                    else -> TextCommandCandidates(commandInfo)
-                }
-            }
-        }
-    }
-
     internal fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
         TODO()
     }
@@ -191,9 +139,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
 //        handler.invalidate()
         TODO()
     }
-
-    val commands: Collection<TextCommandCandidates>
-        get() = Collections.unmodifiableCollection(textCommandMap.values)
 
     val applicationCommandsView: Collection<ApplicationCommandInfo>
         get() = getApplicationCommandsContext()

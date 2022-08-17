@@ -2,13 +2,10 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
-import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.core.api.config.BConfig;
-import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -113,42 +110,6 @@ public interface BContext {
 	default DefaultMessages getDefaultMessages(@NotNull Interaction interaction) {
 		return getDefaultMessages(interaction.getUserLocale());
 	}
-
-	/**
-	 * Returns the first occurrence of {@link TextCommandInfo} of the specified command name, the name can be an alias too
-	 *
-	 * @param path Name / alias of the command
-	 * @return The {@link TextCommandInfo} object of the command name
-	 */
-	@Nullable
-	TextCommandInfo findFirstCommand(@NotNull CommandPath path);
-
-	/**
-	 * Returns the text commands for the given path
-	 *
-	 * @param path The path of the command
-	 * @return a {@link TextCommandCandidates list of text command info}
-	 */
-	@Nullable
-	TextCommandCandidates findCommands(@NotNull CommandPath path);
-
-	/**
-	 * Returns the first occurrence of a text subcommand for the given path
-	 *
-	 * @param path The path of the command to find subcommands in
-	 * @return a {@link TextCommandCandidates list of text command info}
-	 */
-	@Nullable
-	TextCommandCandidates findFirstTextSubcommands(CommandPath path);
-
-	/**
-	 * Returns a list of text subcommands for the given path
-	 *
-	 * @param path The path of the command to find subcommands in
-	 * @return a {@link List} of {@link TextCommandCandidates subcommand candidates}
-	 */
-	@Nullable
-	List<TextCommandCandidates> findTextSubcommands(CommandPath path);
 
 	/**
 	 * Returns the application commands context, this is for user/message/slash commands and related methods

@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.internal.prefixed.TextCommandCandidates;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 /**
- * See {@link #accept(EmbedBuilder, boolean, TextCommandCandidates)} for details
+ * See {@link #accept(EmbedBuilder, boolean, Collection)} for details
  */
 public interface HelpBuilderConsumer {
 	/**
