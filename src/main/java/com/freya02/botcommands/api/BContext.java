@@ -3,7 +3,6 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.components.ComponentManager;
-import com.freya02.botcommands.api.parameters.CustomResolverFunction;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.core.api.config.BConfig;
 import kotlin.reflect.KClass;
@@ -59,14 +58,6 @@ public interface BContext {
 
 		return getPrefixes().get(0);
 	}
-
-	/**
-	 * Adds a prefix to choose from
-	 *
-	 * @param prefix The prefix to add
-	 */
-	@Deprecated
-	void addPrefix(String prefix);
 
 	/**
 	 * Returns a list of IDs of the bot owners
@@ -202,16 +193,6 @@ public interface BContext {
 	 * @return The help builder consumer
 	 */
 	HelpBuilderConsumer getHelpBuilderConsumer();
-
-	/**
-	 * Register a custom resolver for interaction commands (components / app commands)
-	 *
-	 * @param parameterType Type of the parameter
-	 * @param function      Supplier function, may receive interaction events of any type
-	 * @param <T>           Type of the parameter
-	 */
-	@Deprecated
-	<T> void registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function);
 
 	/**
 	 * Returns the uncaught exception handler

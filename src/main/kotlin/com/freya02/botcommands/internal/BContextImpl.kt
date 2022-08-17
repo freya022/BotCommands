@@ -2,9 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.components.ComponentManager
-import com.freya02.botcommands.api.parameters.CustomResolver
-import com.freya02.botcommands.api.parameters.CustomResolverFunction
-import com.freya02.botcommands.api.parameters.ParameterResolvers
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.core.api.config.BConfig
 import com.freya02.botcommands.core.internal.ClassPathContainer
@@ -26,27 +23,22 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class BContextImpl(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+    private val logger = Logging.getLogger()
+
     internal val classPathContainer: ClassPathContainer
     val serviceContainer: ServiceContainer
     val eventDispatcher: EventDispatcher
 
-    private val parameterSupplierMap: MutableMap<Class<*>, ConstructorParameterSupplier<*>> = hashMapOf()
-    private val instanceSupplierMap: MutableMap<Class<*>, InstanceSupplier<*>> = hashMapOf()
-    val dynamicInstanceSuppliers: MutableList<DynamicInstanceSupplier> = arrayListOf()
-    private val classToObjMap: MutableMap<KClass<*>, Any> = hashMapOf()
-    private val commandDependencyMap: MutableMap<Class<*>, Supplier<*>> = hashMapOf()
-    private val methodParameterSupplierMap: MutableMap<Class<*>, MethodParameterSupplier<*>> = hashMapOf()
+    //TODO replace by events
     private val registrationListeners: MutableList<RegistrationListener> = arrayListOf()
 
     private var nextExceptionDispatch: Long = 0
 
     private var uncaughtExceptionHandler: ExceptionHandler? = null
-    private var defaultMessageProvider: Function<DiscordLocale, DefaultMessages>
 
     val localizationManager = LocalizationManager()
 
@@ -58,7 +50,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
     init {
-        defaultMessageProvider = DefaultMessagesFunction()
         classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
         eventDispatcher = EventDispatcher(this) //Service put in ctor
@@ -85,21 +76,12 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return config.textConfig.prefixes
     }
 
-    @Deprecated("To be removed")
-    override fun addPrefix(prefix: String) {
-        throw UnsupportedOperationException()
-    }
-
     override fun getOwnerIds(): Collection<Long> {
         return config.ownerIds
     }
 
     override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
-        return defaultMessageProvider.apply(locale)
-    }
-
-    fun setDefaultMessageProvider(defaultMessageProvider: Function<DiscordLocale, DefaultMessages>) {
-        this.defaultMessageProvider = defaultMessageProvider
+        return config.defaultMessageProvider.apply(locale)
     }
 
     override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {
@@ -116,11 +98,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
     //TODO default method
     override fun getDefaultFooterIconSupplier(): Supplier<InputStream?> {
         return config.textConfig.defaultFooterIconSupplier
-    }
-
-    @Deprecated("To be removed")
-    fun addOwner(ownerId: Long) {
-        throw UnsupportedOperationException()
     }
 
     internal fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
@@ -153,7 +130,7 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
                 }
                 .queue(
                     null,
-                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { LOGGER.warn("Could not send exception DM to owner") }
+                    ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn("Could not send exception DM to owner") }
                 )
         }
     }
@@ -170,22 +147,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return serviceContainer.getService(config.componentsConfig.componentManagerStrategy)
     }
 
-    fun getClassInstance(clazz: KClass<*>): Any? {
-        return classToObjMap[clazz]
-    }
-
-    fun putClassInstance(clazz: KClass<*>, obj: Any) {
-        classToObjMap[clazz] = obj
-    }
-
-    fun addEventListeners(vararg listeners: Any) {
-        if (jda.shardManager != null) {
-            jda.shardManager!!.addEventListener(*listeners)
-        } else {
-            jda.addEventListener(*listeners)
-        }
-    }
-
     override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
         if (!config.hasSettingsProvider()) return null
         return config.settingsProvider
@@ -195,60 +156,11 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return config.textConfig.helpBuilderConsumer
     }
 
-    override fun <T> registerCustomResolver(parameterType: Class<T>, function: CustomResolverFunction<T>) {
-        ParameterResolvers.register(CustomResolver(parameterType, function))
-    }
-
-    fun <T> registerConstructorParameter(parameterType: Class<T>, parameterSupplier: ConstructorParameterSupplier<T>) {
-        parameterSupplierMap[parameterType] = parameterSupplier
-    }
-
-    fun <T> registerInstanceSupplier(classType: Class<T>, instanceSupplier: InstanceSupplier<T>) {
-        instanceSupplierMap[classType] = instanceSupplier
-    }
-
-    fun registerDynamicInstanceSupplier(dynamicInstanceSupplier: DynamicInstanceSupplier) {
-        dynamicInstanceSuppliers.add(dynamicInstanceSupplier)
-    }
-
-    fun getParameterSupplier(parameterType: Class<*>): ConstructorParameterSupplier<*> {
-        return parameterSupplierMap[parameterType]!!
-    }
-
-    fun getInstanceSupplier(classType: Class<*>): InstanceSupplier<*> {
-        return instanceSupplierMap[classType]!!
-    }
-
-    fun <T> registerCommandDependency(fieldType: Class<T>, supplier: Supplier<T>) {
-        commandDependencyMap[fieldType] = supplier
-    }
-
-    fun getCommandDependency(fieldType: Class<*>): Supplier<*> {
-        return commandDependencyMap[fieldType]!!
-    }
-
-    fun <T> registerMethodParameterSupplier(parameterType: Class<T>, supplier: MethodParameterSupplier<T>) {
-        methodParameterSupplierMap[parameterType] = supplier
-    }
-
-    fun getMethodParameterSupplier(parameterType: Class<*>): MethodParameterSupplier<*> {
-        return methodParameterSupplierMap[parameterType]!!
-    }
-
     fun setUncaughtExceptionHandler(exceptionHandler: ExceptionHandler?) {
         uncaughtExceptionHandler = exceptionHandler
     }
 
     override fun getUncaughtExceptionHandler(): ExceptionHandler? {
         return uncaughtExceptionHandler
-    }
-
-    @Deprecated("To be removed")
-    fun disableHelp(isHelpDisabled: Boolean) {
-        throw UnsupportedOperationException()
-    }
-
-    companion object {
-        private val LOGGER = Logging.getLogger()
     }
 }

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.core.api
 
+import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.core.api.config.BConfig
 import com.freya02.botcommands.core.internal.events.LoadEvent
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.events.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
+    private val logger = Logging.getLogger()
     private val config = configConsumer.applyTo(BConfig())
 
     companion object {
@@ -33,6 +35,10 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
     private fun build(manager: CoroutineEventManager) {
         runBlocking(manager.coroutineContext) {
             val context = BContextImpl(config, manager)
+
+            if (context.ownerIds.isEmpty()) {
+                logger.info("No owner ID specified, exceptions won't be sent to owners")
+            }
 
             context.eventDispatcher.dispatchEvent(LoadEvent())
         }

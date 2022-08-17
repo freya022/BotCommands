@@ -1,17 +1,21 @@
 package com.freya02.botcommands.core.api.config
 
 import com.freya02.botcommands.annotations.api.annotations.RequireOwner
+import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.core.api.annotations.LateService
 import com.freya02.botcommands.core.internal.ServiceContainer
+import com.freya02.botcommands.internal.DefaultMessagesFunction
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.toDelegate
 import com.freya02.botcommands.internal.utils.Utils
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import java.sql.Connection
+import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.properties.Delegates
 
@@ -26,6 +30,8 @@ class BConfig internal constructor() {
     internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
     internal val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
+
+    var defaultMessageProvider: Function<DiscordLocale, DefaultMessages> = DefaultMessagesFunction()
 
     val serviceConfig = BServiceConfig()
 

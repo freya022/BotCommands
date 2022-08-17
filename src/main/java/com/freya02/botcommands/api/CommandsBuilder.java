@@ -41,7 +41,7 @@ public final class CommandsBuilder {
 	private final DebugBuilder debugBuilder = new DebugBuilder();
 
 	private CommandsBuilder(long topOwnerId) {
-		context.addOwner(topOwnerId);
+
 	}
 
 	private CommandsBuilder() {
@@ -73,11 +73,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder addOwners(long... ownerIds) {
-		for (long ownerId : ownerIds) {
-			context.addOwner(ownerId);
-		}
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
