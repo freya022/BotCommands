@@ -4,7 +4,6 @@ import com.freya02.botcommands.annotations.api.application.slash.autocomplete.an
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.core.api.config.BConfig;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -26,9 +25,6 @@ public interface BContext {
 	//TODO docs
 	<T> T getService(Class<T> clazz);
 
-	//TODO docs
-	BConfig getConfig();
-
 	/**
 	 * Returns the JDA instance associated with this context
 	 *
@@ -46,13 +42,18 @@ public interface BContext {
 	List<String> getPrefixes();
 
 	/**
+	 * @return Whether the bot will respond to its own ping
+	 */
+	boolean isPingAsPrefix();
+
+	/**
 	 * Returns the preferred prefix for triggering this bot
 	 *
 	 * @return The preferred prefix
 	 */
 	@NotNull
 	default String getPrefix() {
-		if (getConfig().getTextConfig().getUsePingAsPrefix()) {
+		if (isPingAsPrefix()) {
 			return getJDA().getSelfUser().getAsMention() + " ";
 		}
 

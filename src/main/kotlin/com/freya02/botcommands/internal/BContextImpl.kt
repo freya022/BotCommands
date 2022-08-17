@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 
-class BContextImpl(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = Logging.getLogger()
 
     internal val classPathContainer: ClassPathContainer
@@ -66,15 +66,13 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return serviceContainer.getService(clazz)
     }
 
-    override fun getConfig(): BConfig = config
-
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
     }
 
-    override fun getPrefixes(): List<String> {
-        return config.textConfig.prefixes
-    }
+    override fun getPrefixes(): List<String> = config.textConfig.prefixes
+
+    override fun isPingAsPrefix(): Boolean = config.textConfig.usePingAsPrefix
 
     override fun getOwnerIds(): Collection<Long> {
         return config.ownerIds
