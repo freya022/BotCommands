@@ -28,9 +28,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public ExtensionsBuilder registerParameterResolver(ParameterResolver resolver) {
-		ParameterResolvers.register(resolver);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -43,12 +41,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public <T> ExtensionsBuilder registerConstructorParameter(Class<T> parameterType, ConstructorParameterSupplier<T> parameterSupplier) {
-		if (context.getParameterSupplier(parameterType) != null)
-			throw new IllegalStateException("Parameter supplier already exists for parameter of type " + parameterType.getName());
-
-		context.registerConstructorParameter(parameterType, parameterSupplier);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -62,12 +55,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public <T> ExtensionsBuilder registerInstanceSupplier(Class<T> classType, InstanceSupplier<T> instanceSupplier) {
-		if (context.getInstanceSupplier(classType) != null)
-			throw new IllegalStateException("Instance supplier already exists for class " + classType.getName());
-
-		context.registerInstanceSupplier(classType, instanceSupplier);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -81,9 +69,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public ExtensionsBuilder registerDynamicInstanceSupplier(DynamicInstanceSupplier dynamicInstanceSupplier) {
-		context.registerDynamicInstanceSupplier(dynamicInstanceSupplier);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -96,12 +82,7 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public <T> ExtensionsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
-		if (context.getCommandDependency(fieldType) != null)
-			throw new IllegalStateException("Command dependency already exists for fields of type " + fieldType.getName());
-
-		context.registerCommandDependency(fieldType, supplier);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
