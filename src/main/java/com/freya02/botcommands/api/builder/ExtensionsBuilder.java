@@ -1,12 +1,14 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.annotations.api.annotations.Dependency;
-import com.freya02.botcommands.annotations.api.annotations.JDAEventListener;
 import com.freya02.botcommands.api.ConstructorParameterSupplier;
 import com.freya02.botcommands.api.DynamicInstanceSupplier;
 import com.freya02.botcommands.api.InstanceSupplier;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer;
-import com.freya02.botcommands.api.parameters.*;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.RegexParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
@@ -82,19 +84,6 @@ public class ExtensionsBuilder {
 	 */
 	@Deprecated
 	public <T> ExtensionsBuilder registerCommandDependency(Class<T> fieldType, Supplier<T> supplier) {
-		throw new UnsupportedOperationException();
-	}
-
-	/**
-	 * Register a custom resolver for commands (components / app commands), as well as the {@link JDAEventListener framework's event listeners}
-	 *
-	 * @param parameterType Type of the parameter
-	 * @param function      Supplier function, may receive interaction events of any type
-	 * @param <T>           Type of the parameter
-	 * @return This builder for chaining convenience
-	 */
-	@Deprecated
-	public <T> ExtensionsBuilder registerCustomResolver(Class<T> parameterType, CustomResolverFunction<T> function) {  //TODO move to auto service discovery
 		throw new UnsupportedOperationException();
 	}
 

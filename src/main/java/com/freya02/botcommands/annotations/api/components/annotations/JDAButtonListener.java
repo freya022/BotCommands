@@ -3,7 +3,7 @@ package com.freya02.botcommands.annotations.api.components.annotations;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.parameters.ParameterResolvers;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * <p>
- * <i>Supported parameters in {@link ParameterResolvers}</i>
+ * <i>Supported parameters in {@link ParameterResolver}</i>
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
