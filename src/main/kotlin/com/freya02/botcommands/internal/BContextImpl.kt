@@ -45,7 +45,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
 
     private var nextExceptionDispatch: Long = 0
 
-    private val ownerIds: MutableList<Long> = arrayListOf()
     private var uncaughtExceptionHandler: ExceptionHandler? = null
     private var defaultMessageProvider: Function<DiscordLocale, DefaultMessages>
 
@@ -93,8 +92,8 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         prefixes.add(prefix)
     }
 
-    override fun getOwnerIds(): List<Long> {
-        return ownerIds
+    override fun getOwnerIds(): Collection<Long> {
+        return config.ownerIds
     }
 
     override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
@@ -121,8 +120,9 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return defaultFooterIconSupplier
     }
 
+    @Deprecated("To be removed")
     fun addOwner(ownerId: Long) {
-        ownerIds.add(ownerId)
+        throw UnsupportedOperationException()
     }
 
     fun setDefaultFooterIconSupplier(defaultFooterIconSupplier: Supplier<InputStream>) {

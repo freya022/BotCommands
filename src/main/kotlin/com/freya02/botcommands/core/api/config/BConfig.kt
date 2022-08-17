@@ -17,6 +17,7 @@ import kotlin.properties.Delegates
 
 @LateService
 class BConfig internal constructor() {
+    @get:JvmSynthetic
     internal var locked = false
         private set
 
@@ -24,7 +25,7 @@ class BConfig internal constructor() {
     //TODO backed collection as mutable, exposed collection as immutable
     internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
-    private val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
+    internal val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
 
     val serviceConfig = BServiceConfig()
 

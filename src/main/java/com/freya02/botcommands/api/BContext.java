@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -72,7 +73,7 @@ public interface BContext {
 	 * @return a list of IDs of the bot owners
 	 */
 	@NotNull
-	List<Long> getOwnerIds();
+	Collection<Long> getOwnerIds();
 
 	/**
 	 * Tells whether this user is an owner or not
