@@ -50,10 +50,8 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
 
     val localizationManager = LocalizationManager()
 
-    private var defaultEmbedSupplier: Supplier<EmbedBuilder> = Supplier { EmbedBuilder() }
-    private var defaultFooterIconSupplier = Supplier<InputStream> { null }
-    internal var isHelpDisabled: Boolean = false
-    private var helpBuilderConsumer: HelpBuilderConsumer? = null
+    internal val isHelpDisabled: Boolean
+        get() = config.textConfig.isHelpDisabled
 
     internal val textCommandsContext = TextCommandsContextImpl(this)
 
@@ -108,25 +106,21 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return applicationCommandsContext
     }
 
+    //TODO default method to get configs
+
+    //TODO default method
     override fun getDefaultEmbedSupplier(): Supplier<EmbedBuilder> {
-        return defaultEmbedSupplier
+        return config.textConfig.defaultEmbedSupplier
     }
 
-    fun setDefaultEmbedSupplier(defaultEmbedSupplier: Supplier<EmbedBuilder>) {
-        this.defaultEmbedSupplier = Objects.requireNonNull(defaultEmbedSupplier, "Default embed supplier cannot be null")
-    }
-
-    override fun getDefaultFooterIconSupplier(): Supplier<InputStream> {
-        return defaultFooterIconSupplier
+    //TODO default method
+    override fun getDefaultFooterIconSupplier(): Supplier<InputStream?> {
+        return config.textConfig.defaultFooterIconSupplier
     }
 
     @Deprecated("To be removed")
     fun addOwner(ownerId: Long) {
         throw UnsupportedOperationException()
-    }
-
-    fun setDefaultFooterIconSupplier(defaultFooterIconSupplier: Supplier<InputStream>) {
-        this.defaultFooterIconSupplier = Objects.requireNonNull(defaultFooterIconSupplier, "Default footer icon supplier cannot be null")
     }
 
     internal fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
@@ -197,12 +191,8 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return config.settingsProvider
     }
 
-    fun setHelpBuilderConsumer(builderConsumer: HelpBuilderConsumer) {
-        helpBuilderConsumer = builderConsumer
-    }
-
     override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {
-        return helpBuilderConsumer
+        return config.textConfig.helpBuilderConsumer
     }
 
     override fun <T> registerCustomResolver(parameterType: Class<T>, function: CustomResolverFunction<T>) {
@@ -253,8 +243,9 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return uncaughtExceptionHandler
     }
 
+    @Deprecated("To be removed")
     fun disableHelp(isHelpDisabled: Boolean) {
-        this.isHelpDisabled = isHelpDisabled
+        throw UnsupportedOperationException()
     }
 
     companion object {

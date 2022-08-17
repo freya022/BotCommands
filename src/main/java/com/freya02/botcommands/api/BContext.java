@@ -137,7 +137,7 @@ public interface BContext {
 	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
 	 */
 	@NotNull
-	Supplier<InputStream> getDefaultFooterIconSupplier();
+	Supplier<@Nullable InputStream> getDefaultFooterIconSupplier();
 
 	/**
 	 * Sends an exception message to the unique bot owner, retrieved via {@link JDA#retrieveApplicationInfo()}

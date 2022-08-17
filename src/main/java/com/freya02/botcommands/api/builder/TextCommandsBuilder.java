@@ -19,10 +19,9 @@ public final class TextCommandsBuilder {
 	 * @param prefix The prefix to add
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public TextCommandsBuilder addPrefix(String prefix) {
-		context.addPrefix(prefix);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -32,10 +31,9 @@ public final class TextCommandsBuilder {
 	 * @param isHelpDisabled <code>true</code> to disable the built-in help command
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public TextCommandsBuilder disableHelpCommand(boolean isHelpDisabled) {
-		this.context.disableHelp(isHelpDisabled);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -45,10 +43,9 @@ public final class TextCommandsBuilder {
 	 * @param builderConsumer The help builder consumer, modifies the EmbedBuilder
 	 * @return This builder for chaining convenience
 	 */
+	@Deprecated
 	public TextCommandsBuilder setHelpBuilderConsumer(HelpBuilderConsumer builderConsumer) {
-		context.setHelpBuilderConsumer(builderConsumer);
-
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -58,6 +55,7 @@ public final class TextCommandsBuilder {
 	 * @return This builder for chaining convenience
 	 * @see BContext#addTextFilter(TextCommandFilter)
 	 */
+	@Deprecated
 	public TextCommandsBuilder addTextFilter(TextCommandFilter filter) {
 		throw new UnsupportedOperationException();
 	}

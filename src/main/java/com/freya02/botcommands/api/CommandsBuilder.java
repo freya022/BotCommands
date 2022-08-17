@@ -89,9 +89,7 @@ public final class CommandsBuilder {
 	 * @return This builder
 	 */
 	public CommandsBuilder setDefaultEmbedFunction(@NotNull Supplier<EmbedBuilder> defaultEmbedFunction, @NotNull Supplier<InputStream> defaultFooterIconSupplier) { //TODO move to text command config
-		this.context.setDefaultEmbedSupplier(defaultEmbedFunction);
-		this.context.setDefaultFooterIconSupplier(defaultFooterIconSupplier);
-		return this;
+		throw new UnsupportedOperationException();
 	}
 
 	/**
