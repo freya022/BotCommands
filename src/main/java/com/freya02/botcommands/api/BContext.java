@@ -65,6 +65,7 @@ public interface BContext {
 	 *
 	 * @param prefix The prefix to add
 	 */
+	@Deprecated
 	void addPrefix(String prefix);
 
 	/**

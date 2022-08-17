@@ -50,7 +50,6 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
 
     val localizationManager = LocalizationManager()
 
-    private val prefixes: MutableList<String> = arrayListOf()
     private var defaultEmbedSupplier: Supplier<EmbedBuilder> = Supplier { EmbedBuilder() }
     private var defaultFooterIconSupplier = Supplier<InputStream> { null }
     internal var isHelpDisabled: Boolean = false
@@ -88,8 +87,9 @@ class BContextImpl(private val config: BConfig, val eventManager: CoroutineEvent
         return config.textConfig.prefixes
     }
 
+    @Deprecated("To be removed")
     override fun addPrefix(prefix: String) {
-        prefixes.add(prefix)
+        throw UnsupportedOperationException()
     }
 
     override fun getOwnerIds(): Collection<Long> {
