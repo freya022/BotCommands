@@ -27,6 +27,13 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
+    @CommandMarker
+    fun onTextTestSubcommand(event: BaseCommandEvent, number: Int) {
+        event.reply("""
+            number: $number
+        """.trimIndent()).queue()
+    }
+
     @TextDeclaration
     fun declare(textCommandManager: TextCommandManager) {
         textCommandManager.textCommand("test") {
@@ -52,13 +59,9 @@ class TextTest : TextCommand() {
         }
 
         textCommandManager.textCommand("test", subcommand = "subcommand") {
-            customOption("context")
+            option("number")
 
-            generatedOption("userName") {
-                "${it.author.name} (using fallback)"
-            }
-
-            function = ::onTextTestFallback
+            function = ::onTextTestSubcommand
         }
     }
 }

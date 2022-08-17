@@ -26,24 +26,22 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.requests.CompletedRestAction
 import java.util.regex.Matcher
 
+private data class HelpCommandInfo(val helpCommand: IHelpCommand, val helpInfo: TextCommandInfo)
+
 @BService
 internal class TextCommandsListener(private val context: BContextImpl) {
     private val logger = Logging.getLogger()
     private val spacePattern = Regex("\\s+")
 
-    private val helpInfo: TextCommandInfo?
-    private val helpCommand: IHelpCommand?
-
-    init {
-        val helpCommandInfo = context.findFirstCommand(CommandPath.ofName("help"))
-        if (helpCommandInfo == null) {
+    private val helpCommandInfo: HelpCommandInfo? by lazy {
+        val helpCommandInfo = context.textCommandsContext.findFirstTextCommand(listOf("help"))
+        if (helpCommandInfo != null) {
+            val helpCommand = helpCommandInfo.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
+            HelpCommandInfo(helpCommand, helpCommandInfo)
+        } else {
             logger.debug("Help command not loaded")
 
-            helpInfo = null
-            helpCommand = null
-        } else {
-            helpInfo = helpCommandInfo
-            helpCommand = helpInfo.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
+            null
         }
     }
 
@@ -103,7 +101,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
                 }
             }
 
-            if (helpCommand != null && helpInfo != null) {
+            helpCommandInfo?.let { (helpCommand, helpInfo) ->
                 helpCommand.onInvalidCommand(
                     BaseCommandEventImpl(context, helpInfo.method, event, ""),
                     result.commands

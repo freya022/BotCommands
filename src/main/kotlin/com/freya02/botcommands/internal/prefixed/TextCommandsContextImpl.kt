@@ -37,6 +37,10 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
         return TextFindResult(pathComponents, tree.getCommands())
     }
 
+    fun findFirstTextCommand(words: List<String>): TextCommandInfo? {
+        return findTextCommand(words).commands.firstOrNull()
+    }
+
     fun findFirstTextSubcommands(words: List<String>): List<TextCommandInfo> {
         val tree = words.fold(treeRoot) { t, n ->
             return@fold t.children[n] ?: return emptyList()
