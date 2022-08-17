@@ -50,5 +50,15 @@ class TextTest : TextCommand() {
 
             function = ::onTextTestFallback
         }
+
+        textCommandManager.textCommand("test", subcommand = "subcommand") {
+            customOption("context")
+
+            generatedOption("userName") {
+                "${it.author.name} (using fallback)"
+            }
+
+            function = ::onTextTestFallback
+        }
     }
 }

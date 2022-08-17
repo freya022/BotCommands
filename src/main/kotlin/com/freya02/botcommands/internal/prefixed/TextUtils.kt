@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.prefixed
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder.Companion.defaultDescription
+import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -62,15 +63,14 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = event.context.findTextSubcommands(commandInfo.path)
-        if (textSubcommands != null) {
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findFirstTextSubcommands(commandInfo.path.fullPath.split('/'))
+        if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
-                .map { it.first() }
-                .joinToString("\n - ") { info: TextCommandInfo -> "**" + info.path.getNameAt(info.path.nameCount - commandInfo.path.nameCount) + "** : " + info.description }
+                .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
+                    "**" + subcommandInfo.path.fullPath.split('/').drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                }
 
-            if (subcommandHelp.isNotBlank()) {
-                builder.addField("Subcommands", subcommandHelp, false)
-            }
+            builder.addField("Subcommands", subcommandHelp, false)
         }
 
         commandInfo.instance.detailedDescription?.accept(builder)
