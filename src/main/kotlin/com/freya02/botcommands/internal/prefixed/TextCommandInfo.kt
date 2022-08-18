@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.api.prefixed.CommandEvent
-import com.freya02.botcommands.api.prefixed.TextCommand
 import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.prefixed.builder.TextOptionBuilder
 import com.freya02.botcommands.internal.*
@@ -13,7 +12,9 @@ import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.Utils
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import java.util.function.Consumer
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
@@ -34,9 +35,6 @@ class TextCommandInfo(
     override val optionParameters: List<TextCommandParameter>
         get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
 
-    override val instance: TextCommand
-        get() = super.instance as TextCommand
-
     val aliases: List<CommandPath> = builder.aliases
 
     val category: String = builder.category
@@ -47,6 +45,8 @@ class TextCommandInfo(
 
     val completePattern: Pattern?
     val order: Int = builder.order
+
+    val detailedDescription: Consumer<EmbedBuilder>? = builder.detailedDescription
 
     private val useTokenizedEvent: Boolean
 

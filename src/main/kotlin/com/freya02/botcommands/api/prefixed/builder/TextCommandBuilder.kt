@@ -8,6 +8,8 @@ import com.freya02.botcommands.api.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import net.dv8tion.jda.api.EmbedBuilder
+import java.util.function.Consumer
 
 class TextCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath) : CommandBuilder(path) {
     var aliases: MutableList<CommandPath> = arrayListOf()
@@ -19,6 +21,8 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     var hidden: Boolean = false
 
     var order = 0
+
+    var detailedDescription: Consumer<EmbedBuilder>? = null
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
