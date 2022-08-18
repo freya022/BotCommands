@@ -1,8 +1,6 @@
 package com.freya02.botcommands.commands.internal.application.autobuilder
 
 import com.freya02.botcommands.annotations.api.annotations.CommandId
-import com.freya02.botcommands.annotations.api.annotations.Cooldown
-import com.freya02.botcommands.annotations.api.annotations.NSFW
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand
@@ -15,6 +13,8 @@ import com.freya02.botcommands.api.application.builder.UserCommandBuilder
 import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.parameters.ParameterType
+import com.freya02.botcommands.commands.internal.autobuilder.fillApplicationCommandBuilder
+import com.freya02.botcommands.commands.internal.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
@@ -24,7 +24,6 @@ import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.findOptionName
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
@@ -98,9 +97,12 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         }
 
         manager.messageCommand(path.name, annotation.scope) {
+            fillCommandBuilder(func)
+            fillApplicationCommandBuilder(func)
+
             defaultLocked = annotation.defaultLocked
 
-            processApplicationCommandBuilder(func, commandId, manager, instance)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
     }
 
@@ -129,42 +131,13 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         }
 
         manager.userCommand(path.name, annotation.scope) {
+            fillCommandBuilder(func)
+            fillApplicationCommandBuilder(func)
+
             defaultLocked = annotation.defaultLocked
 
-            processApplicationCommandBuilder(func, commandId, manager, instance)
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
-    }
-
-    private fun ApplicationCommandBuilder.processApplicationCommandBuilder(
-        func: KFunction<*>,
-        commandId: String?,
-        manager: IApplicationCommandManager,
-        instance: ApplicationCommand
-    ) {
-        func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
-            cooldown {
-                scope = cooldownAnnotation.cooldownScope
-                cooldown = cooldownAnnotation.cooldown
-                unit = cooldownAnnotation.unit
-            }
-        }
-
-        func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
-            nsfw {
-                allowInDMs = nsfwAnnotation.dm
-                allowInGuild = nsfwAnnotation.guild
-            }
-        }
-
-        userPermissions = AnnotationUtils.getUserPermissions(func)
-        botPermissions = AnnotationUtils.getBotPermissions(func)
-
-        testOnly = AnnotationUtils.getEffectiveTestState(func)
-
-        processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
-
-        @Suppress("UNCHECKED_CAST")
-        function = func as KFunction<Any>
     }
 
     private fun String.nullIfEmpty(): String? = when {

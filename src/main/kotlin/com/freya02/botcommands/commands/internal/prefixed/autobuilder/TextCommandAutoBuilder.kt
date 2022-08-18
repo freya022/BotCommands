@@ -1,7 +1,5 @@
 package com.freya02.botcommands.commands.internal.prefixed.autobuilder
 
-import com.freya02.botcommands.annotations.api.annotations.Cooldown
-import com.freya02.botcommands.annotations.api.annotations.NSFW
 import com.freya02.botcommands.annotations.api.annotations.RequireOwner
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.prefixed.annotations.*
@@ -12,6 +10,7 @@ import com.freya02.botcommands.api.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.prefixed.TextCommand
 import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
+import com.freya02.botcommands.commands.internal.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
@@ -21,7 +20,6 @@ import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.findOptionName
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -61,26 +59,7 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
 
         manager.textCommand(path) {
-            func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
-                cooldown {
-                    scope = cooldownAnnotation.cooldownScope
-                    cooldown = cooldownAnnotation.cooldown
-                    unit = cooldownAnnotation.unit
-                }
-            }
-
-            func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
-                nsfw {
-                    allowInDMs = nsfwAnnotation.dm
-                    allowInGuild = nsfwAnnotation.guild
-                }
-            }
-
-            userPermissions = AnnotationUtils.getUserPermissions(func)
-            botPermissions = AnnotationUtils.getBotPermissions(func)
-
-            @Suppress("UNCHECKED_CAST")
-            function = func as KFunction<Any>
+            fillCommandBuilder(func)
 
             func.findAnnotation<Category>()?.let { category = it.value }
             aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
