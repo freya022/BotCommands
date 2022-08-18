@@ -4,6 +4,7 @@ import com.freya02.botcommands.annotations.api.annotations.BotPermissions;
 import com.freya02.botcommands.annotations.api.annotations.Cooldown;
 import com.freya02.botcommands.annotations.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
+import com.freya02.botcommands.api.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 
 import java.lang.annotation.ElementType;
@@ -69,5 +70,5 @@ public @interface JDATextCommand {
 	 *
 	 * @return Short description of the command
 	 */
-	String description() default "";
+	String description() default TextCommandBuilder.defaultDescription;
 }

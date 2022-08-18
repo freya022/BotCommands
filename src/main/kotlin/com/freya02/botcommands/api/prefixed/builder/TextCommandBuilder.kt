@@ -22,6 +22,15 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
 
     var order = 0
 
+    /**
+     * Returns a detailed embed of what the command is, it is used by the internal <code>'help'</code> command
+     *
+     * The "`help`" command will automatically set the embed title to be "`Command 'command_name'`" but can be overridden
+     *
+     * It will also set the embed's description to be the command's description, **you can override with [EmbedBuilder.setDescription]**
+     *
+     * @return The EmbedBuilder to use as a detailed description
+     */
     var detailedDescription: Consumer<EmbedBuilder>? = null
 
     /**
