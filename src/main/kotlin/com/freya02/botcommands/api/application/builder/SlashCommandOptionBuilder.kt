@@ -8,7 +8,6 @@ import java.util.*
 
 class SlashCommandOptionBuilder(declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
     var description: String = "No description"
-    var optional: Boolean? = null
     var choices: List<Choice>? = null
 
     var valueRange: ValueRange? = null

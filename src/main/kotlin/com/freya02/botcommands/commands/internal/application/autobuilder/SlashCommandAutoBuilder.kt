@@ -25,7 +25,6 @@ import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.AnnotationUtils
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
@@ -149,7 +148,6 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
                 }
                 else -> option(kParameter.findDeclarationName(), optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
-                    optional = kParameter.isNullable
 
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
                     kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
