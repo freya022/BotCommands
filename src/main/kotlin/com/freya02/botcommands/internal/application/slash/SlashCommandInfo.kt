@@ -113,12 +113,14 @@ class SlashCommandInfo internal constructor(
                     val varArgName = optionName.toVarArgName(varArgNum)
                     val optionMapping = event.getOption(varArgName)
                         ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
-                            objectList += when {
-                                parameter.isPrimitive -> 0
-                                else -> null
+                            if (!parameter.kParameter.isOptional) {
+                                objectList += when {
+                                    parameter.isPrimitive -> 0
+                                    else -> null
+                                }
                             }
 
-                            continue
+                            continue@parameterLoop
                         } else {
                             if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop
 

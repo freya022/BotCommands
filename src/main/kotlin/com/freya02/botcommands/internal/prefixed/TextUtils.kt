@@ -73,7 +73,7 @@ object TextUtils {
             builder.addField("Subcommands", subcommandHelp, false)
         }
 
-        commandInfo.instance.detailedDescription?.accept(builder)
+        commandInfo.detailedDescription?.accept(builder)
 
         return builder
     }

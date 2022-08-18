@@ -1,8 +1,13 @@
 package com.freya02.botcommands.api.prefixed;
 
+import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.CommandsBuilder;
+import com.freya02.botcommands.api.application.CommandPath;
+import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier;
+import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -21,4 +26,23 @@ public abstract class TextCommand {
 	 */
 	@Nullable
 	public Consumer<EmbedBuilder> getDetailedDescription() {return null;}
+
+	/**
+	 * Returns the generated value supplier of an {@link GeneratedOption}, if the method doesn't return a generated value supplier, the framework will throw.
+	 * <br>This method is called only if your option is annotated with {@link GeneratedOption}
+	 *
+	 * <p>This method will only be called once per command option per guild
+	 *
+	 * @param commandPath   The path of the command, as set in {@link JDATextCommand}
+	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
+	 * @param parameterType The <b>boxed</b> type of the command option
+	 *
+	 * @return A {@link ApplicationGeneratedValueSupplier} to generate the option on command execution
+	 */
+	@NotNull
+	public TextGeneratedValueSupplier getGeneratedValueSupplier(@NotNull CommandPath commandPath,
+	                                                            @NotNull String optionName,
+	                                                            @NotNull ParameterType parameterType) {
+		throw new IllegalArgumentException("Option '%s' in command path '%s' is a generated option but no generated value supplier has been given".formatted(optionName, commandPath.getFullPath()));
+	}
 }

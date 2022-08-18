@@ -1,8 +1,6 @@
 package com.freya02.botcommands.commands.internal.application.autobuilder
 
 import com.freya02.botcommands.annotations.api.annotations.CommandId
-import com.freya02.botcommands.annotations.api.annotations.Cooldown
-import com.freya02.botcommands.annotations.api.annotations.NSFW
 import com.freya02.botcommands.annotations.api.application.annotations.AppOption
 import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
 import com.freya02.botcommands.annotations.api.application.slash.annotations.ChannelTypes
@@ -18,14 +16,14 @@ import com.freya02.botcommands.api.application.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.commands.internal.application.autocomplete.AutocompleteHandlerContainer
+import com.freya02.botcommands.commands.internal.autobuilder.fillApplicationCommandBuilder
+import com.freya02.botcommands.commands.internal.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.core.api.annotations.BService
 import com.freya02.botcommands.core.internal.ClassPathContainer
 import com.freya02.botcommands.core.internal.ClassPathFunction
 import com.freya02.botcommands.core.internal.requireFirstArg
 import com.freya02.botcommands.core.internal.requireNonStatic
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.AnnotationUtils
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
@@ -91,33 +89,13 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
         }
 
         manager.slashCommand(path, annotation.scope) {
+            fillCommandBuilder(func)
+            fillApplicationCommandBuilder(func)
+
             defaultLocked = annotation.defaultLocked
             description = annotation.description
 
-            func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
-                cooldown {
-                    scope = cooldownAnnotation.cooldownScope
-                    cooldown = cooldownAnnotation.cooldown
-                    unit = cooldownAnnotation.unit
-                }
-            }
-
-            func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
-                nsfw {
-                    allowInDMs = nsfwAnnotation.dm
-                    allowInGuild = nsfwAnnotation.guild
-                }
-            }
-
-            userPermissions = AnnotationUtils.getUserPermissions(func)
-            botPermissions = AnnotationUtils.getBotPermissions(func)
-
-            testOnly = AnnotationUtils.getEffectiveTestState(func)
-
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
-
-            @Suppress("UNCHECKED_CAST")
-            function = func as KFunction<Any>
         }
     }
 
@@ -149,7 +127,6 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
                 }
                 else -> option(kParameter.findDeclarationName(), optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
-                    optional = kParameter.isNullable
 
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
                     kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }

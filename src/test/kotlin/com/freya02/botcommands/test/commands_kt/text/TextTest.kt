@@ -1,16 +1,40 @@
 package com.freya02.botcommands.test.commands_kt.text
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
+import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
+import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand
+import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.TextDeclaration
+import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.prefixed.TextCommand
+import com.freya02.botcommands.api.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.prefixed.builder.TextCommandManager
 
 @CommandMarker
 class TextTest : TextCommand() {
-    @CommandMarker
-    fun onTextTestFallback(event: BaseCommandEvent, context: BContext, userName: String) {
+    override fun getGeneratedValueSupplier(
+        commandPath: CommandPath,
+        optionName: String,
+        parameterType: ParameterType
+    ): TextGeneratedValueSupplier {
+        if (optionName ==  "user_name") {
+            return TextGeneratedValueSupplier {
+                event -> event.author.name
+            }
+        }
+
+        return super.getGeneratedValueSupplier(commandPath, optionName, parameterType)
+    }
+
+    @JDATextCommand(name = "test_annotated")
+    fun onTextTestFallback(
+        event: BaseCommandEvent,
+        context: BContext,
+        @GeneratedOption userName: String
+    ) {
         event.reply("""
             text: [fallback]
             context: $context
@@ -18,8 +42,13 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @CommandMarker
-    fun onTextTest(event: BaseCommandEvent, text: String, context: BContext, userName: String) {
+    @JDATextCommand(name = "test_annotated")
+    fun onTextTest(
+        event: BaseCommandEvent,
+        @TextOption text: String,
+        context: BContext,
+        @GeneratedOption userName: String
+    ) {
         event.reply("""
             text: $text
             context: $context
@@ -27,8 +56,11 @@ class TextTest : TextCommand() {
         """.trimIndent()).queue()
     }
 
-    @CommandMarker
-    fun onTextTestSubcommand(event: BaseCommandEvent, number: Double) {
+    @JDATextCommand(name = "test_annotated", subcommand = "subcommand")
+    fun onTextTestSubcommand(
+        event: BaseCommandEvent,
+        @TextOption number: Double
+    ) {
         event.reply("""
             number: $number
         """.trimIndent()).queue()

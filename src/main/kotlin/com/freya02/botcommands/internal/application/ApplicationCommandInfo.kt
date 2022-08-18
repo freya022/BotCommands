@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.application
 
 import com.freya02.botcommands.api.CooldownScope
-import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
 import com.freya02.botcommands.api.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.AbstractCommandInfo
@@ -18,9 +17,6 @@ abstract class ApplicationCommandInfo internal constructor(
     val isDefaultLocked: Boolean
     val isGuildOnly: Boolean
     val isTestOnly: Boolean
-
-    override val instance: ApplicationCommand
-        get() = super.instance as ApplicationCommand
 
     abstract override val parameters: MethodParameters
     override val optionParameters: List<MethodParameter>
