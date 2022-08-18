@@ -84,7 +84,7 @@ class TextCommandInfo(
         objects[method.nonInstanceParameters.first()] = event
 
         var groupIndex = 1
-        for (parameter in parameters) {
+        parameterLoop@for (parameter in parameters) {
             objects[parameter.kParameter] = when (parameter.methodParameterType) {
                 MethodParameterType.OPTION -> {
                     matcher ?: throwInternal("No matcher passed for a regex command")
@@ -118,6 +118,10 @@ class TextCommandInfo(
 
                         return ExecutionResult.CONTINUE
                     } else { //Parameter is optional
+                        if (parameter.kParameter.isOptional) {
+                            continue@parameterLoop
+                        }
+
                         when {
                             parameter.isPrimitive -> 0
                             else -> null
