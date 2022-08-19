@@ -10,6 +10,8 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.*
@@ -71,8 +73,8 @@ class SlashMyCommand : ApplicationCommand() {
         """.trimIndent()).queue()
     }
 
-    @com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler(name = autocompleteHandlerName)
-    @com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete(cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY)
+    @AutocompleteHandler(name = autocompleteHandlerName)
+    @CacheAutocomplete(cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY)
     fun runAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         stringOption: String,

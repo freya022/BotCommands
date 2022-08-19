@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Co
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
@@ -58,7 +59,7 @@ internal class AutocompleteHandler(
                 @Suppress("UNCHECKED_CAST")
                 val transformer =
                     slashCommandInfo.context.config.applicationConfig.autocompleteTransformers[collectionReturnType.starProjectedType] as? AutocompleteTransformer<Any>
-                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionReturnType.simpleName}', you may also check the docs for ${com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler::class.java.simpleName}")
+                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionReturnType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.java.simpleName}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }
