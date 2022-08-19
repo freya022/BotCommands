@@ -7,10 +7,13 @@ import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextOptionBuilder
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
+import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.EmbedBuilder
@@ -55,7 +58,7 @@ class TextCommandInfo(
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters2.transform<RegexParameterResolver<*, *>>(
+        parameters = MethodParameters.transform<RegexParameterResolver<*, *>>(
             context,
             method,
             builder.optionBuilders

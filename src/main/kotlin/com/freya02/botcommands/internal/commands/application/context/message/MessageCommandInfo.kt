@@ -30,7 +30,7 @@ class MessageCommandInfo internal constructor(
         checkEventScope<GuildMessageEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters2.transform<MessageContextParameterResolver<*, *>>(
+        parameters = MethodParameters.transform<MessageContextParameterResolver<*, *>>(
             context,
             method,
             builder.optionBuilders

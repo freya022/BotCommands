@@ -30,7 +30,7 @@ class UserCommandInfo internal constructor(
         checkEventScope<GuildUserEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters2.transform<UserContextParameterResolver<*, *>>(
+        parameters = MethodParameters.transform<UserContextParameterResolver<*, *>>(
             context,
             method,
             builder.optionBuilders

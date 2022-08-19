@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.parameters.ComponentParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.MethodParameters
-import com.freya02.botcommands.internal.MethodParameters2
 import kotlin.reflect.KFunction
 
 class ComponentDescriptor(
@@ -16,7 +15,7 @@ class ComponentDescriptor(
 
     init {
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters2.transform<ComponentParameterResolver<*, *>>(context, method) {
+        parameters = MethodParameters.transform<ComponentParameterResolver<*, *>>(context, method) {
             optionTransformer = { parameter, _, resolver -> ComponentHandlerParameter(parameter, resolver) }
         }
     }
