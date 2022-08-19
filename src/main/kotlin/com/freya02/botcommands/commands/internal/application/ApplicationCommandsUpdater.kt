@@ -1,10 +1,7 @@
 package com.freya02.botcommands.commands.internal.application
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
-import com.freya02.botcommands.api.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.application.IApplicationCommandManager
+import com.freya02.botcommands.api.application.*
 import com.freya02.botcommands.api.builder.DebugBuilder
 import com.freya02.botcommands.commands.internal.application.ApplicationCommandsCache.Companion.toJsonBytes
 import com.freya02.botcommands.internal.*
@@ -192,6 +189,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun configureTopLevel(info: ApplicationCommandInfo, rightCommand: CommandData) {
+        if (info.scope == CommandScope.GLOBAL_NO_DM) rightCommand.isGuildOnly = true
         if (info.isDefaultLocked) {
             rightCommand.defaultPermissions = DefaultMemberPermissions.DISABLED
         } else if (info.userPermissions.isNotEmpty()) {
