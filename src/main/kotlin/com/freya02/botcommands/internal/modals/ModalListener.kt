@@ -1,11 +1,10 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.core.api.annotations.BEventListener
-import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
-import com.freya02.botcommands.modals.internal.ModalHandlerContainer
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.withContext

@@ -4,7 +4,7 @@ import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextComma
 import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.prefixed.IHelpCommand;
 import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

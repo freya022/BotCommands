@@ -6,13 +6,13 @@ import com.freya02.botcommands.api.components.data.LambdaButtonData
 import com.freya02.botcommands.api.components.data.LambdaSelectionMenuData
 import com.freya02.botcommands.api.components.data.PersistentButtonData
 import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData
-import com.freya02.botcommands.core.api.annotations.BService
-import com.freya02.botcommands.core.internal.db.Database
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.sql.SQLFetchResult
 import com.freya02.botcommands.internal.components.sql.SQLFetchedComponent
 import com.freya02.botcommands.internal.components.sql.SQLLambdaComponentData
 import com.freya02.botcommands.internal.components.sql.SQLPersistentComponentData
+import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import kotlinx.coroutines.delay

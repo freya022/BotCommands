@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.components.sql
 import com.freya02.botcommands.api.components.ComponentType
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo
-import com.freya02.botcommands.core.internal.db.DBResult
-import com.freya02.botcommands.core.internal.db.Transaction
+import com.freya02.botcommands.internal.core.db.DBResult
+import com.freya02.botcommands.internal.core.db.Transaction
 import kotlinx.coroutines.runBlocking
 
 internal class SQLLambdaComponentData private constructor(

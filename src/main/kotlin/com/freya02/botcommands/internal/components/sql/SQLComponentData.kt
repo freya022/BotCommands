@@ -5,9 +5,9 @@ import com.freya02.botcommands.api.components.ComponentErrorReason
 import com.freya02.botcommands.api.components.ComponentType
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.components.builder.ComponentTimeoutInfo
-import com.freya02.botcommands.core.internal.db.Transaction
-import com.freya02.botcommands.core.internal.db.isUniqueViolation
 import com.freya02.botcommands.internal.components.HandleComponentResult
+import com.freya02.botcommands.internal.core.db.Transaction
+import com.freya02.botcommands.internal.core.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.runBlocking

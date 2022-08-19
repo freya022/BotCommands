@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components;
 
-import com.freya02.botcommands.core.api.config.BComponentsConfig;
+import com.freya02.botcommands.api.core.config.BComponentsConfig;
 
 import java.util.function.Predicate;
 

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.application.slash;
 
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.application.slash.GlobalSlashEventImpl;
+import com.freya02.botcommands.internal.commands.application.slash.GlobalSlashEventImpl;
 import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;

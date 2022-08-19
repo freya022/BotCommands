@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent

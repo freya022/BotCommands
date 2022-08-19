@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

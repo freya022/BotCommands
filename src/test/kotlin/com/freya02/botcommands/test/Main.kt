@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test
 
 import com.freya02.botcommands.api.components.DefaultComponentManager
-import com.freya02.botcommands.core.api.BBuilder
+import com.freya02.botcommands.api.core.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import dev.minn.jda.ktx.jdabuilder.light

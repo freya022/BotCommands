@@ -1,17 +1,14 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
-import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler
-import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.annotations.GeneratedOption
+import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
@@ -34,16 +31,16 @@ class SlashTest : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDASlashCommand(name = "test_annotated", scope = CommandScope.GUILD)
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "test_annotated", scope = CommandScope.GUILD)
     fun onSlashTest(
         event: GuildSlashEvent,
-        @AppOption(autocomplete = guildNicknameAutocompleteName) guildNickname: String,
+        @com.freya02.botcommands.api.commands.application.annotations.AppOption(autocomplete = guildNicknameAutocompleteName) guildNickname: String,
         @GeneratedOption guildName: String
     ) {
         event.reply_("woo in $guildName ($guildNickname)", ephemeral = true).queue()
     }
 
-    @AutocompleteHandler(name = guildNicknameAutocompleteName)
+    @com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler(name = guildNicknameAutocompleteName)
     fun onSlashTestGuildNicknameAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         guildName: String, //Generated

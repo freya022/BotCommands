@@ -3,12 +3,12 @@ package com.freya02.botcommands.internal.parameters.resolvers
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextUtils
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.onErrorResponseException
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.prefixed.TextUtils
 import com.freya02.botcommands.internal.throwInternal
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.entities.User

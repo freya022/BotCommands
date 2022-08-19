@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 
 public class SlashGroup extends ApplicationCommand {
 	@JDASlashCommand(name = "anilist2", subcommand = "search", group = "user" ,description = "Searches anime")

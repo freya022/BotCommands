@@ -1,16 +1,14 @@
 package com.freya02.botcommands.test.commands_kt.message
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
-import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption
-import com.freya02.botcommands.annotations.api.application.context.annotations.JDAMessageCommand
-import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.annotations.GeneratedOption
+import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.Guild
@@ -38,10 +36,10 @@ class MessageContextRaw : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @JDAMessageCommand(scope = CommandScope.GUILD, name = "Raw content (annotated)")
+    @com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand(scope = CommandScope.GUILD, name = "Raw content (annotated)")
     fun onMessageContextRaw(
         event: GuildMessageEvent,
-        @AppOption message: Message,
+        @com.freya02.botcommands.api.commands.application.annotations.AppOption message: Message,
         @GeneratedOption rawContent: String
     ) {
         event.reply_("Raw for message ID ${message.id}: $rawContent", ephemeral = true).queue()

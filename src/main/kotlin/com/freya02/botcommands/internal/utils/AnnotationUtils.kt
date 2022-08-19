@@ -3,8 +3,6 @@ package com.freya02.botcommands.internal.utils
 import com.freya02.botcommands.annotations.api.annotations.AppendMode
 import com.freya02.botcommands.annotations.api.annotations.BotPermissions
 import com.freya02.botcommands.annotations.api.annotations.UserPermissions
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption
-import com.freya02.botcommands.annotations.api.application.annotations.Test
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
@@ -31,7 +29,7 @@ object AnnotationUtils {
     @JvmStatic
     fun getEffectiveTestGuildIds(context: BContextImpl, method: KFunction<*>): TLongSet {
         val testIds: TLongSet = TLongHashSet(context.config.applicationConfig.testGuildIds)
-        val effectiveAnnotations = getEffectiveAnnotations(method, Test::class)
+        val effectiveAnnotations = getEffectiveAnnotations(method, com.freya02.botcommands.api.commands.application.annotations.Test::class)
         for (test in effectiveAnnotations) {
             val ids: LongArray = test.guildIds
             val mode: AppendMode = test.mode
@@ -49,7 +47,7 @@ object AnnotationUtils {
         return testIds
     }
 
-    private val optionAnnotations = listOf(TextOption::class, AppOption::class, ModalData::class, ModalInput::class)
+    private val optionAnnotations = listOf(TextOption::class, com.freya02.botcommands.api.commands.application.annotations.AppOption::class, ModalData::class, ModalInput::class)
     fun isOption(parameter: KParameter) = parameter.annotations.any { it.annotationClass in optionAnnotations }
 
     @JvmStatic
@@ -63,7 +61,7 @@ object AnnotationUtils {
     }
 
     fun getEffectiveTestState(method: KFunction<*>): Boolean {
-        return getEffectiveAnnotations(method, Test::class).isNotEmpty()
+        return getEffectiveAnnotations(method, com.freya02.botcommands.api.commands.application.annotations.Test::class).isNotEmpty()
     }
 
     fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {

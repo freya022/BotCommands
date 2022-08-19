@@ -2,9 +2,9 @@ package com.freya02.botcommands.api.builder
 
 import com.freya02.botcommands.api.CooldownScope
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.builder.OptionBuilder
-import com.freya02.botcommands.internal.CooldownStrategy
-import com.freya02.botcommands.internal.NSFWStrategy
+import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
+import com.freya02.botcommands.internal.commands.CooldownStrategy
+import com.freya02.botcommands.internal.commands.NSFWStrategy
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.Permission
 import java.util.*

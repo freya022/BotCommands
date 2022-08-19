@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.builder
 
 import com.freya02.botcommands.api.CooldownScope
-import com.freya02.botcommands.internal.CooldownStrategy
+import com.freya02.botcommands.internal.commands.CooldownStrategy
 import java.util.concurrent.TimeUnit
 
 class CooldownStrategyBuilder internal constructor() {

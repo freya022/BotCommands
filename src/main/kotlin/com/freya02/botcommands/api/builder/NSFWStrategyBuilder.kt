@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.builder
 
-import com.freya02.botcommands.internal.NSFWStrategy
+import com.freya02.botcommands.internal.commands.NSFWStrategy
 
 class NSFWStrategyBuilder internal constructor() {
     var allowInGuild: Boolean = false

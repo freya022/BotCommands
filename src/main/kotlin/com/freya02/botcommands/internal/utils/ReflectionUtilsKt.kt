@@ -2,9 +2,9 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.annotations.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.core.api.annotations.BService
-import com.freya02.botcommands.core.api.annotations.ConditionalService
-import com.freya02.botcommands.core.api.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber

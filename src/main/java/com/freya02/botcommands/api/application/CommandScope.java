@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.application;
 
-import com.freya02.botcommands.annotations.api.application.annotations.Test;
 import com.freya02.botcommands.api.SettingsProvider;
-import com.freya02.botcommands.core.api.config.BApplicationConfig;
+import com.freya02.botcommands.api.commands.application.annotations.Test;
+import com.freya02.botcommands.api.core.config.BApplicationConfig;
 import net.dv8tion.jda.api.entities.Guild;
 
 /**

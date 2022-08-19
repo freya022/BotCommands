@@ -1,11 +1,11 @@
 package com.freya02.botcommands.api.application;
 
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
-import com.freya02.botcommands.internal.application.CommandMap;
-import com.freya02.botcommands.internal.application.MutableCommandMap;
-import com.freya02.botcommands.internal.application.context.message.MessageCommandInfo;
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo;
+import com.freya02.botcommands.internal.commands.application.CommandMap;
+import com.freya02.botcommands.internal.commands.application.MutableCommandMap;
+import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
+import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

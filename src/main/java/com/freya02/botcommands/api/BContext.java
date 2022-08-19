@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.annotations.api.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.application.ApplicationCommandsContext;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import kotlin.reflect.KClass;

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components.sql
 
 import com.freya02.botcommands.api.components.FetchResult
-import com.freya02.botcommands.core.internal.db.Transaction
+import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.throwInternal
 
 internal class SQLFetchResult(val fetchedComponent: SQLFetchedComponent?, transaction: Transaction?) : FetchResult(fetchedComponent) {

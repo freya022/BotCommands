@@ -1,32 +1,30 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import dev.minn.jda.ktx.messages.reply_
 
 @CommandMarker
 class SlashSubWithGroup : ApplicationCommand() {
-    @JDASlashCommand(name = "tag_annotated", subcommand = "send")
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "tag_annotated", subcommand = "send")
     fun onSlashSubWithGroup(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }
 
-    @JDASlashCommand(name = "tag_annotated", group = "manage", subcommand = "create")
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "tag_annotated", group = "manage", subcommand = "create")
     fun onSlashSubWithGroupManageCreate(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }
 
-    @JDASlashCommand(name = "tag_annotated", group = "manage", subcommand = "edit")
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "tag_annotated", group = "manage", subcommand = "edit")
     fun onSlashSubWithGroupManageEdit(event: GuildSlashEvent) {
         event.reply_("ok", ephemeral = true).queue()
     }
 
     @AppDeclaration
-    fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
+    fun declare(globalApplicationCommandManager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
         globalApplicationCommandManager.slashCommand("tag", subcommand = "send") {
             function = ::onSlashSubWithGroup
         }

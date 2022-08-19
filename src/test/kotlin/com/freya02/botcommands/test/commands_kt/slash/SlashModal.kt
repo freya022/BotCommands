@@ -1,15 +1,14 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.test.CustomObject
 import dev.minn.jda.ktx.messages.reply_
@@ -22,7 +21,7 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @CommandMarker
 class SlashModal : ApplicationCommand() {
-    @JDASlashCommand(name = "modal_annotated")
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "modal_annotated")
     fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val input = modals.createTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text", TextInputStyle.SHORT)
             .build()

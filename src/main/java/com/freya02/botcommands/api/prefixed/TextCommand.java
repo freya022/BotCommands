@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.annotations.api.application.annotations.GeneratedOption;
 import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier;
+import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;

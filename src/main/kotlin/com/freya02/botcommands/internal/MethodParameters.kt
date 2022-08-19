@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.parameters.ICustomResolver
-import com.freya02.botcommands.commands.internal.ResolverContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 interface UserContextParameterResolver<T : ParameterResolver<T, R>, R> {

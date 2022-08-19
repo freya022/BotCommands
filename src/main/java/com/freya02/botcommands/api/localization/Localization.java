@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProviders;
-import com.freya02.botcommands.internal.application.localization.BCLocalizationFunction;
+import com.freya02.botcommands.internal.commands.application.localization.BCLocalizationFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;

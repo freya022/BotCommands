@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

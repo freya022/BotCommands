@@ -1,13 +1,11 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener
-import com.freya02.botcommands.api.annotations.AppDeclaration
 import com.freya02.botcommands.api.application.ApplicationCommand
 import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import dev.minn.jda.ktx.coroutines.await
@@ -19,7 +17,7 @@ private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 
 @CommandMarker
 class SlashButton : ApplicationCommand() {
-    @JDASlashCommand(name = "button_annotated")
+    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "button_annotated")
     fun onSlashButton(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .primaryButton {
@@ -47,7 +45,7 @@ class SlashButton : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(manager: GlobalApplicationCommandManager) {
+    fun declare(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
         manager.slashCommand(CommandPath.of("button")) {
             customOption("components")
 

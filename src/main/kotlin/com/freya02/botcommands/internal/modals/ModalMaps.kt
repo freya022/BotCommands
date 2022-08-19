@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.core.api.annotations.BService
-import com.freya02.botcommands.core.api.config.BConfig
+import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.config.BConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.ThreadLocalRandom

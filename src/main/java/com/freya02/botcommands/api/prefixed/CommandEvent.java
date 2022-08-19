@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.prefixed;
 import com.freya02.botcommands.api.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.prefixed.exceptions.NoIdException;
 import com.freya02.botcommands.internal.BContextImpl;
-import com.freya02.botcommands.internal.prefixed.BaseCommandEventImpl;
+import com.freya02.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
 import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;

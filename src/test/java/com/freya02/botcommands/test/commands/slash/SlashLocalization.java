@@ -1,10 +1,9 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;

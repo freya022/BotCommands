@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.core.api.exceptions.InitializationException
-import com.freya02.botcommands.core.api.exceptions.ServiceException
+import com.freya02.botcommands.api.core.exceptions.InitializationException
+import com.freya02.botcommands.api.core.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.exceptions.ErrorResponseException

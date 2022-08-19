@@ -2,8 +2,9 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.Usability.UnusableReason.*
-import com.freya02.botcommands.internal.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.AbstractCommandInfo
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import java.util.*
