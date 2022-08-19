@@ -21,7 +21,7 @@ import java.util.*
 private val LOGGER = Logging.getLogger()
 
 @BService
-internal class ApplicationCommandListenerKt(private val context: BContextImpl) {
+internal class ApplicationCommandListener(private val context: BContextImpl) {
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         LOGGER.trace("Received slash command: {}", reconstructCommand(event))
