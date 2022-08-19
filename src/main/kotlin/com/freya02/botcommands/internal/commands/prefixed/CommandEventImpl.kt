@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.prefixed.CommandEvent
-import com.freya02.botcommands.api.prefixed.exceptions.BadIdException
-import com.freya02.botcommands.api.prefixed.exceptions.NoIdException
+import com.freya02.botcommands.api.commands.prefixed.CommandEvent
+import com.freya02.botcommands.api.commands.prefixed.exceptions.BadIdException
+import com.freya02.botcommands.api.commands.prefixed.exceptions.NoIdException
 import com.freya02.botcommands.api.utils.RichTextFinder
 import com.freya02.botcommands.api.utils.RichTextFinder.RichText
 import com.freya02.botcommands.api.utils.RichTextType

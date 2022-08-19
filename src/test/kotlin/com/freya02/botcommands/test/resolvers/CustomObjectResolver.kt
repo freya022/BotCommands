@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test.resolvers
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.internal.ExecutableInteractionInfo

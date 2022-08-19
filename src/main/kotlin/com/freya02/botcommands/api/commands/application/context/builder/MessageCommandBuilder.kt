@@ -1,11 +1,11 @@
 package com.freya02.botcommands.api.commands.application.context.builder
 
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
+import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
+import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 

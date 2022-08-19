@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.utils;
 
-import com.freya02.botcommands.annotations.api.annotations.Optional;
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange;
 import io.github.classgraph.*;

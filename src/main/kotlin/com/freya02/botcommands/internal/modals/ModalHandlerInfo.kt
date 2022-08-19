@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.modals.annotations.ModalHandler
+import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
@@ -12,7 +12,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData as ModalDataAnnotation
+import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 class ModalHandlerInfo(
     context: BContextImpl,

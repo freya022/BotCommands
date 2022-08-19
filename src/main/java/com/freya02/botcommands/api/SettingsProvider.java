@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.application.ApplicationCommandsContext;
+import com.freya02.botcommands.api.commands.CommandList;
+import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;

@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.api.prefixed.IHelpCommand;
-import com.freya02.botcommands.api.prefixed.TextCommandFilter;
+import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
+import com.freya02.botcommands.api.commands.prefixed.IHelpCommand;
+import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter;
 import com.freya02.botcommands.internal.BContextImpl;
 
 public final class TextCommandsBuilder {

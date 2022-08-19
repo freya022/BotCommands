@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
-import com.freya02.botcommands.annotations.api.annotations.Cooldown
-import com.freya02.botcommands.annotations.api.annotations.NSFW
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import kotlin.reflect.KFunction

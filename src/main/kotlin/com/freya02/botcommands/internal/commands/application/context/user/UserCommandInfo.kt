@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.context.user
 
-import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
-import com.freya02.botcommands.api.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
+import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo

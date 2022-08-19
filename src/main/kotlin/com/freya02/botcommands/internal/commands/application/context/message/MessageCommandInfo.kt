@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.context.message
 
-import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
-import com.freya02.botcommands.api.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
+import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo

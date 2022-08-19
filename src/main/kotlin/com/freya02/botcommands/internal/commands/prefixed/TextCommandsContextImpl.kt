@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.prefixed.TextCommandsContext
+import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwUser
 

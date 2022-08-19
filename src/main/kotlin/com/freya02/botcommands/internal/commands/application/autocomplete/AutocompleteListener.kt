@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.commands.application.autocomplete
 
-import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl

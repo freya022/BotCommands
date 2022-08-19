@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener
-import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.SelectionEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener

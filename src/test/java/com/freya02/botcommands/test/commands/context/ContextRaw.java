@@ -1,10 +1,10 @@
 package com.freya02.botcommands.test.commands.context;
 
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandScope;
-import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
+import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent;
 import net.dv8tion.jda.api.entities.Message;
 
 public class ContextRaw extends ApplicationCommand {

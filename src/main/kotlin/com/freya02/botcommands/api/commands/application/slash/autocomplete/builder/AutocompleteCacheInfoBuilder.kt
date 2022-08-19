@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.builder
 
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 
 class AutocompleteCacheInfoBuilder internal constructor() {
     internal fun build() = AutocompleteCacheInfo(this)

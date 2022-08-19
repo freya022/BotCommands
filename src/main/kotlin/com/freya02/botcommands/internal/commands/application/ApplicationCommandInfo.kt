@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.CooldownScope
-import com.freya02.botcommands.api.application.CommandScope
+import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters

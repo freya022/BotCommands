@@ -1,10 +1,10 @@
 package com.freya02.botcommands.test.commands.guild_specific;
 
-import com.freya02.botcommands.annotations.api.annotations.CommandId;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.CommandPath;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.annotations.CommandId;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;

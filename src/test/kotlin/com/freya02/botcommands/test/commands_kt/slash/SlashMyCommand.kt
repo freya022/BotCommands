@@ -1,15 +1,15 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.slash.ApplicationGeneratedValueSupplier
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteCacheMode
+import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.*

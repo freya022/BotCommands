@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
-import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
-import com.freya02.botcommands.api.prefixed.TextGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo

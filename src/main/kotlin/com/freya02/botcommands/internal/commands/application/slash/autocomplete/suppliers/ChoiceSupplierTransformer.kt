@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers
 
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 

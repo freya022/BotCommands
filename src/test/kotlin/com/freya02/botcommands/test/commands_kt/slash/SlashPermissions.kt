@@ -1,12 +1,12 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.annotations.UserPermissions
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import java.util.*

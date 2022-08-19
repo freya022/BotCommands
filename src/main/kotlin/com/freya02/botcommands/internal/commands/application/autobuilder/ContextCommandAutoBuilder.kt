@@ -1,17 +1,17 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder
 
-import com.freya02.botcommands.annotations.api.annotations.CommandId
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.context.message.GlobalMessageEvent
-import com.freya02.botcommands.api.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
+import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.asDiscordString

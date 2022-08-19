@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations;
 
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteMode;
-import com.freya02.botcommands.api.application.slash.autocomplete.AutocompleteTransformer;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.lang.annotation.ElementType;

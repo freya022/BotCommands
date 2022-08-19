@@ -1,12 +1,12 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.components.annotations.JDASelectionMenuListener
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.components.event.SelectionEvent
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.row

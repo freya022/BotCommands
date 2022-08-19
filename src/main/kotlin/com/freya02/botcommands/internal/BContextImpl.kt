@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
+import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.core.config.BConfig
-import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler

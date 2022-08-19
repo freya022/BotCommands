@@ -1,10 +1,10 @@
 package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandScope;
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.CommandScope;
+import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;

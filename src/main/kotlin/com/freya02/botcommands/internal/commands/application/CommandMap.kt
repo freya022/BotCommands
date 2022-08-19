@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import java.util.*

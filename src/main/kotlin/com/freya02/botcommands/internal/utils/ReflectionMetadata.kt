@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.annotations.api.annotations.Optional
+import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser

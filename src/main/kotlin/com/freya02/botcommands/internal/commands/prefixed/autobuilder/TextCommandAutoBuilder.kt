@@ -1,16 +1,15 @@
 package com.freya02.botcommands.internal.commands.prefixed.autobuilder
 
-import com.freya02.botcommands.annotations.api.annotations.RequireOwner
-import com.freya02.botcommands.annotations.api.prefixed.annotations.*
-import com.freya02.botcommands.api.application.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
-import com.freya02.botcommands.api.commands.annotations.TextDeclaration
+import com.freya02.botcommands.api.commands.annotations.RequireOwner
+import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
+import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.prefixed.TextCommand
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.core.ClassPathContainer

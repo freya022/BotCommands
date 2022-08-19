@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.builder;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.application.ApplicationCommandFilter;
+import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter;
 import com.freya02.botcommands.api.commands.application.annotations.Test;
 import com.freya02.botcommands.api.components.ComponentInteractionFilter;
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider;

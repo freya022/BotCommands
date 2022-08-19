@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.application.ApplicationCommandsContext;
+import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
+import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
-import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

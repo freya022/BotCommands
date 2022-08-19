@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.commands.application.CommandPath
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.math.min
 

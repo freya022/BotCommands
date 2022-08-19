@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.application.CommandUpdateResult
+import com.freya02.botcommands.api.commands.application.CommandUpdateResult
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager

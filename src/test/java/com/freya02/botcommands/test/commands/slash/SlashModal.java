@@ -1,13 +1,13 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData;
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler;
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.modals.Modals;
+import com.freya02.botcommands.api.modals.annotations.ModalData;
+import com.freya02.botcommands.api.modals.annotations.ModalHandler;
+import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.Modal;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;

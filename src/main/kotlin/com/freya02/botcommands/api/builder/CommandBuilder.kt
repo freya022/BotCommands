@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.builder
 
-import com.freya02.botcommands.api.CooldownScope
-import com.freya02.botcommands.api.application.CommandPath
+import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
 import com.freya02.botcommands.internal.commands.CooldownStrategy
 import com.freya02.botcommands.internal.commands.NSFWStrategy

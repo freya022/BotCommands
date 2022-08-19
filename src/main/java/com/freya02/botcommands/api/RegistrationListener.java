@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.commands.prefixed.TextCommand;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;

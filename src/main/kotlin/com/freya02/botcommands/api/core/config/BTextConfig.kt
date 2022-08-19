@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.config
 
+import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
+import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.annotations.LateService
-import com.freya02.botcommands.api.prefixed.HelpBuilderConsumer
-import com.freya02.botcommands.api.prefixed.TextCommandFilter
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.GuildMessageChannel
 import java.io.InputStream

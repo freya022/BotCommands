@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.annotations.api.annotations.AppendMode
-import com.freya02.botcommands.annotations.api.annotations.BotPermissions
-import com.freya02.botcommands.annotations.api.annotations.UserPermissions
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
-import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption
+import com.freya02.botcommands.api.annotations.AppendMode
+import com.freya02.botcommands.api.commands.annotations.BotPermissions
+import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
+import com.freya02.botcommands.api.modals.annotations.ModalData
+import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
 import gnu.trove.set.TLongSet

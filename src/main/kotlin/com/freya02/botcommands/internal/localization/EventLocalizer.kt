@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.GuildLocalizable
 import com.freya02.botcommands.api.localization.Localizable
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.UserLocalizable
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.DiscordLocale

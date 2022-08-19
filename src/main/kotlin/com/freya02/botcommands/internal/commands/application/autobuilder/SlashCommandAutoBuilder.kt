@@ -1,14 +1,10 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder
 
-import com.freya02.botcommands.annotations.api.annotations.CommandId
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
-import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.ValueRange
+import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.annotations.CommandId
+import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.core.annotations.BService

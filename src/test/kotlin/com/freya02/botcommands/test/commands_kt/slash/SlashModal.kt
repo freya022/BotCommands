@@ -1,15 +1,15 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.CommandScope
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.modals.Modals
+import com.freya02.botcommands.api.modals.annotations.ModalData
+import com.freya02.botcommands.api.modals.annotations.ModalHandler
+import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.test.CustomObject
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent

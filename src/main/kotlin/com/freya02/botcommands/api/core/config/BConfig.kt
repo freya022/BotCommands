@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.annotations.api.annotations.RequireOwner
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
+import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.internal.DefaultMessagesFunction
 import com.freya02.botcommands.internal.LockableVar

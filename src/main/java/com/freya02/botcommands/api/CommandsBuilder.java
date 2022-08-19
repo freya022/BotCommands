@@ -1,14 +1,14 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.annotations.api.annotations.RequireOwner;
-import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.api.builder.DebugBuilder;
 import com.freya02.botcommands.api.builder.ExtensionsBuilder;
 import com.freya02.botcommands.api.builder.TextCommandsBuilder;
+import com.freya02.botcommands.api.commands.annotations.RequireOwner;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.prefixed.TextCommand;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.DefaultComponentManager;
-import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.Utils;
 import dev.minn.jda.ktx.events.CoroutineEventManager;

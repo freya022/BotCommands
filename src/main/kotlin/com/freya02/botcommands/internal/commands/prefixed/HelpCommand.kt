@@ -1,12 +1,8 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.api.application.CommandPath
-import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.prefixed.CommandEvent
-import com.freya02.botcommands.api.prefixed.IHelpCommand
-import com.freya02.botcommands.api.prefixed.TextCommand
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.prefixed.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.annotations.IncludeClasspath

@@ -1,10 +1,10 @@
 package com.freya02.bot.pingbot.commands;
 
-import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.TextCommand;
-import com.freya02.botcommands.api.prefixed.annotations.Category;
-import com.freya02.botcommands.api.prefixed.annotations.Description;
-import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
+import com.freya02.botcommands.api.commands.prefixed.TextCommand;
+import com.freya02.botcommands.api.commands.prefixed.annotations.Category;
+import com.freya02.botcommands.api.commands.prefixed.annotations.Description;
+import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
 
 @Category("Misc")
 @Description("Pong !")
