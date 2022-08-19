@@ -43,7 +43,7 @@ abstract class ApplicationCommandInfo internal constructor(
         }
 
         if (!isGuildOnly && (userPermissions.isNotEmpty() || botPermissions.isNotEmpty())) {
-            throwUser("Application command with permissions should be guild-only")
+            throwUser("Application command with permissions should be guild-only, as permissions are not applied in DMs")
         }
     }
 }
