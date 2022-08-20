@@ -24,7 +24,7 @@ import java.util.function.Consumer
 import kotlin.time.Duration.Companion.milliseconds
 
 @BService
-internal class DefaultComponentManager(private val database: Database, private val context: BContextImpl) : ComponentManager {
+class DefaultComponentManager internal constructor(private val database: Database, private val context: BContextImpl) : ComponentManager {
     private val logger = Logging.getLogger()
 
     private val buttonLambdaMap: MutableMap<Long, ButtonConsumer> = hashMapOf()
