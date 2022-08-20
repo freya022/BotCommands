@@ -6,7 +6,7 @@ import java.sql.PreparedStatement
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-internal class KPreparedStatement(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
+class KPreparedStatement(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
     private fun setParameters(vararg params: Any?) {
         for ((i, param) in params.withIndex()) {
             setObject(i + 1, param)

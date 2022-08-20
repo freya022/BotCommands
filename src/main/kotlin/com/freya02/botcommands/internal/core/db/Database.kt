@@ -9,7 +9,7 @@ import java.sql.Connection
 private const val latestVersion = "3.0.0" // Change in CreateDatabase.sql too
 
 @ConditionalService
-internal class Database internal constructor(private val config: BConfig) {
+class Database internal constructor(private val config: BConfig) {
     init {
         config.connectionProvider.get().use { conn ->
             conn.prepareStatement("select version from bc_version").use {
