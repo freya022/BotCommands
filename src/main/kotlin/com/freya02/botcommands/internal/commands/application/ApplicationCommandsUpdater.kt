@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.builder.DebugBuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.CommandScope
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.internal.*
@@ -46,7 +47,17 @@ internal class ApplicationCommandsUpdater private constructor(
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        applicationCommands = manager.applicationCommands
+        applicationCommands = manager.applicationCommands.let {
+            it.filter {
+                context.settingsProvider?.let { settings ->
+                    guild?.let { guild ->
+                        return@filter settings.getGuildCommands(guild).filter.test(it.path)
+                    }
+                }
+
+                return@filter true
+            }
+        }
 
         allCommandData = computeCommands().allCommandData
 
@@ -241,7 +252,7 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     companion object {
-        fun ofGlobal(context: BContextImpl, manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager): ApplicationCommandsUpdater {
+        fun ofGlobal(context: BContextImpl, manager: GlobalApplicationCommandManager): ApplicationCommandsUpdater {
             return ApplicationCommandsUpdater(context, null, manager)
         }
 

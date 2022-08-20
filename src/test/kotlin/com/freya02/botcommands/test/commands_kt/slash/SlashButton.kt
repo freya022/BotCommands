@@ -3,8 +3,10 @@ package com.freya02.botcommands.test.commands_kt.slash
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -17,7 +19,7 @@ private const val TEST_BUTTON_BUTTON_LISTENER_NAME = "MyButton: TestButton"
 
 @CommandMarker
 class SlashButton : ApplicationCommand() {
-    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "button_annotated")
+    @JDASlashCommand(name = "button_annotated")
     fun onSlashButton(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .primaryButton {
@@ -45,7 +47,7 @@ class SlashButton : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
+    fun declare(manager: GlobalApplicationCommandManager) {
         manager.slashCommand(CommandPath.of("button")) {
             customOption("components")
 

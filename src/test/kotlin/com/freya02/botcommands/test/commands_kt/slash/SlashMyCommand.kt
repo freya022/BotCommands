@@ -5,10 +5,15 @@ import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
@@ -46,16 +51,16 @@ class SlashMyCommand : ApplicationCommand() {
         return super.getGeneratedValueSupplier(guild, commandId, commandPath, optionName, parameterType)
     }
 
-    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "my_command_annotated", subcommand = "kt", description = "mah desc")
+    @JDASlashCommand(name = "my_command_annotated", subcommand = "kt", description = "mah desc")
     fun executeCommand(
         event: GuildSlashEvent,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "string_annotated", description = "Option description") stringOption: String,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "int_annotated", description = "An integer") @com.freya02.botcommands.api.commands.application.slash.annotations.LongRange(from = 1, to = 2) intOption: Int,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "user_annotated", description = "An user") userOption: User,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "channel_annot_annotated") @com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes(ChannelType.CATEGORY) channelOptionAnnot: Category,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "channel_annotated") channelOption: TextChannel,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
-        @com.freya02.botcommands.api.commands.application.annotations.AppOption(name = "double_annotated", description = "A double") doubleOption: Double?,
+        @AppOption(name = "string_annotated", description = "Option description") stringOption: String,
+        @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
+        @AppOption(name = "user_annotated", description = "An user") userOption: User,
+        @AppOption(name = "channel_annot_annotated") @ChannelTypes(ChannelType.CATEGORY) channelOptionAnnot: Category,
+        @AppOption(name = "channel_annotated") channelOption: TextChannel,
+        @AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
+        @AppOption(name = "double_annotated", description = "A double") doubleOption: Double?,
         custom: BContext,
         @GeneratedOption guildName: String
     ) {
@@ -86,7 +91,7 @@ class SlashMyCommand : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
+    fun declare(manager: GlobalApplicationCommandManager) {
         for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
             manager.slashCommand(CommandPath.of("my_command", subname)) {
                 description = "mah desc"

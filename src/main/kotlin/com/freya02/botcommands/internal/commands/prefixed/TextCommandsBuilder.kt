@@ -46,7 +46,7 @@ internal class TextCommandsBuilder(
             }
 
             if (manager.textCommands.any { it.path.fullPath == "help" }) {
-                LOGGER.debug("Using a custom 'help' text command implementation");
+                LOGGER.debug("Using a custom 'help' text command implementation")
             } else {
                 if (context.isHelpDisabled) {
                     LOGGER.debug("Using no 'help' text command implementation")

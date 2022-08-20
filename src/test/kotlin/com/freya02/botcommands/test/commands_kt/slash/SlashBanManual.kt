@@ -2,6 +2,7 @@ package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.CommandScope
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import dev.minn.jda.ktx.coroutines.await
@@ -22,7 +23,7 @@ class SlashBanManual {
     }
 
     @AppDeclaration
-    fun declare(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
+    fun declare(manager: GlobalApplicationCommandManager) {
         manager.slashCommand("ban", scope = CommandScope.GLOBAL_NO_DM) {
             description = "Get banned"
 

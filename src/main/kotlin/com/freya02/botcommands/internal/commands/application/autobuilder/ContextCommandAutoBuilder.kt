@@ -3,11 +3,14 @@ package com.freya02.botcommands.internal.commands.application.autobuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
@@ -35,17 +38,17 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
     private val userFunctions: List<ClassPathFunction>
 
     init {
-        messageFunctions = classPathContainer.functionsWithAnnotation<com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand>()
+        messageFunctions = classPathContainer.functionsWithAnnotation<JDAMessageCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalMessageEvent::class)
 
-        userFunctions = classPathContainer.functionsWithAnnotation<com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand>()
+        userFunctions = classPathContainer.functionsWithAnnotation<JDAUserCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalUserEvent::class)
     }
 
     @AppDeclaration
-    fun declareGlobal(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) = declare(manager)
+    fun declareGlobal(manager: GlobalApplicationCommandManager) = declare(manager)
 
     @AppDeclaration
     fun declareGuild(manager: GuildApplicationCommandManager) = declare(manager)
@@ -53,20 +56,20 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
     private fun declare(manager: IApplicationCommandManager) {
         messageFunctions.forEach {
             val func = it.function
-            val annotation = func.findAnnotation<com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand>()!!
+            val annotation = func.findAnnotation<JDAMessageCommand>()!!
 
             if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEach
-            if (manager is com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
+            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
 
             processMessageCommand(manager, annotation, func, it)
         }
 
         userFunctions.forEach {
             val func = it.function
-            val annotation = func.findAnnotation<com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand>()!!
+            val annotation = func.findAnnotation<JDAUserCommand>()!!
 
             if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEach
-            if (manager is com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
+            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
 
             processUserCommand(manager, annotation, func, it)
         }
@@ -74,7 +77,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
     private fun processMessageCommand(
         manager: IApplicationCommandManager,
-        annotation: com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand,
+        annotation: JDAMessageCommand,
         func: KFunction<*>,
         classPathFunction: ClassPathFunction
     ) {
@@ -108,7 +111,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
     private fun processUserCommand(
         manager: IApplicationCommandManager,
-        annotation: com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand,
+        annotation: JDAUserCommand,
         func: KFunction<*>,
         classPathFunction: ClassPathFunction
     ) {

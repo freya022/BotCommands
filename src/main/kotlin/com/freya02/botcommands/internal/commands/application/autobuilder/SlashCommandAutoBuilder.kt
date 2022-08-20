@@ -2,13 +2,12 @@ package com.freya02.botcommands.internal.commands.application.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
-import com.freya02.botcommands.api.commands.application.ApplicationCommand
-import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.ValueRange
+import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
@@ -34,16 +33,16 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     private val functions: List<ClassPathFunction>
 
     init {
-        functions = classPathContainer.functionsWithAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand>()
+        functions = classPathContainer.functionsWithAnnotation<JDASlashCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalSlashEvent::class)
     }
 
     @AppDeclaration
-    fun declareGlobal(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
+    fun declareGlobal(manager: GlobalApplicationCommandManager) {
         functions.forEach {
             val func = it.function
-            val annotation = func.findAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand>()!!
+            val annotation = func.findAnnotation<JDASlashCommand>()!!
 
             if (!annotation.scope.isGlobal) return@forEach
 
@@ -55,7 +54,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     fun declareGuild(manager: GuildApplicationCommandManager) {
         functions.forEach {
             val func = it.function
-            val annotation = func.findAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand>()!!
+            val annotation = func.findAnnotation<JDASlashCommand>()!!
 
             if (annotation.scope.isGlobal) return@forEach
 
@@ -65,7 +64,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
 
     private fun processCommand(
         manager: IApplicationCommandManager,
-        annotation: com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand,
+        annotation: JDASlashCommand,
         func: KFunction<*>,
         classPathFunction: ClassPathFunction
     ) {
@@ -111,7 +110,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     ) {
         var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            when (val optionAnnotation = kParameter.findAnnotation<com.freya02.botcommands.api.commands.application.annotations.AppOption>()) {
+            when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> customOption(kParameter.findDeclarationName())
                     else -> generatedOption(
@@ -147,7 +146,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(
-        optionAnnotation: com.freya02.botcommands.api.commands.application.annotations.AppOption,
+        optionAnnotation: AppOption,
         func: KFunction<*>
     ) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {

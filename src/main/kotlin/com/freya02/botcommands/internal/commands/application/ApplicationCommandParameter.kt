@@ -6,6 +6,4 @@ import kotlin.reflect.KParameter
 
 abstract class ApplicationCommandParameter(
     parameter: KParameter, optionBuilder: ApplicationCommandOptionBuilder
-) : CommandParameter(parameter, optionBuilder) {
-
-}
+) : CommandParameter(parameter, optionBuilder)

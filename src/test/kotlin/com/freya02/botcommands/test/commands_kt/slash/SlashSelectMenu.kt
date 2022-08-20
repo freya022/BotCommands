@@ -3,8 +3,10 @@ package com.freya02.botcommands.test.commands_kt.slash
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.components.event.SelectionEvent
@@ -17,7 +19,7 @@ private const val TEST_SELECTION_SELECTION_LISTENER_NAME = "MySelectMenu: TestSe
 
 @CommandMarker
 class SlashSelectMenu : ApplicationCommand() {
-    @com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand(name = "selectmenu_annotated")
+    @JDASlashCommand(name = "selectmenu_annotated")
     fun onSlashSelectMenu(event: GuildSlashEvent, components: Components) {
         val ephemeral = components
             .selectionMenu {
@@ -51,7 +53,7 @@ class SlashSelectMenu : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(manager: com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager) {
+    fun declare(manager: GlobalApplicationCommandManager) {
         manager.slashCommand(CommandPath.of("selectmenu")) {
             customOption("components")
 
