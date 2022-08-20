@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.requireUser

@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.builder.DebugBuilder
-import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager

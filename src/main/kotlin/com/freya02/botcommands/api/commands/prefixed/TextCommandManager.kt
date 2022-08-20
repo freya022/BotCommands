@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed
 
-import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo

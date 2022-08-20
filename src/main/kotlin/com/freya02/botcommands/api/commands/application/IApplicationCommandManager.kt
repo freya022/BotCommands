@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application
 
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder

@@ -1,7 +1,5 @@
 package com.freya02.botcommands.api.commands;
 
-import com.freya02.botcommands.api.commands.application.CommandPath;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;

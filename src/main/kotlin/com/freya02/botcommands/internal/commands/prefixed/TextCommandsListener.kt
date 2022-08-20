@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
-import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener

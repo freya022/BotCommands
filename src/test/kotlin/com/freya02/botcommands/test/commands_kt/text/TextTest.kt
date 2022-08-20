@@ -2,8 +2,8 @@ package com.freya02.botcommands.test.commands_kt.text
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
-import com.freya02.botcommands.api.commands.application.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager

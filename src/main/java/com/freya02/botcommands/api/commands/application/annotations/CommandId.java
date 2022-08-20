@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application.annotations;
 
+import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.CommandPath;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test.commands.guild_specific;
 
+import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.CommandPath;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;

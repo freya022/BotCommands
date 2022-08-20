@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application;
 
+import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.annotations.CommandId;

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.annotations;
 
+import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.CommandPath;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.prefixed.TextCommand;
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier;

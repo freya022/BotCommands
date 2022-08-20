@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.commands.application.CommandPath
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder

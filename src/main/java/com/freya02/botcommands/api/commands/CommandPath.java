@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application;
+package com.freya02.botcommands.api.commands;
 
 import com.freya02.botcommands.internal.commands.CommandPathImpl;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
