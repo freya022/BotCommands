@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -203,28 +203,15 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements G
 	/**
 	 * Sends a file as a response in the event's channel
 	 *
-	 * @param data     {@linkplain InputStream} of the data to send
-	 * @param fileName Name of the file appearing on Discord
-	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
-	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
-	 */
-	@CheckReturnValue
-	@NotNull
-	public abstract RestAction<Message> respondFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
-
-	/**
-	 * Sends a file as a response in the event's channel
+	 * @param fileUploads The {@linkplain FileUpload file uploads} to send
 	 *
-	 * @param data     byte array of the data to send
-	 * @param fileName Name of the file appearing on Discord
-	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
 	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
+	 *
+	 * @see MessageChannel#sendFiles(FileUpload...)
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> respondFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
+	public abstract RestAction<Message> respondFile(@NotNull FileUpload... fileUploads);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -264,28 +251,15 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent implements G
 	/**
 	 * Sends a file as a reply in the event's channel
 	 *
-	 * @param data     {@linkplain InputStream} of the data to send
-	 * @param fileName Name of the file appearing on Discord
-	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
-	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendFile(InputStream, String, AttachmentOption...)
-	 */
-	@CheckReturnValue
-	@NotNull
-	public abstract RestAction<Message> replyFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options);
-
-	/**
-	 * Sends a file as a reply in the event's channel
+	 * @param fileUploads The {@linkplain FileUpload file uploads} to send
 	 *
-	 * @param data     byte array of the data to send
-	 * @param fileName Name of the file appearing on Discord
-	 * @param options  {@linkplain AttachmentOption AttachmentOptions} for the file sent
 	 * @return {@linkplain RestAction} to send the message
-	 * @see MessageChannel#sendFile(byte[], String, AttachmentOption...)
+	 *
+	 * @see MessageChannel#sendFiles(FileUpload...)
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> replyFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options);
+	public abstract RestAction<Message> replyFile(@NotNull FileUpload... fileUploads);
 
 	/**
 	 * Sends an error reply in the event's channel

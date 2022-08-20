@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.pagination.menu.MenuBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.stream.IntStream;
 
@@ -28,7 +29,7 @@ public class SlashMenu extends ApplicationCommand {
 				.setMaxEntriesPerPage(3)
 				.build();
 
-		event.reply(menu.get())
+		event.reply(MessageCreateData.fromEditData(menu.get()))
 				.setEphemeral(false)
 				.queue();
 	}
@@ -42,7 +43,7 @@ public class SlashMenu extends ApplicationCommand {
 				.setMaxEntriesPerPage(3)
 				.build();
 
-		event.reply(menu.get())
+		event.reply(MessageCreateData.fromEditData(menu.get()))
 				.setEphemeral(false)
 				.queue();
 	}

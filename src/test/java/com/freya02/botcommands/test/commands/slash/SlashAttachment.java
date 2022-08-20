@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 public class SlashAttachment extends ApplicationCommand {
 	@JDASlashCommand(
@@ -13,8 +14,12 @@ public class SlashAttachment extends ApplicationCommand {
 	public void onSlashAttachment(GuildSlashEvent event, @AppOption Message.Attachment attachment) {
 		event.deferReply(true).queue();
 
-		attachment.getProxy().download().thenAccept(stream -> {
-			event.getHook().sendFile(stream, "reupload_" + attachment.getFileName()).queue();
+		attachment.getProxy()
+				.download()
+				.thenAccept(stream -> {
+			event.getHook()
+					.sendFiles(FileUpload.fromData(stream, "reupload_" + attachment.getFileName()))
+					.queue();
 		});
 	}
 }

@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.pagination.interactive.InteractiveMenuBuilder
 import com.freya02.botcommands.api.pagination.interactive.SelectContent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,7 +18,11 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "interactive")
 	public void interactiveMenu(GuildSlashEvent event, Components componentss) {
 		final InteractiveMenu menu = new InteractiveMenuBuilder()
-				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+				.usePaginator(true)
+				.addMenu(SelectContent.of("Joy", "This sparks joy", Emoji.fromUnicode("\uD83D\uDE02")), 3, (interactiveMenu, pageNumber, editBuilder, components) -> {
+					editBuilder.setContent(":joy:");
+					editBuilder.setReplace(true);
+
 					components.addComponents(
 							componentss.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
@@ -35,7 +40,9 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 
 					return new EmbedBuilder().setTitle("This sparks joy").setDescription("Page #" + pageNumber).build();
 				})
-				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, messageBuilder, components) -> {
+				.addMenu(SelectContent.of("Grin", "This does not spark joy", Emoji.fromUnicode("\uD83D\uDE00")), 3, (interactiveMenu, pageNumber, editBuilder, components) -> {
+//					editBuilder.setReplace(true);
+
 					components.addComponents(
 							componentss.dangerButton(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
@@ -61,6 +68,6 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 				})
 				.build();
 
-		event.reply(menu.get()).setEphemeral(false).queue();
+		event.reply(MessageCreateData.fromEditData(menu.get())).setEphemeral(false).queue();
 	}
 }

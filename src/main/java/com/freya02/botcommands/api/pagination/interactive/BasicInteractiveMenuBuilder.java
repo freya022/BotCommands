@@ -38,7 +38,9 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 *
 	 * @param usePaginator <code>true</code> to use the paginator buttons
 	 */
-	public void usePaginator(boolean usePaginator) {
+	public T usePaginator(boolean usePaginator) {
 		this.usePaginator = usePaginator;
+
+		return (T) this;
 	}
 }

@@ -7,11 +7,11 @@ import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.utils.ButtonContent;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicPagination<T> {
 	private static final Logger LOGGER = Logging.getLogger();
-	private static final Message DELETED_MESSAGE = new MessageBuilder("[deleted]").build();
+	private static final MessageEditData DELETED_MESSAGE = MessageEditData.fromContent("[deleted]");
 	protected final PaginatorSupplier<T> supplier;
 	private final Button deleteButton;
 	protected int maxPages;
@@ -123,7 +123,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	 * @return The {@link Message} for this Paginator
 	 */
 	@Override
-	public Message get() {
+	public MessageEditData get() {
 		onPreGet();
 
 		putComponents();
@@ -133,7 +133,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		messageBuilder.setEmbeds(embed);
 
 		final List<ActionRow> rows = components.getActionRows();
-		messageBuilder.setActionRows(rows);
+		messageBuilder.setComponents(rows);
 
 		onPostGet();
 

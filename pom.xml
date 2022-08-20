@@ -309,9 +309,9 @@
             <version>${kotlin.coroutine.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>com.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.16</version>
+            <version>4642660753</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
