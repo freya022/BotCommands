@@ -161,7 +161,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                runSupplierFunction(instanceSupplier, useNonClasspath) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                instanceSupplier.supply(context) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
             }
             else -> {
                 val constructors = clazz.constructors
