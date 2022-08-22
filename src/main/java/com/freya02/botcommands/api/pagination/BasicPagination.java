@@ -49,7 +49,9 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	/**
 	 * Returns the {@link MessageEditData} for this current page
-	 * <br>You can use this message edit data in order to edit a currently active pagination instance
+	 * <br>You can use this message edit data in order to edit a currently active pagination instance,
+	 * be aware that this will only replace the fields that already currently exist,
+	 * if you want to replace the whole message you need to call {@link MessageEditBuilder#setReplace(boolean)} in your {@link PaginatorSupplier paginator supplier}
 	 * <br><b>You need to use {@link MessageCreateData#fromEditData(MessageEditData)} in order to send the initial message</b>
 	 *
 	 * @return The {@link MessageEditData} for this current page
