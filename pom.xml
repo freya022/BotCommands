@@ -301,9 +301,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.DV8FromTheWorld</groupId>
+            <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4642660753</version>
+            <version>5.0.0-alpha.18</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
