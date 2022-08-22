@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class PaginatorCommand extends ApplicationCommand {
 				.build();
 
 		//You must send the paginator as a message
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(true)
 				.queue();
 	}

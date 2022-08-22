@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.pagination.menu.MenuBuilder;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class MenuCommand extends ApplicationCommand {
 				.build();
 
 		//You must send the menu as a message
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(true)
 				.queue();
 	}

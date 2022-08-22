@@ -23,9 +23,8 @@ public class SlashModal extends ApplicationCommand {
 			description = "Test modal"
 	)
 	public void onSlashModal(GuildSlashEvent event, Modals modals) {
-		final Modal modal = modals.create(MODAL_HANDLER_NAME, "foobar", 42L)
+		final Modal modal = modals.create("Formatting !", MODAL_HANDLER_NAME, "foobar", 42L)
 				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
-				.setTitle("Formatting !")
 				.addActionRow(
 						modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
 								.setRequired(false)

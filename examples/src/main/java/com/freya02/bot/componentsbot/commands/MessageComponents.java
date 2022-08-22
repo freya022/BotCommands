@@ -32,7 +32,7 @@ public class MessageComponents extends TextCommand {
 		);
 
 		event.getMessage().reply("Components !")
-				.setActionRows(firstRow, secondRow)
+				.setComponents(firstRow, secondRow)
 				.queue();
 	}
 
