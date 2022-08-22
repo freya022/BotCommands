@@ -5,10 +5,12 @@ import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	protected final InteractionConstraints constraints;
 	@Nullable protected final TimeoutInfo<T> timeout;
 
-	protected final MessageBuilder messageBuilder = new MessageBuilder();
+	protected final MessageEditBuilder messageBuilder = new MessageEditBuilder();
 	protected final PaginatorComponents components = new PaginatorComponents();
 
 	private final Set<String> usedIds = new HashSet<>();
@@ -46,11 +48,15 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	}
 
 	/**
-	 * Returns the {@link Message} for this current page
+	 * Returns the {@link MessageEditData} for this current page
+	 * <br>You can use this message edit data in order to edit a currently active pagination instance,
+	 * be aware that this will only replace the fields that already currently exist,
+	 * if you want to replace the whole message you need to call {@link MessageEditBuilder#setReplace(boolean)} in your {@link PaginatorSupplier paginator supplier}
+	 * <br><b>You need to use {@link MessageCreateData#fromEditData(MessageEditData)} in order to send the initial message</b>
 	 *
-	 * @return The {@link Message} for this current page
+	 * @return The {@link MessageEditData} for this current page
 	 */
-	public abstract Message get();
+	public abstract MessageEditData get();
 
 	/**
 	 * Sets the {@link Message} associated to this paginator
