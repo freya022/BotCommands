@@ -1,6 +1,6 @@
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.16-important)](https://github.com/DV8FromTheWorld/JDA/releases)
-[![image](https://discordapp.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--alpha.18-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
