@@ -39,7 +39,7 @@ public class SlashBan extends ApplicationCommand {
 	@JDAButtonListener(name = BAN_CONFIRM_HANDLER_NAME)
 	public void banConfirm(ButtonEvent event, @AppOption User user, @AppOption long delDays, @AppOption String reason) {
 		event.editMessage("Banned")
-				.setActionRows() //Clear buttons
+				.setComponents() //Clear buttons
 				.queue();
 
 		//do ban logic
@@ -48,7 +48,7 @@ public class SlashBan extends ApplicationCommand {
 	@JDAButtonListener(name = BAN_CANCEL_HANDLER_NAME)
 	public void banCancel(ButtonEvent event) {
 		event.editMessage("Cancelled")
-				.setActionRows() //Clear buttons
+				.setComponents() //Clear buttons
 				.queue();
 	}
 }
