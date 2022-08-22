@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.RestAction
-import net.dv8tion.jda.api.utils.AttachmentOption
+import net.dv8tion.jda.api.utils.FileUpload
 import java.io.InputStream
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
@@ -68,7 +68,7 @@ open class BaseCommandEventImpl(
         embed: MessageEmbed,
         onException: Consumer<in Throwable>
     ): RestAction<Message> = when {
-        iconStream != null -> channel.sendTyping().flatMap { channel.sendFile(iconStream, "icon.jpg").setEmbeds(embed) }
+        iconStream != null -> channel.sendTyping().flatMap { channel.sendFiles(FileUpload.fromData(iconStream, "icon.jpg")).setEmbeds(embed) }
         else -> channel.sendTyping().flatMap { channel.sendMessageEmbeds(embed) }
     }
 
@@ -84,11 +84,7 @@ open class BaseCommandEventImpl(
 
     override fun respond(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = channel.sendMessageEmbeds(embed, *other)
 
-    override fun respondFile(data: InputStream, fileName: String, vararg options: AttachmentOption): RestAction<Message> =
-        channel.sendFile(data, fileName, *options)
-
-    override fun respondFile(data: ByteArray, fileName: String, vararg options: AttachmentOption): RestAction<Message> =
-        channel.sendFile(data, fileName, *options)
+    override fun respondFile(vararg fileUploads: FileUpload): RestAction<Message> = channel.sendFiles(*fileUploads)
 
     @CheckReturnValue
     override fun reply(text: CharSequence): RestAction<Message> = message.reply(text)
@@ -100,12 +96,8 @@ open class BaseCommandEventImpl(
     override fun reply(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = message.replyEmbeds(embed, *other)
 
     @CheckReturnValue
-    override fun replyFile(data: InputStream, fileName: String, vararg options: AttachmentOption): RestAction<Message> =
-        channel.sendTyping().flatMap { message.reply(data, fileName, *options) }
-
-    @CheckReturnValue
-    override fun replyFile(data: ByteArray, fileName: String, vararg options: AttachmentOption): RestAction<Message> =
-        channel.sendTyping().flatMap { message.reply(data, fileName, *options) }
+    override fun replyFile(vararg fileUploads: FileUpload): RestAction<Message> =
+        channel.sendTyping().flatMap { message.replyFiles(*fileUploads) }
 
     override fun indicateError(text: CharSequence): RestAction<Message> = when {
         guild.selfMember.hasPermission(guildChannel, Permission.MESSAGE_ADD_REACTION) -> reactError().flatMap { channel.sendMessage(text) }

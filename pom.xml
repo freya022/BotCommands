@@ -374,7 +374,7 @@
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>03b07e7d17</version>
+            <version>081a177281</version>
         </dependency>
         <dependency>
             <groupId>info.debatty</groupId>
