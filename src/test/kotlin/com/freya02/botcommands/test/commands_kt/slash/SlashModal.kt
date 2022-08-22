@@ -7,11 +7,14 @@ import com.freya02.botcommands.api.commands.application.GuildApplicationCommandM
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.api.modals.annotations.ModalData
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.test.CustomObject
+import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
@@ -21,7 +24,7 @@ private const val SLASH_MODAL_MODAL_HANDLER = "SlashModal: modalHandler"
 private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 
 @CommandMarker
-class SlashModal : ApplicationCommand() {
+class SlashModal(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "modal_annotated")
     fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val input = modals.createTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text", TextInputStyle.SHORT)
@@ -51,7 +54,15 @@ class SlashModal : ApplicationCommand() {
             dataInt: $dataInt
             inputStr: $inputStr
             customObject: $customObject
-            """.trimIndent(), ephemeral = true).queue()
+            """.trimIndent(),
+            components = listOf(row(components.primaryButton(this::handleButton).build("Test button"))),
+            ephemeral = true).queue()
+    }
+
+    private fun handleButton(event: ButtonEvent) {
+        event.deferEdit().queue()
+
+        println(event.message.interaction?.user?.asMention)
     }
 
     @AppDeclaration
