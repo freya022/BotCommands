@@ -1,9 +1,11 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.throwUser
@@ -11,10 +13,12 @@ import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
-internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: ClassPathContainer) {
+internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: ClassPathContainer, serviceContainer: ServiceContainer) {
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 
     init {
+        serviceContainer.putServiceAs<Modals>(serviceContainer.getService(ModalsImpl::class, useNonClasspath = true))
+
         classPathContainer.functionsWithAnnotation<ModalHandler>()
             .requireNonStatic()
             .requireFirstArg(ModalInteractionEvent::class)
