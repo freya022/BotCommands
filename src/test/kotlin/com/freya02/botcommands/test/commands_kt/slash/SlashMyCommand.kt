@@ -25,14 +25,14 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 @CommandMarker
 class SlashMyCommand : ApplicationCommand() {
-    override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionIndex: Int): List<Choice> {
-        if (optionIndex == 0) {
+    override fun getOptionChoices(guild: Guild?, commandPath: CommandPath, optionName: String): List<Choice> {
+        if (optionName == "string_option" || optionName == "string_annotated") {
             return listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
-        } else if (optionIndex == 1) {
+        } else if (optionName == "int_option" || optionName == "int_annotated") {
             return listOf(Choice("1", 1L), Choice("2", 2L))
         }
 
-        return super.getOptionChoices(guild, commandPath, optionIndex)
+        return super.getOptionChoices(guild, commandPath, optionName)
     }
 
     override fun getGeneratedValueSupplier(

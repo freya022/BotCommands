@@ -137,7 +137,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
 
                     processAutocomplete(optionAnnotation, func)
 
-                    choices = instance.getOptionChoices(null, path, optionIndex)
+                    choices = instance.getOptionChoices(guild, path, optionName)
 
                     optionIndex++
                 }

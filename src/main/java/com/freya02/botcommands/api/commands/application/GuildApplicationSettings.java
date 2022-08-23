@@ -28,14 +28,14 @@ public interface GuildApplicationSettings {
 	 *
 	 * @param guild       The {@link Guild} in which the command is, might be <code>null</code> for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
-	 * @param optionIndex The index of the option, this starts at 0 and goes to how many {@link AppOption @AppOption} there are, minus 1
+	 * @param optionName  The option name, this is the same name that appears on Discord
 	 *
 	 * @return The list of choices for this slash command's options
 	 *
 	 * @see SlashParameterResolver#getPredefinedChoices(Guild)
 	 */
 	@NotNull
-	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
+	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
 		return Collections.emptyList();
 	}
 

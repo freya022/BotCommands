@@ -37,14 +37,14 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 
 	@Override
 	@NotNull
-	public List<Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
-		if (optionIndex == 0) {
+	public List<Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
+		if (optionName.equals("string_option") || optionName.equals("string_annotated")) {
 			return List.of(new Choice("a", "a"), new Choice("b", "b"), new Choice("c", "c"));
-		} else if (optionIndex == 1) {
+		} else if (optionName.equals("int_option") || optionName.equals("int_annotated")) {
 			return List.of(new Choice("1", 1L), new Choice("2", 2L));
 		}
 
-		return super.getOptionChoices(guild, commandPath, optionIndex);
+		return super.getOptionChoices(guild, commandPath, optionName);
 	}
 
 	@JDASlashCommand(name = "my_command_annotated", subcommand = "java", description = "mah desc")
