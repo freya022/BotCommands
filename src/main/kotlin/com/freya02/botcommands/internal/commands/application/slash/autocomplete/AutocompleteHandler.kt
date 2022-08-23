@@ -67,6 +67,10 @@ internal class AutocompleteHandler(
         cache = AbstractAutocompleteCache.fromMode(this)
     }
 
+    internal fun invalidate() {
+        cache.invalidate()
+    }
+
     suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         return cache.retrieveAndCall(event, this::generateChoices)
     }

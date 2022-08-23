@@ -102,11 +102,11 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         TODO()
     }
 
+    //TODO implement correctly
+    // Autocomplete functions declared manually will need to have a name specified,
+    // so both annotated and manual have unique names, independent of command path
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
-//        val handler = getAutocompleteHandler(autocompleteHandlerName)
-//            ?: throwUser("Autocomplete handler name not found for '$autocompleteHandlerName'")
-//        handler.invalidate()
-        TODO()
+        logger.warn("Autocomplete invalidation isn't implemented yet")
     }
 
     val applicationCommandsView: Collection<ApplicationCommandInfo>
