@@ -17,16 +17,14 @@ import com.freya02.botcommands.api.commands.application.context.message.GlobalMe
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.asDiscordString
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.findOptionName
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
@@ -47,29 +45,38 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
             .requireFirstArg(GlobalUserEvent::class)
     }
 
+    //Separated functions so message errors don't prevent user commands from being registered
     @AppDeclaration
-    fun declareGlobal(manager: GlobalApplicationCommandManager) = declare(manager)
+    fun declareGlobalMessage(manager: GlobalApplicationCommandManager) = declareMessage(manager)
 
     @AppDeclaration
-    fun declareGuild(manager: GuildApplicationCommandManager) = declare(manager)
+    fun declareGlobalUser(manager: GlobalApplicationCommandManager) = declareUser(manager)
 
-    private fun declare(manager: IApplicationCommandManager) {
-        messageFunctions.forEach {
+    @AppDeclaration
+    fun declareGuildMessage(manager: GuildApplicationCommandManager) = declareMessage(manager)
+
+    @AppDeclaration
+    fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
+
+    private fun declareMessage(manager: IApplicationCommandManager) {
+        messageFunctions.forEachWithDelayedExceptions {
             val func = it.function
-            val annotation = func.findAnnotation<JDAMessageCommand>()!!
+            val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
 
-            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEach
-            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
+            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEachWithDelayedExceptions
 
             processMessageCommand(manager, annotation, func, it)
         }
+    }
 
-        userFunctions.forEach {
+    private fun declareUser(manager: IApplicationCommandManager) {
+        userFunctions.forEachWithDelayedExceptions {
             val func = it.function
-            val annotation = func.findAnnotation<JDAUserCommand>()!!
+            val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAUserCommand should be present")
 
-            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEach
-            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEach
+            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEachWithDelayedExceptions
 
             processUserCommand(manager, annotation, func, it)
         }

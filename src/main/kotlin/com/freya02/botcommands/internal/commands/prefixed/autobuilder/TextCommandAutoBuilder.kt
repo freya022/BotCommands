@@ -10,15 +10,13 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.asDiscordString
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.findOptionName
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -36,9 +34,9 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
     @TextDeclaration
     fun declare(manager: TextCommandManager) {
-        functions.forEach {
+        functions.forEachWithDelayedExceptions {
             val func = it.function
-            val annotation = func.findAnnotation<JDATextCommand>()!!
+            val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
 
             processCommand(manager, annotation, func, it)
         }

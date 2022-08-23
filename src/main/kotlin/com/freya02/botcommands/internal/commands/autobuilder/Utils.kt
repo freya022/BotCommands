@@ -8,6 +8,22 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
+//This is used so commands can't prevent other commands from being registered when an exception happens
+inline fun <T> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
+    val exceptions: MutableList<Throwable> = arrayListOf()
+    forEach {
+        runCatching {
+            block(it)
+        }.onFailure {
+           exceptions.add(it)
+        }
+    }
+
+    if (exceptions.isNotEmpty()) {
+        throw RuntimeException("${exceptions.size} exception(s) occurred while registering annotated commands, here is the first exception:", exceptions.first())
+    }
+}
+
 fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {

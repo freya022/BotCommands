@@ -18,6 +18,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -97,9 +98,13 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult {
+        val failedDeclarations: MutableList<KFunction<*>> = arrayListOf()
+
         val manager = GlobalApplicationCommandManager(context)
         globalDeclarationFunctions.forEach { classPathFunction ->
-            runDeclarationFunction(classPathFunction, serviceContainer, manager)
+            runCatching {
+                runDeclarationFunction(classPathFunction, serviceContainer, manager)
+            }.onFailure { failedDeclarations.add(classPathFunction.function) }
         }
 
         val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
@@ -113,23 +118,27 @@ internal class ApplicationCommandsBuilder(
 
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
 
-        return CommandUpdateResult(null, needsUpdate)
+        return CommandUpdateResult(null, needsUpdate, failedDeclarations)
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
         val slashGuildIds = context.config.applicationConfig.slashGuildIds
         if (slashGuildIds.isNotEmpty()) {
             if (guild.idLong in slashGuildIds) {
-                return CommandUpdateResult(guild, false)
+                return CommandUpdateResult(guild, false, listOf())
             }
         }
 
         synchronized(guildUpdateMutexMap) {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
         }.withLock {
+            val failedDeclarations: MutableList<KFunction<*>> = arrayListOf()
+
             val manager = GuildApplicationCommandManager(context, guild)
             guildDeclarationFunctions.forEach { classPathFunction ->
-                runDeclarationFunction(classPathFunction, serviceContainer, manager)
+                runCatching {
+                    runDeclarationFunction(classPathFunction, serviceContainer, manager)
+                }.onFailure { failedDeclarations.add(classPathFunction.function) }
             }
 
             val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
@@ -143,7 +152,7 @@ internal class ApplicationCommandsBuilder(
 
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())
 
-            return CommandUpdateResult(guild, needsUpdate)
+            return CommandUpdateResult(guild, needsUpdate, failedDeclarations)
         }
     }
 

@@ -18,6 +18,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
@@ -42,7 +43,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         functions.forEach {
             val func = it.function
-            val annotation = func.findAnnotation<JDASlashCommand>()!!
+            val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
 
             if (!annotation.scope.isGlobal) return@forEach
 
@@ -52,11 +53,11 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
 
     @AppDeclaration
     fun declareGuild(manager: GuildApplicationCommandManager) {
-        functions.forEach {
+        functions.forEachWithDelayedExceptions {
             val func = it.function
-            val annotation = func.findAnnotation<JDASlashCommand>()!!
+            val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
 
-            if (annotation.scope.isGlobal) return@forEach
+            if (annotation.scope.isGlobal) return@forEachWithDelayedExceptions
 
             processCommand(manager, annotation, func, it)
         }
