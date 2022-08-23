@@ -112,15 +112,18 @@ class SlashCommandInfo internal constructor(
                 for (varArgNum in 0 until arguments) {
                     val varArgName = optionName.toVarArgName(varArgNum)
                     val optionMapping = event.getOption(varArgName)
+                        //TODO this is probably wrong for out of order varargs
                         ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
                             if (!parameter.kParameter.isOptional) {
                                 objectList += when {
                                     parameter.isPrimitive -> 0
                                     else -> null
                                 }
-                            }
 
-                            continue@parameterLoop
+                                continue //Continue looking at varargs
+                            } else {
+                                continue@parameterLoop //Parameter is optional, don't put anything
+                            }
                         } else {
                             if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop
 
