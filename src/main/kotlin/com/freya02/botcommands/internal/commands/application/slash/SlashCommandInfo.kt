@@ -71,7 +71,7 @@ class SlashCommandInfo internal constructor(
                                 "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
                             )
 
-                        requireUser(param.kParameter.checkTypeEquals(autocompleteParam.kParameter), handler.autocompleteInfo.method) {
+                        requireUser(param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter), handler.autocompleteInfo.method) {
                             "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
                         }
                     }

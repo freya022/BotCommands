@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.api.core.exceptions.ServiceException
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -117,8 +116,8 @@ fun KParameter.findOptionName(): String {
 val KType.simpleName: String
     get() = (this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")) + if (this.isMarkedNullable) "?" else ""
 
-fun KParameter.checkTypeEquals(param: KParameter): Boolean =
-    this.type.jvmErasure == param.type.jvmErasure && this.isNullable == param.isNullable
+fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
+    this.type.jvmErasure == param.type.jvmErasure
 
 val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC
