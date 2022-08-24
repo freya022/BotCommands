@@ -18,7 +18,14 @@ class SlashCommandOptionBuilder(declaredName: String, optionName: String): Appli
     var autocompleteInfo: AutocompleteInfo? = null
         private set
 
-    fun autocomplete(block: AutocompleteInfoBuilder.() -> Unit) {
-        autocompleteInfo = AutocompleteInfoBuilder().apply(block).build()
+    /**
+     * Name must be unique
+     *
+     * Recommended naming: `ClassSimpleName: AutocompletedField`
+     *
+     * Example: `SlashTag: tagName`
+     */
+    fun autocomplete(name: String, block: AutocompleteInfoBuilder.() -> Unit) {
+        autocompleteInfo = AutocompleteInfoBuilder(name).apply(block).build()
     }
 }

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
+import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
@@ -58,6 +59,8 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         serviceContainer.preloadServices()
     }
 
+    inline fun <reified T : Any> getService() = getService(T::class)
+
     override fun <T : Any> getService(clazz: KClass<T>): T {
         return serviceContainer.getService(clazz)
     }
@@ -98,15 +101,15 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         return config.textConfig.defaultFooterIconSupplier
     }
 
-    internal fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
-        TODO()
+    private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
+        return getService(AutocompleteHandlerContainer::class)[autocompleteHandlerName]
     }
 
     //TODO implement correctly
     // Autocomplete functions declared manually will need to have a name specified,
     // so both annotated and manual have unique names, independent of command path
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
-        logger.warn("Autocomplete invalidation isn't implemented yet")
+        getAutocompleteHandler(autocompleteHandlerName)?.invalidate()
     }
 
     val applicationCommandsView: Collection<ApplicationCommandInfo>

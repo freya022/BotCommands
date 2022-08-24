@@ -5,9 +5,9 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.Autoc
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 
-class AutocompleteInfoBuilder internal constructor() : BuilderFunctionHolder<Collection<*>>() {
+class AutocompleteInfoBuilder internal constructor(val name: String) : BuilderFunctionHolder<Collection<*>>() {
     var mode: AutocompleteMode = AutocompleteMode.FUZZY
-    var showUserInput: Boolean = false
+    var showUserInput: Boolean = true
     var autocompleteCache: AutocompleteCacheInfo? = null
         private set
 

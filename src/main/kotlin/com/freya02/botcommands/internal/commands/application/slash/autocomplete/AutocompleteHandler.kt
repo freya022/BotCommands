@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
@@ -65,6 +66,9 @@ internal class AutocompleteHandler(
         }
 
         cache = AbstractAutocompleteCache.fromMode(this)
+
+        //Register this handler
+        slashCommandInfo.context.getService<AutocompleteHandlerContainer>() += this
     }
 
     internal fun invalidate() {

@@ -18,7 +18,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
+import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteFunctionContainer
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
@@ -32,8 +32,8 @@ import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
-@BService
-internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer: AutocompleteHandlerContainer, classPathContainer: ClassPathContainer) {
+@BService //TODO this needs to be manually processed before any user declaration functions, as to consistently allow users to reference manual autocomplete function
+internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer: AutocompleteFunctionContainer, classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
 
     init {
@@ -154,14 +154,13 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
         func: KFunction<*>
     ) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {
-            autocomplete {
-                val autocompleteFunction = autocompleteHandlerContainer[optionAnnotation.autocomplete]?.function ?: throwUser(
+            autocomplete(optionAnnotation.autocomplete) {
+                val autocompleteFunction = autocompleteFunctionContainer[optionAnnotation.autocomplete] ?: throwUser(
                     func,
                     "Autocomplete handler '${optionAnnotation.autocomplete}' was not found"
                 )
 
-                @Suppress("UNCHECKED_CAST")
-                this@autocomplete.function = autocompleteFunction as KFunction<Collection<*>>
+                this@autocomplete.function = autocompleteFunction
 
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 

@@ -1,35 +1,30 @@
 package com.freya02.botcommands.internal.commands.application.autocomplete
 
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtils
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaType
-import kotlin.reflect.jvm.jvmErasure
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
 
 @BService
-internal class AutocompleteHandlerContainer(classPathContainer: ClassPathContainer) {
-    private val autocompleteFunctions: Map<String, ClassPathFunction>
+internal class AutocompleteHandlerContainer {
+    private val autocompleteHandlers: MutableMap<String, AutocompleteHandler> = hashMapOf()
 
-    init {
-        autocompleteFunctions = classPathContainer.functionsWithAnnotation<AutocompleteHandler>()
-            .requireNonStatic()
-            .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
-            .onEach {
-                val returnType = it.function.returnType
-                ReflectionUtils.getCollectionReturnType(returnType.jvmErasure.java, returnType.javaType) ?: throwUser(
-                    it.function,
-                    "Autocomplete handler needs to return a Collection"
-                )
+    operator fun get(handlerName: String): AutocompleteHandler? = autocompleteHandlers[handlerName]
+
+    operator fun plusAssign(handler: AutocompleteHandler) {
+        autocompleteHandlers[handler.autocompleteInfo.name]?.let {
+            if (it.autocompleteInfo == handler.autocompleteInfo) {
+                return //Skip assignation & exception if both autocompletes are the exact same
             }
-            .associateBy { it.function.findAnnotation<AutocompleteHandler>()!!.name }
-    }
 
-    operator fun get(handlerName: String): ClassPathFunction? = autocompleteFunctions[handlerName]
+            throwUser(
+                """
+                Tried to add an autocomplete handler with the same name, but with different characteristics: '${handler.autocompleteInfo.name}'
+                Old function: ${it.autocompleteInfo.method.shortSignatureNoSrc}
+                New function: ${handler.autocompleteInfo.method.shortSignatureNoSrc}""".trimIndent()
+            )
+        }
+
+        autocompleteHandlers[handler.autocompleteInfo.name] = handler
+    }
 }
