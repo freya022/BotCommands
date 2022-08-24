@@ -164,6 +164,8 @@ class DefaultComponentManager internal constructor(private val database: Databas
     }
 
     private fun scheduleTimeout(timeout: Long, timeoutUnit: TimeUnit, block: suspend () -> Unit) {
+        if (timeout == 0L) throwInternal("Scheduled timeout should be positive")
+
         context.config.coroutineScopesConfig.componentsScope.launch {
             try {
                 delay(timeoutUnit.toMillis(timeout).milliseconds)
@@ -252,7 +254,10 @@ class DefaultComponentManager internal constructor(private val database: Databas
                     builder.args
                 )
 
-                schedulePersistentTimeout(builder.timeout, componentId)
+
+                if (builder.timeout.timeout() > 0) {
+                    schedulePersistentTimeout(builder.timeout, componentId)
+                }
 
                 return componentId
             }
