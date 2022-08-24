@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 
 abstract class ApplicationCommandBuilder internal constructor(path: CommandPath, internal val scope: CommandScope) : CommandBuilder(path) {
-    var defaultLocked = false
+    var defaultLocked = DEFAULT_DEFAULT_LOCKED
     var testOnly = false
 
     /**
@@ -18,4 +18,8 @@ abstract class ApplicationCommandBuilder internal constructor(path: CommandPath,
      * @param declaredName Name of the declared parameter in the [function]
      */
     abstract fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier)
+
+    companion object {
+        const val DEFAULT_DEFAULT_LOCKED = false
+    }
 }

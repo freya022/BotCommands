@@ -5,6 +5,8 @@ import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -101,7 +103,7 @@ public @interface JDASlashCommand {
 	 *
 	 * @return <code>true</code> if the command should be disabled by default
 	 */
-	boolean defaultLocked() default false;
+	boolean defaultLocked() default ApplicationCommandBuilder.DEFAULT_DEFAULT_LOCKED;
 
 	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
@@ -136,5 +138,5 @@ public @interface JDASlashCommand {
 	 *
 	 * @return Short description of the command
 	 */
-	String description() default "No description";
+	String description() default SlashCommandBuilder.DEFAULT_DESCRIPTION;
 }

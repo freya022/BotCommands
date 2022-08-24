@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.CommandScope;
+import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder;
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent;
 import net.dv8tion.jda.api.entities.Message;
@@ -45,7 +46,7 @@ public @interface JDAMessageCommand {
 	 *
 	 * @return <code>true</code> if the command should be disabled by default
 	 */
-	boolean defaultLocked() default false;
+	boolean defaultLocked() default ApplicationCommandBuilder.DEFAULT_DEFAULT_LOCKED;
 
 	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>

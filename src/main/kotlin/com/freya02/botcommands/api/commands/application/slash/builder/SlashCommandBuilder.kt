@@ -15,7 +15,7 @@ class SlashCommandBuilder internal constructor(
     path: CommandPath,
     scope: CommandScope
 ) : ApplicationCommandBuilder(path, scope) {
-    var description: String = "No description"
+    var description: String = DEFAULT_DESCRIPTION
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
@@ -42,5 +42,9 @@ class SlashCommandBuilder internal constructor(
     internal fun build(): SlashCommandInfo {
         checkFunction()
         return SlashCommandInfo(context, this)
+    }
+
+    companion object {
+        const val DEFAULT_DESCRIPTION = "No description"
     }
 }
