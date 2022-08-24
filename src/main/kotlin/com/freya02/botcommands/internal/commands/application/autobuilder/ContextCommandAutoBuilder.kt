@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.GlobalApplicationCommand
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -162,7 +163,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         commandId: String?
     ) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
-            when (val optionAnnotation = kParameter.findAnnotation<com.freya02.botcommands.api.commands.application.annotations.AppOption>()) {
+            when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> customOption(kParameter.findDeclarationName())
                     else -> generatedOption(

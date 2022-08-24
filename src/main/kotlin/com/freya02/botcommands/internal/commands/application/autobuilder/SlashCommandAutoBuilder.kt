@@ -7,7 +7,10 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
@@ -127,10 +130,10 @@ internal class SlashCommandAutoBuilder(private val autocompleteHandlerContainer:
                 else -> option(kParameter.findDeclarationName(), optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
 
-                    kParameter.findAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
-                    kParameter.findAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
+                    kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
+                    kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
 
-                    kParameter.findAnnotation<com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes>()?.let { channelTypesAnnotation ->
+                    kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
                         channelTypes = enumSetOf<ChannelType>().also { types ->
                             types += channelTypesAnnotation.value
                         }
