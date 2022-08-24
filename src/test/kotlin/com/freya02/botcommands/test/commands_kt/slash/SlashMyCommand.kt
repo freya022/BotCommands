@@ -11,7 +11,6 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
-import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
@@ -19,7 +18,10 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.enumSetOf
-import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.GuildChannel
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
@@ -57,8 +59,7 @@ class SlashMyCommand : ApplicationCommand() {
         @AppOption(name = "string_annotated", description = "Option description") stringOption: String,
         @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
         @AppOption(name = "user_annotated", description = "An user") userOption: User,
-        @AppOption(name = "channel_annot_annotated") @ChannelTypes(ChannelType.CATEGORY) channelOptionAnnot: Category,
-        @AppOption(name = "channel_annotated") channelOption: TextChannel,
+        @AppOption(name = "channel_annotated") channelOption: GuildChannel,
         @AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
         @AppOption(name = "double_annotated", description = "A double") doubleOption: Double?,
         custom: BContext,
@@ -69,7 +70,6 @@ class SlashMyCommand : ApplicationCommand() {
                     string: $stringOption
                     int: $intOption
                     user: $userOption
-                    category: $channelOptionAnnot
                     text channel: $channelOption
                     autocomplete string: $autocompleteStr
                     double: $doubleOption
@@ -118,8 +118,6 @@ class SlashMyCommand : ApplicationCommand() {
                     description = "An user"
                 }
 
-                option("channelOptionAnnot")
-
                 option("channelOption") {
                     channelTypes = enumSetOf(ChannelType.TEXT)
                 }
@@ -129,7 +127,7 @@ class SlashMyCommand : ApplicationCommand() {
                 option("autocompleteStr") {
                     description = "Autocomplete !"
 
-                    autocomplete {
+                    autocomplete("MyCommand: autocompleteStr") {
                         function = ::runAutocomplete
 
                         cache {

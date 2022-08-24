@@ -8,11 +8,12 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.parameters.ParameterType;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,12 +53,11 @@ public class SlashMyJavaCommand extends ApplicationCommand {
 	                @AppOption(name = "string_annotated", description = "Option description") String stringOption,
 	                @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) int intOption,
 	                @AppOption(name = "user_annotated", description = "An user") User userOption,
-	                @AppOption(name = "channel_annot_annotated") @ChannelTypes(ChannelType.CATEGORY) Category channelOptionAnnot,
-	                @AppOption(name = "channel_annotated") TextChannel channelOption,
+	                @AppOption(name = "channel_annotated") GuildChannel channelOption,
 	                @AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = SlashMyCommand.autocompleteHandlerName) String autocompleteStr,
 	                @AppOption(name = "double_annotated", description = "A double") @Optional double doubleOption,
 	                BContext custom,
 	                @GeneratedOption String guildName) {
-		event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOptionAnnot + channelOption + autocompleteStr + guildName).queue();
+		event.reply(stringOption + intOption + doubleOption + userOption + custom + channelOption + autocompleteStr + guildName).queue();
 	}
 }
