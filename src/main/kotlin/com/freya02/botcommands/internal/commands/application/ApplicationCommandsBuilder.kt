@@ -1,10 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.commands.application.CommandUpdateResult
-import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
@@ -18,7 +15,6 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -82,7 +78,9 @@ internal class ApplicationCommandsBuilder(
         LOGGER.debug("Guild ready: $guild")
 
         try {
-            updateGuildCommands(guild)
+            updateCatching(guild) {
+                updateGuildCommands(guild)
+            }
         } catch (t: Throwable) {
             handleGuildCommandUpdateException(guild, t)
         }
@@ -98,13 +96,13 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult {
-        val failedDeclarations: MutableList<KFunction<*>> = arrayListOf()
+        val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
         val manager = GlobalApplicationCommandManager(context)
         globalDeclarationFunctions.forEach { classPathFunction ->
             runCatching {
                 runDeclarationFunction(classPathFunction, serviceContainer, manager)
-            }.onFailure { failedDeclarations.add(classPathFunction.function) }
+            }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
         }
 
         val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
@@ -132,20 +130,24 @@ internal class ApplicationCommandsBuilder(
         synchronized(guildUpdateMutexMap) {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
         }.withLock {
-            val failedDeclarations: MutableList<KFunction<*>> = arrayListOf()
+            val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
             val manager = GuildApplicationCommandManager(context, guild)
             guildDeclarationFunctions.forEach { classPathFunction ->
                 runCatching {
                     runDeclarationFunction(classPathFunction, serviceContainer, manager)
-                }.onFailure { failedDeclarations.add(classPathFunction.function) }
+                }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
             }
 
             val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
             val needsUpdate = force || guildUpdater.shouldUpdateCommands()
             if (needsUpdate) {
                 guildUpdater.updateCommands()
-                LOGGER.debug("Guild '${guild.name}' (${guild.id}) commands were{} updated ({})", getForceString(force), getCheckTypeString())
+                LOGGER.debug(
+                    "Guild '${guild.name}' (${guild.id}) commands were{} updated ({})",
+                    getForceString(force),
+                    getCheckTypeString()
+                )
             } else {
                 LOGGER.debug("Guild '${guild.name}' (${guild.id}) commands does not have to be updated ({})", getCheckTypeString())
             }
@@ -169,9 +171,24 @@ internal class ApplicationCommandsBuilder(
         context.serviceContainer.putService(ApplicationCommandsCache(jda))
 
         try {
-            updateGlobalCommands()
+            updateCatching(null) { updateGlobalCommands() }
         } catch (e: Throwable) {
             LOGGER.error("An error occurred while updating global commands", e)
+        }
+    }
+
+    private inline fun updateCatching(guild: Guild?, block: () -> CommandUpdateResult) {
+        block().also { result ->
+            if (result.updateExceptions.isNotEmpty()) {
+                when {
+                    guild != null -> LOGGER.error("Errors occurred while registering commands for guild '{}' ({})", guild.name, guild.id)
+                    else -> LOGGER.error("Errors occurred while registering commands:")
+                }
+
+                result.updateExceptions.forEach { updateException ->
+                    LOGGER.error("Function: {}", updateException.function, updateException.throwable)
+                }
+            }
         }
     }
 
