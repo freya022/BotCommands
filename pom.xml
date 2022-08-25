@@ -251,6 +251,9 @@
 <!--                    <releaseProfiles>ossrh</releaseProfiles>-->
 <!--                    <goals>deploy</goals>-->
 <!--                </configuration>-->
+                <configuration>
+                    <tagNameFormat>@{version}</tagNameFormat>
+                </configuration>
             </plugin>
             <!-- Update plugin versions -->
             <plugin>
