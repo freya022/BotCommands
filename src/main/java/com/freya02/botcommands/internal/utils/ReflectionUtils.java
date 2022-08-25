@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ReflectionUtils {
 	private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
@@ -50,24 +51,24 @@ public class ReflectionUtils {
 				continue;
 			}
 
-			Files.walk(walkRoot, maxDepth)
-					.filter(Files::isRegularFile)
-					.filter(p -> IOUtils.getFileExtension(p).equals("class"))
-					.forEach(p -> {
-						// Change from a/b/c/d to c/d
-						final String relativePath = walkRoot.relativize(p)
-								.toString()
-								.replace(walkRoot.getFileSystem().getSeparator(),  ".");
+			try (Stream<Path> stream = Files.walk(walkRoot, maxDepth)) {
+				stream.filter(Files::isRegularFile)
+						.filter(p -> IOUtils.getFileExtension(p).equals("class"))
+						.forEach(p -> {
+							// Change from a/b/c/d to c/d
+							final String relativePath = walkRoot.relativize(p)
+									.toString()
+									.replace(walkRoot.getFileSystem().getSeparator(),  ".");
 
-						//Remove .class suffix and add package prefix
-						final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
-
-						try {
-							classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
-						} catch (ClassNotFoundException e) {
-							LOGGER.error("Unable to load class '{}' in class path '{}', isJAR = {}, filesystem: {}", result, strPath, isJar, walkRoot.getFileSystem(), e);
-						}
-					});
+							//Remove .class suffix and add package prefix
+							final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
+							try {
+								classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
+							} catch (ClassNotFoundException e) {
+								LOGGER.error("Unable to load class '{}' in class path '{}', isJAR = {}, filesystem: {}", result, strPath, isJar, walkRoot.getFileSystem(), e);
+							}
+						});
+			}
 		}
 
 		return classes;
