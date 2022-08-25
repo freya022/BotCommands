@@ -34,7 +34,7 @@ public class ReflectionUtils {
 		final String packagePath = packageName.replace('.', File.separatorChar);
 
 		final String classPath = System.getProperty("java.class.path");
-		for (String strPath : classPath.split(";")) {
+		for (String strPath : classPath.split(File.pathSeparator)) {
 			final Path jarPath = Path.of(strPath);
 
 			final Path walkRoot;
