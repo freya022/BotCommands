@@ -58,7 +58,6 @@ public class ReflectionUtils {
 							// Change from a/b/c/d to c/d
 							final String relativePath = walkRoot.relativize(p)
 									.toString()
-									.replace(walkRoot.getFileSystem().getSeparator(),  ".");
 									.replace(walkRoot.getFileSystem().getSeparator(), ".");
 
 							//Remove .class suffix and add package prefix
