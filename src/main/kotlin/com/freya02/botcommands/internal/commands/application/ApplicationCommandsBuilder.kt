@@ -6,6 +6,8 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
+import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -37,6 +39,16 @@ internal class ApplicationCommandsBuilder(
     private var init = false
 
     init {
+        val slashCommandAutoBuilder = serviceContainer.getService<SlashCommandAutoBuilder>()
+        globalDeclarationFunctions += ClassPathFunction(slashCommandAutoBuilder, SlashCommandAutoBuilder::declareGlobal)
+        guildDeclarationFunctions += ClassPathFunction(slashCommandAutoBuilder, SlashCommandAutoBuilder::declareGuild)
+
+        val contextCommandAutoBuilder = serviceContainer.getService<ContextCommandAutoBuilder>()
+        globalDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGlobalMessage)
+        globalDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGlobalUser)
+        guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildMessage)
+        guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildUser)
+
         for (classPathFunction in classPathContainer
             .functionsWithAnnotation<AppDeclaration>()
             .requireNonStatic()

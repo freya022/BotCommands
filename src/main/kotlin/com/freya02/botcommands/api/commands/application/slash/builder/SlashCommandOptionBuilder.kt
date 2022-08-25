@@ -28,4 +28,6 @@ class SlashCommandOptionBuilder(declaredName: String, optionName: String): Appli
     fun autocomplete(name: String, block: AutocompleteInfoBuilder.() -> Unit) {
         autocompleteInfo = AutocompleteInfoBuilder(name).apply(block).build()
     }
+
+    //TODO autocomplete reference
 }

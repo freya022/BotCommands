@@ -65,6 +65,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    inline fun <reified T : Any> getService(useNonClasspath: Boolean = false): T {
+        return getService(T::class, useNonClasspath)
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getService(clazz: KClass<T>, useNonClasspath: Boolean = false): T {
         synchronized(serviceMap) {

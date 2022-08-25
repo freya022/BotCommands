@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -47,16 +46,12 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
     }
 
     //Separated functions so message errors don't prevent user commands from being registered
-    @AppDeclaration
     fun declareGlobalMessage(manager: GlobalApplicationCommandManager) = declareMessage(manager)
 
-    @AppDeclaration
     fun declareGlobalUser(manager: GlobalApplicationCommandManager) = declareUser(manager)
 
-    @AppDeclaration
     fun declareGuildMessage(manager: GuildApplicationCommandManager) = declareMessage(manager)
 
-    @AppDeclaration
     fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareMessage(manager: IApplicationCommandManager) {

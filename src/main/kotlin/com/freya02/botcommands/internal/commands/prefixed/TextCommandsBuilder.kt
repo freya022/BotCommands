@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.events.FirstReadyEvent
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -23,6 +24,8 @@ internal class TextCommandsBuilder(
     private val declarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
 
     init {
+        declarationFunctions += ClassPathFunction(serviceContainer.getService<TextCommandAutoBuilder>(), TextCommandAutoBuilder::declare)
+
         for (classPathFunction in classPathContainer
             .functionsWithAnnotation<TextDeclaration>()
             .requireNonStatic()

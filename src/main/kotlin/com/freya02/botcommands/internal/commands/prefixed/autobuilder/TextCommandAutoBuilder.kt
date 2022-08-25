@@ -32,7 +32,6 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             .requireFirstArg(BaseCommandEvent::class)
     }
 
-    @TextDeclaration
     fun declare(manager: TextCommandManager) {
         functions.forEachWithDelayedExceptions {
             val func = it.function

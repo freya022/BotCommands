@@ -19,6 +19,8 @@ internal class InstanceDelegate(private val getter: () -> Any) {
 
 internal class ClassPathFunction(instanceProvider: InstanceDelegate, val function: KFunction<*>) {
     val instance: Any by instanceProvider
+
+    constructor(obj: Any, function: KFunction<*>) : this(InstanceDelegate { obj }, function)
 }
 
 internal class ClassPathContainer(private val context: BContextImpl) {

@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.application.autobuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.*
-import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
@@ -32,7 +31,7 @@ import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
-@BService //TODO this needs to be manually processed before any user declaration functions, as to consistently allow users to reference manual autocomplete function
+@BService
 internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer: AutocompleteFunctionContainer, classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
 
@@ -42,7 +41,6 @@ internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer
             .requireFirstArg(GlobalSlashEvent::class)
     }
 
-    @AppDeclaration
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         functions.forEach {
             val func = it.function
@@ -54,7 +52,6 @@ internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer
         }
     }
 
-    @AppDeclaration
     fun declareGuild(manager: GuildApplicationCommandManager) {
         functions.forEachWithDelayedExceptions {
             val func = it.function
