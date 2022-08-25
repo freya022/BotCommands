@@ -59,6 +59,7 @@ public class ReflectionUtils {
 							final String relativePath = walkRoot.relativize(p)
 									.toString()
 									.replace(walkRoot.getFileSystem().getSeparator(),  ".");
+									.replace(walkRoot.getFileSystem().getSeparator(), ".");
 
 							//Remove .class suffix and add package prefix
 							final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
