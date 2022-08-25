@@ -31,7 +31,7 @@ internal class AutocompleteHandler(
 
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
-    private val cache: AbstractAutocompleteCache
+    private val cache: AbstractAutocompleteCache //TODO probably move to autocomplete info
 
     init {
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug

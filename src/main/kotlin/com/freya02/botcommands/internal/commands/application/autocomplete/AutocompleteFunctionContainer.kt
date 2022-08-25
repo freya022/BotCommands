@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.core.requireReturnType
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -21,6 +22,7 @@ internal class AutocompleteFunctionContainer(classPathContainer: ClassPathContai
         autocompleteFunctions = classPathContainer.functionsWithAnnotation<AutocompleteHandlerAnnotation>()
             .requireNonStatic()
             .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
+            .requireReturnType(Collection::class)
             .map {
                 val returnType = it.function.returnType
                 ReflectionUtils.getCollectionReturnType(returnType.jvmErasure.java, returnType.javaType) ?: throwUser(

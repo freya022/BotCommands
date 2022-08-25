@@ -10,14 +10,11 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.Channe
 import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteFunctionContainer
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
@@ -32,7 +29,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer: AutocompleteFunctionContainer, classPathContainer: ClassPathContainer) {
+internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
     private val functions: List<ClassPathFunction>
 
     init {
@@ -136,7 +133,7 @@ internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer
                         }
                     }
 
-                    processAutocomplete(optionAnnotation, func)
+                    processAutocomplete(optionAnnotation)
 
                     choices = instance.getOptionChoices(guild, path, optionName)
 
@@ -146,35 +143,9 @@ internal class SlashCommandAutoBuilder(private val autocompleteFunctionContainer
         }
     }
 
-    private fun SlashCommandOptionBuilder.processAutocomplete(
-        optionAnnotation: AppOption,
-        func: KFunction<*>
-    ) {
+    private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: AppOption) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {
-            autocomplete(optionAnnotation.autocomplete) {
-                val autocompleteFunction = autocompleteFunctionContainer[optionAnnotation.autocomplete] ?: throwUser(
-                    func,
-                    "Autocomplete handler '${optionAnnotation.autocomplete}' was not found"
-                )
-
-                this@autocomplete.function = autocompleteFunction
-
-                val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
-
-                mode = autocompleteHandlerAnnotation.mode
-                showUserInput = autocompleteHandlerAnnotation.showUserInput
-
-                autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
-                    cache {
-                        cacheMode = autocompleteCacheAnnotation.cacheMode
-                        cacheSize = autocompleteCacheAnnotation.cacheSize
-
-                        userLocal = autocompleteCacheAnnotation.userLocal
-                        channelLocal = autocompleteCacheAnnotation.channelLocal
-                        guildLocal = autocompleteCacheAnnotation.guildLocal
-                    }
-                }
-            }
+            autocompleteReference(optionAnnotation.autocomplete)
         }
     }
 }

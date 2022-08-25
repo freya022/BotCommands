@@ -22,7 +22,7 @@ class SlashCommandBuilder internal constructor(
      */
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        optionBuilders[declaredName] = SlashCommandOptionBuilder(declaredName, optionName).apply(block)
+        optionBuilders[declaredName] = SlashCommandOptionBuilder(context, declaredName, optionName).apply(block)
     }
 
     /**
