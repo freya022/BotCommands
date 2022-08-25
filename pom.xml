@@ -252,7 +252,7 @@
 <!--                    <goals>deploy</goals>-->
 <!--                </configuration>-->
                 <configuration>
-                    <tagNameFormat>@{version}</tagNameFormat>
+                    <tagNameFormat>v@{version}</tagNameFormat>
                 </configuration>
             </plugin>
             <!-- Update plugin versions -->
