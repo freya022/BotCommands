@@ -4,12 +4,12 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommandMap
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 class MutableApplicationCommandMap : ApplicationCommandMap() {
-    override fun getSlashCommands(): MutableCommandMap<SlashCommandInfo> {
+    override fun getSlashCommands(): MutableCommandMap<TopLevelSlashCommandInfo> {
         return getTypeMap(CommandType.SLASH)
     }
 
@@ -40,7 +40,7 @@ class MutableApplicationCommandMap : ApplicationCommandMap() {
                 val type = when (info) {
                     is MessageCommandInfo -> CommandType.MESSAGE
                     is UserCommandInfo -> CommandType.USER
-                    is SlashCommandInfo -> CommandType.SLASH
+                    is TopLevelSlashCommandInfo -> CommandType.SLASH
                     else -> throw IllegalArgumentException("Unknown application command info type: " + info.javaClass.name)
                 }
                 map.getTypeMap<ApplicationCommandInfo>(type)[info.path] = info

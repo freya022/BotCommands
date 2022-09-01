@@ -25,16 +25,16 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-class SlashCommandInfo internal constructor(
+open class SlashCommandInfo internal constructor(
     val context: BContextImpl,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
     builder
 ) {
-    val description = builder.description
+    val description: String = builder.description
 
-    override val parameters: MethodParameters
+    final override val parameters: MethodParameters
 
     @Suppress("UNCHECKED_CAST")
     override val optionParameters: List<SlashCommandParameter>

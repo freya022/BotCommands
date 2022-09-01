@@ -154,3 +154,7 @@ inline fun <T> Result<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Result
 inline fun <T> Result<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): Result<T> {
     return onErrorResponseException { if (it.errorResponse == error) block(it) }
 }
+
+internal inline fun <reified T> Any.throwMixin(): Nothing {
+    throwInternal("${this::class.simpleName} should implement ${T::class.simpleName}")
+}

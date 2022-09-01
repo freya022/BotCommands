@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.requireUser
@@ -14,7 +13,7 @@ abstract class AbstractCommandInfo internal constructor(
     context: BContextImpl,
     builder: CommandBuilder
 ) : Cooldownable(context, builder.cooldownStrategy), ExecutableInteractionInfo {
-    val path: CommandPath
+    val name: String
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
     val nsfwStrategy: NSFWStrategy?
@@ -25,7 +24,7 @@ abstract class AbstractCommandInfo internal constructor(
     init {
         instance = context.serviceContainer.getFunctionService(builder.function)
 
-        path = builder.path
+        name = builder.name
         method = builder.function
         nsfwStrategy = builder.nsfwStrategy
         userPermissions = builder.userPermissions

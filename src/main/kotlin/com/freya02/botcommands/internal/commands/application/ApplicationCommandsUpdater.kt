@@ -12,8 +12,8 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommands
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.localization.BCLocalizationFunction
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
+import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -122,8 +122,8 @@ internal class ApplicationCommandsUpdater private constructor(
         map: ApplicationCommandDataMap
     ) {
         guildApplicationCommands
-            .filterIsInstance<SlashCommandInfo>()
-            .forEach { info: SlashCommandInfo ->
+            .filterIsInstance<TopLevelSlashCommandInfo>()
+            .forEach { info: TopLevelSlashCommandInfo ->
                 val commandPath = info.path
                 val description = info.description
                 try {
