@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.application
 
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
@@ -22,7 +21,7 @@ class GlobalApplicationCommandManager internal constructor(val context: BContext
     override fun userCommand0(name: String, scope: CommandScope, builder: UserCommandBuilder.() -> Unit) {
         if (!scope.isGlobal) throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
 
-        applicationCommands += UserCommandBuilder(context, CommandPath.ofName(name), scope)
+        applicationCommands += UserCommandBuilder(context, name, scope)
             .apply(builder)
             .build()
     }
@@ -30,7 +29,7 @@ class GlobalApplicationCommandManager internal constructor(val context: BContext
     override fun messageCommand0(name: String, scope: CommandScope, builder: MessageCommandBuilder.() -> Unit) {
         if (!scope.isGlobal) throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
 
-        applicationCommands += MessageCommandBuilder(context, CommandPath.ofName(name), scope)
+        applicationCommands += MessageCommandBuilder(context, name, scope)
             .apply(builder)
             .build()
     }
