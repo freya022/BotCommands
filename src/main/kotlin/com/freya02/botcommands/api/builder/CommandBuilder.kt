@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-abstract class CommandBuilder internal constructor(val path: CommandPath) : BuilderFunctionHolder<Any>() {
-    constructor(name: String) : this(TODO() as CommandPath)
+abstract class CommandBuilder internal constructor(val name: String) : BuilderFunctionHolder<Any>() {
+    constructor(name: CommandPath) : this(TODO() as String)
 
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()

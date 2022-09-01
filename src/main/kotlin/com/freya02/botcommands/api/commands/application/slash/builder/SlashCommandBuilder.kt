@@ -6,10 +6,9 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationGener
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 
-class SlashCommandBuilder internal constructor(
-    private val context: BContextImpl,
+abstract class SlashCommandBuilder internal constructor(
+    protected val context: BContextImpl,
     name: String
 ) : ApplicationCommandBuilder(name) {
     var description: String = DEFAULT_DESCRIPTION
@@ -34,11 +33,6 @@ class SlashCommandBuilder internal constructor(
      */
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
         optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
-    }
-
-    internal fun build(): SlashCommandInfo {
-        checkFunction()
-        return SlashCommandInfo(context, this)
     }
 
     companion object {

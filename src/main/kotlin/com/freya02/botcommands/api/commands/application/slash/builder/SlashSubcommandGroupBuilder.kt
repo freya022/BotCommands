@@ -6,7 +6,7 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, val name: S
     @get:JvmSynthetic
     internal val subcommands: MutableList<SlashCommandBuilder> = mutableListOf()
 
-    fun subcommand(name: String, block: SlashCommandBuilder.() -> Unit) {
-        subcommands += SlashCommandBuilder(context, name).apply(block)
+    fun subcommand(name: String, block: SlashSubcommandBuilder.() -> Unit) {
+        subcommands += SlashSubcommandBuilder(context, name).apply(block)
     }
 }
