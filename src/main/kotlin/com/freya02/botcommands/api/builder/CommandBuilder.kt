@@ -11,6 +11,8 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 abstract class CommandBuilder internal constructor(val path: CommandPath) : BuilderFunctionHolder<Any>() {
+    constructor(name: String) : this(TODO() as CommandPath)
+
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 

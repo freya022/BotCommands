@@ -1,18 +1,35 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 
-class SlashCommandBuilder internal constructor(
+class TopLevelSlashCommandBuilder internal constructor(
     private val context: BContextImpl,
-    name: String
-) : ApplicationCommandBuilder(name) {
+    name: String,
+    scope: CommandScope
+) : ApplicationCommandBuilder(name), ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
     var description: String = DEFAULT_DESCRIPTION
+
+    @get:JvmSynthetic
+    internal val subcommands: MutableList<SlashCommandBuilder> = mutableListOf()
+    @get:JvmSynthetic
+    internal val subcommandGroups: MutableList<SlashSubcommandGroupBuilder> = mutableListOf()
+
+    fun subcommand(name: String, block: SlashCommandBuilder.() -> Unit) {
+        subcommands += SlashCommandBuilder(context, name).apply(block)
+    }
+
+    fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {
+        subcommandGroups += SlashSubcommandGroupBuilder(context, name).apply(block)
+    }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
