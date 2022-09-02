@@ -128,7 +128,7 @@ object SlashUtils {
 
     internal inline fun <reified T> ApplicationCommandInfo.checkEventScope() {
         val firstParamKlass = method.valueParameters.first().type.jvmErasure
-        if (scope.isGuildOnly) {
+        if (topLevelInstance.scope.isGuildOnly) {
             if (!firstParamKlass.isSubclassOf(T::class)) {
                 Logging.getLogger().warn("${method.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
             }

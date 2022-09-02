@@ -50,7 +50,6 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
         OWNER_ONLY(false, false),
         USER_PERMISSIONS(false, false),
         BOT_PERMISSIONS(true, false),
-        GUILD_ONLY(false, false),
         NSFW_DISABLED(false, false),
         NSFW_ONLY(false, false),
         NSFW_DM_DENIED(false, false);
@@ -114,8 +113,6 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
         @JvmStatic
         fun of(context: BContext, event: GenericCommandInteractionEvent, cmdInfo: ApplicationCommandInfo, isNotOwner: Boolean): Usability {
             with(EnumSet.noneOf(UnusableReason::class.java)) {
-                if (!event.isFromGuild && cmdInfo.isGuildOnly) add(GUILD_ONLY)
-
                 checkNSFW(context, this, event.messageChannel, cmdInfo)
 
                 if (!event.isFromGuild) return Usability(this)

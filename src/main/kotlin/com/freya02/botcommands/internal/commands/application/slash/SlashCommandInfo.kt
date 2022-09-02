@@ -25,7 +25,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-open class SlashCommandInfo internal constructor(
+abstract class SlashCommandInfo internal constructor(
     val context: BContextImpl,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
@@ -84,7 +84,7 @@ open class SlashCommandInfo internal constructor(
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
-            if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
+            if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
         putSlashOptions(event, objects, parameters)
 

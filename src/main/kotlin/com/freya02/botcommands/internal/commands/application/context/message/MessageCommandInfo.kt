@@ -7,9 +7,12 @@ import com.freya02.botcommands.api.commands.application.context.message.GuildMes
 import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
+import com.freya02.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.commands.application.slash.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -21,7 +24,8 @@ import kotlin.reflect.full.valueParameters
 class MessageCommandInfo internal constructor(
     context: BContextImpl,
     builder: MessageCommandBuilder
-) : ApplicationCommandInfo(context, builder) {
+) : ApplicationCommandInfo(context, builder), ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
+    override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parameters: MethodParameters
 
     init {
