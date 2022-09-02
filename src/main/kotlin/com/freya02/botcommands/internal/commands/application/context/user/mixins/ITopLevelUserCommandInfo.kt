@@ -1,5 +1,5 @@
 package com.freya02.botcommands.internal.commands.application.context.user.mixins
 
-import com.freya02.botcommands.internal.commands.application.slash.mixins.ITopLevelApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 
 interface ITopLevelUserCommandInfo : ITopLevelApplicationCommandInfo

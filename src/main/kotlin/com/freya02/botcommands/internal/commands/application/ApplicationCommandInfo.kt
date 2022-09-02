@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.mixins.ITopLevelApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.MethodParameter
 
 abstract class ApplicationCommandInfo internal constructor(

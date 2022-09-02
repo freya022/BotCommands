@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application.context.message.mi
 
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.commands.application.slash.mixins.TopLevelApplicationCommandInfoMixin
+import com.freya02.botcommands.internal.commands.application.mixins.TopLevelApplicationCommandInfoMixin
 
 class TopLevelMessageCommandInfoMixin(
     context: BContextImpl,

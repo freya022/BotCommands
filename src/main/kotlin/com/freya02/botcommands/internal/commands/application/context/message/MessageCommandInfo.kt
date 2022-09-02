@@ -9,10 +9,10 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
+import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
-import com.freya02.botcommands.internal.commands.application.slash.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent

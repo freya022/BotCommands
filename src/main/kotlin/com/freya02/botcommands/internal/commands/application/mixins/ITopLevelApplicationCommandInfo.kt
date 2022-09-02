@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands.application.slash.mixins
+package com.freya02.botcommands.internal.commands.application.mixins
 
 import com.freya02.botcommands.api.commands.application.CommandScope
 

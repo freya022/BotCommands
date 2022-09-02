@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands.application.slash.mixins
+package com.freya02.botcommands.internal.commands.application.mixins
 
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -8,7 +8,8 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwMixin
 import com.freya02.botcommands.internal.throwUser
 
-open class TopLevelApplicationCommandInfoMixin(context: BContextImpl, builder: ITopLevelApplicationCommandBuilder) : ITopLevelApplicationCommandInfo {
+open class TopLevelApplicationCommandInfoMixin(context: BContextImpl, builder: ITopLevelApplicationCommandBuilder) :
+    ITopLevelApplicationCommandInfo {
     final override val scope: CommandScope
     final override val isDefaultLocked: Boolean
     final override val isGuildOnly: Boolean
@@ -32,11 +33,11 @@ open class TopLevelApplicationCommandInfoMixin(context: BContextImpl, builder: I
 
         //Administrators manage who can use what, bot doesn't need to check for user mistakes
         // Why would you ask for a permission if the administrators want a less-powerful user to be able to use it ?
-        if (isDefaultLocked && builder.userPermissions.isNotEmpty()) {
+        if (isDefaultLocked && kotlin.collections.isNotEmpty()) {
             throwUser(builder.function, "Cannot put user permissions on default locked commands")
         }
 
-        if (!isGuildOnly && (builder.userPermissions.isNotEmpty() || builder.botPermissions.isNotEmpty())) {
+        if (!isGuildOnly && (kotlin.collections.isNotEmpty() || kotlin.collections.isNotEmpty())) {
             throwUser("Application command with permissions should be guild-only, as permissions are not applied in DMs")
         }
     }
