@@ -12,7 +12,7 @@ class TopLevelSlashCommandBuilder internal constructor(
     scope: CommandScope
 ) : SlashCommandBuilder(context, name), ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
     @get:JvmSynthetic
-    internal val subcommands: MutableList<SlashCommandBuilder> = mutableListOf()
+    internal val subcommands: MutableList<SlashSubcommandBuilder> = mutableListOf()
     @get:JvmSynthetic
     internal val subcommandGroups: MutableList<SlashSubcommandGroupBuilder> = mutableListOf()
 
