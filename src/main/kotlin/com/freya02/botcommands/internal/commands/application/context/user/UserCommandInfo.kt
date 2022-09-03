@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
+import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
@@ -26,6 +27,7 @@ class UserCommandInfo internal constructor(
     builder: UserCommandBuilder
 ) : ApplicationCommandInfo(context, builder), ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
+    override val parentInstance: INamedCommandInfo = this
     override val parameters: MethodParameters
 
     init {

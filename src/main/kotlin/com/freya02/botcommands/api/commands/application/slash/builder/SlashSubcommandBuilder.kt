@@ -10,6 +10,6 @@ class SlashSubcommandBuilder internal constructor(
 ) : SlashCommandBuilder(context, name) {
     internal fun build(topLevelInstance: TopLevelSlashCommandInfo): SlashSubcommandInfo {
         checkFunction()
-        return SlashSubcommandInfo(context, topLevelInstance, this)
+        return SlashSubcommandInfo(context, topLevelInstance, topLevelInstance, this)
     }
 }
