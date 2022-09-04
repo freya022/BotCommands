@@ -12,7 +12,9 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommands
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.localization.BCLocalizationFunction
+import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
@@ -51,18 +53,7 @@ internal class ApplicationCommandsUpdater private constructor(
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        applicationCommands = manager.applicationCommands.let {
-            it.filter {
-                context.settingsProvider?.let { settings ->
-                    guild?.let { guild ->
-                        return@filter settings.getGuildCommands(guild).filter.test(it._path)
-                    }
-                }
-
-                return@filter true
-            }
-        }
-
+        applicationCommands = manager.applicationCommands
         allCommandData = computeCommands().allCommandData
 
         //Apply localization
@@ -121,12 +112,10 @@ internal class ApplicationCommandsUpdater private constructor(
         computeContextCommands(applicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
     }
 
-    private fun computeSlashCommands(
-        guildApplicationCommands: List<ApplicationCommandInfo>,
-        map: ApplicationCommandDataMap
-    ) {
+    private fun computeSlashCommands(guildApplicationCommands: List<ApplicationCommandInfo>, map: ApplicationCommandDataMap) {
         guildApplicationCommands
             .filterIsInstance<TopLevelSlashCommandInfo>()
+            .filterCommands()
             .forEach { info: TopLevelSlashCommandInfo ->
                 try {
                     val isTopLevel = info.subcommands.isEmpty() && info.subcommandGroups.isEmpty()
@@ -139,13 +128,8 @@ internal class ApplicationCommandsUpdater private constructor(
                         commandData.configureTopLevel(info)
                     }
 
-                    topLevelData.addSubcommandGroups(info.subcommandGroups.values.map { subcommandGroupInfo ->
-                        SubcommandGroupData(subcommandGroupInfo.name, subcommandGroupInfo.description).also {
-                            it.addSubcommands(subcommandGroupInfo.subcommands.values.mapToSubcommandData())
-                        }
-                    })
-
-                    topLevelData.addSubcommands(info.subcommands.values.mapToSubcommandData())
+                    topLevelData.addSubcommandGroups(info.subcommandGroups.values.filterCommands().mapToSubcommandGroupData())
+                    topLevelData.addSubcommands(info.subcommands.values.filterCommands().mapToSubcommandData())
 
                     map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
@@ -153,6 +137,13 @@ internal class ApplicationCommandsUpdater private constructor(
                 }
             }
     }
+
+    private fun Collection<SlashSubcommandGroupInfo>.mapToSubcommandGroupData() =
+        this.map { subcommandGroupInfo ->
+            SubcommandGroupData(subcommandGroupInfo.name, subcommandGroupInfo.description).also {
+                it.addSubcommands(subcommandGroupInfo.subcommands.values.mapToSubcommandData())
+            }
+        }
 
     private fun Collection<SlashSubcommandInfo>.mapToSubcommandData() =
         this.map { subcommandInfo ->
@@ -170,6 +161,7 @@ internal class ApplicationCommandsUpdater private constructor(
     ) where T: ITopLevelApplicationCommandInfo, T: ApplicationCommandInfo {
         guildApplicationCommands
             .filterIsInstance(targetClazz)
+            .filterCommands()
             .forEach { info: T ->
                 try {
                     //Standard command
@@ -182,6 +174,16 @@ internal class ApplicationCommandsUpdater private constructor(
                     )
                 }
             }
+    }
+
+    private fun <T : INamedCommandInfo> Collection<T>.filterCommands() = filter { info ->
+        context.settingsProvider?.let { settings ->
+            guild?.let { guild ->
+                return@filter settings.getGuildCommands(guild).filter.test(info._path)
+            }
+        }
+
+        return@filter true
     }
 
     private fun <T> CommandData.configureTopLevel(info: T): CommandData
