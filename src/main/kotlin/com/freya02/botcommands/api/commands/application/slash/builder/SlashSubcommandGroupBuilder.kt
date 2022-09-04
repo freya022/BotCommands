@@ -16,6 +16,6 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, val name: S
     }
 
     fun build(topLevelInstance: TopLevelSlashCommandInfo): SlashSubcommandGroupInfo {
-        return SlashSubcommandGroupInfo(topLevelInstance, topLevelInstance, this)
+        return SlashSubcommandGroupInfo(topLevelInstance, this)
     }
 }
