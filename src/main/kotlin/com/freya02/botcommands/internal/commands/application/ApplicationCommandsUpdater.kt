@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.builder.DebugBuilder
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
@@ -23,6 +22,7 @@ import com.freya02.botcommands.internal.rethrowUser
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
@@ -33,7 +33,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Files
 
-private val LOGGER = Logging.getLogger()
+private val LOGGER = KotlinLogging.logger { }
+
 internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
@@ -67,8 +68,8 @@ internal class ApplicationCommandsUpdater private constructor(
         val oldBytes = when {
             onlineCheck -> {
                 (guild?.retrieveCommands(true) ?: context.jda.retrieveCommands(true))
-                .await()
-                .map { CommandData.fromCommand(it) }.toJsonBytes()
+                    .await()
+                    .map { CommandData.fromCommand(it) }.toJsonBytes()
             }
 
             else -> {
@@ -89,8 +90,8 @@ internal class ApplicationCommandsUpdater private constructor(
                 LOGGER.trace("Updating commands because content is not equal")
 
                 if (DebugBuilder.isLogApplicationDiffsEnabled()) {
-                    LOGGER.trace("Old commands bytes: {}", oldBytes.decodeToString())
-                    LOGGER.trace("New commands bytes: {}", newBytes.decodeToString())
+                    LOGGER.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
+                    LOGGER.trace { "New commands bytes: ${newBytes.decodeToString()}" }
                 }
             }
         }
@@ -158,7 +159,8 @@ internal class ApplicationCommandsUpdater private constructor(
         map: ApplicationCommandDataMap,
         targetClazz: Class<T>,
         type: Command.Type
-    ) where T: ITopLevelApplicationCommandInfo, T: ApplicationCommandInfo {
+    ) where T : ITopLevelApplicationCommandInfo,
+            T : ApplicationCommandInfo {
         guildApplicationCommands
             .filterIsInstance(targetClazz)
             .filterCommands()
@@ -200,24 +202,22 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun printPushedCommandData(commands: List<Command>, guild: Guild?) {
         if (!LOGGER.isTraceEnabled) return
 
-        val commandNumber = commands.size
-        val sentCommandNumber = allCommandData.size
-        val cacheViewNumber = context.applicationCommandsView.size
-        val scope = guild.asScopeString()
-
-        LOGGER.trace("Updated $commandNumber / $sentCommandNumber ($cacheViewNumber) commands for $scope")
+        LOGGER.trace {
+            val commandNumber = commands.size
+            val sentCommandNumber = allCommandData.size
+            val cacheViewNumber = context.applicationCommandsView.size
+            val scope = guild.asScopeString()
+            "Updated $commandNumber / $sentCommandNumber ($cacheViewNumber) commands for $scope"
+        }
     }
 
     private fun saveCommandData(guild: Guild?) {
         try {
             commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
         } catch (e: Exception) {
-            LOGGER.error(
-                "An exception occurred while temporarily saving {} commands in '{}'",
-                guild.asScopeString(),
-                commandsCachePath.toAbsolutePath(),
-                e
-            )
+            LOGGER.error(e) {
+                "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"
+            }
         }
     }
 
