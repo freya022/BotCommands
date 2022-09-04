@@ -10,17 +10,20 @@ import kotlin.reflect.full.findAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
 inline fun <T> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
-    val exceptions: MutableList<Throwable> = arrayListOf()
+    var ex: Throwable? = null
     forEach {
         runCatching {
             block(it)
         }.onFailure {
-           exceptions.add(it)
+            when (ex) {
+                null -> ex = it
+                else -> ex!!.addSuppressed(it)
+            }
         }
     }
 
-    if (exceptions.isNotEmpty()) {
-        throw RuntimeException("${exceptions.size} exception(s) occurred while registering annotated commands, here is the first exception:", exceptions.first())
+    if (ex != null) {
+        throw RuntimeException("Exception(s) occurred while registering annotated commands", ex)
     }
 }
 
