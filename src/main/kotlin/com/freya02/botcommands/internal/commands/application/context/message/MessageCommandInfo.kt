@@ -9,7 +9,6 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
@@ -27,7 +26,7 @@ class MessageCommandInfo internal constructor(
     builder: MessageCommandBuilder
 ) : ApplicationCommandInfo(context, builder), ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
-    override val parentInstance: INamedCommandInfo = this
+    override val parentInstance = null
     override val parameters: MethodParameters
 
     init {

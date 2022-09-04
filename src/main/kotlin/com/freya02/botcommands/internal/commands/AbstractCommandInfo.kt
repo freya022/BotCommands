@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
@@ -15,6 +16,18 @@ abstract class AbstractCommandInfo internal constructor(
     builder: CommandBuilder
 ) : Cooldownable(context, builder.cooldownStrategy), ExecutableInteractionInfo, INamedCommandInfo {
     override val name: String
+    override val _path: CommandPath by lazy {
+        val components: MutableList<String> = arrayListOf()
+        var info: INamedCommandInfo = this
+
+        do {
+            components += info.name
+            info = info.parentInstance ?: break
+        } while (true)
+
+        return@lazy CommandPath.of(*components.toTypedArray())
+    }
+
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
     val nsfwStrategy: NSFWStrategy?
