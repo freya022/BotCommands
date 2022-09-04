@@ -19,9 +19,8 @@ internal class ApplicationCommandDataMap {
         return getTypeMap(type).computeIfAbsent(path.name, mappingFunction)
     }
 
-    //TODO replace with String
-    operator fun set(type: CommandType, path: CommandPath, value: CommandData) {
-        getTypeMap(type)[path.name] = value
+    operator fun set(type: CommandType, name: String, value: CommandData) {
+        getTypeMap(type)[name] = value
     }
 
     private fun getTypeMap(type: CommandType): MutableMap<String, CommandData> {

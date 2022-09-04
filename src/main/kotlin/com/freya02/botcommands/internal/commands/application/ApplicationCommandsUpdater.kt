@@ -147,7 +147,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
                     topLevelData.addSubcommands(info.subcommands.values.mapToSubcommandData())
 
-                    map[Command.Type.SLASH, info._path] = topLevelData
+                    map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
                     rethrowUser(info.method, "An exception occurred while processing command '${info.name}'", e)
                 }
@@ -173,7 +173,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .forEach { info: T ->
                 try {
                     //Standard command
-                    map[type, info._path] = Commands.context(type, info.name).configureTopLevel(info)
+                    map[type, info.name] = Commands.context(type, info.name).configureTopLevel(info)
                 } catch (e: Exception) {
                     rethrowUser(
                         info.method,
