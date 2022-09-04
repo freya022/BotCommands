@@ -41,7 +41,7 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
                 "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
                     key,
                     Utils.formatMethodShort(value.method),
-                    oldInfo.path,
+                    oldInfo._path,
                     Utils.formatMethodShort(oldInfo.method)
                 )
             )

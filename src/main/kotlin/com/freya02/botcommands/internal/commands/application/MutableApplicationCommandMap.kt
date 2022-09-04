@@ -43,7 +43,27 @@ class MutableApplicationCommandMap : ApplicationCommandMap() {
                     is TopLevelSlashCommandInfo -> CommandType.SLASH
                     else -> throw IllegalArgumentException("Unknown application command info type: " + info.javaClass.name)
                 }
-                map.getTypeMap<ApplicationCommandInfo>(type)[info.path] = info
+
+                val typeMap = map.getTypeMap<ApplicationCommandInfo>(type)
+                when (info) {
+                    is UserCommandInfo, is MessageCommandInfo -> typeMap[info._path] = info
+                    is TopLevelSlashCommandInfo -> {
+                        if (info.isTopLevelCommandOnly()) {
+                            typeMap[info._path] = info
+                        } else {
+                            info.subcommandGroups.values.forEach { groupInfo ->
+                                groupInfo.subcommands.values.forEach {
+                                    typeMap[it._path] = it
+                                }
+                            }
+
+                            info.subcommands.values.forEach {
+                                typeMap[it._path] = it
+                            }
+                        }
+                    }
+                    else -> throw IllegalArgumentException("Unknown application command info type: " + info.javaClass.name)
+                }
             }
         }
     }
