@@ -16,14 +16,12 @@ internal class ApplicationCommandDataMap {
             .flatMap { it.values }
 
     fun computeIfAbsent(type: CommandType, path: CommandPath, mappingFunction: Function<String, CommandData>): CommandData {
-        return getTypeMap(type).computeIfAbsent(path.name, mappingFunction)
+        return this[type].computeIfAbsent(path.name, mappingFunction)
     }
 
     operator fun set(type: CommandType, name: String, value: CommandData) {
-        getTypeMap(type)[name] = value
+        this[type][name] = value
     }
 
-    private fun getTypeMap(type: CommandType): MutableMap<String, CommandData> {
-        return typeMap.computeIfAbsent(type) { hashMapOf() }
-    }
+    private operator fun get(type: CommandType) = typeMap.computeIfAbsent(type) { hashMapOf() }
 }
