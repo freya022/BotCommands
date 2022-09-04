@@ -24,6 +24,7 @@ abstract class CommandBuilder internal constructor(val name: String) : BuilderFu
     internal var nsfwStrategy: NSFWStrategy? = null
         private set
 
+    @get:JvmSynthetic
     internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 
     fun cooldown(block: CooldownStrategyBuilder.() -> Unit) {
