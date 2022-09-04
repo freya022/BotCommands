@@ -9,6 +9,10 @@ class SlashSubcommandBuilder internal constructor(
     context: BContextImpl,
     name: String
 ) : SlashCommandBuilder(context, name) {
+    override val allowOptions: Boolean = true
+    override val allowSubcommands: Boolean = false
+    override val allowSubcommandGroups: Boolean = false
+
     internal fun build(topLevelInstance: TopLevelSlashCommandInfo, parentInstance: INamedCommandInfo): SlashSubcommandInfo {
         checkFunction()
         return SlashSubcommandInfo(context, topLevelInstance, parentInstance, this)
