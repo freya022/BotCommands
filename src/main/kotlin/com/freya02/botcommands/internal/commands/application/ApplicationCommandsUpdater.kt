@@ -2,31 +2,36 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.builder.DebugBuilder
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.asScopeString
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.localization.BCLocalizationFunction
+import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import com.freya02.botcommands.internal.overwriteBytes
+import com.freya02.botcommands.internal.rethrowUser
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions
-import net.dv8tion.jda.api.interactions.commands.build.*
+import net.dv8tion.jda.api.interactions.commands.build.CommandData
+import net.dv8tion.jda.api.interactions.commands.build.Commands
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Files
-import java.util.function.Function
 
 private val LOGGER = Logging.getLogger()
-
 internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
@@ -40,7 +45,6 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
-    private val subcommandGroupDataMap: MutableMap<String, SubcommandGroupData> = hashMapOf()
     val applicationCommands: List<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
 
@@ -51,7 +55,7 @@ internal class ApplicationCommandsUpdater private constructor(
             it.filter {
                 context.settingsProvider?.let { settings ->
                     guild?.let { guild ->
-                        return@filter settings.getGuildCommands(guild).filter.test(it.path)
+                        return@filter settings.getGuildCommands(guild).filter.test(it._path)
                     }
                 }
 
@@ -124,88 +128,70 @@ internal class ApplicationCommandsUpdater private constructor(
         guildApplicationCommands
             .filterIsInstance<TopLevelSlashCommandInfo>()
             .forEach { info: TopLevelSlashCommandInfo ->
-                val commandPath = info.path
-                val description = info.description
                 try {
-                    val methodOptions = info.getMethodOptions(guild)
-                    when (commandPath.nameCount) {
-                        1 -> {
-                            //Standard command
-                            map[Command.Type.SLASH, commandPath] = Commands.slash(commandPath.name, description).also { commandData ->
-                                commandData.addOptions(methodOptions)
-                                configureTopLevel(info, commandData)
-                            }
+                    val isTopLevel = info.subcommands.isEmpty() && info.subcommandGroups.isEmpty()
+                    val topLevelData = Commands.slash(info.name, info.description).also { commandData ->
+                        if (isTopLevel) {
+                            val methodOptions = info.getMethodOptions(guild)
+                            commandData.addOptions(methodOptions)
                         }
-                        2 -> {
-                            val commandData = map.computeIfAbsent(Command.Type.SLASH, commandPath) {
-                                Commands.slash(commandPath.name, "No description (base name)").also { commandData ->
-                                    configureTopLevel(info, commandData)
-                                }
-                            } as SlashCommandData
 
-                            val subname = commandPath.subname ?: throwInternal("Command path subname should have not been null")
-                            val subcommandData = SubcommandData(subname, description)
-                            subcommandData.addOptions(methodOptions)
-                            commandData.addSubcommands(subcommandData)
-                        }
-                        3 -> {
-                            val groupData = getSubcommandGroup(map, Command.Type.SLASH, commandPath) {
-                                Commands.slash(commandPath.name, "No description (base name)").also { commandData ->
-                                    configureTopLevel(info, commandData)
-                                }
-                            }
-
-                            val subname = commandPath.subname ?: throwInternal("Command path subname should have not been null")
-                            val subcommandData = SubcommandData(subname, description)
-                            subcommandData.addOptions(methodOptions)
-                            groupData.addSubcommands(subcommandData)
-                        }
-                        else -> {
-                            throwInternal("A slash command with more than 4 path components got registered")
-                        }
+                        commandData.configureTopLevel(info)
                     }
-                } catch (e: Exception) {
-                    rethrowUser(info.method, "An exception occurred while processing command '$commandPath'", e)
+
+                    topLevelData.addSubcommandGroups(info.subcommandGroups.values.map { subcommandGroupInfo ->
+                        SubcommandGroupData(subcommandGroupInfo.name, subcommandGroupInfo.description).also {
+                            it.addSubcommands(subcommandGroupInfo.subcommands.values.mapToSubcommandData())
+                        }
+                    })
+
+                    topLevelData.addSubcommands(info.subcommands.values.mapToSubcommandData())
+
+                    map[Command.Type.SLASH, info._path] = topLevelData
+                } catch (e: Exception) { //TODO use some sort of exception context for command paths
+                    rethrowUser(info.method, "An exception occurred while processing command '${info.name}'", e)
                 }
             }
     }
 
-    private fun <T : ApplicationCommandInfo> computeContextCommands(
+    private fun Collection<SlashSubcommandInfo>.mapToSubcommandData() =
+        this.map { subcommandInfo ->
+            SubcommandData(subcommandInfo.name, subcommandInfo.description).also {
+                val methodOptions = subcommandInfo.getMethodOptions(guild)
+                it.addOptions(methodOptions)
+            }
+        }
+
+    private fun <T> computeContextCommands(
         guildApplicationCommands: List<ApplicationCommandInfo>,
         map: ApplicationCommandDataMap,
         targetClazz: Class<T>,
         type: Command.Type
-    ) {
+    ) where T: ITopLevelApplicationCommandInfo, T: ApplicationCommandInfo {
         guildApplicationCommands
             .filterIsInstance(targetClazz)
             .forEach { info: T ->
-                val commandPath = info.path
                 try {
-                    if (commandPath.nameCount == 1) {
-                        //Standard command
-                        Commands.context(type, commandPath.name).also { commandData ->
-                            configureTopLevel(info, commandData)
-                            map[type, commandPath] = commandData
-                        }
-                    } else {
-                        throw IllegalStateException("A " + type.name + " command with more than 1 path component got registered")
-                    }
+                    //Standard command
+                    map[type, info._path] = Commands.context(type, info.name).configureTopLevel(info)
                 } catch (e: Exception) {
                     rethrowUser(
                         info.method,
-                        "An exception occurred while processing a ${type.name} command $commandPath",
+                        "An exception occurred while processing a ${type.name} command ${info.name}",
                         e
                     )
                 }
             }
     }
 
-    private fun configureTopLevel(info: ApplicationCommandInfo, rightCommand: CommandData) {
-        if (info.scope == CommandScope.GLOBAL_NO_DM) rightCommand.isGuildOnly = true
+    private fun <T> CommandData.configureTopLevel(info: T): CommandData
+            where T : ITopLevelApplicationCommandInfo,
+                  T : ApplicationCommandInfo = apply {
+        if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true
         if (info.isDefaultLocked) {
-            rightCommand.defaultPermissions = DefaultMemberPermissions.DISABLED
+            defaultPermissions = DefaultMemberPermissions.DISABLED
         } else if (info.userPermissions.isNotEmpty()) {
-            rightCommand.defaultPermissions = DefaultMemberPermissions.enabledFor(info.userPermissions)
+            defaultPermissions = DefaultMemberPermissions.enabledFor(info.userPermissions)
         }
     }
 
@@ -230,24 +216,6 @@ internal class ApplicationCommandsUpdater private constructor(
                 commandsCachePath.toAbsolutePath(),
                 e
             )
-        }
-    }
-
-    //I am aware that the type is always Command.Type#SLASH, still use a parameter to mimic how ApplicationCommandMap functions and for future-proof uses
-    private fun getSubcommandGroup(
-        map: ApplicationCommandDataMap,
-        type: Command.Type,
-        path: CommandPath,
-        baseCommandSupplier: Function<String, CommandData>
-    ): SubcommandGroupData {
-        requireNotNull(path.group) { "Group component of command path is null at '$path'" }
-        val data = map.computeIfAbsent(type, path, baseCommandSupplier) as SlashCommandData
-        val parent = path.parent
-            ?: throwInternal("A command path with less than 3 components was passed to #getSubcommandGroup")
-        return subcommandGroupDataMap.computeIfAbsent(parent.fullPath) {
-            SubcommandGroupData(path.group!!, "No description (group)").also {
-                data.addSubcommandGroups(it)
-            }
         }
     }
 
