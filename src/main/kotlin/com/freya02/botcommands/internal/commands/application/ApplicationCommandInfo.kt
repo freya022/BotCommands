@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 
 abstract class ApplicationCommandInfo internal constructor(
@@ -18,5 +17,4 @@ abstract class ApplicationCommandInfo internal constructor(
         get() = super.optionParameters as List<ApplicationCommandParameter>
 
     abstract val topLevelInstance: ITopLevelApplicationCommandInfo
-    abstract val parentInstance: INamedCommandInfo
 }

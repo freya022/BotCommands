@@ -12,6 +12,6 @@ class TopLevelSlashCommandInfo internal constructor(
     override val topLevelInstance: TopLevelSlashCommandInfo = this
     override val parentInstance: TopLevelSlashCommandInfo = this
 
-    val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.associate { it.name to it.build(this) }
+    val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.associate { it.name to it.build(this, this) }
     val subcommandGroups: Map<String, SlashSubcommandGroupInfo> = builder.subcommandGroups.associate { it.name to it.build(this) }
 }
