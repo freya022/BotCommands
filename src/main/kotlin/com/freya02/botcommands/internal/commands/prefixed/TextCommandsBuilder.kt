@@ -48,7 +48,7 @@ internal class TextCommandsBuilder(
                 runDeclarationFunction(classPathFunction, manager)
             }
 
-            if (manager.textCommands.any { it.path.fullPath == "help" }) {
+            if (manager.textCommands.any { it._path.fullPath == "help" }) {
                 LOGGER.debug("Using a custom 'help' text command implementation")
             } else {
                 if (context.isHelpDisabled) {

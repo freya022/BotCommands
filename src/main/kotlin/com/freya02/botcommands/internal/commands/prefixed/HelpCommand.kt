@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.annotations.CommandMarker
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
+import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
@@ -63,7 +63,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         val member = event.member
         val usability = Usability.of(context, commandInfos.first(), member, event.guildChannel, !context.isOwner(member.idLong))
         if (usability.isNotShowable) {
-            event.respond("Command '" + commandInfos.first().path.getSpacedPath() + "' does not exist").await()
+            event.respond("Command '" + commandInfos.first()._path.getSpacedPath() + "' does not exist").await()
             return
         }
 
@@ -82,7 +82,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
             if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
                 categoryBuilderMap
                     .computeIfAbsent(cmd.category) { StringJoiner("\n") }
-                    .add("**${cmd.path.name}** : ${cmd.description}")
+                    .add("**${cmd.name}** : ${cmd.description}")
             }
         }
 
@@ -103,10 +103,6 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         context.helpBuilderConsumer?.accept(builder, false, commandInfos)
 
         return builder
-    }
-
-    private fun CommandPath.getSpacedPath(): String {
-        return fullPath.replace('/', ' ')
     }
 
     internal fun declare(manager: TextCommandManager) {

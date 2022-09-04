@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.builder
 
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
 import com.freya02.botcommands.internal.commands.CooldownStrategy
@@ -11,8 +10,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 abstract class CommandBuilder internal constructor(val name: String) : BuilderFunctionHolder<Any>() {
-    constructor(name: CommandPath) : this(TODO() as String)
-
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 

@@ -10,7 +10,9 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
-class TextCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath) : CommandBuilder(path) {
+class TextCommandBuilder internal constructor(private val context: BContextImpl, name: String) : CommandBuilder(name) {
+    val subcommands: MutableList<TextCommandBuilder> = arrayListOf()
+
     var aliases: MutableList<CommandPath> = arrayListOf()
 
     var category: String = "No category"
@@ -31,6 +33,10 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
      * @return The EmbedBuilder to use as a detailed description
      */
     var detailedDescription: Consumer<EmbedBuilder>? = null
+
+    fun subcommand(name: String, block: TextCommandBuilder.() -> Unit) {
+        subcommands += TextCommandBuilder(context, name).apply(block)
+    }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
@@ -55,9 +61,9 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     }
 
     @JvmSynthetic
-    internal fun build(): TextCommandInfo {
+    internal fun build(parentInstance: TextCommandInfo?): TextCommandInfo {
         checkFunction()
-        return TextCommandInfo(context, this)
+        return TextCommandInfo(context, this, parentInstance)
     }
 
     companion object {

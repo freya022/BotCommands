@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.defaultDescription
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
@@ -16,7 +17,7 @@ object TextUtils {
         val builder = event.defaultEmbed
 
         val commandInfo = candidates.first()
-        val name = commandInfo.path.fullPath.replace('/', ' ')
+        val name = commandInfo._path.getSpacedPath()
 
         val author = if (!builder.isEmpty) builder.build().author else null
         when {
@@ -63,11 +64,11 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findFirstTextSubcommands(commandInfo.path.fullPath.split('/'))
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findFirstTextSubcommands(commandInfo._path.fullPath.split('/'))
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.fullPath.split('/').drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                    "**" + subcommandInfo._path.fullPath.split('/').drop(commandInfo._path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
                 }
 
             builder.addField("Subcommands", subcommandHelp, false)
@@ -125,4 +126,8 @@ object TextUtils {
 
     suspend fun <T : IMentionable> findEntitySuspend(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
+
+    fun CommandPath.getSpacedPath(): String {
+        return fullPath.replace('/', ' ')
+    }
 }

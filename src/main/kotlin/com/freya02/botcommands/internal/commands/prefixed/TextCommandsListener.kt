@@ -159,7 +159,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                onCommandNotFound(event, commandInfo.path, true)
+                onCommandNotFound(event, commandInfo._path, true)
                 return ExecutionResult.STOP
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
@@ -233,6 +233,6 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     }
 
     private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
-        return listOf()
+        return listOf() //TODO decide if useful or not
     }
 }

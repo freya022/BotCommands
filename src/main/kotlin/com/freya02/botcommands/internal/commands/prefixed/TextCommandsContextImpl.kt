@@ -8,19 +8,19 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
     private val treeRoot = TextCommandTree()
 
     fun addTextCommand(commandInfo: TextCommandInfo) {
-        val tree = commandInfo.path.fullPath
+        val tree = commandInfo._path.fullPath
             .split('/')
             .dropLast(1)
             .fold(treeRoot) { tree, it ->
                 tree.children.computeIfAbsent(it) { TextCommandTree() }
             }
 
-        (commandInfo.aliases + commandInfo.path).forEach { path ->
+        (commandInfo.aliases + commandInfo._path).forEach { path ->
             val currentTree = tree.children.computeIfAbsent(path.lastName) { TextCommandTree() }
 
-            if (currentTree.exists(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo.path} already exists")
+            if (currentTree.exists(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo._path} already exists")
 
-            if (!currentTree.addCommand(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo.path} already exists")
+            if (!currentTree.addCommand(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo._path} already exists")
         }
     }
 

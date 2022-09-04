@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.MethodParameters
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
+import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -33,11 +34,14 @@ private val LOGGER = Logging.getLogger()
 
 class TextCommandInfo(
     private val context: BContextImpl,
-    builder: TextCommandBuilder
+    builder: TextCommandBuilder,
+    override val parentInstance: INamedCommandInfo?
 ) : AbstractCommandInfo(context, builder) {
     override val parameters: MethodParameters
     override val optionParameters: List<TextCommandParameter>
         get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
+
+    val subcommands: Map<String, TextCommandInfo> = builder.subcommands.associate { it.name to it.build(this) }
 
     val aliases: List<CommandPath> = builder.aliases
 
