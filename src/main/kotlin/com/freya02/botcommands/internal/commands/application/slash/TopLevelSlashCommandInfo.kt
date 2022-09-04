@@ -14,4 +14,6 @@ class TopLevelSlashCommandInfo internal constructor(
 
     val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.associate { it.name to it.build(this, this) }
     val subcommandGroups: Map<String, SlashSubcommandGroupInfo> = builder.subcommandGroups.associate { it.name to it.build(this) }
+
+    fun isTopLevelCommandOnly() = subcommands.isEmpty() && subcommandGroups.isNotEmpty()
 }

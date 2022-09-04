@@ -119,7 +119,7 @@ internal class ApplicationCommandsUpdater private constructor(
             .filterCommands()
             .forEach { info: TopLevelSlashCommandInfo ->
                 try {
-                    val isTopLevel = info.subcommands.isEmpty() && info.subcommandGroups.isEmpty()
+                    val isTopLevel = info.isTopLevelCommandOnly()
                     val topLevelData = Commands.slash(info.name, info.description).also { commandData ->
                         if (isTopLevel) {
                             val methodOptions = info.getMethodOptions(guild)
