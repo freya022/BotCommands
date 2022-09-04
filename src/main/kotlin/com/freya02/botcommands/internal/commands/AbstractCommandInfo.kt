@@ -16,8 +16,8 @@ abstract class AbstractCommandInfo internal constructor(
     context: BContextImpl,
     builder: CommandBuilder
 ) : Cooldownable(context, builder.cooldownStrategy), ExecutableInteractionInfo, INamedCommandInfo {
-    override val name: String
-    override val _path: CommandPath by lazy { computePath() }
+    final override val name: String
+    final override val _path: CommandPath by lazy { computePath() }
 
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
