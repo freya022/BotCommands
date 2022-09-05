@@ -77,7 +77,9 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         subcommandGroups: Map<String, TextSubcommandGroupMetadata>
     ) {
         manager.textCommand(metadata.path.name) {
-            processBuilder(metadata, arrayListOf(name))
+            if (metadata.path.nameCount == 1) {
+                processBuilder(metadata, arrayListOf(name))
+            }
 
             subcommands[name]?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
