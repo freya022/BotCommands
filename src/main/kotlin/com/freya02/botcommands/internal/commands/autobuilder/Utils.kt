@@ -8,6 +8,11 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
+fun String.nullIfEmpty(): String? = when {
+    isEmpty() -> null
+    else -> this
+}
+
 //This is used so commands can't prevent other commands from being registered when an exception happens
 inline fun <T> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
     var ex: Throwable? = null

@@ -18,6 +18,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
+import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
@@ -152,11 +153,6 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
     private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
         fillCommandBuilder(metadata.func)
         fillApplicationCommandBuilder(metadata.func)
-    }
-
-    private fun String.nullIfEmpty(): String? = when {
-        isEmpty() -> null
-        else -> this
     }
 
     private fun SlashCommandBuilder.processOptions(
