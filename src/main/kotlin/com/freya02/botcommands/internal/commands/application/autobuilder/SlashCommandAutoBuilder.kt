@@ -24,7 +24,6 @@ import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
@@ -218,12 +217,4 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
     private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
     }
-
-    private class SlashFunctionMetadata(
-        val instance: ApplicationCommand,
-        val func: KFunction<*>,
-        val annotation: JDASlashCommand,
-        val path: CommandPath,
-        val commandId: String?
-    )
 }
