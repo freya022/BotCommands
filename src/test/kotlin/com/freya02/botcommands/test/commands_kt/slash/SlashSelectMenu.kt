@@ -1,7 +1,6 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
@@ -54,7 +53,7 @@ class SlashSelectMenu : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand(CommandPath.of("selectmenu")) {
+        manager.slashCommand("selectmenu") {
             customOption("components")
 
             function = ::onSlashSelectMenu

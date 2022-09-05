@@ -92,55 +92,57 @@ class SlashMyCommand : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
-            manager.slashCommand(CommandPath.of("my_command", subname)) {
-                description = "mah desc"
+        manager.slashCommand("my_command") {
+            for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
+                subcommand(subname) {
+                    description = "mah desc"
 
-                option("stringOption", "string") {
-                    description = "Option description"
+                    option("stringOption", "string") {
+                        description = "Option description"
 
-                    choices = listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
-                }
+                        choices = listOf(Choice("a", "a"), Choice("b", "b"), Choice("c", "c"))
+                    }
 
-                option("intOption", "int") {
-                    description = "An integer"
+                    option("intOption", "int") {
+                        description = "An integer"
 
-                    valueRange = 1 range 2
+                        valueRange = 1 range 2
 
-                    choices = listOf(Choice("1", 1L), Choice("2", 2L))
-                }
+                        choices = listOf(Choice("1", 1L), Choice("2", 2L))
+                    }
 
-                option("doubleOption", "double") {
-                    description = "A double"
-                }
+                    option("doubleOption", "double") {
+                        description = "A double"
+                    }
 
-                option("userOption", "user") {
-                    description = "An user"
-                }
+                    option("userOption", "user") {
+                        description = "An user"
+                    }
 
-                option("channelOption") {
-                    channelTypes = enumSetOf(ChannelType.TEXT)
-                }
+                    option("channelOption") {
+                        channelTypes = enumSetOf(ChannelType.TEXT)
+                    }
 
-                customOption("custom")
+                    customOption("custom")
 
-                option("autocompleteStr") {
-                    description = "Autocomplete !"
+                    option("autocompleteStr") {
+                        description = "Autocomplete !"
 
-                    autocomplete("MyCommand: autocompleteStr") {
-                        function = ::runAutocomplete
+                        autocomplete("MyCommand: autocompleteStr") {
+                            function = ::runAutocomplete
 
-                        cache {
-                            cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY
+                            cache {
+                                cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY
+                            }
                         }
                     }
-                }
 
-                generatedOption("guildName") {
-                    it.guild!!.name
-                }
+                    generatedOption("guildName") {
+                        it.guild!!.name
+                    }
 
-                function = localFunction
+                    function = localFunction
+                }
             }
         }
     }

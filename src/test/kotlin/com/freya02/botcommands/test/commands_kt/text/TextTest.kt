@@ -90,10 +90,12 @@ class TextTest : TextCommand() {
             function = ::onTextTestFallback
         }
 
-        textCommandManager.textCommand("test", subcommand = "subcommand") {
-            option("number")
+        textCommandManager.textCommand("test") {
+            subcommand("subcommand") {
+                option("number")
 
-            function = ::onTextTestSubcommand
+                function = ::onTextTestSubcommand
+            }
         }
     }
 }

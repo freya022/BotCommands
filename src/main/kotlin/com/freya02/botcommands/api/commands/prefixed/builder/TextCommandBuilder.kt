@@ -11,7 +11,8 @@ import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
 class TextCommandBuilder internal constructor(private val context: BContextImpl, name: String) : CommandBuilder(name) {
-    val subcommands: MutableList<TextCommandBuilder> = arrayListOf()
+    @get:JvmSynthetic
+    internal val subcommands: MutableList<TextCommandBuilder> = arrayListOf()
 
     var aliases: MutableList<CommandPath> = arrayListOf()
 

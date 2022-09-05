@@ -13,8 +13,9 @@ import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
+import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
+import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -24,62 +25,105 @@ import kotlin.reflect.full.hasAnnotation
 
 @BService
 internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
-    private val functions: List<ClassPathFunction>
+    private val functions: List<TextFunctionMetadata>
 
     init {
         functions = classPathContainer.functionsWithAnnotation<JDATextCommand>()
             .requireNonStatic()
-            .requireFirstArg(BaseCommandEvent::class)
+            .requireFirstArg(BaseCommandEvent::class).map {
+                val instance = it.instance as? TextCommand
+                    ?: throwUser(it.function, "Declaring class must extend ${TextCommand::class.simpleName}")
+                val func = it.function
+                val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
+                val path = CommandPath.of(annotation.name, annotation.group, annotation.subcommand).also { path ->
+                    if (path.group != null && path.nameCount == 2) {
+                        throwUser(func, "Slash commands with groups need to have their subcommand name set")
+                    }
+                }
+
+                TextFunctionMetadata(instance, func, annotation, path)
+            }
     }
 
     fun declare(manager: TextCommandManager) {
-        functions.forEachWithDelayedExceptions {
-            val func = it.function
-            val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
+        val subcommands: MutableMap<String, MutableList<TextFunctionMetadata>> = hashMapOf()
+        val subcommandGroups: MutableMap<String, TextSubcommandGroupMetadata> = hashMapOf()
 
-            processCommand(manager, annotation, func, it)
+        functions.forEachWithDelayedExceptions { metadata ->
+            when (metadata.path.nameCount) {
+                2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
+                3 -> subcommandGroups
+                    .computeIfAbsent(metadata.path.name) {
+                        TextSubcommandGroupMetadata(
+                            metadata.path.group!!,
+                            metadata.annotation.description
+                        )
+                    }
+                    .subcommands
+                    .computeIfAbsent(metadata.path.group!!) { arrayListOf() }
+                    .add(metadata)
+            }
+        }
+
+        functions.forEachWithDelayedExceptions {
+            processCommand(manager, it, subcommands, subcommandGroups)
         }
     }
 
     private fun processCommand(
         manager: TextCommandManager,
-        annotation: JDATextCommand,
-        func: KFunction<*>,
-        classPathFunction: ClassPathFunction
+        metadata: TextFunctionMetadata,
+        subcommands: Map<String, MutableList<TextFunctionMetadata>>,
+        subcommandGroups: Map<String, TextSubcommandGroupMetadata>
     ) {
-        val instance = classPathFunction.instance as? TextCommand ?: throwUser(
-            classPathFunction.function,
-            "Declaring class must extend ${TextCommand::class.simpleName}"
-        )
+        manager.textCommand(metadata.path.name) {
+            processBuilder(metadata, arrayListOf(name))
 
-        val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
+            subcommands[name]?.let { metadataList ->
+                metadataList.forEach { subMetadata ->
+                    subcommand(subMetadata.path.subname!!) {
+                        processBuilder(subMetadata, arrayListOf(metadata.path.name, subMetadata.path.subname!!))
+                    }
+                }
+            }
 
-        manager.textCommand(path) {
-            fillCommandBuilder(func)
+            subcommandGroups[name]?.let { groupMetadata ->
+                subcommand(groupMetadata.name) {
+                    description = groupMetadata.description
 
-            func.findAnnotation<Category>()?.let { category = it.value }
-            aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
-            description = annotation.description
-
-            order = annotation.order
-            hidden = func.hasAnnotation<Hidden>()
-            ownerRequired = func.hasAnnotation<RequireOwner>()
-
-            detailedDescription = instance.detailedDescription
-
-            processOptions(func, instance)
+                    groupMetadata.subcommands.forEach { (subname, metadataList) ->
+                        metadataList.forEach { subMetadata ->
+                            subcommand(subname) {
+                                processBuilder(subMetadata, arrayListOf(metadata.path.name, groupMetadata.name, subMetadata.path.subname!!))
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private fun String.nullIfEmpty(): String? = when {
-        isEmpty() -> null
-        else -> this
+    private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata, pathComponents: MutableList<String>) {
+        val func = metadata.func
+        val annotation = metadata.annotation
+        val instance = metadata.instance
+
+        fillCommandBuilder(func)
+
+        func.findAnnotation<Category>()?.let { category = it.value }
+        aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
+        description = annotation.description
+
+        order = annotation.order
+        hidden = func.hasAnnotation<Hidden>()
+        ownerRequired = func.hasAnnotation<RequireOwner>()
+
+        detailedDescription = instance.detailedDescription
+
+        processOptions(func, instance, CommandPath.of(*pathComponents.toTypedArray()))
     }
 
-    private fun TextCommandBuilder.processOptions(
-        func: KFunction<*>,
-        instance: TextCommand,
-    ) {
+    private fun TextCommandBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
@@ -98,5 +142,9 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                 }
             }
         }
+    }
+
+    private class TextSubcommandGroupMetadata(val name: String, val description: String) {
+        val subcommands: MutableMap<String, MutableList<TextFunctionMetadata>> = hashMapOf()
     }
 }
