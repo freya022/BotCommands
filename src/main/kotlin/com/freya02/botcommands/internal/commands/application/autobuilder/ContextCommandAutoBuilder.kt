@@ -18,9 +18,12 @@ import com.freya02.botcommands.api.commands.application.context.user.GlobalUserE
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
+import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
+import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
@@ -149,11 +152,6 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         }
 
         return true
-    }
-
-    private fun String.nullIfEmpty(): String? = when {
-        isEmpty() -> null
-        else -> this
     }
 
     private fun ApplicationCommandBuilder.processOptions(
