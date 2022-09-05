@@ -15,6 +15,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions

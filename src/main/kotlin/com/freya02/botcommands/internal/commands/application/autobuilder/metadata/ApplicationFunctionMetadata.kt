@@ -1,7 +1,7 @@
-package com.freya02.botcommands.internal.commands.application.autobuilder
+package com.freya02.botcommands.internal.commands.application.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.internal.commands.autobuilder.CommandFunctionMetadata
+import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import kotlin.reflect.KFunction
 
 internal abstract class ApplicationFunctionMetadata<T, A : Annotation>(

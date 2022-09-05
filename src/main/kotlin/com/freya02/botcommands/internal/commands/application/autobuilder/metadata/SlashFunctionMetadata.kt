@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands.application.autobuilder
+package com.freya02.botcommands.internal.commands.application.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommand

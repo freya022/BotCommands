@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands.autobuilder
+package com.freya02.botcommands.internal.commands.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
 import kotlin.reflect.KFunction
