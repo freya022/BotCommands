@@ -19,7 +19,6 @@ import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationComm
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -30,69 +29,130 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
-    private val functions: List<ClassPathFunction>
+    private val functions: List<SlashFunctionMetadata>
 
     init {
         functions = classPathContainer.functionsWithAnnotation<JDASlashCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalSlashEvent::class)
+            .map {
+                val instance = it.instance as? ApplicationCommand
+                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val func = it.function
+                val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
+                val path = CommandPath.of(annotation.name, annotation.group, annotation.subcommand).also { path ->
+                    if (path.group != null && path.nameCount == 2) {
+                        throwUser(func, "Slash commands with groups need to have their subcommand name set")
+                    }
+                }
+                val commandId = func.findAnnotation<CommandId>()?.value
+
+                SlashFunctionMetadata(instance, func, annotation, path, commandId)
+            }
     }
 
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
-        functions.forEach {
-            val func = it.function
-            val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
+        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
+        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
+        fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
-            if (!annotation.scope.isGlobal) return@forEach
+        functions.forEachWithDelayedExceptions {
+            val annotation = it.annotation
+            if (!annotation.scope.isGlobal) return@forEachWithDelayedExceptions
 
-            processCommand(manager, annotation, func, it)
+            processCommand(manager, it, subcommands, subcommandGroups)
         }
     }
 
     fun declareGuild(manager: GuildApplicationCommandManager) {
-        functions.forEachWithDelayedExceptions {
-            val func = it.function
-            val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
+        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
+        val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
+        fillSubcommandsAndGroups(subcommands, subcommandGroups)
+
+        functions.forEachWithDelayedExceptions { metadata ->
+            val instance = metadata.instance
+            val annotation = metadata.annotation
+            val path = metadata.path
 
             if (annotation.scope.isGlobal) return@forEachWithDelayedExceptions
 
-            processCommand(manager, annotation, func, it)
+            //TODO test
+            metadata.commandId?.also { id ->
+                val guildIds = instance.getGuildsForCommandId(id, path) ?: return@also
+
+                if (manager.guild.idLong !in guildIds) {
+                    return@forEachWithDelayedExceptions //Don't push command if it isn't allowed
+                }
+            }
+
+            processCommand(manager, metadata, subcommands, subcommandGroups)
+        }
+    }
+
+    private fun fillSubcommandsAndGroups(
+        subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>>,
+        subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata>
+    ) {
+        functions.forEachWithDelayedExceptions { metadata ->
+            when (metadata.path.nameCount) {
+                2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
+                3 -> subcommandGroups
+                    .computeIfAbsent(metadata.path.name) { SlashSubcommandGroupMetadata(metadata.path.group!!, metadata.annotation.description) }
+                    .subcommands
+                    .computeIfAbsent(metadata.path.group!!) { arrayListOf() }
+                    .add(metadata)
+            }
         }
     }
 
     private fun processCommand(
         manager: IApplicationCommandManager,
-        annotation: JDASlashCommand,
-        func: KFunction<*>,
-        classPathFunction: ClassPathFunction
+        metadata: SlashFunctionMetadata,
+        subcommands: Map<String, List<SlashFunctionMetadata>>,
+        subcommandGroups: Map<String, SlashSubcommandGroupMetadata>
     ) {
-        val instance = classPathFunction.instance as? ApplicationCommand ?: throwUser(
-            classPathFunction.function,
-            "Declaring class must extend ${ApplicationCommand::class.simpleName}"
-        )
+        val annotation = metadata.annotation
+        val instance = metadata.instance
+        val path = metadata.path
+        val commandId = metadata.commandId
 
-        val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty())
-
-        //TODO test
-        val commandId = func.findAnnotation<CommandId>()?.value?.also {
-            if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
-
-                if (manager.guild.idLong !in guildIds) {
-                    return //Don't push command if it isn't allowed
-                }
-            }
-        }
-
-        manager.slashCommand(path, annotation.scope) {
-            fillCommandBuilder(func)
-            fillApplicationCommandBuilder(func)
+        manager.slashCommand(path.name, annotation.scope) {
+            configureBuilder(metadata)
 
             defaultLocked = annotation.defaultLocked
             description = annotation.description
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
+            subcommands[name]?.let { metadataList ->
+                metadataList.forEach { subMetadata ->
+                    subcommand(subMetadata.path.subname!!) {
+                        configureBuilder(subMetadata)
+                        processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                    }
+                }
+            }
+
+            subcommandGroups[name]?.let { groupMetadata ->
+                subcommandGroup(groupMetadata.name) {
+                    description = groupMetadata.description
+
+                    groupMetadata.subcommands.forEach { (subname, metadataList) ->
+                        metadataList.forEach { subMetadata ->
+                            subcommand(subname) {
+                                configureBuilder(subMetadata)
+                                processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                            }
+                        }
+                    }
+                }
+            }
+
+            processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
         }
+    }
+
+    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
+        fillCommandBuilder(metadata.func)
+        fillApplicationCommandBuilder(metadata.func)
     }
 
     private fun String.nullIfEmpty(): String? = when {
@@ -102,10 +162,13 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
     private fun SlashCommandBuilder.processOptions(
         guild: Guild?,
-        func: KFunction<*>,
+        metadata: SlashFunctionMetadata,
         instance: ApplicationCommand,
         commandId: String?
     ) {
+        val func = metadata.func
+        val path = metadata.path
+
         var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
@@ -121,7 +184,10 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                         )
                     )
                 }
-                else -> option(kParameter.findDeclarationName(), optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()) {
+                else -> option(
+                    kParameter.findDeclarationName(),
+                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()
+                ) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
 
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
@@ -148,4 +214,16 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             autocompleteReference(optionAnnotation.autocomplete)
         }
     }
+
+    private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
+        val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
+    }
+
+    private class SlashFunctionMetadata(
+        val instance: ApplicationCommand,
+        val func: KFunction<*>,
+        val annotation: JDASlashCommand,
+        val path: CommandPath,
+        val commandId: String?
+    )
 }
