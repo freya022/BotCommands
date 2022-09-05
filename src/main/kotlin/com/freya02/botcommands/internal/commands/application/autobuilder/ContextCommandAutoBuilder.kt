@@ -165,7 +165,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
                         kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
                             guild,
                             commandId,
-                            path,
+                            CommandPath.ofName(name),
                             kParameter.findOptionName().asDiscordString(),
                             ParameterType.ofType(kParameter.type)
                         )
