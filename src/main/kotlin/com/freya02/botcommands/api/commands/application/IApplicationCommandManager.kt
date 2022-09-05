@@ -8,6 +8,9 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommandI
 sealed class IApplicationCommandManager {
     internal abstract val applicationCommands: List<ApplicationCommandInfo>
 
+    @JvmSynthetic
+    internal abstract fun isValidScope(scope: CommandScope): Boolean
+
     protected abstract fun slashCommand0(name: String, scope: CommandScope, builder: TopLevelSlashCommandBuilder.() -> Unit)
     protected abstract fun userCommand0(name: String, scope: CommandScope, builder: UserCommandBuilder.() -> Unit)
     protected abstract fun messageCommand0(name: String, scope: CommandScope, builder: MessageCommandBuilder.() -> Unit)

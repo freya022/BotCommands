@@ -58,7 +58,7 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
         functions.forEachWithDelayedExceptions {
             val annotation = it.annotation
-            if (!annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
             processCommand(manager, it, subcommands, subcommandGroups)
         }
@@ -74,7 +74,7 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             val annotation = metadata.annotation
             val path = metadata.path
 
-            if (annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
             //TODO test
             metadata.commandId?.also { id ->

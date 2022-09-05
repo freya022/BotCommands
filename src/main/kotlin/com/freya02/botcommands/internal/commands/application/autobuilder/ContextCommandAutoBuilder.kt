@@ -22,7 +22,6 @@ import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationComm
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -32,17 +31,37 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
-    private val messageFunctions: List<ClassPathFunction>
-    private val userFunctions: List<ClassPathFunction>
+    private val messageFunctions: List<MessageContextFunctionMetadata>
+    private val userFunctions: List<UserContextFunctionMetadata>
 
     init {
         messageFunctions = classPathContainer.functionsWithAnnotation<JDAMessageCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalMessageEvent::class)
+            .map {
+                val instance = it.instance as? ApplicationCommand
+                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val func = it.function
+                val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
+                val path = CommandPath.ofName(annotation.name)
+                val commandId = func.findAnnotation<CommandId>()?.value
+
+                MessageContextFunctionMetadata(instance, func, annotation, path, commandId)
+            }
 
         userFunctions = classPathContainer.functionsWithAnnotation<JDAUserCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalUserEvent::class)
+            .map {
+                val instance = it.instance as? ApplicationCommand
+                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val func = it.function
+                val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAMessageCommand should be present")
+                val path = CommandPath.ofName(annotation.name)
+                val commandId = func.findAnnotation<CommandId>()?.value
+
+                UserContextFunctionMetadata(instance, func, annotation, path, commandId)
+            }
     }
 
     //Separated functions so message errors don't prevent user commands from being registered
@@ -56,52 +75,37 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
     private fun declareMessage(manager: IApplicationCommandManager) {
         messageFunctions.forEachWithDelayedExceptions {
-            val func = it.function
-            val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
+            val annotation = it.annotation
 
-            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEachWithDelayedExceptions
-            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
-            processMessageCommand(manager, annotation, func, it)
+            processMessageCommand(manager, it)
         }
     }
 
     private fun declareUser(manager: IApplicationCommandManager) {
         userFunctions.forEachWithDelayedExceptions {
-            val func = it.function
-            val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAUserCommand should be present")
+            val annotation = it.annotation
 
-            if (manager is GuildApplicationCommandManager && annotation.scope.isGlobal) return@forEachWithDelayedExceptions
-            if (manager is GlobalApplicationCommandManager && !annotation.scope.isGlobal) return@forEachWithDelayedExceptions
+            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
-            processUserCommand(manager, annotation, func, it)
+            processUserCommand(manager, it)
         }
     }
 
-    private fun processMessageCommand(
-        manager: IApplicationCommandManager,
-        annotation: JDAMessageCommand,
-        func: KFunction<*>,
-        classPathFunction: ClassPathFunction
-    ) {
-        val instance = classPathFunction.instance as? ApplicationCommand ?: throwUser(
-            classPathFunction.function,
-            "Declaring class must extend ${ApplicationCommand::class.simpleName}"
-        )
-
-        val path = CommandPath.ofName(annotation.name)
+    private fun processMessageCommand(manager: IApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
+        val func = metadata.func
+        val instance = metadata.instance
+        val path = metadata.path
 
         //TODO test
-        val commandId = func.findAnnotation<CommandId>()?.value?.also {
-            if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
-
-                if (manager.guild.idLong !in guildIds) {
-                    return //Don't push command if it isn't allowed
-                }
+        val commandId = metadata.commandId?.also {
+            if (!checkCommandId(manager, instance, it, path)) {
+                return
             }
         }
 
+        val annotation = metadata.annotation
         manager.messageCommand(path.name, annotation.scope) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
@@ -112,30 +116,19 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         }
     }
 
-    private fun processUserCommand(
-        manager: IApplicationCommandManager,
-        annotation: JDAUserCommand,
-        func: KFunction<*>,
-        classPathFunction: ClassPathFunction
-    ) {
-        val instance = classPathFunction.instance as? ApplicationCommand ?: throwUser(
-            classPathFunction.function,
-            "Declaring class must extend ${ApplicationCommand::class.simpleName}"
-        )
-
-        val path = CommandPath.ofName(annotation.name)
+    private fun processUserCommand(manager: IApplicationCommandManager, metadata: UserContextFunctionMetadata) {
+        val func = metadata.func
+        val instance = metadata.instance
+        val path = metadata.path
 
         //TODO test
-        val commandId = func.findAnnotation<CommandId>()?.value?.also {
-            if (manager is GuildApplicationCommandManager) {
-                val guildIds = instance.getGuildsForCommandId(it, path) ?: return@also
-
-                if (manager.guild.idLong !in guildIds) {
-                    return //Don't push command if it isn't allowed
-                }
+        val commandId = metadata.commandId?.also {
+            if (!checkCommandId(manager, instance, it, path)) {
+                return
             }
         }
 
+        val annotation = metadata.annotation
         manager.userCommand(path.name, annotation.scope) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func)
@@ -144,6 +137,18 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
+    }
+
+    private fun checkCommandId(manager: IApplicationCommandManager, instance: ApplicationCommand, it: String, path: CommandPath): Boolean {
+        if (manager is GuildApplicationCommandManager) {
+            val guildIds = instance.getGuildsForCommandId(it, path) ?: return true
+
+            if (manager.guild.idLong !in guildIds) {
+                return false //Don't push command if it isn't allowed
+            }
+        }
+
+        return true
     }
 
     private fun String.nullIfEmpty(): String? = when {
