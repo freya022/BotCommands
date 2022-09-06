@@ -41,7 +41,7 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                     ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
-                val path = CommandPath.of(annotation.name, annotation.group, annotation.subcommand).also { path ->
+                val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
                     if (path.group != null && path.nameCount == 2) {
                         throwUser(func, "Slash commands with groups need to have their subcommand name set")
                     }
