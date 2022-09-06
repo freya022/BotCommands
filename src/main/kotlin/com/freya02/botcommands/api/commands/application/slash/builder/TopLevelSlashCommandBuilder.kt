@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.CommandScope
+import com.freya02.botcommands.api.commands.application.slash.DefaultSlashFunction
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
 import com.freya02.botcommands.internal.BContextImpl
@@ -37,7 +38,18 @@ class TopLevelSlashCommandBuilder internal constructor(
     }
 
     internal fun build(): TopLevelSlashCommandInfo {
-        checkFunction()
+        //If there is no subcommands or no subcommands in all the subcommand groups
+        if (subcommands.isEmpty() && subcommandGroups.all { it.subcommands.isEmpty() }) {
+            checkFunction()
+        } else {
+            if (isFunctionInitialized()) throwUser("Cannot have a top level command with subcommands / groups")
+
+            function = when (scope) {
+                CommandScope.GUILD, CommandScope.GLOBAL_NO_DM -> DefaultSlashFunction::guild
+                CommandScope.GLOBAL -> DefaultSlashFunction::global
+            }
+        }
+
         return TopLevelSlashCommandInfo(context, this)
     }
 }

@@ -18,7 +18,7 @@ abstract class BuilderFunctionHolder<R> internal constructor() {
             field = value.reflectReference() as KFunction<R>
         }
 
-    private fun isFunctionInitialized() = function !== NO_FUNCTION
+    protected fun isFunctionInitialized() = function !== NO_FUNCTION
 
     protected fun checkFunction() {
         if (!isFunctionInitialized()) {

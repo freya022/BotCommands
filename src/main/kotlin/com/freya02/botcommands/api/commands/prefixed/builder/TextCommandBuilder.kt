@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.prefixed.DefaultTextFunction
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
@@ -63,7 +64,12 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
 
     @JvmSynthetic
     internal fun build(parentInstance: TextCommandInfo?): TextCommandInfo {
-        checkFunction()
+        if (subcommands.isEmpty()) { //Must be top level only
+            checkFunction()
+        } else if (!isFunctionInitialized()) {
+            function = DefaultTextFunction::guild
+        }
+
         return TextCommandInfo(context, this, parentInstance)
     }
 
