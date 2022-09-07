@@ -18,7 +18,7 @@ interface INamedCommandInfo {
                 info = info.parentInstance ?: break
             } while (true)
 
-            return CommandPath.of(*components.toTypedArray())
+            return CommandPath.of(*components.also { it.reverse() }.toTypedArray())
         }
     }
 }
