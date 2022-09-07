@@ -110,7 +110,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
         val annotation = metadata.annotation
         manager.messageCommand(path.name, annotation.scope) {
-            fillCommandBuilder(func)
+            fillCommandBuilder(func, true)
             fillApplicationCommandBuilder(func)
 
             defaultLocked = annotation.defaultLocked
@@ -133,7 +133,7 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
         val annotation = metadata.annotation
         manager.userCommand(path.name, annotation.scope) {
-            fillCommandBuilder(func)
+            fillCommandBuilder(func, true)
             fillApplicationCommandBuilder(func)
 
             defaultLocked = annotation.defaultLocked

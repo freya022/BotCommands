@@ -118,41 +118,45 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val commandId = metadata.commandId
 
         manager.slashCommand(path.name, annotation.scope) {
-            configureBuilder(metadata)
-
             defaultLocked = annotation.defaultLocked
             description = annotation.description
 
-            subcommands[name]?.let { metadataList ->
+            val subcommandsMetadata = subcommands[name]
+            subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
                     subcommand(subMetadata.path.subname!!) {
-                        configureBuilder(subMetadata)
-                        processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                        this@subcommand.configureBuilder(subMetadata, true)
+                        this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                     }
                 }
             }
 
-            subcommandGroups[name]?.let { groupMetadata ->
+            val subcommandGroupsMetadata = subcommandGroups[name]
+            subcommandGroupsMetadata?.let { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
-                    description = groupMetadata.description
+                    this@subcommandGroup.description = groupMetadata.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
                             subcommand(subname) {
-                                configureBuilder(subMetadata)
-                                processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
+                                this@subcommand.configureBuilder(subMetadata, true)
+                                this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                             }
                         }
                     }
                 }
             }
 
-            processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
+            val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
+            configureBuilder(metadata, isTopLevel)
+            if (isTopLevel) {
+                processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
+            }
         }
     }
 
-    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
-        fillCommandBuilder(metadata.func)
+    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata, putFunction: Boolean) {
+        fillCommandBuilder(metadata.func, putFunction)
         fillApplicationCommandBuilder(metadata.func)
     }
 

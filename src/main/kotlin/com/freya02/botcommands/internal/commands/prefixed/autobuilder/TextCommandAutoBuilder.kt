@@ -110,7 +110,7 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val annotation = metadata.annotation
         val instance = metadata.instance
 
-        fillCommandBuilder(func)
+        fillCommandBuilder(func, true) //TODO fix
 
         func.findAnnotation<Category>()?.let { category = it.value }
         aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
