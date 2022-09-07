@@ -84,19 +84,19 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             subcommands[name]?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
                     subcommand(subMetadata.path.subname!!) {
-                        processBuilder(subMetadata, arrayListOf(metadata.path.name, subMetadata.path.subname!!))
+                        this@subcommand.processBuilder(subMetadata, arrayListOf(metadata.path.name, subMetadata.path.subname!!))
                     }
                 }
             }
 
             subcommandGroups[name]?.let { groupMetadata ->
-                subcommand(groupMetadata.name) {
-                    description = groupMetadata.description
+                subcommand(groupMetadata.name) group@{
+                    this@group.description = groupMetadata.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
-                            subcommand(subname) {
-                                processBuilder(subMetadata, arrayListOf(metadata.path.name, groupMetadata.name, subMetadata.path.subname!!))
+                            this@group.subcommand(subname) {
+                                this@subcommand.processBuilder(subMetadata, arrayListOf(metadata.path.name, groupMetadata.name, subMetadata.path.subname!!))
                             }
                         }
                     }
@@ -110,7 +110,9 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val annotation = metadata.annotation
         val instance = metadata.instance
 
-        fillCommandBuilder(func, true) //TODO fix
+        //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
+        val putFunction = metadata.path == CommandPath.of(*pathComponents.toTypedArray())
+        fillCommandBuilder(func, putFunction)
 
         func.findAnnotation<Category>()?.let { category = it.value }
         aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
