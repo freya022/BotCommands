@@ -41,7 +41,15 @@ class TextCommandInfo(
     override val optionParameters: List<TextCommandParameter>
         get() = super.optionParameters.map { TextCommandParameter::class.cast(it) }
 
-    val subcommands: Map<String, TextCommandInfo> = builder.subcommands.associate { it.name to it.build(this) }
+    val subcommands: Map<String, List<TextCommandInfo>> = let {
+        val map: MutableMap<String, MutableList<TextCommandInfo>> = hashMapOf()
+
+        builder.subcommands.forEach {
+            map.computeIfAbsent(it.name) { arrayListOf() }.add(it.build(this))
+        }
+
+        map
+    }
 
     val aliases: List<CommandPath> = builder.aliases
 
