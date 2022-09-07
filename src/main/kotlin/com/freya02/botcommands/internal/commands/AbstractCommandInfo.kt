@@ -39,4 +39,8 @@ abstract class AbstractCommandInfo internal constructor(
             "Function must have the same number of options declared as on the method"
         }
     }
+
+    override fun toString(): String {
+        return "${this::class.simpleName}: ${_path.fullPath}"
+    }
 }
