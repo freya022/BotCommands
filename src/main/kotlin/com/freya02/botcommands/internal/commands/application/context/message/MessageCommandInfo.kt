@@ -32,7 +32,7 @@ class MessageCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
-        checkEventScope<GuildMessageEvent>()
+        builder.checkEventScope<GuildMessageEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         parameters = MethodParameters.transform<MessageContextParameterResolver<*, *>>(

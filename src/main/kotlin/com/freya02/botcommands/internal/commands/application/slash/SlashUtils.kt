@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.ExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
@@ -126,11 +126,11 @@ object SlashUtils {
         return list
     }
 
-    internal inline fun <reified T> ApplicationCommandInfo.checkEventScope() {
-        val firstParamKlass = method.valueParameters.first().type.jvmErasure
-        if (topLevelInstance.scope.isGuildOnly) {
+    internal inline fun <reified T> ApplicationCommandBuilder.checkEventScope() {
+        val firstParamKlass = function.valueParameters.first().type.jvmErasure
+        if (topLevelBuilder.scope.isGuildOnly) {
             if (!firstParamKlass.isSubclassOf(T::class)) {
-                Logging.getLogger().warn("${method.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
+                Logging.getLogger().warn("${function.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
             }
         } else if (firstParamKlass.isSubclassOf(T::class)) {
             throwUser("Cannot use ${T::class.simpleName} on a global application command")

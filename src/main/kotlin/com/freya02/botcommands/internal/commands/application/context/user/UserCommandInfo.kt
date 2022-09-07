@@ -32,7 +32,7 @@ class UserCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
-        checkEventScope<GuildUserEvent>()
+        builder.checkEventScope<GuildUserEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         parameters = MethodParameters.transform<UserContextParameterResolver<*, *>>(

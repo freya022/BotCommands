@@ -15,6 +15,7 @@ class MessageCommandBuilder internal constructor(
     name: String,
     scope: CommandScope
 ) : ApplicationCommandBuilder(name), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
+import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
@@ -7,7 +8,8 @@ import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlash
 
 class SlashSubcommandBuilder internal constructor(
     context: BContextImpl,
-    name: String
+    name: String,
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder
 ) : SlashCommandBuilder(context, name) {
     override val allowOptions: Boolean = true
     override val allowSubcommands: Boolean = false

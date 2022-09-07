@@ -43,7 +43,7 @@ abstract class SlashCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 
-        checkEventScope<GuildSlashEvent>()
+        builder.checkEventScope<GuildSlashEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         parameters = MethodParameters.transform<SlashParameterResolver<*, *>>(
