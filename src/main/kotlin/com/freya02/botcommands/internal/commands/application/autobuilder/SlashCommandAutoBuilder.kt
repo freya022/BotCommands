@@ -57,12 +57,14 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
-        functions.forEachWithDelayedExceptions {
-            val annotation = it.annotation
-            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+        functions
+            .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
+            .forEachWithDelayedExceptions {
+                val annotation = it.annotation
+                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
-            processCommand(manager, it, subcommands, subcommandGroups)
-        }
+                processCommand(manager, it, subcommands, subcommandGroups)
+            }
     }
 
     fun declareGuild(manager: GuildApplicationCommandManager) {
@@ -70,24 +72,26 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         val subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata> = hashMapOf()
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
-        functions.forEachWithDelayedExceptions { metadata ->
-            val instance = metadata.instance
-            val annotation = metadata.annotation
-            val path = metadata.path
+        functions
+            .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
+            .forEachWithDelayedExceptions { metadata ->
+                val instance = metadata.instance
+                val annotation = metadata.annotation
+                val path = metadata.path
 
-            if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
-            //TODO test
-            metadata.commandId?.also { id ->
-                val guildIds = instance.getGuildsForCommandId(id, path) ?: return@also
+                //TODO test
+                metadata.commandId?.also { id ->
+                    val guildIds = instance.getGuildsForCommandId(id, path) ?: return@also
 
-                if (manager.guild.idLong !in guildIds) {
-                    return@forEachWithDelayedExceptions //Don't push command if it isn't allowed
+                    if (manager.guild.idLong !in guildIds) {
+                        return@forEachWithDelayedExceptions //Don't push command if it isn't allowed
+                    }
                 }
-            }
 
-            processCommand(manager, metadata, subcommands, subcommandGroups)
-        }
+                processCommand(manager, metadata, subcommands, subcommandGroups)
+            }
     }
 
     private fun fillSubcommandsAndGroups(
