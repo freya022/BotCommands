@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.internal.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
@@ -20,7 +20,7 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 object SlashUtils {
-    fun ExecutableInteractionInfo.checkDefaultValue(
+    fun IExecutableInteractionInfo.checkDefaultValue(
         parameter: ApplicationGeneratedMethodParameter,
         defaultValue: Any?
     ) {

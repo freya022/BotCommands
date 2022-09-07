@@ -18,7 +18,7 @@ class ModalHandlerInfo(
     context: BContextImpl,
     override val instance: Any,
     override val method: KFunction<*>
-) : ExecutableInteractionInfo {
+) : IExecutableInteractionInfo {
 
     override val parameters: MethodParameters
 
