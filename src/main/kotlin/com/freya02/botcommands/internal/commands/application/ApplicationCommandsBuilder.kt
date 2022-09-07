@@ -198,7 +198,7 @@ internal class ApplicationCommandsBuilder(
                 }
 
                 result.updateExceptions.forEach { updateException ->
-                    LOGGER.error("Function: {}", updateException.function, updateException.throwable)
+                    LOGGER.error("Function: {}", updateException.function.shortSignature, updateException.throwable)
                 }
             }
         }
