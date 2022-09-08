@@ -8,5 +8,4 @@ interface IExecutableInteractionInfo {
     val method: KFunction<*>
     val parameters: MethodParameters
     val optionParameters: List<MethodParameter>
-        get() = parameters.filter { it.isOption }
 }

@@ -10,6 +10,9 @@ class ExecutableInteractionInfo(context: BContextImpl, builder: CommandBuilder) 
     override val method: KFunction<*>
     override val parameters: MethodParameters
         get() = throwInternal("Must be implemented by delegate host")
+    override val optionParameters: List<MethodParameter> by lazy {
+        parameters.filter { it.isOption }
+    }
 
     init {
         instance = context.serviceContainer.getFunctionService(builder.function)
