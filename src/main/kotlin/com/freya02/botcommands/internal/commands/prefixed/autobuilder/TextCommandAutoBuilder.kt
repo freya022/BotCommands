@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.commands.autobuilder.addFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
@@ -26,7 +27,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 @BService
-internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
+internal class TextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
     private val functions: List<TextFunctionMetadata>
 
     init {
@@ -103,12 +104,13 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
     private fun TextCommandBuilder.processVariations(container: TextCommandContainer) {
         container
-            .variations //TODO sort
+            .variations
+            .sortedWith(TextCommandComparator(context)) //Sort variations as to put most complex variations first, and fallback last
             .forEach {
-            variation {
-                processVariation(it)
+                variation {
+                    processVariation(it)
+                }
             }
-        }
     }
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {

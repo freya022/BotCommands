@@ -65,6 +65,9 @@ internal class ResolverContainer( //TODO Should be part of the base module
         }
     }
 
+    @JvmSynthetic
+    internal fun getResolverOrNull(parameter: KParameter) = map[parameter.type.jvmErasure]
+
     fun getResolver(parameter: KParameter): Any {
         val requestedType = parameter.type.jvmErasure
 
