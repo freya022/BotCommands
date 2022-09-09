@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
@@ -14,7 +13,7 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     @get:JvmSynthetic
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
 
-    var aliases: MutableList<CommandPath> = arrayListOf()
+    var aliases: MutableList<String> = arrayListOf()
 
     var category: String = "No category"
     var description = defaultDescription

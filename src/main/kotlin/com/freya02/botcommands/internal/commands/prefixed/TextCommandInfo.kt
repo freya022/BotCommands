@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
@@ -30,7 +29,7 @@ class TextCommandInfo(
 
     val variations: List<TextCommandVariation> = builder.variations.map { it.build(this) }
 
-    val aliases: List<CommandPath> = builder.aliases
+    val aliases: List<String> = builder.aliases
 
     val category: String = builder.category
     val description: String = builder.description
