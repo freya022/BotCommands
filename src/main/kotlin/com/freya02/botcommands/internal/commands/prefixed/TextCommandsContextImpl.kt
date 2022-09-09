@@ -17,9 +17,11 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
 
     fun findTextCommand(words: List<String>): TextCommandInfo? {
         val initial = textCommandMap[words.first()] ?: return null
-        return words.fold(initial) { info, subname ->
-            info.subcommands[subname] ?: return null
-        }
+        return words
+            .drop(1) //First word is already resolved
+            .fold(initial) { info, subname ->
+                info.subcommands[subname] ?: return null
+            }
     }
 
     fun findTextSubcommands(words: List<String>): Collection<TextCommandInfo> {
