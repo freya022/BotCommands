@@ -32,7 +32,8 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private val helpCommandInfo: HelpCommandInfo? by lazy {
         val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
         if (helpCommandInfo != null) {
-            val helpCommand = helpCommandInfo.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
+            val helpVariation = helpCommandInfo.variations.singleOrNull() ?: throwUser("Help command must have a single variation of the 'help' command path")
+            val helpCommand = helpVariation.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
             HelpCommandInfo(helpCommand, helpCommandInfo)
         } else {
             logger.debug("Help command not loaded")
@@ -65,25 +66,24 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         logger.trace("Received prefixed command: {}", msg)
 
         try {
-            var result: TextFindResult? = null
+            var commandInfo: TextCommandInfo? = null
             val words: List<String> = spacePattern.split(content)
             for (index in words.indices) {
-                val newResult = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))
-                when {
-                    newResult.commands.isEmpty() -> break
-                    else -> result = newResult
+                when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
+                    null -> break
+                    else -> commandInfo = info
                 }
             }
 
             val isNotOwner = !context.config.isOwner(member.idLong)
 
-            if (result == null) {
+            if (commandInfo == null) {
                 onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
                 return
             }
 
-            val args = words.drop(result.pathComponents).joinToString(" ")
-            result.commands.forEach {
+            val args = words.drop(commandInfo._path.nameCount).joinToString(" ")
+            commandInfo.variations.forEach {
                 when (it.completePattern) {
                     null -> { //Fallback method
                         if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return
@@ -100,7 +100,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
             helpCommandInfo?.let { (helpCommand, _) ->
                 helpCommand.onInvalidCommand(
                     BaseCommandEventImpl(context, null, event, ""),
-                    result.commands
+                    commandInfo
                 )
             }
         } catch (e: Throwable) {
@@ -142,10 +142,12 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private suspend fun tryExecute(
         event: MessageReceivedEvent,
         args: String,
-        commandInfo: TextCommandInfo,
+        variation: TextCommandVariation,
         isNotOwner: Boolean,
         matcher: Matcher?
     ): ExecutionResult {
+        val commandInfo = variation.info
+
         val filteringData = TextFilteringData(context, event, commandInfo, args)
         for (filter in context.config.textConfig.textFilters) {
             if (!filter.isAccepted(filteringData)) {
@@ -202,7 +204,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         }
 
         return withContext(context.config.coroutineScopesConfig.textCommandsScope.coroutineContext) {
-            commandInfo.execute(event, args, matcher)
+            variation.execute(event, args, matcher)
         }
     }
 
