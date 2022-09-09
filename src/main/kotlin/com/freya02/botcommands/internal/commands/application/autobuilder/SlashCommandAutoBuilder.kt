@@ -126,7 +126,8 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
                     subcommand(subMetadata.path.subname!!) {
-                        this@subcommand.configureBuilder(subMetadata, true)
+                        this@subcommand.configureBuilder(subMetadata)
+                        this@subcommand.addFunction(subMetadata.func)
                         this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                     }
                 }
@@ -140,7 +141,8 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
                             subcommand(subname) {
-                                this@subcommand.configureBuilder(subMetadata, true)
+                                this@subcommand.configureBuilder(subMetadata)
+                                this@subcommand.addFunction(subMetadata.func)
                                 this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                             }
                         }
@@ -148,17 +150,18 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                 }
             }
 
+            configureBuilder(metadata)
+
             val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
-            configureBuilder(metadata, isTopLevel)
             if (isTopLevel) {
+                addFunction(metadata.func)
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
             }
         }
     }
 
-    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata, putFunction: Boolean) {
+    private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
         fillCommandBuilder(metadata.func)
-        addFunction(metadata.func)
         fillApplicationCommandBuilder(metadata.func)
     }
 
