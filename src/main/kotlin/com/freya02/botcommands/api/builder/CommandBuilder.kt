@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-abstract class CommandBuilder internal constructor(val name: String) : BuilderFunctionHolder<Any>() {
+abstract class CommandBuilder internal constructor(val name: String) {
     var userPermissions: EnumSet<Permission> = enumSetOf()
     var botPermissions: EnumSet<Permission> = enumSetOf()
 

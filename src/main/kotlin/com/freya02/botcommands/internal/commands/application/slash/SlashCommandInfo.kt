@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.math.max
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
@@ -34,6 +35,7 @@ abstract class SlashCommandInfo internal constructor(
 ) {
     val description: String = builder.description
 
+    final override val method: KFunction<*> = super.method
     final override val parameters: MethodParameters
 
     @Suppress("UNCHECKED_CAST")

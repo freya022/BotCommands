@@ -1,19 +1,18 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.prefixed.DefaultTextFunction
-import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
 class TextCommandBuilder internal constructor(private val context: BContextImpl, name: String) : CommandBuilder(name) {
-    @get:JvmSynthetic
+    @get:JvmSynthetic //TODO don't use TextCommandBuilder for subcommands, subcommands don't have categories for example
     internal val subcommands: MutableList<TextCommandBuilder> = arrayListOf()
+
+    @get:JvmSynthetic
+    internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
 
     var aliases: MutableList<CommandPath> = arrayListOf()
 
@@ -40,36 +39,12 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
         subcommands += TextCommandBuilder(context, name).apply(block)
     }
 
-    /**
-     * @param declaredName Name of the declared parameter in the [function]
-     */
-    @JvmOverloads
-    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextOptionBuilder.() -> Unit = {}) {
-        optionBuilders[declaredName] = TextOptionBuilder(declaredName, optionName).apply(block)
-    }
-
-    /**
-     * @param declaredName Name of the declared parameter in the [function]
-     */
-    fun customOption(declaredName: String) {
-        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
-    }
-
-    /**
-     * @param declaredName Name of the declared parameter in the [function]
-     */
-    fun generatedOption(declaredName: String, generatedValueSupplier: TextGeneratedValueSupplier) {
-        optionBuilders[declaredName] = TextGeneratedOptionBuilder(declaredName, generatedValueSupplier)
+    fun variation(block: TextCommandVariationBuilder.() -> Unit) {
+        variations += TextCommandVariationBuilder(context).apply(block)
     }
 
     @JvmSynthetic
     internal fun build(parentInstance: TextCommandInfo?): TextCommandInfo {
-        if (subcommands.isEmpty()) { //Must be top level only
-            checkFunction()
-        } else if (!isFunctionInitialized()) {
-            function = DefaultTextFunction::guild
-        }
-
         return TextCommandInfo(context, this, parentInstance)
     }
 

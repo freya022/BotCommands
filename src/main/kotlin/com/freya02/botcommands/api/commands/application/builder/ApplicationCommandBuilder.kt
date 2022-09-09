@@ -1,12 +1,14 @@
 package com.freya02.botcommands.api.commands.application.builder
 
+import com.freya02.botcommands.api.builder.BuilderFunctionHolder
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 
 abstract class ApplicationCommandBuilder internal constructor(
     name: String
-) : CommandBuilder(name) {
+) : CommandBuilder(name), IBuilderFunctionHolder<Any> by BuilderFunctionHolder() {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     var defaultLocked = DEFAULT_DEFAULT_LOCKED

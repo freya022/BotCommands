@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -38,7 +39,9 @@ internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithD
 private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
     RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
 
-fun CommandBuilder.fillCommandBuilder(func: KFunction<*>, putFunction: Boolean) {
+fun <T> T.fillCommandBuilder(func: KFunction<*>, putFunction: Boolean)
+        where T : CommandBuilder,
+              T : IBuilderFunctionHolder<in Any> {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {
             scope = cooldownAnnotation.cooldownScope

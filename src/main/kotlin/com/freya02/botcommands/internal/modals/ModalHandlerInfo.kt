@@ -5,7 +5,9 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KFunction
@@ -21,6 +23,7 @@ class ModalHandlerInfo(
 ) : IExecutableInteractionInfo {
 
     override val parameters: MethodParameters
+    override val optionParameters: List<MethodParameter>
 
     val handlerName: String
 
@@ -36,6 +39,8 @@ class ModalHandlerInfo(
             resolvablePredicate = { it.hasAnnotation<ModalDataAnnotation>() }
             resolvableTransformer = { parameter -> ModalHandlerDataParameter(parameter) }
         }
+
+        optionParameters = parameters.filterOptions()
 
         val hasModalData = parameters.filterIsInstance<ModalHandlerDataParameter>().isNotEmpty()
 

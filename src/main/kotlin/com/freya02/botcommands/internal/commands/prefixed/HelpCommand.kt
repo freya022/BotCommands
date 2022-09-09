@@ -108,20 +108,19 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
     internal fun declare(manager: TextCommandManager) {
 		manager.textCommand("help") {
             category = "Utils"
-            description = "Gives help for all commands"
-
-            function = HelpCommand::onTextHelpFallback
-        }
-
-		manager.textCommand("help") {
-            category = "Utils"
             description = "Gives help for a command"
 
-			option("commandStr", "command path") {
-				helpExample = "tag"
-			}
+            variation {
+                option("commandStr", "command path") {
+                    helpExample = "tag"
+                }
 
-            function = HelpCommand::onTextHelpCommand
+                function = HelpCommand::onTextHelpCommand
+            }
+
+            variation { //fallback
+                function = HelpCommand::onTextHelpFallback
+            }
 		}
     }
 

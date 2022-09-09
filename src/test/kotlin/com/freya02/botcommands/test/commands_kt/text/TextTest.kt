@@ -69,32 +69,34 @@ class TextTest : TextCommand() {
     @TextDeclaration
     fun declare(textCommandManager: TextCommandManager) {
         textCommandManager.textCommand("test") {
-            option("text")
+            variation {
+                option("text")
 
-            customOption("context")
+                customOption("context")
 
-            generatedOption("userName") {
-                it.author.name
+                generatedOption("userName") {
+                    it.author.name
+                }
+
+                function = ::onTextTest
             }
 
-            function = ::onTextTest
-        }
+            variation {
+                customOption("context")
 
-        textCommandManager.textCommand("test") {
-            customOption("context")
+                generatedOption("userName") {
+                    it.author.name
+                }
 
-            generatedOption("userName") {
-                it.author.name
+                function = ::onTextTestFallback
             }
 
-            function = ::onTextTestFallback
-        }
-
-        textCommandManager.textCommand("test") {
             subcommand("subcommand") {
-                option("number")
+                variation {
+                    option("number")
 
-                function = ::onTextTestSubcommand
+                    function = ::onTextTestSubcommand
+                }
             }
         }
     }
