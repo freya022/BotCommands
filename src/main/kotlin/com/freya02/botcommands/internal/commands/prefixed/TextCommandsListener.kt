@@ -7,11 +7,8 @@ import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.Usability
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
-import com.freya02.botcommands.internal.getDeepestCause
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
@@ -32,8 +29,10 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private val helpCommandInfo: HelpCommandInfo? by lazy {
         val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
         if (helpCommandInfo != null) {
-            val helpVariation = helpCommandInfo.variations.singleOrNull() ?: throwUser("Help command must have a single variation of the 'help' command path")
-            val helpCommand = helpVariation.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
+            val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
+                ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
+            val helpCommand = helpVariation.instance as? IHelpCommand
+                ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
             HelpCommandInfo(helpCommand, helpCommandInfo)
         } else {
             logger.debug("Help command not loaded")
