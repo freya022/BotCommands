@@ -13,10 +13,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
-    fun generateCommandHelp(candidates: Collection<TextCommandInfo>, event: BaseCommandEvent): EmbedBuilder {
+    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
 
-        val commandInfo = candidates.first()
         val name = commandInfo._path.getSpacedPath()
 
         val author = if (!builder.isEmpty) builder.build().author else null
@@ -31,8 +30,8 @@ object TextUtils {
         }
 
         val prefix = event.context.prefix
-        for ((i, candidate) in candidates.reversed().withIndex()) {
-            val commandParameters = candidate.optionParameters
+        for ((i, variation) in commandInfo.variations.withIndex()) {
+            val commandParameters = variation.optionParameters
 
             val syntax = StringBuilder("**Syntax**: $prefix$name ")
             val example = StringBuilder("**Example**: $prefix$name ")
@@ -52,12 +51,12 @@ object TextUtils {
                 }
             }
 
-            val effectiveCandidateDescription = when (candidate.description) {
+            val effectiveCandidateDescription = when (description) {
                 defaultDescription -> ""
-                else -> "**Description**: ${candidate.description}\n"
+                else -> "**Description**: $description\n"
             }
 
-            if (candidates.size == 1) {
+            if (commandInfo.variations.size == 1) {
                 builder.addField("Usage", "$effectiveCandidateDescription$syntax\n$example", false)
             } else {
                 builder.addField("Overload #${i + 1}", "$effectiveCandidateDescription$syntax\n$example", false)
