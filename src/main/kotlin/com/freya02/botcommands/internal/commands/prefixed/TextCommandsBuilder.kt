@@ -58,19 +58,9 @@ internal class TextCommandsBuilder(
                 }
             }
 
-            addTextCommands(context, manager.textCommands)
+            manager.textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
         } catch (e: Throwable) {
             LOGGER.error("An error occurred while updating global commands", e)
-        }
-    }
-
-    private fun addTextCommands(context: BContextImpl, commands: List<TextCommandInfo>) {
-        commands.forEach { topLevelInfo ->
-            context.textCommandsContext.addTextCommand(topLevelInfo)
-
-            topLevelInfo.subcommands.values.forEach { list ->
-                addTextCommands(context, list)
-            }
         }
     }
 
