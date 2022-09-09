@@ -94,7 +94,7 @@ object TextUtils {
                     parameter.isId -> ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L).toString()
                     else -> ThreadLocalRandom.current().nextLong(50).toString()
                 }
-                Float::class, Double::class -> ThreadLocalRandom.current().nextDouble(50.0).toString()
+                Float::class, Double::class -> String.format(locale = null, "%.3f", ThreadLocalRandom.current().nextDouble(50.0))
                 Guild::class -> "331718482485837825"
                 Role::class -> "801161492296499261"
                 User::class -> "222046562543468545"
