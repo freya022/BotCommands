@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.onErrorResponse
@@ -36,7 +36,7 @@ class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
 
     override suspend fun resolveSuspend(
         context: BContext,
-        info: TextCommandInfo,
+        variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
     ): Member? {

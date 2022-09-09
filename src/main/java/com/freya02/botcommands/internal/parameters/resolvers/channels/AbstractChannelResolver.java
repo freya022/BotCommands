@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
@@ -50,7 +50,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel>
 
 	@Override
 	@Nullable
-	public T resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public T resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return channelResolver.apply(event.getGuild(), args[0]);
 	}
 

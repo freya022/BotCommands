@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 
@@ -20,7 +20,7 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
      */
     fun resolve(
         context: BContext,
-        info: TextCommandInfo,
+        variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
     ): R? = TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
@@ -28,10 +28,10 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
     @JvmSynthetic
     suspend fun resolveSuspend(
         context: BContext,
-        info: TextCommandInfo,
+        variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ) = resolve(context, info, event, args)
+    ) = resolve(context, variation, event, args)
 
     /**
      * Returns the pattern required to recognize this parameter
