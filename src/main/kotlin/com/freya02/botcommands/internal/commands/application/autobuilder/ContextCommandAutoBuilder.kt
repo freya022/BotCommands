@@ -20,10 +20,7 @@ import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
-import com.freya02.botcommands.internal.commands.autobuilder.fillApplicationCommandBuilder
-import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
-import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
-import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
+import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
@@ -110,7 +107,8 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
         val annotation = metadata.annotation
         manager.messageCommand(path.name, annotation.scope) {
-            fillCommandBuilder(func, true)
+            fillCommandBuilder(func)
+            addFunction(metadata.func)
             fillApplicationCommandBuilder(func)
 
             defaultLocked = annotation.defaultLocked
@@ -133,7 +131,8 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
 
         val annotation = metadata.annotation
         manager.userCommand(path.name, annotation.scope) {
-            fillCommandBuilder(func, true)
+            fillCommandBuilder(func)
+            addFunction(metadata.func)
             fillApplicationCommandBuilder(func)
 
             defaultLocked = annotation.defaultLocked

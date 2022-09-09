@@ -39,9 +39,7 @@ internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithD
 private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
     RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
 
-fun <T> T.fillCommandBuilder(func: KFunction<*>, putFunction: Boolean)
-        where T : CommandBuilder,
-              T : IBuilderFunctionHolder<in Any> {
+fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {
             scope = cooldownAnnotation.cooldownScope
@@ -59,11 +57,11 @@ fun <T> T.fillCommandBuilder(func: KFunction<*>, putFunction: Boolean)
 
     userPermissions = AnnotationUtils.getUserPermissions(func)
     botPermissions = AnnotationUtils.getBotPermissions(func)
+}
 
-    if (putFunction) {
-        @Suppress("UNCHECKED_CAST")
-        function = func as KFunction<Any>
-    }
+internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
+    @Suppress("UNCHECKED_CAST")
+    function = func as KFunction<Any>
 }
 
 fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>) {
