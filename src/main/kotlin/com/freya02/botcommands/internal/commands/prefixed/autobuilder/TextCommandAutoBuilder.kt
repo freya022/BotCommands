@@ -8,9 +8,11 @@ import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.autobuilder.addFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
@@ -46,76 +48,85 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
     }
 
     fun declare(manager: TextCommandManager) {
-        val subcommands: MutableMap<String, MutableList<TextFunctionMetadata>> = hashMapOf()
-        val subcommandGroups: MutableMap<String, TextSubcommandGroupMetadata> = hashMapOf()
+        val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
         functions.forEachWithDelayedExceptions { metadata ->
-            when (metadata.path.nameCount) {
-                2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
-                3 -> subcommandGroups
-                    .computeIfAbsent(metadata.path.name) {
-                        TextSubcommandGroupMetadata(
-                            metadata.path.group!!,
-                            metadata.annotation.description
-                        )
-                    }
-                    .subcommands
-                    .computeIfAbsent(metadata.path.group!!) { arrayListOf() }
-                    .add(metadata)
-            }
-        }
-
-        functions.forEachWithDelayedExceptions {
-            processCommand(manager, it, subcommands, subcommandGroups)
-        }
-    }
-
-    private fun processCommand(
-        manager: TextCommandManager,
-        metadata: TextFunctionMetadata,
-        subcommands: Map<String, MutableList<TextFunctionMetadata>>,
-        subcommandGroups: Map<String, TextSubcommandGroupMetadata>
-    ) {
-        manager.textCommand(metadata.path.name) {
-            if (metadata.path.nameCount == 1) {
-                processBuilder(metadata, arrayListOf(name))
-            }
-
-            subcommands[name]?.let { metadataList ->
-                metadataList.forEach { subMetadata ->
-                    subcommand(subMetadata.path.subname!!) {
-                        this@subcommand.processBuilder(subMetadata, arrayListOf(metadata.path.name, subMetadata.path.subname!!))
-                    }
-                }
-            }
-
-            subcommandGroups[name]?.let { groupMetadata ->
-                subcommand(groupMetadata.name) group@{
-                    this@group.description = groupMetadata.description
-
-                    groupMetadata.subcommands.forEach { (subname, metadataList) ->
-                        metadataList.forEach { subMetadata ->
-                            this@group.subcommand(subname) {
-                                this@subcommand.processBuilder(subMetadata, arrayListOf(metadata.path.name, groupMetadata.name, subMetadata.path.subname!!))
-                            }
+            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(metadata.path.name, metadata) }
+            val container = when (metadata.path.nameCount) {
+                1 -> firstContainer
+                else -> {
+                    val split = metadata.path.fullPath.split('/')
+                    split
+                        .drop(1) //Skip first component as it is the initial step
+                        .dropLast(1) //Navigate text command containers until n-1 path component
+                        .fold(firstContainer) { acc, s ->
+                            acc.subcommands.computeIfAbsent(s) { TextCommandContainer(s, null) }
                         }
-                    }
+                        .subcommands //Only put metadata on the last path component as this is what the annotation applies on
+                        .computeIfAbsent(split.last()) { TextCommandContainer(split.last(), metadata) }
                 }
+            }
+
+            container.variations.add(metadata)
+        }
+
+        containers.values.forEach { container -> processCommand(manager, container) }
+    }
+
+    private fun processCommand(manager: TextCommandManager, container: TextCommandContainer) {
+        manager.textCommand(container.name) {
+            container.metadata?.let { metadata ->
+                processBuilder(metadata)
+            }
+
+            processVariations(container)
+
+            container.subcommands.values.forEach { subContainer ->
+                processSubcontainer(subContainer)
             }
         }
     }
 
-    private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata, pathComponents: MutableList<String>) {
+    private fun TextCommandBuilder.processSubcontainer(subContainer: TextCommandContainer) {
+        subcommand(subContainer.name) {
+            subContainer.metadata?.let { metadata ->
+                processBuilder(metadata)
+            }
+
+            subContainer.subcommands.values.forEach {
+                processSubcontainer(it)
+            }
+
+            processVariations(subContainer)
+        }
+    }
+
+    private fun TextCommandBuilder.processVariations(container: TextCommandContainer) {
+        container
+            .variations //TODO sort
+            .forEach {
+            variation {
+                processVariation(it)
+            }
+        }
+    }
+
+    private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
+        addFunction(metadata.func)
+
+        processOptions(metadata.func, metadata.instance, metadata.path)
+    }
+
+    private fun TextCommandBuilder.processBuilder(metadata: TextFunctionMetadata) {
         val func = metadata.func
         val annotation = metadata.annotation
         val instance = metadata.instance
 
         //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
-        val putFunction = metadata.path == CommandPath.of(*pathComponents.toTypedArray())
-        fillCommandBuilder(func, putFunction)
+        fillCommandBuilder(func)
 
         func.findAnnotation<Category>()?.let { category = it.value }
-        aliases = annotation.aliases.map { CommandPath.of(it) }.toMutableList()
+        aliases = annotation.aliases.toMutableList()
         description = annotation.description
 
         order = annotation.order
@@ -123,11 +134,9 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         ownerRequired = func.hasAnnotation<RequireOwner>()
 
         detailedDescription = instance.detailedDescription
-
-        processOptions(func, instance, CommandPath.of(*pathComponents.toTypedArray()))
     }
 
-    private fun TextCommandBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
+    private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
@@ -148,7 +157,11 @@ internal class TextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
         }
     }
 
-    private class TextSubcommandGroupMetadata(val name: String, val description: String) {
-        val subcommands: MutableMap<String, MutableList<TextFunctionMetadata>> = hashMapOf()
+    /**
+     * @param metadata This is only the metadata of the first method encountered with the annotation
+     */
+    private class TextCommandContainer(val name: String, val metadata: TextFunctionMetadata?) {
+        val subcommands: MutableMap<String, TextCommandContainer> = hashMapOf()
+        val variations: MutableList<TextFunctionMetadata> = arrayListOf()
     }
 }
