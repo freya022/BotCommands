@@ -64,7 +64,7 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findFirstTextSubcommands(commandInfo._path.fullPath.split('/'))
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo._path.fullPath.split('/'))
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->

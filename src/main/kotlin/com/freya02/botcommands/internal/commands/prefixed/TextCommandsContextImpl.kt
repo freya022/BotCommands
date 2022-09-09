@@ -5,59 +5,29 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwUser
 
 class TextCommandsContextImpl internal constructor(context: BContextImpl) : TextCommandsContext {
-    private val treeRoot = TextCommandTree()
+    private val textCommandMap: MutableMap<String, TextCommandInfo> = hashMapOf()
 
     fun addTextCommand(commandInfo: TextCommandInfo) {
-        val tree = commandInfo._path.fullPath
-            .split('/')
-            .dropLast(1)
-            .fold(treeRoot) { tree, it ->
-                tree.children.computeIfAbsent(it) { TextCommandTree() }
-            }
-
-        (commandInfo.aliases + commandInfo._path).forEach { path ->
-            val currentTree = tree.children.computeIfAbsent(path.lastName) { TextCommandTree() }
-
-            if (currentTree.exists(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo._path} already exists")
-
-            if (!currentTree.addCommand(commandInfo)) throwUser(commandInfo.method, "Text command with path ${commandInfo._path} already exists")
-        }
-    }
-
-    fun findTextCommand(words: List<String>): TextFindResult {
-        var tree = treeRoot
-        var pathComponents = 0
-        words.forEach {
-            tree.children[it]?.let { nextTree ->
-                tree = nextTree
-                pathComponents++
+        (commandInfo.aliases + commandInfo.name).forEach { name ->
+            textCommandMap.put(name, commandInfo)?.let {
+                throwUser(commandInfo.variations.first().method, "Text command with path ${commandInfo._path} already exists")
             }
         }
-
-        return TextFindResult(pathComponents, tree.getCommands())
     }
 
-    fun findFirstTextCommand(words: List<String>): TextCommandInfo? {
-        return findTextCommand(words).commands.firstOrNull()
-    }
-
-    fun findFirstTextSubcommands(words: List<String>): List<TextCommandInfo> {
-        val tree = words.fold(treeRoot) { t, n ->
-            return@fold t.children[n] ?: return emptyList()
-        }
-
-        return arrayListOf<TextCommandInfo>().also { getFirstSubcommands(it, tree) }
-    }
-
-    private fun getFirstSubcommands(subcommands: MutableList<TextCommandInfo>, tree: TextCommandTree) {
-        tree.children.forEach { (_, children) ->
-            children.getCommands().firstOrNull()?.let { subcommands += it }
-
-            getFirstSubcommands(subcommands, children)
+    fun findTextCommand(words: List<String>): TextCommandInfo? {
+        val initial = textCommandMap[words.first()] ?: return null
+        return words.fold(initial) { info, subname ->
+            info.subcommands[subname] ?: return null
         }
     }
 
-    fun getFirstRootCommands(): Collection<TextCommandInfo> {
-        return treeRoot.children.values.map { it.getCommands().first() }
+    fun findTextSubcommands(words: List<String>): Collection<TextCommandInfo> {
+        val command = findTextCommand(words) ?: return emptyList()
+        return command.subcommands.values
+    }
+
+    fun getRootCommands(): Collection<TextCommandInfo> {
+        return textCommandMap.values
     }
 }

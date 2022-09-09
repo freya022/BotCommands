@@ -30,7 +30,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private val spacePattern = Regex("\\s+")
 
     private val helpCommandInfo: HelpCommandInfo? by lazy {
-        val helpCommandInfo = context.textCommandsContext.findFirstTextCommand(listOf("help"))
+        val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
         if (helpCommandInfo != null) {
             val helpCommand = helpCommandInfo.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
             HelpCommandInfo(helpCommand, helpCommandInfo)

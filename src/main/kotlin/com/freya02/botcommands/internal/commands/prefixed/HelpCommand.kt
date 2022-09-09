@@ -78,7 +78,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n")
 
         val categoryBuilderMap = TreeMap<String, StringJoiner>(String.CASE_INSENSITIVE_ORDER)
-        for (cmd in context.textCommandsContext.getFirstRootCommands()) {
+        for (cmd in context.textCommandsContext.getRootCommands()) {
             if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
                 categoryBuilderMap
                     .computeIfAbsent(cmd.category) { StringJoiner("\n") }
