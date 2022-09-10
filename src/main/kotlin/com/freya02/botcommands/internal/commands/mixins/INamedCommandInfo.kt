@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.commands.application.mixins
+package com.freya02.botcommands.internal.commands.mixins
 
 import com.freya02.botcommands.api.commands.CommandPath
 

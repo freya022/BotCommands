@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 

@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.commands
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo.Companion.computePath
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo.Companion.computePath
 import net.dv8tion.jda.api.Permission
 import java.util.*
 

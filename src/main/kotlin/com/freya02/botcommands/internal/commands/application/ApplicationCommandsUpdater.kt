@@ -11,12 +11,12 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommands
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.localization.BCLocalizationFunction
-import com.freya02.botcommands.internal.commands.application.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.overwriteBytes
 import com.freya02.botcommands.internal.rethrowUser
 import dev.minn.jda.ktx.coroutines.await
