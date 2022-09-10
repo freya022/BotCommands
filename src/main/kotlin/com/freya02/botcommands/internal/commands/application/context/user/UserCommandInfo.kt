@@ -7,10 +7,10 @@ import com.freya02.botcommands.api.commands.application.context.user.GuildUserEv
 import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter

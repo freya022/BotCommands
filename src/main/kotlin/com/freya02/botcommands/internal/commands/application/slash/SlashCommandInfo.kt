@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.toVarArgName
