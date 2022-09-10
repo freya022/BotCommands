@@ -20,6 +20,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction
 import java.util.regex.Matcher
 
 private data class HelpCommandInfo(val helpCommand: IHelpCommand, val helpInfo: TextCommandInfo)
+private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
 @BService
 internal class TextCommandsListener(private val context: BContextImpl) {
@@ -65,23 +66,13 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         logger.trace("Received prefixed command: {}", msg)
 
         try {
-            var commandInfo: TextCommandInfo? = null
-            val words: List<String> = spacePattern.split(content)
-            for (index in words.indices) {
-                when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
-                    null -> break
-                    else -> commandInfo = info
-                }
-            }
-
             val isNotOwner = !context.config.isOwner(member.idLong)
 
-            if (commandInfo == null) {
-                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
+            val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
+//                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
                 return
             }
 
-            val args = words.drop(commandInfo._path.nameCount).joinToString(" ")
             commandInfo.variations.forEach {
                 when (it.completePattern) {
                     null -> { //Fallback method
@@ -121,6 +112,21 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
 
         context.dispatchException("Exception in application command '$msg'", baseEx)
+    }
+
+    private fun findCommandWithArgs(content: String): CommandWithArgs? {
+        var commandInfo: TextCommandInfo? = null
+        val words: List<String> = spacePattern.split(content)
+        for (index in words.indices) {
+            when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
+                null -> break
+                else -> commandInfo = info
+            }
+        }
+
+        return commandInfo?.let {
+            CommandWithArgs(it, words.drop(it._path.nameCount).joinToString(" "))
+        }
     }
 
     private fun getMsgNoPrefix(msg: String, guild: Guild): String? {
