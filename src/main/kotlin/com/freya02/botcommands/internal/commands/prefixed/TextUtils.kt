@@ -63,11 +63,11 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo._path.fullPath.split('/'))
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo._path.components)
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo._path.fullPath.split('/').drop(commandInfo._path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                    "**" + subcommandInfo._path.components.drop(commandInfo._path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
                 }
 
             builder.addField("Subcommands", subcommandHelp, false)
@@ -129,4 +129,7 @@ object TextUtils {
     fun CommandPath.getSpacedPath(): String {
         return fullPath.replace('/', ' ')
     }
+
+    val CommandPath.components: List<String>
+        get() = fullPath.split('/')
 }

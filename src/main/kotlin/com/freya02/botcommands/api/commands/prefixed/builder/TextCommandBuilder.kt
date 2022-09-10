@@ -44,6 +44,10 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
 
     @JvmSynthetic
     internal fun build(parentInstance: TextCommandInfo?): TextCommandInfo {
+        require(variations.isNotEmpty()) {
+            "Text command should have at least 1 variation"
+        }
+
         return TextCommandInfo(context, this, parentInstance)
     }
 

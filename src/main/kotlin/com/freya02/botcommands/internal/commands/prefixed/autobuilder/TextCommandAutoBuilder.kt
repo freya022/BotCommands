@@ -17,6 +17,7 @@ import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
+import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
@@ -56,7 +57,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
                 else -> {
-                    val split = metadata.path.fullPath.split('/')
+                    val split = metadata.path.components
                     split
                         .drop(1) //Skip first component as it is the initial step
                         .dropLast(1) //Navigate text command containers until n-1 path component
