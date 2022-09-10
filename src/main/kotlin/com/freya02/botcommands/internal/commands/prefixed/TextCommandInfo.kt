@@ -24,7 +24,5 @@ class TextCommandInfo(
     val isOwnerRequired: Boolean = builder.ownerRequired
     val hidden: Boolean = builder.hidden
 
-    val order: Int = builder.order //TODO remove, order must be explicit with DSL, as "order" was a workaround for java methods being unordered
-
     val detailedDescription: Consumer<EmbedBuilder>? = builder.detailedDescription
 }

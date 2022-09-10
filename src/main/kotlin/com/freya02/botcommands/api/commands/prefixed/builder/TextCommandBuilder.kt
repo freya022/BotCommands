@@ -21,8 +21,6 @@ class TextCommandBuilder internal constructor(private val context: BContextImpl,
     var ownerRequired: Boolean = false
     var hidden: Boolean = false
 
-    var order = 0
-
     /**
      * Returns a detailed embed of what the command is, it is used by the internal <code>'help'</code> command
      *

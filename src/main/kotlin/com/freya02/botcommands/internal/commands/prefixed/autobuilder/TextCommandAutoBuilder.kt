@@ -132,7 +132,6 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
         aliases = annotation.aliases.toMutableList()
         description = annotation.description
 
-        order = annotation.order
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()
 
