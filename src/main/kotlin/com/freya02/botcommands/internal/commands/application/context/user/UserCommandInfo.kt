@@ -24,7 +24,9 @@ import kotlin.reflect.full.valueParameters
 class UserCommandInfo internal constructor(
     context: BContextImpl,
     builder: UserCommandBuilder
-) : ApplicationCommandInfo(context, builder), ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
+) : ApplicationCommandInfo(context, builder),
+    ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
+
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
     override val parameters: MethodParameters

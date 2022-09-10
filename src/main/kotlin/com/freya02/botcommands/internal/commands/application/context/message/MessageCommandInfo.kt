@@ -24,7 +24,9 @@ import kotlin.reflect.full.valueParameters
 class MessageCommandInfo internal constructor(
     context: BContextImpl,
     builder: MessageCommandBuilder
-) : ApplicationCommandInfo(context, builder), ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
+) : ApplicationCommandInfo(context, builder),
+    ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
+
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
     override val parameters: MethodParameters

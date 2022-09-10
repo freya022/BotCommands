@@ -8,7 +8,9 @@ import com.freya02.botcommands.internal.commands.application.slash.mixins.TopLev
 class TopLevelSlashCommandInfo internal constructor(
     context: BContextImpl,
     builder: TopLevelSlashCommandBuilder
-) : SlashCommandInfo(context, builder), ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(context, builder) {
+) : SlashCommandInfo(context, builder),
+    ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(context, builder) {
+
     override val topLevelInstance: TopLevelSlashCommandInfo = this
     override val parentInstance = null
 
