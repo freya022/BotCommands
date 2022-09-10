@@ -5,9 +5,9 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwUser
 
 class TextCommandsContextImpl internal constructor(context: BContextImpl) : TextCommandsContext {
-    private val textCommandMap: MutableMap<String, TextCommandInfo> = hashMapOf()
+    private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
 
-    fun addTextCommand(commandInfo: TextCommandInfo) {
+    fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.put(name, commandInfo)?.let {
                 throwUser(commandInfo.variations.first().method, "Text command with path ${commandInfo.path} already exists")
@@ -16,7 +16,7 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
     }
 
     fun findTextCommand(words: List<String>): TextCommandInfo? {
-        val initial = textCommandMap[words.first()] ?: return null
+        val initial: TextCommandInfo = textCommandMap[words.first()] ?: return null
         return words
             .drop(1) //First word is already resolved
             .fold(initial) { info, subname ->
@@ -29,7 +29,7 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
         return command.subcommands.values
     }
 
-    fun getRootCommands(): Collection<TextCommandInfo> {
+    fun getRootCommands(): Collection<TopLevelTextCommandInfo> {
         return textCommandMap.values
     }
 }

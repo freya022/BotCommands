@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
@@ -126,9 +127,13 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
         val instance = metadata.instance
 
         //Only put the command function if the path specified on the function is the same as the one computed in pathComponents
+
         fillCommandBuilder(func)
 
-        func.findAnnotation<Category>()?.let { category = it.value }
+        if (this is TopLevelTextCommandBuilder) {
+            func.findAnnotation<Category>()?.let { category = it.value }
+        }
+
         aliases = annotation.aliases.toMutableList()
         description = annotation.description
 

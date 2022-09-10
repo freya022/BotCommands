@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
-class TextCommandInfo(
+abstract class TextCommandInfo(
     context: BContextImpl,
     builder: TextCommandBuilder,
     override val parentInstance: INamedCommandInfo?
@@ -18,7 +18,6 @@ class TextCommandInfo(
 
     val aliases: List<String> = builder.aliases
 
-    val category: String = builder.category
     val description: String = builder.description
 
     val isOwnerRequired: Boolean = builder.ownerRequired
