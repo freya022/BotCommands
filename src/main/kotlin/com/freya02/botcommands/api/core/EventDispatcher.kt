@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -7,6 +7,10 @@ import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.filterWithAnnotation
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.PreboundFunction
+import com.freya02.botcommands.internal.core.requireFirstArg
+import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -20,11 +24,11 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = Logging.getLogger()
-
 private typealias EventMap = MutableMap<KClass<*>, MutableList<PreboundFunction>>
 
 class EventDispatcher internal constructor(private val context: BContextImpl) {
+    private val logger = Logging.getLogger()
+
     private val map: EventMap = hashMapOf()
     private val listeners: MutableMap<Any, EventMap> = hashMapOf()
 
@@ -37,32 +41,6 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
             dispatchEvent(it)
         }
     }
-
-    private fun addEventListeners(instance: Any?, functions: List<ClassPathFunction>) = functions
-        .requireNonStatic()
-        .requireFirstArg(GenericEvent::class, BEvent::class)
-        .forEach { classPathFunc ->
-            val function = classPathFunc.function
-
-            val parameters = function.nonInstanceParameters
-            val args = context.serviceContainer.getParameters(
-                parameters.drop(1).map { it.type.jvmErasure }
-            )
-
-            val erasure = parameters.first().type.jvmErasure
-            val preboundFunction = PreboundFunction(classPathFunc, args.toTypedArray())
-            instance?.let { instance ->
-                //Skip adding event listeners if the instance is already registered
-                if (listeners[instance] != null) return
-
-                val instanceMap: EventMap = hashMapOf()
-                instanceMap.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
-
-                listeners[instance] = instanceMap
-            }
-
-            map.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
-        }
 
     fun addEventListener(listener: Any) {
         addEventListeners(
@@ -106,7 +84,33 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private fun printException(preboundFunction: PreboundFunction, e: Throwable) = LOGGER.error(
+    private fun addEventListeners(instance: Any?, functions: List<ClassPathFunction>) = functions
+        .requireNonStatic()
+        .requireFirstArg(GenericEvent::class, BEvent::class)
+        .forEach { classPathFunc ->
+            val function = classPathFunc.function
+
+            val parameters = function.nonInstanceParameters
+            val args = context.serviceContainer.getParameters(
+                parameters.drop(1).map { it.type.jvmErasure }
+            )
+
+            val erasure = parameters.first().type.jvmErasure
+            val preboundFunction = PreboundFunction(classPathFunc, args.toTypedArray())
+            instance?.let { instance ->
+                //Skip adding event listeners if the instance is already registered
+                if (listeners[instance] != null) return
+
+                val instanceMap: EventMap = hashMapOf()
+                instanceMap.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
+
+                listeners[instance] = instanceMap
+            }
+
+            map.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
+        }
+
+    private fun printException(preboundFunction: PreboundFunction, e: Throwable) = logger.error(
         "An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}",
         e.getDeepestCause()
     )

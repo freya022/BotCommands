@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.components.ComponentManager
+import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
@@ -10,7 +11,6 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.EventDispatcher
 import com.freya02.botcommands.internal.core.ServiceContainer
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import net.dv8tion.jda.api.EmbedBuilder
