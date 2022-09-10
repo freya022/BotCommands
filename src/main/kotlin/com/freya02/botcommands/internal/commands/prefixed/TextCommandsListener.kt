@@ -2,11 +2,12 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
-import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
@@ -18,26 +19,11 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.requests.CompletedRestAction
 import java.util.regex.Matcher
 
-private data class HelpCommandInfo(val helpCommand: IHelpCommand, val helpInfo: TextCommandInfo)
 private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
-internal class TextCommandsListener(private val context: BContextImpl) {
+internal class TextCommandsListener(private val context: BContextImpl, private val helpCommandInfo: HelpCommandInfo?) {
     private val logger = KotlinLogging.logger {  }
     private val spacePattern = Regex("\\s+")
-
-    private val helpCommandInfo: HelpCommandInfo? = let {
-        val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
-        when {
-            helpCommandInfo != null -> {
-                val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
-                    ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
-                val helpCommand = helpVariation.instance as? IHelpCommand
-                    ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
-                HelpCommandInfo(helpCommand, helpCommandInfo)
-            }
-            else -> null.also { logger.debug("Help command not loaded") }
-        }
-    }
 
     @BEventListener
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
