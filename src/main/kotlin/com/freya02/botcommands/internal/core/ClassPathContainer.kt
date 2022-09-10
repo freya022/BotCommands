@@ -47,6 +47,12 @@ internal class ClassPathContainer(private val context: BContextImpl) {
             .associate { InstanceDelegate { context.getService(it) } to it.declaredMemberFunctions }
             .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
     }
+
+    companion object {
+        inline fun <reified T : Annotation> Iterable<KFunction<*>>.filterWithAnnotation() = filter { it.hasAnnotation<T>() }
+
+        fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }
+    }
 }
 
 internal fun List<ClassPathFunction>.withReturnType(vararg types: KClass<*>) =
