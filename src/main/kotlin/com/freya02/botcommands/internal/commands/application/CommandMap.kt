@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.application
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.Utils
 import java.util.*
 
 interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>
@@ -20,8 +19,8 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             if (key.fullPath == commandPath.name) {
                 throwUser(
                     "Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)".format(
-                        key, Utils.formatMethodShort(value.method),
-                        commandPath, Utils.formatMethodShort(mapInfo.method)
+                        key, value.method.shortSignatureNoSrc,
+                        commandPath, mapInfo.method.shortSignatureNoSrc
                     )
                 )
             }
@@ -29,8 +28,8 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             if (commandPath.fullPath == key.name) {
                 throwUser(
                     "Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)".format(
-                        key, Utils.formatMethodShort(value.method),
-                        commandPath, Utils.formatMethodShort(mapInfo.method)
+                        key, value.method.shortSignatureNoSrc,
+                        commandPath, mapInfo.method.shortSignatureNoSrc
                     )
                 )
             }

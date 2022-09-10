@@ -8,7 +8,6 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.getDeepestCause
-import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -207,7 +206,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             .queue(null, ErrorHandler()
                 .ignore(ErrorResponse.CANNOT_SEND_TO_USER)
                 .handle(Exception::class.java) { e: Exception ->
-                    Utils.printExceptionString("Could not send reply message from command listener", e)
+                    logger.error("Could not send reply message from command listener", e)
                     context.dispatchException("Could not send reply message from command listener", e)
                 })
     }

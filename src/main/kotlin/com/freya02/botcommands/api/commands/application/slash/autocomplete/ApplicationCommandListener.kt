@@ -9,7 +9,6 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -182,7 +181,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
         event.reply(msg)
             .setEphemeral(true)
             .queue(null) {
-                Utils.printExceptionString("Could not send reply message from application command listener", it)
+                LOGGER.error("Could not send reply message from application command listener", it)
                 context.dispatchException("Could not send reply message from application command listener", it)
             }
     }
