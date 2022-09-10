@@ -130,7 +130,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    fun getFunctionService(function: KFunction<Any>): Any {
+    fun getFunctionService(function: KFunction<*>): Any {
         return when {
             function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
             else -> getService(function.javaMethod!!.declaringClass)

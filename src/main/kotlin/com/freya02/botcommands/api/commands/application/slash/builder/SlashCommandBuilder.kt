@@ -1,27 +1,30 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
-import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.throwUser
 
-class SlashCommandBuilder internal constructor(
-    private val context: BContextImpl,
-    path: CommandPath,
-    scope: CommandScope
-) : ApplicationCommandBuilder(path, scope) {
+abstract class SlashCommandBuilder internal constructor(
+    protected val context: BContextImpl,
+    name: String
+) : ApplicationCommandBuilder(name) {
     var description: String = DEFAULT_DESCRIPTION
+
+    protected abstract val allowOptions: Boolean
+    protected abstract val allowSubcommands: Boolean
+    protected abstract val allowSubcommandGroups: Boolean
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
+        if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
+
         optionBuilders[declaredName] = SlashCommandOptionBuilder(context, declaredName, optionName).apply(block)
     }
 
@@ -29,6 +32,8 @@ class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun customOption(declaredName: String) {
+        if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
+
         optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
     }
 
@@ -36,12 +41,9 @@ class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
-    }
+        if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
 
-    internal fun build(): SlashCommandInfo {
-        checkFunction()
-        return SlashCommandInfo(context, this)
+        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
     }
 
     companion object {

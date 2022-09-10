@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.Utils
 import java.util.*
 
@@ -40,9 +41,9 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             throwUser(
                 "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
                     key,
-                    Utils.formatMethodShort(value.method),
+                    value.method.shortSignatureNoSrc,
                     oldInfo.path,
-                    Utils.formatMethodShort(oldInfo.method)
+                    oldInfo.method.shortSignatureNoSrc
                 )
             )
         }

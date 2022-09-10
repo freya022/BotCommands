@@ -1,7 +1,6 @@
 package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -23,7 +22,7 @@ class SlashPermissions : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand(CommandPath.of("permissions"), scope = CommandScope.GLOBAL_NO_DM) {
+        manager.slashCommand("permissions", scope = CommandScope.GLOBAL_NO_DM) {
             userPermissions = EnumSet.of(Permission.MANAGE_SERVER, Permission.ADMINISTRATOR)
 
             function = ::onSlashPermissions

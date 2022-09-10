@@ -65,6 +65,9 @@ internal class ResolverContainer( //TODO Should be part of the base module
         }
     }
 
+    @JvmSynthetic
+    internal fun getResolverOrNull(parameter: KParameter) = map[parameter.type.jvmErasure]
+
     fun getResolver(parameter: KParameter): Any {
         val requestedType = parameter.type.jvmErasure
 
@@ -88,7 +91,7 @@ internal class ResolverContainer( //TODO Should be part of the base module
     }
 
     private class ServiceCustomResolver(private val o: Any) : ParameterResolver<ServiceCustomResolver, Any>(Any::class), ICustomResolver<ServiceCustomResolver, Any> {
-        override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: ExecutableInteractionInfo, event: Event) = o
+        override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 
     companion object {

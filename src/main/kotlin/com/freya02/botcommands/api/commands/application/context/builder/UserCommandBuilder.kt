@@ -1,16 +1,21 @@
 package com.freya02.botcommands.api.commands.application.context.builder
 
 import com.freya02.botcommands.api.builder.CustomOptionBuilder
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelApplicationCommandBuilderMixin
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 
-class UserCommandBuilder internal constructor(private val context: BContextImpl, path: CommandPath, scope: CommandScope) :
-    ApplicationCommandBuilder(path, scope) {
+class UserCommandBuilder internal constructor(
+    private val context: BContextImpl,
+    name: String,
+    scope: CommandScope
+) : ApplicationCommandBuilder(name), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

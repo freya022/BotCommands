@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -34,7 +34,7 @@ public class StringResolver
 
 	@Override
 	@Nullable
-	public String resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public String resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return args[0];
 	}
 

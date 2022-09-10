@@ -7,11 +7,8 @@ import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.Usability
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
-import com.freya02.botcommands.internal.getDeepestCause
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
@@ -23,6 +20,7 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction
 import java.util.regex.Matcher
 
 private data class HelpCommandInfo(val helpCommand: IHelpCommand, val helpInfo: TextCommandInfo)
+private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
 @BService
 internal class TextCommandsListener(private val context: BContextImpl) {
@@ -30,9 +28,12 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private val spacePattern = Regex("\\s+")
 
     private val helpCommandInfo: HelpCommandInfo? by lazy {
-        val helpCommandInfo = context.textCommandsContext.findFirstTextCommand(listOf("help"))
+        val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
         if (helpCommandInfo != null) {
-            val helpCommand = helpCommandInfo.instance as? IHelpCommand ?: throwUser("Help command must implement IHelpCommand")
+            val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
+                ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
+            val helpCommand = helpVariation.instance as? IHelpCommand
+                ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
             HelpCommandInfo(helpCommand, helpCommandInfo)
         } else {
             logger.debug("Help command not loaded")
@@ -65,25 +66,14 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         logger.trace("Received prefixed command: {}", msg)
 
         try {
-            var result: TextFindResult? = null
-            val words: List<String> = spacePattern.split(content)
-            for (index in words.indices) {
-                val newResult = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))
-                when {
-                    newResult.commands.isEmpty() -> break
-                    else -> result = newResult
-                }
-            }
-
             val isNotOwner = !context.config.isOwner(member.idLong)
 
-            if (result == null) {
-                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
+            val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
+//                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
                 return
             }
 
-            val args = words.drop(result.pathComponents).joinToString(" ")
-            result.commands.forEach {
+            commandInfo.variations.forEach {
                 when (it.completePattern) {
                     null -> { //Fallback method
                         if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return
@@ -97,10 +87,10 @@ internal class TextCommandsListener(private val context: BContextImpl) {
                 }
             }
 
-            helpCommandInfo?.let { (helpCommand, helpInfo) ->
+            helpCommandInfo?.let { (helpCommand, _) ->
                 helpCommand.onInvalidCommand(
-                    BaseCommandEventImpl(context, helpInfo.method, event, ""),
-                    result.commands
+                    BaseCommandEventImpl(context, null, event, ""),
+                    commandInfo
                 )
             }
         } catch (e: Throwable) {
@@ -124,6 +114,21 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         context.dispatchException("Exception in application command '$msg'", baseEx)
     }
 
+    private fun findCommandWithArgs(content: String): CommandWithArgs? {
+        var commandInfo: TextCommandInfo? = null
+        val words: List<String> = spacePattern.split(content)
+        for (index in words.indices) {
+            when (val info = context.textCommandsContext.findTextCommand(words.subList(0, index + 1))) {
+                null -> break
+                else -> commandInfo = info
+            }
+        }
+
+        return commandInfo?.let {
+            CommandWithArgs(it, words.drop(it.path.nameCount).joinToString(" "))
+        }
+    }
+
     private fun getMsgNoPrefix(msg: String, guild: Guild): String? {
         return getPrefixes(guild)
             .find { prefix -> msg.startsWith(prefix) }
@@ -142,10 +147,12 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     private suspend fun tryExecute(
         event: MessageReceivedEvent,
         args: String,
-        commandInfo: TextCommandInfo,
+        variation: TextCommandVariation,
         isNotOwner: Boolean,
         matcher: Matcher?
     ): ExecutionResult {
+        val commandInfo = variation.info
+
         val filteringData = TextFilteringData(context, event, commandInfo, args)
         for (filter in context.config.textConfig.textFilters) {
             if (!filter.isAccepted(filteringData)) {
@@ -202,7 +209,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         }
 
         return withContext(context.config.coroutineScopesConfig.textCommandsScope.coroutineContext) {
-            commandInfo.execute(event, args, matcher)
+            variation.execute(event, args, matcher)
         }
     }
 
@@ -233,6 +240,6 @@ internal class TextCommandsListener(private val context: BContextImpl) {
     }
 
     private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
-        return listOf()
+        return listOf() //TODO decide if useful or not
     }
 }

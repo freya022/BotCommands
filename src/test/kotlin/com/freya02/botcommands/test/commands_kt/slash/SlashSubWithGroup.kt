@@ -27,16 +27,20 @@ class SlashSubWithGroup : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("tag", subcommand = "send") {
-            function = ::onSlashSubWithGroup
-        }
+        globalApplicationCommandManager.slashCommand("tag") {
+            subcommand("send") {
+                function = ::onSlashSubWithGroup
+            }
 
-        globalApplicationCommandManager.slashCommand("tag", group = "manage", subcommand = "create") {
-            function = ::onSlashSubWithGroup
-        }
+            subcommandGroup("manage") {
+                this@subcommandGroup.subcommand("create") {
+                    function = ::onSlashSubWithGroup
+                }
 
-        globalApplicationCommandManager.slashCommand("tag", group = "manage", subcommand = "edit") {
-            function = ::onSlashSubWithGroup
+                this@subcommandGroup.subcommand("edit") {
+                    function = ::onSlashSubWithGroup
+                }
+            }
         }
     }
 }

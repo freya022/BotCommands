@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.annotations.CommandMarker
-import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
+import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
@@ -25,18 +25,18 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
 
     @CommandMarker
     suspend fun onTextHelpCommand(event: BaseCommandEvent, commandStr: String) {
-        val commandInfos = context.textCommandsContext.findTextCommand(SPACE_PATTERN.split(commandStr)).commands
-        if (commandInfos.isEmpty()) {
+        val commandInfo = context.textCommandsContext.findTextCommand(SPACE_PATTERN.split(commandStr))
+        if (commandInfo == null) {
             event.respond("Command '$commandStr' does not exist").await()
             return
         }
 
-        sendCommandHelp(event, commandInfos)
+        sendCommandHelp(event, commandInfo)
     }
 
-    override fun onInvalidCommand(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>) {
+    override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
         context.config.coroutineScopesConfig.textCommandsScope.launch {
-            sendCommandHelp(event, commandInfos)
+            sendCommandHelp(event, commandInfo)
         }
     }
 
@@ -59,15 +59,15 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         }
     }
 
-    private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>) {
+    private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
         val member = event.member
-        val usability = Usability.of(context, commandInfos.first(), member, event.guildChannel, !context.isOwner(member.idLong))
+        val usability = Usability.of(context, commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
         if (usability.isNotShowable) {
-            event.respond("Command '" + commandInfos.first().path.getSpacedPath() + "' does not exist").await()
+            event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").await()
             return
         }
 
-        val embed = generateCommandHelp(event, commandInfos)
+        val embed = generateCommandHelp(event, commandInfo)
         event.respond(embed.build()).queue()
     }
 
@@ -78,11 +78,11 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         builder.setFooter("NSFW commands might not be shown\nRun help in an NSFW channel to see them\n")
 
         val categoryBuilderMap = TreeMap<String, StringJoiner>(String.CASE_INSENSITIVE_ORDER)
-        for (cmd in context.textCommandsContext.getFirstRootCommands()) {
+        for (cmd in context.textCommandsContext.getRootCommands()) {
             if (Usability.of(context, cmd, member, channel, !context.isOwner(member.idLong)).isShowable) {
                 categoryBuilderMap
                     .computeIfAbsent(cmd.category) { StringJoiner("\n") }
-                    .add("**${cmd.path.name}** : ${cmd.description}")
+                    .add("**${cmd.name}** : ${cmd.description}")
             }
         }
 
@@ -95,37 +95,32 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         return builder
     }
 
-    private fun generateCommandHelp(event: BaseCommandEvent, commandInfos: Collection<TextCommandInfo>): EmbedBuilder {
-        val builder = TextUtils.generateCommandHelp(commandInfos, event)
+    private fun generateCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo): EmbedBuilder {
+        val builder = TextUtils.generateCommandHelp(commandInfo, event)
         builder.setTimestamp(Instant.now())
         builder.setColor(event.member.colorRaw)
 
-        context.helpBuilderConsumer?.accept(builder, false, commandInfos)
+        context.helpBuilderConsumer?.accept(builder, false, commandInfo)
 
         return builder
-    }
-
-    private fun CommandPath.getSpacedPath(): String {
-        return fullPath.replace('/', ' ')
     }
 
     internal fun declare(manager: TextCommandManager) {
 		manager.textCommand("help") {
             category = "Utils"
-            description = "Gives help for all commands"
-
-            function = HelpCommand::onTextHelpFallback
-        }
-
-		manager.textCommand("help") {
-            category = "Utils"
             description = "Gives help for a command"
 
-			option("commandStr", "command path") {
-				helpExample = "tag"
-			}
+            variation {
+                option("commandStr", "command path") {
+                    helpExample = "tag"
+                }
 
-            function = HelpCommand::onTextHelpCommand
+                function = HelpCommand::onTextHelpCommand
+            }
+
+            variation { //fallback
+                function = HelpCommand::onTextHelpFallback
+            }
 		}
     }
 

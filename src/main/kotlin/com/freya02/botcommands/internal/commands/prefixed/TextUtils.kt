@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.defaultDescription
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
@@ -12,11 +13,10 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
-    fun generateCommandHelp(candidates: Collection<TextCommandInfo>, event: BaseCommandEvent): EmbedBuilder {
+    fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
 
-        val commandInfo = candidates.first()
-        val name = commandInfo.path.fullPath.replace('/', ' ')
+        val name = commandInfo.path.getSpacedPath()
 
         val author = if (!builder.isEmpty) builder.build().author else null
         when {
@@ -30,8 +30,8 @@ object TextUtils {
         }
 
         val prefix = event.context.prefix
-        for ((i, candidate) in candidates.reversed().withIndex()) {
-            val commandParameters = candidate.optionParameters
+        for ((i, variation) in commandInfo.variations.withIndex()) {
+            val commandParameters = variation.optionParameters
 
             val syntax = StringBuilder("**Syntax**: $prefix$name ")
             val example = StringBuilder("**Example**: $prefix$name ")
@@ -51,23 +51,23 @@ object TextUtils {
                 }
             }
 
-            val effectiveCandidateDescription = when (candidate.description) {
+            val effectiveCandidateDescription = when (description) {
                 defaultDescription -> ""
-                else -> "**Description**: ${candidate.description}\n"
+                else -> "**Description**: $description\n"
             }
 
-            if (candidates.size == 1) {
+            if (commandInfo.variations.size == 1) {
                 builder.addField("Usage", "$effectiveCandidateDescription$syntax\n$example", false)
             } else {
                 builder.addField("Overload #${i + 1}", "$effectiveCandidateDescription$syntax\n$example", false)
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findFirstTextSubcommands(commandInfo.path.fullPath.split('/'))
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo.path.components)
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo.path.fullPath.split('/').drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
                 }
 
             builder.addField("Subcommands", subcommandHelp, false)
@@ -94,7 +94,7 @@ object TextUtils {
                     parameter.isId -> ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L).toString()
                     else -> ThreadLocalRandom.current().nextLong(50).toString()
                 }
-                Float::class, Double::class -> ThreadLocalRandom.current().nextDouble(50.0).toString()
+                Float::class, Double::class -> String.format(locale = null, "%.3f", ThreadLocalRandom.current().nextDouble(50.0))
                 Guild::class -> "331718482485837825"
                 Role::class -> "801161492296499261"
                 User::class -> "222046562543468545"
@@ -125,4 +125,11 @@ object TextUtils {
 
     suspend fun <T : IMentionable> findEntitySuspend(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
+
+    fun CommandPath.getSpacedPath(): String {
+        return fullPath.replace('/', ' ')
+    }
+
+    val CommandPath.components: List<String>
+        get() = fullPath.split('/')
 }

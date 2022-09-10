@@ -1,28 +1,43 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import com.freya02.botcommands.internal.utils.AnnotationUtils
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
+fun String.nullIfEmpty(): String? = when {
+    isEmpty() -> null
+    else -> this
+}
+
 //This is used so commands can't prevent other commands from being registered when an exception happens
-inline fun <T> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
-    val exceptions: MutableList<Throwable> = arrayListOf()
-    forEach {
+internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
+    var ex: Throwable? = null
+    forEach { metadata ->
         runCatching {
-            block(it)
+            block(metadata)
         }.onFailure {
-           exceptions.add(it)
+            when (ex) {
+                null -> ex = it.addFunction(metadata)
+                else -> ex!!.addSuppressed(it.addFunction(metadata))
+            }
         }
     }
 
-    if (exceptions.isNotEmpty()) {
-        throw RuntimeException("${exceptions.size} exception(s) occurred while registering annotated commands, here is the first exception:", exceptions.first())
+    if (ex != null) {
+        throw RuntimeException("Exception(s) occurred while registering annotated commands", ex)
     }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
+    RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
 
 fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
@@ -42,7 +57,9 @@ fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
 
     userPermissions = AnnotationUtils.getUserPermissions(func)
     botPermissions = AnnotationUtils.getBotPermissions(func)
+}
 
+internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
     @Suppress("UNCHECKED_CAST")
     function = func as KFunction<Any>
 }

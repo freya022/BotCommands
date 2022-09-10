@@ -24,7 +24,7 @@ internal inline fun <reified T : Enum<T>, V> enumMapOf(): EnumMap<T, V> = EnumMa
 internal fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 internal fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.any { this.isSubclassOf(it) }
 
-internal fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
+internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
     val firstParameter = kParameters.firstOrNull() ?: throwUser("First argument should be a ${klass.simpleName}")
     requireUser(klass.isSuperclassOf(firstParameter.type.jvmErasure)) {
         "First argument should be a ${klass.simpleName}"
@@ -35,7 +35,7 @@ internal fun ExecutableInteractionInfo.requireFirstParam(kParameters: List<KPara
 internal inline fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun ExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
+internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
@@ -56,7 +56,7 @@ internal inline fun throwService(message: String, function: KFunction<*>? = null
 }
 
 @OptIn(ExperimentalContracts::class)
-internal inline fun ExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
+internal inline fun IExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
     contract {
         returns() implies value
     }
@@ -153,4 +153,8 @@ inline fun <T> Result<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Result
 
 inline fun <T> Result<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): Result<T> {
     return onErrorResponseException { if (it.errorResponse == error) block(it) }
+}
+
+internal inline fun <reified T> Any.throwMixin(): Nothing {
+    throwInternal("${this::class.simpleName} should implement ${T::class.simpleName}")
 }

@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.toVarArgName
@@ -19,22 +20,24 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.math.max
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-class SlashCommandInfo internal constructor(
+abstract class SlashCommandInfo internal constructor(
     val context: BContextImpl,
     builder: SlashCommandBuilder
 ) : ApplicationCommandInfo(
     context,
     builder
 ) {
-    val description = builder.description
+    val description: String = builder.description
 
-    override val parameters: MethodParameters
+    final override val method: KFunction<*> = super.method
+    final override val parameters: MethodParameters
 
     @Suppress("UNCHECKED_CAST")
     override val optionParameters: List<SlashCommandParameter>
@@ -43,7 +46,7 @@ class SlashCommandInfo internal constructor(
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 
-        checkEventScope<GuildSlashEvent>()
+        builder.checkEventScope<GuildSlashEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         parameters = MethodParameters.transform<SlashParameterResolver<*, *>>(
@@ -84,7 +87,7 @@ class SlashCommandInfo internal constructor(
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
-            if (isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
+            if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
 
         putSlashOptions(event, objects, parameters)
 

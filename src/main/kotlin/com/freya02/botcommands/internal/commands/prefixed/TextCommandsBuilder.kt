@@ -58,9 +58,7 @@ internal class TextCommandsBuilder(
                 }
             }
 
-            manager.textCommands.forEach {
-                context.textCommandsContext.addTextCommand(it)
-            }
+            manager.textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
         } catch (e: Throwable) {
             LOGGER.error("An error occurred while updating global commands", e)
         }
