@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
+import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 
@@ -23,7 +24,7 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): R? = TODO("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
+    ): R? = throwUser("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(

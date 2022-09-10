@@ -7,11 +7,6 @@ import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
-//TODO Separate "method" into it's own interface
-// method will be implemented into ApplicationCommandInfo
-// Separate method from DSL too, use a "variant" function to add a text command variant for the current path
-// In the end, one path corresponds to a command containing it's own variants, all the variants sharing the same description/permissions/etc...
-// It's up to the user to create subcommands if they want different attributes
 class TextCommandInfo(
     context: BContextImpl,
     builder: TextCommandBuilder,
