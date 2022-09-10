@@ -1,16 +1,15 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorHandler
@@ -22,23 +21,21 @@ import java.util.regex.Matcher
 private data class HelpCommandInfo(val helpCommand: IHelpCommand, val helpInfo: TextCommandInfo)
 private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
-@BService
 internal class TextCommandsListener(private val context: BContextImpl) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger {  }
     private val spacePattern = Regex("\\s+")
 
-    private val helpCommandInfo: HelpCommandInfo? by lazy {
+    private val helpCommandInfo: HelpCommandInfo? = let {
         val helpCommandInfo = context.textCommandsContext.findTextCommand(listOf("help"))
-        if (helpCommandInfo != null) {
-            val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
-                ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
-            val helpCommand = helpVariation.instance as? IHelpCommand
-                ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
-            HelpCommandInfo(helpCommand, helpCommandInfo)
-        } else {
-            logger.debug("Help command not loaded")
-
-            null
+        when {
+            helpCommandInfo != null -> {
+                val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
+                    ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
+                val helpCommand = helpVariation.instance as? IHelpCommand
+                    ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
+                HelpCommandInfo(helpCommand, helpCommandInfo)
+            }
+            else -> null.also { logger.debug("Help command not loaded") }
         }
     }
 
@@ -63,7 +60,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         }
         if (content.isNullOrBlank()) return
 
-        logger.trace("Received prefixed command: {}", msg)
+        logger.trace { "Received prefixed command: $msg" }
 
         try {
             val isNotOwner = !context.config.isOwner(member.idLong)
