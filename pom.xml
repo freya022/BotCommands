@@ -23,7 +23,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
         <kotlin.version>1.7.10</kotlin.version>
-        <kotlin.coroutine.version>1.6.2</kotlin.coroutine.version>
+        <kotlin.coroutine.version>1.6.4</kotlin.coroutine.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     </properties>
 
@@ -391,7 +391,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.4.1</version>
+            <version>42.5.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
