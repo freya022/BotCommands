@@ -7,7 +7,6 @@ import com.freya02.botcommands.internal.commands.application.MutableCommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +33,7 @@ public abstract class ApplicationCommandMap {
 	}
 
 	@UnmodifiableView
-	public CommandMap<TopLevelSlashCommandInfo> getSlashCommands() {
+	public CommandMap<SlashCommandInfo> getSlashCommands() {
 		return getTypeMap(Command.Type.SLASH);
 	}
 

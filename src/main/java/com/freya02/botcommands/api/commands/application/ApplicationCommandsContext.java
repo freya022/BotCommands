@@ -5,7 +5,6 @@ import com.freya02.botcommands.internal.commands.application.CommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
-import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -66,7 +65,7 @@ public interface ApplicationCommandsContext {
 	 */
 	@NotNull
 	@UnmodifiableView
-	default CommandMap<TopLevelSlashCommandInfo> getSlashCommandsMap() {
+	default CommandMap<SlashCommandInfo> getSlashCommandsMap() {
 		return getApplicationCommandMap().getSlashCommands();
 	}
 
@@ -104,7 +103,7 @@ public interface ApplicationCommandsContext {
 				.getSlashCommands()
 				.values()
 				.stream()
-				.map(TopLevelSlashCommandInfo::get_path)
+				.map(SlashCommandInfo::get_path)
 				.toList();
 	}
 

@@ -4,12 +4,13 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommandMap
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
 class MutableApplicationCommandMap : ApplicationCommandMap() {
-    override fun getSlashCommands(): MutableCommandMap<TopLevelSlashCommandInfo> {
+    override fun getSlashCommands(): MutableCommandMap<SlashCommandInfo> {
         return getTypeMap(CommandType.SLASH)
     }
 
