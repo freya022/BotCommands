@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.CommandUpdateResult
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import gnu.trove.TCollections
 import gnu.trove.map.hash.TLongObjectHashMap
 import kotlinx.coroutines.launch
@@ -20,7 +20,7 @@ class ApplicationCommandsContextImpl(private val context: BContextImpl) : Applic
 
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
 
-    override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): TopLevelSlashCommandInfo? =
+    override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
         liveApplicationCommandInfoMap[getGuildKey(guild)]?.findSlashCommand(path)
 
     override fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo? =

@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.commands.application.CommandMap;
 import com.freya02.botcommands.internal.commands.application.MutableCommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public abstract class ApplicationCommandMap {
 	}
 
 	@Nullable
-	public TopLevelSlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
+	public SlashCommandInfo findSlashCommand(@NotNull CommandPath path) {
 		return this.getSlashCommands().get(path);
 	}
 

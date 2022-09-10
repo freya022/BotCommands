@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.internal.commands.application.CommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
@@ -15,15 +16,15 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ApplicationCommandsContext {
 	/**
-	 * Returns the {@link TopLevelSlashCommandInfo} object of the specified full slash command name, in the specific guild
+	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild
 	 *
 	 * @param guild The Guild the command has been invoked in, can be null for global commands
 	 * @param path  Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
 	 *
-	 * @return The {@link TopLevelSlashCommandInfo} object of the slash command
+	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
-	TopLevelSlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path);
+	SlashCommandInfo findLiveSlashCommand(@Nullable Guild guild, @NotNull CommandPath path);
 
 	/**
 	 * Returns the {@link UserCommandInfo} object of the specified user context command name, in the specific guild
