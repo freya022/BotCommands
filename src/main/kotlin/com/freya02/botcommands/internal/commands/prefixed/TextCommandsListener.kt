@@ -125,7 +125,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         }
 
         return commandInfo?.let {
-            CommandWithArgs(it, words.drop(it._path.nameCount).joinToString(" "))
+            CommandWithArgs(it, words.drop(it.path.nameCount).joinToString(" "))
         }
     }
 
@@ -166,7 +166,7 @@ internal class TextCommandsListener(private val context: BContextImpl) {
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
-                onCommandNotFound(event, commandInfo._path, true)
+                onCommandNotFound(event, commandInfo.path, true)
                 return ExecutionResult.STOP
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)

@@ -181,7 +181,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun <T : INamedCommandInfo> Collection<T>.filterCommands() = filter { info ->
         context.settingsProvider?.let { settings ->
             guild?.let { guild ->
-                return@filter settings.getGuildCommands(guild).filter.test(info._path)
+                return@filter settings.getGuildCommands(guild).filter.test(info.path)
             }
         }
 

@@ -10,7 +10,7 @@ class TextCommandsContextImpl internal constructor(context: BContextImpl) : Text
     fun addTextCommand(commandInfo: TextCommandInfo) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.put(name, commandInfo)?.let {
-                throwUser(commandInfo.variations.first().method, "Text command with path ${commandInfo._path} already exists")
+                throwUser(commandInfo.variations.first().method, "Text command with path ${commandInfo.path} already exists")
             }
         }
     }

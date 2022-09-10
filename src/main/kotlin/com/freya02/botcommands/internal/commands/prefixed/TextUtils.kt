@@ -16,7 +16,7 @@ object TextUtils {
     fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
 
-        val name = commandInfo._path.getSpacedPath()
+        val name = commandInfo.path.getSpacedPath()
 
         val author = if (!builder.isEmpty) builder.build().author else null
         when {
@@ -63,11 +63,11 @@ object TextUtils {
             }
         }
 
-        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo._path.components)
+        val textSubcommands = (event.context as BContextImpl).textCommandsContext.findTextSubcommands(commandInfo.path.components)
         if (textSubcommands.isNotEmpty()) {
             val subcommandHelp = textSubcommands
                 .joinToString("\n - ") { subcommandInfo: TextCommandInfo ->
-                    "**" + subcommandInfo._path.components.drop(commandInfo._path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
+                    "**" + subcommandInfo.path.components.drop(commandInfo.path.nameCount).joinToString(" ") + "** : " + subcommandInfo.description
                 }
 
             builder.addField("Subcommands", subcommandHelp, false)

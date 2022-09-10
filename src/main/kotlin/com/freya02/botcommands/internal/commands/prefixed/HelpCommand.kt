@@ -63,7 +63,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
         val member = event.member
         val usability = Usability.of(context, commandInfo, member, event.guildChannel, !context.isOwner(member.idLong))
         if (usability.isNotShowable) {
-            event.respond("Command '" + commandInfo._path.getSpacedPath() + "' does not exist").await()
+            event.respond("Command '" + commandInfo.path.getSpacedPath() + "' does not exist").await()
             return
         }
 

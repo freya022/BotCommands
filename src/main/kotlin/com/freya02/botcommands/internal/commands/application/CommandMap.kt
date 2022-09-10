@@ -42,7 +42,7 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
                 "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
                     key,
                     value.method.shortSignatureNoSrc,
-                    oldInfo._path,
+                    oldInfo.path,
                     oldInfo.method.shortSignatureNoSrc
                 )
             )

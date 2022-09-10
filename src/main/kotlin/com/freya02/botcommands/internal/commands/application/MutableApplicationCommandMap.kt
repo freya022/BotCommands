@@ -47,19 +47,19 @@ class MutableApplicationCommandMap : ApplicationCommandMap() {
 
                 val typeMap = map.getTypeMap<ApplicationCommandInfo>(type)
                 when (info) {
-                    is UserCommandInfo, is MessageCommandInfo -> typeMap[info._path] = info
+                    is UserCommandInfo, is MessageCommandInfo -> typeMap[info.path] = info
                     is TopLevelSlashCommandInfo -> {
                         if (info.isTopLevelCommandOnly()) {
-                            typeMap[info._path] = info
+                            typeMap[info.path] = info
                         } else {
                             info.subcommandGroups.values.forEach { groupInfo ->
                                 groupInfo.subcommands.values.forEach {
-                                    typeMap[it._path] = it
+                                    typeMap[it.path] = it
                                 }
                             }
 
                             info.subcommands.values.forEach {
-                                typeMap[it._path] = it
+                                typeMap[it.path] = it
                             }
                         }
                     }

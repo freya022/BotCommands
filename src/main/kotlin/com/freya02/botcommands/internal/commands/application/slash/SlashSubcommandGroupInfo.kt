@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.commands.application.mixins.INamedComman
 class SlashSubcommandGroupInfo(topLevelInstance: TopLevelSlashCommandInfo, builder: SlashSubcommandGroupBuilder) : INamedCommandInfo {
     override val parentInstance = topLevelInstance
     override val name = builder.name
-    override val _path: CommandPath by lazy { computePath() }
+    override val path: CommandPath by lazy { computePath() }
 
     val description = builder.description
 

@@ -13,7 +13,7 @@ abstract class AbstractCommandInfo internal constructor(
     builder: CommandBuilder
 ) : Cooldownable(context, builder.cooldownStrategy), INamedCommandInfo {
     final override val name: String
-    final override val _path: CommandPath by lazy { computePath() }
+    final override val path: CommandPath by lazy { computePath() }
 
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
@@ -27,6 +27,6 @@ abstract class AbstractCommandInfo internal constructor(
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}: ${_path.fullPath}"
+        return "${this::class.simpleName}: ${path.fullPath}"
     }
 }

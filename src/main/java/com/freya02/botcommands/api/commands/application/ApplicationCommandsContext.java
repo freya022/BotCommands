@@ -103,7 +103,7 @@ public interface ApplicationCommandsContext {
 				.getSlashCommands()
 				.values()
 				.stream()
-				.map(SlashCommandInfo::get_path)
+				.map(SlashCommandInfo::getPath)
 				.toList();
 	}
 

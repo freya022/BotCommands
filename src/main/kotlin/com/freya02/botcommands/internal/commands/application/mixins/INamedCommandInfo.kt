@@ -6,7 +6,7 @@ interface INamedCommandInfo {
     val parentInstance: INamedCommandInfo?
 
     val name: String
-    val _path: CommandPath
+    val path: CommandPath
 
     companion object {
         fun INamedCommandInfo.computePath(): CommandPath {
