@@ -2,7 +2,7 @@ package com.freya02.botcommands.api;
 
 import java.time.Instant;
 
-public class BCInfo {
+public class $BCInfo {
 	public static final Instant BUILD_TIME;
 	public static final String VERSION_MAJOR = "%%version-major%%";
 	public static final String VERSION_MINOR = "%%version-minor%%";
