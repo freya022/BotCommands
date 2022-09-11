@@ -2,7 +2,11 @@ package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
+import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
@@ -38,6 +42,18 @@ internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithD
 @Suppress("NOTHING_TO_INLINE")
 private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
     RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
+
+internal fun checkCommandId(manager: IApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
+    if (manager is GuildApplicationCommandManager) {
+        val guildIds = instance.getGuildsForCommandId(commandId, path) ?: return true
+
+        if (manager.guild.idLong !in guildIds) {
+            return false //Don't push command if it isn't allowed
+        }
+    }
+
+    return true
+}
 
 fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->

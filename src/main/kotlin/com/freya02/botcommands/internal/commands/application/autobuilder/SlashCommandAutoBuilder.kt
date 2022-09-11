@@ -80,10 +80,8 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
 
                 //TODO test
                 metadata.commandId?.also { id ->
-                    val guildIds = instance.getGuildsForCommandId(id, path) ?: return@also
-
-                    if (manager.guild.idLong !in guildIds) {
-                        return@forEachWithDelayedExceptions //Don't push command if it isn't allowed
+                    if (!checkCommandId(manager, instance, id, path)) {
+                        return
                     }
                 }
 

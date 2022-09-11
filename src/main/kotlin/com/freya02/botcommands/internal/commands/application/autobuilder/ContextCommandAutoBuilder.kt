@@ -141,18 +141,6 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
         }
     }
 
-    private fun checkCommandId(manager: IApplicationCommandManager, instance: ApplicationCommand, it: String, path: CommandPath): Boolean {
-        if (manager is GuildApplicationCommandManager) {
-            val guildIds = instance.getGuildsForCommandId(it, path) ?: return true
-
-            if (manager.guild.idLong !in guildIds) {
-                return false //Don't push command if it isn't allowed
-            }
-        }
-
-        return true
-    }
-
     private fun ApplicationCommandBuilder.processOptions(
         guild: Guild?,
         func: KFunction<*>,
