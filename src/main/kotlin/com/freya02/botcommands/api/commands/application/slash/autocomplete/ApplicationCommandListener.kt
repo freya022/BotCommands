@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
@@ -10,6 +9,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -17,13 +17,13 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 import java.util.*
 
-private val LOGGER = Logging.getLogger()
+private val LOGGER = KotlinLogging.logger {  }
 
 @BService
 internal class ApplicationCommandListener(private val context: BContextImpl) {
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
-        LOGGER.trace("Received slash command: {}", reconstructCommand(event))
+        LOGGER.trace { "Received slash command: ${reconstructCommand(event)}" }
 
         try {
             val slashCommand = CommandPath.of(event.commandPath).let {
@@ -43,7 +43,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
     @BEventListener
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
-        LOGGER.trace("Received user context command: {}", reconstructCommand(event))
+        LOGGER.trace { "Received user context command: ${reconstructCommand(event)}" }
 
         try {
             val userCommand = event.name.let {
@@ -63,7 +63,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
     @BEventListener
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
-        LOGGER.trace("Received message context command: {}", reconstructCommand(event))
+        LOGGER.trace { "Received message context command: ${reconstructCommand(event)}" }
 
         try {
             val messageCommand = event.name.let {

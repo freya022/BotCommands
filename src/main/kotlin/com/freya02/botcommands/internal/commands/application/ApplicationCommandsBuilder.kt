@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -14,6 +13,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParam
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -21,7 +21,7 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = Logging.getLogger()
+private val LOGGER = KotlinLogging.logger {  }
 
 @BService
 internal class ApplicationCommandsBuilder(
@@ -63,11 +63,11 @@ internal class ApplicationCommandsBuilder(
 
         LOGGER.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
         if (globalDeclarationFunctions.isNotEmpty()) {
-            LOGGER.trace("Global declaration functions:\n" + globalDeclarationFunctions.joinToString("\n") { it.function.shortSignature })
+            LOGGER.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
 
         if (guildDeclarationFunctions.isNotEmpty()) {
-            LOGGER.trace("Guild declaration functions:\n" + guildDeclarationFunctions.joinToString("\n") { it.function.shortSignature })
+            LOGGER.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
     }
 

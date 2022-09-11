@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.components.sql
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.components.ComponentErrorReason
 import com.freya02.botcommands.api.components.ComponentType
 import com.freya02.botcommands.api.components.InteractionConstraints
@@ -11,6 +10,7 @@ import com.freya02.botcommands.internal.core.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.sql.SQLException
 
@@ -25,8 +25,8 @@ internal abstract class SQLComponentData(
         with(transaction) {
             when {
                 groupId > 0 -> preparedStatement("delete from bc_component_data where group_id = ?;") {
-                    val i = executeUpdate(groupId)
-                    logger.trace("Deleted {} components from group {}", i, groupId)
+                    val rowsAffected = executeUpdate(groupId)
+                    logger.trace { "Deleted $rowsAffected components from group ${groupId}" }
                 }
                 else -> preparedStatement("delete from bc_component_data where component_id = ?;") {
                     executeUpdate(*arrayOf(componentId))
@@ -75,7 +75,7 @@ internal abstract class SQLComponentData(
     }
 
     companion object {
-        private val logger = Logging.getLogger()
+        private val logger = KotlinLogging.logger {  }
 
         context(Transaction)
         @JvmStatic

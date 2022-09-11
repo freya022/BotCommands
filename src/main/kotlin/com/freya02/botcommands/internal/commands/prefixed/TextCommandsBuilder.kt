@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
@@ -14,10 +13,11 @@ import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import mu.KotlinLogging
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = Logging.getLogger()
+private val LOGGER = KotlinLogging.logger {  }
 
 @BService
 internal class TextCommandsBuilder(
@@ -39,7 +39,7 @@ internal class TextCommandsBuilder(
 
         LOGGER.debug("Loaded ${declarationFunctions.size} text command declaration functions")
         if (declarationFunctions.isNotEmpty()) {
-            LOGGER.trace("Text command declaration functions:\n" + declarationFunctions.joinToString("\n") { it.function.shortSignature })
+            LOGGER.trace { "Text command declaration functions:\n" + declarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
     }
 

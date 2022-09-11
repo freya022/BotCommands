@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.*
@@ -10,6 +9,7 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.core.events.LoadEvent
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -21,7 +21,7 @@ internal class ResolverContainer(
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger {  }
 
     private val map: MutableMap<KClass<*>, Any> = hashMapOf()
 
@@ -61,7 +61,7 @@ internal class ResolverContainer(
                 }
             }
 
-            logger.trace("Found resolvers:\n$resolversStr")
+            logger.trace { "Found resolvers:\n$resolversStr" }
         }
     }
 

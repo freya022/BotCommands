@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
@@ -14,6 +13,7 @@ import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.companionObjectInstance
@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
-private val LOGGER = Logging.getLogger()
+private val LOGGER = KotlinLogging.logger { }
 
 class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
@@ -99,7 +99,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                     serviceMap[clazz] = instance
 
-                    LOGGER.trace("Loaded service: ${clazz.simpleName}")
+                    LOGGER.trace { "Loaded service: ${clazz.simpleName}" }
 
                     return instance as T
                 } catch (e: Exception) {
