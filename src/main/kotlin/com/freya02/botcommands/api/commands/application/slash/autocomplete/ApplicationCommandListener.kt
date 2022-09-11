@@ -90,11 +90,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
         val baseEx = e.getDeepestCause()
 
-        LOGGER.error(
-            "Unhandled exception in thread '${Thread.currentThread().name}' while executing an application command '${
-                reconstructCommand(event)
-            }'", baseEx
-        )
+        LOGGER.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {

@@ -126,9 +126,7 @@ internal class ComponentListener(
 
         val baseEx = e.getDeepestCause()
 
-        LOGGER.error(
-            "Unhandled exception in thread '${Thread.currentThread().name}' while executing a component", baseEx
-        )
+        LOGGER.error("Unhandled exception while executing a component", baseEx)
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
