@@ -1,8 +1,10 @@
 package com.freya02.botcommands.internal
 
+import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.api.core.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.lang.reflect.Modifier
@@ -32,7 +34,10 @@ internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KPar
 }
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwInternal(message: String): Nothing = throw IllegalArgumentException("$message, please report this to the devs")
+internal inline fun throwInternal(message: String): Nothing =
+    throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
+
+internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
