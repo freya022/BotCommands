@@ -17,7 +17,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class ResolverContainer( //TODO Should be part of the base module
+internal class ResolverContainer(
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
