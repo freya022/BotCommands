@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -76,7 +77,12 @@ public abstract class AbstractChannelResolver<T extends GuildChannel>
 	@Override
 	@Nullable
 	public T resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		return (T) optionMapping.getAsChannel();
+		final GuildChannelUnion channel = optionMapping.getAsChannel();
+		if (channelTypes.contains(channel.getType())) {
+			return (T) channel;
+		}
+
+		return null;
 	}
 
 	@Override
