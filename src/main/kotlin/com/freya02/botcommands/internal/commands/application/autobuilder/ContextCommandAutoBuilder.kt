@@ -30,7 +30,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer) {
+internal class ContextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
     private val messageFunctions: List<MessageContextFunctionMetadata>
     private val userFunctions: List<UserContextFunctionMetadata>
 
@@ -105,6 +105,10 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
             }
         }
 
+        if (!checkTestCommand(manager, func, metadata.annotation.scope, context)) {
+            return
+        }
+
         val annotation = metadata.annotation
         manager.messageCommand(path.name, annotation.scope) {
             fillCommandBuilder(func)
@@ -127,6 +131,10 @@ internal class ContextCommandAutoBuilder(classPathContainer: ClassPathContainer)
             if (!checkCommandId(manager, instance, it, path)) {
                 return
             }
+        }
+
+        if (!checkTestCommand(manager, func, metadata.annotation.scope, context)) {
+            return
         }
 
         val annotation = metadata.annotation

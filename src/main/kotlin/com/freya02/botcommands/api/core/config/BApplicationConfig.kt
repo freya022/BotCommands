@@ -25,7 +25,7 @@ class BApplicationConfig internal constructor(config: BConfig) {
      *
      * @see Test
      */
-    val testGuildIds: MutableList<Long> = mutableListOf() //TODO implement usage
+    val testGuildIds: MutableList<Long> = mutableListOf()
 
     /**
      * Enables the library to do network calls to Discord in order to check if application commands need to be updated

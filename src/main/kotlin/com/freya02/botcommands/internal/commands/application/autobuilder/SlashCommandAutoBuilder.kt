@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
+internal class SlashCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
     private val functions: List<SlashFunctionMetadata>
 
     init {
@@ -83,6 +83,10 @@ internal class SlashCommandAutoBuilder(classPathContainer: ClassPathContainer) {
                     if (!checkCommandId(manager, instance, id, path)) {
                         return
                     }
+                }
+
+                if (!checkTestCommand(manager, metadata.func, annotation.scope, context)) {
+                    return
                 }
 
                 processCommand(manager, metadata, subcommands, subcommandGroups)

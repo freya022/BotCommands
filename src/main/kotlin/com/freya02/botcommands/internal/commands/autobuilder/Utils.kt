@@ -5,15 +5,21 @@ import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
+import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 
 fun String.nullIfEmpty(): String? = when {
     isEmpty() -> null
@@ -55,6 +61,18 @@ internal fun checkCommandId(manager: IApplicationCommandManager, instance: Appli
     return true
 }
 
+internal fun checkTestCommand(manager: IApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): Boolean {
+    if (func.hasAnnotation<Test>()) {
+        if (scope != CommandScope.GUILD) throwUser(func, "Test commands must have their scope set to GUILD")
+        if (manager !is GuildApplicationCommandManager) throwInternal("GUILD scoped command was not registered with a guild command manager")
+
+        //Returns whether the command can be registered
+        return manager.guild.idLong in AnnotationUtils.getEffectiveTestGuildIds(context, func)
+    }
+
+    return true
+}
+
 fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {
@@ -81,5 +99,5 @@ internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
 }
 
 fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>) {
-    testOnly = AnnotationUtils.getEffectiveTestState(func)
+
 }

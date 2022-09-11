@@ -12,7 +12,6 @@ abstract class ApplicationCommandBuilder internal constructor(
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     var defaultLocked = DEFAULT_DEFAULT_LOCKED
-    var testOnly = false
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
