@@ -13,10 +13,11 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
     /**
      * Returns a resolved object from this text command interaction
      *
-     * @param context The [BContext] of this bot
-     * @param info    The text command info of the command being executed
-     * @param event   The event of this received message
-     * @param args    The text arguments of this command, extracted with [pattern]
+     * @param context   The [BContext] of this bot
+     * @param variation The text command variation of the command being executed
+     * @param event     The event of this received message
+     * @param args      The text arguments of this command, extracted with [pattern]
+     *
      * @return The resolved option mapping
      */
     fun resolve(
