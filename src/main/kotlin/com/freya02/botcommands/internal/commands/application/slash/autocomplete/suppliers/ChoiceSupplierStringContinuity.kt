@@ -9,7 +9,11 @@ internal class ChoiceSupplierStringContinuity(private val numChoices: Int) : Cho
     @Throws(Exception::class)
     override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice> {
         val autoCompleteQuery = event.focusedOption
-        return AutocompleteAlgorithms.fuzzyMatchingWithContinuity(collection, { obj -> obj.toString() }, event)
+        return AutocompleteAlgorithms.fuzzyMatchingWithContinuity(
+            collection,
+            { obj -> obj.toString() },
+            event.focusedOption.value
+        )
             .take(numChoices)
             .map { it.string.asChoice(autoCompleteQuery.type) ?: throw IllegalArgumentException("Malformed input for option type ${autoCompleteQuery.type}: '${it.string}'") }
     }

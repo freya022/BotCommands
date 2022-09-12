@@ -9,7 +9,7 @@ internal class ChoiceSupplierStringFuzzy(private val numChoices: Int) : ChoiceSu
     @Throws(Exception::class)
     override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice> {
         val autoCompleteQuery = event.focusedOption
-        return AutocompleteAlgorithms.fuzzyMatching(collection, { it.toString() }, event)
+        return AutocompleteAlgorithms.fuzzyMatching(collection, { it.toString() }, event.focusedOption.value)
             .take(numChoices)
             .map { it.string.asChoice(autoCompleteQuery.type) ?: throw IllegalArgumentException("Malformed input for option type ${autoCompleteQuery.type}: '${it.string}'") }
     }

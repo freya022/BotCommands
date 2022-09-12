@@ -361,12 +361,6 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>me.xdrop</groupId> <!-- TODO remove -->
-            <artifactId>fuzzywuzzy</artifactId>
-            <version>1.4.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
@@ -419,6 +413,12 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.xdrop</groupId> <!-- legacy -->
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
