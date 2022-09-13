@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;

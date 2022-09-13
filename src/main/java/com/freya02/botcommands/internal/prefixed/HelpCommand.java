@@ -10,9 +10,9 @@ import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.Usability;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
