@@ -60,6 +60,13 @@
             </properties>
         </profile>
         <profile>
+            <id>check-docs</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
+        </profile>
+        <profile>
             <id>release</id>
             <properties>
                 <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
