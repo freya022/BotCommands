@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.prefixed.annotations.Category;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

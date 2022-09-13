@@ -3,10 +3,10 @@ package com.freya02.botcommands.internal.application.slash.autocomplete;
 import com.freya02.botcommands.api.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.application.slash.ApplicationCommandVarArgParameter;
-import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.lang.reflect.Parameter;
 

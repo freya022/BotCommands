@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.lang.reflect.Parameter;

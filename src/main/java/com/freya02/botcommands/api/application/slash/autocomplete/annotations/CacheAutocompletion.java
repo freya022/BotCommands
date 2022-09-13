@@ -2,9 +2,9 @@ package com.freya02.botcommands.api.application.slash.autocomplete.annotations;
 
 import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.autocomplete.AutocompletionCacheMode;
-import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.Channel;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

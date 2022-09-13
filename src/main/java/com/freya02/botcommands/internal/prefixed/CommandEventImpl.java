@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.utils.RichTextFinder;
 import com.freya02.botcommands.api.utils.RichTextType;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;

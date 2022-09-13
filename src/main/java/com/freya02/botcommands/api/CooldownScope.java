@@ -2,7 +2,7 @@ package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.annotations.Cooldown;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 /**
  * <p>Provides cooldown scopes for executed commands</p>

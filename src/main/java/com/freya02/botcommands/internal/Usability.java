@@ -4,7 +4,14 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.SettingsProvider;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
 import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.Interaction;
 
 import java.util.EnumSet;
