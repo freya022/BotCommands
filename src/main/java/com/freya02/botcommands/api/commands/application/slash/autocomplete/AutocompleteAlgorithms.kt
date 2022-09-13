@@ -21,7 +21,7 @@ class AutocompleteAlgorithms {
          */
         @JvmStatic
         fun <T> fuzzyMatching(items: Collection<T>, toStringFunction: ToStringFunction<T>, query: String): List<FuzzyResult<T>> {
-            val list = arrayListOf<FuzzyResult<T>>()
+            val list = sortedSetOf<FuzzyResult<T>>()
             items.forEach {
                 val str = toStringFunction.toString(it)
                 val algo = when {
@@ -35,7 +35,6 @@ class AutocompleteAlgorithms {
                 list += FuzzyResult(it, str, distance)
             }
 
-            list.sort()
             return list.take(25)
         }
 
@@ -57,7 +56,7 @@ class AutocompleteAlgorithms {
             toStringFunction: ToStringFunction<T>,
             query: String
         ): List<FuzzyResult<T>> {
-            val list = arrayListOf<FuzzyResult<T>>()
+            val list = sortedSetOf<FuzzyResult<T>>()
             items.forEach {
                 val str = toStringFunction.toString(it)
                 if (!str.startsWith(query, ignoreCase = true)) return@forEach
@@ -73,7 +72,6 @@ class AutocompleteAlgorithms {
                 list += FuzzyResult(it, str, distance)
             }
 
-            list.sort()
             return list.take(25)
         }
     }
