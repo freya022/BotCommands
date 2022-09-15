@@ -7,8 +7,8 @@ import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFun
 import kotlin.reflect.KFunction
 
 internal class TextFunctionMetadata(
-    instance: TextCommand,
+    instanceSupplier: () -> TextCommand,
     func: KFunction<*>,
     annotation: JDATextCommand,
     path: CommandPath
-) : CommandFunctionMetadata<TextCommand, JDATextCommand>(instance, func, annotation, path)
+) : CommandFunctionMetadata<TextCommand, JDATextCommand>(instanceSupplier, func, annotation, path)

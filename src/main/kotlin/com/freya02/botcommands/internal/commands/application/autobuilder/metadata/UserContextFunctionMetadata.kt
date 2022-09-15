@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAU
 import kotlin.reflect.KFunction
 
 internal class UserContextFunctionMetadata(
-    instance: ApplicationCommand,
+    instanceSupplier: () -> ApplicationCommand,
     func: KFunction<*>,
     annotation: JDAUserCommand,
     path: CommandPath,
     commandId: String?
-) : ApplicationFunctionMetadata<ApplicationCommand, JDAUserCommand>(instance, func, annotation, path, commandId)
+) : ApplicationFunctionMetadata<ApplicationCommand, JDAUserCommand>(instanceSupplier, func, annotation, path, commandId)

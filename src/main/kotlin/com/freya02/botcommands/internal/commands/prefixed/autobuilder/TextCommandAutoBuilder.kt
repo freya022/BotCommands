@@ -13,10 +13,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommand
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.autobuilder.addFunction
-import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
-import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
-import com.freya02.botcommands.internal.commands.autobuilder.nullIfEmpty
+import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
@@ -36,8 +33,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
         functions = classPathContainer.functionsWithAnnotation<JDATextCommand>()
             .requireNonStatic()
             .requireFirstArg(BaseCommandEvent::class).map {
-                val instance = it.instance as? TextCommand
-                    ?: throwUser(it.function, "Declaring class must extend ${TextCommand::class.simpleName}")
+                val instanceSupplier: () -> TextCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -46,7 +42,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
                     }
                 }
 
-                TextFunctionMetadata(instance, func, annotation, path)
+                TextFunctionMetadata(instanceSupplier, func, annotation, path)
             }
     }
 

@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import kotlin.reflect.KFunction
 
 internal class SlashFunctionMetadata(
-    instance: ApplicationCommand,
+    instanceSupplier: () -> ApplicationCommand,
     func: KFunction<*>,
     annotation: JDASlashCommand,
     path: CommandPath,
     commandId: String?
-) : ApplicationFunctionMetadata<ApplicationCommand, JDASlashCommand>(instance, func, annotation, path, commandId)
+) : ApplicationFunctionMetadata<ApplicationCommand, JDASlashCommand>(instanceSupplier, func, annotation, path, commandId)

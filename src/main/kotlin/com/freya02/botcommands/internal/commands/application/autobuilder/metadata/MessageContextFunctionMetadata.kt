@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAM
 import kotlin.reflect.KFunction
 
 internal class MessageContextFunctionMetadata(
-    instance: ApplicationCommand,
+    instanceSupplier: () -> ApplicationCommand,
     func: KFunction<*>,
     annotation: JDAMessageCommand,
     path: CommandPath,
     commandId: String?
-) : ApplicationFunctionMetadata<ApplicationCommand, JDAMessageCommand>(instance, func, annotation, path, commandId)
+) : ApplicationFunctionMetadata<ApplicationCommand, JDAMessageCommand>(instanceSupplier, func, annotation, path, commandId)

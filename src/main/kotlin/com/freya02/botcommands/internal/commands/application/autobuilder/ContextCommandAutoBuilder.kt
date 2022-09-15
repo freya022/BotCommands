@@ -39,28 +39,26 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
             .requireNonStatic()
             .requireFirstArg(GlobalMessageEvent::class)
             .map {
-                val instance = it.instance as? ApplicationCommand
-                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                MessageContextFunctionMetadata(instance, func, annotation, path, commandId)
+                MessageContextFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
             }
 
         userFunctions = classPathContainer.functionsWithAnnotation<JDAUserCommand>()
             .requireNonStatic()
             .requireFirstArg(GlobalUserEvent::class)
             .map {
-                val instance = it.instance as? ApplicationCommand
-                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAMessageCommand should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                UserContextFunctionMetadata(instance, func, annotation, path, commandId)
+                UserContextFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
             }
     }
 

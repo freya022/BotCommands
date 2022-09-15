@@ -5,9 +5,9 @@ import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFun
 import kotlin.reflect.KFunction
 
 internal abstract class ApplicationFunctionMetadata<T, A : Annotation>(
-    instance: T,
+    instanceSupplier: () -> T,
     func: KFunction<*>,
     annotation: A,
     path: CommandPath,
     val commandId: String?
-) : CommandFunctionMetadata<T, A>(instance, func, annotation, path)
+) : CommandFunctionMetadata<T, A>(instanceSupplier, func, annotation, path)

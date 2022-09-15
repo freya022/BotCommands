@@ -34,8 +34,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
             .requireNonStatic()
             .requireFirstArg(GlobalSlashEvent::class)
             .map {
-                val instance = it.instance as? ApplicationCommand
-                    ?: throwUser(it.function, "Declaring class must extend ${ApplicationCommand::class.simpleName}")
+                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -45,7 +44,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 }
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                SlashFunctionMetadata(instance, func, annotation, path, commandId)
+                SlashFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
             }
     }
 
