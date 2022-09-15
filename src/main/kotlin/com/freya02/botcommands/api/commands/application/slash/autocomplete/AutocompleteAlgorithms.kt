@@ -17,10 +17,10 @@ class AutocompleteAlgorithms {
          * @param toStringFunction The function to transform an item into a String
          * @param query            The query to match items against
          *
-         * @return A list of extract results with the scores of each item
+         * @return A collection of extract results with the scores of each item
          */
         @JvmStatic
-        fun <T> fuzzyMatching(items: Collection<T>, toStringFunction: ToStringFunction<T>, query: String): List<FuzzyResult<T>> {
+        fun <T> fuzzyMatching(items: Collection<T>, toStringFunction: ToStringFunction<T>, query: String): Collection<FuzzyResult<T>> {
             val list = sortedSetOf<FuzzyResult<T>>()
             items.forEach {
                 val str = toStringFunction.toString(it)
@@ -33,7 +33,7 @@ class AutocompleteAlgorithms {
                 list += FuzzyResult(it, str, distance)
             }
 
-            return list.take(25)
+            return list
         }
 
         /**
@@ -46,14 +46,14 @@ class AutocompleteAlgorithms {
          * @param query            The query to match items against
          * @param <T>              Type of the items
          *
-         * @return A list of extract results with the scores of each item
+         * @return A collection of extract results with the scores of each item
          */
         @JvmStatic
         fun <T> fuzzyMatchingWithContinuity(
             items: Collection<T>,
             toStringFunction: ToStringFunction<T>,
             query: String
-        ): List<FuzzyResult<T>> {
+        ): Collection<FuzzyResult<T>> {
             val list = sortedSetOf<FuzzyResult<T>>()
             items.forEach {
                 val str = toStringFunction.toString(it)
@@ -68,7 +68,7 @@ class AutocompleteAlgorithms {
                 list += FuzzyResult(it, str, distance)
             }
 
-            return list.take(25)
+            return list
         }
     }
 }
