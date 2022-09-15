@@ -7,10 +7,16 @@ public record FuzzyResult<T>(T item, String string, double distance) implements 
 		return 1d - distance;
 	}
 
+	//Serves for ordering purpose
 	@Override
 	public int compareTo(@NotNull FuzzyResult<T> o) {
 		if (distance == o.distance) { //This is needed as TreeSet considers entries as duplicated if compare result is 0
-			return string.compareTo(o.string);
+			final int strCompare = string.compareTo(o.string);
+			if (strCompare == 0) {
+				return 1; //Don't care about ordering if both strings are equal
+			}
+
+			return strCompare;
 		}
 
 		return Double.compare(distance, o.distance);
