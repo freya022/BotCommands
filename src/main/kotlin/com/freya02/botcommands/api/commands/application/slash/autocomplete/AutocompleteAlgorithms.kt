@@ -30,8 +30,6 @@ class AutocompleteAlgorithms {
                 }
 
                 val distance = algo.distance(str, query)
-                if ((1 - distance) <= 0.1) return@forEach
-
                 list += FuzzyResult(it, str, distance)
             }
 
@@ -67,8 +65,6 @@ class AutocompleteAlgorithms {
                 }
 
                 val distance = algo.distance(str, query)
-                if ((1 - distance) <= 0.1) return@forEach
-
                 list += FuzzyResult(it, str, distance)
             }
 
