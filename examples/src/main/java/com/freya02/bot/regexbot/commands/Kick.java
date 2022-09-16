@@ -27,6 +27,6 @@ public class Kick extends TextCommand {
 	public void exec(BaseCommandEvent event,
 	                 @TextOption Member member,
 	                 @TextOption(example = "Spam") /* In the help content this parameter will have 'Spam' as a reason example */ @Optional String reason) {
-		event.getGuild().kick(member, reason).queue();
+		event.getGuild().kick(member).reason(reason).queue();
 	}
 }
