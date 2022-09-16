@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.toVarArgName
+import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.Event
@@ -83,7 +84,7 @@ abstract class SlashCommandInfo internal constructor(
         }
     }
 
-    suspend fun execute(event: SlashCommandInteractionEvent): Boolean {
+    suspend fun execute(event: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
@@ -91,7 +92,7 @@ abstract class SlashCommandInfo internal constructor(
 
         putSlashOptions(event, objects, parameters)
 
-        applyCooldown(event)
+        cooldownService.applyCooldown(this, event)
 
         method.callSuspendBy(objects)
 

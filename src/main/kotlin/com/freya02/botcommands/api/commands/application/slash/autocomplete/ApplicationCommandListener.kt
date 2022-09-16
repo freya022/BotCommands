@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.core.CooldownService
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -20,7 +21,7 @@ import java.util.*
 private val LOGGER = KotlinLogging.logger {  }
 
 @BService
-internal class ApplicationCommandListener(private val context: BContextImpl) {
+internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         LOGGER.trace { "Received slash command: ${reconstructCommand(event)}" }
@@ -34,7 +35,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
             if (!canRun(event, slashCommand)) return
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
-                slashCommand.execute(event)
+                slashCommand.execute(event, cooldownService)
             }
         } catch (e: Throwable) {
             handleException(e, event)
@@ -54,7 +55,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
             if (!canRun(event, userCommand)) return
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
-                userCommand.execute(context, event)
+                userCommand.execute(context, cooldownService, event)
             }
         } catch (e: Throwable) {
             handleException(e, event)
@@ -74,7 +75,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
 
             if (!canRun(event, messageCommand)) return
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
-                messageCommand.execute(context, event)
+                messageCommand.execute(context, cooldownService, event)
             }
         } catch (e: Throwable) {
             handleException(e, event)
@@ -155,11 +156,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl) {
         }
 
         if (isNotOwner) {
-            val cooldown = applicationCommand.getCooldown(event)
+            val cooldown = cooldownService.getCooldown(applicationCommand, event)
             if (cooldown > 0) {
                 val messages = context.getDefaultMessages(event)
 
-                when (applicationCommand.cooldownScope) {
+                when (applicationCommand.cooldownStrategy.scope) {
                     CooldownScope.USER -> reply(event, messages.getUserCooldownMsg(cooldown / 1000.0))
                     CooldownScope.GUILD -> reply(event, messages.getGuildCooldownMsg(cooldown / 1000.0))
                     //Implicit CooldownScope.CHANNEL

@@ -105,9 +105,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         return getService(AutocompleteHandlerContainer::class)[autocompleteHandlerName]
     }
 
-    //TODO implement correctly
-    // Autocomplete functions declared manually will need to have a name specified,
-    // so both annotated and manual have unique names, independent of command path
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
         getAutocompleteHandler(autocompleteHandlerName)?.invalidate()
     }

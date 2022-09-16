@@ -12,7 +12,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 class AutocompleteCommandParameter(
     parameter: KParameter,
-    optionBuilder: SlashCommandOptionBuilder, //TODO Not sure about that
+    optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandParameter(
     parameter, optionBuilder, resolver

@@ -44,7 +44,7 @@ internal class TextCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl) {
+    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl, cooldownService: CooldownService) {
         try {
             val manager = TextCommandManager(context)
             declarationFunctions.forEach { classPathFunction ->
@@ -55,7 +55,7 @@ internal class TextCommandsBuilder(
 
             manager.textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
 
-            context.eventDispatcher.addEventListener(TextCommandsListener(context, helpCommandInfo))
+            context.eventDispatcher.addEventListener(TextCommandsListener(context, cooldownService, helpCommandInfo))
         } catch (e: Throwable) {
             LOGGER.error("An error occurred while updating global commands", e)
         }

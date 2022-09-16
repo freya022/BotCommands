@@ -11,7 +11,7 @@ abstract class TextCommandInfo(
     context: BContextImpl,
     builder: TextCommandBuilder,
     override val parentInstance: INamedCommandInfo?
-) : AbstractCommandInfo(context, builder) {
+) : AbstractCommandInfo(builder) {
     val subcommands: Map<String, TextCommandInfo> = builder.subcommands.associate { it.name to it.build(this) }
 
     val variations: List<TextCommandVariation> = builder.variations.map { it.build(this) }

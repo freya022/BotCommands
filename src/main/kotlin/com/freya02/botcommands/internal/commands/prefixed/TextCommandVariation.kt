@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
+import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
@@ -58,6 +59,7 @@ class TextCommandVariation internal constructor(
 
     suspend fun execute(
         _event: MessageReceivedEvent,
+        cooldownService: CooldownService,
         args: String,
         matcher: Matcher?
     ): ExecutionResult {
@@ -129,7 +131,7 @@ class TextCommandVariation internal constructor(
             }
         }
 
-        info.applyCooldown(event) //TODO cooldown is applied on a per-alternative basis, it should be per command path
+        cooldownService.applyCooldown(info, event) //TODO cooldown is applied on a per-alternative basis, it should be per command path
 
         method.callSuspendBy(objects)
 

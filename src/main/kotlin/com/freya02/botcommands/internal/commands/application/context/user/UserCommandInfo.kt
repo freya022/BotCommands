@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.commands.application.context.user.mixins
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
@@ -51,6 +52,7 @@ class UserCommandInfo internal constructor(
 
     suspend fun execute(
         context: BContextImpl,
+        cooldownService: CooldownService,
         event: UserContextInteractionEvent
     ): Boolean {
         val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
@@ -79,7 +81,7 @@ class UserCommandInfo internal constructor(
             }
         }
 
-        applyCooldown(event)
+        cooldownService.applyCooldown(this, event)
 
         method.callSuspendBy(arguments)
 

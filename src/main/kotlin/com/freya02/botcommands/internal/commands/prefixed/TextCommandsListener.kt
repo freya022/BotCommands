@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.getDeepestCause
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
@@ -20,7 +21,7 @@ import java.util.regex.Matcher
 
 private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
-internal class TextCommandsListener(private val context: BContextImpl, private val helpCommandInfo: HelpCommandInfo?) {
+internal class TextCommandsListener(private val context: BContextImpl, private val cooldownService: CooldownService, private val helpCommandInfo: HelpCommandInfo?) {
     private val logger = KotlinLogging.logger {  }
     private val spacePattern = Regex("\\s+")
 
@@ -177,10 +178,10 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
         }
 
         if (isNotOwner) {
-            val cooldown: Long = commandInfo.getCooldown(event)
+            val cooldown: Long = cooldownService.getCooldown(commandInfo, event)
             if (cooldown > 0) {
                 val defaultMessages = context.getDefaultMessages(event.guild)
-                when (commandInfo.cooldownScope) {
+                when (commandInfo.cooldownStrategy.scope) {
                     CooldownScope.USER -> replyError(event, defaultMessages.getUserCooldownMsg(cooldown / 1000.0))
                     CooldownScope.GUILD -> replyError(event, defaultMessages.getGuildCooldownMsg(cooldown / 1000.0))
                     CooldownScope.CHANNEL -> replyError(event, defaultMessages.getChannelCooldownMsg(cooldown / 1000.0))
@@ -191,7 +192,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
         }
 
         return withContext(context.config.coroutineScopesConfig.textCommandsScope.coroutineContext) {
-            variation.execute(event, args, matcher)
+            variation.execute(event, cooldownService, args, matcher)
         }
     }
 

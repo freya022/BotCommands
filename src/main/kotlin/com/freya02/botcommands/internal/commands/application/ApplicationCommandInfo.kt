@@ -11,7 +11,7 @@ import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApp
 abstract class ApplicationCommandInfo internal constructor(
     context: BContextImpl,
     builder: ApplicationCommandBuilder
-) : AbstractCommandInfo(context, builder), IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
+) : AbstractCommandInfo(builder), IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
     override val optionParameters: List<ApplicationCommandParameter> by lazy { parameters.filterOptions() }
 
     abstract val topLevelInstance: ITopLevelApplicationCommandInfo
