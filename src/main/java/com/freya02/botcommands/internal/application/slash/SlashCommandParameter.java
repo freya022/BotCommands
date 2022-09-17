@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.lang.reflect.Parameter;
@@ -51,6 +52,10 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 
 		final Length length = parameter.getAnnotation(Length.class);
 		if (length != null) {
+			if (getResolver() == null || getResolver().getOptionType() != OptionType.STRING) {
+				throw new IllegalStateException("Cannot use @" + Length.class.getSimpleName() + " on a option that doesn't accept a string");
+			}
+
 			minLength = length.min();
 			maxLength = length.max();
 		} else {
