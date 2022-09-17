@@ -8,7 +8,11 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.Category;
 import com.freya02.botcommands.api.commands.prefixed.annotations.Description;
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 @CommandMarker //No unused warnings
 @Category("Utils")

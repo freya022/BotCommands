@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.commands.application.slash.annotations;
 
 
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
-import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
