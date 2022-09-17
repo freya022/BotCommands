@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.reflect.KClass

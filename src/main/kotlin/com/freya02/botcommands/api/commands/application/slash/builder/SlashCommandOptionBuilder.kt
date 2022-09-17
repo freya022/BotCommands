@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.build
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
 import com.freya02.botcommands.internal.throwUser
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 

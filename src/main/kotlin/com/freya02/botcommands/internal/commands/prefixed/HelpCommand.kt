@@ -9,8 +9,8 @@ import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPat
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.GuildMessageChannel
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant

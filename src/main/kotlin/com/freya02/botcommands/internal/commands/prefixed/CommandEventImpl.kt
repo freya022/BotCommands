@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent

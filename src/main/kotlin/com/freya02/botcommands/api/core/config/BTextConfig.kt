@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.annotations.LateService
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.GuildMessageChannel
 import java.io.InputStream
 import java.util.function.Supplier
 
