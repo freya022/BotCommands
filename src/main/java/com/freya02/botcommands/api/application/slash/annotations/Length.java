@@ -9,8 +9,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows setting minimum and maximum length on the specified {@link AppOption}
- * <br><b>This is only for strings</b>
+ * Allows setting minimum and maximum string length on the specified {@link AppOption}
+ * <br><b>This is only for string types !</b>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
