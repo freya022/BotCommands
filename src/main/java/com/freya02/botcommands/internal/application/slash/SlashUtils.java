@@ -88,6 +88,8 @@ public class SlashUtils {
 				} else if (optionType == OptionType.NUMBER) {
 					data.setMinValue(parameter.getMinValue().doubleValue());
 					data.setMaxValue(parameter.getMaxValue().doubleValue());
+				} else if (optionType == OptionType.STRING) {
+					data.setRequiredLength(parameter.getMinLength(), parameter.getMaxLength());
 				}
 
 				if (applicationOptionData.hasAutocompletion()) {
