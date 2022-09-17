@@ -32,11 +32,19 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 
 		final LongRange longRange = ReflectionUtils.getLongRange(parameter);
 		if (longRange != null) {
+			if (getResolver() == null || getResolver().getOptionType() != OptionType.INTEGER) {
+				throw new IllegalStateException("Cannot use @" + LongRange.class.getSimpleName() + " on a option that doesn't accept an integer");
+			}
+
 			minValue = longRange.from();
 			maxValue = longRange.to();
 		} else {
 			final DoubleRange doubleRange = ReflectionUtils.getDoubleRange(parameter);
 			if (doubleRange != null) {
+				if (getResolver() == null || getResolver().getOptionType() != OptionType.NUMBER) {
+					throw new IllegalStateException("Cannot use @" + DoubleRange.class.getSimpleName() + " on a option that doesn't accept a floating point number");
+				}
+
 				minValue = doubleRange.from();
 				maxValue = doubleRange.to();
 			} else {
