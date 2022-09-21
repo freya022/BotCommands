@@ -32,7 +32,7 @@
         <dependency> <!-- The Java Discord API-->
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.19</version>
+            <version>5.0.0-alpha.20</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
