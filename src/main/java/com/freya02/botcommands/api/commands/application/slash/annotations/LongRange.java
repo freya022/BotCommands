@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Allows setting minimum and maximum values on the specified {@link AppOption}
+ * <br><b>This is only for integer types !</b>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
