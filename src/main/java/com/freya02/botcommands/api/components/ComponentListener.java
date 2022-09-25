@@ -216,7 +216,7 @@ public class ComponentListener extends ListenerAdapter {
 			throw new IllegalArgumentException("Resolver for %s has %d arguments but component had %d data objects".formatted(Utils.formatMethodShort(descriptor.getMethod()), parameters.size(), args.length));
 		}
 
-		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(handlerName, args);
+		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event, handlerName, args);
 		try {
 			//For some reason using an array list instead of a regular array
 			// magically unboxes primitives when passed to Method#invoke
@@ -263,8 +263,26 @@ public class ComponentListener extends ListenerAdapter {
 	}
 
 	@NotNull
-	private Consumer<Throwable> getThrowableConsumer(String handlerName, String[] args) {
-		return e -> LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
+	private Consumer<Throwable> getThrowableConsumer(GenericComponentInteractionCreateEvent event, String handlerName, String[] args) {
+		return e -> {
+			final ExceptionHandler handler = context.getUncaughtExceptionHandler();
+			if (handler != null) {
+				handler.onException(context, event, e);
+
+				return;
+			}
+
+			Throwable baseEx = Utils.getException(e);
+
+			LOGGER.error("An exception occurred while handling a persistent component '{}' with args {}", handlerName, Arrays.toString(args), e);
+			if (event.isAcknowledged()) {
+				event.getHook().sendMessage(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
+			} else {
+				event.reply(context.getDefaultMessages(event).getGeneralErrorMsg()).setEphemeral(true).queue();
+			}
+
+			context.dispatchException("Exception in persistent component handler", baseEx);
+		};
 	}
 
 	private void onError(GenericComponentInteractionCreateEvent event, ComponentErrorReason reason) {
