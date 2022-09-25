@@ -42,7 +42,7 @@ internal class AutocompleteHandler(
         ) {
             optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
             optionTransformer = { kParameter, paramName, resolver ->
-                val optionBuilder = slashCmdOptionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
+                val optionBuilder = slashCmdOptionBuilders.findOption<SlashCommandOptionBuilder>(paramName, "an autocomplete option")
                 AutocompleteCommandParameter(kParameter, optionBuilder, resolver)
             }
         }

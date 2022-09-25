@@ -57,7 +57,7 @@ abstract class SlashCommandInfo internal constructor(
         ) {
             optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
             optionTransformer = { kParameter, paramName, resolver ->
-                val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName)
+                val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName, "a slash command option")
                 SlashCommandParameter(this@SlashCommandInfo, builder.optionBuilders, kParameter, optionBuilder, resolver)
             }
         }

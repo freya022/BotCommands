@@ -46,7 +46,7 @@ class TextCommandVariation internal constructor(
             builder.optionBuilders
         ) {
             optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is TextOptionBuilder }
-            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.optionBuilders.findOption(paramName), resolver) }
+            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.optionBuilders.findOption(paramName, "a text command option"), resolver) }
         }
 
         optionParameters = parameters.filterOptions()
