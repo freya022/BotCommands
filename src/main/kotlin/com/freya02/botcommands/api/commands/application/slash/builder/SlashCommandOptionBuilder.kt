@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
+import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
@@ -16,6 +17,7 @@ class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName:
     var choices: List<Choice>? = null
 
     var valueRange: ValueRange? = null
+    var lengthRange: LengthRange? = null
     var channelTypes: EnumSet<ChannelType>? = null
 
     var autocompleteInfo: AutocompleteInfo? = null

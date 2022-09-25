@@ -1,6 +1,6 @@
-package com.freya02.botcommands.api.application.slash.annotations;
+package com.freya02.botcommands.api.commands.application.slash.annotations;
 
-import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.lang.annotation.ElementType;

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application
 
-class ValueRange internal constructor(val min: Number, val max: Number) {
+class ValueRange private constructor(val min: Number, val max: Number) {
     companion object {
         @JvmStatic
         fun ofLong(minValue: Long, maxValue: Long) =

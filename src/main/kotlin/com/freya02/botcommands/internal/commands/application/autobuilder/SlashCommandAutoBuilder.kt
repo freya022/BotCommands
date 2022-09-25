@@ -6,9 +6,7 @@ import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
-import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
-import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.*
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
@@ -196,8 +194,9 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 ) {
                     description = optionAnnotation.description.nullIfEmpty() ?: "No description"
 
-                    kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
-                    kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange(range.from, range.to) }
+                    kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
+                    kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
+                    kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
 
                     kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
                         channelTypes = enumSetOf<ChannelType>().also { types ->

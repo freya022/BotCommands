@@ -85,6 +85,11 @@ object SlashUtils {
                             data.setMaxValue(it.max.toDouble())
                         }
                     }
+                    OptionType.STRING -> {
+                        parameter.length?.let {
+                            data.setRequiredLength(it.min, it.max)
+                        }
+                    }
                     else -> {}
                 }
 
