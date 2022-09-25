@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  */
 public class Logging {
 	private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-	private static final Map<Class<?>, Set<String>> loggedMap = new HashMap<>();
+	private static final Map<Class<?>, Set<String>> loggedMap = Collections.synchronizedMap(new HashMap<>());
 
 	/**
 	 * Returns the {@link Logger} for the class which calls this method
