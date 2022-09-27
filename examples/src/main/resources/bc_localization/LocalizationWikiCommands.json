@@ -2,17 +2,19 @@
     "ban": {
         "name": "ban",
         "description": "Bans an user",
-        "user": {
-            "name": "user",
-            "description": "The user to be banned"
-        },
-        "del_hours": {
-            "name": "delete_hours",
-            "description": "Hours of messages to delete"
-        },
-        "reason": {
-            "name": "reason",
-            "description": "The ban reason"
+        "options": {
+            "user": {
+                "name": "user",
+                "description": "The user to be banned"
+            },
+            "del_hours": {
+                "name": "delete_hours",
+                "description": "Hours of messages to delete"
+            },
+            "reason": {
+                "name": "reason",
+                "description": "The ban reason"
+            }
         },
         "caller": {
             "permission_error": "You are missing the \"Ban members\" permission.",

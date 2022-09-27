@@ -33,7 +33,7 @@ public class SlashBan extends ApplicationCommand {
 	//Description is set in localization
 	@JDASlashCommand(name = "ban")
 	public void onSlashBan(GuildSlashEvent event,
-	                       @AppOption User targetUser, //Description is set in localization
+	                       @AppOption(name = "user") User targetUser, //Description is set in localization
 	                       @AppOption int delHours, //Description is set in localization
 	                       @AppOption @Nullable String reason) { //Description is set in localization
 
@@ -46,8 +46,8 @@ public class SlashBan extends ApplicationCommand {
 
 		//Check bot permissions
 		if (!botMember.hasPermission(Permission.BAN_MEMBERS)) {
-			event.getHook().sendMessage(event.localize("ban.bot.permission_error")).setEphemeral(false).queue();
-			event.getHook().sendMessage(event.localize("ban.bot.permission_error")).setEphemeral(true).queue();
+			final String localize = event.localize("ban.bot.permission_error");
+			event.getHook().sendMessage(localize).queue();
 			return;
 		}
 
