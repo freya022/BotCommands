@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.builder.DebugBuilder
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
@@ -85,11 +84,11 @@ internal class ApplicationCommandsUpdater private constructor(
         }
 
         val newBytes = allCommandData.toJsonBytes()
-        return (!ApplicationCommandsCache.isJsonContentSame(oldBytes, newBytes)).also { needUpdate ->
+        return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
                 LOGGER.trace("Updating commands because content is not equal")
 
-                if (DebugBuilder.isLogApplicationDiffsEnabled()) {
+                if (context.config.debugConfig.enableApplicationDiffsLogs) {
                     LOGGER.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
                     LOGGER.trace { "New commands bytes: ${newBytes.decodeToString()}" }
                 }

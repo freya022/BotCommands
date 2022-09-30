@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.commands.application
 
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
 import com.google.gson.Gson
 import net.dv8tion.jda.api.JDA
@@ -26,12 +27,11 @@ internal class ApplicationCommandsCache(jda: JDA) {
 
         fun Collection<CommandData>.toJsonBytes(): ByteArray = DataArray.empty().addAll(this).toJson()
 
-        @JvmStatic
-        fun isJsonContentSame(oldContentBytes: ByteArray, newContentBytes: ByteArray): Boolean {
+        fun isJsonContentSame(context: BContextImpl, oldContentBytes: ByteArray, newContentBytes: ByteArray): Boolean {
             val oldMap = gson.fromJson(oldContentBytes.decodeToString(), Any::class.java)
             val newMap = gson.fromJson(newContentBytes.decodeToString(), Any::class.java)
 
-            val isSame = DiffLogger.getLogger().let { diffLogger ->
+            val isSame = DiffLogger.getLogger(context).let { diffLogger ->
                 checkDiff(oldMap, newMap, diffLogger, 0).also {
                     diffLogger.printLogs()
                 }

@@ -1,14 +1,13 @@
 package com.freya02.botcommands.internal.commands.application.localization
 
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.builder.DebugBuilder
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
 
-class BCLocalizationFunction(context: BContextImpl) : LocalizationFunction {
+class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
     private val baseNameToLocalesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {
@@ -32,7 +31,7 @@ class BCLocalizationFunction(context: BContextImpl) : LocalizationFunction {
                     val template = instance[localizationKey]
                     if (template != null) {
                         map[DiscordLocale.from(locale)] = template.localize()
-                    } else if (DebugBuilder.isLogMissingLocalizationEnabled()) {
+                    } else if (context.config.debugConfig.enabledMissingLocalizationLogs) {
                         if (Logging.tryLog(baseName, locale.toLanguageTag(), localizationKey)) {
                             logger.warn(
                                 "Localization template '{}' could not be found in bundle '{}' with locale '{}' or below",

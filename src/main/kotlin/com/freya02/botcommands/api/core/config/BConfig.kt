@@ -33,6 +33,8 @@ class BConfig internal constructor() {
 
     var defaultMessageProvider: Function<DiscordLocale, DefaultMessages> = DefaultMessagesFunction()
 
+    val debugConfig = BDebugConfig()
+
     val serviceConfig = BServiceConfig()
 
     val textConfig = BTextConfig()
