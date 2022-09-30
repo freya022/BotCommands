@@ -108,7 +108,7 @@ public final class CommandsBuilder {
 	 * @see ExceptionHandlerAdapter
 	 */
 	public CommandsBuilder setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
-		context.setUncaughtExceptionHandler(exceptionHandler);
+//		context.setUncaughtExceptionHandler(exceptionHandler);
 
 		return this;
 	}

@@ -50,8 +50,6 @@ public abstract class RegistrationListener { //TODO change to custom BC events
 	 */
 	public abstract void onComponentRegistered(ComponentDescriptor descriptor);
 
-	/**
-	 * Fired when {@linkplain CommandsBuilder} has finished building
-	 */
+	@Deprecated //TODO replace
 	public abstract void onBuildComplete();
 }

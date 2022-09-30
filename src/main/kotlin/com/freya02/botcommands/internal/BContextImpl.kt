@@ -39,8 +39,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
 
     private var nextExceptionDispatch: Long = 0
 
-    private var uncaughtExceptionHandler: ExceptionHandler? = null
-
     val localizationManager = LocalizationManager()
 
     internal val isHelpDisabled: Boolean
@@ -154,11 +152,8 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         return config.textConfig.helpBuilderConsumer
     }
 
-    fun setUncaughtExceptionHandler(exceptionHandler: ExceptionHandler?) {
-        uncaughtExceptionHandler = exceptionHandler
-    }
-
-    override fun getUncaughtExceptionHandler(): ExceptionHandler? {
-        return uncaughtExceptionHandler
+    override fun getUncaughtExceptionHandler(): ExceptionHandler? = when {
+        config.hasUncaughtExceptionHandler() -> config.uncaughtExceptionHandler
+        else -> null
     }
 }

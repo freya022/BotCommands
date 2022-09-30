@@ -4,6 +4,8 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommandsConte
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.core.config.BConfig;
+import com.freya02.botcommands.api.core.config.BTextConfig;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -117,7 +119,7 @@ public interface BContext {
 	 * Returns the default {@linkplain EmbedBuilder} supplier
 	 *
 	 * @return The default {@linkplain EmbedBuilder} supplier
-	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
+	 * @see BTextConfig#setDefaultEmbedSupplier(Supplier)
 	 */
 	@NotNull
 	Supplier<EmbedBuilder> getDefaultEmbedSupplier();
@@ -126,7 +128,7 @@ public interface BContext {
 	 * Returns the default icon {@linkplain InputStream} supplier
 	 *
 	 * @return The default icon {@linkplain InputStream} supplier
-	 * @see CommandsBuilder#setDefaultEmbedFunction(Supplier, Supplier)
+	 * @see BTextConfig#setDefaultFooterIconSupplier(Supplier)
 	 */
 	@NotNull
 	Supplier<@Nullable InputStream> getDefaultFooterIconSupplier();
@@ -199,7 +201,7 @@ public interface BContext {
 	 * Returns the uncaught exception handler
 	 *
 	 * @return The uncaught exception handler
-	 * @see CommandsBuilder#setUncaughtExceptionHandler(ExceptionHandler)
+	 * @see BConfig#setUncaughtExceptionHandler(ExceptionHandler)
 	 */
 	@Nullable
 	ExceptionHandler getUncaughtExceptionHandler();

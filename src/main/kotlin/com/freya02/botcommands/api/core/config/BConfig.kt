@@ -58,6 +58,7 @@ class BConfig internal constructor() {
      * @see ExceptionHandlerAdapter
      */
     var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
+    fun hasUncaughtExceptionHandler() = ::uncaughtExceptionHandler.toDelegate<LockableVar<*>>().hasValue()
 
     var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
     fun hasConnectionProvider() = ::connectionProvider.toDelegate<LockableVar<*>>().hasValue()
