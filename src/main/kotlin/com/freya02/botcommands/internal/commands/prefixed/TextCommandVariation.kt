@@ -131,7 +131,7 @@ class TextCommandVariation internal constructor(
             }
         }
 
-        cooldownService.applyCooldown(info, event) //TODO cooldown is applied on a per-alternative basis, it should be per command path
+        cooldownService.applyCooldown(info, event)
 
         method.callSuspendBy(objects)
 

@@ -34,7 +34,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	@Nullable protected final TimeoutInfo<T> timeout;
 
 	protected final MessageEditBuilder messageBuilder = new MessageEditBuilder();
-	protected final PaginatorComponents components = new PaginatorComponents(); //TODO rename
+	protected final PaginatorComponents components = new PaginatorComponents();
 
 	private final Set<String> usedIds = new HashSet<>();
 
@@ -43,8 +43,9 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	private boolean timeoutPassed = false;
 
-	//TODO rename
-	protected Components componentss; //TODO Instance should be supplied in the constructor, by the builder, which will receive the instance via a dependency injected factory
+	//TODO Instance should be supplied in the constructor, by the builder
+	// The instance could be passed by a method in events, but for that we need to rework events
+	protected Components componentss;
 
 	protected BasicPagination(@NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
 		this.constraints = constraints;

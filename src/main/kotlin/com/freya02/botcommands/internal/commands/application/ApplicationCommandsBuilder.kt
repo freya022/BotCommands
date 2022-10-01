@@ -178,7 +178,7 @@ internal class ApplicationCommandsBuilder(
     private fun List<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
     private suspend fun onFirstRun(context: BContextImpl, jda: JDA) {
-        LOGGER.debug("First ready") //TODO runInitialization ? (+ exit if error ?)
+        LOGGER.debug("First ready")
 
         context.serviceContainer.putService(ApplicationCommandsCache(jda))
 
