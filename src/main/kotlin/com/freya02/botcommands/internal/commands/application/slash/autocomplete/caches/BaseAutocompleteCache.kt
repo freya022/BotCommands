@@ -1,10 +1,8 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches
 
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheInfo
-import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteCommandParameter
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.CompositeAutocompleteKey
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 private typealias EntityCacheFunction = (CommandAutoCompleteInteractionEvent) -> Long
@@ -29,21 +27,15 @@ internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : 
 
         optionValues.add(event.focusedOption.value)
 
-        autocompleteHandler
-            .methodParameters
-            .asSequence()
-            .filter { it.methodParameterType == MethodParameterType.OPTION }
-            .map { it as AutocompleteCommandParameter }
-            .filter { it.isCompositeKey }
-            .forEach { parameter ->
-                val optionName = parameter.discordName
-                val option = event.getOption(optionName)
+        autocompleteHandler.compositeParameters.forEach { parameter ->
+            val optionName = parameter.discordName
+            val option = event.getOption(optionName)
 
-                when {
-                    option == null -> optionValues.add("null")
-                    event.focusedOption.name != optionName -> optionValues.add(option.asString)
-                }
+            when {
+                option == null -> optionValues.add("null")
+                event.focusedOption.name != optionName -> optionValues.add(option.asString)
             }
+        }
 
         return optionValues.toTypedArray()
     }

@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
@@ -27,6 +28,7 @@ internal class AutocompleteHandler(
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.method)
     internal val methodParameters: MethodParameters
+    internal val compositeParameters: List<AutocompleteCommandParameter>
 
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
@@ -44,6 +46,11 @@ internal class AutocompleteHandler(
                 AutocompleteCommandParameter(kParameter, optionBuilder, resolver)
             }
         }
+
+        compositeParameters = methodParameters
+            .filter { it.methodParameterType == MethodParameterType.OPTION }
+            .map { it as AutocompleteCommandParameter }
+            .filter { it.isCompositeKey }
 
         //accommodate for user input
         val collectionReturnType =
