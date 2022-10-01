@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.application.localization
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.SingleLogger
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
@@ -18,7 +19,7 @@ class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFu
                 val instance = Localization.getInstance(baseName, locale)
                 if (instance != null) {
                     if (instance.effectiveLocale !== locale) {
-                        if (Logging.tryLog(baseName, locale.toLanguageTag(), instance.effectiveLocale.toLanguageTag())) {
+                        SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), instance.effectiveLocale.toLanguageTag()) {
                             logger.warn(
                                 "Localization bundle '{}' with locale '{}' was specified to be valid but was not found, falling back to '{}'",
                                 baseName,
@@ -30,9 +31,9 @@ class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFu
 
                     val template = instance[localizationKey]
                     if (template != null) {
-                        map[DiscordLocale.from(locale)] = template.localize()
+                        map[locale.toDiscordLocale()] = template.localize()
                     } else if (context.config.debugConfig.enabledMissingLocalizationLogs) {
-                        if (Logging.tryLog(baseName, locale.toLanguageTag(), localizationKey)) {
+                        SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), localizationKey) {
                             logger.warn(
                                 "Localization template '{}' could not be found in bundle '{}' with locale '{}' or below",
                                 localizationKey,
@@ -41,8 +42,10 @@ class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFu
                             )
                         }
                     }
-                } else if (Logging.tryLog(baseName, locale.toLanguageTag())) {
-                    logger.warn("Localization bundle '{}' with locale '{}' was specified to be valid but was not found.", baseName, locale)
+                } else {
+                    SingleLogger.current().tryLog(baseName, locale.toLanguageTag()) {
+                        logger.warn("Localization bundle '{}' with locale '{}' was specified to be valid but was not found.", baseName, locale)
+                    }
                 }
             }
         }
@@ -52,5 +55,7 @@ class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFu
 
     companion object {
         private val logger = Logging.getLogger()
+
+        private fun Locale.toDiscordLocale() = DiscordLocale.from(this)
     }
 }
