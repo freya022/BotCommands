@@ -12,10 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import kotlin.time.Duration.Companion.minutes
 
-internal class ConstantByKeyAutocompleteCache(
-    private val handler: AutocompleteHandler,
-    cacheInfo: AutocompleteCacheInfo
-) : BaseAutocompleteCache(cacheInfo) {
+internal class ConstantByKeyAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : BaseAutocompleteCache(cacheInfo) {
     private val cache: Cache<CompositeAutocompleteKey, List<Command.Choice>>
     private val maxWeight: Long = cacheInfo.cacheSize * 1024
     private val lock = Mutex()
@@ -37,6 +34,7 @@ internal class ConstantByKeyAutocompleteCache(
         key.length() + choices.sumOf { c -> c.name.length + c.asString.length }
 
     override suspend fun retrieveAndCall(
+        handler: AutocompleteHandler,
         event: CommandAutoCompleteInteractionEvent,
         valueComputer: suspend (CommandAutoCompleteInteractionEvent) -> List<Command.Choice>
     ): List<Command.Choice> {

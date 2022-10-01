@@ -11,7 +11,6 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -31,7 +30,6 @@ internal class AutocompleteHandler(
 
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
-    private val cache: AbstractAutocompleteCache //TODO probably move to autocomplete info
 
     init {
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
@@ -65,18 +63,16 @@ internal class AutocompleteHandler(
             }
         }
 
-        cache = AbstractAutocompleteCache.fromMode(this)
-
         //Register this handler
         slashCommandInfo.context.getService<AutocompleteHandlerContainer>() += this
     }
 
     internal fun invalidate() {
-        cache.invalidate()
+        autocompleteInfo.cache.invalidate()
     }
 
     suspend fun handle(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        return cache.retrieveAndCall(event, this::generateChoices)
+        return autocompleteInfo.cache.retrieveAndCall(this, event, this::generateChoices)
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
