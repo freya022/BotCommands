@@ -18,13 +18,13 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 import java.util.*
 
-private val LOGGER = KotlinLogging.logger {  }
-
 @BService
 internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
+    private val logger = KotlinLogging.logger {  }
+
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
-        LOGGER.trace { "Received slash command: ${reconstructCommand(event)}" }
+        logger.trace { "Received slash command: ${reconstructCommand(event)}" }
 
         try {
             val slashCommand = CommandPath.of(event.commandPath).let {
@@ -44,7 +44,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
 
     @BEventListener
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
-        LOGGER.trace { "Received user context command: ${reconstructCommand(event)}" }
+        logger.trace { "Received user context command: ${reconstructCommand(event)}" }
 
         try {
             val userCommand = event.name.let {
@@ -64,7 +64,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
 
     @BEventListener
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
-        LOGGER.trace { "Received message context command: ${reconstructCommand(event)}" }
+        logger.trace { "Received message context command: ${reconstructCommand(event)}" }
 
         try {
             val messageCommand = event.name.let {
@@ -91,7 +91,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
 
         val baseEx = e.getDeepestCause()
 
-        LOGGER.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
+        logger.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
@@ -108,7 +108,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
         for (applicationFilter in context.config.applicationConfig.applicationFilters) {
             if (!applicationFilter.isAccepted(applicationFilteringData)) {
-                LOGGER.trace("Cancelled application commands due to filter")
+                logger.trace("Cancelled application commands due to filter")
                 return false
             }
         }
@@ -178,7 +178,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         event.reply(msg)
             .setEphemeral(true)
             .queue(null) {
-                LOGGER.error("Could not send reply message from application command listener", it)
+                logger.error("Could not send reply message from application command listener", it)
                 context.dispatchException("Could not send reply message from application command listener", it)
             }
     }

@@ -90,11 +90,11 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
 
         val baseEx = e.getDeepestCause()
 
-        logger.error("Unhandled exception while executing a text command '{}'", msg, baseEx)
+        logger.error("Unhandled exception while executing a text command '$msg'", baseEx)
 
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
 
-        context.dispatchException("Exception in application command '$msg'", baseEx)
+        context.dispatchException("Exception in text command '$msg'", baseEx)
     }
 
     private fun findCommandWithArgs(content: String): CommandWithArgs? {
