@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core
 
+import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
 import mu.KotlinLogging
@@ -13,38 +14,49 @@ internal class ExceptionContextInfo {
 
 internal class ExceptionContext private constructor(private val context: BContextImpl) {
     private val descStack: Stack<String> = Stack()
+    private lateinit var contextBlock: ExceptionContextInfo.() -> Unit //Set during "construction"
 
     inline fun <R> exceptionContext(desc: String, block: ExceptionContext.() -> R): R {
         descStack += desc
         return let(block).also { descStack.pop() }
     }
 
-    suspend inline fun <R> overrideHandler(
-        contextBlock: ExceptionContextInfo.() -> Unit,
+    inline fun <R> overrideHandler(
+        noinline contextBlock: ExceptionContextInfo.() -> Unit,
         block: ExceptionContext.() -> R
-    ): Result<R> = runCatching(block).onFailure { e ->
-        val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
+    ): R {
+        this.contextBlock = contextBlock
+        return let(block)
+    }
 
-        val baseEx = e.getDeepestCause()
+    private suspend inline fun <R> runContext(desc: String, block: ExceptionContext.() -> R): Result<R> {
+        descStack += desc
+        return runCatching(block).onFailure { e ->
+            val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
 
-        val descStr = descStack.joinToString("\n\t          ")
-        val contextStr = "\tContext:  $descStr"
+            val baseEx = e.getDeepestCause()
 
-        KotlinLogging.logger {}.error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
-        context.dispatchException(exceptionContextInfo.dispatchMessage(), baseEx)
-        exceptionContextInfo.postRun()
+            val descStr = descStack.joinToString("\n\t          ")
+            val contextStr = "\tContext:  $descStr"
+
+            //Compiler crash if the function type method is used
+            KotlinLogging.logger(Logging.getLogger()).error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
+            context.dispatchException(exceptionContextInfo.dispatchMessage(), baseEx)
+            exceptionContextInfo.postRun()
+        }.also { descStack.pop() }
     }
 
     companion object {
         suspend inline fun <R> exceptionContext(
             context: BContextImpl,
             desc: String,
-            contextBlock: ExceptionContextInfo.() -> Unit,
+            noinline contextBlock: ExceptionContextInfo.() -> Unit,
             block: ExceptionContext.() -> R
         ): Result<R> {
-            return ExceptionContext(context).overrideHandler(contextBlock) {
-                exceptionContext(desc, block)
-            }
+            val exceptionContext = ExceptionContext(context)
+            exceptionContext.contextBlock = contextBlock
+
+            return exceptionContext.runContext(desc, block)
         }
     }
 }
