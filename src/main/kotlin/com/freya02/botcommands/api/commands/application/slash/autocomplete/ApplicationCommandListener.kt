@@ -5,10 +5,15 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.ExceptionHandler
+import com.freya02.botcommands.internal.core.ExceptionHandlerBuilder
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -19,14 +24,14 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 import java.util.*
 
 @BService
-internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
+internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService, private val exceptionHandler: ExceptionHandler) {
     private val logger = KotlinLogging.logger {  }
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${reconstructCommand(event)}" }
 
-        try {
+        exceptionHandler.runCatching(event, { configureHandler(event) }) {
             val slashCommand = CommandPath.of(event.commandPath).let {
                 context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
@@ -37,8 +42,6 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
                 slashCommand.execute(event, cooldownService)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 
@@ -46,7 +49,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${reconstructCommand(event)}" }
 
-        try {
+        exceptionHandler.runCatching(event, { configureHandler(event) }) {
             val userCommand = event.name.let {
                 context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
@@ -57,8 +60,6 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
                 userCommand.execute(context, cooldownService, event)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 
@@ -66,7 +67,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${reconstructCommand(event)}" }
 
-        try {
+        exceptionHandler.runCatching(event, { configureHandler(event) }) {
             val messageCommand = event.name.let {
                 context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
@@ -77,31 +78,19 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
                 messageCommand.execute(context, cooldownService, event)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 
-    private fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
-        val handler = context.uncaughtExceptionHandler
-        if (handler != null) {
-            handler.onException(context, event, e)
-            return
+    private fun ExceptionHandlerBuilder.configureHandler(event: GenericCommandInteractionEvent) {
+        logMessage = { "Unhandled exception while executing an application command '${reconstructCommand(event)}'" }
+        dispatchMessage = { "Exception in application command '${reconstructCommand(event)}'" }
+        postRun = {
+            val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
+            when {
+                event.isAcknowledged -> event.hook.sendMessage(generalErrorMsg).setEphemeral(true).queue()
+                else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
+            }
         }
-
-        val baseEx = e.getDeepestCause()
-
-        logger.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
-
-        val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
-        when {
-            event.isAcknowledged -> event.hook.sendMessage(generalErrorMsg).setEphemeral(true).queue()
-            else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
-        }
-
-        context.dispatchException(
-            "Exception in application command '${reconstructCommand(event)}'", baseEx
-        )
     }
 
     private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
