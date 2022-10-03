@@ -15,7 +15,7 @@ suspend fun main() {
         postRun = { println("oké") }
     }
 
-    ExceptionContext.exceptionContext(context, "Test", contextBlock) {
+    ExceptionContext.ExceptionContextBuilder(context, "Test", contextBlock).build {
         println("do sth")
 
         exceptionContext("Test 2") {

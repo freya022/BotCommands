@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
 import mu.KotlinLogging
@@ -12,9 +11,11 @@ internal class ExceptionContextInfo {
     var postRun: suspend () -> Unit = { }
 }
 
-internal class ExceptionContext private constructor(private val context: BContextImpl) {
+internal class ExceptionContext private constructor(
+    private val context: BContextImpl,
+    private var contextBlock: ExceptionContextInfo.() -> Unit
+) {
     private val descStack: Stack<String> = Stack()
-    private lateinit var contextBlock: ExceptionContextInfo.() -> Unit //Set during "construction"
 
     inline fun <R> exceptionContext(desc: String, block: ExceptionContext.() -> R): R {
         descStack += desc
@@ -39,24 +40,18 @@ internal class ExceptionContext private constructor(private val context: BContex
             val descStr = descStack.joinToString("\n\t          ")
             val contextStr = "\tContext:  $descStr"
 
-            //Compiler crash if the function type method is used
-            KotlinLogging.logger(Logging.getLogger()).error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
+            KotlinLogging.logger { }.error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
             context.dispatchException(exceptionContextInfo.dispatchMessage(), baseEx)
             exceptionContextInfo.postRun()
         }.also { descStack.pop() }
     }
 
-    companion object {
-        suspend inline fun <R> exceptionContext(
-            context: BContextImpl,
-            desc: String,
-            noinline contextBlock: ExceptionContextInfo.() -> Unit,
-            block: ExceptionContext.() -> R
-        ): Result<R> {
-            val exceptionContext = ExceptionContext(context)
-            exceptionContext.contextBlock = contextBlock
-
-            return exceptionContext.runContext(desc, block)
-        }
+    internal class ExceptionContextBuilder(
+        private val context: BContextImpl,
+        private val desc: String,
+        private val contextBlock: ExceptionContextInfo.() -> Unit
+    ) {
+        suspend inline fun <R> build(block: ExceptionContext.() -> R): Result<R> =
+            ExceptionContext(context, contextBlock).runContext(desc, block)
     }
 }
