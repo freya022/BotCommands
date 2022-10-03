@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core
 
+import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.getDeepestCause
 import mu.KotlinLogging
@@ -26,8 +27,9 @@ internal class ExceptionContext private constructor(
         noinline contextBlock: ExceptionContextInfo.() -> Unit,
         block: ExceptionContext.() -> R
     ): R {
+        val oldBlock = this.contextBlock
         this.contextBlock = contextBlock
-        return let(block)
+        return block().also { this.contextBlock = oldBlock }
     }
 
     private suspend inline fun <R> runContext(desc: String, block: ExceptionContext.() -> R): Result<R> {
@@ -40,7 +42,8 @@ internal class ExceptionContext private constructor(
             val descStr = descStack.joinToString("\n\t          ")
             val contextStr = "\tContext:  $descStr"
 
-            KotlinLogging.logger { }.error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
+            //Compiler error when using the function type method
+            KotlinLogging.logger(Logging.getLogger()).error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
             context.dispatchException(exceptionContextInfo.dispatchMessage(), baseEx)
             exceptionContextInfo.postRun()
         }.also { descStack.pop() }
