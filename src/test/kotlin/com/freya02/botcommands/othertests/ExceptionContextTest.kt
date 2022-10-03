@@ -17,6 +17,7 @@ suspend fun main() {
 
     ExceptionContext.ExceptionContextBuilder(context, "Test", contextBlock).build {
         println("do sth")
+        throw AssertionError("throw")
 
         exceptionContext("Test 2") {
             throwUser("throw")

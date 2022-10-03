@@ -1,9 +1,8 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.getDeepestCause
 import mu.KotlinLogging
+import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.function.Supplier
 
@@ -35,19 +34,18 @@ internal class ExceptionContext private constructor(
         return block().also { this.contextBlock = oldBlock }
     }
 
-    private suspend inline fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
+    private suspend fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
         descStack += descSupplier
         return runCatching(block).onFailure { e ->
             val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
 
-            val baseEx = e.getDeepestCause()
-
-            val descStr = StringJoiner("\n\t          ").apply { descStack.forEach { add(it.get()) } }.toString()
+            val descStr = descStack.joinToString("\n\t          ") { it.get() }
             val contextStr = "\tContext:  $descStr"
 
-            //Compiler error when using the function type method
-            KotlinLogging.logger(Logging.getLogger()).error(exceptionContextInfo.logMessage() + "\n$contextStr", baseEx)
-            context.dispatchException(exceptionContextInfo.dispatchMessage(), baseEx)
+            KotlinLogging.logger(LoggerFactory.getLogger(e.stackTrace[0].className)).error(exceptionContextInfo.logMessage() + "\n$contextStr", e)
+
+            context.dispatchException(exceptionContextInfo.dispatchMessage(), e)
+
             exceptionContextInfo.postRun()
         }.also { descStack.pop() }
     }
@@ -63,7 +61,7 @@ internal class ExceptionContext private constructor(
             contextBlock
         )
 
-        suspend inline fun <R> build(block: ExceptionContext.() -> R): Result<R> =
+        suspend inline fun <R> build(noinline block: ExceptionContext.() -> R): Result<R> =
             ExceptionContext(context, contextBlock).runContext(descSupplier, block)
     }
 }
