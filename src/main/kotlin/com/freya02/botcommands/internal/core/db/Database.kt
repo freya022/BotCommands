@@ -2,12 +2,14 @@ package com.freya02.botcommands.internal.core.db
 
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.ConditionalServiceCheck
+import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
 private const val latestVersion = "3.0.0" // Change in CreateDatabase.sql too
 
+@LateService
 @ConditionalService
 class Database internal constructor(private val config: BConfig) {
     init {

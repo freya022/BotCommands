@@ -33,6 +33,10 @@ internal class ClassPathContainer(private val context: BContextImpl) {
         val packages = context.config.packages
         val userClasses = context.config.classes
 
+        if (packages.isEmpty()) {
+            throwUser("You must specify at least 1 package to scan classes from")
+        }
+
         val nano = measureNanoTime {
             this.classes = ReflectionMetadata.runScan(packages, userClasses).map(Class<*>::kotlin)
         }
