@@ -91,12 +91,14 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
             val function = classPathFunc.function
 
             val parameters = function.nonInstanceParameters
-            val args = context.serviceContainer.getParameters(
-                parameters.drop(1).map { it.type.jvmErasure }
-            )
 
             val erasure = parameters.first().type.jvmErasure
-            val preboundFunction = PreboundFunction(classPathFunc, args.toTypedArray())
+            val preboundFunction = PreboundFunction(classPathFunc) {
+                //Getting services is delayed until execution, as to ensure late services can be used in listeners
+                context.serviceContainer.getParameters(
+                    parameters.drop(1).map { it.type.jvmErasure }
+                ).toTypedArray()
+            }
             instance?.let { instance ->
                 //Skip adding event listeners if the instance is already registered
                 if (listeners[instance] != null) return
