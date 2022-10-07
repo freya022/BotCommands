@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.internal.core.ServiceContainer
-import com.freya02.botcommands.internal.core.events.FirstReadyEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 
 @BService
