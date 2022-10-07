@@ -22,10 +22,15 @@ import java.util.function.Supplier;
 
 public interface BContext {
 	//TODO docs
-	<T> T getService(KClass<T> clazz);
+	@NotNull
+	<T> T getService(@NotNull KClass<T> clazz);
 
 	//TODO docs
-	<T> T getService(Class<T> clazz);
+	@NotNull
+	<T> T getService(@NotNull Class<T> clazz);
+
+	//TODO docs
+	<T> void putService(@NotNull T service);
 
 	/**
 	 * Returns the JDA instance associated with this context

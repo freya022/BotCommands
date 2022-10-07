@@ -67,6 +67,10 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
         return serviceContainer.getService(clazz)
     }
 
+    override fun <T : Any> putService(service: T) {
+        serviceContainer.putService(service)
+    }
+
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
     }
