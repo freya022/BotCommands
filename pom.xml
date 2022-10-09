@@ -331,7 +331,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.20</version>
+            <version>5.0.0-alpha.21</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -339,6 +339,11 @@
                 </exclusion>
             </exclusions>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <!-- Local testing -->
 <!--        <dependency>-->
