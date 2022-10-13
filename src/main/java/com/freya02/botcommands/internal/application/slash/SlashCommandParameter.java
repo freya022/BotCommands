@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
+import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -22,7 +23,7 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 	private final Number minValue, maxValue;
 	private final int minLength, maxLength;
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
-	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = new TLongObjectHashMap<>();
+	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
 	public SlashCommandParameter(Parameter parameter, int index) {
 		super(SlashParameterResolver.class, parameter, index);
