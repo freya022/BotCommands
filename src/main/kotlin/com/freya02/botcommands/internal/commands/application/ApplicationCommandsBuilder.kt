@@ -35,6 +35,7 @@ internal class ApplicationCommandsBuilder(
     private val guildDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
 
     private val guildReadyMutex = Mutex()
+    private val globalUpdateMutex = Mutex()
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
     private var init = false
 
@@ -107,7 +108,7 @@ internal class ApplicationCommandsBuilder(
         )
     }
 
-    internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult {
+    internal suspend fun updateGlobalCommands(force: Boolean = false): CommandUpdateResult = globalUpdateMutex.withLock {
         val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()
 
         val manager = GlobalApplicationCommandManager(context)
