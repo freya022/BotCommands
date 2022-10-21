@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.builder.*;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -345,18 +345,33 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with a lambda {@link SelectionEvent} handler<br>
+	 * Creates a new selection menu with a lambda {@link StringSelectionEvent} handler<br>
 	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
-	 * @param consumer The {@link SelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @param consumer The {@link StringSelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull SelectionConsumer consumer) {
+	public static LambdaStringSelectionMenuBuilder selectionMenu(@NotNull StringSelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
-		return new LambdaSelectionMenuBuilder(context, consumer);
+		return new LambdaStringSelectionMenuBuilder(context, consumer);
+	}
+
+	/**
+	 * Creates a new selection menu with a lambda {@link StringSelectionEvent} handler<br>
+	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
+	 *
+	 * @param consumer The {@link StringSelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_ -> new")
+	public static LambdaEntitySelectionMenuBuilder selectionMenu(@NotNull EntitySelectionConsumer consumer) {
+		checkCapturedVars(consumer);
+
+		return new LambdaEntitySelectionMenuBuilder(context, consumer);
 	}
 
 	/**

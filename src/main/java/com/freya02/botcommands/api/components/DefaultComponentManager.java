@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -39,7 +40,7 @@ public class DefaultComponentManager implements ComponentManager {
 	private final Supplier<Connection> connectionSupplier;
 
 	private final Map<Long, ButtonConsumer> buttonLambdaMap = new HashMap<>();
-	private final Map<Long, SelectionConsumer> selectionMenuLambdaMap = new HashMap<>();
+	private final Map<Long, SelectionConsumer<? extends GenericSelectMenuInteractionEvent<?, ?>>> selectionMenuLambdaMap = new HashMap<>();
 
 	public DefaultComponentManager(@NotNull Supplier<Connection> connectionSupplier) {
 		this.connectionSupplier = connectionSupplier;
@@ -93,20 +94,21 @@ public class DefaultComponentManager implements ComponentManager {
 	}
 
 	@Override
-	public void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer) {
+	public <E extends GenericSelectMenuInteractionEvent<?, ?>> void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData<E>> dataConsumer) {
 		handleLambdaComponent(event,
 				(SQLFetchResult) fetchResult,
 				onError,
 				dataConsumer,
-				selectionMenuLambdaMap,
-				LambdaSelectionMenuData::new);
+				(Map<Long, SelectionConsumer<E>>) (Object) selectionMenuLambdaMap, //No choice here really, at least the function will pick a pair with the correct types
+				LambdaSelectionMenuData<E>::new);
 	}
 
 	private <CONSUMER extends ComponentConsumer<EVENT>,EVENT extends GenericComponentInteractionCreateEvent, DATA> void handleLambdaComponent(GenericComponentInteractionCreateEvent event,
 	                                                                                                                                          SQLFetchResult fetchResult,
 	                                                                                                                                          Consumer<ComponentErrorReason> onError,
 	                                                                                                                                          Consumer<DATA> dataConsumer,
-	                                                                                                                                          Map<Long, CONSUMER> map, Function<CONSUMER, DATA> eventFunc) {
+	                                                                                                                                          Map<Long, CONSUMER> map,
+	                                                                                                                                          Function<CONSUMER, DATA> eventFunc) {
 
 		try {
 			final SQLFetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
@@ -241,9 +243,9 @@ public class DefaultComponentManager implements ComponentManager {
 		}
 	}
 
-	@Override
 	@NotNull
-	public String putLambdaSelectMenu(LambdaSelectionMenuBuilder builder) {
+	@Override
+	public <E extends GenericSelectMenuInteractionEvent<?, ?>> String putLambdaSelectMenu(LambdaSelectionMenuBuilder<?, E> builder) {
 		try (Connection connection = getConnection()) {
 			final LambdaComponentTimeoutInfo timeout = builder.getTimeout();
 			final SQLLambdaCreateResult result = SQLLambdaComponentData.create(connection,

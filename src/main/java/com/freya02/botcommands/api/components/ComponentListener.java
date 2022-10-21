@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.components;
 import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.RunnableEx;
@@ -12,7 +12,8 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +68,7 @@ public class ComponentListener extends ListenerAdapter {
 	@SubscribeEvent
 	@Override
 	public void onGenericComponentInteractionCreate(@NotNull GenericComponentInteractionCreateEvent event) {
-		if (!(event instanceof ButtonInteractionEvent) && !(event instanceof SelectMenuInteractionEvent)) return;
+		if (!(event instanceof ButtonInteractionEvent) && !(event instanceof GenericSelectMenuInteractionEvent<?, ?>)) return;
 
 		runHandler(() -> handleComponentInteraction(event), event);
 	}
@@ -99,8 +100,8 @@ public class ComponentListener extends ListenerAdapter {
 				return;
 			}
 
-			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof SelectMenuInteractionEvent)) {
-				LOGGER.error("Received a selection menu id type but event is not a SelectMenuInteractionEvent");
+			if ((idType == ComponentType.PERSISTENT_SELECTION_MENU || idType == ComponentType.LAMBDA_SELECTION_MENU) && !(event instanceof GenericSelectMenuInteractionEvent<?, ?>)) {
+				LOGGER.error("Received a selection menu id type but event is not a GenericSelectMenuInteractionEvent");
 
 				return;
 			}
@@ -127,12 +128,12 @@ public class ComponentListener extends ListenerAdapter {
 										selectionMenuMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										descriptor -> new SelectionEvent(descriptor.getMethod(), context, (SelectMenuInteractionEvent) event)),
+										descriptor -> new StringSelectionEvent(descriptor.getMethod(), context, (StringSelectInteractionEvent) event)), //TODO separate events
 								event));
 				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
 						fetchResult,
 						e -> onError(event, e),
-						data -> runCallback(() -> data.getConsumer().accept(new SelectionEvent(null, context, (SelectMenuInteractionEvent) event)), event));
+						data -> runCallback(() -> data.getConsumer().accept(new StringSelectionEvent(null, context, (StringSelectInteractionEvent) event)), event)); //TODO separate events
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 			}
 		}

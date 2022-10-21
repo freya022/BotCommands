@@ -4,7 +4,8 @@ import com.freya02.botcommands.api.components.ComponentListener;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.utils.ClassInstancer;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
@@ -33,9 +34,16 @@ public class ComponentsBuilder {
 				continue;
 			}
 
-			JDASelectionMenuListener jdaSelectMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
-			if (jdaSelectMenuListener != null) {
-				handleComponentListener(method, jdaSelectMenuListener.name(), selectionMenuMap, SelectionEvent.class, "Selection menu");
+			JDASelectionMenuListener jdaStringSelectMenuListener = method.getAnnotation(JDASelectionMenuListener.class);
+			if (jdaStringSelectMenuListener != null) {
+				if (ReflectionUtils.hasFirstParameter(method, StringSelectionEvent.class)) {
+					handleComponentListener(method, jdaStringSelectMenuListener.name(), selectionMenuMap, StringSelectionEvent.class, "String selection menu");
+				} else if (ReflectionUtils.hasFirstParameter(method, EntitySelectionEvent.class)) {
+					handleComponentListener(method, jdaStringSelectMenuListener.name(), selectionMenuMap, EntitySelectionEvent.class, "Entity selection menu");
+				} else {
+					throw new IllegalArgumentException("First parameter of method %s should be either a %s or %s"
+							.formatted(Utils.formatMethodShort(method), StringSelectionEvent.class.getSimpleName(), EntitySelectionEvent.class.getSimpleName()));
+				}
 			}
 		}
 	}

@@ -2,13 +2,12 @@ package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.builder.LambdaStringSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -42,7 +41,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 
 	@NotNull
 	private SelectMenu buildSelectMenu() {
-		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+		final LambdaStringSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
 		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
@@ -57,7 +56,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 		return builder.build();
 	}
 
-	private void handleSelection(SelectionEvent event) {
+	private void handleSelection(StringSelectionEvent event) {
 		selectedItem = Integer.parseInt(event.getValues().get(0));
 
 		event.editMessage(get()).queue();
