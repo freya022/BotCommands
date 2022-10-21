@@ -12,7 +12,8 @@ internal class ExceptionContextInfo {
     var postRun: suspend () -> Unit = { }
 }
 
-internal class ExceptionContext private constructor(
+//Kotlinc no happy when this private
+internal class ExceptionContext @Deprecated("Do not use manually", replaceWith = ReplaceWith("ExceptionContext.build(context, contextBlock)")) internal constructor(
     private val context: BContextImpl,
     private var contextBlock: ExceptionContextInfo.() -> Unit
 ) {
@@ -31,10 +32,12 @@ internal class ExceptionContext private constructor(
     ): R {
         val oldBlock = this.contextBlock
         this.contextBlock = contextBlock
-        return block().also { this.contextBlock = oldBlock }
+        return let(block).also { this.contextBlock = oldBlock }
     }
 
-    private suspend fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
+    //Kotlinc no happy when this private
+    @Deprecated("Do not use manually")
+    internal suspend inline fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
         descStack += descSupplier
         return runCatching(block).onFailure { e ->
             val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
@@ -50,18 +53,14 @@ internal class ExceptionContext private constructor(
         }.also { descStack.pop() }
     }
 
-    internal class ExceptionContextBuilder(
-        private val context: BContextImpl,
-        private val descSupplier: Supplier<String>,
-        private val contextBlock: ExceptionContextInfo.() -> Unit
-    ) {
-        constructor(context: BContextImpl, desc: String, contextBlock: ExceptionContextInfo.() -> Unit) : this(
-            context,
-            { desc },
-            contextBlock
-        )
-
-        suspend inline fun <R> build(noinline block: ExceptionContext.() -> R): Result<R> =
+    companion object {
+        @Suppress("DEPRECATION")
+        suspend inline fun <R> create(
+            context: BContextImpl,
+            noinline contextBlock: ExceptionContextInfo.() -> Unit,
+            descSupplier: Supplier<String>,
+            block: ExceptionContext.() -> R
+        ): Result<R> =
             ExceptionContext(context, contextBlock).runContext(descSupplier, block)
     }
 }

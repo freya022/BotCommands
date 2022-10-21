@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ExceptionContext
 import com.freya02.botcommands.internal.core.ExceptionContextInfo
-import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.events.CoroutineEventManager
 
 suspend fun main() {
@@ -15,12 +14,12 @@ suspend fun main() {
         postRun = { println("oké") }
     }
 
-    ExceptionContext.ExceptionContextBuilder(context, "Test", contextBlock).build {
+    ExceptionContext.create(context, contextBlock, { "Test" }) {
         println("do sth")
-        throw AssertionError("throw")
+//        throw AssertionError("throw")
 
         exceptionContext("Test 2") {
-            throwUser("throw")
+            throw AssertionError("throw")
         }
 
         overrideHandler(contextBlock) {
