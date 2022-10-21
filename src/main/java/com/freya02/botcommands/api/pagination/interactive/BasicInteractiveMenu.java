@@ -41,7 +41,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 
 	@NotNull
 	private SelectMenu buildSelectMenu() {
-		final LambdaStringSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+		final LambdaStringSelectionMenuBuilder builder = Components.stringSelectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
 		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {

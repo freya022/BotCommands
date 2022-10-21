@@ -353,7 +353,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaStringSelectionMenuBuilder selectionMenu(@NotNull StringSelectionConsumer consumer) {
+	public static LambdaStringSelectionMenuBuilder stringSelectionMenu(@NotNull StringSelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaStringSelectionMenuBuilder(context, consumer);
@@ -368,7 +368,7 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaEntitySelectionMenuBuilder selectionMenu(@NotNull EntitySelectionConsumer consumer) {
+	public static LambdaEntitySelectionMenuBuilder entitySelectionMenu(@NotNull EntitySelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
 		return new LambdaEntitySelectionMenuBuilder(context, consumer);
@@ -384,7 +384,21 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
-		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
+	public static PersistentStringSelectionMenuBuilder stringSelectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentStringSelectionMenuBuilder(context, handlerName, processArgs(args));
+	}
+
+	/**
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JDASelectionMenuListener}, and the given arguments<br>
+	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_, _ -> new")
+	public static PersistentEntitySelectionMenuBuilder entitySelectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentEntitySelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }

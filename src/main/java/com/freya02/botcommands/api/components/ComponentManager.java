@@ -45,7 +45,7 @@ public interface ComponentManager {
 	String putPersistentButton(PersistentButtonBuilder builder);
 
 	@NotNull
-	String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder);
+	<T extends PersistentSelectionMenuBuilder<T>> String putPersistentSelectMenu(T builder);
 
 	void registerGroup(Collection<String> builders);
 

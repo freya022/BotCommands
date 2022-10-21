@@ -95,6 +95,7 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@Override
 	public <E extends GenericSelectMenuInteractionEvent<?, ?>> void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData<E>> dataConsumer) {
+		//noinspection unchecked
 		handleLambdaComponent(event,
 				(SQLFetchResult) fetchResult,
 				onError,
@@ -310,9 +311,9 @@ public class DefaultComponentManager implements ComponentManager {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_BUTTON);
 	}
 
-	@Override
 	@NotNull
-	public String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder) {
+	@Override
+	public <T extends PersistentSelectionMenuBuilder<T>> String putPersistentSelectMenu(T builder) {
 		return putPersistentComponent(builder, ComponentType.PERSISTENT_SELECTION_MENU);
 	}
 
