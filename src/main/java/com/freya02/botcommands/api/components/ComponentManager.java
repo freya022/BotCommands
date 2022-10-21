@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.components;
 
-import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.LambdaButtonBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.PersistentButtonBuilder;
+import com.freya02.botcommands.api.components.builder.selects.LambdaSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.PersistentSelectionMenuBuilder;
 import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;

@@ -1,6 +1,8 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.selects;
 
 import com.freya02.botcommands.api.components.SelectionConsumer;
+import com.freya02.botcommands.api.components.builder.ComponentBuilder;
+import com.freya02.botcommands.api.components.builder.LambdaComponentBuilder;
 import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 

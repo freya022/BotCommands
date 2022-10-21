@@ -1,27 +1,28 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.selects;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.EntitySelectionConsumer;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.StringSelectionConsumer;
-import com.freya02.botcommands.api.components.event.StringSelectionEvent;
+import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class LambdaStringSelectionMenuBuilder
-		extends StringSelectMenu.Builder
-		implements LambdaSelectionMenuBuilder<LambdaStringSelectionMenuBuilder, StringSelectionEvent> {
+public class LambdaEntitySelectionMenuBuilder
+		extends EntitySelectMenu.Builder
+		implements LambdaSelectionMenuBuilder<LambdaEntitySelectionMenuBuilder, EntitySelectionEvent> {
 	private final BContext context;
-	private final StringSelectionConsumer consumer;
+	private final EntitySelectionConsumer consumer;
 
 	private boolean oneUse;
 	private LambdaComponentTimeoutInfo timeoutInfo = new LambdaComponentTimeoutInfo(0, TimeUnit.MILLISECONDS, () -> {});
 	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 
-	public LambdaStringSelectionMenuBuilder(BContext context, StringSelectionConsumer consumer) {
+	public LambdaEntitySelectionMenuBuilder(BContext context, EntitySelectionConsumer consumer) {
 		super("fake");
 
 		this.context = context;
@@ -30,13 +31,13 @@ public class LambdaStringSelectionMenuBuilder
 
 	@NotNull
 	@Override
-	public StringSelectionConsumer getConsumer() {
+	public EntitySelectionConsumer getConsumer() {
 		return consumer;
 	}
 
 	@NotNull
 	@Override
-	public StringSelectMenu build() {
+	public EntitySelectMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
 		setId(componentManager.putLambdaSelectMenu(this));
@@ -45,14 +46,14 @@ public class LambdaStringSelectionMenuBuilder
 	}
 
 	@Override
-	public LambdaStringSelectionMenuBuilder oneUse() {
+	public LambdaEntitySelectionMenuBuilder oneUse() {
 		this.oneUse = true;
 
 		return this;
 	}
 
 	@Override
-	public LambdaStringSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull Runnable timeoutCallback) {
+	public LambdaEntitySelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit, @NotNull Runnable timeoutCallback) {
 		this.timeoutInfo = new LambdaComponentTimeoutInfo(timeout, timeoutUnit, timeoutCallback);
 
 		return this;

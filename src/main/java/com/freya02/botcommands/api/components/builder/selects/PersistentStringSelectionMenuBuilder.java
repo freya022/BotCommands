@@ -1,17 +1,18 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.selects;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public class PersistentEntitySelectionMenuBuilder
-		extends EntitySelectMenu.Builder
-		implements PersistentSelectionMenuBuilder<PersistentEntitySelectionMenuBuilder> {
+public class PersistentStringSelectionMenuBuilder
+		extends StringSelectMenu.Builder
+		implements PersistentSelectionMenuBuilder<PersistentStringSelectionMenuBuilder> {
 	private final BContext context;
 	private final String handlerName;
 	private final String[] args;
@@ -20,7 +21,7 @@ public class PersistentEntitySelectionMenuBuilder
 	private PersistentComponentTimeoutInfo timeoutInfo = new PersistentComponentTimeoutInfo(0, TimeUnit.MILLISECONDS);
 	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 
-	public PersistentEntitySelectionMenuBuilder(BContext context, String handlerName, String[] args) {
+	public PersistentStringSelectionMenuBuilder(BContext context, String handlerName, String[] args) {
 		super("fake");
 
 		this.context = context;
@@ -40,7 +41,7 @@ public class PersistentEntitySelectionMenuBuilder
 
 	@NotNull
 	@Override
-	public EntitySelectMenu build() {
+	public StringSelectMenu build() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
 		setId(componentManager.putPersistentSelectMenu(this));
@@ -49,7 +50,7 @@ public class PersistentEntitySelectionMenuBuilder
 	}
 
 	@Override
-	public PersistentEntitySelectionMenuBuilder oneUse() {
+	public PersistentStringSelectionMenuBuilder oneUse() {
 		this.oneUse = true;
 
 		return this;
@@ -62,7 +63,7 @@ public class PersistentEntitySelectionMenuBuilder
 	 * @return This component builder for chaining purposes
 	 */
 	@Override
-	public PersistentEntitySelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit) {
+	public PersistentStringSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit) {
 		this.timeoutInfo = new PersistentComponentTimeoutInfo(timeout, timeoutUnit);
 
 		return this;

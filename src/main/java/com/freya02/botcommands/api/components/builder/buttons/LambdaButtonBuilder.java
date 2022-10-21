@@ -1,7 +1,9 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.buttons;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.components.ButtonConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.builder.AbstractLambdaComponentBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -9,27 +11,19 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 
-public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<PersistentButtonBuilder> {
+public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder> {
 	private final BContext context;
-	private final String handlerName;
-	private final String[] args;
+	private final ButtonConsumer consumer;
 	private final ButtonStyle buttonStyle;
 
-	public PersistentButtonBuilder(BContext context, String handlerName, String[] args, ButtonStyle buttonStyle) {
+	public LambdaButtonBuilder(BContext context, ButtonConsumer consumer, ButtonStyle buttonStyle) {
 		this.context = context;
-		this.handlerName = handlerName;
-		this.args = args;
+		this.consumer = consumer;
 		this.buttonStyle = buttonStyle;
 	}
 
-	@Override
-	public String getHandlerName() {
-		return handlerName;
-	}
-
-	@Override
-	public String[] getArgs() {
-		return args;
+	public ButtonConsumer getConsumer() {
+		return consumer;
 	}
 
 	public Button build(String label) {
@@ -57,6 +51,6 @@ public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<
 	public String buildId() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		return componentManager.putPersistentButton(this);
+		return componentManager.putLambdaButton(this);
 	}
 }

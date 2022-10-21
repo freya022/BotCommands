@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.builder.LambdaStringSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.LambdaStringSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
