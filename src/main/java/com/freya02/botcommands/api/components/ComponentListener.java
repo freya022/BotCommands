@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.components;
 import com.freya02.botcommands.api.ExceptionHandler;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.internal.BContextImpl;
@@ -10,15 +11,14 @@ import com.freya02.botcommands.internal.RunnableEx;
 import com.freya02.botcommands.internal.application.CommandParameter;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.utils.Utils;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.SubscribeEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -128,12 +128,12 @@ public class ComponentListener extends ListenerAdapter {
 										selectionMenuMap,
 										data.getHandlerName(),
 										data.getArgs(),
-										descriptor -> new StringSelectionEvent(descriptor.getMethod(), context, (StringSelectInteractionEvent) event)), //TODO separate events
+										descriptor -> transformSelectEvent(descriptor.getMethod(), context, event)),
 								event));
 				case LAMBDA_SELECTION_MENU -> componentManager.handleLambdaSelectMenu(event,
 						fetchResult,
 						e -> onError(event, e),
-						data -> runCallback(() -> data.getConsumer().accept(new StringSelectionEvent(null, context, (StringSelectInteractionEvent) event)), event)); //TODO separate events
+						data -> runCallback(() -> data.getConsumer().accept(transformSelectEvent(null, context, event)), event));
 				default -> throw new IllegalArgumentException("Unknown id type: " + idType.name());
 			}
 		}
@@ -197,6 +197,17 @@ public class ComponentListener extends ListenerAdapter {
 				context.dispatchException("Exception in component callback", baseEx);
 			}
 		});
+	}
+
+	@NotNull
+	private GenericSelectMenuInteractionEvent<?, ?> transformSelectEvent(@Nullable Method method, BContextImpl context, GenericComponentInteractionCreateEvent event) {
+		if (event instanceof StringSelectInteractionEvent stringSelectEvent) {
+			return new StringSelectionEvent(method, context, stringSelectEvent);
+		} else if (event instanceof EntitySelectInteractionEvent entitySelectEvent) {
+			return new EntitySelectionEvent(null, context, entitySelectEvent);
+		} else {
+			throw new IllegalArgumentException("Invalid select menu type: " + event.getClass().getName());
+		}
 	}
 
 	private void handlePersistentComponent(GenericComponentInteractionCreateEvent event,
