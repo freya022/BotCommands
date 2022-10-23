@@ -111,7 +111,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		if (event instanceof SlashCommandInteractionEvent slashEvent) {
 			return slashEvent.getCommandString();
 		} else {
-			return "/" + event.getName();
+			return event.getName();
 		}
 	}
 
