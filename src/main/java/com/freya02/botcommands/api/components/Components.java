@@ -12,6 +12,7 @@ import com.freya02.botcommands.api.components.builder.selects.LambdaStringSelect
 import com.freya02.botcommands.api.components.builder.selects.PersistentEntitySelectionMenuBuilder;
 import com.freya02.botcommands.api.components.builder.selects.PersistentStringSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
@@ -366,10 +367,10 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with a lambda {@link StringSelectionEvent} handler<br>
+	 * Creates a new selection menu with a lambda {@link EntitySelectionEvent} handler<br>
 	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
-	 * @param consumer The {@link StringSelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @param consumer The {@link EntitySelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
