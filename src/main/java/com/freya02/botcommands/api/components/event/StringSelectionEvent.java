@@ -5,19 +5,19 @@ import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.components.LambdaLocalizable;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.localization.EventLocalizer;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
 
-public class SelectionEvent extends SelectMenuInteractionEvent implements LambdaLocalizable {
+public class StringSelectionEvent extends StringSelectInteractionEvent implements LambdaLocalizable {
 	private final EventLocalizer localizer;
 
 	private final BContext context;
 
-	public SelectionEvent(@Nullable Method method, BContextImpl context, SelectMenuInteractionEvent event) {
+	public StringSelectionEvent(@Nullable Method method, BContextImpl context, StringSelectInteractionEvent event) {
 		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
 
 		this.context = context;

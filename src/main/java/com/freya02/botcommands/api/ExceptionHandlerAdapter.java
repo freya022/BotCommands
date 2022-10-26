@@ -6,7 +6,8 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -25,7 +26,9 @@ public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
 			handle(context, e, throwable);
 		} else if (event instanceof ButtonInteractionEvent e) {
 			handle(context, e, throwable);
-		} else if (event instanceof SelectMenuInteractionEvent e) {
+		} else if (event instanceof StringSelectInteractionEvent e) {
+			handle(context, e, throwable);
+		} else if (event instanceof EntitySelectInteractionEvent e) {
 			handle(context, e, throwable);
 		} else if (event instanceof ModalInteractionEvent e) {
 			handle(context, e, throwable);
@@ -48,5 +51,7 @@ public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
 
 	public void handle(BContext context, ButtonInteractionEvent event, Throwable throwable) {}
 
-	public void handle(BContext context, SelectMenuInteractionEvent event, Throwable throwable) {}
+	public void handle(BContext context, StringSelectInteractionEvent event, Throwable throwable) {}
+
+	public void handle(BContext context, EntitySelectInteractionEvent event, Throwable throwable) {}
 }

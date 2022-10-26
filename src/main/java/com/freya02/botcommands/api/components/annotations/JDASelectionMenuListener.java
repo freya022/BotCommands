@@ -1,8 +1,9 @@
 package com.freya02.botcommands.api.components.annotations;
 
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 
@@ -12,11 +13,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for defining a selection menu listener, this has to be the same name as the one given to {@link Components#selectionMenu(String, Object...)} <br><br>
+ * Annotation for defining a selection menu listener,
+ * this has to be the same name as the one given to {@link Components#stringSelectionMenu(String, Object...)} or {@link Components#entitySelectionMenu(String, Object...)}
+ *
+ * <p>
+ *
  * Requirements:
  * <ul>
  *     <li><b>Selection menu listeners can only be put on methods that are inside a class that extends {@link TextCommand} or {@link ApplicationCommand}</b></li>
- *     <li><b>These handlers also need to have a {@link GlobalSlashEvent} as their first argument</b></li>
+ *     <li><b>These handlers also need to have a {@link StringSelectionEvent} or {@link EntitySelectionEvent} as their first argument</b></li>
  * </ul>
  *
  * <p>

@@ -72,9 +72,9 @@ public class CommandPathImpl implements CommandPath {
 		if (group != null && subname != null) { // /name group sub
 			return CommandPath.of(name, group);
 		} else if (group != null /*&& subname == null*/) { // /name group
-			return CommandPath.of(name);
+			return CommandPath.ofName(name);
 		} else if (subname != null) { // /name sub
-			return CommandPath.of(name);
+			return CommandPath.ofName(name);
 		} else { // /name
 			return null;
 		}

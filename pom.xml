@@ -75,7 +75,6 @@
                             <release>17</release>
                             <additionalJOptions>
                                 <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
-                                <additionalJOption>--enable-preview</additionalJOption>
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -331,7 +330,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.21</version>
+            <version>5.0.0-alpha.22</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>

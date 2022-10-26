@@ -1,8 +1,8 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.buttons;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.components.ButtonConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.builder.AbstractPersistentComponentBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -10,19 +10,27 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl;
 
-public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaButtonBuilder> {
+public class PersistentButtonBuilder extends AbstractPersistentComponentBuilder<PersistentButtonBuilder> {
 	private final BContext context;
-	private final ButtonConsumer consumer;
+	private final String handlerName;
+	private final String[] args;
 	private final ButtonStyle buttonStyle;
 
-	public LambdaButtonBuilder(BContext context, ButtonConsumer consumer, ButtonStyle buttonStyle) {
+	public PersistentButtonBuilder(BContext context, String handlerName, String[] args, ButtonStyle buttonStyle) {
 		this.context = context;
-		this.consumer = consumer;
+		this.handlerName = handlerName;
+		this.args = args;
 		this.buttonStyle = buttonStyle;
 	}
 
-	public ButtonConsumer getConsumer() {
-		return consumer;
+	@Override
+	public String getHandlerName() {
+		return handlerName;
+	}
+
+	@Override
+	public String[] getArgs() {
+		return args;
 	}
 
 	public Button build(String label) {
@@ -50,6 +58,6 @@ public class LambdaButtonBuilder extends AbstractLambdaComponentBuilder<LambdaBu
 	public String buildId() {
 		final ComponentManager componentManager = Utils.getComponentManager(context);
 
-		return componentManager.putLambdaButton(this);
+		return componentManager.putPersistentButton(this);
 	}
 }
