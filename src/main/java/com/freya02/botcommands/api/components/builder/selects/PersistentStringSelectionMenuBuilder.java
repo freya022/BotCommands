@@ -56,12 +56,6 @@ public class PersistentStringSelectionMenuBuilder
 		return this;
 	}
 
-	/**
-	 * Makes this component expire after the specified timeout<br>
-	 * Once the component expires it should be removed from the component manager
-	 *
-	 * @return This component builder for chaining purposes
-	 */
 	@Override
 	public PersistentStringSelectionMenuBuilder timeout(long timeout, @NotNull TimeUnit timeoutUnit) {
 		this.timeoutInfo = new PersistentComponentTimeoutInfo(timeout, timeoutUnit);
