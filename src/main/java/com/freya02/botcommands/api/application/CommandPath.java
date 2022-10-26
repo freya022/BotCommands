@@ -5,12 +5,16 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.regex.Pattern;
+
 /**
- * Represents a path of a command, each path component is delimited with a /, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getCommandPath()}
+ * Represents a path of a command, each path component is delimited with a space, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getCommandPath()}
  * <br>The different components are name, group and subcommand.
  * <br>This is mainly a utility class to avoid manipulating strings
  */
 public interface CommandPath extends Comparable<CommandPath> {
+	Pattern PATH_PATTERN = Pattern.compile("[ /]");
+
 	static CommandPath of(@NotNull String name, @Nullable String group, @Nullable String subname) {
 		return new CommandPathImpl(name, group, subname);
 	}
@@ -24,7 +28,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	}
 
 	static CommandPath of(@NotNull String path) {
-		final String[] components = path.split("/");
+		final String[] components = PATH_PATTERN.split(path);
 
 		return of(components);
 	}

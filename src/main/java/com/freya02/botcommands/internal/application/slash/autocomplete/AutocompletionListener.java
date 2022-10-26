@@ -46,7 +46,7 @@ public class AutocompletionListener implements EventListener {
 				final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
 
 				if (slashCommand == null) {
-					LOGGER.warn("Slash command not found during autocompletion for: {}", event.getCommandPath());
+					LOGGER.warn("Slash command not found during autocompletion for '{}'", event.getCommandPath());
 
 					return;
 				}

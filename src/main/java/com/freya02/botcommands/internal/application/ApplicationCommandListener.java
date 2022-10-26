@@ -97,7 +97,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
 
 			if (slashCommand == null) {
-				throw new IllegalArgumentException("A slash command could not be found: " + event.getCommandPath());
+				throw new IllegalArgumentException("A slash command could not be found: '" + event.getCommandPath() + "'");
 			}
 
 			if (!canRun(event, slashCommand)) return;
