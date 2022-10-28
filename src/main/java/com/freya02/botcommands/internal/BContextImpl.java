@@ -236,7 +236,7 @@ public class BContextImpl implements BContext {
 	private CommandPath getEffectivePath(@NotNull AbstractCommandInfo<?> commandInfo) {
 		return commandInfo.getCommandId() == null
 				? commandInfo.getPath()
-				: CommandPath.of(commandInfo.getCommandId());
+				: CommandPath.ofName(commandInfo.getCommandId());
 	}
 
 	public CommandPath addSlashCommand(SlashCommandInfo commandInfo) {

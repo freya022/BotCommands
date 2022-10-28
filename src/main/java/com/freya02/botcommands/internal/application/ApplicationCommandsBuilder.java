@@ -43,6 +43,7 @@ public final class ApplicationCommandsBuilder {
 	private final BContextImpl context;
 	private final List<Long> slashGuildIds;
 
+	private final ReentrantLock globalLock = new ReentrantLock();
 	private final Map<Long, ReentrantLock> lockMap = Collections.synchronizedMap(new HashMap<>());
 
 	public ApplicationCommandsBuilder(@NotNull BContextImpl context, List<Long> slashGuildIds) {
@@ -140,6 +141,7 @@ public final class ApplicationCommandsBuilder {
 
 		es.submit(() -> {
 			try {
+				globalLock.lock();
 				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, context.isOnlineAppCommandCheckEnabled());
 				if (globalUpdater.shouldUpdateCommands()) {
 					globalUpdater.updateCommands();
@@ -151,6 +153,8 @@ public final class ApplicationCommandsBuilder {
 				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getScopeApplicationCommands()));
 			} catch (IOException e) {
 				LOGGER.error("An error occurred while updating global commands", e);
+			} finally {
+				globalLock.unlock();
 			}
 		});
 

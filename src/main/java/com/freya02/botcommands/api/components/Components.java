@@ -4,9 +4,16 @@ import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
-import com.freya02.botcommands.api.components.builder.*;
+import com.freya02.botcommands.api.components.builder.ComponentBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.LambdaButtonBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.PersistentButtonBuilder;
+import com.freya02.botcommands.api.components.builder.selects.LambdaEntitySelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.LambdaStringSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.PersistentEntitySelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.PersistentStringSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -345,18 +352,33 @@ public class Components {
 	}
 
 	/**
-	 * Creates a new selection menu with a lambda {@link SelectionEvent} handler<br>
+	 * Creates a new selection menu with a lambda {@link StringSelectionEvent} handler<br>
 	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
-	 * @param consumer The {@link SelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @param consumer The {@link StringSelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
 	@Contract("_ -> new")
-	public static LambdaSelectionMenuBuilder selectionMenu(@NotNull SelectionConsumer consumer) {
+	public static LambdaStringSelectionMenuBuilder stringSelectionMenu(@NotNull StringSelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
-		return new LambdaSelectionMenuBuilder(context, consumer);
+		return new LambdaStringSelectionMenuBuilder(context, consumer);
+	}
+
+	/**
+	 * Creates a new selection menu with a lambda {@link EntitySelectionEvent} handler<br>
+	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
+	 *
+	 * @param consumer The {@link EntitySelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_ -> new")
+	public static LambdaEntitySelectionMenuBuilder entitySelectionMenu(@NotNull EntitySelectionConsumer consumer) {
+		checkCapturedVars(consumer);
+
+		return new LambdaEntitySelectionMenuBuilder(context, consumer);
 	}
 
 	/**
@@ -369,7 +391,21 @@ public class Components {
 	 */
 	@NotNull
 	@Contract("_, _ -> new")
-	public static PersistentSelectionMenuBuilder selectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
-		return new PersistentSelectionMenuBuilder(context, handlerName, processArgs(args));
+	public static PersistentStringSelectionMenuBuilder stringSelectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentStringSelectionMenuBuilder(context, handlerName, processArgs(args));
+	}
+
+	/**
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JDASelectionMenuListener}, and the given arguments<br>
+	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
+	 *
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_, _ -> new")
+	public static PersistentEntitySelectionMenuBuilder entitySelectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentEntitySelectionMenuBuilder(context, handlerName, processArgs(args));
 	}
 }

@@ -2,16 +2,15 @@ package com.freya02.botcommands.api.pagination.interactive;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.builder.selects.LambdaStringSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -41,8 +40,8 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	}
 
 	@NotNull
-	private SelectMenu buildSelectMenu() {
-		final LambdaSelectionMenuBuilder builder = Components.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+	protected StringSelectMenu.Builder createSelectMenuBuilder() {
+		final LambdaStringSelectionMenuBuilder builder = Components.stringSelectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
 		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
@@ -54,10 +53,10 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			options.add(option);
 		}
 
-		return builder.build();
+		return builder;
 	}
 
-	private void handleSelection(SelectionEvent event) {
+	private void handleSelection(StringSelectionEvent event) {
 		selectedItem = Integer.parseInt(event.getValues().get(0));
 
 		event.editMessage(get()).queue();
@@ -120,7 +119,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			putComponents();
 		}
 
-		components.addComponents(buildSelectMenu());
+		components.addComponents(createSelectMenuBuilder().build());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
 		messageBuilder.setEmbeds(embed);

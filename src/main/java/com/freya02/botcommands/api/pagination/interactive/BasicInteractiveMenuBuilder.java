@@ -23,7 +23,9 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 *
 	 * @param content  The content of the {@link SelectOption} bound to this menu
 	 * @param supplier The interactive menu supplier for this menu's page
+	 *
 	 * @return This builder for chaining convenience
+	 *
 	 * @see SelectContent#of(String, String, Emoji)
 	 */
 	public T addMenu(@NotNull SelectContent content, int maxPages, @NotNull InteractiveMenuSupplier<R> supplier) {
@@ -37,6 +39,8 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 * <br>This is disabled by default
 	 *
 	 * @param usePaginator <code>true</code> to use the paginator buttons
+	 *
+	 * @return This builder for chaining convenience
 	 */
 	public T usePaginator(boolean usePaginator) {
 		this.usePaginator = usePaginator;

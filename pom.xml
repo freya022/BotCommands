@@ -5,7 +5,7 @@
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>2.6.2-SNAPSHOT</version>
+    <version>2.7.1-SNAPSHOT</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps developing your bots fast</description>
@@ -75,7 +75,6 @@
                             <release>17</release>
                             <additionalJOptions>
                                 <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
-                                <additionalJOption>--enable-preview</additionalJOption>
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -331,7 +330,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.20</version>
+            <version>5.0.0-alpha.22</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -339,6 +338,11 @@
                 </exclusion>
             </exclusions>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>3.0.2</version>
         </dependency>
         <!-- Local testing -->
 <!--        <dependency>-->

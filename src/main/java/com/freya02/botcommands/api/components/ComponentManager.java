@@ -1,14 +1,15 @@
 package com.freya02.botcommands.api.components;
 
-import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
-import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.LambdaButtonBuilder;
+import com.freya02.botcommands.api.components.builder.buttons.PersistentButtonBuilder;
+import com.freya02.botcommands.api.components.builder.selects.LambdaSelectionMenuBuilder;
+import com.freya02.botcommands.api.components.builder.selects.PersistentSelectionMenuBuilder;
 import com.freya02.botcommands.internal.components.data.LambdaButtonData;
 import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.internal.components.data.PersistentButtonData;
 import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericSelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ public interface ComponentManager {
 
 	void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer);
 
-	void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData> dataConsumer);
+	<E extends GenericSelectMenuInteractionEvent<?, ?>> void handleLambdaSelectMenu(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaSelectionMenuData<E>> dataConsumer);
 
 	void handlePersistentButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<PersistentButtonData> dataConsumer);
 
@@ -38,13 +39,13 @@ public interface ComponentManager {
 	String putLambdaButton(LambdaButtonBuilder builder);
 
 	@NotNull
-	String putLambdaSelectMenu(LambdaSelectionMenuBuilder builder);
+	<E extends GenericSelectMenuInteractionEvent<?, ?>> String putLambdaSelectMenu(LambdaSelectionMenuBuilder<?, E> builder);
 
 	@NotNull
 	String putPersistentButton(PersistentButtonBuilder builder);
 
 	@NotNull
-	String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder);
+	<T extends PersistentSelectionMenuBuilder<T>> String putPersistentSelectMenu(T builder);
 
 	void registerGroup(Collection<String> builders);
 
