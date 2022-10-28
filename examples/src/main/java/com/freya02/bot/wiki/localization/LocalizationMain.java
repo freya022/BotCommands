@@ -24,6 +24,8 @@ public class LocalizationMain {
 
 			final CommandsBuilder builder = CommandsBuilder.newBuilder()
 					.applicationCommandBuilder(applicationCommandsBuilder -> applicationCommandsBuilder
+							//This enables localization from the "LocalizationWikiCommands.json" bundle, in the en_US language (i.e. LocalizationWikiCommands_en_US.json)
+							// If you wish to add more localizations, add a Locale here, and create the corresponding files
 							.addLocalizations("LocalizationWikiCommands", Locale.US)
 					);
 			builder.build(jda, "com.freya02.bot.wiki.localization.commands");
