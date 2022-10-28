@@ -52,6 +52,7 @@ public class SlashBan extends ApplicationCommand {
 		}
 
 		//Check permissions & hierarchy
+		// This requires the JDA chunking filter and member cache policy to be enabled, as this uses member cache.
 		final Member targetMember = event.getGuild().getMember(targetUser);
 		if (targetMember != null) { //Can be null if caching isn't set up
 			if (!caller.canInteract(targetMember)) { //Check if the caller can interact with the banned member
