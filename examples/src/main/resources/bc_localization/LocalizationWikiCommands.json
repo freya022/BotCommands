@@ -28,7 +28,7 @@
         "success": "{banned_user} was banned successfully for the reason '{reason}', and {del_hours} {del_hours, choice, 1#hour|2<hours} of messages were deleted",
         "unknown_error": "An unknown error occurred"
     },
-    "error": {
+    "exception": {
         "name": "exception",
         "description": "Voluntarily throws an exception"
     }

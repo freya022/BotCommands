@@ -6,10 +6,10 @@ import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 
 @LocalizationBundle("LocalizationWikiCommands")
-public class SlashError extends ApplicationCommand {
+public class SlashException extends ApplicationCommand {
 	//Description is set in localization
 	@JDASlashCommand(name = "exception")
-	public void onSlashBan(GuildSlashEvent event) {
+	public void onSlashException(GuildSlashEvent event) {
 		throw new UnsupportedOperationException();
 	}
 }
