@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
-//TODO waiting on JDA localization changes (#2261)
 /**
  * A few resources:
  *
