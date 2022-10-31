@@ -17,7 +17,7 @@ public interface ApplicationCommandsContext {
 	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild
 	 *
 	 * @param guild The Guild the command has been invoked in, can be null for global commands
-	 * @param path Full name of the slash command (Examples: ban ; info/user ; ban/user/perm)
+	 * @param path Full name of the slash command (Examples: {@code ban} ; {@code info user} ; {@code ban user perm})
 	 * @return The {@link SlashCommandInfo} object of the slash command
 	 */
 	@Nullable
@@ -84,7 +84,7 @@ public interface ApplicationCommandsContext {
 	CommandInfoMap<MessageCommandInfo> getMessageCommandsMapView();
 
 	/**
-	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
+	 * Returns a list of the application commands paths, names such as {@code ban user perm}
 	 *
 	 * @return A list of the application commands paths
 	 */
