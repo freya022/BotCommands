@@ -12,18 +12,22 @@ import org.jetbrains.annotations.Nullable;
  * <br>This is mainly a utility class to avoid manipulating strings
  */
 public interface CommandPath extends Comparable<CommandPath> {
+	@NotNull
 	static CommandPath of(@NotNull String name, @Nullable String group, @Nullable String subname) {
 		return new CommandPathImpl(name, group, subname);
 	}
 
+	@NotNull
 	static CommandPath of(@NotNull String name, @Nullable String subname) {
 		return new CommandPathImpl(name, null, subname);
 	}
 
+	@NotNull
 	static CommandPath ofName(@NotNull String name) {
 		return new CommandPathImpl(name, null, null);
 	}
 
+	@NotNull
 	static CommandPath of(@NotNull String path) {
 		final String[] components = path.split(" ");
 		for (String component : components) {
@@ -33,7 +37,8 @@ public interface CommandPath extends Comparable<CommandPath> {
 		return of(components);
 	}
 
-	static CommandPath of(String... components) {
+	@NotNull
+	static CommandPath of(@NotNull String @NotNull ... components) {
 		if (components.length == 1) {
 			return new CommandPathImpl(components[0], null, null);
 		} else if (components.length == 2) {
@@ -101,6 +106,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	 *
 	 * @return The full encoded path of this command path
 	 */
+	@NotNull
 	String getFullPath();
 
 	/**
@@ -126,6 +132,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	 *
 	 * @return The command path with / in between each component
 	 */
+	@NotNull
 	String toString();
 
 	/**

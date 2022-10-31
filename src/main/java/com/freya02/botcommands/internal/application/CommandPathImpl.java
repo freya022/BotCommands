@@ -95,6 +95,7 @@ public class CommandPathImpl implements CommandPath {
 		return path.hashCode();
 	}
 
+	@NotNull
 	@Override
 	public String getFullPath() {
 		return path;
@@ -131,6 +132,7 @@ public class CommandPathImpl implements CommandPath {
 		}
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return path;
