@@ -56,7 +56,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findLiveUserCommand(event.getGuild(), event.getCommandPath());
+			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findLiveUserCommand(event.getGuild(), event.getName());
 
 			if (userCommand == null) {
 				throw new IllegalArgumentException("An user context command could not be found: " + event.getName());
@@ -75,7 +75,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findLiveMessageCommand(event.getGuild(), event.getCommandPath());
+			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findLiveMessageCommand(event.getGuild(), event.getName());
 
 			if (messageCommand == null) {
 				throw new IllegalArgumentException("A message context command could not be found: " + event.getName());
@@ -94,10 +94,10 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 
 		final Consumer<Throwable> throwableConsumer = getThrowableConsumer(event);
 		runCommand(() -> {
-			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getCommandPath()));
+			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getFullCommandName()));
 
 			if (slashCommand == null) {
-				throw new IllegalArgumentException("A slash command could not be found: '" + event.getCommandPath() + "'");
+				throw new IllegalArgumentException("A slash command could not be found: '" + event.getFullCommandName() + "'");
 			}
 
 			if (!canRun(event, slashCommand)) return;
