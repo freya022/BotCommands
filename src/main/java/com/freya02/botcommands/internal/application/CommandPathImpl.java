@@ -24,7 +24,7 @@ public class CommandPathImpl implements CommandPath {
 		this.group = group;
 		this.subname = subname;
 		
-		final StringJoiner joiner = new StringJoiner("/");
+		final StringJoiner joiner = new StringJoiner(" ");
 
 		joiner.add(name);
 
