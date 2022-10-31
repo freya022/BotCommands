@@ -81,8 +81,8 @@ public class SlashBan extends ApplicationCommand {
 				.reason(logReason)
 				.queue(x -> {
 					event.getHook().sendMessage(event.localize("ban.success",
-							entry("banned_user", targetUser.getAsMention()),
-							entry("del_hours", delHours),
+							entry("bannedUser", targetUser.getAsMention()),
+							entry("delHours", delHours),
 							entry("reason", notNullReason)
 					)).queue();
 				}, t -> {

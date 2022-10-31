@@ -25,7 +25,7 @@
             "interact_error": "The bot cannot ban {mention}."
         },
         "ban_status": "Banning...",
-        "success": "{banned_user} was banned successfully for the reason '{reason}', and {del_hours} {del_hours, choice, 1#hour|2<hours} of messages were deleted",
+        "success": "{bannedUser} was banned successfully for the reason '{reason}', and {delHours} {delHours, choice, 1#hour|2<hours} of messages were deleted",
         "unknown_error": "An unknown error occurred"
     },
     "exception": {
