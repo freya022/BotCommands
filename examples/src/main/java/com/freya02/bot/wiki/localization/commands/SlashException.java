@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 
-@LocalizationBundle("LocalizationWikiCommands")
 public class SlashException extends ApplicationCommand {
 	//Description is set in localization
 	@JDASlashCommand(name = "exception")
