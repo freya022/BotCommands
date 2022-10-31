@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	}
 
 	@NotNull
-	private SelectMenu buildSelectMenu() {
+	protected StringSelectMenu.Builder createSelectMenuBuilder() {
 		final LambdaStringSelectionMenuBuilder builder = Components.stringSelectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
 
 		final List<SelectOption> options = builder.getOptions();
@@ -53,7 +53,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			options.add(option);
 		}
 
-		return builder.build();
+		return builder;
 	}
 
 	private void handleSelection(StringSelectionEvent event) {
@@ -119,7 +119,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			putComponents();
 		}
 
-		components.addComponents(buildSelectMenu());
+		components.addComponents(createSelectMenuBuilder().build());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
 		messageBuilder.setEmbeds(embed);

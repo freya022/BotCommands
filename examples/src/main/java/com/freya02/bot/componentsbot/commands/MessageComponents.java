@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.prefixed.CommandEvent;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.api.prefixed.annotations.Description;
@@ -19,7 +19,7 @@ public class MessageComponents extends TextCommand {
 	@JDATextCommand(name = "components")
 	public void execute(CommandEvent event) {
 		final ActionRow firstRow = ActionRow.of(
-				Components.selectionMenu(SELECTION_HANDLER_NAME)
+				Components.stringSelectionMenu(SELECTION_HANDLER_NAME)
 						.addOption("Option 1", "Value 1")
 						.addOption("Option 2", "Value 2")
 						.addOption("Option 3", "Value 3")
@@ -44,7 +44,7 @@ public class MessageComponents extends TextCommand {
 	}
 
 	@JDASelectionMenuListener(name = SELECTION_HANDLER_NAME)
-	public void run(SelectionEvent event) {
+	public void run(StringSelectionEvent event) {
 		event.reply("Selected a value in a persistent selection menu: " + event.getValues())
 				.setEphemeral(true)
 				.queue();
