@@ -17,6 +17,7 @@ internal class ExceptionContext internal constructor(
     private val context: BContextImpl,
     private var contextBlock: ExceptionContextInfo.() -> Unit
 ) {
+    private var running = false
     private val descStack: Stack<Supplier<String>> = Stack()
 
     inline fun <R> exceptionContext(desc: String, block: ExceptionContext.() -> R) = exceptionContext({ desc }, block)
@@ -36,6 +37,9 @@ internal class ExceptionContext internal constructor(
     }
 
     internal suspend inline fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
+        if (running) throw IllegalStateException("This exception context is already active")
+        running = true
+
         descStack += descSupplier
         return runCatching(block).onFailure { e ->
             val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
@@ -48,6 +52,9 @@ internal class ExceptionContext internal constructor(
             context.dispatchException(exceptionContextInfo.dispatchMessage(), e)
 
             exceptionContextInfo.postRun()
-        }.also { descStack.pop() }
+        }.also {
+            descStack.pop()
+            running = false
+        }
     }
 }
