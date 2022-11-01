@@ -18,12 +18,16 @@ suspend fun main() {
         println("do sth")
 //        throw AssertionError("throw")
 
-        withExceptionContext("Test 2") {
-            throw AssertionError("throw")
+        withNewExceptionContext(contextBlock).runContext({ "Something" }) {
+            withExceptionContext("Test 2") {
+                throw AssertionError("throw")
+            }
         }
 
         overrideHandler(contextBlock) {
             print("do sth 2")
         }
+
+        throw AssertionError("catch this")
     }
 }

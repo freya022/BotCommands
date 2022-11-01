@@ -16,6 +16,10 @@ internal class ExceptionContext internal constructor(
     private val context: BContextImpl,
     private var contextBlock: ExceptionContextInfo.() -> Unit
 ) {
+    internal constructor(currentContext: ExceptionContext, contextBlock: ExceptionContextInfo.() -> Unit) : this(currentContext.context, contextBlock) {
+        descStack += currentContext.descStack
+    }
+
     private var running = false
     private val descStack: Stack<() -> String> = Stack()
 
@@ -25,6 +29,8 @@ internal class ExceptionContext internal constructor(
         descStack += descSupplier
         return let(block).also { descStack.pop() }
     }
+
+    fun withNewExceptionContext(contextBlock: ExceptionContextInfo.() -> Unit) = ExceptionContext(this, contextBlock)
 
     inline fun <R> overrideHandler(
         noinline contextBlock: ExceptionContextInfo.() -> Unit,
