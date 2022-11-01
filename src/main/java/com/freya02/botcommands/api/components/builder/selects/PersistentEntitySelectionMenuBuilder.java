@@ -6,8 +6,10 @@ import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.builder.PersistentComponentTimeoutInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class PersistentEntitySelectionMenuBuilder
@@ -21,8 +23,9 @@ public class PersistentEntitySelectionMenuBuilder
 	private PersistentComponentTimeoutInfo timeoutInfo = new PersistentComponentTimeoutInfo(0, TimeUnit.MILLISECONDS);
 	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 
-	public PersistentEntitySelectionMenuBuilder(BContext context, String handlerName, String[] args) {
+	public PersistentEntitySelectionMenuBuilder(Collection<SelectTarget> types, BContext context, String handlerName, String[] args) {
 		super("fake");
+		setEntityTypes(types);
 
 		this.context = context;
 		this.handlerName = handlerName;

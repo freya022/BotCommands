@@ -8,8 +8,10 @@ import com.freya02.botcommands.api.components.builder.LambdaComponentTimeoutInfo
 import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class LambdaEntitySelectionMenuBuilder
@@ -22,8 +24,9 @@ public class LambdaEntitySelectionMenuBuilder
 	private LambdaComponentTimeoutInfo timeoutInfo = new LambdaComponentTimeoutInfo(0, TimeUnit.MILLISECONDS, () -> {});
 	private final InteractionConstraints interactionConstraints = new InteractionConstraints();
 
-	public LambdaEntitySelectionMenuBuilder(BContext context, EntitySelectionConsumer consumer) {
+	public LambdaEntitySelectionMenuBuilder(Collection<SelectTarget> types, BContext context, EntitySelectionConsumer consumer) {
 		super("fake");
+		setEntityTypes(types);
 
 		this.context = context;
 		this.consumer = consumer;
