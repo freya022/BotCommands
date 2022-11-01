@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.core
 import com.freya02.botcommands.internal.BContextImpl
 import mu.KotlinLogging
 import java.util.*
-import java.util.function.Supplier
 
 internal class ExceptionContextInfo {
     var logMessage: () -> String = { "An unhandled exception has been caught" }
@@ -18,11 +17,11 @@ internal class ExceptionContext internal constructor(
     private var contextBlock: ExceptionContextInfo.() -> Unit
 ) {
     private var running = false
-    private val descStack: Stack<Supplier<String>> = Stack()
+    private val descStack: Stack<() -> String> = Stack()
 
     inline fun <R> withExceptionContext(desc: String, block: ExceptionContext.() -> R) = withExceptionContext({ desc }, block)
 
-    inline fun <R> withExceptionContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): R {
+    inline fun <R> withExceptionContext(noinline descSupplier: () -> String, block: ExceptionContext.() -> R): R {
         descStack += descSupplier
         return let(block).also { descStack.pop() }
     }
@@ -36,7 +35,7 @@ internal class ExceptionContext internal constructor(
         return let(block).also { this.contextBlock = oldBlock }
     }
 
-    internal suspend inline fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
+    internal suspend inline fun <R> runContext(noinline descSupplier: () -> String, block: ExceptionContext.() -> R): Result<R> {
         if (running) throw IllegalStateException("This exception context is already active")
         running = true
 
@@ -44,7 +43,7 @@ internal class ExceptionContext internal constructor(
         return runCatching(block).onFailure { e ->
             val exceptionContextInfo = ExceptionContextInfo().apply(contextBlock)
 
-            val descStr = descStack.joinToString("\n\t          ") { it.get() }
+            val descStr = descStack.joinToString("\n\t          ") { it() }
             val contextStr = "\tContext:  $descStr"
 
             KotlinLogging.logger { }.error(exceptionContextInfo.logMessage() + "\n$contextStr", e)
