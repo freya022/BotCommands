@@ -20,9 +20,9 @@ internal class ExceptionContext internal constructor(
     private var running = false
     private val descStack: Stack<Supplier<String>> = Stack()
 
-    inline fun <R> exceptionContext(desc: String, block: ExceptionContext.() -> R) = exceptionContext({ desc }, block)
+    inline fun <R> withExceptionContext(desc: String, block: ExceptionContext.() -> R) = withExceptionContext({ desc }, block)
 
-    inline fun <R> exceptionContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): R {
+    inline fun <R> withExceptionContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): R {
         descStack += descSupplier
         return let(block).also { descStack.pop() }
     }

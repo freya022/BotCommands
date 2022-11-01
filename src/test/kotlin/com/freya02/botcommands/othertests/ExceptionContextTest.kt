@@ -18,7 +18,7 @@ suspend fun main() {
         println("do sth")
 //        throw AssertionError("throw")
 
-        exceptionContext("Test 2") {
+        withExceptionContext("Test 2") {
             throw AssertionError("throw")
         }
 
