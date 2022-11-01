@@ -14,7 +14,7 @@ suspend fun main() {
         postRun = { println("oké") }
     }
 
-    ExceptionContext.create(context, contextBlock, { "Test" }) {
+    ExceptionContext(context, contextBlock).runContext({ "Test" }) {
         println("do sth")
 //        throw AssertionError("throw")
 

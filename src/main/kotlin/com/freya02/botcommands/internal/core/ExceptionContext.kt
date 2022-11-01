@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.internal.BContextImpl
 import mu.KotlinLogging
-import org.slf4j.LoggerFactory
 import java.util.*
 import java.util.function.Supplier
 
@@ -12,8 +11,9 @@ internal class ExceptionContextInfo {
     var postRun: suspend () -> Unit = { }
 }
 
-//Kotlinc no happy when this private
-internal class ExceptionContext @Deprecated("Do not use manually", replaceWith = ReplaceWith("ExceptionContext.build(context, contextBlock)")) internal constructor(
+//Kotlin either refuses to compile when some things are private
+// Or doesn't notice source changes when too deeply inlined code is changed (i.e. runContext)
+internal class ExceptionContext internal constructor(
     private val context: BContextImpl,
     private var contextBlock: ExceptionContextInfo.() -> Unit
 ) {
@@ -35,8 +35,6 @@ internal class ExceptionContext @Deprecated("Do not use manually", replaceWith =
         return let(block).also { this.contextBlock = oldBlock }
     }
 
-    //Kotlinc no happy when this private
-    @Deprecated("Do not use manually")
     internal suspend inline fun <R> runContext(descSupplier: Supplier<String>, block: ExceptionContext.() -> R): Result<R> {
         descStack += descSupplier
         return runCatching(block).onFailure { e ->
@@ -45,22 +43,11 @@ internal class ExceptionContext @Deprecated("Do not use manually", replaceWith =
             val descStr = descStack.joinToString("\n\t          ") { it.get() }
             val contextStr = "\tContext:  $descStr"
 
-            KotlinLogging.logger(LoggerFactory.getLogger(e.stackTrace[0].className)).error(exceptionContextInfo.logMessage() + "\n$contextStr", e)
+            KotlinLogging.logger { }.error(exceptionContextInfo.logMessage() + "\n$contextStr", e)
 
             context.dispatchException(exceptionContextInfo.dispatchMessage(), e)
 
             exceptionContextInfo.postRun()
         }.also { descStack.pop() }
-    }
-
-    companion object {
-        @Suppress("DEPRECATION")
-        suspend inline fun <R> create(
-            context: BContextImpl,
-            noinline contextBlock: ExceptionContextInfo.() -> Unit,
-            descSupplier: Supplier<String>,
-            block: ExceptionContext.() -> R
-        ): Result<R> =
-            ExceptionContext(context, contextBlock).runContext(descSupplier, block)
     }
 }
