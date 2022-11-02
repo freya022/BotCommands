@@ -1,6 +1,6 @@
 package com.freya02.botcommands.core.internal.data
 
-import com.freya02.botcommands.core.internal.db.DBResult
+import com.freya02.botcommands.internal.core.db.DBResult
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import java.sql.Timestamp

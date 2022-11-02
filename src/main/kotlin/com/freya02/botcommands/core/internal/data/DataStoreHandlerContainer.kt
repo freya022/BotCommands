@@ -1,10 +1,10 @@
 package com.freya02.botcommands.core.internal.data
 
-import com.freya02.botcommands.core.api.annotations.ConditionalService
-import com.freya02.botcommands.core.internal.ClassPathContainer
-import com.freya02.botcommands.core.internal.ServiceContainer
-import com.freya02.botcommands.core.internal.requireFirstArg
-import com.freya02.botcommands.core.internal.requireNonStatic
+import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.ServiceContainer
+import com.freya02.botcommands.internal.core.requireFirstArg
+import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.full.findAnnotation
 import com.freya02.botcommands.core.internal.data.annotations.DataStoreTimeoutHandler as DataStoreTimeoutHandlerAnnotation

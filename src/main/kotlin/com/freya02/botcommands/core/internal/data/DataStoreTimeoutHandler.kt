@@ -1,7 +1,7 @@
 package com.freya02.botcommands.core.internal.data
 
-import com.freya02.botcommands.core.internal.ClassPathFunction
-import com.freya02.botcommands.core.internal.ServiceContainer
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy

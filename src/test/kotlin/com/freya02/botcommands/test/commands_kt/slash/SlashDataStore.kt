@@ -1,10 +1,10 @@
-package com.freya02.botcommands.test.commands2
+package com.freya02.botcommands.test.commands_kt.slash
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.api.annotations.Declaration
-import com.freya02.botcommands.api.application.ApplicationCommand
-import com.freya02.botcommands.api.application.GlobalApplicationCommandManager
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.core.internal.data.DataEntity
 import com.freya02.botcommands.core.internal.data.DataStoreService
 import com.freya02.botcommands.core.internal.data.PartialDataEntity
@@ -41,20 +41,22 @@ class SlashDataStore : ApplicationCommand() {
         println(dataEntity)
     }
 
-    @Declaration
+    @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("data_store", subcommand = "put") {
-            customOption("dataStore")
+        globalApplicationCommandManager.slashCommand("data_store") {
+            subcommand("put") {
+                customOption("dataStore")
 
-            function = ::onSlashDataStorePut
-        }
+                function = ::onSlashDataStorePut
+            }
 
-        globalApplicationCommandManager.slashCommand("data_store", subcommand = "get") {
-            option("id")
+            subcommand("get") {
+                option("id")
 
-            customOption("dataStore")
+                customOption("dataStore")
 
-            function = ::onSlashDataStoreGet
+                function = ::onSlashDataStoreGet
+            }
         }
     }
 }

@@ -2,9 +2,9 @@ package com.freya02.botcommands.core.internal.data
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.core.api.annotations.ConditionalService
-import com.freya02.botcommands.core.internal.db.Database
-import com.freya02.botcommands.core.internal.db.isUniqueViolation
+import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.internal.core.db.Database
+import com.freya02.botcommands.internal.core.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.*
