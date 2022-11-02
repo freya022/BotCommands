@@ -4,10 +4,11 @@ import com.freya02.botcommands.api.components.builder.LambdaButtonBuilder;
 import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
 import com.freya02.botcommands.api.components.builder.PersistentButtonBuilder;
 import com.freya02.botcommands.api.components.builder.PersistentSelectionMenuBuilder;
-import com.freya02.botcommands.internal.components.data.LambdaButtonData;
-import com.freya02.botcommands.internal.components.data.LambdaSelectionMenuData;
-import com.freya02.botcommands.internal.components.data.PersistentButtonData;
-import com.freya02.botcommands.internal.components.data.PersistentSelectionMenuData;
+import com.freya02.botcommands.api.components.data.LambdaButtonData;
+import com.freya02.botcommands.api.components.data.LambdaSelectionMenuData;
+import com.freya02.botcommands.api.components.data.PersistentButtonData;
+import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData;
+import com.freya02.botcommands.api.core.annotations.ConditionalService;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -18,11 +19,13 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 /**
- * The button id is supposed to be fully treated before returning data, if it is indicated it is one use, the id must be deleted before returning for example
+ * The interface which manages components, this goes from creating components, deleting them, or handling their timeouts
+ *
+ * <p>The default implementation should be used: {@link DefaultComponentManager}
  */
+@ConditionalService(message = "A component manager strategy needs to be set")
 public interface ComponentManager {
-	@NotNull
-	FetchResult fetchComponent(String id);
+	void fetchComponent(String id, Consumer<FetchResult> resultCallback);
 
 	void handleLambdaButton(GenericComponentInteractionCreateEvent event, FetchResult fetchResult, Consumer<ComponentErrorReason> onError, Consumer<LambdaButtonData> dataConsumer);
 
@@ -44,7 +47,7 @@ public interface ComponentManager {
 	@NotNull
 	String putPersistentSelectMenu(PersistentSelectionMenuBuilder builder);
 
-	void registerGroup(Collection<String> builders);
+	void registerGroup(Collection<String> ids);
 
 	int deleteIds(Collection<String> ids);
 

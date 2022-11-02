@@ -1,10 +1,10 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import net.dv8tion.jda.api.entities.Category;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
 
 public class SlashChannelType extends ApplicationCommand {
 	@JDASlashCommand(name = "channeltype")

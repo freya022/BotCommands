@@ -1,9 +1,9 @@
 package com.freya02.bot.registeredclasses.othercommands;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import org.slf4j.Logger;
 
 import java.sql.Connection;

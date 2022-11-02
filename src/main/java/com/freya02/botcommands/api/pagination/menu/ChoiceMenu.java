@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.List;
 
@@ -41,6 +42,9 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent,
 				makePages(entries, transformer, rowPrefixSupplier, maxEntriesPerPage),
 				supplier);
+
+		Checks.notNull(buttonContentSupplier, "Button content supplier");
+		Checks.notNull(callback, "Callback");
 
 		this.buttonContentSupplier = buttonContentSupplier;
 		this.callback = callback;

@@ -1,8 +1,10 @@
 package com.freya02.botcommands.api.components.builder;
 
+import com.freya02.botcommands.api.components.ComponentConsumer;
+
 import java.util.concurrent.TimeUnit;
 
-public interface LambdaComponentBuilder<T extends LambdaComponentBuilder<T>> {
+public interface LambdaComponentBuilder<T extends LambdaComponentBuilder<T, C>, C extends ComponentConsumer<?>> extends ComponentBuilder<T> {
 	/**
 	 * Makes this component expire after the specified timeout
 	 * <br>Once the component expires it should be removed from the component manager
@@ -13,4 +15,6 @@ public interface LambdaComponentBuilder<T extends LambdaComponentBuilder<T>> {
 	T timeout(long timeout, TimeUnit timeoutUnit, Runnable timeoutCallback);
 
 	LambdaComponentTimeoutInfo getTimeout();
+
+	C getConsumer();
 }

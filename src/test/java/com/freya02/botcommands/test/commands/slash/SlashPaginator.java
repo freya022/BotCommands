@@ -1,10 +1,10 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
@@ -14,6 +14,7 @@ import com.freya02.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
@@ -46,23 +47,25 @@ public class SlashPaginator extends ApplicationCommand {
 					//Disable all components on timeout, more expensive
 //					event.getHook()
 //							.retrieveOriginal()
-//							.flatMap(m -> m.editMessageComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
+//							.flatMap(m -> event.getHook().editOriginalComponents(m.getActionRows().stream().map(ActionRow::asDisabled).toList()))
 //							.queue();
 				})
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
 				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
-					components.addComponents(1, componentss.primaryButton(btnEvt -> {
-						paginator.setPage(2); //Pages starts at 0
+					components.addComponents(
+							componentss.primaryButton(btnEvt -> {
+								paginator.setPage(2); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))),
 
-					components.addComponents(1, componentss.primaryButton(btnEvt -> {
-						paginator.setPage(4); //Pages starts at 0
+							componentss.primaryButton(btnEvt -> {
+								paginator.setPage(4); //Pages starts at 0
 
-						btnEvt.editMessage(paginator.get()).queue();
-					}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up"))));
+								btnEvt.editMessage(paginator.get()).queue();
+							}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")))
+					);
 
 					return new EmbedBuilder()
 							.setTitle("Page #" + (page + 1)) //Pages starts at 0
@@ -71,7 +74,7 @@ public class SlashPaginator extends ApplicationCommand {
 
 		final Paginator paginator = builder.build();
 
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(false)
 				.queue();
 	}

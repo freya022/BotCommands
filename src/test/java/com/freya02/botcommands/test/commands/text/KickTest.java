@@ -1,15 +1,15 @@
 package com.freya02.botcommands.test.commands.text;
 
-import com.freya02.botcommands.annotations.api.annotations.BotPermissions;
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker;
-import com.freya02.botcommands.annotations.api.annotations.Optional;
-import com.freya02.botcommands.annotations.api.annotations.UserPermissions;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Category;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.Description;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.TextOption;
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.annotations.CommandMarker;
+import com.freya02.botcommands.api.commands.annotations.BotPermissions;
+import com.freya02.botcommands.api.commands.annotations.Optional;
+import com.freya02.botcommands.api.commands.annotations.UserPermissions;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.commands.prefixed.TextCommand;
+import com.freya02.botcommands.api.commands.prefixed.annotations.Category;
+import com.freya02.botcommands.api.commands.prefixed.annotations.Description;
+import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 

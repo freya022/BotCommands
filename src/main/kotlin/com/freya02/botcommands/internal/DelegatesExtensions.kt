@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.core.api.config.BConfig
+import com.freya02.botcommands.api.core.config.BConfig
 import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-abstract class LockableVar<T : Any?>(private val config: BConfig) : ReadWriteProperty<Any?, T> {
-    protected var value: T? = null
+abstract class LockableVar<T : Any?>(private val config: BConfig, defaultVal: T?) : ReadWriteProperty<Any?, T> {
+    protected var value: T? = defaultVal
 
     override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         if (config.locked) throwUser("This config is immutable")
@@ -16,20 +16,20 @@ abstract class LockableVar<T : Any?>(private val config: BConfig) : ReadWritePro
     fun hasValue() = value != null
 }
 
-class NotNullVar<T : Any>(config: BConfig, private val message: String) : LockableVar<T>(config) {
+class NotNullVar<T : Any>(config: BConfig, private val message: String, defaultVal: T?) : LockableVar<T>(config, defaultVal) {
     override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return value ?: throw IllegalStateException(message)
     }
 }
 
-class NullableVar<T : Any>(config: BConfig) : LockableVar<T?>(config) {
+class NullableVar<T : Any>(config: BConfig, defaultVal: T?) : LockableVar<T?>(config, defaultVal) {
     override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
         return value
     }
 }
 
 @Suppress("unused")
-fun <T : Any> Delegates.lockableNotNull(config: BConfig, message: String): NotNullVar<T> = NotNullVar(config, message)
+fun <T : Any> Delegates.lockableNotNull(config: BConfig, message: String = "This property cannot be null", defaultVal: T? = null): NotNullVar<T> = NotNullVar(config, message, defaultVal)
 
 @Suppress("unused")
-fun <T : Any> Delegates.lockable(config: BConfig): NullableVar<T> = NullableVar(config)
+fun <T : Any> Delegates.lockable(config: BConfig, defaultVal: T? = null): NullableVar<T> = NullableVar(config, defaultVal)

@@ -1,12 +1,12 @@
 package com.freya02.bot.wiki.slash.commands;
 
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class SlashInfo extends ApplicationCommand {
 	@JDASlashCommand(name = "info", subcommand = "user")

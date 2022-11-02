@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api;
 
-import com.freya02.botcommands.annotations.api.annotations.NSFW;
+import com.freya02.botcommands.api.commands.application.annotations.NSFW;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

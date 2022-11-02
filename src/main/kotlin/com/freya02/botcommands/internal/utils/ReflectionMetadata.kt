@@ -1,14 +1,12 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.annotations.api.annotations.Optional
-import com.freya02.botcommands.core.api.annotations.BService
+import com.freya02.botcommands.api.commands.annotations.Optional
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
-import io.github.classgraph.ArrayTypeSignature
-import io.github.classgraph.ClassGraph
-import io.github.classgraph.ClassInfoList
-import io.github.classgraph.TypeVariableSignature
+import io.github.classgraph.*
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -48,36 +46,53 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(functionMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> = ClassGraph()
-        .acceptPackages(*packages.toTypedArray(), "com.freya02.botcommands")
-        .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
-        .enableMethodInfo()
-        .enableAnnotationInfo()
-        .scan()
-        .let { scanResult ->
-            val list = scanResult.allStandardClasses
-                .filter {
-                    if (it.packageName.startsWith("com.freya02.botcommands") && !it.packageName.startsWith("com.freya02.botcommands.test")) {
-                        return@filter it.hasAnnotation(BService::class.java.name)
-                    }
-
-                    return@filter true
+    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
+        val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
+            ClassGraph()
+                .acceptPackages("com.freya02.botcommands")
+                .enableMethodInfo()
+                .enableAnnotationInfo()
+                .scan()
+                .also { scanResult -> // Don't keep test classes
+                    add(scanResult to scanResult.allStandardClasses.filter {
+                        if (it.packageName.startsWith("com.freya02.botcommands.test")) {
+                            return@filter false
+                        } else {
+                            return@filter it.isService()
+                                    || it.outerClasses.any { outer -> outer.isService() }
+                                    || it.hasAnnotation(IncludeClasspath::class.java.name)
+                        }
+                    })
                 }
+
+            ClassGraph()
+                .acceptPackages(*packages.toTypedArray())
+                .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
+                .enableMethodInfo()
+                .enableAnnotationInfo()
+                .scan()
+                .also { scanResult ->
+                    add(scanResult to scanResult.allStandardClasses)
+                }
+        }
+
+        return scanned.flatMap { (scanResult, classes) ->
+            classes
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
                         return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
                     }
                     return@filter true
                 }
-                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isInnerClass || it.isEnum || it.isAbstract) }
+                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
                 .filter(ReflectionUtilsKt::isInstantiable)
                 .also { readAnnotations(it) }
                 .loadClasses()
-
-            scanResult.close()
-
-            list
+                .also {
+                    scanResult.close()
+                }
         }
+    }
 
 
     private fun readAnnotations(classInfoList: ClassInfoList) {

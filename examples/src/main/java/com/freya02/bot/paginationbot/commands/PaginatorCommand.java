@@ -1,13 +1,14 @@
 package com.freya02.bot.paginationbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ public class PaginatorCommand extends ApplicationCommand {
 				.build();
 
 		//You must send the paginator as a message
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(true)
 				.queue();
 	}

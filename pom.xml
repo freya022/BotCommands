@@ -22,26 +22,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <kotlin.version>1.7.10</kotlin.version>
-        <kotlin.coroutine.version>1.6.2</kotlin.coroutine.version>
+        <kotlin.version>1.7.20</kotlin.version>
+        <kotlin.coroutine.version>1.6.4</kotlin.coroutine.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>no-docs</id>
-            <properties>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-            </properties>
-        </profile>
-        <profile>
-            <id>check-docs</id>
-            <properties>
-                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
-                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
-            </properties>
-        </profile>
-    </profiles>
 
     <licenses>
         <license>
@@ -69,8 +53,169 @@
         </repository>
     </distributionManagement>
 
+    <profiles>
+        <profile>
+            <id>no-docs</id>
+            <properties>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>check-docs</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <configuration>
+                            <release>17</release>
+                            <additionalJOptions>
+                                <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                                <additionalJOption>--enable-preview</additionalJOption>
+                            </additionalJOptions>
+                            <links>
+                                <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
+                                <link>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</link>
+                            </links>
+                            <excludePackageNames>
+                                com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
+                            </excludePackageNames>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
+                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Built-By>freya02</Built-By>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>enforce-all-profiles-are-activated</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireActiveProfile>
+                                            <profiles>check-docs</profiles>
+                                        </requireActiveProfile>
+                                    </rules>
+                                    <fail>true</fail>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- Good resources:
+                    https://github.com/classgraph/classgraph/blob/e81f793faba16ed102aeba4760fa0b5cd6e260d2/pom.xml
+                    https://central.sonatype.org/publish/publish-maven/
+                     -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.12</version> <!-- Updated for Java 16+ -->
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>3.0.0-M5</version> <!-- Updated -->
+                        <configuration>
+                            <tagNameFormat>v@{version}</tagNameFormat>
+                        </configuration>
+                    </plugin>
+                    <!-- Update plugin versions -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.2.0</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>3.0.0-M2</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <version>3.0.0-M1</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>3.12.0</version>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.github.freya022</groupId>
+                <artifactId>BotCommandsBuild-maven-plugin</artifactId>
+                <version>763c9f0108</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>BotCommandsBuild</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -81,6 +226,7 @@
                         <arg>-opt-in=kotlin.RequiresOptIn</arg>
                         <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
                         <arg>-Xjvm-default=all</arg>
+                        <arg>-Xcontext-receivers</arg>
                     </args>
                 </configuration>
                 <executions>
@@ -93,6 +239,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <!-- Needed for BC generated sources -->
+                                <sourceDir>${project.build.directory}/generated-sources</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -113,11 +261,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <release>17</release>
                     <compilerArgs>
                         <compilerArg>-parameters</compilerArg>
-                        <compilerArg>--enable-preview</compilerArg>
                     </compilerArgs>
                 </configuration>
                 <executions>
@@ -146,18 +292,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Built-By>freya02</Built-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
@@ -191,108 +325,22 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <release>17</release>
-                    <additionalJOptions>
-                        <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
-                        <additionalJOption>--enable-preview</additionalJOption>
-                    </additionalJOptions>
-                    <links>
-                        <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
-                        <link>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</link>
-                    </links>
-                    <excludePackageNames>
-                        com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
-                    </excludePackageNames>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Good resources:
-            https://github.com/classgraph/classgraph/blob/e81f793faba16ed102aeba4760fa0b5cd6e260d2/pom.xml
-            https://central.sonatype.org/publish/publish-maven/
-             -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.12</version> <!-- Updated for Java 16+ -->
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M5</version> <!-- Updated -->
-<!--                <configuration> &lt;!&ndash; TODO test if this is needed &ndash;&gt;-->
-<!--                    <autoVersionSubmodules>true</autoVersionSubmodules>-->
-<!--                    <useReleaseProfile>false</useReleaseProfile>-->
-<!--                    <releaseProfiles>ossrh</releaseProfiles>-->
-<!--                    <goals>deploy</goals>-->
-<!--                </configuration>-->
-            </plugin>
-            <!-- Update plugin versions -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>3.2.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>3.0.0-M2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
-                <version>3.0.0-M1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.12.0</version>
-            </plugin>
         </plugins>
     </build>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
     <repositories>
-        <repository>
-            <id>dv8tion</id>
-            <name>m2-dv8tion</name>
-            <url>https://m2.dv8tion.net/releases</url>
-        </repository>
         <repository>
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -317,7 +365,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.16</version>
+            <version>5.0.0-alpha.20</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -350,12 +398,6 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
-            <groupId>me.xdrop</groupId>
-            <artifactId>fuzzywuzzy</artifactId>
-            <version>1.4.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>23.0.0</version>
@@ -380,7 +422,17 @@
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>03b07e7d17</version>
+            <version>081a177281</version>
+        </dependency>
+        <dependency>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.microutils</groupId>
+            <artifactId>kotlin-logging-jvm</artifactId>
+            <version>2.1.23</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -391,25 +443,19 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.xodus</groupId>
-            <artifactId>xodus-environment</artifactId>
-            <version>1.3.232</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.xodus</groupId>
-            <artifactId>xodus-entity-store</artifactId>
-            <version>1.3.232</version>
+            <version>42.5.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.xdrop</groupId> <!-- legacy -->
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

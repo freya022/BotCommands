@@ -1,12 +1,12 @@
 package com.freya02.botcommands.test.commands.text
 
-import com.freya02.botcommands.annotations.api.annotations.CommandMarker
-import com.freya02.botcommands.annotations.api.components.annotations.JDAButtonListener
-import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand
+import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.prefixed.TextCommand
+import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.prefixed.TextCommand
 import kotlinx.coroutines.delay
 import kotlin.system.measureTimeMillis
 

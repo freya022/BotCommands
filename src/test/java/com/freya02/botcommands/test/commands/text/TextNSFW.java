@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.text;
 
-import com.freya02.botcommands.annotations.api.annotations.NSFW;
-import com.freya02.botcommands.annotations.api.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.api.prefixed.CommandEvent;
-import com.freya02.botcommands.api.prefixed.TextCommand;
+import com.freya02.botcommands.api.commands.application.annotations.NSFW;
+import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
+import com.freya02.botcommands.api.commands.prefixed.TextCommand;
+import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
 
 public class TextNSFW extends TextCommand {
 	@NSFW

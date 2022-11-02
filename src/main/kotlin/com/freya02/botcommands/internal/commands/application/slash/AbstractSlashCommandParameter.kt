@@ -1,0 +1,29 @@
+package com.freya02.botcommands.internal.commands.application.slash
+
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.parameters.SlashParameterResolver
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandParameter
+import kotlin.reflect.KParameter
+
+abstract class AbstractSlashCommandParameter(
+    parameter: KParameter,
+    optionBuilder: SlashCommandOptionBuilder,
+    val resolver: SlashParameterResolver<*, *>
+) : ApplicationCommandParameter(parameter, optionBuilder) {
+    val varArgs: Int
+    private val numRequired: Int
+    val isVarArg: Boolean
+        get() = varArgs != -1
+
+    init {
+        varArgs = -1 //TODO option builder
+        numRequired = 0 //TODO option builder
+    }
+
+    fun isRequiredVararg(varArgNum: Int): Boolean {
+        return when {
+            !isVarArg -> !isOptional //Default if not a vararg
+            else -> varArgNum < numRequired
+        }
+    }
+}

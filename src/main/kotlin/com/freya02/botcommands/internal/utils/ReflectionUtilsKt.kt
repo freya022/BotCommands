@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.annotations.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.annotations.ConditionalUse
+import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
@@ -13,6 +16,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -22,6 +26,9 @@ private val LOGGER = Logging.getLogger()
 
 internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
+
+    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, LateService::class)
+    private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
@@ -53,11 +60,16 @@ internal object ReflectionUtilsKt {
     internal val KFunction<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
-    internal val KFunction<*>.shortSignature: String
+    internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
             val declaringClassName = this.javaMethod?.declaringClass?.simpleName ?: "<no-java-method>"
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleName }
+            return "$declaringClassName#$methodName($parameters)"
+        }
+
+    internal val KFunction<*>.shortSignature: String
+        get() {
             val returnType = this.returnType.simpleName
             val source = this.javaMethod.let { method ->
                 return@let when {
@@ -70,7 +82,7 @@ internal object ReflectionUtilsKt {
                     else -> "<no-source>"
                 }
             }
-            return "$declaringClassName#$methodName($parameters): $returnType ($source)"
+            return "$shortSignatureNoSrc: $returnType ($source)"
         }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
@@ -104,4 +116,7 @@ internal object ReflectionUtilsKt {
 
         return canInstantiate
     }
+
+    internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
+    internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
 }

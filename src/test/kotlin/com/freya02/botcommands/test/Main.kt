@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test
 
 import com.freya02.botcommands.api.components.DefaultComponentManager
-import com.freya02.botcommands.core.api.BBuilder
+import com.freya02.botcommands.api.core.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import dev.minn.jda.ktx.jdabuilder.light
@@ -22,14 +22,26 @@ fun main() {
     }
 
     BBuilder.newBuilder({
-        addSearchPath("com.freya02.botcommands.test.commands2")
+        addSearchPath("com.freya02.botcommands.test.commands_kt")
+        addSearchPath("com.freya02.botcommands.test.resolvers")
 
         connectionProvider = testDB.connectionSupplier
-        componentManagerStrategy = DefaultComponentManager::class.java
+
+        components {
+            componentManagerStrategy = DefaultComponentManager::class.java
+        }
+
+        textCommands {
+            usePingAsPrefix = true
+        }
+
+        applicationCommands {
+            onlineAppCommandCheckEnabled = true
+        }
     }, manager)
 
     light(config.token, enableCoroutines = false) {
-        enableIntents(GatewayIntent.GUILD_MEMBERS)
+        enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
         setActivity(Activity.playing("coroutines go brrr"))
         setEventManager(manager)
     }

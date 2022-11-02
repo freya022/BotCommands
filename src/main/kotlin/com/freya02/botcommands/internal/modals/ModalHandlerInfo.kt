@@ -1,26 +1,29 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalHandler
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.modals.annotations.ModalHandler
+import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
-import com.freya02.botcommands.annotations.api.modals.annotations.ModalData as ModalDataAnnotation
+import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 class ModalHandlerInfo(
     context: BContextImpl,
     override val instance: Any,
     override val method: KFunction<*>
-) : ExecutableInteractionInfo {
+) : IExecutableInteractionInfo {
 
     override val parameters: MethodParameters
+    override val optionParameters: List<MethodParameter>
 
     val handlerName: String
 
@@ -29,7 +32,7 @@ class ModalHandlerInfo(
         handlerName = annotation.name
 
         @Suppress("RemoveExplicitTypeArguments") //Kotlin: Could not load module <Error module> --> Type inference is broken
-        parameters = MethodParameters2.transform<ModalParameterResolver>(context, method) {
+        parameters = MethodParameters.transform<ModalParameterResolver<*, *>>(context, method) {
             optionPredicate = { it.hasAnnotation<ModalInput>() }
             optionTransformer = { parameter, _, resolver -> ModalHandlerInputParameter(parameter, resolver) }
 
@@ -37,13 +40,15 @@ class ModalHandlerInfo(
             resolvableTransformer = { parameter -> ModalHandlerDataParameter(parameter) }
         }
 
+        optionParameters = parameters.filterOptions()
+
         val hasModalData = parameters.filterIsInstance<ModalHandlerDataParameter>().isNotEmpty()
 
         //Check if the first parameters are all modal data
         if (hasModalData) {
             var sawModalData = false
             for (parameter in parameters) {
-                if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+                if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
                 parameter as ModalHandlerParameter
 
@@ -89,7 +94,7 @@ class ModalHandlerInfo(
         //Insert modal data in the order of appearance, after the event
         for (i in userDatas.indices) {
             val parameter = parameters[i]
-            if (parameter.methodParameterType != MethodParameterType.COMMAND) continue
+            if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
             requireUser(parameter is ModalHandlerDataParameter) {
                 """
@@ -111,7 +116,7 @@ class ModalHandlerInfo(
 
         for (parameter in parameters) {
             objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.COMMAND -> {
+                MethodParameterType.OPTION -> {
                     if (parameter !is ModalHandlerInputParameter) continue
 
                     //We have the modal input's ID
@@ -121,19 +126,15 @@ class ModalHandlerInfo(
                     val modalMapping = event.getValue(inputId)
                         ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                    parameter.resolver.resolve(context, this, event, modalMapping).also { obj ->
-                        requireUser(obj != null) {
+                    parameter.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
+                        requireUser(obj != null || parameter.isOptional) {
                             "The parameter '${parameter.name}' of value '${modalMapping.asString}' could not be resolved into a ${parameter.type.simpleName}"
-                        }
-
-                        requireUser(parameter.type.jvmErasure.isSuperclassOf(obj::class)) {
-                            "The parameter '${parameter.name}' of value '${modalMapping.asString}' is not a valid type (expected a ${parameter.type.simpleName})"
                         }
                     }
                 }
                 MethodParameterType.CUSTOM -> {
                     parameter as CustomMethodParameter
-                    parameter.resolver.resolve(context, this, event)
+                    parameter.resolver.resolveSuspend(context, this, event)
                 }
                 else -> throwInternal("Unexpected MethodParameterType: ${parameter.methodParameterType}")
             }

@@ -1,11 +1,14 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.core.api.annotations.BService;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.RegexParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -18,15 +21,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-@BService
-public class GuildResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+@IncludeClasspath
+public class GuildResolver
+		extends ParameterResolver<GuildResolver, Guild>
+		implements RegexParameterResolver<GuildResolver, Guild>,
+		           SlashParameterResolver<GuildResolver, Guild>,
+		           ComponentParameterResolver<GuildResolver, Guild> {
+
 	public GuildResolver() {
-		super(ParameterType.ofClass(Guild.class));
+		super(Guild.class);
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public Guild resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return resolveGuild(event.getJDA(), args[0]);
 	}
 
@@ -50,13 +58,13 @@ public class GuildResolver extends ParameterResolver implements RegexParameterRe
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
-		throw new UnsupportedOperationException();
+	public Guild resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+		return resolveGuild(event.getJDA(), optionMapping.getAsString());
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Guild resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return resolveGuild(event.getJDA(), arg);
 	}
 

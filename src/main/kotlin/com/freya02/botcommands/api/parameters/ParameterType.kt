@@ -10,6 +10,29 @@ import kotlin.reflect.jvm.javaType
 import kotlin.reflect.jvm.jvmErasure
 
 class ParameterType private constructor(val type: KType) {
+    fun javaType() = type.javaType
+
+    fun javaClass() = type.jvmErasure.java
+
+    fun kotlinErasure() = type.jvmErasure
+
+    fun ignoreNullability() = ParameterType(type.withNullability(false))
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParameterType
+
+        if (type != other.type) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return type.hashCode()
+    }
+
     companion object {
         @JvmStatic
         @JvmOverloads
@@ -28,10 +51,4 @@ class ParameterType private constructor(val type: KType) {
         @JvmStatic
         fun ofType(type: KType) = ParameterType(type)
     }
-
-    fun javaType() = type.javaType
-
-    fun javaClass() = type.jvmErasure.java
-
-    fun ignoreNullability() = ParameterType(type.withNullability(false))
 }

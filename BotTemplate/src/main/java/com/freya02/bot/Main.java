@@ -7,9 +7,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.Logger;
 
-import javax.security.auth.login.LoginException;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -23,6 +23,7 @@ public class Main {
 
 			//Set up JDA
 			final JDA jda = JDABuilder.createLight(config.getToken())
+					.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 					.setActivity(Activity.playing("Prefix is " + config.getPrefix()))
 					.build()
 					.awaitReady();
@@ -45,7 +46,7 @@ public class Main {
 					.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder.addPrefix(config.getPrefix()))
 					.setComponentManager(new DefaultComponentManager(componentsDB::getConnection))
 					.build(jda, "com.freya02.bot.commands"); //Registering listeners is taken care of by the lib
-		} catch (IOException | InterruptedException | LoginException | SQLException e) {
+		} catch (IOException | InterruptedException | SQLException e) {
 			LOGGER.error("Unable to start the bot", e);
 
 			System.exit(-1);

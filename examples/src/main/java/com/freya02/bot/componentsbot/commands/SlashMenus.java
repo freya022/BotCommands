@@ -1,9 +1,10 @@
 package com.freya02.bot.componentsbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.CommandScope;
+import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener;
 import com.freya02.botcommands.api.components.event.SelectionEvent;
@@ -13,7 +14,7 @@ public class SlashMenus extends ApplicationCommand {
 	private static final String SELECTION_HANDLER_NAME = "selectionHandler";
 
 	@JDASlashCommand(
-			guildOnly = false,
+			scope = CommandScope.GLOBAL,
 			name = "menus",
 			description = "Shows how menus works"
 	)

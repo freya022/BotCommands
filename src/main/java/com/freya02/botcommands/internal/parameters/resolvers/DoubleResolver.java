@@ -1,11 +1,14 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.core.api.annotations.BService;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.RegexParameterResolver;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -16,22 +19,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-@BService
-public class DoubleResolver extends ParameterResolver implements RegexParameterResolver, SlashParameterResolver, ComponentParameterResolver {
+@IncludeClasspath
+public class DoubleResolver
+		extends ParameterResolver<DoubleResolver, Double>
+		implements RegexParameterResolver<DoubleResolver, Double>,
+		           SlashParameterResolver<DoubleResolver, Double>,
+		           ComponentParameterResolver<DoubleResolver, Double> {
+
 	public DoubleResolver() {
-		super(ParameterType.ofClass(Double.class));
+		super(Double.class);
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
-		return Double.valueOf(args[0]);
+	public Double resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+		try {
+			return Double.valueOf(args[0]);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 	@Override
 	@NotNull
 	public Pattern getPattern() {
-		return Pattern.compile("(\\d+)");
+		return Pattern.compile("([-+]?[0-9]*[.,]?[0-9]+)");
 	}
 
 	@Override
@@ -48,17 +60,17 @@ public class DoubleResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public Double resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		try {
 			return optionMapping.getAsDouble();
 		} catch (NumberFormatException e) { //Can't have discord to send us actual input when autocompleting lmao
-			return 0;
+			return 0d;
 		}
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public Double resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return Double.valueOf(arg);
 	}
 }

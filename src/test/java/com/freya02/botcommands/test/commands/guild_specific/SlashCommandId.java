@@ -1,12 +1,11 @@
 package com.freya02.botcommands.test.commands.guild_specific;
 
-import com.freya02.botcommands.annotations.api.annotations.CommandId;
-import com.freya02.botcommands.annotations.api.application.annotations.AppOption;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.CommandPath;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.annotations.CommandId;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,12 +16,12 @@ import java.util.List;
 public class SlashCommandId extends ApplicationCommand {
 	@Override
 	@Nullable
-	public Collection<Long> getGuildsForCommandId(@NotNull BContext context, @NotNull String commandId, @NotNull CommandPath commandPath) {
+	public Collection<Long> getGuildsForCommandId(@NotNull String commandId, @NotNull CommandPath commandPath) {
 		if (commandId.equals("specific_run")) {
 			return List.of(722891685755093072L);
 		}
 
-		return super.getGuildsForCommandId(context, commandId, commandPath);
+		return super.getGuildsForCommandId(commandId, commandPath);
 	}
 
 	@CommandId("global_run")

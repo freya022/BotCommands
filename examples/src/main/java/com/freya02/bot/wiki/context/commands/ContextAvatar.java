@@ -1,8 +1,8 @@
 package com.freya02.bot.wiki.context.commands;
 
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.application.context.user.GuildUserEvent;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand;
+import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent;
 import net.dv8tion.jda.api.entities.User;
 
 public class ContextAvatar extends ApplicationCommand {

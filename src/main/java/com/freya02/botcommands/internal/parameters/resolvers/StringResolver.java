@@ -2,11 +2,11 @@ package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.parameters.*;
-import com.freya02.botcommands.core.api.annotations.BService;
-import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.annotations.IncludeClasspath;
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -19,15 +19,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Pattern;
 
-@BService
-public class StringResolver extends ParameterResolver implements RegexParameterResolver, QuotableRegexParameterResolver, SlashParameterResolver, ComponentParameterResolver, ModalParameterResolver {
+@IncludeClasspath
+public class StringResolver
+		extends ParameterResolver<StringResolver, String>
+		implements RegexParameterResolver<StringResolver, String>,
+		           QuotableRegexParameterResolver,
+		           SlashParameterResolver<StringResolver, String>,
+		           ComponentParameterResolver<StringResolver, String>,
+		           ModalParameterResolver<StringResolver, String> {
+
 	public StringResolver() {
-		super(ParameterType.ofClass(String.class));
+		super(String.class);
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
+	public String resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String @NotNull [] args) {
 		return args[0];
 	}
 
@@ -57,19 +64,19 @@ public class StringResolver extends ParameterResolver implements RegexParameterR
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
+	public String resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		return optionMapping.getAsString();
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
+	public String resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
 		return arg;
 	}
 
 	@Override
 	@Nullable
-	public Object resolve(@NotNull BContext context, @NotNull ModalHandlerInfo info, @NotNull ModalInteractionEvent event, @NotNull ModalMapping modalMapping) {
+	public String resolve(@NotNull BContext context, @NotNull ModalHandlerInfo info, @NotNull ModalInteractionEvent event, @NotNull ModalMapping modalMapping) {
 		return modalMapping.getAsString();
 	}
 }

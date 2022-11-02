@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.parameters
 
 enum class MethodParameterType {
-    COMMAND,
+    OPTION,
     CUSTOM,
     CONSTANT, //TODO
-    COMPUTED //TODO
+    GENERATED
 }

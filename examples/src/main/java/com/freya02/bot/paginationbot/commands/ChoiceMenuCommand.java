@@ -1,14 +1,15 @@
 package com.freya02.bot.paginationbot.commands;
 
 import com.freya02.botcommands.api.annotations.CommandMarker;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
-import net.dv8tion.jda.api.MessageBuilder;
+import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +39,16 @@ public class ChoiceMenuCommand extends ApplicationCommand {
 				// First callback parameter is the button event and the second is the chosen entry (the Guild)
 				.setCallback((btnEvt, guild) -> {
 					//Edit the message with a Message so everything is replaced, instead of just the content
-					btnEvt.editMessage(new MessageBuilder("You chose the guild '" + guild.getName() + "' !").build()).queue();
+					btnEvt.editMessage("You chose the guild '" + guild.getName() + "' !")
+							.setReplace(true)
+							.queue();
 				})
+				//This determines what the buttons look like
+				.setButtonContentSupplier((item, index) -> ButtonContent.withString(String.valueOf(index + 1)))
 				.build();
 
 		//You must send the menu as a message
-		event.reply(paginator.get())
+		event.reply(MessageCreateData.fromEditData(paginator.get()))
 				.setEphemeral(true)
 				.queue();
 	}

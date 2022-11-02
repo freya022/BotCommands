@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationBundle
-import com.freya02.botcommands.annotations.api.localization.annotations.LocalizationPrefix
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
+import com.freya02.botcommands.api.localization.annotations.LocalizationPrefix
 import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation

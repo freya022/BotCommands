@@ -1,10 +1,10 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.annotations.api.annotations.Cooldown;
-import com.freya02.botcommands.annotations.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.CooldownScope;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.CooldownScope;
+import com.freya02.botcommands.api.commands.annotations.Cooldown;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 
 import java.util.concurrent.TimeUnit;
 

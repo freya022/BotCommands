@@ -22,7 +22,7 @@ public class EventWaiterBuilder<T extends GenericEvent> {
 	private Runnable onTimeout, onCancelled;
 	private CompletedFutureEvent<T> onComplete;
 
-	private int timeout;
+	private long timeout = -1;
 	private TimeUnit timeoutUnit;
 
 	EventWaiterBuilder(Class<T> eventType) {
@@ -36,7 +36,7 @@ public class EventWaiterBuilder<T extends GenericEvent> {
 	 * @param timeoutUnit Unit of time for the timeout (minutes / seconds / millis...)
 	 * @return This builder for chaining convenience
 	 */
-	public EventWaiterBuilder<T> setTimeout(int timeout, TimeUnit timeoutUnit) {
+	public EventWaiterBuilder<T> setTimeout(long timeout, TimeUnit timeoutUnit) {
 		Checks.positive(timeout, "timeout");
 
 		this.timeout = timeout;

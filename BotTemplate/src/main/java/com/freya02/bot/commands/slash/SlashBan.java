@@ -3,11 +3,11 @@ package com.freya02.bot.commands.slash;
 import com.freya02.botcommands.api.annotations.BotPermissions;
 import com.freya02.botcommands.api.annotations.Optional;
 import com.freya02.botcommands.api.annotations.UserPermissions;
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.application.slash.annotations.LongRange;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
@@ -39,7 +39,7 @@ public class SlashBan extends ApplicationCommand {
 	@JDAButtonListener(name = BAN_CONFIRM_HANDLER_NAME)
 	public void banConfirm(ButtonEvent event, @AppOption User user, @AppOption long delDays, @AppOption String reason) {
 		event.editMessage("Banned")
-				.setActionRows() //Clear buttons
+				.setComponents() //Clear buttons
 				.queue();
 
 		//do ban logic
@@ -48,7 +48,7 @@ public class SlashBan extends ApplicationCommand {
 	@JDAButtonListener(name = BAN_CANCEL_HANDLER_NAME)
 	public void banCancel(ButtonEvent event) {
 		event.editMessage("Cancelled")
-				.setActionRows() //Clear buttons
+				.setComponents() //Clear buttons
 				.queue();
 	}
 }
