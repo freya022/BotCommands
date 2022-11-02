@@ -65,7 +65,7 @@ internal class DataStoreService(
                         insert into bc_data (id, data, lifetime_type, expiration_timestamp, timeout_handler_id)
                         VALUES (?, ?, ?, ?, ?);""".trimIndent()
                     ) {
-                        executeQuery(
+                        executeUpdate(
                             id,
                             entity.data,
                             entity.lifetimeType.id,
