@@ -1,4 +1,4 @@
-package com.freya02.botcommands.core.internal.data
+package com.freya02.botcommands.internal.data
 
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.core.ClassPathContainer
@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.full.findAnnotation
-import com.freya02.botcommands.core.internal.data.annotations.DataStoreTimeoutHandler as DataStoreTimeoutHandlerAnnotation
+import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler as DataStoreTimeoutHandlerAnnotation
 
 @ConditionalService
 internal class DataStoreHandlerContainer(classPathContainer: ClassPathContainer, serviceContainer: ServiceContainer) {

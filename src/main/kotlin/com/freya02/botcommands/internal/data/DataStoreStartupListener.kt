@@ -1,4 +1,4 @@
-package com.freya02.botcommands.core.internal.data
+package com.freya02.botcommands.internal.data
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService

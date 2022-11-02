@@ -1,4 +1,4 @@
-package com.freya02.botcommands.core.internal.data
+package com.freya02.botcommands.internal.data
 
 import com.google.gson.Gson
 import kotlinx.datetime.Clock

@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
-import com.freya02.botcommands.core.internal.data.DataEntity
-import com.freya02.botcommands.core.internal.data.DataStoreService
-import com.freya02.botcommands.core.internal.data.PartialDataEntity
-import com.freya02.botcommands.core.internal.data.annotations.DataStoreTimeoutHandler
+import com.freya02.botcommands.internal.data.DataEntity
+import com.freya02.botcommands.internal.data.DataStoreService
+import com.freya02.botcommands.internal.data.PartialDataEntity
+import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
