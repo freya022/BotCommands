@@ -15,6 +15,7 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.valueParameters
@@ -83,6 +84,13 @@ internal object ReflectionUtilsKt {
                 }
             }
             return "$shortSignatureNoSrc: $returnType ($source)"
+        }
+
+    val KProperty<*>.referenceString: String
+        get() {
+            val callableReference = (this as? CallableReference)
+                ?: throwInternal("Referenced field doesn't seem to be compiled generated, exact type: ${this::class}")
+            return (callableReference.owner as KClass<*>).java.simpleName + "#" + this.name
         }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
