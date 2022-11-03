@@ -17,10 +17,17 @@ open class PartialDataEntity protected constructor(
 
     companion object {
         val defaultGson = Gson()
-        fun ofEphemeral(data: String, timeoutAfter: Duration?, timeoutHandlerId: String) =
+
+        fun ofEphemeral(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
+            ofType(LifetimeType.EPHEMERAL, data, timeoutAfter, timeoutHandlerId)
+
+        fun ofPersistent(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
+            ofType(LifetimeType.PERSISTENT, data, timeoutAfter, timeoutHandlerId)
+
+        private fun ofType(lifetimeType: LifetimeType, data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
             PartialDataEntity(
-                data,
-                LifetimeType.EPHEMERAL,
+                defaultGson.toJson(data),
+                lifetimeType,
                 timeoutAfter?.let { Clock.System.now().plus(timeoutAfter) },
                 timeoutHandlerId
             )
