@@ -20,6 +20,7 @@ class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
     var applicationCommandsScope: CoroutineScope by ScopeDelegate()
     var componentsScope: CoroutineScope by ScopeDelegate()
     var modalsScope: CoroutineScope by ScopeDelegate()
+    var dataTimeoutScope: CoroutineScope by ScopeDelegate()
 
     private inner class ScopeDelegate : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
         private var scope: CoroutineScope? by Delegates.lockable(config)

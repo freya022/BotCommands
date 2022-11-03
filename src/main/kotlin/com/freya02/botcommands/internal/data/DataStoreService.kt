@@ -3,11 +3,14 @@ package com.freya02.botcommands.internal.data
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
-import kotlinx.coroutines.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import java.sql.SQLException
@@ -19,7 +22,8 @@ import kotlin.time.Duration.Companion.milliseconds
 internal class DataStoreService(
     private val database: Database,
     private val handlerContainer: DataStoreHandlerContainer,
-    private val context: BContext
+    private val context: BContext,
+    private val coroutineScopesConfig: BCoroutineScopesConfig
 ) {
     private val logger = Logging.getLogger()
 
@@ -77,10 +81,7 @@ internal class DataStoreService(
                     return@transactional id
                 }.also { dataId ->
                     entity.expirationTimestamp?.let {
-                        CoroutineScope(currentCoroutineContext()).scheduleDataTimeout(
-                            dataId,
-                            entity.expirationTimestamp - Clock.System.now()
-                        )
+                        scheduleDataTimeout(dataId, entity.expirationTimestamp - Clock.System.now())
                     }
                 }
             } catch (e: SQLException) {
@@ -94,7 +95,7 @@ internal class DataStoreService(
         throwInternal("Unable to insert in data store after 10 tries, no exceptions have been caught")
     }
 
-    private fun CoroutineScope.scheduleDataTimeout(dataId: String, delay: Duration) = launch(Dispatchers.IO) {
+    private fun scheduleDataTimeout(dataId: String, delay: Duration) = coroutineScopesConfig.dataTimeoutScope.launch {
         delay(delay)
 
         when (val data = getData(dataId)) {
