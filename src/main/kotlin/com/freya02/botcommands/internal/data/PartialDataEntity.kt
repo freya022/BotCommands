@@ -18,6 +18,7 @@ open class PartialDataEntity protected constructor(
     companion object {
         val defaultGson = Gson()
 
+        //TODO this needs to be refactored to use timeout objects, one cannot be null without the other
         fun ofEphemeral(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
             ofType(LifetimeType.EPHEMERAL, data, timeoutAfter, timeoutHandlerId)
 

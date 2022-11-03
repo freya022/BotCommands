@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
 import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
 import com.freya02.botcommands.internal.new_components.ComponentTimeoutInfo
+import com.freya02.botcommands.internal.new_components.EphemeralHandlers
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import kotlinx.coroutines.runBlocking
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 @LateService
 @ConditionalService
-class NewComponents internal constructor(private val dataStore: DataStoreService) {
+class NewComponents internal constructor(private val dataStore: DataStoreService, private val ephemeralHandlers: EphemeralHandlers) {
     @JvmOverloads
     fun newGroup(oneUse: Boolean = false, vararg components: ActionComponent): ComponentGroup =
         createComponentGroup(oneUse, null, components)
@@ -62,7 +63,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
 
         @ConditionalServiceCheck
-        internal fun check(config: BComponentsConfig): String? {
+        fun check(config: BComponentsConfig): String? {
             if (config.useComponents) {
                 return null
             }
