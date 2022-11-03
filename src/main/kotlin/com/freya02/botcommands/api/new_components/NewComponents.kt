@@ -38,7 +38,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         vararg components: ActionComponent
     ): ComponentGroup = createComponentGroup(oneUse, ComponentTimeoutInfo(timeout, timeoutUnit, timeoutHandlerName), components)
 
-    fun primaryButton(): ButtonBuilder = ButtonBuilder(dataStore)
+    fun primaryButton(): ButtonBuilder = ButtonBuilder(dataStore, ephemeralHandlers)
 
     private fun createComponentGroup(
         oneUse: Boolean,

@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
 
-class ButtonBuilder internal constructor(private val dataStore: DataStoreService) {
+class ButtonBuilder internal constructor(private val dataStore: DataStoreService, private val ephemeralHandlers: EphemeralHandlers) {
     private var oneUse: Boolean = false
     private var constraints: InteractionConstraints = InteractionConstraints()
     private var timeoutInfo: ComponentTimeoutInfo? = null
