@@ -69,11 +69,11 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         functions
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions { metadata ->
-                val instance = metadata.instance
                 val annotation = metadata.annotation
-                val path = metadata.path
-
                 if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+
+                val instance = metadata.instance
+                val path = metadata.path
 
                 //TODO test
                 metadata.commandId?.also { id ->
