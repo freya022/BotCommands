@@ -1,4 +1,4 @@
-drop table if exists bc_version, bc_component_data, bc_lambda_component_data, bc_persistent_component_data, bc_statement_result cascade;
+drop table if exists bc_version, bc_component_data, bc_lambda_component_data, bc_persistent_component_data, bc_statement_result, bc_data cascade;
 drop sequence if exists bc_component_group_seq cascade;
 
 create table bc_version
