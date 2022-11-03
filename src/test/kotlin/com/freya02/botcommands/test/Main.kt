@@ -1,6 +1,5 @@
 package com.freya02.botcommands.test
 
-import com.freya02.botcommands.api.components.DefaultComponentManager
 import com.freya02.botcommands.api.core.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
@@ -28,7 +27,9 @@ fun main() {
         connectionProvider = testDB.connectionSupplier
 
         components {
-            componentManagerStrategy = DefaultComponentManager::class.java
+//            componentManagerStrategy = DefaultComponentManager::class.java
+
+            useComponents = true
         }
 
         textCommands {

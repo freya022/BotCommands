@@ -18,7 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 class SlashDataStore : ApplicationCommand() {
     @CommandMarker //Just a test
     internal suspend fun onSlashDataStorePut(event: GuildSlashEvent, dataStore: DataStoreService) {
-        val id = dataStore.putData(PartialDataEntity.ofEphemeral("""{"bruh": 42}""", 5.seconds, "timeout_handler1"))
+        val id = dataStore.putData(PartialDataEntity.ofEphemeral(mapOf("bruh" to 42), 5.seconds, "timeout_handler1"))
 
         event.reply_("id: $id", ephemeral = true).queue()
     }

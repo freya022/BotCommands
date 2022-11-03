@@ -20,6 +20,8 @@ class BComponentsConfig internal constructor(config: BConfig) {
     var componentManagerStrategy: Class<out ComponentManager> by Delegates.lockableNotNull(config, "Component manager needs to be set !")
     fun hasComponentManagerStrategy() = ::componentManagerStrategy.toDelegate<LockableVar<*>>().hasValue()
 
+    var useComponents: Boolean = false
+
     /**
      * Filters for the component interaction listener, they will check all components such as buttons and selection menus
      *
