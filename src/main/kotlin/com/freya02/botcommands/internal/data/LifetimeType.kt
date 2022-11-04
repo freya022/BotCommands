@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.data
 
 import com.freya02.botcommands.internal.throwUser
 
-enum class LifetimeType(val id: Int) {
+internal enum class LifetimeType(val id: Int) {
     PERSISTENT(1),
     EPHEMERAL(2);
 

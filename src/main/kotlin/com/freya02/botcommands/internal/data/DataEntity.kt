@@ -5,7 +5,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import java.sql.Timestamp
 
-class DataEntity(
+internal class DataEntity(
     val id: String,
     data: String,
     lifetimeType: LifetimeType,
