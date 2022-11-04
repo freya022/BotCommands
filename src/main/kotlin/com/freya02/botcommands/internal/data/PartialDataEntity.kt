@@ -1,11 +1,14 @@
 package com.freya02.botcommands.internal.data
 
+import com.freya02.botcommands.internal.data.adapters.TLongArrayListAdapter
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import gnu.trove.list.array.TLongArrayList
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlin.time.Duration
 
-open class PartialDataEntity protected constructor(
+internal open class PartialDataEntity protected constructor(
     val data: String,
     val lifetimeType: LifetimeType,
     val expirationTimestamp: Instant?,
@@ -16,7 +19,10 @@ open class PartialDataEntity protected constructor(
     }
 
     companion object {
-        val defaultGson = Gson()
+        val defaultGson: Gson = GsonBuilder()
+            .disableJdkUnsafe()
+            .registerTypeAdapter(TLongArrayList::class.java, TLongArrayListAdapter)
+            .create()
 
         //TODO this needs to be refactored to use timeout objects, one cannot be null without the other
         fun ofEphemeral(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
