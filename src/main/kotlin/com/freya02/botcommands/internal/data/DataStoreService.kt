@@ -73,15 +73,15 @@ internal class DataStoreService(
                             id,
                             entity.data,
                             entity.lifetimeType.id,
-                            entity.expirationTimestamp?.let { Timestamp.from(it.toJavaInstant()) },
-                            entity.timeoutHandlerId
+                            entity.expiration?.let { Timestamp.from(it.expirationInstant.toJavaInstant()) },
+                            entity.expiration?.handlerName
                         )
                     }
 
                     return@transactional id
                 }.also { dataId ->
-                    entity.expirationTimestamp?.let {
-                        scheduleDataTimeout(dataId, entity.expirationTimestamp - Clock.System.now())
+                    entity.expiration?.let {
+                        scheduleDataTimeout(dataId, entity.expiration.expirationInstant - Clock.System.now())
                     }
                 }
             } catch (e: SQLException) {
@@ -112,8 +112,12 @@ internal class DataStoreService(
                     context.dispatchException("An exception occurred while deleting a data entity", e)
                 }
 
-                val timeoutHandler = handlerContainer.timeoutHandlers[data.timeoutHandlerId] ?: let {
-                    logger.warn("No timeout handler found for '${data.timeoutHandlerId}'")
+                val handlerName = data.expiration?.handlerName ?: let {
+                    logger.warn("A timeout was scheduled for a DataEntity with no expiration object")
+                    return@launch
+                }
+                val timeoutHandler = handlerContainer.timeoutHandlers[handlerName] ?: let {
+                    logger.warn("No timeout handler found for '${handlerName}'")
 
                     return@launch
                 }

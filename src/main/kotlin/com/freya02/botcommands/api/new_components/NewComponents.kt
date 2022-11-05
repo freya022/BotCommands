@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.core.annotations.ConditionalServiceCheck
 import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.internal.data.DataEntity
+import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
 import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
-import com.freya02.botcommands.internal.new_components.ComponentTimeoutInfo
 import com.freya02.botcommands.internal.new_components.EphemeralHandlers
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
@@ -28,7 +28,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         timeout: Long,
         timeoutUnit: TimeUnit,
         vararg components: ActionComponent
-    ): ComponentGroup = createComponentGroup(oneUse, ComponentTimeoutInfo(timeout, timeoutUnit, null), components)
+    ): ComponentGroup = createComponentGroup(oneUse, DataEntityTimeout(timeout, timeoutUnit, null), components)
 
     fun newGroup(
         oneUse: Boolean,
@@ -36,20 +36,20 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         timeoutUnit: TimeUnit,
         timeoutHandlerName: String? = null,
         vararg components: ActionComponent
-    ): ComponentGroup = createComponentGroup(oneUse, ComponentTimeoutInfo(timeout, timeoutUnit, timeoutHandlerName), components)
+    ): ComponentGroup = createComponentGroup(oneUse, DataEntityTimeout(timeout, timeoutUnit, timeoutHandlerName), components)
 
     fun primaryButton(): ButtonBuilder = ButtonBuilder(dataStore, ephemeralHandlers)
 
     private fun createComponentGroup(
         oneUse: Boolean,
-        componentTimeoutInfo: ComponentTimeoutInfo?,
+        groupTimeout: DataEntityTimeout?,
         components: Array<out ActionComponent>
     ): ComponentGroup {
-        val timeoutAfter = componentTimeoutInfo?.asDuration()
+        val dataEntityTimeout = groupTimeout?.let { DataEntityTimeout(it.duration, TIMEOUT_HANDLER_NAME) }
         val componentsIds = components.map { it.id ?: throwUser("Cannot put components without IDs in groups") }
-        return ComponentGroup(oneUse, componentTimeoutInfo, componentsIds).also { group ->
+        return ComponentGroup(oneUse, groupTimeout, componentsIds).also { group ->
             runBlocking {
-                dataStore.putData(PartialDataEntity.ofPersistent(group, timeoutAfter, TIMEOUT_HANDLER_NAME))
+                dataStore.putData(PartialDataEntity.ofPersistent(group, dataEntityTimeout))
             }
         }
     }
@@ -63,7 +63,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
 
         @ConditionalServiceCheck
-        fun check(config: BComponentsConfig): String? {
+        internal fun check(config: BComponentsConfig): String? {
             if (config.useComponents) {
                 return null
             }

@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.new_components
 
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
 import com.freya02.botcommands.internal.new_components.*
@@ -10,6 +11,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
+
+internal typealias ComponentTimeoutInfo = DataEntityTimeout
 
 class ButtonBuilder internal constructor(private val dataStore: DataStoreService, private val ephemeralHandlers: EphemeralHandlers) {
     private var oneUse: Boolean = false
@@ -33,9 +36,9 @@ class ButtonBuilder internal constructor(private val dataStore: DataStoreService
     fun build(emoji: Emoji): Button = build(null, emoji)
     fun build(label: String?, emoji: Emoji?): Button {
         val data = PersistentComponentData(oneUse, constraints, timeoutInfo, handler as PersistentHandler)
-        val timeoutAfter = timeoutInfo?.asDuration()
+        val entityTimeout = timeoutInfo?.let { DataEntityTimeout(it.duration, NewComponents.TIMEOUT_HANDLER_NAME) }
         return runBlocking {
-            val id = dataStore.putData(PartialDataEntity.ofPersistent(data, timeoutAfter, NewComponents.TIMEOUT_HANDLER_NAME))
+            val id = dataStore.putData(PartialDataEntity.ofPersistent(data, entityTimeout))
             return@runBlocking Button.of(ButtonStyle.PRIMARY, id, label, emoji)
         }
     }

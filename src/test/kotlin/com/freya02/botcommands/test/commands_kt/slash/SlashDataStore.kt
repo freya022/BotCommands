@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.GlobalApplicationCommand
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.data.DataEntity
+import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
 import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
@@ -18,7 +19,7 @@ import kotlin.time.Duration.Companion.seconds
 class SlashDataStore : ApplicationCommand() {
     @CommandMarker //Just a test
     internal suspend fun onSlashDataStorePut(event: GuildSlashEvent, dataStore: DataStoreService) {
-        val id = dataStore.putData(PartialDataEntity.ofEphemeral(mapOf("bruh" to 42), 5.seconds, "timeout_handler1"))
+        val id = dataStore.putData(PartialDataEntity.ofEphemeral(mapOf("bruh" to 42), DataEntityTimeout(5.seconds, "timeout_handler1")))
 
         event.reply_("id: $id", ephemeral = true).queue()
     }

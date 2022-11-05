@@ -4,15 +4,11 @@ import com.freya02.botcommands.internal.data.adapters.TLongArrayListAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import gnu.trove.list.array.TLongArrayList
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlin.time.Duration
 
 internal open class PartialDataEntity protected constructor(
     val data: String,
     val lifetimeType: LifetimeType,
-    val expirationTimestamp: Instant?,
-    val timeoutHandlerId: String
+    val expiration: DataEntityExpiration?
 ) {
     inline fun <reified R> decodeData(gson: Gson = defaultGson): R {
         return gson.fromJson(data, R::class.java)
@@ -25,18 +21,17 @@ internal open class PartialDataEntity protected constructor(
             .create()
 
         //TODO this needs to be refactored to use timeout objects, one cannot be null without the other
-        fun ofEphemeral(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
-            ofType(LifetimeType.EPHEMERAL, data, timeoutAfter, timeoutHandlerId)
+        fun ofEphemeral(data: Any, timeout: DataEntityTimeout?) =
+            ofType(LifetimeType.EPHEMERAL, data, timeout)
 
-        fun ofPersistent(data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
-            ofType(LifetimeType.PERSISTENT, data, timeoutAfter, timeoutHandlerId)
+        fun ofPersistent(data: Any, timeout: DataEntityTimeout?) =
+            ofType(LifetimeType.PERSISTENT, data, timeout)
 
-        private fun ofType(lifetimeType: LifetimeType, data: Any, timeoutAfter: Duration?, timeoutHandlerId: String) =
+        private fun ofType(lifetimeType: LifetimeType, data: Any, timeout: DataEntityTimeout?) =
             PartialDataEntity(
                 defaultGson.toJson(data),
                 lifetimeType,
-                timeoutAfter?.let { Clock.System.now().plus(timeoutAfter) },
-                timeoutHandlerId
+                timeout?.toDateEntityExpiration()
             )
     }
 }
