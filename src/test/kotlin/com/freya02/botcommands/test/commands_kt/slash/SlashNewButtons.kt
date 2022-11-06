@@ -4,12 +4,17 @@ import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.NewComponents
+import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
+
+private const val FIRST_BUTTON_LISTENER_NAME = "SlashNewButtons: firstButton"
 
 @CommandMarker
 class SlashNewButtons : ApplicationCommand() {
@@ -23,7 +28,7 @@ class SlashNewButtons : ApplicationCommand() {
             }
             .timeout(20, TimeUnit.SECONDS) //Incompatible with group, emit warn when built
 //            .timeout(10, TimeUnit.SECONDS, "SlashNewButtons: onFirstButtonTimeout"/* no params */)
-            .bindTo("SlashNewButtons: onFirstButtonClicked", ThreadLocalRandom.current().nextDouble(), event.member)
+            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
 //            .bindTo { evt -> TODO() }
             .build("test")
 
@@ -33,6 +38,13 @@ class SlashNewButtons : ApplicationCommand() {
 //        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
 //        val buttonEvent: ButtonEvent = firstButton.await()
 
-        event.reply("OK, button ID: ${firstButton.id}").queue()
+        event.reply("OK, button ID: ${firstButton.id}")
+            .addActionRow(firstButton)
+            .queue()
+    }
+
+    @JDAButtonListener(name = FIRST_BUTTON_LISTENER_NAME)
+    fun onFirstButtonClicked(event: ButtonEvent) {
+        event.reply_("Button clicked", ephemeral = true).queue()
     }
 }

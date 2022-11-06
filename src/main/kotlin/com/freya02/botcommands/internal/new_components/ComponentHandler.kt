@@ -12,6 +12,9 @@ internal class PersistentHandler(val handlerName: String, args: Array<out Any?>)
         this.args = processArgs(args)
     }
 
+    operator fun component1() = handlerName
+    operator fun component2() = args
+
     private fun processArgs(args: Array<out Any?>): Array<String> = args.map { arg ->
         when (arg) {
             is ISnowflake -> arg.id
