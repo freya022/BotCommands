@@ -10,4 +10,5 @@ package com.freya02.botcommands.api.core.annotations
  * The function can use any parameters
  */
 @Target(AnnotationTarget.FUNCTION)
+@Deprecated("Removed in favor of ConditionalServiceChecker")
 annotation class ConditionalServiceCheck

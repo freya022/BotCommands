@@ -1,11 +1,19 @@
 package com.freya02.botcommands.api.core.annotations
 
+import com.freya02.botcommands.internal.core.ConditionalServiceChecker
+import java.lang.annotation.Inherited
+
 /**
- * Indicates the class is a service that might be available under certain conditions
+ * Indicates the class is a service that might be available under certain conditions.
  *
- * May include stuff like services related to components
+ * You will need to implement [ConditionalServiceChecker].
  *
- * Has no use other than static analysis
+ * @see BService
+ * @see InjectedService
+ * @see LazyService
+ * @see ConditionalServiceChecker
+ * @see ServiceType
  */
+@Inherited
 @Target(AnnotationTarget.CLASS)
 annotation class ConditionalService(val message: String = "Conditional object") //Error message may be useful here in case the requested object is an interface
