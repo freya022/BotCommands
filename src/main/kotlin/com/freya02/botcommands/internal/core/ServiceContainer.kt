@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.ConditionalServiceCheck
 import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
@@ -14,12 +14,10 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import java.lang.reflect.Modifier
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.companionObjectInstance
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
@@ -115,25 +113,48 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
      * Returns a non-null string if the service is not instantiable
      */
     internal fun canCreateService(clazz: KClass<*>): String? {
-        if (!context.classPathContainer.classes.contains(clazz) && !clazz.hasAnnotation<LateService>()) {
-            clazz.findAnnotation<ConditionalService>()?.let { return it.message }
-            return "Service is unavailable"
+        // Services can be conditional
+        // They can implement an interface to do checks
+        // They can also depend on other services, in which case the interface becomes optional
+        return clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
+            conditionalService.dependencies.forEach { dependency ->
+                canCreateService(dependency)?.let { errorMessage ->
+                    return "Conditional service depends on ${dependency.simpleName} but it is not available: $errorMessage"
+                }
+            }
+
+            val checker = findConditionalServiceChecker(clazz)
+            requireUser(checker != null || conditionalService.dependencies.isNotEmpty()) { //Either a checker or validated dependencies
+                "Conditional service ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}, check the docs for more details"
+            }
+            return checker?.checkServiceAvailability(context) //Final optional check
+        }
+    }
+
+    private fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
+        //Kotlin implementations uses companion object
+        clazz.companionObjectInstance?.let { companion ->
+            requireUser(companion is ConditionalServiceChecker) {
+                "Companion object of ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}"
+            }
+
+            return companion
         }
 
-        val companionObj = clazz.companionObjectInstance ?: return null
+        //Find any nested class which extend the interface, is static and
+        clazz.nestedClasses.forEach { nestedClass ->
+            if (nestedClass == ConditionalServiceChecker::class) {
+                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.java.simpleName} must be static" }
 
-        val checks = companionObj::class.declaredMemberFunctions.filter { it.hasAnnotation<ConditionalServiceCheck>() }
-        if (checks.isEmpty()) return null
-        if (checks.size > 1) throwUser("Class ${clazz.jvmName} has more than one ConditionalServiceCheck function")
+                val instance = nestedClass.constructors
+                    .find { it.parameters.isEmpty() && it.isPublic }
+                    ?.call() ?: throwUser("A ${ConditionalServiceChecker::class.simpleName} constructor needs to be no-arg and accessible")
 
-        val func = checks.single()
-        if (!func.isPublic) throwUser(func, "Function should be public")
-        if (func.returnType.jvmErasure != String::class) throwUser(func, "Function should return a 'String?'")
-        if (!func.returnType.isMarkedNullable) throwUser(func, "Function should return a 'String?'")
+                return instance as ConditionalServiceChecker
+            }
+        }
 
-        val params = getParameters(func.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), false)
-
-        return func.call(companionObj, *params.toTypedArray()) as String?
+        return null
     }
 
     private fun checkConditions(clazz: KClass<*>) {
@@ -177,7 +198,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                instanceSupplier.supply(context) ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                instanceSupplier.supply(context)
+                    ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
             }
             else -> {
                 val constructors = clazz.constructors
