@@ -1,9 +1,12 @@
 package com.freya02.botcommands.internal.core.db
 
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.ConditionalServiceCheck
 import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
@@ -51,11 +54,11 @@ class Database internal constructor(private val config: BConfig) {
         return fetchConnection().use { connection -> block(KPreparedStatement(this, connection.prepareStatement(sql))) }
     }
 
-    companion object {
-        @ConditionalServiceCheck
-        internal fun checkServiceConditions(config: BConfig): String? {
+    companion object : ConditionalServiceChecker {
+        override fun checkServiceAvailability(context: BContext): String? {
+            val config = (context as BContextImpl).getService<BConfig>()
             if (!config.hasConnectionProvider()) {
-                return "BConfig#connectionProvider needs to be set"
+                return "${BConfig::connectionProvider.referenceString} needs to be set"
             }
 
             return null
