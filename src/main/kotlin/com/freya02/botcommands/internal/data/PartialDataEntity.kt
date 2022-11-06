@@ -16,11 +16,9 @@ internal open class PartialDataEntity protected constructor(
 
     companion object {
         val defaultGson: Gson = GsonBuilder()
-            .disableJdkUnsafe()
             .registerTypeAdapter(TLongArrayList::class.java, TLongArrayListAdapter)
             .create()
 
-        //TODO this needs to be refactored to use timeout objects, one cannot be null without the other
         fun ofEphemeral(data: Any, timeout: DataEntityTimeout?) =
             ofType(LifetimeType.EPHEMERAL, data, timeout)
 
