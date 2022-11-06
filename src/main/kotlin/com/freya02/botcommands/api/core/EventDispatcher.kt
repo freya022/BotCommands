@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlinx.coroutines.withContext
@@ -55,7 +56,8 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     fun removeEventListener(listener: Any) {
         listeners[listener]?.let { instanceMap ->
             instanceMap.forEach { (kClass, functions) ->
-                val functionMap = map[kClass] ?: throwInternal("Listener was registered without having its functions added to the listener map")
+                val functionMap = map[kClass]
+                    ?: throwInternal("Listener was registered without having its functions added to the listener map")
                 functionMap.removeAll(functions)
             }
         }
@@ -92,24 +94,27 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
             val parameters = function.nonInstanceParameters
 
-            val erasure = parameters.first().type.jvmErasure
+            val eventErasure = parameters.first().type.jvmErasure
+            val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }.onEach {
+                context.serviceContainer.canCreateService(it).let { errorMessage ->
+                    throwUser(classPathFunc.function, "Unable to register event listener due to an unavailable service: $errorMessage")
+                }
+            }
             val preboundFunction = PreboundFunction(classPathFunc) {
                 //Getting services is delayed until execution, as to ensure late services can be used in listeners
-                context.serviceContainer.getParameters(
-                    parameters.drop(1).map { it.type.jvmErasure }
-                ).toTypedArray()
+                context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
             }
             instance?.let { instance ->
                 //Skip adding event listeners if the instance is already registered
                 if (listeners[instance] != null) return
 
                 val instanceMap: EventMap = hashMapOf()
-                instanceMap.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
+                instanceMap.getOrPut(eventErasure) { mutableListOf() }.add(preboundFunction)
 
                 listeners[instance] = instanceMap
             }
 
-            (eventTreeService.getSubclasses(erasure) + erasure).forEach {
+            (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
                 map.getOrPut(it) { mutableListOf() }.add(preboundFunction)
             }
         }
