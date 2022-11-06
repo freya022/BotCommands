@@ -6,7 +6,6 @@ package com.freya02.botcommands.api.core.annotations
  * The service needs to be instantiated and registered manually.
  *
  * @see BService
- * @see LazyService
  * @see ConditionalService
  * @see ServiceType
  */

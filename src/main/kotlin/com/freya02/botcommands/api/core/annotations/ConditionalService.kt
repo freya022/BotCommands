@@ -10,7 +10,6 @@ import java.lang.annotation.Inherited
  *
  * @see BService
  * @see InjectedService
- * @see LazyService
  * @see ConditionalServiceChecker
  * @see ServiceType
  */

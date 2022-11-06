@@ -6,9 +6,8 @@ package com.freya02.botcommands.api.core.annotations
  * The service is eagerly loaded at startup and must be in the classpath.
  *
  * @see InjectedService
- * @see LazyService
  * @see ConditionalService
  * @see ServiceType
  */
 @Target(AnnotationTarget.CLASS)
-annotation class BService
+annotation class BService(val lazy: Boolean)
