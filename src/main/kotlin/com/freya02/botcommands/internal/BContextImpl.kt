@@ -24,9 +24,9 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = Logging.getLogger()
@@ -119,7 +119,7 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
 
     override fun dispatchException(message: String, t: Throwable?) {
         if (nextExceptionDispatch < System.currentTimeMillis()) {
-            nextExceptionDispatch = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)
+            nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
 
             val exceptionStr = if (t == null) "" else "\nException : \n%s".format(t.getDeepestCause())
 
