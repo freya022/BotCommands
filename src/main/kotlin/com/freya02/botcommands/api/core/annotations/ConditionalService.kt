@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.annotations
 
-import com.freya02.botcommands.internal.core.ConditionalServiceChecker
+import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import java.lang.annotation.Inherited
 
 /**
