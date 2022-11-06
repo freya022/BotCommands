@@ -5,15 +5,15 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 
 internal interface ComponentHandler
 
-internal class PersistentHandler(val handlerName: String, args: Array<out Any?>) : ComponentHandler {
-    val args: Array<out Any?>
+internal class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : ComponentHandler {
+    val userData: Array<String>
 
     init {
-        this.args = processArgs(args)
+        this.userData = processArgs(userData)
     }
 
     operator fun component1() = handlerName
-    operator fun component2() = args
+    operator fun component2() = userData
 
     private fun processArgs(args: Array<out Any?>): Array<String> = args.map { arg ->
         when (arg) {
