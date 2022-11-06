@@ -1,12 +1,9 @@
 package com.freya02.botcommands.internal.new_components
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.SelectionEvent
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.new_components.NewComponents
 import com.freya02.botcommands.internal.*
@@ -28,8 +25,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
-@LateService
-@ConditionalService
+@ConditionalService(dependencies = [NewComponents::class])
 internal class NewComponentsListener(
     private val context: BContextImpl,
     private val componentsHandlerContainer: ComponentsHandlerContainer,
@@ -132,9 +128,5 @@ internal class NewComponentsListener(
         context.dispatchException(
             "Exception in component handler with id ${event.componentId}", baseEx
         )
-    }
-
-    companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext) = NewComponents.checkServiceAvailability(context)
     }
 }
