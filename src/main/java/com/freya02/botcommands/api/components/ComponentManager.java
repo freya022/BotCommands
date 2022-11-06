@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.components.data.LambdaButtonData;
 import com.freya02.botcommands.api.components.data.LambdaSelectionMenuData;
 import com.freya02.botcommands.api.components.data.PersistentButtonData;
 import com.freya02.botcommands.api.components.data.PersistentSelectionMenuData;
-import com.freya02.botcommands.api.core.annotations.ConditionalService;
+import com.freya02.botcommands.api.core.annotations.InjectedService;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  *
  * <p>The default implementation should be used: {@link DefaultComponentManager}
  */
-@ConditionalService(message = "A component manager strategy needs to be set")
+@InjectedService(message = "A component manager strategy needs to be set")
 public interface ComponentManager {
 	void fetchComponent(String id, Consumer<FetchResult> resultCallback);
 

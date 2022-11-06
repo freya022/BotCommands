@@ -6,4 +6,5 @@ package com.freya02.botcommands.api.core.annotations
  * Has no use other than static analysis
  */
 @Target(AnnotationTarget.CLASS)
+@Deprecated("Replaced with InjectedService")
 annotation class LateService

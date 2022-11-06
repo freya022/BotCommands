@@ -30,5 +30,6 @@ annotation class ConditionalService(
     /**
      * The message displayed if this class cannot be instantiated
      */
+    @Deprecated("Replaced with the interface return value")
     val message: String = "Conditional object"
 )
