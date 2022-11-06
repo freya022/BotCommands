@@ -125,7 +125,7 @@ fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
     this.type.jvmErasure == param.type.jvmErasure
 
 val KFunction<*>.isPublic: Boolean
-    get() = this.visibility == KVisibility.PUBLIC
+    get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
 val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
