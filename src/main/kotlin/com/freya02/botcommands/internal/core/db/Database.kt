@@ -53,7 +53,7 @@ class Database internal constructor(private val config: BConfig) {
 
     companion object {
         @ConditionalServiceCheck
-        fun check(config: BConfig): String? {
+        internal fun checkServiceConditions(config: BConfig): String? {
             if (!config.hasConnectionProvider()) {
                 return "BConfig#connectionProvider needs to be set"
             }

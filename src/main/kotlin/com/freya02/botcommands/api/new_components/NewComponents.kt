@@ -63,7 +63,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
 
         @ConditionalServiceCheck
-        internal fun check(config: BComponentsConfig): String? {
+        internal fun checkServiceConditions(config: BComponentsConfig): String? {
             if (config.useComponents) {
                 return null
             }

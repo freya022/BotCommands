@@ -136,6 +136,6 @@ internal class NewComponentsListener(
 
     companion object {
         @ConditionalServiceCheck
-        fun checkServiceConditions(config: BComponentsConfig) = NewComponents.checkServiceConditions(config)
+        internal fun checkServiceConditions(config: BComponentsConfig) = NewComponents.checkServiceConditions(config)
     }
 }
