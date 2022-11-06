@@ -111,11 +111,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private fun <T : Any> checkConditions(clazz: KClass<T>) {
-        val companionObj = clazz.companionObjectInstance ?: return
+    /**
+     * Returns a non-null string if the service is not instantiable
+     */
+    internal fun canCreateService(clazz: KClass<*>): String? {
+        val companionObj = clazz.companionObjectInstance ?: return null
 
         val checks = companionObj::class.declaredMemberFunctions.filter { it.hasAnnotation<ConditionalServiceCheck>() }
-        if (checks.isEmpty()) return
+        if (checks.isEmpty()) return null
         if (checks.size > 1) throwUser("Class ${clazz.jvmName} has more than one ConditionalServiceCheck function")
 
         val func = checks.single()
@@ -124,10 +127,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         if (!func.returnType.isMarkedNullable) throwUser(func, "Function should return a 'String?'")
 
         val params = getParameters(func.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), false)
-        val message: String? = func.call(companionObj, *params.toTypedArray()) as String?
 
-        if (message != null) {
-            throwService("Cannot auto-load ${clazz.simpleName}: $message")
+        return func.call(companionObj, *params.toTypedArray()) as String?
+    }
+
+    private fun checkConditions(clazz: KClass<*>) {
+        canCreateService(clazz)?.let { errorMessage ->
+            throwService("Cannot auto-load ${clazz.simpleName}: $errorMessage")
         }
     }
 
@@ -204,4 +210,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
         return supplierFunction.call(*params.toTypedArray())
     }
+
+    internal data class ServiceAvailability(val available: Boolean, val errorMessage: String?)
 }
