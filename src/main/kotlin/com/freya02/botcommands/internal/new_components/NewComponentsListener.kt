@@ -98,15 +98,13 @@ internal class NewComponentsListener(
                 else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
 
-            if (value == null) {
-                if (parameter.kParameter.isOptional) {
-                    continue //Kotlin optional, continue getting more parameters
-                } else if (!parameter.isOptional) { // Not a kotlin optional and not nullable
-                    throwUser(
-                        descriptor.method,
-                        "Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null"
-                    )
-                }
+            if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
+                continue
+            } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
+                throwUser(
+                    descriptor.method,
+                    "Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null"
+                )
             }
 
             args[parameter.kParameter] = value
