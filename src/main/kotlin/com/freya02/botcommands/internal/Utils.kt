@@ -80,6 +80,17 @@ internal inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMess
     }
 }
 
+@OptIn(ExperimentalContracts::class)
+internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
+    if (!value) {
+        throwUser(lazyMessage())
+    }
+}
+
 val KParameter.isPrimitive: Boolean
     get() = this.type.jvmErasure.java.isPrimitive || this.type.jvmErasure.javaPrimitiveType != null
 
@@ -120,6 +131,12 @@ fun KParameter.findOptionName(): String {
 
 val KType.simpleName: String
     get() = (this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")) + if (this.isMarkedNullable) "?" else ""
+
+val KClass<*>.simpleNestedName: String
+    get() = this.java.simpleNestedName
+
+val Class<*>.simpleNestedName: String
+    get() = this.canonicalName.substring(this.packageName.length + 1)
 
 fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
     this.type.jvmErasure == param.type.jvmErasure
