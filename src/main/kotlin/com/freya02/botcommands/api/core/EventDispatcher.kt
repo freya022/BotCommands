@@ -96,7 +96,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
             val eventErasure = parameters.first().type.jvmErasure
             val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }.onEach {
-                context.serviceContainer.canCreateService(it).let { errorMessage ->
+                context.serviceContainer.canCreateService(it)?.let { errorMessage ->
                     throwUser(classPathFunc.function, "Unable to register event listener due to an unavailable service: $errorMessage")
                 }
             }

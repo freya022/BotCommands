@@ -115,6 +115,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
      * Returns a non-null string if the service is not instantiable
      */
     internal fun canCreateService(clazz: KClass<*>): String? {
+        if (!context.classPathContainer.classes.contains(clazz) && !clazz.hasAnnotation<LateService>()) {
+            clazz.findAnnotation<ConditionalService>()?.let { return it.message }
+            return "Service is unavailable"
+        }
+
         val companionObj = clazz.companionObjectInstance ?: return null
 
         val checks = companionObj::class.declaredMemberFunctions.filter { it.hasAnnotation<ConditionalServiceCheck>() }
