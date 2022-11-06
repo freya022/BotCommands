@@ -105,7 +105,7 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     }
 
     private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
-        return getService(AutocompleteHandlerContainer::class)[autocompleteHandlerName]
+        return getService<AutocompleteHandlerContainer>()[autocompleteHandlerName]
     }
 
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {

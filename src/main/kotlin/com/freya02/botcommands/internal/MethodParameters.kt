@@ -23,7 +23,7 @@ class MethodParameters internal constructor(
             options: Map<String, OptionBuilder> = mapOf(),
             configurationBlock: Configuration<R>.() -> Unit
         ): MethodParameters {
-            val resolverContainer = context.getService(ResolverContainer::class)
+            val resolverContainer = context.getService<ResolverContainer>()
             val config = Configuration<R>().apply(configurationBlock)
 
             return MethodParameters(function.valueParameters.drop(1).map { kParameter ->
