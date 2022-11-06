@@ -48,6 +48,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 
     private fun retrieveClassFunctions(): List<ClassPathFunction> {
         return classes
+            .filter { context.serviceContainer.canCreateService(it) != null } //Avoid services which cannot be loaded
             .associate { InstanceDelegate { context.getService(it) } to it.declaredMemberFunctions }
             .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
     }
