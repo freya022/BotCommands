@@ -52,9 +52,10 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     init {
         classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
+        config.putConfigInServices(serviceContainer)
+
         eventDispatcher = EventDispatcher(this, EventTreeService(this)) //Services put in ctor
 
-        config.putConfigInServices(serviceContainer)
         serviceContainer.preloadServices()
     }
 
