@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
@@ -28,7 +28,7 @@ private val LOGGER = Logging.getLogger()
 internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
-    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, LateService::class)
+    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
     private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     internal fun Method.asKFunction(): KFunction<*> {
