@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.core.EventDispatcher
+import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
@@ -51,7 +52,7 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     init {
         classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
-        eventDispatcher = EventDispatcher(this) //Service put in ctor
+        eventDispatcher = EventDispatcher(this, EventTreeService(this)) //Services put in ctor
 
         config.putConfigInServices(serviceContainer)
         serviceContainer.preloadServices()

@@ -26,7 +26,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 private typealias EventMap = MutableMap<KClass<*>, MutableList<PreboundFunction>>
 
-class EventDispatcher internal constructor(private val context: BContextImpl) {
+class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
     private val logger = Logging.getLogger()
 
     private val map: EventMap = hashMapOf()
@@ -109,7 +109,9 @@ class EventDispatcher internal constructor(private val context: BContextImpl) {
                 listeners[instance] = instanceMap
             }
 
-            map.getOrPut(erasure) { mutableListOf() }.add(preboundFunction)
+            (eventTreeService.getSubclasses(erasure) + erasure).forEach {
+                map.getOrPut(it) { mutableListOf() }.add(preboundFunction)
+            }
         }
 
     private fun printException(preboundFunction: PreboundFunction, e: Throwable) = logger.error(
