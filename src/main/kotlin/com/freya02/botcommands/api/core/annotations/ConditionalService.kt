@@ -16,4 +16,7 @@ import java.lang.annotation.Inherited
  */
 @Inherited
 @Target(AnnotationTarget.CLASS)
-annotation class ConditionalService(val message: String = "Conditional object") //Error message may be useful here in case the requested object is an interface
+annotation class ConditionalService(
+    val lazy: Boolean = false,
+    val message: String = "Conditional object"
+)
