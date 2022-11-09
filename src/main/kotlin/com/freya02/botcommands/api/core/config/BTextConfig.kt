@@ -2,12 +2,12 @@ package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import net.dv8tion.jda.api.EmbedBuilder
 import java.io.InputStream
 import java.util.function.Supplier
 
-@LateService
+@InjectedService
 class BTextConfig internal constructor() {
     var usePingAsPrefix: Boolean = false
 

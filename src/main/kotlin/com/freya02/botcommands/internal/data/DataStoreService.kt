@@ -18,7 +18,7 @@ import java.sql.Timestamp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-@ConditionalService
+@ConditionalService(dependencies = [Database::class])
 internal class DataStoreService(
     private val database: Database,
     private val handlerContainer: DataStoreHandlerContainer,

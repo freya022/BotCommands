@@ -3,13 +3,13 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.components.DefaultComponentManager
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.toDelegate
 import kotlin.properties.Delegates
 
-@LateService
+@InjectedService
 class BComponentsConfig internal constructor(config: BConfig) {
     /**
      * Sets the type of the service to use as a component manager

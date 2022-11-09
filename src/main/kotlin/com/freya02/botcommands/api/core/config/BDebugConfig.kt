@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 
-@LateService
+@InjectedService
 class BDebugConfig internal constructor() {
     /**
      * Whether the differences between old and new application commands data should be logged

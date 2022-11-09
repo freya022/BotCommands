@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.full.findAnnotation
 import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler as DataStoreTimeoutHandlerAnnotation
 
-@ConditionalService
+@ConditionalService(dependencies = [DataStoreService::class])
 internal class DataStoreHandlerContainer(classPathContainer: ClassPathContainer, serviceContainer: ServiceContainer) {
     val timeoutHandlers: Map<String, DataStoreTimeoutHandler>
 

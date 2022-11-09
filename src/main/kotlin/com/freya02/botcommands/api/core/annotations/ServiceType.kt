@@ -9,7 +9,6 @@ import kotlin.reflect.KClass
  *
  * @see BService
  * @see InjectedService
- * @see LazyService
  * @see ConditionalService
  */
 @Target(AnnotationTarget.CLASS)

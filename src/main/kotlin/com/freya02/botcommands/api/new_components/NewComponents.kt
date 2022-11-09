@@ -1,9 +1,10 @@
 package com.freya02.botcommands.api.new_components
 
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.ConditionalServiceCheck
-import com.freya02.botcommands.api.core.annotations.LateService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.data.DataEntity
 import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
@@ -16,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import java.util.concurrent.TimeUnit
 
-@LateService
 @ConditionalService
 class NewComponents internal constructor(private val dataStore: DataStoreService, private val ephemeralHandlers: EphemeralHandlers) {
     @JvmOverloads
@@ -59,11 +59,13 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         println("timeout occurred for ${dataEntity.id}")
     }
 
-    companion object {
+    //TODO finish reconfiguring existing services
+    // Then reimplement ServiceContainer
+    internal companion object : ConditionalServiceChecker {
         internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
 
-        @ConditionalServiceCheck
-        internal fun checkServiceConditions(config: BComponentsConfig): String? {
+        override fun checkServiceAvailability(context: BContext): String? {
+            val config = (context as BContextImpl).getService<BComponentsConfig>()
             if (config.useComponents) {
                 return null
             }

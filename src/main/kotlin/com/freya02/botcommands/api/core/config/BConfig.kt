@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.ExceptionHandlerAdapter
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.DefaultMessagesFunction
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.core.ServiceContainer
@@ -19,7 +19,7 @@ import java.util.function.Function
 import java.util.function.Supplier
 import kotlin.properties.Delegates
 
-@LateService
+@InjectedService
 class BConfig internal constructor() {
     @get:JvmSynthetic
     internal var locked = false

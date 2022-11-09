@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListen
 import com.freya02.botcommands.api.components.builder.*
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.SelectionEvent
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.ISnowflake
@@ -43,7 +43,7 @@ import org.jetbrains.annotations.Contract
  * 	.queue();
  * ```
  */
-@LateService
+@ConditionalService(dependencies = [ComponentManager::class]) //This should work fine as CM would be injected at PreloadServiceEvent
 class Components internal constructor(private val context: BContextImpl, private val componentManager: ComponentManager) {
     private val logger = Logging.getLogger()
 
