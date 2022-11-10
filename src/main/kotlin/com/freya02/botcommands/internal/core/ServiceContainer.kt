@@ -5,28 +5,36 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
-import com.freya02.botcommands.api.core.exceptions.ServiceException
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.lang.reflect.Modifier
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
+import kotlin.system.measureNanoTime
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 private val LOGGER = KotlinLogging.logger { }
 
 class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
     private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
+    private val lock = ReentrantLock()
 
     private val localBeingCreatedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
 
@@ -39,73 +47,68 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         putServiceAs(context.config)
     }
 
+    @JvmSynthetic
     internal fun preloadServices() {
         runBlocking {
             getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
         }
 
-        context.classPathContainer.classes.forEach {
-            if (it.hasAnnotation<BService>() || (it.hasAnnotation<ConditionalService>() && !it.hasAnnotation<LateService>())) {
-                getService(it)
+        context.classPathContainer.classes.forEach { clazz ->
+            if (clazz.isService()) {
+                if (clazz.findAnnotation<BService>()?.lazy == true) return@forEach
+                if (clazz.findAnnotation<ConditionalService>()?.lazy == true) return@forEach
+
+                tryGetService(clazz)
             }
         }
     }
 
-    @JvmOverloads
-    fun <T : Any> getService(clazz: Class<T>, useNonClasspath: Boolean = false): T {
-        return getService(clazz.kotlin, useNonClasspath)
+    fun <T : Any> getService(clazz: Class<T>): T {
+        return getService(clazz.kotlin)
     }
 
-    fun <T : Any> tryGetService(clazz: KClass<T>): Result<T> {
-        return try {
-            Result.success(getService(clazz))
-        } catch (e: ServiceException) {
-            Result.failure(e)
-        }
+    inline fun <reified T : Any> getService(): T {
+        return getService(T::class)
     }
 
-    inline fun <reified T : Any> getService(useNonClasspath: Boolean = false): T {
-        return getService(T::class, useNonClasspath)
+    fun <T : Any> getService(clazz: KClass<T>): T {
+        return tryGetService(clazz).getOrThrow()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> getService(clazz: KClass<T>, useNonClasspath: Boolean = false): T {
-        synchronized(serviceMap) {
-            return (serviceMap[clazz] as T?) ?: run {
-                //Don't autoload here as it could chain into loading stuff like BContextImpl or ApplicationCommandManager, which you shouldn't create automatically
-                //Cannot load if the class isn't in the class path or the loading isn't forced
-                //Still load late services if they're requested
-                if (!useNonClasspath && !context.classPathContainer.classes.contains(clazz) && !clazz.hasAnnotation<LateService>()) {
-                    if (clazz.hasAnnotation<ConditionalService>()) {
-                        throwService("Cannot auto-load ${clazz.jvmName}: ${clazz.findAnnotation<ConditionalService>()!!.message}")
-                    } else {
-                        throwService("Cannot auto-load ${clazz.jvmName} as it is not in the classpath")
-                    }
-                }
-
-                val beingCreatedSet = localBeingCreatedSet.get()
-                try {
-                    if (!beingCreatedSet.add(clazz)) {
-                        throw IllegalStateException("Circular dependency detected, list of the services being created : [${beingCreatedSet.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
-                    }
-
-                    checkConditions(clazz)
-
-                    val instance = constructInstance(clazz, false)
-
-                    beingCreatedSet.remove(clazz)
-
-                    serviceMap[clazz] = instance
-
-                    LOGGER.trace { "Loaded service: ${clazz.simpleName}" }
-
-                    return instance as T
-                } catch (e: Exception) {
-                    throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
-                } finally {
-                    beingCreatedSet.clear()
-                }
+    fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
+        val service = serviceMap[clazz] as T?
+        when {
+            service != null -> return ServiceResult(service, null)
+            else -> clazz.findAnnotation<InjectedService>()?.let {
+                return ServiceResult(null, "Tried to load an unavailable InjectedService, reason might include: ${it.message}")
             }
+        }
+
+        val beingCreatedSet = localBeingCreatedSet.get()
+        try {
+            return beingCreatedSet.withServiceKey(clazz) {
+                val checkNanoTime = measureNanoTime {
+                    canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
+                }
+
+                //Don't measure time globally, we need to not take into account the time to make dependencies
+                val (instance, nanos) = constructInstance(clazz)
+                when (val serviceType = clazz.findAnnotation<ServiceType>()) {
+                    null -> serviceMap[clazz] = instance
+                    else -> {
+                        serviceMap[serviceType.type] = instance
+                        if (serviceType.keepOriginalType) serviceMap[clazz] = instance
+                    }
+                }
+
+                LOGGER.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((checkNanoTime + nanos.inWholeNanoseconds) / 1000000.0) }
+                ServiceResult(instance as T, null)
+            }
+        } catch (e: Exception) {
+            throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
+        } finally {
+            beingCreatedSet.clear()
         }
     }
 
@@ -129,6 +132,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             }
             return checker?.checkServiceAvailability(context) //Final optional check
         }
+    }
+
+    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceKey(clazz: KClass<T>, block: () -> R): R {
+        if (!this.add(clazz)) {
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
+        }
+        return block().also { this.remove(clazz) }
     }
 
     private fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
@@ -157,12 +167,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return null
     }
 
-    private fun checkConditions(clazz: KClass<*>) {
-        canCreateService(clazz)?.let { errorMessage ->
-            throwService("Cannot auto-load ${clazz.simpleName}: $errorMessage")
-        }
-    }
-
     fun getFunctionService(function: KFunction<*>): Any {
         return when {
             function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
@@ -178,17 +182,21 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         serviceMap[T::class] = t
     }
 
-    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf(), useNonClasspath: Boolean = false): List<Any> {
+    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
         return types.map {
-            map[it] ?: getService(it, useNonClasspath)
+            map[it] ?: getService(it)
         }
     }
 
-    private fun constructInstance(clazz: KClass<*>, useNonClasspath: Boolean): Any {
+    @OptIn(ExperimentalTime::class)
+    private fun constructInstance(clazz: KClass<*>): TimedInstantiation {
         for (dynamicInstanceSupplier in serviceConfig.dynamicInstanceSuppliers) {
-            val instance = runSupplierFunction(dynamicInstanceSupplier, useNonClasspath)
-            if (instance != null) {
-                return instance
+            measureTimedValue {
+                runSupplierFunction(dynamicInstanceSupplier)
+            }.let {
+                it.value?.let { service ->
+                    return TimedInstantiation(service, it.duration)
+                }
             }
         }
 
@@ -198,8 +206,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                instanceSupplier.supply(context)
-                    ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                measureTimedValue {
+                    instanceSupplier.supply(context)
+                        ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
+                }
             }
             else -> {
                 val constructors = clazz.constructors
@@ -208,13 +218,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                 val constructor = constructors.first()
 
-                val params = getParameters(constructor.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), useNonClasspath)
-                constructor.call(*params.toTypedArray())
+                val params = getParameters(constructor.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
+                measureTimedValue { constructor.call(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
+        }.let {
+            TimedInstantiation(it.value, it.duration)
         }
     }
 
-    private fun runSupplierFunction(supplier: Any, useNonClasspath: Boolean): Any? { //TODO test supplier func
+    private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
         val suppliers = supplier::class
             .declaredMemberFunctions
             .filter { it.hasAnnotation<Supplier>() }
@@ -233,10 +245,24 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             throwService("Function should return the type declared in @Supplier", supplierFunction)
         }
 
-        val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf(), useNonClasspath)
+        val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
 
         return supplierFunction.call(*params.toTypedArray())
     }
 
-    internal data class ServiceAvailability(val available: Boolean, val errorMessage: String?)
+    data class ServiceResult<T>(val service: T?, val errorMessage: String?) {
+        init {
+            if (service == null && errorMessage == null) {
+                throwInternal("ServiceResult should contain either the service or the error message")
+            }
+        }
+
+        fun getOrThrow(): T = when {
+            service != null -> service
+            errorMessage != null -> throwService(errorMessage)
+            else -> throwInternal("ServiceResult should contain either the service or the error message")
+        }
+    }
+
+    private data class TimedInstantiation(val service: Any, val duration: Duration)
 }
