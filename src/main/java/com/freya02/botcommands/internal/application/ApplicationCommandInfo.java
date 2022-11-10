@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.application;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.annotations.NSFW;
 import com.freya02.botcommands.api.application.ApplicationCommand;
 import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
@@ -19,6 +20,7 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 	protected final boolean defaultLocked;
 	protected final boolean guildOnly;
 	protected final boolean testOnly;
+	protected final boolean nsfw;
 
 	@SafeVarargs
 	protected <A extends Annotation> ApplicationCommandInfo(@NotNull BContext context,
@@ -32,6 +34,7 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 		this.defaultLocked = AnnotationUtils.getAnnotationValue(annotation, "defaultLocked");
 		this.guildOnly = context.getApplicationCommandsContext().isForceGuildCommandsEnabled() || scope.isGuildOnly();
 		this.testOnly = AnnotationUtils.getEffectiveTestState(commandMethod);
+		this.nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw");
 
 		if (testOnly && scope != CommandScope.GUILD) {
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application command annotated with @Test must have the GUILD scope");
@@ -39,6 +42,10 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 
 		if (isOwnerRequired()) {
 			throw new IllegalArgumentException(Utils.formatMethodShort(commandMethod) + " : application commands cannot be marked as owner-only");
+		}
+
+		if (commandMethod.isAnnotationPresent(NSFW.class)) {
+			throw new IllegalArgumentException("@NSFW can only be used on text commands, use the #nsfw method on your annotation instead");
 		}
 
 		//Administrators manage who can use what, bot doesn't need to check for user mistakes
@@ -69,6 +76,10 @@ public abstract class ApplicationCommandInfo extends AbstractCommandInfo<Applica
 
 	public boolean isTestOnly() {
 		return testOnly;
+	}
+
+	public boolean isNsfw() {
+		return nsfw;
 	}
 
 	@NotNull

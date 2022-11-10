@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel;
 import net.dv8tion.jda.api.interactions.Interaction;
 
@@ -26,7 +25,7 @@ public class Usability {
 		this.unusableReasons = unusableReasons;
 	}
 
-	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, MessageChannel msgChannel, AbstractCommandInfo<?> cmdInfo) {
+	private static void checkNSFW(BContext context, EnumSet<UnusableReason> unusableReasons, GuildMessageChannel msgChannel, TextCommandInfo cmdInfo) {
 		final NSFWState nsfwState = cmdInfo.getNSFWState();
 		if (nsfwState == null) return;
 
@@ -84,14 +83,12 @@ public class Usability {
 		return new Usability(unusableReasons);
 	}
 
-	public static Usability of(BContext context, Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
+	public static Usability of(Interaction event, ApplicationCommandInfo cmdInfo, boolean isNotOwner) {
 		final EnumSet<UnusableReason> unusableReasons = EnumSet.noneOf(UnusableReason.class);
 
 		if (!event.isFromGuild() && cmdInfo.isGuildOnly()) { //Should not happen anymore
 			unusableReasons.add(GUILD_ONLY);
 		}
-
-		checkNSFW(context, unusableReasons, event.getMessageChannel(), cmdInfo);
 
 		if (!event.isFromGuild()) {
 			return new Usability(unusableReasons);

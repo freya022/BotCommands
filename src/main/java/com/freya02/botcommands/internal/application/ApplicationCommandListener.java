@@ -125,7 +125,7 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 		}
 
 		final boolean isNotOwner = !context.isOwner(event.getUser().getIdLong());
-		final Usability usability = Usability.of(context, event, applicationCommand, isNotOwner);
+		final Usability usability = Usability.of(event, applicationCommand, isNotOwner);
 
 		if (usability.isUnusable()) {
 			final var unusableReasons = usability.getUnusableReasons();
