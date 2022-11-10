@@ -109,6 +109,16 @@ public @interface JDASlashCommand {
 	boolean defaultLocked() default false;
 
 	/**
+	 * Specifies whether the application command is usable in NSFW channels.
+	 * <br>Note: NSFW commands need to be enabled by the user in order to appear in DMs
+	 *
+	 * @return {@code true} if the command should only be usable in NSFW channels
+	 *
+	 * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
+	 */
+	boolean nsfw() default false;
+
+	/**
 	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
 	 * <br>This can be a localization property
 	 *
