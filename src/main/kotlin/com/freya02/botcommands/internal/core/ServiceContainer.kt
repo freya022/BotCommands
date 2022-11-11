@@ -11,7 +11,7 @@ import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
+import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isLoadableService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -29,9 +29,9 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-private val LOGGER = KotlinLogging.logger { }
-
 class ServiceContainer internal constructor(private val context: BContextImpl) {
+    private val logger = KotlinLogging.logger { }
+
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
     private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
     private val lock = ReentrantLock()
@@ -54,11 +54,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         context.classPathContainer.classes.forEach { clazz ->
-            if (clazz.isService()) {
+            if (clazz.isLoadableService()) {
                 if (clazz.findAnnotation<BService>()?.lazy == true) return@forEach
                 if (clazz.findAnnotation<ConditionalService>()?.lazy == true) return@forEach
 
-                tryGetService(clazz)
+                tryGetService(clazz).errorMessage?.let { errorMessage ->
+                    logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
+                }
             }
         }
     }
@@ -81,7 +83,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         when {
             service != null -> return ServiceResult(service, null)
             else -> clazz.findAnnotation<InjectedService>()?.let {
-                return ServiceResult(null, "Tried to load an unavailable InjectedService, reason might include: ${it.message}")
+                return ServiceResult(null, "Tried to load an unavailable InjectedService '${clazz.simpleName}', reason might include: ${it.message}")
             }
         }
 
@@ -93,7 +95,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 }
 
                 //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (instance, nanos) = constructInstance(clazz)
+                val (anyResult, nanos) = constructInstance(clazz)
+                val result: ServiceResult<T> = anyResult as ServiceResult<T> //Doesn't really matter, the object is not used anyway
+                if (result.errorMessage != null)
+                    return result
+
+                val instance = result.getOrThrow()
                 when (val serviceType = clazz.findAnnotation<ServiceType>()) {
                     null -> serviceMap[clazz] = instance
                     else -> {
@@ -102,8 +109,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     }
                 }
 
-                LOGGER.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((checkNanoTime + nanos.inWholeNanoseconds) / 1000000.0) }
-                ServiceResult(instance as T, null)
+                logger.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((checkNanoTime + nanos.inWholeNanoseconds) / 1000000.0) }
+                ServiceResult(instance, null)
             }
         } catch (e: Exception) {
             throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
@@ -195,7 +202,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 runSupplierFunction(dynamicInstanceSupplier)
             }.let {
                 it.value?.let { service ->
-                    return TimedInstantiation(service, it.duration)
+                    return TimedInstantiation(ServiceResult(service, null), it.duration)
                 }
             }
         }
@@ -218,11 +225,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                 val constructor = constructors.first()
 
-                val params = getParameters(constructor.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
+                val params = constructor.nonInstanceParameters.map {
+                    val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
+                    dependencyResult.service ?: return TimedInstantiation(ServiceResult(null, dependencyResult.errorMessage!!), Duration.INFINITE)
+                }
                 measureTimedValue { constructor.call(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
         }.let {
-            TimedInstantiation(it.value, it.duration)
+            TimedInstantiation(ServiceResult(it.value, null), it.duration)
         }
     }
 
@@ -245,7 +255,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             throwService("Function should return the type declared in @Supplier", supplierFunction)
         }
 
-        val params = getParameters(supplierFunction.nonInstanceParameters.map { it.type.jvmErasure }, mapOf())
+        val params = supplierFunction.nonInstanceParameters.map {
+            val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then skip this supplier
+            dependencyResult.service ?: return null
+        }
 
         return supplierFunction.call(*params.toTypedArray())
     }
@@ -264,5 +277,5 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private data class TimedInstantiation(val service: Any, val duration: Duration)
+    private data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 }
