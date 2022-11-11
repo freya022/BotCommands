@@ -2,6 +2,8 @@ package com.freya02.botcommands.api;
 
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.hooks.EventListener;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Similar to {@link EventListener}
@@ -14,5 +16,5 @@ public interface ExceptionHandler {
 	 * @param event The event which triggered this exception
 	 * @param throwable The throwable which got threw
 	 */
-	void onException(BContext context, Event event, Throwable throwable);
+	void onException(@NotNull BContext context, @Nullable Event event, @NotNull Throwable throwable);
 }
