@@ -136,11 +136,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 }
             }
 
+            //Skip checker if dependencies have been validated
+            if (conditionalService.dependencies.isNotEmpty()) return@let
+
             val checker = findConditionalServiceChecker(clazz)
-            requireUser(checker != null || conditionalService.dependencies.isNotEmpty()) { //Either a checker or validated dependencies
+            requireUser(checker != null) {
                 "Conditional service ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}, check the docs for more details"
             }
-            checker?.checkServiceAvailability(context)?.let { errorMessage -> return@cachedCallback errorMessage } //Final optional check
+            checker.checkServiceAvailability(context)?.let { errorMessage -> return@cachedCallback errorMessage } //Final optional check
         }
 
         //Check parameters of dynamic resolvers
@@ -166,10 +169,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     fun <T : Any> putService(t: T) {
+        if (t::class in serviceMap)
+            throwUser("Cannot put service ${t::class.simpleNestedName} as it already exists")
         serviceMap[t::class] = t
     }
 
     internal inline fun <reified T : Any> putServiceAs(t: T) {
+        if (T::class in serviceMap)
+            throwUser("Cannot put service ${t::class.simpleNestedName} as it already exists")
         serviceMap[T::class] = t
     }
 
