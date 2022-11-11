@@ -10,8 +10,10 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
 import com.freya02.botcommands.internal.components.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.data.DataEntity
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.LifetimeType
+import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_
@@ -61,6 +63,11 @@ internal class NewComponentsListener(
                 handleException(event, e)
             }
         }
+    }
+
+    @DataStoreTimeoutHandler(TIMEOUT_HANDLER_NAME)
+    internal fun onComponentTimeout(dataEntity: DataEntity) {
+        println("timeout occurred for ${dataEntity.id}")
     }
 
     private suspend fun handlePersistentComponent(
@@ -125,8 +132,10 @@ internal class NewComponentsListener(
             else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
         }
 
-        context.dispatchException(
-            "Exception in component handler with id ${event.componentId}", baseEx
-        )
+        context.dispatchException("Exception in component handler with id ${event.componentId}", baseEx)
+    }
+
+    companion object {
+        internal const val TIMEOUT_HANDLER_NAME = "NewComponentsListener: timeoutHandler"
     }
 }

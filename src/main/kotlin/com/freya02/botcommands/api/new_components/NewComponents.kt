@@ -5,12 +5,11 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.data.DataEntity
 import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
-import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
 import com.freya02.botcommands.internal.new_components.EphemeralHandlers
+import com.freya02.botcommands.internal.new_components.NewComponentsListener
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import kotlinx.coroutines.runBlocking
@@ -45,7 +44,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         groupTimeout: DataEntityTimeout?,
         components: Array<out ActionComponent>
     ): ComponentGroup {
-        val dataEntityTimeout = groupTimeout?.let { DataEntityTimeout(it.duration, TIMEOUT_HANDLER_NAME) }
+        val dataEntityTimeout = groupTimeout?.let { DataEntityTimeout(it.duration, NewComponentsListener.TIMEOUT_HANDLER_NAME) }
         val componentsIds = components.map { it.id ?: throwUser("Cannot put components without IDs in groups") }
         return ComponentGroup(oneUse, groupTimeout, componentsIds).also { group ->
             runBlocking {
@@ -54,14 +53,7 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         }
     }
 
-    @DataStoreTimeoutHandler(TIMEOUT_HANDLER_NAME)
-    internal fun onComponentTimeout(dataEntity: DataEntity) {
-        println("timeout occurred for ${dataEntity.id}")
-    }
-
     internal companion object : ConditionalServiceChecker {
-        internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
-
         override fun checkServiceAvailability(context: BContext): String? {
             val config = (context as BContextImpl).getService<BComponentsConfig>()
             if (config.useComponents) {
