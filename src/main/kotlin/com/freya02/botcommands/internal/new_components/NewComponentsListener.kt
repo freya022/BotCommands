@@ -37,31 +37,29 @@ internal class NewComponentsListener(
     private val logger = KotlinLogging.logger { }
 
     @BEventListener
-    internal suspend fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) {
-        coroutinesScopesConfig.componentsScope.launch {
-            logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
+    internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
+        logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
 
-            try {
-                val data = dataStore.getData(event.componentId) ?: let {
-                    event.reply_("This button has expired", ephemeral = true).queue()
-                    return@launch
-                }
-
-                when (data.lifetimeType) {
-                    LifetimeType.PERSISTENT -> {
-                        val componentData = data.decodeData<PersistentComponentData>()
-                        val (handlerName, userData) = componentData.persistentHandler
-                        val descriptor = componentsHandlerContainer.getButtonDescriptor(handlerName)
-                            ?: throwUser("Could not find a button description named $handlerName")
-
-                        handlePersistentComponent(descriptor, event, userData)
-                    }
-                    LifetimeType.EPHEMERAL -> TODO()
-                }
-
-            } catch (e: Throwable) {
-                handleException(event, e)
+        try {
+            val data = dataStore.getData(event.componentId) ?: let {
+                event.reply_("This button has expired", ephemeral = true).queue()
+                return@launch
             }
+
+            when (data.lifetimeType) {
+                LifetimeType.PERSISTENT -> {
+                    val componentData = data.decodeData<PersistentComponentData>()
+                    val (handlerName, userData) = componentData.persistentHandler
+                    val descriptor = componentsHandlerContainer.getButtonDescriptor(handlerName)
+                        ?: throwUser("Could not find a button description named $handlerName")
+
+                    handlePersistentComponent(descriptor, event, userData)
+                }
+                LifetimeType.EPHEMERAL -> TODO()
+            }
+
+        } catch (e: Throwable) {
+            handleException(event, e)
         }
     }
 
