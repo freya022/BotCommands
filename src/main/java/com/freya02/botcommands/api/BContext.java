@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommandsConte
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.core.annotations.InjectedService;
 import com.freya02.botcommands.api.core.config.BConfig;
 import com.freya02.botcommands.api.core.config.BTextConfig;
 import kotlin.reflect.KClass;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
+@InjectedService
 public interface BContext {
 	//TODO docs
 	@NotNull
