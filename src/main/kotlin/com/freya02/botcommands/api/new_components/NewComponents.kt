@@ -59,8 +59,6 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         println("timeout occurred for ${dataEntity.id}")
     }
 
-    //TODO finish reconfiguring existing services
-    // Then reimplement ServiceContainer
     internal companion object : ConditionalServiceChecker {
         internal const val TIMEOUT_HANDLER_NAME = "NewComponents: timeoutHandler"
 

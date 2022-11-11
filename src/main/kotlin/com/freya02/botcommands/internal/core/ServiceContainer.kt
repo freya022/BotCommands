@@ -158,6 +158,27 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return null
     }?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
+    fun getFunctionService(function: KFunction<*>): Any {
+        return when {
+            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
+            else -> getService(function.javaMethod!!.declaringClass)
+        }
+    }
+
+    fun <T : Any> putService(t: T) {
+        serviceMap[t::class] = t
+    }
+
+    internal inline fun <reified T : Any> putServiceAs(t: T) {
+        serviceMap[T::class] = t
+    }
+
+    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
+        return types.map {
+            map[it] ?: getService(it)
+        }
+    }
+
     //If services have circular dependencies during checking, consider it to not be an issue
     private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCheckKey(clazz: KClass<T>, block: () -> R): R? {
         if (!this.add(clazz)) return null
@@ -202,27 +223,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         return null
-    }
-
-    fun getFunctionService(function: KFunction<*>): Any {
-        return when {
-            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
-            else -> getService(function.javaMethod!!.declaringClass)
-        }
-    }
-
-    fun <T : Any> putService(t: T) {
-        serviceMap[t::class] = t
-    }
-
-    internal inline fun <reified T : Any> putServiceAs(t: T) {
-        serviceMap[T::class] = t
-    }
-
-    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
-        return types.map {
-            map[it] ?: getService(it)
-        }
     }
 
     @OptIn(ExperimentalTime::class)
