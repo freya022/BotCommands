@@ -114,7 +114,7 @@ internal class ApplicationCommandsBuilder(
         val manager = GlobalApplicationCommandManager(context)
         globalDeclarationFunctions.forEach { classPathFunction ->
             runCatching {
-                runDeclarationFunction(classPathFunction, serviceContainer, manager)
+                runDeclarationFunction(classPathFunction, manager)
             }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
         }
 
@@ -148,7 +148,7 @@ internal class ApplicationCommandsBuilder(
             val manager = GuildApplicationCommandManager(context, guild)
             guildDeclarationFunctions.forEach { classPathFunction ->
                 runCatching {
-                    runDeclarationFunction(classPathFunction, serviceContainer, manager)
+                    runDeclarationFunction(classPathFunction, manager)
                 }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
             }
 
@@ -205,17 +205,10 @@ internal class ApplicationCommandsBuilder(
         }
     }
 
-    private suspend fun runDeclarationFunction(
-        classPathFunction: ClassPathFunction,
-        serviceContainer: ServiceContainer,
-        manager: IApplicationCommandManager
-    ) {
+    private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: IApplicationCommandManager) {
         val function = classPathFunction.function
-        val args = serviceContainer.getParameters(
-            function.nonInstanceParameters.map { it.type.jvmErasure },
-            mapOf(manager::class to manager)
-        ).toTypedArray()
+        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
 
-        function.callSuspend(classPathFunction.instance, *args)
+        function.callSuspend(classPathFunction.instance, manager, *args)
     }
 }
