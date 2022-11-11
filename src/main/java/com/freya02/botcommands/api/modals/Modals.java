@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.modals;
 
+import com.freya02.botcommands.api.core.annotations.InjectedService;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import com.freya02.botcommands.internal.modals.ModalData;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Methods for modals and modal inputs
  */
+@InjectedService
 public interface Modals {
 	/**
 	 * Creates a new modal with the specified handler name, and the passed user data

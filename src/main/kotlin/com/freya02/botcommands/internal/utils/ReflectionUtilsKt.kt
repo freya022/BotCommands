@@ -29,6 +29,7 @@ internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
     private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
+    private val loadableServiceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class)
     private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     internal fun Method.asKFunction(): KFunction<*> {
@@ -127,4 +128,5 @@ internal object ReflectionUtilsKt {
 
     internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
     internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
+    internal fun KClass<*>.isLoadableService() = loadableServiceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
 }

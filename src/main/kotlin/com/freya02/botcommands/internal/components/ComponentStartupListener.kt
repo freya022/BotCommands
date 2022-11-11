@@ -15,10 +15,7 @@ internal class ComponentStartupListener {
         if (config.componentsConfig.hasComponentManagerStrategy()) {
             @Suppress("RemoveExplicitTypeArguments")
             serviceContainer.putServiceAs<ComponentManager>(
-                serviceContainer.getService(
-                    config.componentsConfig.componentManagerStrategy,
-                    useNonClasspath = true
-                )
+                serviceContainer.getService(config.componentsConfig.componentManagerStrategy)
             )
         }
     }
