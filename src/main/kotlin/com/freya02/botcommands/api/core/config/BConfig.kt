@@ -125,6 +125,8 @@ class BConfig internal constructor() {
         serviceContainer.putService(applicationConfig)
         serviceContainer.putService(componentsConfig)
         serviceContainer.putService(coroutineScopesConfig)
+        serviceContainer.putService(debugConfig)
+        serviceContainer.putService(textConfig)
     }
 
     internal fun lock() {
