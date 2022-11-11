@@ -24,7 +24,6 @@ import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
-import kotlin.system.measureNanoTime
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
@@ -34,9 +33,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
     private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
+    private val unavailableServices: MutableMap<KClass<*>, String> = hashMapOf() //Must not contain InjectedService(s) !
     private val lock = ReentrantLock()
 
-    private val localBeingCreatedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
+    private val localBeingCheckedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
 
     init {
         putService(this)
@@ -58,6 +58,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 if (clazz.findAnnotation<BService>()?.lazy == true) return@forEach
                 if (clazz.findAnnotation<ConditionalService>()?.lazy == true) return@forEach
 
+                if (clazz in serviceMap || clazz in unavailableServices) return@forEach //Skip classes that have been already loaded/checked
                 tryGetService(clazz).errorMessage?.let { errorMessage ->
                     logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
                 }
@@ -79,21 +80,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
+        canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
+
         val service = serviceMap[clazz] as T?
-        when {
-            service != null -> return ServiceResult(service, null)
-            else -> clazz.findAnnotation<InjectedService>()?.let {
-                return ServiceResult(null, "Tried to load an unavailable InjectedService '${clazz.simpleName}', reason might include: ${it.message}")
-            }
-        }
+        if (service != null) return ServiceResult(service, null)
 
-        val beingCreatedSet = localBeingCreatedSet.get()
         try {
-            return beingCreatedSet.withServiceKey(clazz) {
-                val checkNanoTime = measureNanoTime {
-                    canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
-                }
-
+            return localBeingCheckedSet.get().withServiceCreateKey(clazz) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
                 val (anyResult, nanos) = constructInstance(clazz)
                 val result: ServiceResult<T> = anyResult as ServiceResult<T> //Doesn't really matter, the object is not used anyway
@@ -109,27 +102,37 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     }
                 }
 
-                logger.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((checkNanoTime + nanos.inWholeNanoseconds) / 1000000.0) }
+                logger.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult(instance, null)
             }
         } catch (e: Exception) {
             throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
-        } finally {
-            beingCreatedSet.clear()
         }
     }
 
     /**
      * Returns a non-null string if the service is not instantiable
      */
-    internal fun canCreateService(clazz: KClass<*>): String? {
+    internal fun canCreateService(clazz: KClass<*>): String? = localBeingCheckedSet.get().withServiceCheckKey(clazz) cachedCallback@{
+        //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
+        if (clazz !in serviceMap) {
+            unavailableServices[clazz]?.let { return it }
+
+            clazz.findAnnotation<InjectedService>()?.let {
+                //Skips cache
+                return "Tried to load an unavailable InjectedService '${clazz.simpleName}', reason might include: ${it.message}"
+            }
+        } else {
+            return null
+        }
+
         // Services can be conditional
         // They can implement an interface to do checks
         // They can also depend on other services, in which case the interface becomes optional
-        return clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
+        clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
             conditionalService.dependencies.forEach { dependency ->
                 canCreateService(dependency)?.let { errorMessage ->
-                    return "Conditional service depends on ${dependency.simpleName} but it is not available: $errorMessage"
+                    return@cachedCallback "Conditional service depends on ${dependency.simpleName} but it is not available: $errorMessage"
                 }
             }
 
@@ -137,15 +140,42 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             requireUser(checker != null || conditionalService.dependencies.isNotEmpty()) { //Either a checker or validated dependencies
                 "Conditional service ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}, check the docs for more details"
             }
-            return checker?.checkServiceAvailability(context) //Final optional check
+            checker?.checkServiceAvailability(context)?.let { errorMessage -> return@cachedCallback errorMessage } //Final optional check
+        }
+
+        //Check parameters of dynamic resolvers
+        for (supplier in serviceConfig.dynamicInstanceSuppliers) {
+            findSupplierFunction(supplier).nonInstanceParameters.forEach {
+                canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
+            }
+        }
+
+        //Check constructor parameters
+        findConstructor(clazz).nonInstanceParameters.forEach {
+            canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
+        }
+
+        return null
+    }?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
+
+    //If services have circular dependencies during checking, consider it to not be an issue
+    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCheckKey(clazz: KClass<T>, block: () -> R): R? {
+        if (!this.add(clazz)) return null
+        try {
+            return block()
+        } finally {
+            this.remove(clazz)
         }
     }
 
-    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceKey(clazz: KClass<T>, block: () -> R): R {
-        if (!this.add(clazz)) {
+    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
+        if (!this.add(clazz))
             throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
+        try {
+            return block()
+        } finally {
+            this.remove(clazz)
         }
-        return block().also { this.remove(clazz) }
     }
 
     private fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
@@ -219,11 +249,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 }
             }
             else -> {
-                val constructors = clazz.constructors
-                require(constructors.isNotEmpty()) { "Class " + clazz.simpleName + " must have an accessible constructor" }
-                require(constructors.size <= 1) { "Class " + clazz.simpleName + " must have exactly one constructor" }
-
-                val constructor = constructors.first()
+                val constructor = findConstructor(clazz)
 
                 val params = constructor.nonInstanceParameters.map {
                     val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
@@ -236,24 +262,16 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    private fun findConstructor(clazz: KClass<*>): KFunction<Any> {
+        val constructors = clazz.constructors
+        require(constructors.isNotEmpty()) { "Class " + clazz.simpleNestedName + " must have an accessible constructor" }
+        require(constructors.size == 1) { "Class " + clazz.simpleNestedName + " must have exactly one constructor" }
+
+        return constructors.single()
+    }
+
     private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
-        val suppliers = supplier::class
-            .declaredMemberFunctions
-            .filter { it.hasAnnotation<Supplier>() }
-
-        if (suppliers.size > 1) {
-            throwService("Class ${supplier::class.jvmName} should have only one supplier function")
-        } else if (suppliers.isEmpty()) {
-            throwService("Class ${supplier::class.jvmName} should have one supplier function")
-        }
-
-        val supplierFunction = suppliers.first()
-        val annotation = supplierFunction.findAnnotation<Supplier>()
-            ?: throwInternal("Supplier annotation should have been checked but was not found")
-
-        if (supplierFunction.returnType.jvmErasure != annotation.type) {
-            throwService("Function should return the type declared in @Supplier", supplierFunction)
-        }
+        val supplierFunction = findSupplierFunction(supplier)
 
         val params = supplierFunction.nonInstanceParameters.map {
             val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then skip this supplier
@@ -261,6 +279,25 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         return supplierFunction.call(*params.toTypedArray())
+    }
+
+    private fun findSupplierFunction(supplier: Any): KFunction<*> {
+        val suppliers = supplier::class
+            .declaredMemberFunctions
+            .filter { it.hasAnnotation<Supplier>() }
+
+        if (suppliers.size != 1) {
+            throwService("Class ${supplier::class.jvmName} should have only one supplier function")
+        }
+
+        val supplierFunction = suppliers.single()
+        val annotation = supplierFunction.findAnnotation<Supplier>()
+            ?: throwInternal("Supplier annotation should have been checked but was not found")
+
+        if (supplierFunction.returnType.jvmErasure != annotation.type) {
+            throwService("Function should return the type declared in @Supplier", supplierFunction)
+        }
+        return supplierFunction
     }
 
     data class ServiceResult<T>(val service: T?, val errorMessage: String?) {
