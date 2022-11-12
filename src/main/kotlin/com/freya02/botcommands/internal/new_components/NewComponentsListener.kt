@@ -5,11 +5,15 @@ import com.freya02.botcommands.api.components.event.SelectionEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
+import com.freya02.botcommands.api.new_components.ComponentGroup
+import com.freya02.botcommands.api.new_components.ComponentTimeoutData
+import com.freya02.botcommands.api.new_components.GroupTimeoutData
 import com.freya02.botcommands.api.new_components.NewComponents
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
 import com.freya02.botcommands.internal.components.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.data.DataEntity
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.LifetimeType
@@ -22,17 +26,22 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.jvmErasure
 
 @ConditionalService(dependencies = [NewComponents::class])
 internal class NewComponentsListener(
     private val context: BContextImpl,
     private val componentsHandlerContainer: ComponentsHandlerContainer,
     private val dataStore: DataStoreService,
-    private val coroutinesScopesConfig: BCoroutineScopesConfig
+    private val coroutinesScopesConfig: BCoroutineScopesConfig,
+    private val componentTimeoutHandlers: ComponentTimeoutHandlers,
+    private val groupTimeoutHandlers: GroupTimeoutHandlers,
+    private val serviceContainer: ServiceContainer
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -64,8 +73,62 @@ internal class NewComponentsListener(
     }
 
     @DataStoreTimeoutHandler(TIMEOUT_HANDLER_NAME)
-    internal fun onComponentTimeout(dataEntity: DataEntity) {
-        println("timeout occurred for ${dataEntity.id}")
+    internal fun onComponentTimeout(dataEntity: DataEntity) = coroutinesScopesConfig.componentsScope.launch {
+        try {
+            when (dataEntity.getDataType<ComponentType>()) {
+                ComponentType.GROUP -> handleGroupTimeout(dataEntity)
+                ComponentType.BUTTON, ComponentType.SELECT_MENU -> handleComponentTimeout(dataEntity)
+            }
+        } catch (e: Throwable) {
+            handleTimeoutException(dataEntity.id, e)
+        }
+    }
+
+    private suspend fun handleGroupTimeout(dataEntity: DataEntity) {
+        val componentGroup = dataEntity.decodeData<ComponentGroup>()
+        dataStore.deleteData(componentGroup.componentsIds).also { deletedComponents ->
+            logger.trace { "Deleted $deletedComponents/${componentGroup.componentsIds.size} components from a group" }
+        }
+
+        componentGroup.timeout?.let {
+            val handlerName = it.handlerName ?: return
+            val handler = groupTimeoutHandlers[handlerName] ?: let {
+                logger.warn("Could not find group timeout handler: $handlerName")
+                return
+            }
+
+            callTimeoutHandler(handler, GroupTimeoutData(componentGroup.componentsIds))
+        }
+    }
+
+    private suspend fun callTimeoutHandler(handler: KFunction<*>, firstParameter: Any): Any? {
+        val args = hashMapOf<KParameter, Any?>()
+        args[handler.instanceParameter!!] = serviceContainer.getFunctionService(handler)
+        args[handler.valueParameters.first()] = firstParameter
+
+        handler.valueParameters.drop(1).forEach { kParameter ->
+            args[kParameter] = serviceContainer.getService(kParameter.type.jvmErasure)
+        }
+
+        return handler.callSuspendBy(args)
+    }
+
+    private suspend fun handleComponentTimeout(dataEntity: DataEntity) {
+        when (dataEntity.lifetimeType) {
+            LifetimeType.PERSISTENT -> {
+                val componentData = dataEntity.decodeData<PersistentComponentData>()
+                componentData.timeoutInfo?.let {
+                    val handlerName = it.handlerName ?: return
+                    val handler = componentTimeoutHandlers[handlerName] ?: let {
+                        logger.warn("Could not find component timeout handler: $handlerName")
+                        return
+                    }
+
+                    callTimeoutHandler(handler, ComponentTimeoutData(dataEntity.id))
+                }
+            }
+            LifetimeType.EPHEMERAL -> TODO()
+        }
     }
 
     private suspend fun handlePersistentComponent(
@@ -131,6 +194,18 @@ internal class NewComponentsListener(
         }
 
         context.dispatchException("Exception in component handler with id ${event.componentId}", baseEx)
+    }
+
+    private fun handleTimeoutException(componentId: String, e: Throwable) {
+        context.uncaughtExceptionHandler?.let { handler ->
+            handler.onException(context, null, e)
+            return
+        }
+
+        val baseEx = e.getDeepestCause()
+
+        logger.error("Unhandled exception while executing a component timeout with id $componentId", baseEx)
+        context.dispatchException("Exception in component handler with id $componentId", baseEx)
     }
 
     companion object {

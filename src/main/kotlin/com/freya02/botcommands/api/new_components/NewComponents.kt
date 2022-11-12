@@ -13,11 +13,14 @@ import com.freya02.botcommands.internal.new_components.NewComponentsListener
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import java.util.concurrent.TimeUnit
 
 @ConditionalService
 class NewComponents internal constructor(private val dataStore: DataStoreService, private val ephemeralHandlers: EphemeralHandlers) {
+    private val logger = KotlinLogging.logger { }
+
     @JvmOverloads
     fun newGroup(oneUse: Boolean = false, vararg components: ActionComponent): ComponentGroup =
         createComponentGroup(oneUse, null, components)
@@ -48,7 +51,18 @@ class NewComponents internal constructor(private val dataStore: DataStoreService
         val componentsIds = components.map { it.id ?: throwUser("Cannot put components without IDs in groups") }
         return ComponentGroup(oneUse, groupTimeout, componentsIds).also { group ->
             runBlocking {
-                dataStore.putData(PartialDataEntity.ofPersistent(group, dataEntityTimeout))
+                dataStore.putData(PartialDataEntity.ofPersistent(group, dataEntityTimeout)) {
+                    //Try to find components with timeouts
+                    if (groupTimeout == null) return@putData
+
+                    preparedStatement("select id from bc_data where id = any(?)") {
+                        executeQuery(componentsIds.toTypedArray()).forEach { result ->
+                            logger.warn {
+                                "Grouped components cannot have timeouts set, component: ${components.find { it.id == result.get<String>("id") }}"
+                            }
+                        }
+                    }
+                }
             }
         }
     }

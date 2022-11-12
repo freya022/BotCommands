@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.core.db.Database
+import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.core.db.isUniqueViolation
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.Utils
@@ -58,7 +59,7 @@ internal class DataStoreService(
         }
     }
 
-    suspend fun putData(entity: PartialDataEntity): String {
+    suspend fun putData(entity: PartialDataEntity, postInsert: suspend Transaction.() -> Unit = {}): String {
         for (count in 1 .. 10) {
             try {
                 return database.transactional {
@@ -78,6 +79,8 @@ internal class DataStoreService(
                             entity.expiration?.handlerName
                         )
                     }
+
+                    postInsert()
 
                     return@transactional id
                 }.also { dataId ->
@@ -100,6 +103,7 @@ internal class DataStoreService(
         delay(delay)
 
         when (val data = getData(dataId)) {
+            //TODO may be nice to cancel this job if the ID was manually deleted
             null -> logger.trace("Data not found for ID '$dataId'") //Might be normal if it was cleanup up by the user
             else -> data.let { dataEntity ->
                 runCatching {
@@ -129,6 +133,14 @@ internal class DataStoreService(
                     logger.error("An exception occurred while running a data entity timeout handler, '$dataId'", e)
                     context.dispatchException("An exception occurred while running a data entity timeout handler", e)
                 }
+            }
+        }
+    }
+
+    suspend fun deleteData(componentsIds: List<String>): Int {
+        database.transactional {
+            preparedStatement("delete from bc_data where id = any(?)") {
+                return executeUpdate(componentsIds.toTypedArray())
             }
         }
     }
