@@ -6,14 +6,16 @@ import java.sql.Timestamp
 
 internal class DataEntity(
     val id: String,
+    dataType: String,
     data: String,
     lifetimeType: LifetimeType,
     expiration: DataEntityExpiration?
-): PartialDataEntity(data, lifetimeType, expiration) {
+): PartialDataEntity(data, dataType, lifetimeType, expiration) {
     companion object {
         internal fun fromDBResult(rs: DBResult) = DataEntity(
             rs["id"],
             rs["data"],
+            rs["data_type"],
             LifetimeType.fromId(rs["lifetime_type"]),
             rs.get<Timestamp?>("expiration_timestamp")?.let {
                 DataEntityExpiration(

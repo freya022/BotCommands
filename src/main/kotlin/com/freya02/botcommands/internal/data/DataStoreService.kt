@@ -66,12 +66,13 @@ internal class DataStoreService(
 
                     preparedStatement(
                         """
-                        insert into bc_data (id, data, lifetime_type, expiration_timestamp, timeout_handler_id)
-                        VALUES (?, ?, ?, ?, ?);""".trimIndent()
+                        insert into bc_data (id, data, data_type, lifetime_type, expiration_timestamp, timeout_handler_id)
+                        VALUES (?, ?, ?, ?, ?, ?);""".trimIndent()
                     ) {
                         executeUpdate(
                             id,
                             entity.data,
+                            entity._dataType,
                             entity.lifetimeType.id,
                             entity.expiration?.let { Timestamp.from(it.expirationInstant.toJavaInstant()) },
                             entity.expiration?.handlerName

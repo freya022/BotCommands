@@ -5,10 +5,7 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
-import com.freya02.botcommands.internal.data.DataEntity
-import com.freya02.botcommands.internal.data.DataEntityTimeout
-import com.freya02.botcommands.internal.data.DataStoreService
-import com.freya02.botcommands.internal.data.PartialDataEntity
+import com.freya02.botcommands.internal.data.*
 import com.freya02.botcommands.internal.data.annotations.DataStoreTimeoutHandler
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
@@ -17,9 +14,17 @@ import kotlin.time.Duration.Companion.seconds
 
 @CommandMarker
 class SlashDataStore : ApplicationCommand() {
+    private enum class DummyEnum {
+        DUMMY
+    }
+
+    private class Dummy(val map: Map<String, *>): SerializableDataEntity {
+        override val type = DummyEnum.DUMMY
+    }
+
     @CommandMarker //Just a test
     internal suspend fun onSlashDataStorePut(event: GuildSlashEvent, dataStore: DataStoreService) {
-        val id = dataStore.putData(PartialDataEntity.ofEphemeral(mapOf("bruh" to 42), DataEntityTimeout(5.seconds, "timeout_handler1")))
+        val id = dataStore.putData(PartialDataEntity.ofEphemeral(Dummy(mapOf("bruh" to 42)), DataEntityTimeout(5.seconds, "timeout_handler1")))
 
         event.reply_("id: $id", ephemeral = true).queue()
     }
@@ -27,7 +32,7 @@ class SlashDataStore : ApplicationCommand() {
     @CommandMarker //Just a test
     internal suspend fun onSlashDataStoreGet(event: GuildSlashEvent, id: String, dataStore: DataStoreService) {
         val data = dataStore.getData(id)
-        val map = data?.decodeData<Map<String, *>>()
+        val map = data?.decodeData<Dummy>()?.map
 
         event.deferReply().await()
 

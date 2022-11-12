@@ -35,8 +35,8 @@ class ButtonBuilder internal constructor(private val dataStore: DataStoreService
     fun build(label: String): Button = build(label, null)
     fun build(emoji: Emoji): Button = build(null, emoji)
     fun build(label: String?, emoji: Emoji?): Button {
-        val data = PersistentComponentData(oneUse, constraints, timeoutInfo, handler as PersistentHandler)
-        val entityTimeout = timeoutInfo?.let { DataEntityTimeout(it.duration, NewComponents.TIMEOUT_HANDLER_NAME) }
+        val data = PersistentComponentData(ComponentType.BUTTON, oneUse, constraints, timeoutInfo, handler as PersistentHandler)
+        val entityTimeout = timeoutInfo?.let { DataEntityTimeout(it.duration, NewComponentsListener.TIMEOUT_HANDLER_NAME) }
         return runBlocking {
             val id = dataStore.putData(PartialDataEntity.ofPersistent(data, entityTimeout))
             return@runBlocking Button.of(ButtonStyle.PRIMARY, id, label, emoji)
