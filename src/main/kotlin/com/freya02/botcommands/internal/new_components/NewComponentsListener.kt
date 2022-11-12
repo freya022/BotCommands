@@ -14,6 +14,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
 import com.freya02.botcommands.internal.components.ComponentsHandlerContainer
 import com.freya02.botcommands.internal.core.ServiceContainer
+import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.data.DataEntity
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.LifetimeType
@@ -33,7 +34,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-@ConditionalService(dependencies = [NewComponents::class])
+@ConditionalService(dependencies = [NewComponents::class, DataStoreService::class, Database::class])
 internal class NewComponentsListener(
     private val context: BContextImpl,
     private val componentsHandlerContainer: ComponentsHandlerContainer,
@@ -41,7 +42,8 @@ internal class NewComponentsListener(
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
     private val componentTimeoutHandlers: ComponentTimeoutHandlers,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
-    private val serviceContainer: ServiceContainer
+    private val serviceContainer: ServiceContainer,
+    private val database: Database
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -63,10 +65,28 @@ internal class NewComponentsListener(
                         ?: throwUser("Could not find a button description named $handlerName")
 
                     handlePersistentComponent(descriptor, event, userData)
+
+                    if (!componentData.oneUse) return@launch
+
+                    database.transactional {
+                        //Delete all components of the group
+                        preparedStatement("select * from bc_data where jsonb_exists(data::jsonb->'componentsIds', ?)") {
+                            executeQuery(*arrayOf(data.id)).forEach {
+                                val componentGroup = DataEntity.fromDBResult(it).decodeData<ComponentGroup>()
+                                dataStore.deleteData(componentGroup.componentsIds).also { deletedComponents ->
+                                    logger.trace { "Deleted $deletedComponents/${componentGroup.componentsIds.size} components from a group" }
+                                }
+                            }
+                        }
+
+                        //Delete this component, in case it wasn't in a group
+                        preparedStatement("delete from bc_data where id = ?") {
+                            executeUpdate(*arrayOf(data.id))
+                        }
+                    }
                 }
                 LifetimeType.EPHEMERAL -> TODO()
             }
-
         } catch (e: Throwable) {
             handleException(event, e)
         }
