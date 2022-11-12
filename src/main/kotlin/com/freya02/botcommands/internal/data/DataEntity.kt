@@ -6,8 +6,8 @@ import java.sql.Timestamp
 
 internal class DataEntity(
     val id: String,
-    dataType: String,
     data: String,
+    dataType: String,
     lifetimeType: LifetimeType,
     expiration: DataEntityExpiration?
 ): PartialDataEntity(data, dataType, lifetimeType, expiration) {
