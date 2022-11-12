@@ -15,7 +15,7 @@ internal open class PartialDataEntity protected constructor(
         return enumValueOf(_dataType)
     }
 
-    inline fun <reified R> decodeData(gson: Gson = defaultGson): R {
+    inline fun <reified R : SerializableDataEntity> decodeData(gson: Gson = defaultGson): R {
         return gson.fromJson(data, R::class.java)
     }
 
