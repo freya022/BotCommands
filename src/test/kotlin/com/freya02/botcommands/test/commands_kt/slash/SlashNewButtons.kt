@@ -15,7 +15,6 @@ import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandle
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
 
 private const val FIRST_BUTTON_LISTENER_NAME = "SlashNewButtons: firstButton"
@@ -34,8 +33,8 @@ class SlashNewButtons : ApplicationCommand() {
             }
 //            .timeout(20, TimeUnit.SECONDS) //Incompatible with group, emit warn when built
             .timeout(20, TimeUnit.SECONDS, FIRST_BUTTON_TIMEOUT_LISTENER_NAME/* no params */)
-            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
-//            .bindTo { evt -> TODO() }
+//            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
             .build("test")
 
         val firstGroup: ComponentGroup = components.newGroup(true, 10, TimeUnit.SECONDS, FIRST_GROUP_TIMEOUT_LISTENER_NAME, firstButton)
@@ -51,7 +50,7 @@ class SlashNewButtons : ApplicationCommand() {
 
     @JDAButtonListener(name = FIRST_BUTTON_LISTENER_NAME)
     fun onFirstButtonClicked(event: ButtonEvent) {
-        event.reply_("Button clicked", ephemeral = true).queue()
+        event.reply_("Persistent button clicked", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler(name = FIRST_BUTTON_TIMEOUT_LISTENER_NAME)

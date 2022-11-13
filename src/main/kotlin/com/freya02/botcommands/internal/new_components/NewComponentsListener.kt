@@ -43,7 +43,8 @@ internal class NewComponentsListener(
     private val componentTimeoutHandlers: ComponentTimeoutHandlers,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
     private val serviceContainer: ServiceContainer,
-    private val database: Database
+    private val database: Database,
+    private val ephemeralHandlers: EphemeralHandlers
 ) {
     private val logger = KotlinLogging.logger { }
 
@@ -66,26 +67,33 @@ internal class NewComponentsListener(
 
                     handlePersistentComponent(descriptor, event, userData)
 
-                    if (!componentData.oneUse) return@launch
-
-                    database.transactional {
-                        //Delete all components of the group
-                        preparedStatement("select * from bc_data where jsonb_exists(data::jsonb->'componentsIds', ?)") {
-                            executeQuery(*arrayOf(data.id)).forEach {
-                                val componentGroup = DataEntity.fromDBResult(it).decodeData<ComponentGroup>()
-                                dataStore.deleteData(componentGroup.componentsIds).also { deletedComponents ->
-                                    logger.trace { "Deleted $deletedComponents/${componentGroup.componentsIds.size} components from a group" }
-                                }
-                            }
-                        }
-
-                        //Delete this component, in case it wasn't in a group
-                        preparedStatement("delete from bc_data where id = ?") {
-                            executeUpdate(*arrayOf(data.id))
-                        }
+                    if (componentData.oneUse) {
+                        deleteRelatedComponents(data)
                     }
                 }
-                LifetimeType.EPHEMERAL -> TODO()
+                LifetimeType.EPHEMERAL -> {
+                    val componentData = data.decodeData<EphemeralComponentData>()
+                    val handlerId = componentData.ephemeralHandlerId
+                    val ephemeralHandler = ephemeralHandlers[handlerId]
+                        ?: throwInternal("Ephemeral handle with ID $handlerId was not found")
+
+                    if (componentData.oneUse) {
+                        deleteRelatedComponents(data)
+                    }
+
+                    @Suppress("UNCHECKED_CAST")
+                    when (event) {
+                        is ButtonInteractionEvent -> {
+                            val handler = (ephemeralHandler as EphemeralHandler<ButtonEvent>).handler
+                            handler(ButtonEvent(null, context, event))
+                        }
+                        is SelectMenuInteractionEvent -> {
+                            val handler = (ephemeralHandler as EphemeralHandler<SelectionEvent>).handler
+                            handler(SelectionEvent(null, context, event))
+                        }
+                        else -> logger.error("Unhandled component event: ${event::class.simpleName}")
+                    }
+                }
             }
         } catch (e: Throwable) {
             handleException(event, e)
@@ -104,11 +112,23 @@ internal class NewComponentsListener(
         }
     }
 
+    private suspend fun deleteRelatedComponents(data: DataEntity): Unit = database.transactional {
+        //Delete all components of the group
+        preparedStatement("select * from bc_data where jsonb_exists(data::jsonb->'componentsIds', ?)") {
+            executeQuery(*arrayOf(data.id))
+                .map { DataEntity.fromDBResult(it).decodeData<ComponentGroup>() }
+                .forEach { deleteComponentGroup(it) }
+        }
+
+        //Delete this component, in case it wasn't in a group
+        preparedStatement("delete from bc_data where id = ?") {
+            executeUpdate(*arrayOf(data.id))
+        }
+    }
+
     private suspend fun handleGroupTimeout(dataEntity: DataEntity) {
         val componentGroup = dataEntity.decodeData<ComponentGroup>()
-        dataStore.deleteData(componentGroup.componentsIds).also { deletedComponents ->
-            logger.trace { "Deleted $deletedComponents/${componentGroup.componentsIds.size} components from a group" }
-        }
+        deleteComponentGroup(componentGroup)
 
         componentGroup.timeout?.let {
             val handlerName = it.handlerName ?: return
@@ -118,6 +138,21 @@ internal class NewComponentsListener(
             }
 
             callTimeoutHandler(handler, GroupTimeoutData(componentGroup.componentsIds))
+        }
+    }
+
+    private suspend fun deleteComponentGroup(componentGroup: ComponentGroup) {
+        dataStore.deleteReturningData(componentGroup.componentsIds).also { deletedData ->
+            //Delete ephemeral handler IDs
+            deletedData.items
+                .filter { deletedEntity -> deletedEntity.lifetimeType == LifetimeType.EPHEMERAL }
+                .filter { deletedEntity -> deletedEntity.getDataType<ComponentType>() != ComponentType.GROUP }
+                .map { it.decodeData<EphemeralComponentData>() }
+                .forEach { ephemeralComponentData ->
+                    ephemeralHandlers.remove(ephemeralComponentData.ephemeralHandlerId)
+                }
+        }.also { deletedData ->
+            logger.trace { "Deleted ${deletedData.rowsAffected}/${componentGroup.componentsIds.size} components from a group" }
         }
     }
 

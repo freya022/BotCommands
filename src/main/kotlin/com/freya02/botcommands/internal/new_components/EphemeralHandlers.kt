@@ -17,4 +17,8 @@ internal class EphemeralHandlers {
         map[id] = handler
         return@withLock id
     }
+
+    fun remove(handlerId: Long) {
+        map.remove(handlerId)
+    }
 }

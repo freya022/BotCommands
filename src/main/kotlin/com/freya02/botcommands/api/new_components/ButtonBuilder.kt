@@ -6,6 +6,9 @@ import com.freya02.botcommands.internal.data.DataEntityTimeout
 import com.freya02.botcommands.internal.data.DataStoreService
 import com.freya02.botcommands.internal.data.PartialDataEntity
 import com.freya02.botcommands.internal.new_components.*
+import com.freya02.botcommands.internal.simpleNestedName
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -35,10 +38,19 @@ class ButtonBuilder internal constructor(private val dataStore: DataStoreService
     fun build(label: String): Button = build(label, null)
     fun build(emoji: Emoji): Button = build(null, emoji)
     fun build(label: String?, emoji: Emoji?): Button {
-        val data = PersistentComponentData(ComponentType.BUTTON, oneUse, constraints, timeoutInfo, handler as PersistentHandler)
+        val data = when (handler) {
+            null -> throwUser("A component handler needs to be set using #bindTo methods")
+            is PersistentHandler ->
+                PersistentComponentData(ComponentType.BUTTON, oneUse, constraints, timeoutInfo, handler as PersistentHandler)
+            is EphemeralHandler<*> -> {
+                val handlerId = ephemeralHandlers.put(handler as EphemeralHandler<*>)
+                EphemeralComponentData(ComponentType.BUTTON, oneUse, constraints, timeoutInfo, handlerId)
+            }
+            else -> throwInternal("Unknown handler type: ${handler!!::class.simpleNestedName}")
+        }
         val entityTimeout = timeoutInfo?.let { DataEntityTimeout(it.duration, NewComponentsListener.TIMEOUT_HANDLER_NAME) }
         return runBlocking {
-            val id = dataStore.putData(PartialDataEntity.ofPersistent(data, entityTimeout))
+            val id = dataStore.putData(PartialDataEntity.ofType(handler!!.lifetimeType, data, entityTimeout))
             return@runBlocking Button.of(ButtonStyle.PRIMARY, id, label, emoji)
         }
     }

@@ -30,7 +30,7 @@ internal open class PartialDataEntity protected constructor(
         fun ofPersistent(data: SerializableDataEntity, timeout: DataEntityTimeout?) =
             ofType(LifetimeType.PERSISTENT, data, timeout)
 
-        private fun ofType(lifetimeType: LifetimeType, data: SerializableDataEntity, timeout: DataEntityTimeout?) =
+        fun ofType(lifetimeType: LifetimeType, data: SerializableDataEntity, timeout: DataEntityTimeout?) =
             PartialDataEntity(
                 defaultGson.toJson(data),
                 data.type.name,

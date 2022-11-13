@@ -1,11 +1,15 @@
 package com.freya02.botcommands.internal.new_components
 
+import com.freya02.botcommands.internal.data.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
-internal interface ComponentHandler
+internal interface ComponentHandler {
+    val lifetimeType: LifetimeType
+}
 
 internal class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : ComponentHandler {
+    override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
     val userData: Array<String>
 
     init {
@@ -23,4 +27,6 @@ internal class PersistentHandler(val handlerName: String, userData: Array<out An
     }.toTypedArray()
 }
 
-internal class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(handler: (T) -> Unit) : ComponentHandler
+internal class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: (T) -> Unit) : ComponentHandler {
+    override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
+}

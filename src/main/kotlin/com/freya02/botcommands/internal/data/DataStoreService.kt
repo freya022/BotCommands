@@ -137,11 +137,19 @@ internal class DataStoreService(
         }
     }
 
-    suspend fun deleteData(componentsIds: List<String>): Int {
-        database.transactional {
-            preparedStatement("delete from bc_data where id = any(?)") {
-                return executeUpdate(componentsIds.toTypedArray())
-            }
+    suspend fun deleteData(componentsIds: List<String>): Int = database.transactional {
+        return preparedStatement("delete from bc_data where id = any(?)") {
+            executeUpdate(componentsIds.toTypedArray())
         }
     }
+
+    suspend fun deleteReturningData(componentsIds: List<String>): DeletedData = database.transactional {
+        return preparedStatement("delete from bc_data where id = any(?) returning *") {
+            executeQuery(componentsIds.toTypedArray())
+                .map { DataEntity.fromDBResult(it) }
+                .let { dataEntities -> DeletedData(dataEntities.size, dataEntities) }
+        }
+    }
+
+    internal class DeletedData(val rowsAffected: Int, val items: List<DataEntity>)
 }
