@@ -112,39 +112,7 @@ internal class ComponentRepository(
             val groupId: Int? = dbResult.getOrNull<Int>("group_id")
 
             if (componentType == ComponentType.GROUP) {
-                val timeout = preparedStatement( //TODO extract
-                    """
-                       select pt.expiration_timestamp as timeout_expiration_timestamp,
-                              pt.handler_name         as timeout_handler_name,
-                              pt.user_data            as timeout_user_data
-                       from bc_persistent_timeout pt
-                       where component_id = ?;
-                    """.trimIndent()
-                ) {
-                    val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
-
-                    dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-                        PersistentTimeout(
-                            timestamp.toInstant().toKotlinInstant(),
-                            dbResult["timeout_handler_name"],
-                            dbResult["timeout_user_data"]
-                        )
-                    }
-                }
-
-                val componentIds: List<Int> = preparedStatement(
-                    """
-                        select component_id
-                        from bc_component_component_group
-                        where group_id = ?
-                    """.trimIndent()
-                ) {
-                    executeQuery(id).map { it["component_id"] }
-                }
-
-                return@preparedStatement ComponentGroupData(
-                    id, oneUse, timeout, groupId, componentIds
-                )
+                return@preparedStatement getGroup(id, oneUse, groupId ?: throwInternal("Group didn't have an ID"))
             }
 
             val constraints = InteractionConstraints().apply {
@@ -293,6 +261,41 @@ internal class ComponentRepository(
         }
 
         EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+    }
+
+    context(Transaction)
+            private suspend fun getGroup(id: Int, oneUse: Boolean, groupId: Int): ComponentGroupData {
+        val timeout = preparedStatement(
+            """
+               select pt.expiration_timestamp as timeout_expiration_timestamp,
+                      pt.handler_name         as timeout_handler_name,
+                      pt.user_data            as timeout_user_data
+               from bc_persistent_timeout pt
+               where component_id = ?;
+            """.trimIndent()
+        ) {
+            val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
+
+            dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
+                PersistentTimeout(
+                    timestamp.toInstant().toKotlinInstant(),
+                    dbResult["timeout_handler_name"],
+                    dbResult["timeout_user_data"]
+                )
+            }
+        }
+
+        val componentIds: List<Int> = preparedStatement(
+            """
+                select component_id
+                from bc_component_component_group
+                where group_id = ?
+            """.trimIndent()
+        ) {
+            executeQuery(id).map { it["component_id"] }
+        }
+
+        return ComponentGroupData(id, oneUse, timeout, groupId, componentIds)
     }
 
     private fun cleanupEphemeral() = runBlocking {

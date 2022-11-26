@@ -7,6 +7,6 @@ internal class ComponentGroupData internal constructor(
     componentId: Int,
     oneUse: Boolean,
     timeout: ComponentTimeout?,
-    groupId: Int?,
+    groupId: Int,
     internal val componentsIds: List<Int>
 ): ComponentData(componentId, ComponentType.GROUP, LifetimeType.PERSISTENT, oneUse, null, timeout, null, groupId)
