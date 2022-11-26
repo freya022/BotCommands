@@ -8,6 +8,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
+@Deprecated("To be removed")
 internal class DataStoreTimeoutHandler(private val classPathFunction: ClassPathFunction, private val serviceContainer: ServiceContainer) {
     private val function = classPathFunction.function
 

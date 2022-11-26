@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.data
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
@@ -19,7 +18,8 @@ import java.sql.Timestamp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-@ConditionalService(dependencies = [Database::class])
+@Deprecated("To be removed")
+//@ConditionalService(dependencies = [Database::class])
 internal class DataStoreService(
     private val database: Database,
     private val handlerContainer: DataStoreHandlerContainer,
@@ -31,7 +31,7 @@ internal class DataStoreService(
     init {
         database.transactional {
             preparedStatement("delete from bc_data where lifetime_type = ?") {
-                runBlocking { executeUpdate(LifetimeType.EPHEMERAL.id) }
+                runBlocking { executeUpdate(LifetimeType.EPHEMERAL.key) }
             }
 
             preparedStatement("delete from bc_data where expiration_timestamp < now()") {
@@ -74,7 +74,7 @@ internal class DataStoreService(
                             id,
                             entity.data,
                             entity._dataType,
-                            entity.lifetimeType.id,
+                            entity.lifetimeType.key,
                             entity.expiration?.let { Timestamp.from(it.expirationInstant.toJavaInstant()) },
                             entity.expiration?.handlerName
                         )

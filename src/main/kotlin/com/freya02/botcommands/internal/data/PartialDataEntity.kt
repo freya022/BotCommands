@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import gnu.trove.list.array.TLongArrayList
 
+@Deprecated("To be removed")
 internal open class PartialDataEntity protected constructor(
     val data: String,
     internal val _dataType: String, // Transformed into an Enum when requested

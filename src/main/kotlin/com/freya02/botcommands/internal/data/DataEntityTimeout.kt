@@ -7,6 +7,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
+@Deprecated("To be removed")
 data class DataEntityTimeout(val duration: Duration, val handlerName: String?) {
     @OptIn(ExperimentalTime::class)
     constructor(timeout: Long, timeoutUnit: TimeUnit, handlerName: String?) : this(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName)

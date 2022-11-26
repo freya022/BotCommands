@@ -4,6 +4,7 @@ import com.freya02.botcommands.internal.core.db.DBResult
 import kotlinx.datetime.toKotlinInstant
 import java.sql.Timestamp
 
+@Deprecated("To be removed")
 internal class DataEntity(
     val id: String,
     data: String,
