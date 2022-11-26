@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
-import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import com.freya02.botcommands.internal.requireUser
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
 @ConditionalService
-class NewComponents internal constructor(private val componentRepository: ComponentRepository, private val componentController: ComponentController) {
+class NewComponents internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 
     //TODO kotlin should be the impl as to use the command's coroutine context
@@ -27,10 +27,14 @@ class NewComponents internal constructor(private val componentRepository: Compon
             "Cannot make groups with link buttons"
         }
 
-        return ComponentGroupBuilder(components.map { it.id!! }).apply(block).build().also {
-            runBlocking { //TODO kotlin should be the impl as to use the command's coroutine context
-                componentRepository.insertGroup(it)
-            }
+        return components.map { it.id?.toIntOrNull() ?: throwUser("Cannot put external components in groups") }.let { componentIds ->
+            ComponentGroupBuilder(componentIds)
+                .apply(block)
+                .let {
+                    runBlocking { //TODO kotlin should be the impl as to use the command's coroutine context
+                        componentController.insertGroup(it)
+                    }
+                }
         }
     }
 

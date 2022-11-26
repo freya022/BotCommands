@@ -51,6 +51,10 @@ internal inline fun rethrowUser(function: KFunction<*>, message: String, e: Thro
     throw RuntimeException("${function.shortSignature} : $message", e)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+internal inline fun rethrowUser(message: String, e: Throwable): Nothing =
+    throw RuntimeException(message, e)
+
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
 

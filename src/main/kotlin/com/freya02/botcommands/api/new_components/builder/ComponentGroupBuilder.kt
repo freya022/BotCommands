@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.new_components.builder
 
-import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.internal.new_components.new.ComponentTimeout
 import com.freya02.botcommands.internal.new_components.new.EphemeralTimeout
 import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
@@ -13,15 +12,18 @@ import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
 @OptIn(ExperimentalTime::class)
-class ComponentGroupBuilder internal constructor(private val componentIds: List<String>) {
-    private var oneUse: Boolean = false
-    private var timeout: ComponentTimeout? = null
+class ComponentGroupBuilder internal constructor(@get:JvmSynthetic internal val componentIds: List<Int>) {
+    @get:JvmSynthetic
+    internal var oneUse: Boolean = false
+    @get:JvmSynthetic
+    internal var timeout: ComponentTimeout? = null
 
     fun oneUse() = this.also { oneUse = true }
 
-    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): ComponentGroupBuilder = setTimeout(timeout, timeoutUnit) {
-        runBlocking { handler.run() }
-    }
+    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): ComponentGroupBuilder =
+        setTimeout(timeout.toDuration(timeoutUnit.toDurationUnit())) {
+            runBlocking { handler.run() }
+        }
 
     @JvmSynthetic
     fun setTimeout(timeout: Duration, handler: suspend () -> Unit): ComponentGroupBuilder = this.also {
@@ -35,6 +37,4 @@ class ComponentGroupBuilder internal constructor(private val componentIds: List<
     fun setTimeout(timeout: Duration, handlerName: String, vararg args: Any?): ComponentGroupBuilder = this.also {
         this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, args)
     }
-
-    fun build(): ComponentGroup = ComponentGroup(oneUse, timeout, componentIds)
 }

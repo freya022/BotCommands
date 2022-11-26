@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal.new_components.new.repositories
 
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
+import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.data.LifetimeType
@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.new_components.*
 import com.freya02.botcommands.internal.new_components.new.*
 import com.freya02.botcommands.internal.new_components.new.EphemeralComponentData
 import com.freya02.botcommands.internal.new_components.new.PersistentComponentData
+import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import java.sql.SQLException
 import java.sql.Timestamp
 
 @BService //TODO removing it still works
@@ -98,7 +100,7 @@ internal class ComponentRepository(
             """
             select lifetime_type, component_type, one_use, users, roles, permissions, group_id
             from bc_component
-                     natural join bc_component_constraints
+                     natural left join bc_component_constraints
                      natural left join bc_component_component_group
             where component_id = ?""".trimIndent()
         ) {
@@ -108,6 +110,43 @@ internal class ComponentRepository(
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val oneUse: Boolean = dbResult["one_use"]
             val groupId: Int? = dbResult.getOrNull<Int>("group_id")
+
+            if (componentType == ComponentType.GROUP) {
+                val timeout = preparedStatement( //TODO extract
+                    """
+                       select pt.expiration_timestamp as timeout_expiration_timestamp,
+                              pt.handler_name         as timeout_handler_name,
+                              pt.user_data            as timeout_user_data
+                       from bc_persistent_timeout pt
+                       where component_id = ?;
+                    """.trimIndent()
+                ) {
+                    val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
+
+                    dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
+                        PersistentTimeout(
+                            timestamp.toInstant().toKotlinInstant(),
+                            dbResult["timeout_handler_name"],
+                            dbResult["timeout_user_data"]
+                        )
+                    }
+                }
+
+                val componentIds: List<Int> = preparedStatement(
+                    """
+                        select component_id
+                        from bc_component_component_group
+                        where group_id = ?
+                    """.trimIndent()
+                ) {
+                    executeQuery(id).map { it["component_id"] }
+                }
+
+                return@preparedStatement ComponentGroupData(
+                    id, oneUse, timeout, groupId, componentIds
+                )
+            }
+
             val constraints = InteractionConstraints().apply {
                 userList.addAll(dbResult.get<List<Long>>("users"))
                 roleList.addAll(dbResult.get<List<Long>>("roles"))
@@ -121,18 +160,25 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun insertGroup(group: ComponentGroup) = database.transactional {
-        val groupId: Int = preparedStatement(
-            """
-            insert into bc_component (component_type, lifetime_type, one_use)
-            VALUES (?, ?, ?)
-            returning component_id""".trimIndent()
-        ) {
-            executeQuery(group.type.key, LifetimeType.PERSISTENT.key, group.oneUse).readOnce()!!["component_id"]
-        }
+    suspend fun insertGroup(group: ComponentGroupBuilder): Int = database.transactional {
+        val groupId: Int = runCatching {
+            preparedStatement(
+                """
+                insert into bc_component (component_type, lifetime_type, one_use)
+                VALUES (?, ?, ?)
+                returning component_id""".trimIndent()
+            ) {
+                executeQuery(ComponentType.GROUP.key, LifetimeType.PERSISTENT.key, group.oneUse).readOnce()!!.get<Int>("component_id")
+            }
+        }.onFailure {
+            if (it is SQLException && it.errorCode == 23523) { //foreign_key_violation, the component does not exist
+                rethrowUser("Attempted to put a group ID to an external component: ${it.message}", it)
+            }
+        }.getOrThrow()
 
-        group.componentsIds.forEach {
-            val componentId = it.toIntOrNull() ?: throwUser("Attempted to put a group ID to an external component: $it")
+        //TODO INSERT TIMEOUT
+
+        group.componentIds.forEach { componentId ->
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
@@ -146,18 +192,22 @@ internal class ComponentRepository(
                      natural left join bc_ephemeral_timeout
             where component_id = any (?)""".trimIndent()
         ) {
-            executeQuery(group.componentsIds.map { it.toInt() }.toTypedArray()).readOnce()!!["exists"]
+            executeQuery(group.componentIds.toTypedArray()).readOnce()!!["exists"]
         }
 
         if (hasTimeouts) {
             throwUser("Cannot put components inside groups if they have a timeout set")
         }
+
+        return groupId
     }
 
-    suspend fun deleteComponent(component: ComponentData): Unit = database.transactional {
+    /** Returns additional deleted components */
+    suspend fun deleteComponent(component: ComponentData): List<Int> = database.transactional {
+        val additionalComponents = arrayListOf<Int>()
         if (component.groupId != null) {
-            preparedStatement("delete from bc_component c using bc_component_component_group g where g.group_id = ?") {
-                executeUpdate(component.groupId)
+            preparedStatement("delete from bc_component c using bc_component_component_group g where g.group_id = ? returning c.component_id") {
+                additionalComponents += executeQuery(component.groupId).map { it["component_id"] }
             }
         }
 
@@ -165,6 +215,8 @@ internal class ComponentRepository(
         preparedStatement("delete from bc_component where component_id = ?") {
             executeUpdate(component.componentId)
         }
+
+        return@transactional additionalComponents
     }
 
     context(Transaction)

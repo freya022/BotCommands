@@ -14,4 +14,4 @@ internal class PersistentComponentData(
     override val timeout: PersistentTimeout?,
     constraints: InteractionConstraints,
     groupId: Int?
-) : ComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+) : AbstractComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
