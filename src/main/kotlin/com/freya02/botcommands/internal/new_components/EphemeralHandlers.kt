@@ -1,18 +1,16 @@
 package com.freya02.botcommands.internal.new_components
 
-import com.freya02.botcommands.api.core.annotations.BService
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-@BService
-internal class EphemeralHandlers {
+internal abstract class EphemeralHandlers<T> {
     private val lock = ReentrantLock()
-    private val map = hashMapOf<Long, EphemeralHandler<*>>()
+    private val map = hashMapOf<Long, T>()
     private var currentId: Long = 0
 
-    operator fun get(handlerId: Long): EphemeralHandler<*>? = map[handlerId]
+    operator fun get(handlerId: Long): T? = map[handlerId]
 
-    fun put(handler: EphemeralHandler<*>) = lock.withLock {
+    fun put(handler: T) = lock.withLock {
         val id = currentId++
         map[id] = handler
         return@withLock id

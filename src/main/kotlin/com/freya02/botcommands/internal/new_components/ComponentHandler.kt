@@ -4,17 +4,13 @@ import com.freya02.botcommands.internal.data.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
-internal interface ComponentHandler {
+sealed interface ComponentHandler {
     val lifetimeType: LifetimeType
 }
 
-internal class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : ComponentHandler {
+class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    val userData: Array<String>
-
-    init {
-        this.userData = processArgs(userData)
-    }
+    val userData: Array<out String> = processArgs(userData)
 
     operator fun component1() = handlerName
     operator fun component2() = userData

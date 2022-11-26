@@ -48,15 +48,15 @@ create table bc_component_constraints
 
 create table bc_ephemeral_handler
 (
-    component_id int    not null primary key references bc_component on delete cascade,
-    handler_id   serial not null -- Returned
+    component_id int not null primary key references bc_component on delete cascade,
+    handler_id   int not null
 );
 
 create table bc_persistent_handler
 (
     component_id int    not null primary key references bc_component on delete cascade,
     handler_name text   not null,
-    args         text[] not null
+    user_data    text[] not null
 );
 
 -- Component timeouts
@@ -65,7 +65,7 @@ create table bc_ephemeral_timeout
 (
     component_id         int                      not null primary key references bc_component on delete cascade,
     expiration_timestamp timestamp with time zone not null,
-    handler_id           serial                   not null -- Returned
+    handler_id           int                      not null
 );
 
 create table bc_persistent_timeout
@@ -73,15 +73,15 @@ create table bc_persistent_timeout
     component_id         int                      not null primary key references bc_component on delete cascade,
     expiration_timestamp timestamp with time zone not null,
     handler_name         text                     not null,
-    args                 text[]                   not null
+    user_data            text[]                   not null
 );
 
 -- Group, bc_component can already be a group
 -- Associative table
 create table bc_component_component_group
 (
-    group_id     int not null references bc_component,
-    component_id int not null references bc_component,
+    group_id     int not null references bc_component on delete cascade,
+    component_id int not null references bc_component on delete cascade,
 
     primary key (group_id, component_id)
 );

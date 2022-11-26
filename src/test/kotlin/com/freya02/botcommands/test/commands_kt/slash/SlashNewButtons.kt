@@ -15,7 +15,8 @@ import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandle
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.ThreadLocalRandom
+import kotlin.time.Duration.Companion.seconds
 
 private const val FIRST_BUTTON_LISTENER_NAME = "SlashNewButtons: firstButton"
 private const val FIRST_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: firstButtonTimeout"
@@ -32,12 +33,14 @@ class SlashNewButtons : ApplicationCommand() {
                 permissions += Permission.ADMINISTRATOR
             }
 //            .timeout(20, TimeUnit.SECONDS) //Incompatible with group, emit warn when built
-            .timeout(20, TimeUnit.SECONDS, FIRST_BUTTON_TIMEOUT_LISTENER_NAME/* no params */)
-//            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
-            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
+//            .timeout(20, TimeUnit.SECONDS, FIRST_BUTTON_TIMEOUT_LISTENER_NAME/* no params */)
+            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+//            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
             .build("test")
-
-        val firstGroup: ComponentGroup = components.newGroup(true, 10, TimeUnit.SECONDS, FIRST_GROUP_TIMEOUT_LISTENER_NAME, firstButton)
+        val firstGroup: ComponentGroup = components.newGroup(firstButton) {
+            oneUse()
+            setTimeout(10.seconds, FIRST_GROUP_TIMEOUT_LISTENER_NAME)
+        }
 
         //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
 //        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
