@@ -76,6 +76,7 @@ internal class ComponentTimeoutManager(
     }
 
     fun cancelTimeout(id: Int) {
+        logger.trace { "Cancelled timeout for component $id" }
         timeoutMap.remove(id)?.cancel()
     }
 

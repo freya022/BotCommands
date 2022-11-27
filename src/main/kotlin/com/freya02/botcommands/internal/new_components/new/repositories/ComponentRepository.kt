@@ -191,17 +191,49 @@ internal class ComponentRepository(
 
     /** Returns additional deleted components */
     suspend fun deleteComponent(component: ComponentData): List<Int> = database.transactional {
-        val additionalComponents = arrayListOf<Int>()
-        if (component.groupId != null) {
-            preparedStatement("delete from bc_component c using bc_component_component_group g where g.group_id = ? returning c.component_id") {
-                additionalComponents += executeQuery(component.groupId).map { it["component_id"] }
+        // If the component is a group, then delete the component, and it's contained components
+        // If the component is not a group, then delete the component as well as it's group
+
+        val additionalComponents: MutableList<Int> = arrayListOf()
+        if (component.componentType == ComponentType.GROUP) {
+            val groupId = component.groupId ?: throwInternal("Group has no group ID")
+
+            //Delete other components from same group
+            preparedStatement(
+                """
+                    delete
+                    from bc_component c
+                    where c.component_id = any (select component_id from bc_component_component_group where group_id = ?)
+                    returning c.component_id
+                """.trimIndent()
+            ) {
+                additionalComponents += executeQuery(groupId).map { it["component_id"] }
             }
+        } else {
+            //Delete other components from same group
+            preparedStatement(
+                """
+                    delete
+                    from bc_component c
+                    where c.component_id = any (select g.component_id
+                                                from bc_component_component_group c
+                                                         join bc_component_component_group g on c.group_id = g.group_id
+                                                where c.component_id = ?)
+                    returning c.component_id
+                """.trimIndent()
+            ) {
+                additionalComponents += executeQuery(component.componentId).map { it["component_id"] }
+            }
+
+            component.groupId?.let { additionalComponents.add(it) } //Also cancel the group timeout
         }
 
-        // Also delete the group
+        // Deletes the component/group, component would already be deleted by the previous query if it was a group
         preparedStatement("delete from bc_component where component_id = ?") {
             executeUpdate(component.componentId)
         }
+
+        logger.trace { "Deleted component ${component.componentId} along with [${additionalComponents.joinToString()}]" }
 
         return@transactional additionalComponents
     }
@@ -226,7 +258,7 @@ internal class ComponentRepository(
            where ph.component_id = ?;
         """.trimIndent()
     ) {
-        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
+        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component $id seem to have been deleted in the same transaction")
 
         val handler = PersistentHandler(
             dbResult["handler_handler_name"],
@@ -262,9 +294,9 @@ internal class ComponentRepository(
             where component_id = ?;
         """.trimIndent()
     ) {
-        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
+        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component $id seem to have been deleted in the same transaction")
 
-        val handler = dbResult.get<Long>("handler_handler_id").let { handlerId ->
+        val handler = dbResult.get<Int>("handler_handler_id").let { handlerId ->
             ephemeralComponentHandlers[handlerId]
                 ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
         }
@@ -272,7 +304,7 @@ internal class ComponentRepository(
         val timeout = dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
             EphemeralTimeout(
                 timestamp.toInstant().toKotlinInstant(),
-                dbResult.get<Long>("timeout_handler_id").let { handlerId ->
+                dbResult.get<Int>("timeout_handler_id").let { handlerId ->
                     ephemeralTimeoutHandlers[handlerId]
                         ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
                 }
@@ -293,7 +325,7 @@ internal class ComponentRepository(
                where component_id = ?;
             """.trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component seem to have been deleted in the same transaction")
+            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
 
             dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
                 PersistentTimeout(

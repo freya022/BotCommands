@@ -5,10 +5,10 @@ import kotlin.concurrent.withLock
 
 internal abstract class EphemeralHandlers<T> {
     private val lock = ReentrantLock()
-    private val map = hashMapOf<Long, T>()
-    private var currentId: Long = 0
+    private val map = hashMapOf<Int, T>()
+    private var currentId: Int = 0
 
-    operator fun get(handlerId: Long): T? = map[handlerId]
+    operator fun get(handlerId: Int): T? = map[handlerId]
 
     fun put(handler: T) = lock.withLock {
         val id = currentId++
@@ -16,7 +16,7 @@ internal abstract class EphemeralHandlers<T> {
         return@withLock id
     }
 
-    fun remove(handlerId: Long) {
+    fun remove(handlerId: Int) {
         map.remove(handlerId)
     }
 }
