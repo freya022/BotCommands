@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolvers;
 import com.freya02.botcommands.api.prefixed.TextCommand;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +15,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for defining a selection menu listener,
- * this has to be the same name as the one given to {@link Components#stringSelectionMenu(String, Object...)} or {@link Components#entitySelectionMenu(String, Object...)}
+ * this has to be the same name as the one given to {@link Components#stringSelectionMenu(String, Object...)} or {@link Components#entitySelectionMenu(SelectTarget, String, Object...)}
  *
  * <p>
  *
