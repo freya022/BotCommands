@@ -6,62 +6,87 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.ComponentTimeoutData
 import com.freya02.botcommands.api.new_components.GroupTimeoutData
 import com.freya02.botcommands.api.new_components.NewComponents
 import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandler
+import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
-private const val FIRST_BUTTON_LISTENER_NAME = "SlashNewButtons: firstButton"
-private const val FIRST_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: firstButtonTimeout"
-private const val FIRST_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: firstGroupTimeout"
+private const val PERSISTENT_BUTTON_LISTENER_NAME = "SlashNewButtons: persistentButton"
+private const val PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentButtonTimeout"
+private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentGroupTimeout"
 
 @CommandMarker
-class SlashNewButtons : ApplicationCommand() {
+class SlashNewButtons(private val components: NewComponents) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
-    suspend fun onSlashNewButtons(event: GuildSlashEvent, components: NewComponents) {
+    fun onSlashNewButtons(event: GuildSlashEvent) {
+        val persistentButton: Button = persistentGroupTest(event)
+        val ephemeralButton: Button = ephemeralGroupTest(event)
+
+        //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
+//        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
+//        val buttonEvent: ButtonEvent = firstButton.await()
+
+        event.reply("OK, button ID: ${persistentButton.id}")
+            .addActionRow(persistentButton, ephemeralButton)
+            .queue()
+    }
+
+    private fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton: Button = components.primaryButton()
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
             }
-//            .timeout(20, TimeUnit.SECONDS) //Incompatible with group, emit warn when built
-//            .timeout(20, TimeUnit.SECONDS, FIRST_BUTTON_TIMEOUT_LISTENER_NAME/* no params */)
-            .bindTo(FIRST_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
-//            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
-            .build("test")
-        val firstGroup: ComponentGroup = components.newGroup(firstButton) {
+            .bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+            .build("Persistent")
+
+        components.newGroup(firstButton) {
             oneUse()
-            setTimeout(10.seconds, FIRST_GROUP_TIMEOUT_LISTENER_NAME)
+            setTimeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
-
-        //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
-//        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
-//        val buttonEvent: ButtonEvent = firstButton.await()
-
-        event.reply("OK, button ID: ${firstButton.id}")
-            .addActionRow(firstButton)
-            .queue()
+        return firstButton
     }
 
-    @JDAButtonListener(name = FIRST_BUTTON_LISTENER_NAME)
+    private fun ephemeralGroupTest(event: GuildSlashEvent): Button {
+        val firstButton: Button = components.primaryButton()
+            .oneUse() //Cancels whole group if used
+            .constraints {
+                addUserIds(1234L)
+                permissions += Permission.ADMINISTRATOR
+            }
+            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
+            .build("Ephemeral")
+
+        components.newGroup(firstButton) {
+            oneUse()
+            setTimeout(10.seconds) {
+                event.hook.retrieveOriginal()
+                    .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
+                    .queue()
+            }
+        }
+        return firstButton
+    }
+
+    @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
     fun onFirstButtonClicked(event: ButtonEvent) {
         event.reply_("Persistent button clicked", ephemeral = true).queue()
     }
 
-    @ComponentTimeoutHandler(name = FIRST_BUTTON_TIMEOUT_LISTENER_NAME)
+    @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)
     fun onFirstButtonTimeout(data: ComponentTimeoutData) {
         println(data)
     }
 
-    @GroupTimeoutHandler(name = FIRST_GROUP_TIMEOUT_LISTENER_NAME)
+    @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
     fun onFirstGroupTimeout(data: GroupTimeoutData) {
         println(data)
     }
