@@ -112,7 +112,7 @@ internal class ComponentRepository(
             val groupId: Int? = dbResult.getOrNull<Int>("group_id")
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, oneUse, groupId ?: throwInternal("Group didn't have an ID"))
+                return@preparedStatement getGroup(id, oneUse)
             }
 
             val constraints = InteractionConstraints().apply {
@@ -128,7 +128,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun insertGroup(group: ComponentGroupBuilder): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilder): Int = database.transactional {
         val groupId: Int = runCatching {
             preparedStatement(
                 """
@@ -136,7 +136,7 @@ internal class ComponentRepository(
                 VALUES (?, ?, ?)
                 returning component_id""".trimIndent()
             ) {
-                executeQuery(ComponentType.GROUP.key, LifetimeType.PERSISTENT.key, group.oneUse).readOnce()!!.get<Int>("component_id")
+                executeQuery(ComponentType.GROUP.key, LifetimeType.PERSISTENT.key, builder.oneUse).readOnce()!!.get<Int>("component_id")
             }
         }.onFailure {
             if (it is SQLException && it.errorCode == 23523) { //foreign_key_violation, the component does not exist
@@ -144,9 +144,10 @@ internal class ComponentRepository(
             }
         }.getOrThrow()
 
-        //TODO INSERT TIMEOUT
+        // Add timeout
+        insertTimeoutData(builder, groupId)
 
-        group.componentIds.forEach { componentId ->
+        builder.componentIds.forEach { componentId ->
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
@@ -160,7 +161,7 @@ internal class ComponentRepository(
                      natural left join bc_ephemeral_timeout
             where component_id = any (?)""".trimIndent()
         ) {
-            executeQuery(group.componentIds.toTypedArray()).readOnce()!!["exists"]
+            executeQuery(builder.componentIds.toTypedArray()).readOnce()!!["exists"]
         }
 
         if (hasTimeouts) {
@@ -168,6 +169,24 @@ internal class ComponentRepository(
         }
 
         return groupId
+    }
+
+    context(Transaction)
+    private suspend fun insertTimeoutData(builder: ComponentGroupBuilder, groupId: Int) {
+        val timeout = builder.timeout
+        if (timeout is EphemeralTimeout) {
+            preparedStatement("insert into bc_ephemeral_timeout (component_id, expiration_timestamp, handler_id) VALUES (?, ?, ?)") {
+                executeUpdate(
+                    groupId,
+                    Timestamp.from(timeout.expirationTimestamp.toJavaInstant()),
+                    ephemeralTimeoutHandlers.put(timeout.handler)
+                )
+            }
+        } else if (timeout is PersistentTimeout) {
+            preparedStatement("insert into bc_persistent_timeout (component_id, expiration_timestamp, handler_name, user_data) VALUES (?, ?, ?, ?)") {
+                executeUpdate(groupId, timeout.expirationTimestamp.toSqlTimestamp(), timeout.handlerName, timeout.userData)
+            }
+        }
     }
 
     /** Returns additional deleted components */
@@ -264,7 +283,7 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-            private suspend fun getGroup(id: Int, oneUse: Boolean, groupId: Int): ComponentGroupData {
+    private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
         val timeout = preparedStatement(
             """
                select pt.expiration_timestamp as timeout_expiration_timestamp,
@@ -295,7 +314,7 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, timeout, groupId, componentIds)
+        return ComponentGroupData(id, oneUse, timeout, componentIds)
     }
 
     private fun cleanupEphemeral() = runBlocking {

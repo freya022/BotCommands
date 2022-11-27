@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class ComponentTimeoutHandlers(classPathContainer: ClassPathContainer) {
+internal class ComponentTimeoutHandlers(classPathContainer: ClassPathContainer) : HandlerContainer {
     private val map: Map<String, KFunction<*>>
 
     init {
@@ -22,5 +22,5 @@ internal class ComponentTimeoutHandlers(classPathContainer: ClassPathContainer) 
             }
     }
 
-    operator fun get(handlerName: String) = map[handlerName]
+    override operator fun get(handlerName: String) = map[handlerName]
 }
