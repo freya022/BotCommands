@@ -4,8 +4,9 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
-import com.freya02.botcommands.api.new_components.builder.ButtonBuilder
 import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
+import com.freya02.botcommands.api.new_components.builder.EphemeralButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.PersistentButtonBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
@@ -41,7 +42,9 @@ class NewComponents internal constructor(private val componentController: Compon
     @JvmSynthetic
     fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = newGroup(block, *components)
 
-    fun primaryButton(): ButtonBuilder = ButtonBuilder(ButtonStyle.PRIMARY, componentController)
+    internal fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilder(ButtonStyle.PRIMARY, componentController)
+
+    internal fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilder(ButtonStyle.PRIMARY, componentController)
 
     private fun createComponentGroup(
         oneUse: Boolean,

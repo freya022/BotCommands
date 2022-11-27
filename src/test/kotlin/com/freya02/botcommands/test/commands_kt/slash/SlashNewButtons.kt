@@ -39,7 +39,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
     }
 
     private fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.primaryButton()
+        val firstButton: Button = components.primaryPersistentButton()
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)
@@ -56,7 +56,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
     }
 
     private fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.primaryButton()
+        val firstButton: Button = components.primaryEphemeralButton()
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)
