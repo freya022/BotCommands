@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -356,6 +357,7 @@ public class Components {
 	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
 	 * @param consumer The {@link StringSelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 *
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
@@ -370,15 +372,34 @@ public class Components {
 	 * Creates a new selection menu with a lambda {@link EntitySelectionEvent} handler<br>
 	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
 	 *
+	 * @param type     The {@link SelectTarget SelectTarget} that should be supported by this menu
 	 * @param consumer The {@link EntitySelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 *
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
-	@Contract("_ -> new")
-	public static LambdaEntitySelectionMenuBuilder entitySelectionMenu(@NotNull EntitySelectionConsumer consumer) {
+	@Contract("_, _ -> new")
+	public static LambdaEntitySelectionMenuBuilder entitySelectionMenu(@NotNull SelectTarget type, @NotNull EntitySelectionConsumer consumer) {
 		checkCapturedVars(consumer);
 
-		return new LambdaEntitySelectionMenuBuilder(context, consumer);
+		return new LambdaEntitySelectionMenuBuilder(List.of(type), context, consumer);
+	}
+
+	/**
+	 * Creates a new selection menu with a lambda {@link EntitySelectionEvent} handler<br>
+	 * <b>These selection menus are not persistent and will not exist anymore once the bot restarts</b>
+	 *
+	 * @param types    The {@link SelectTarget SelectTargets} that should be supported by this menu
+	 * @param consumer The {@link EntitySelectionEvent} handler, fired after all conditions are met (defined when creating the selection menu)
+	 *
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_, _ -> new")
+	public static LambdaEntitySelectionMenuBuilder entitySelectionMenu(@NotNull Collection<SelectTarget> types, @NotNull EntitySelectionConsumer consumer) {
+		checkCapturedVars(consumer);
+
+		return new LambdaEntitySelectionMenuBuilder(types, context, consumer);
 	}
 
 	/**
@@ -387,6 +408,7 @@ public class Components {
 	 *
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
+	 *
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
@@ -399,13 +421,31 @@ public class Components {
 	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JDASelectionMenuListener}, and the given arguments<br>
 	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
 	 *
+	 * @param type        The {@link SelectTarget SelectTarget} that should be supported by this menu
 	 * @param handlerName The name of this component's handler
 	 * @param args        The args to pass to this component's handler method
+	 *
 	 * @return A selection menu builder to configure behavior
 	 */
 	@NotNull
-	@Contract("_, _ -> new")
-	public static PersistentEntitySelectionMenuBuilder entitySelectionMenu(@NotNull String handlerName, @NotNull Object @NotNull ... args) {
-		return new PersistentEntitySelectionMenuBuilder(context, handlerName, processArgs(args));
+	@Contract("_, _, _ -> new")
+	public static PersistentEntitySelectionMenuBuilder entitySelectionMenu(@NotNull SelectTarget type, @NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentEntitySelectionMenuBuilder(List.of(type), context, handlerName, processArgs(args));
+	}
+
+	/**
+	 * Creates a new selection menu with the given handler name, which must exist as one registered with {@link JDASelectionMenuListener}, and the given arguments<br>
+	 * <b>These selection menus <i>are</i> persistent and will still exist even if the bot restarts</b>
+	 *
+	 * @param types       The {@link SelectTarget SelectTargets} that should be supported by this menu
+	 * @param handlerName The name of this component's handler
+	 * @param args        The args to pass to this component's handler method
+	 *
+	 * @return A selection menu builder to configure behavior
+	 */
+	@NotNull
+	@Contract("_, _, _ -> new")
+	public static PersistentEntitySelectionMenuBuilder entitySelectionMenu(@NotNull Collection<SelectTarget> types, @NotNull String handlerName, @NotNull Object @NotNull ... args) {
+		return new PersistentEntitySelectionMenuBuilder(types, context, handlerName, processArgs(args));
 	}
 }

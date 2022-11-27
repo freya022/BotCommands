@@ -12,6 +12,7 @@ import com.freya02.botcommands.api.prefixed.annotations.TextOption;
 import com.freya02.botcommands.internal.AbstractCommandInfo;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
+import com.freya02.botcommands.internal.NSFWState;
 import com.freya02.botcommands.internal.utils.AnnotationUtils;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
@@ -37,6 +38,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	private final List<CommandPath> aliases;
 
 	private final String description;
+	private final NSFWState nsfwState;
 
 	private final boolean hidden;
 
@@ -57,6 +59,7 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 
 		aliases = Arrays.stream(jdaCommand.aliases()).map(CommandPath::of).collect(Collectors.toList());
 		description = jdaCommand.description();
+		nsfwState = NSFWState.ofMethod(commandMethod);
 
 		order = jdaCommand.order();
 
@@ -94,6 +97,11 @@ public final class TextCommandInfo extends AbstractCommandInfo<TextCommand> {
 	@NotNull
 	public String getDescription() {
 		return description;
+	}
+
+	@Nullable
+	public NSFWState getNSFWState() {
+		return nsfwState;
 	}
 
 	public int getOrder() {

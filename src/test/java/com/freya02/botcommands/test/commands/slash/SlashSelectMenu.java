@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,10 +54,10 @@ public class SlashSelectMenu extends ApplicationCommand {
 	public void onSlashSelectMenu(GuildSlashEvent event, @AppOption String selectType) {
 		final SelectMenu menu = switch (selectType) {
 			case "String" -> finishMenu((LambdaStringSelectionMenuBuilder) Components.stringSelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).addOption("Test", "Test"));
-			case "Role" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setEntityTypes(EntitySelectMenu.SelectTarget.ROLE));
-			case "User" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setEntityTypes(EntitySelectMenu.SelectTarget.USER));
-			case "Channel" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setEntityTypes(EntitySelectMenu.SelectTarget.CHANNEL));
-			case "Channel (Category)" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setEntityTypes(EntitySelectMenu.SelectTarget.CHANNEL).setChannelTypes(ChannelType.CATEGORY));
+			case "Role" -> finishMenu(Components.entitySelectionMenu(SelectTarget.ROLE, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
+			case "User" -> finishMenu(Components.entitySelectionMenu(SelectTarget.USER, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
+			case "Channel" -> finishMenu(Components.entitySelectionMenu(SelectTarget.CHANNEL, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
+			case "Channel (Category)" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(SelectTarget.CHANNEL, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setChannelTypes(ChannelType.CATEGORY));
 			default -> throw new IllegalArgumentException("Unknown select type: " + selectType);
 		};
 

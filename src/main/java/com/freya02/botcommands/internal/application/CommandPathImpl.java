@@ -24,7 +24,7 @@ public class CommandPathImpl implements CommandPath {
 		this.group = group;
 		this.subname = subname;
 		
-		final StringJoiner joiner = new StringJoiner("/");
+		final StringJoiner joiner = new StringJoiner(" ");
 
 		joiner.add(name);
 
@@ -95,6 +95,7 @@ public class CommandPathImpl implements CommandPath {
 		return path.hashCode();
 	}
 
+	@NotNull
 	@Override
 	public String getFullPath() {
 		return path;
@@ -131,6 +132,7 @@ public class CommandPathImpl implements CommandPath {
 		}
 	}
 
+	@NotNull
 	@Override
 	public String toString() {
 		return path;
