@@ -8,6 +8,8 @@ import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.EphemeralButtonBuilder
 import com.freya02.botcommands.api.new_components.builder.PersistentButtonBuilder
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.new_components.builder.EphemeralButtonBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.PersistentButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
 import com.freya02.botcommands.internal.requireUser
@@ -42,9 +44,9 @@ class NewComponents internal constructor(private val componentController: Compon
     @JvmSynthetic
     fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = newGroup(block, *components)
 
-    internal fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilder(ButtonStyle.PRIMARY, componentController)
+    internal fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
 
-    internal fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilder(ButtonStyle.PRIMARY, componentController)
+    internal fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
 
     private fun createComponentGroup(
         oneUse: Boolean,
