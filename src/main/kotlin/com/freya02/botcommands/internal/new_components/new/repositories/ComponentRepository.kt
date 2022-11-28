@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
+import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.data.LifetimeType
@@ -76,20 +77,7 @@ internal class ComponentRepository(
             }
 
             // Add timeout
-            val timeout = builder.timeout
-            if (timeout is EphemeralTimeout) {
-                preparedStatement("insert into bc_ephemeral_timeout (component_id, expiration_timestamp, handler_id) VALUES (?, ?, ?)") {
-                    executeUpdate(
-                        componentId,
-                        Timestamp.from(timeout.expirationTimestamp.toJavaInstant()),
-                        ephemeralTimeoutHandlers.put(timeout.handler)
-                    )
-                }
-            } else if (timeout is PersistentTimeout) {
-                preparedStatement("insert into bc_persistent_timeout (component_id, expiration_timestamp, handler_name, user_data) VALUES (?, ?, ?, ?)") {
-                    executeUpdate(componentId, timeout.expirationTimestamp.toSqlTimestamp(), timeout.handlerName, timeout.userData)
-                }
-            }
+            insertTimeoutData(builder, componentId)
 
             return@runBlocking componentId
         }
@@ -172,8 +160,8 @@ internal class ComponentRepository(
     }
 
     context(Transaction)
-    private suspend fun insertTimeoutData(builder: ComponentGroupBuilder, groupId: Int) {
-        val timeout = builder.timeout
+    private suspend fun insertTimeoutData(timeoutableComponentBuilder: ITimeoutableComponent, groupId: Int) {
+        val timeout = timeoutableComponentBuilder.timeout
         if (timeout is EphemeralTimeout) {
             preparedStatement("insert into bc_ephemeral_timeout (component_id, expiration_timestamp, handler_id) VALUES (?, ?, ?)") {
                 executeUpdate(
