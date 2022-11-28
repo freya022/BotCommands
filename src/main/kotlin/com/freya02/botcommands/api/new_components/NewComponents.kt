@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.EphemeralButtonBuilder
 import com.freya02.botcommands.api.new_components.builder.PersistentButtonBuilder
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.builder.EphemeralButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.builder.PersistentButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
@@ -31,7 +32,7 @@ class NewComponents internal constructor(private val componentController: Compon
         }
 
         return components.map { it.id?.toIntOrNull() ?: throwUser("Cannot put external components in groups") }.let { componentIds ->
-            ComponentGroupBuilder(componentIds)
+            ComponentGroupBuilderImpl(componentIds)
                 .apply(block)
                 .let {
                     runBlocking { //TODO kotlin should be the impl as to use the command's coroutine context

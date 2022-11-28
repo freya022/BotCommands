@@ -59,7 +59,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
 
         components.newGroup(firstButton, secondButton) {
             oneUse()
-            setTimeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
+            timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstButton
     }
@@ -76,7 +76,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
 
         components.newGroup(firstButton) {
             oneUse()
-            setTimeout(15.seconds) {
+            timeout(15.seconds) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
                     .queue()
