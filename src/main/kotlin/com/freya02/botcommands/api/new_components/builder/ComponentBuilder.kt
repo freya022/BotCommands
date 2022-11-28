@@ -4,13 +4,10 @@ import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.ComponentHandler
 import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.new.ComponentTimeout
 
-interface ComponentBuilder {
+interface ComponentBuilder<T : ComponentBuilder<T>> : ITimeoutableComponent, IUniqueComponent<T> {
     val componentType: ComponentType
     val lifetimeType: LifetimeType
-    val oneUse: Boolean
     val constraints: InteractionConstraints
-    val timeout: ComponentTimeout?
     val handler: ComponentHandler?
 }

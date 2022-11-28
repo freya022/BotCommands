@@ -25,6 +25,7 @@ class ComponentGroupBuilder internal constructor(@get:JvmSynthetic internal val 
             runBlocking { handler.run() }
         }
 
+    //TODO change constraints to allow ephemeral groups
     @JvmSynthetic
     fun setTimeout(timeout: Duration, handler: suspend () -> Unit): ComponentGroupBuilder = this.also {
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)

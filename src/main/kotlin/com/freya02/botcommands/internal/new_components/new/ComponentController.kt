@@ -11,7 +11,7 @@ internal class ComponentController(
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
-    fun createComponent(builder: ComponentBuilder): String {
+    fun createComponent(builder: ComponentBuilder<*>): String {
         return componentRepository.createComponent(builder).also { id ->
             val timeout = builder.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)
