@@ -19,9 +19,9 @@ internal abstract class ButtonBuilderImpl<T : ButtonBuilder<T>>(
     override val componentType: ComponentType = ComponentType.BUTTON
 
     final override var oneUse: Boolean = false
-        protected set
+        private set
     final override var constraints: InteractionConstraints = InteractionConstraints()
-        protected set
+        private set
     override val timeout: ComponentTimeout? = null
     override val handler: ComponentHandler? = null
 
