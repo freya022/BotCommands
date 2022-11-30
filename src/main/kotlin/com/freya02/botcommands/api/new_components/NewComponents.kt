@@ -45,9 +45,9 @@ class NewComponents internal constructor(private val componentController: Compon
     @JvmSynthetic
     fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = newGroup(block, *components)
 
-    internal fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+    fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
 
-    internal fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+    fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
 
     private fun createComponentGroup(
         oneUse: Boolean,
