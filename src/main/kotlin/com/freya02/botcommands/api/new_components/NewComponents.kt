@@ -16,7 +16,9 @@ import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -25,8 +27,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 class NewComponents internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 
-    //TODO kotlin should be the impl as to use the command's coroutine context
-    fun newGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup {
+    fun newGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
+        createGroup(block, *components)
+    }
+
+    @JvmSynthetic
+    suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
+
+    fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+
+    fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+
+    private suspend fun createGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup {
         requireUser(components.none { it.id == null }) {
             "Cannot make groups with link buttons"
         }
@@ -35,19 +47,12 @@ class NewComponents internal constructor(private val componentController: Compon
             ComponentGroupBuilderImpl(componentIds)
                 .apply(block)
                 .let {
-                    runBlocking { //TODO kotlin should be the impl as to use the command's coroutine context
+                    withContext(Dispatchers.IO) { //TODO kotlin should be the impl as to use the command's coroutine context
                         componentController.insertGroup(it)
                     }
                 }
         }
     }
-
-    @JvmSynthetic
-    fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = newGroup(block, *components)
-
-    fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
-
-    fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
 
     private fun createComponentGroup(
         oneUse: Boolean,

@@ -25,7 +25,7 @@ private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: per
 @CommandMarker
 class SlashNewButtons(private val components: NewComponents) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
-    fun onSlashNewButtons(event: GuildSlashEvent) {
+    suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton: Button = persistentGroupTest(event)
         val ephemeralButton: Button = ephemeralGroupTest(event)
 
@@ -38,7 +38,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
             .queue()
     }
 
-    private fun persistentGroupTest(event: GuildSlashEvent): Button {
+    private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton: Button = components.primaryPersistentButton()
             .oneUse() //Cancels whole group if used
             .constraints {
@@ -64,7 +64,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
         return firstButton
     }
 
-    private fun ephemeralGroupTest(event: GuildSlashEvent): Button {
+    private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
         val firstButton: Button = components.primaryEphemeralButton()
             .oneUse() //Cancels whole group if used
             .constraints {
