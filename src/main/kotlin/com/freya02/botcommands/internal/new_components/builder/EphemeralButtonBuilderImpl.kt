@@ -26,5 +26,5 @@ internal class EphemeralButtonBuilderImpl internal constructor(
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)
     }
 
-    override fun bindTo(handler: (ButtonEvent) -> Unit): EphemeralButtonBuilder = this.also { it.handler = EphemeralHandler(handler) }
+    override fun bindTo(handler: suspend (ButtonEvent) -> Unit): EphemeralButtonBuilder = this.also { it.handler = EphemeralHandler(handler) }
 }

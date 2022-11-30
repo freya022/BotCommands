@@ -23,6 +23,6 @@ class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : Co
     }.toTypedArray()
 }
 
-class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: (T) -> Unit) : ComponentHandler {
+class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: suspend (T) -> Unit) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 }
