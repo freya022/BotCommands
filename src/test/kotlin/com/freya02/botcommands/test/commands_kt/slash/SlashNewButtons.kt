@@ -15,6 +15,7 @@ import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,7 +40,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.primaryPersistentButton()
+        val firstButton: Button = components.persistentButton(ButtonStyle.PRIMARY)
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)
@@ -48,7 +49,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
             .bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
             .build("Persistent")
 
-        val secondButton: Button = components.primaryPersistentButton()
+        val secondButton: Button = components.persistentButton(ButtonStyle.PRIMARY)
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)
@@ -65,7 +66,7 @@ class SlashNewButtons(private val components: NewComponents) : ApplicationComman
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.primaryEphemeralButton()
+        val firstButton: Button = components.ephemeralButton(ButtonStyle.SECONDARY)
             .oneUse() //Cancels whole group if used
             .constraints {
                 addUserIds(1234L)

@@ -12,7 +12,6 @@ import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBui
 import com.freya02.botcommands.internal.new_components.builder.EphemeralButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.builder.PersistentButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
-import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
@@ -34,9 +33,9 @@ class NewComponents internal constructor(private val componentController: Compon
     @JvmSynthetic
     suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
 
-    fun primaryPersistentButton(): PersistentButtonBuilder = PersistentButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+    fun persistentButton(style: ButtonStyle): PersistentButtonBuilder = PersistentButtonBuilderImpl(style, componentController)
 
-    fun primaryEphemeralButton(): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(ButtonStyle.PRIMARY, componentController)
+    fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(style, componentController)
 
     private suspend fun createGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup {
         requireUser(components.none { it.id == null }) {
@@ -52,32 +51,6 @@ class NewComponents internal constructor(private val componentController: Compon
                     }
                 }
         }
-    }
-
-    private fun createComponentGroup(
-        oneUse: Boolean,
-        groupTimeout: PersistentTimeout?,
-        components: Array<out ActionComponent>
-    ): ComponentGroup {
-//        val dataEntityTimeout = groupTimeout?.let { DataEntityTimeout(it.duration, NewComponentsListener.TIMEOUT_HANDLER_NAME) }
-//        val componentsIds = components.map { it.id ?: throwUser("Cannot put components without IDs in groups") }
-//        return ComponentGroup(oneUse, groupTimeout, componentsIds).also { group ->
-//            runBlocking {
-//                dataStore.putData(PartialDataEntity.ofPersistent(group, dataEntityTimeout)) {
-//                    //Try to find components with timeouts
-//                    if (groupTimeout == null) return@putData
-//
-//                    preparedStatement("select id from bc_data where id = any(?)") {
-//                        executeQuery(componentsIds.toTypedArray()).forEach { result ->
-//                            logger.warn {
-//                                "Grouped components cannot have timeouts set, component: ${components.find { it.id == result.get<String>("id") }}"
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        TODO()
     }
 
     internal companion object : ConditionalServiceChecker {
