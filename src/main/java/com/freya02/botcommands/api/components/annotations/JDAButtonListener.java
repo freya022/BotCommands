@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
  * <i>Supported parameters in {@link ParameterResolver}</i>
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.RUNTIME) //TODO remove in favor of unified listener for button/selects
 public @interface JDAButtonListener {
 	/**
 	 * Name of the button listener, this is used to find back the handler method after a button has been clicked

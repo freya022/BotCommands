@@ -1,8 +1,9 @@
-package com.freya02.botcommands.api.components.builder;
+package com.freya02.botcommands.api.components.builder.buttons;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.components.ButtonConsumer;
 import com.freya02.botcommands.api.components.ComponentManager;
+import com.freya02.botcommands.api.components.builder.AbstractLambdaComponentBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.emoji.Emoji;

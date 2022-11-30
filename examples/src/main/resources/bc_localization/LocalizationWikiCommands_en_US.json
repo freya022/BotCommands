@@ -1,0 +1,4 @@
+{
+    // Inherited from LocalizationWikiCommands.json
+    // This will remove warnings about bundles not being found - as it tries to get the most "precise" bundle as possible
+}
