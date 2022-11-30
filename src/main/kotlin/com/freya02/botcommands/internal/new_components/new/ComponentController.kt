@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.new_components.new
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
-import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
+import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 
 @BService
@@ -25,7 +25,7 @@ internal class ComponentController(
         }
     }
 
-    suspend fun insertGroup(group: ComponentGroupBuilder): ComponentGroup {
+    suspend fun insertGroup(group: ComponentGroupBuilderImpl): ComponentGroup {
         componentRepository.insertGroup(group).also { id ->
             val timeout = group.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)

@@ -3,12 +3,12 @@ package com.freya02.botcommands.internal.new_components.new.repositories
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
-import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.*
+import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.*
 import com.freya02.botcommands.internal.new_components.new.EphemeralComponentData
 import com.freya02.botcommands.internal.new_components.new.PersistentComponentData
@@ -116,7 +116,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilder): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilderImpl): Int = database.transactional {
         val groupId: Int = runCatching {
             preparedStatement(
                 """
@@ -135,7 +135,7 @@ internal class ComponentRepository(
         // Add timeout
         insertTimeoutData(builder, groupId)
 
-        builder.componentIds.forEach { componentId ->
+        builder._componentIds.forEach { componentId ->
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
@@ -149,7 +149,7 @@ internal class ComponentRepository(
                      natural left join bc_ephemeral_timeout
             where component_id = any (?)""".trimIndent()
         ) {
-            executeQuery(builder.componentIds.toTypedArray()).readOnce()!!["exists"]
+            executeQuery(builder._componentIds.toTypedArray()).readOnce()!!["exists"]
         }
 
         if (hasTimeouts) {
