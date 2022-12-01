@@ -1,10 +1,12 @@
 package com.freya02.botcommands.internal.new_components
 
+import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectionEvent
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.NewComponents
@@ -41,6 +43,7 @@ internal class NewComponentsListener(
     private val componentsHandlerContainer: ComponentsHandlerContainer,
 //    private val dataStore: DataStoreService,
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
+    private val componentsConfig: BComponentsConfig,
     private val componentTimeoutHandlers: ComponentTimeoutHandlers,
     private val groupTimeoutHandlers: GroupTimeoutHandlers,
     private val serviceContainer: ServiceContainer,
@@ -53,9 +56,16 @@ internal class NewComponentsListener(
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
-        logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
-
         try {
+            componentsConfig.componentFilters.forEach {
+                if (!it.isAccepted(ComponentFilteringData(context, event))) {
+                    logger.trace { "Rejected ${event.componentType} interaction: ${event.componentId}" }
+                    return@launch
+                }
+            }
+
+            logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
+
             val component = event.componentId.toIntOrNull()?.let {
                 componentRepository.getComponent(it)
             }
