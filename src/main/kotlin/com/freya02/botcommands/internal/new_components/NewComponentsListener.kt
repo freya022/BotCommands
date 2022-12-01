@@ -1,7 +1,8 @@
 package com.freya02.botcommands.internal.new_components
 
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.components.event.SelectionEvent
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent
+import com.freya02.botcommands.api.components.event.StringSelectionEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
@@ -26,9 +27,7 @@ import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -86,9 +85,13 @@ internal class NewComponentsListener(
                             val handler = (ephemeralHandler as EphemeralHandler<ButtonEvent>).handler
                             handler(ButtonEvent(null, context, event))
                         }
-                        is SelectMenuInteractionEvent -> {
-                            val handler = (ephemeralHandler as EphemeralHandler<SelectionEvent>).handler
-                            handler(SelectionEvent(null, context, event))
+                        is StringSelectInteractionEvent -> {
+                            val handler = (ephemeralHandler as EphemeralHandler<StringSelectionEvent>).handler
+                            handler(StringSelectionEvent(null, context, event))
+                        }
+                        is EntitySelectInteractionEvent -> {
+                            val handler = (ephemeralHandler as EphemeralHandler<EntitySelectionEvent>).handler
+                            handler(EntitySelectionEvent(null, context, event))
                         }
                         else -> logger.error("Unhandled component event: ${event::class.simpleName}")
                     }
@@ -244,7 +247,8 @@ internal class NewComponentsListener(
         args[descriptor.method.instanceParameter!!] = descriptor.instance
         args[descriptor.method.valueParameters.first()] = when (event) {
             is ButtonInteractionEvent -> ButtonEvent(descriptor.method, context, event)
-            is SelectMenuInteractionEvent -> SelectionEvent(descriptor.method, context, event)
+            is StringSelectInteractionEvent -> StringSelectionEvent(descriptor.method, context, event)
+            is EntitySelectInteractionEvent -> EntitySelectionEvent(descriptor.method, context, event)
             else -> throwInternal("Unhandled persistent component event: $event")
         }
 

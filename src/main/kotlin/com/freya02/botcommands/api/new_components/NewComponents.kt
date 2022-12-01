@@ -35,6 +35,7 @@ class NewComponents internal constructor(private val componentController: Compon
 
     fun persistentButton(style: ButtonStyle): PersistentButtonBuilder = PersistentButtonBuilderImpl(style, componentController)
 
+    //TODO (docs) warn about captured jda entities
     fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(style, componentController)
 
     private suspend fun createGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup {

@@ -9,7 +9,7 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.events.ShutdownEvent
+import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {

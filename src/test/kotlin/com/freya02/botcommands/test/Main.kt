@@ -7,7 +7,7 @@ import dev.minn.jda.ktx.jdabuilder.light
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.events.ShutdownEvent
+import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import kotlin.time.Duration.Companion.minutes
 

@@ -27,10 +27,10 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         logger.trace { "Received slash command: ${reconstructCommand(event)}" }
 
         try {
-            val slashCommand = CommandPath.of(event.commandPath).let {
+            val slashCommand = CommandPath.of(event.fullCommandName).let {
                 context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
-                    ?: throwUser("A slash command could not be found: ${event.commandPath}")
+                    ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
             }
 
             if (!canRun(event, slashCommand)) return
@@ -50,7 +50,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             val userCommand = event.name.let {
                 context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
-                    ?: throwUser("A user context command could not be found: ${event.commandPath}")
+                    ?: throwUser("A user context command could not be found: ${event.name}")
             }
 
             if (!canRun(event, userCommand)) return
@@ -70,7 +70,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             val messageCommand = event.name.let {
                 context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
                     ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
-                    ?: throwUser("A message context command could not be found: ${event.commandPath}")
+                    ?: throwUser("A message context command could not be found: ${event.name}")
             }
 
             if (!canRun(event, messageCommand)) return
