@@ -48,11 +48,11 @@ class Components internal constructor(private val componentController: Component
     //TODO (docs) warn about captured jda entities
     fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(style, componentController)
 
-    fun persistentStringSelectMenu(): PersistentStringSelectBuilder = PersistentStringSelectBuilderImpl()
-    fun persistentEntitySelectMenu(): PersistentEntitySelectBuilder = PersistentEntitySelectBuilderImpl()
+    fun persistentStringSelectMenu(): PersistentStringSelectBuilder = PersistentStringSelectBuilderImpl(componentController)
+    fun persistentEntitySelectMenu(): PersistentEntitySelectBuilder = PersistentEntitySelectBuilderImpl(componentController)
 
-    fun ephemeralStringSelectMenu(): EphemeralStringSelectBuilder = EphemeralStringSelectBuilderImpl()
-    fun ephemeralEntitySelectMenu(): EphemeralEntitySelectBuilder = EphemeralEntitySelectBuilderImpl()
+    fun ephemeralStringSelectMenu(): EphemeralStringSelectBuilder = EphemeralStringSelectBuilderImpl(componentController)
+    fun ephemeralEntitySelectMenu(): EphemeralEntitySelectBuilder = EphemeralEntitySelectBuilderImpl(componentController)
 
     fun deleteComponentsById(ids: List<Int>) = runBlocking { deleteComponentsById_(ids) }
 
