@@ -25,12 +25,22 @@ internal class PersistentEntitySelectBuilderImpl(private val componentController
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
 
-    @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun setId(customId: String): EntitySelectMenu.Builder {
+    @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
+    override fun getId(): Nothing {
         throwUser("Cannot set an ID on components managed by the framework")
     }
 
-    override fun build(): EntitySelectMenu {
+    @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
+    override fun setId(customId: String): Nothing {
+        throwUser("Cannot set an ID on components managed by the framework")
+    }
+
+    @Deprecated("Cannot build on components managed by the framework", level = DeprecationLevel.ERROR)
+    override fun build(): Nothing {
+        throwUser("Cannot build on components managed by the framework")
+    }
+
+    internal fun doBuild(): EntitySelectMenu {
         require(handler != null) {
             throwUser("A component handler needs to be set using #bindTo methods")
         }
