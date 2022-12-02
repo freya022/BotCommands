@@ -9,3 +9,9 @@ fun interface ReceiverConsumer<T> {
         return receiver
     }
 }
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T, R : T> R.apply(block: ReceiverConsumer<T>): R {
+    block.applyTo(this)
+    return this
+}
