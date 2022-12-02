@@ -1,8 +1,6 @@
 package com.freya02.botcommands.internal.utils;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.ComponentManager;
 import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.Contract;
@@ -77,18 +75,6 @@ public final class Utils {
 		}
 
 		return sb.toString();
-	}
-
-	@NotNull
-	public static ComponentManager getComponentManager(BContext context) {
-		if (context == null)
-			throw new IllegalStateException("The ComponentManager must be set in CommandsBuilder in order to use components (no BContext so assuming it didn't get set)");
-
-		final ComponentManager componentManager = context.getComponentManager();
-		if (componentManager == null)
-			throw new IllegalStateException("The ComponentManager must be set in CommandsBuilder in order to use components");
-
-		return componentManager;
 	}
 
 	public static Class<?> getBoxedType(Class<?> type) {

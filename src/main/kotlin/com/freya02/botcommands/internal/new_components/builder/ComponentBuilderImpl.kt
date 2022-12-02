@@ -17,4 +17,6 @@ abstract class ComponentBuilderImpl<T: ComponentBuilder<T>> : ComponentBuilder<T
     override fun oneUse(): T = this.also { oneUse = true } as T
 
     override fun constraints(block: InteractionConstraints.() -> Unit): T = this.also { constraints.apply(block) } as T
+
+    override fun setConstraints(constraints: InteractionConstraints): T = this.also { this.constraints = constraints } as T
 }

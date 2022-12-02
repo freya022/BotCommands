@@ -1,11 +1,8 @@
 package com.freya02.botcommands.api.pagination;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.ComponentManager;
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.internal.utils.Utils;
+import com.freya02.botcommands.api.new_components.Components;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -132,15 +129,9 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	/**
 	 * Cleans up the button IDs used in this paginator
 	 * <br>This will remove every stored button IDs, even then buttons you included yourself
-	 *
-	 * @param context The {@link BContext} of this bot
 	 */
-	public void cleanup(BContext context) {
-		final ComponentManager manager = Utils.getComponentManager(context);
-
-		final int deletedIds = manager.deleteIds(usedIds);
-
-		LOGGER.trace("Cleaned up {} component IDs out of {}", deletedIds, usedIds.size());
+	public void cleanup() {
+		componentss.deleteComponentsById(usedIds.stream().map(Integer::valueOf).toList());
 
 		usedIds.clear();
 	}

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -38,25 +39,25 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = componentss.primaryButton(e -> {
+		firstButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
 			page = 0;
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(firstContent);
 
-		previousButton = componentss.primaryButton(e -> {
+		previousButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
 			page = Math.max(0, page - 1);
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(previousContent);
 
-		nextButton = componentss.primaryButton(e -> {
+		nextButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
 			page = Math.min(maxPages - 1, page + 1);
 
 			e.editMessage(get()).queue();
 		}).setConstraints(constraints).build(nextContent);
 
-		lastButton = componentss.primaryButton(e -> {
+		lastButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
 			page = maxPages - 1;
 
 			e.editMessage(get()).queue();
@@ -64,7 +65,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = componentss.dangerButton(this::onDeleteClicked)
+			this.deleteButton = componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(this::onDeleteClicked)
 					.setConstraints(constraints)
 					.oneUse()
 					.build(deleteContent);
@@ -113,7 +114,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			LOGGER.warn("Attempted to delete a ephemeral message using a Paginator delete button, consider disabling the delete button in the constructor or making your message not ephemeral, pagination supplier comes from {}", supplier.getClass().getName());
 		}
 
-		cleanup(e.getContext());
+		cleanup();
 	}
 
 	/**

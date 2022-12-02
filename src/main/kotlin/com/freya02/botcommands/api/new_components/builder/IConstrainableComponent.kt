@@ -6,4 +6,5 @@ interface IConstrainableComponent<T : IConstrainableComponent<T>> {
     val constraints: InteractionConstraints
 
     fun constraints(block: InteractionConstraints.() -> Unit): T
+    fun setConstraints(constraints: InteractionConstraints): T
 }

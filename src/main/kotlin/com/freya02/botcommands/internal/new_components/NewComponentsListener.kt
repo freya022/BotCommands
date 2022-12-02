@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.new_components.ComponentGroup
-import com.freya02.botcommands.api.new_components.NewComponents
+import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
@@ -37,7 +37,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-@ConditionalService(dependencies = [NewComponents::class, DataStoreService::class, Database::class])
+@ConditionalService(dependencies = [Components::class, DataStoreService::class, Database::class])
 internal class NewComponentsListener(
     private val context: BContextImpl,
     private val componentsHandlerContainer: ComponentsHandlerContainer,

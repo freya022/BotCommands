@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.new_components.ComponentTimeoutData
+import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.api.new_components.GroupTimeoutData
-import com.freya02.botcommands.api.new_components.NewComponents
 import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandler
 import dev.minn.jda.ktx.interactions.components.asDisabled
@@ -24,7 +24,7 @@ private const val PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: pe
 private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentGroupTimeout"
 
 @CommandMarker
-class SlashNewButtons(private val components: NewComponents) : ApplicationCommand() {
+class SlashNewButtons(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton: Button = persistentGroupTest(event)

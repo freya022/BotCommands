@@ -1,6 +1,5 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
@@ -20,26 +19,26 @@ import java.util.concurrent.TimeUnit;
 
 public class SlashPaginator extends ApplicationCommand {
 	@JDASlashCommand(name = "paginator", subcommand = "user")
-	public void paginatorUser(GuildSlashEvent event, BContext context, Components components) {
-		replyPaginator(event, context, InteractionConstraints.ofUsers(event.getUser()), components);
+	public void paginatorUser(GuildSlashEvent event, Components components) {
+		replyPaginator(event, InteractionConstraints.ofUsers(event.getUser()), components);
 	}
 
 	@JDASlashCommand(name = "paginator", subcommand = "role")
-	public void paginatorRole(GuildSlashEvent event, BContext context, @AppOption Role role, Components components) {
-		replyPaginator(event, context, InteractionConstraints.ofRoles(role), components);
+	public void paginatorRole(GuildSlashEvent event, @AppOption Role role, Components components) {
+		replyPaginator(event, InteractionConstraints.ofRoles(role), components);
 	}
 
 	@JDASlashCommand(name = "paginator", subcommand = "permissions")
-	public void paginatorPermissions(GuildSlashEvent event, BContext context, Components components) {
-		replyPaginator(event, context, InteractionConstraints.ofPermissions(Permission.MANAGE_THREADS), components);
+	public void paginatorPermissions(GuildSlashEvent event, Components components) {
+		replyPaginator(event, InteractionConstraints.ofPermissions(Permission.MANAGE_THREADS), components);
 	}
 
-	private void replyPaginator(GuildSlashEvent event, BContext context, InteractionConstraints constraints, Components componentss) {
+	private void replyPaginator(GuildSlashEvent event, InteractionConstraints constraints, Components componentss) {
 		final PaginatorBuilder builder = new PaginatorBuilder()
 				.setConstraints(constraints)
 				.useDeleteButton(true)
 				.setTimeout(5, TimeUnit.SECONDS, (paginator, message) -> {
-					paginator.cleanup(context);
+					paginator.cleanup();
 
 					//Remove components on timeout
 					event.getHook().editOriginalComponents().queue();

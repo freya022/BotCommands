@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.components.annotations;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.prefixed.TextCommand;
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
 import com.freya02.botcommands.api.components.event.StringSelectionEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolver;

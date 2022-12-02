@@ -3,13 +3,14 @@ package com.freya02.botcommands.test.commands.slash;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.new_components.Components;
 import com.freya02.botcommands.api.pagination.interactive.InteractiveMenu;
 import com.freya02.botcommands.api.pagination.interactive.InteractiveMenuBuilder;
 import com.freya02.botcommands.api.pagination.interactive.SelectContent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
@@ -24,15 +25,15 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 					editBuilder.setReplace(true);
 
 					components.addComponents(
-							componentss.dangerButton(buttonEvent -> {
+							componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
 								interactiveMenu.cancelTimeout();
 
-								interactiveMenu.cleanup(event.getContext());
+								interactiveMenu.cleanup();
 							}).build("Delete"),
 
-							componentss.secondaryButton(buttonEvent -> {
+							componentss.ephemeralButton(ButtonStyle.SECONDARY).bindTo(buttonEvent -> {
 								interactiveMenu.setSelectedItem("Grin");
 
 								buttonEvent.editMessage(interactiveMenu.get()).queue();
@@ -44,15 +45,15 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 //					editBuilder.setReplace(true);
 
 					components.addComponents(
-							componentss.dangerButton(buttonEvent -> {
+							componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(buttonEvent -> {
 								event.getHook().deleteOriginal().queue();
 
 								interactiveMenu.cancelTimeout();
 
-								interactiveMenu.cleanup(event.getContext());
+								interactiveMenu.cleanup();
 							}).build("Delete"),
 
-							componentss.secondaryButton(buttonEvent -> {
+							componentss.ephemeralButton(ButtonStyle.SECONDARY).bindTo(buttonEvent -> {
 								interactiveMenu.setSelectedItem(0);
 
 								buttonEvent.editMessage(interactiveMenu.get()).queue();
@@ -64,7 +65,7 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 				.setTimeout(5, TimeUnit.SECONDS, (interactiveMenu, msg) -> {
 					System.out.println("bru");
 
-					interactiveMenu.cleanup(event.getContext());
+					interactiveMenu.cleanup();
 				})
 				.build();
 

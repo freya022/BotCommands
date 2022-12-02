@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import java.util.List;
@@ -60,8 +61,8 @@ public final class ChoiceMenu<E> extends BasicMenu<E, ChoiceMenu<E>> {
 		for (int i = 0; i < entries.size(); i++) {
 			final E item = entries.get(i);
 			final ButtonContent content = buttonContentSupplier.apply(item, i);
-			final Button choiceButton = componentss.primaryButton(event -> {
-				this.cleanup(event.getContext());
+			final Button choiceButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(event -> {
+				this.cleanup();
 
 				callback.accept(event, item);
 			}).setConstraints(constraints).build(content);

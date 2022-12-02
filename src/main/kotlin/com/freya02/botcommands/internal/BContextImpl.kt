@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.config.BConfig
@@ -143,10 +142,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
 
     override fun addRegistrationListeners(vararg listeners: RegistrationListener) {
         registrationListeners += listeners
-    }
-
-    override fun getComponentManager(): ComponentManager {
-        return serviceContainer.getService(config.componentsConfig.componentManagerStrategy)
     }
 
     override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
