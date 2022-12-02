@@ -32,4 +32,10 @@ internal class ComponentController(
         }
         return ComponentGroup(group.componentIds)
     }
+
+    suspend fun deleteComponentsById(ids: List<Int>) {
+        componentRepository.deleteComponentsById(ids).forEach { componentId ->
+            timeoutManager.cancelTimeout(componentId)
+        }
+    }
 }

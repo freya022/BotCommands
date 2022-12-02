@@ -198,6 +198,7 @@ internal class ComponentRepository(
                 additionalComponents += executeQuery(groupId).map { it["component_id"] }
             }
         } else {
+            //TODO does this already cover singular component deletion ?
             //Delete other components from same group
             preparedStatement(
                 """
@@ -224,6 +225,11 @@ internal class ComponentRepository(
         logger.trace { "Deleted component ${component.componentId} along with [${additionalComponents.joinToString()}]" }
 
         return@transactional additionalComponents
+    }
+
+    //TODO optimize
+    suspend fun deleteComponentsById(ids: List<Int>): List<Int> {
+        return ids.mapNotNull { getComponent(it) }.flatMap { deleteComponent(it) }.distinct()
     }
 
     context(Transaction)
