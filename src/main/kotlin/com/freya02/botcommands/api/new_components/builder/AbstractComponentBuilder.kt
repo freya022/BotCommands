@@ -1,10 +1,9 @@
-package com.freya02.botcommands.internal.new_components.builder
+package com.freya02.botcommands.api.new_components.builder
 
 import com.freya02.botcommands.api.components.InteractionConstraints
-import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 
 @Suppress("UNCHECKED_CAST")
-abstract class ComponentBuilderImpl<T: ComponentBuilder<T>> : ComponentBuilder<T> {
+abstract class AbstractComponentBuilder<T: ComponentBuilder<T>> internal constructor() : ComponentBuilder<T> {
     final override var oneUse: Boolean = false
         private set
     final override var constraints: InteractionConstraints = InteractionConstraints()

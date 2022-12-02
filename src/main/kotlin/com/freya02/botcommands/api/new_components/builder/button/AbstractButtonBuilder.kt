@@ -1,18 +1,17 @@
-package com.freya02.botcommands.internal.new_components.builder.button
+package com.freya02.botcommands.api.new_components.builder.button
 
-import com.freya02.botcommands.api.new_components.builder.button.ButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.AbstractComponentBuilder
 import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.builder.ComponentBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
-internal abstract class ButtonBuilderImpl<T : ButtonBuilder<T>>(
+abstract class AbstractButtonBuilder<T : ButtonBuilder<T>> internal constructor(
     private val componentController: ComponentController,
     private val style: ButtonStyle
-) : ComponentBuilderImpl<T>(), ButtonBuilder<T> {
+) : AbstractComponentBuilder<T>(), ButtonBuilder<T> {
     final override val componentType: ComponentType = ComponentType.BUTTON
 
     override fun build(label: String?, emoji: Emoji?): Button {

@@ -16,8 +16,6 @@ import com.freya02.botcommands.api.new_components.builder.select.persistent.Pers
 import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentStringSelectBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
-import com.freya02.botcommands.internal.new_components.builder.button.EphemeralButtonBuilderImpl
-import com.freya02.botcommands.internal.new_components.builder.button.PersistentButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
@@ -41,10 +39,10 @@ class Components internal constructor(private val componentController: Component
     @JvmSynthetic
     suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
 
-    fun persistentButton(style: ButtonStyle): PersistentButtonBuilder = PersistentButtonBuilderImpl(style, componentController)
+    fun persistentButton(style: ButtonStyle): PersistentButtonBuilder = PersistentButtonBuilder(style, componentController)
 
     //TODO (docs) warn about captured jda entities
-    fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(style, componentController)
+    fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilder(style, componentController)
 
     fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
         PersistentStringSelectBuilder(componentController).apply(block).doBuild()
