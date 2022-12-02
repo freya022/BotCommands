@@ -38,20 +38,23 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	}
 
 	@NotNull
-	protected StringSelectMenu.Builder createSelectMenuBuilder() {
-		final LambdaStringSelectionMenuBuilder builder = componentss.stringSelectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+	protected StringSelectMenu createSelectMenu() {
+		return componentss.ephemeralStringSelectMenu(selectBuilder -> {
+			selectBuilder.bindTo(this::handleSelection);
+			selectBuilder.oneUse();
+			selectBuilder.setConstraints(constraints);
 
-		final List<SelectOption> options = builder.getOptions();
-		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
-			InteractiveMenuItem<T> item = items.get(i);
+			final SelectOption[] options = new SelectOption[items.size()];
+			for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
+				InteractiveMenuItem<T> item = items.get(i);
 
-			SelectOption option = item.content().toSelectOption(String.valueOf(i));
-			if (i == selectedItem) option = option.withDefault(true);
+				SelectOption option = item.content().toSelectOption(String.valueOf(i));
+				if (i == selectedItem) option = option.withDefault(true);
 
-			options.add(option);
-		}
-
-		return builder;
+				options[i] = option;
+			}
+			selectBuilder.addOptions(options);
+		});
 	}
 
 	private void handleSelection(StringSelectionEvent event) {
@@ -117,7 +120,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			putComponents();
 		}
 
-		components.addComponents(createSelectMenuBuilder().build());
+		components.addComponents(createSelectMenu());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
 		messageBuilder.setEmbeds(embed);
