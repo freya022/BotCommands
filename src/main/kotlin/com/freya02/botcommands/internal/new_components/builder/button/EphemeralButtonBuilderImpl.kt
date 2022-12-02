@@ -1,7 +1,7 @@
-package com.freya02.botcommands.internal.new_components.builder
+package com.freya02.botcommands.internal.new_components.builder.button
 
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.new_components.builder.EphemeralButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.button.EphemeralButtonBuilder
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.EphemeralHandler
 import com.freya02.botcommands.internal.new_components.new.ComponentController

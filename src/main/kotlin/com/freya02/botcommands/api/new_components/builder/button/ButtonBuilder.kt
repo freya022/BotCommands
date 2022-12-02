@@ -1,5 +1,6 @@
-package com.freya02.botcommands.api.new_components.builder
+package com.freya02.botcommands.api.new_components.builder.button
 
+import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.utils.ButtonContent
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button

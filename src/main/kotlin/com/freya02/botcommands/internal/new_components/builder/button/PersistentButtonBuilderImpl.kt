@@ -1,6 +1,6 @@
-package com.freya02.botcommands.internal.new_components.builder
+package com.freya02.botcommands.internal.new_components.builder.button
 
-import com.freya02.botcommands.api.new_components.builder.PersistentButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.button.PersistentButtonBuilder
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.PersistentHandler
 import com.freya02.botcommands.internal.new_components.new.ComponentController

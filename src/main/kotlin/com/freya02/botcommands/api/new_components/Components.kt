@@ -6,12 +6,12 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
-import com.freya02.botcommands.api.new_components.builder.EphemeralButtonBuilder
-import com.freya02.botcommands.api.new_components.builder.PersistentButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.button.EphemeralButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.button.PersistentButtonBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
-import com.freya02.botcommands.internal.new_components.builder.EphemeralButtonBuilderImpl
-import com.freya02.botcommands.internal.new_components.builder.PersistentButtonBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.button.EphemeralButtonBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.button.PersistentButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser

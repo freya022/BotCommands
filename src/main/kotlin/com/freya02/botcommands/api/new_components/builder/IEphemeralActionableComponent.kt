@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.new_components.builder
 
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.api.new_components.builder.button.EphemeralButtonBuilder
 import java.util.function.Consumer
 
 interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T>> {
