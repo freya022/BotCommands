@@ -8,10 +8,18 @@ import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.button.EphemeralButtonBuilder
 import com.freya02.botcommands.api.new_components.builder.button.PersistentButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.select.ephemeral.EphemeralEntitySelectBuilder
+import com.freya02.botcommands.api.new_components.builder.select.ephemeral.EphemeralStringSelectBuilder
+import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentEntitySelectBuilder
+import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentStringSelectBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.builder.button.EphemeralButtonBuilderImpl
 import com.freya02.botcommands.internal.new_components.builder.button.PersistentButtonBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.select.ephemeral.EphemeralEntitySelectBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.select.ephemeral.EphemeralStringSelectBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.select.persistent.PersistentEntitySelectBuilderImpl
+import com.freya02.botcommands.internal.new_components.builder.select.persistent.PersistentStringSelectBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
@@ -39,6 +47,12 @@ class Components internal constructor(private val componentController: Component
 
     //TODO (docs) warn about captured jda entities
     fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilderImpl(style, componentController)
+
+    fun persistentStringSelectMenu(): PersistentStringSelectBuilder = PersistentStringSelectBuilderImpl()
+    fun persistentEntitySelectMenu(): PersistentEntitySelectBuilder = PersistentEntitySelectBuilderImpl()
+
+    fun ephemeralStringSelectMenu(): EphemeralStringSelectBuilder = EphemeralStringSelectBuilderImpl()
+    fun ephemeralEntitySelectMenu(): EphemeralEntitySelectBuilder = EphemeralEntitySelectBuilderImpl()
 
     fun deleteComponentsById(ids: List<Int>) = runBlocking { deleteComponentsById_(ids) }
 

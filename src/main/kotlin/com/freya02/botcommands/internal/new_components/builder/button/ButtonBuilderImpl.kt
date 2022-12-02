@@ -13,7 +13,7 @@ internal abstract class ButtonBuilderImpl<T : ButtonBuilder<T>>(
     private val componentController: ComponentController,
     private val style: ButtonStyle
 ) : ComponentBuilderImpl<T>(), ButtonBuilder<T> {
-    override val componentType: ComponentType = ComponentType.BUTTON
+    final override val componentType: ComponentType = ComponentType.BUTTON
 
     override fun build(label: String?, emoji: Emoji?): Button {
         require(handler != null) {
