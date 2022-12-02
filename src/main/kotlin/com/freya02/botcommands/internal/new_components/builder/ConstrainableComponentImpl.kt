@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.new_components.builder
 import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.new_components.builder.IConstrainableComponent
 
-class ConstrainableComponentImpl<T : IConstrainableComponent<T>> : IConstrainableComponent<T> {
+internal class ConstrainableComponentImpl<T : IConstrainableComponent<T>> : IConstrainableComponent<T> {
     override var constraints: InteractionConstraints = InteractionConstraints()
 
     override fun constraints(block: InteractionConstraints.() -> Unit): T = this.also { constraints.apply(block) } as T

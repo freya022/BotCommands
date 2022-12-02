@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.new_components.new.EphemeralTimeout
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 
-class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableComponent<T>> : IEphemeralTimeoutableComponent<T> {
+internal class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableComponent<T>> : IEphemeralTimeoutableComponent<T> {
     override var timeout: EphemeralTimeout? = null
         private set
 

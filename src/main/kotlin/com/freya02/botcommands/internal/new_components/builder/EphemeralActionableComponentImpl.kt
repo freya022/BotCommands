@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.new_components.builder.IEphemeralActionableComponent
 import com.freya02.botcommands.internal.new_components.EphemeralHandler
 
-class EphemeralActionableComponentImpl<T : IEphemeralActionableComponent<T>> : IEphemeralActionableComponent<T> {
+internal class EphemeralActionableComponentImpl<T : IEphemeralActionableComponent<T>> : IEphemeralActionableComponent<T> {
     override var handler: EphemeralHandler<*>? = null
         private set
 

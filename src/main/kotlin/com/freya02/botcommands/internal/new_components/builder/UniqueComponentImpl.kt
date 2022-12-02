@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.new_components.builder
 
 import com.freya02.botcommands.api.new_components.builder.IUniqueComponent
 
-class UniqueComponentImpl<T : IUniqueComponent<T>> : IUniqueComponent<T> {
+internal class UniqueComponentImpl<T : IUniqueComponent<T>> : IUniqueComponent<T> {
     override var oneUse: Boolean = false
 
     //TODO prefer property accessors

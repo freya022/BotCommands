@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.new_components.builder
 import com.freya02.botcommands.api.new_components.builder.IPersistentActionableComponent
 import com.freya02.botcommands.internal.new_components.PersistentHandler
 
-class PersistentActionableComponentImpl<T : IPersistentActionableComponent<T>> : IPersistentActionableComponent<T> {
+internal class PersistentActionableComponentImpl<T : IPersistentActionableComponent<T>> : IPersistentActionableComponent<T> {
     override var handler: PersistentHandler? = null
         private set
 
