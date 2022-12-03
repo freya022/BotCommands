@@ -42,15 +42,15 @@ class Components internal constructor(private val componentController: Component
     @JvmSynthetic
     suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
 
+    // -------------------- Persistent buttons --------------------
+
     @JvmOverloads
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
         PersistentButtonBuilder(style, componentController).apply(block).build(label, emoji)
     fun persistentButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<PersistentButtonBuilder>) =
         persistentButton(style, content.text, content.emoji, block)
 
-    @JvmSynthetic
-    internal fun ephemeralButton(style: ButtonStyle, block: ReceiverConsumer<EphemeralButtonBuilder>) =
-        EphemeralButtonBuilder(style, componentController).apply(block).build(null, null)
+    // -------------------- Ephemeral buttons --------------------
 
     @JvmOverloads
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
@@ -58,12 +58,16 @@ class Components internal constructor(private val componentController: Component
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<EphemeralButtonBuilder>) =
         ephemeralButton(style, content.text, content.emoji, block)
 
+    // -------------------- Persistent select menus --------------------
+
     fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
         PersistentStringSelectBuilder(componentController).apply(block).doBuild()
     fun persistentEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
         persistentEntitySelectMenu(listOf(target), block)
     fun persistentEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
         PersistentEntitySelectBuilder(componentController, targets).apply(block).doBuild()
+
+    // -------------------- Ephemeral select menus --------------------
 
     fun ephemeralStringSelectMenu(block: ReceiverConsumer<EphemeralStringSelectBuilder>) =
         EphemeralStringSelectBuilder(componentController).apply(block).doBuild()
