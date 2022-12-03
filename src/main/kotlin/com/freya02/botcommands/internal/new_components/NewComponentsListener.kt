@@ -80,9 +80,14 @@ internal class NewComponentsListener(
 
             when (component) {
                 is PersistentComponentData -> {
-                    val (handlerName, userData) =  component.handler
-                    val descriptor = componentsHandlerContainer.getButtonDescriptor(handlerName)
-                        ?: throwUser("Could not find a button descriptor named $handlerName")
+                    val (handlerName, userData) = component.handler
+                    val descriptor = when (component.componentType) {
+                        ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
+                            ?: throwUser("Could not find a button handler named $handlerName")
+                        ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
+                            ?: throwUser("Could not find a select menu handler named $handlerName")
+                        else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                    }
 
                     handlePersistentComponent(descriptor, event, userData)
                 }
