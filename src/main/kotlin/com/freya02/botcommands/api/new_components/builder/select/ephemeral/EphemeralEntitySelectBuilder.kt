@@ -33,7 +33,8 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     }
 
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun setId(customId: String): Nothing {
+    override fun setId(customId: String): EntitySelectMenu.Builder {
+        if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwUser("Cannot set an ID on components managed by the framework")
     }
 
