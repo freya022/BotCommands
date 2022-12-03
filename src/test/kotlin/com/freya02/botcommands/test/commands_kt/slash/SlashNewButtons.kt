@@ -19,10 +19,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
-private const val PERSISTENT_BUTTON_LISTENER_NAME = "SlashNewButtons: persistentButton"
-private const val PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentButtonTimeout"
-private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentGroupTimeout"
-
 @CommandMarker
 class SlashNewButtons(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "new_buttons")
@@ -99,5 +95,11 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
     @GroupTimeoutHandler(name = PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
     fun onFirstGroupTimeout(data: GroupTimeoutData) {
         println(data)
+    }
+
+    companion object {
+        private const val PERSISTENT_BUTTON_LISTENER_NAME = "SlashNewButtons: persistentButton"
+        private const val PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentButtonTimeout"
+        private const val PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME = "SlashNewButtons: persistentGroupTimeout"
     }
 }
