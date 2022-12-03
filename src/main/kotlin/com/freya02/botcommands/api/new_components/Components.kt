@@ -14,6 +14,7 @@ import com.freya02.botcommands.api.new_components.builder.select.ephemeral.Ephem
 import com.freya02.botcommands.api.new_components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentEntitySelectBuilder
 import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentStringSelectBuilder
+import com.freya02.botcommands.api.utils.ButtonContent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
@@ -24,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -39,10 +41,17 @@ class Components internal constructor(private val componentController: Component
     @JvmSynthetic
     suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
 
-    fun persistentButton(style: ButtonStyle): PersistentButtonBuilder = PersistentButtonBuilder(style, componentController)
+    @JvmOverloads
+    fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
+        PersistentButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    fun persistentButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<PersistentButtonBuilder>) =
+        persistentButton(style, content.text, content.emoji, block)
 
-    //TODO (docs) warn about captured jda entities
-    fun ephemeralButton(style: ButtonStyle): EphemeralButtonBuilder = EphemeralButtonBuilder(style, componentController)
+    @JvmOverloads
+    fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
+        EphemeralButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<EphemeralButtonBuilder>) =
+        ephemeralButton(style, content.text, content.emoji, block)
 
     fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
         PersistentStringSelectBuilder(componentController).apply(block).doBuild()

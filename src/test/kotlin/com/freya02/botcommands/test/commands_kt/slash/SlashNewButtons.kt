@@ -40,23 +40,23 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.persistentButton(ButtonStyle.PRIMARY)
-            .oneUse() //Cancels whole group if used
-            .constraints {
+        val firstButton: Button = components.persistentButton(ButtonStyle.PRIMARY, "Persistent") {
+            oneUse() //Cancels whole group if used
+            constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
             }
-            .bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
-            .build("Persistent")
+            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+        }
 
-        val secondButton: Button = components.persistentButton(ButtonStyle.PRIMARY)
-            .oneUse() //Cancels whole group if used
-            .constraints {
+        val secondButton: Button = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
+            oneUse() //Cancels whole group if used
+            constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
             }
-            .bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
-            .build("Invisible")
+            bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
+        }
 
         components.newGroup(firstButton, secondButton) {
             oneUse()
@@ -66,14 +66,14 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
-        val firstButton: Button = components.ephemeralButton(ButtonStyle.SECONDARY)
-            .oneUse() //Cancels whole group if used
-            .constraints {
+        val firstButton: Button = components.ephemeralButton(ButtonStyle.SECONDARY, "Ephemeral") {
+            oneUse() //Cancels whole group if used
+            constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
             }
-            .bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
-            .build("Ephemeral")
+            bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
+        }
 
         components.newGroup(firstButton) {
             oneUse()

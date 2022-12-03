@@ -8,13 +8,14 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
-abstract class AbstractButtonBuilder<T : ButtonBuilder<T>> internal constructor(
+abstract class AbstractButtonBuilder<T : AbstractButtonBuilder<T>> internal constructor(
     private val componentController: ComponentController,
     private val style: ButtonStyle
-) : AbstractComponentBuilder<T>(), ButtonBuilder<T> {
+) : AbstractComponentBuilder<T>() {
     final override val componentType: ComponentType = ComponentType.BUTTON
 
-    override fun build(label: String?, emoji: Emoji?): Button {
+    @JvmSynthetic
+    internal fun build(label: String?, emoji: Emoji?): Button {
         require(handler != null) {
             throwUser("A component handler needs to be set using #bindTo methods")
         }

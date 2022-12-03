@@ -39,36 +39,49 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
-			page = 0;
+		firstButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, firstContent, builder -> {
+			builder.bindTo(e -> {
+				page = 0;
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(firstContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		previousButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
-			page = Math.max(0, page - 1);
+		previousButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, previousContent, builder -> {
+			builder.bindTo(e -> {
+				page = Math.max(0, page - 1);
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(previousContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		nextButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
-			page = Math.min(maxPages - 1, page + 1);
+		nextButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, nextContent, builder -> {
+			builder.bindTo(e -> {
+				page = Math.min(maxPages - 1, page + 1);
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(nextContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		lastButton = componentss.ephemeralButton(ButtonStyle.PRIMARY).bindTo(e -> {
-			page = maxPages - 1;
+		lastButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, lastContent, builder -> {
+			builder.bindTo(e -> {
+				page = maxPages - 1;
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(lastContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(this::onDeleteClicked)
-					.setConstraints(constraints)
-					.oneUse()
-					.build(deleteContent);
+			this.deleteButton = componentss.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
+				builder.bindTo(this::onDeleteClicked);
+				builder.setConstraints(constraints);
+				builder.oneUse();
+			});
 		} else {
 			this.deleteButton = null;
 		}

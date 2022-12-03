@@ -13,6 +13,7 @@ interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> 
 }
 
 interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T>> : IActionableComponent {
+    //TODO (docs) warn about captured jda entities
     fun bindTo(handler: Consumer<ButtonEvent>): T = bindTo { handler.accept(it) }
 
     @JvmSynthetic

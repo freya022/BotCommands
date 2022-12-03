@@ -23,6 +23,7 @@ interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>
 
 @OptIn(ExperimentalTime::class)
 interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> : ITimeoutableComponent {
+    //TODO (docs) warn about captured jda entities
     fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): T =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
 
