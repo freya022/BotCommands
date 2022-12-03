@@ -80,7 +80,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			this.deleteButton = componentss.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
 				builder.bindTo(this::onDeleteClicked);
 				builder.setConstraints(constraints);
-				builder.oneUse();
+				builder.setOneUse(true);
 			});
 		} else {
 			this.deleteButton = null;

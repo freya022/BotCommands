@@ -8,7 +8,5 @@ abstract class AbstractComponentBuilder internal constructor() : ComponentBuilde
     final override var oneUse: Boolean = false
     final override var constraints: InteractionConstraints = InteractionConstraints()
 
-    fun oneUse() = this.also { oneUse = true }
-
     override fun constraints(block: ReceiverConsumer<InteractionConstraints>) { constraints.apply(block) }
 }

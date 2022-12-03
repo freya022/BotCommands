@@ -41,7 +41,7 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {
         val firstButton: Button = components.persistentButton(ButtonStyle.PRIMARY, "Persistent") {
-            oneUse() //Cancels whole group if used
+            oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
@@ -50,7 +50,7 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
         }
 
         val secondButton: Button = components.persistentButton(ButtonStyle.PRIMARY, "Invisible") {
-            oneUse() //Cancels whole group if used
+            oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
@@ -67,7 +67,7 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): Button {
         val firstButton: Button = components.ephemeralButton(ButtonStyle.SECONDARY, "Ephemeral") {
-            oneUse() //Cancels whole group if used
+            oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)
                 permissions += Permission.ADMINISTRATOR
