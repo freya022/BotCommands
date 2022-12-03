@@ -36,6 +36,15 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
         event.reply("OK, button ID: ${persistentButton.id}")
             .addActionRow(persistentButton, ephemeralButton)
             .queue()
+
+        try {
+            withTimeout(5.seconds) {
+                val buttonEvent: ButtonEvent = ephemeralButton.await()
+                event.hook.send("Done awaiting !", ephemeral = true).queue()
+            }
+        } catch (e: TimeoutCancellationException) {
+            event.hook.send("Too slow", ephemeral = true).queue()
+        }
     }
 
     private suspend fun persistentGroupTest(event: GuildSlashEvent): Button {

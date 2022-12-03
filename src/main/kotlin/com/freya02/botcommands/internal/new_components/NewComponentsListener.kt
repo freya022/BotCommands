@@ -30,6 +30,8 @@ import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.*
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -74,6 +76,8 @@ internal class NewComponentsListener(
                 return@launch
             }
 
+            component.constraints //TODO check
+
             if (component.oneUse) {
                 deleteRelatedComponents(component)
             }
@@ -89,26 +93,26 @@ internal class NewComponentsListener(
                         else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                     }
 
-                    handlePersistentComponent(descriptor, event, userData)
+                    transformEvent(event, descriptor.method)?.let { evt ->
+                        componentController.removeContinuations(component.componentId).forEach {
+                            @Suppress("UNCHECKED_CAST")
+                            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+                        }
+
+                        handlePersistentComponent(descriptor, evt, userData)
+                    }
                 }
                 is EphemeralComponentData -> {
                     val ephemeralHandler = component.handler
 
-                    @Suppress("UNCHECKED_CAST")
-                    when (event) {
-                        is ButtonInteractionEvent -> {
-                            val handler = (ephemeralHandler as EphemeralHandler<ButtonEvent>).handler
-                            handler(ButtonEvent(null, context, event))
+                    transformEvent(event, null)?.let { evt ->
+                        componentController.removeContinuations(component.componentId).forEach {
+                            @Suppress("UNCHECKED_CAST")
+                            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
                         }
-                        is StringSelectInteractionEvent -> {
-                            val handler = (ephemeralHandler as EphemeralHandler<StringSelectionEvent>).handler
-                            handler(StringSelectionEvent(null, context, event))
-                        }
-                        is EntitySelectInteractionEvent -> {
-                            val handler = (ephemeralHandler as EphemeralHandler<EntitySelectionEvent>).handler
-                            handler(EntitySelectionEvent(null, context, event))
-                        }
-                        else -> logger.error("Unhandled component event: ${event::class.simpleName}")
+
+                        @Suppress("UNCHECKED_CAST")
+                        (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
                     }
                 }
             }
@@ -157,6 +161,18 @@ internal class NewComponentsListener(
 //            }
         } catch (e: Throwable) {
             handleException(event, e)
+        }
+    }
+
+    private fun transformEvent(event: GenericComponentInteractionCreateEvent, function: KFunction<*>?): GenericComponentInteractionCreateEvent? {
+        return when (event) {
+            is ButtonInteractionEvent -> ButtonEvent(function, context, event)
+            is StringSelectInteractionEvent -> StringSelectionEvent(function, context, event)
+            is EntitySelectInteractionEvent -> EntitySelectionEvent(function, context, event)
+            else -> {
+                logger.warn("Unhandled component event: ${event::class.simpleName}")
+                null
+            }
         }
     }
 
@@ -254,18 +270,13 @@ internal class NewComponentsListener(
 
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
-        event: GenericComponentInteractionCreateEvent,
+        event: GenericComponentInteractionCreateEvent, // already a BC event
         userData: Array<out String>
     ) {
         var userArgsIndex = 0
         val args = hashMapOf<KParameter, Any?>()
         args[descriptor.method.instanceParameter!!] = descriptor.instance
-        args[descriptor.method.valueParameters.first()] = when (event) {
-            is ButtonInteractionEvent -> ButtonEvent(descriptor.method, context, event)
-            is StringSelectInteractionEvent -> StringSelectionEvent(descriptor.method, context, event)
-            is EntitySelectInteractionEvent -> EntitySelectionEvent(descriptor.method, context, event)
-            else -> throwInternal("Unhandled persistent component event: $event")
-        }
+        args[descriptor.method.valueParameters.first()] = event
 
         for (parameter in descriptor.parameters) {
             val value = when (parameter.methodParameterType) {

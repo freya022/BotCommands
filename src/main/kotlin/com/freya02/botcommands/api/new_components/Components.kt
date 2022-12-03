@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.new_components
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.apply
-import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
@@ -27,7 +26,6 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.ActionComponent
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
@@ -111,5 +109,3 @@ class Components internal constructor(private val componentController: Component
         }
     }
 }
-
-suspend fun Button.await(): ButtonEvent = TODO()
