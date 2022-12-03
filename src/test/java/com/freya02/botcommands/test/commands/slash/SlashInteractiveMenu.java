@@ -25,19 +25,23 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 					editBuilder.setReplace(true);
 
 					components.addComponents(
-							componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(buttonEvent -> {
-								event.getHook().deleteOriginal().queue();
+							componentss.ephemeralButton(ButtonStyle.DANGER, "Delete", builder -> {
+								builder.bindTo(buttonEvent -> {
+									event.getHook().deleteOriginal().queue();
 
-								interactiveMenu.cancelTimeout();
+									interactiveMenu.cancelTimeout();
 
-								interactiveMenu.cleanup();
-							}).build("Delete"),
+									interactiveMenu.cleanup();
+								});
+							}),
 
-							componentss.ephemeralButton(ButtonStyle.SECONDARY).bindTo(buttonEvent -> {
-								interactiveMenu.setSelectedItem("Grin");
+							componentss.ephemeralButton(ButtonStyle.SECONDARY, "Go to 'Grin'", builder -> {
+								builder.bindTo(buttonEvent -> {
+									interactiveMenu.setSelectedItem("Grin");
 
-								buttonEvent.editMessage(interactiveMenu.get()).queue();
-							}).build("Go to 'Grin'"));
+									buttonEvent.editMessage(interactiveMenu.get()).queue();
+								});
+							}));
 
 					return new EmbedBuilder().setTitle("This sparks joy").setDescription("Page #" + pageNumber).build();
 				})
@@ -45,19 +49,23 @@ public class SlashInteractiveMenu extends ApplicationCommand {
 //					editBuilder.setReplace(true);
 
 					components.addComponents(
-							componentss.ephemeralButton(ButtonStyle.DANGER).bindTo(buttonEvent -> {
-								event.getHook().deleteOriginal().queue();
+							componentss.ephemeralButton(ButtonStyle.DANGER, "Delete", builder -> {
+								builder.bindTo(buttonEvent -> {
+									event.getHook().deleteOriginal().queue();
 
-								interactiveMenu.cancelTimeout();
+									interactiveMenu.cancelTimeout();
 
-								interactiveMenu.cleanup();
-							}).build("Delete"),
+									interactiveMenu.cleanup();
+								});
+							}),
 
-							componentss.ephemeralButton(ButtonStyle.SECONDARY).bindTo(buttonEvent -> {
-								interactiveMenu.setSelectedItem(0);
+							componentss.ephemeralButton(ButtonStyle.SECONDARY, "Go to 'Joy'", builder -> {
+								builder.bindTo(buttonEvent -> {
+									interactiveMenu.setSelectedItem(0);
 
-								buttonEvent.editMessage(interactiveMenu.get()).queue();
-							}).build("Go to 'Joy'"));
+									buttonEvent.editMessage(interactiveMenu.get()).queue();
+								});
+							}));
 
 					return new EmbedBuilder().setTitle("This does not spark joy").setDescription("Page #" + pageNumber).build();
 				})

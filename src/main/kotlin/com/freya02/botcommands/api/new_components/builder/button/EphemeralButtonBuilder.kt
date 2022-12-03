@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.new_components.builder.button
 
+import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.new_components.builder.IEphemeralActionableComponent
 import com.freya02.botcommands.api.new_components.builder.IEphemeralTimeoutableComponent
 import com.freya02.botcommands.internal.data.LifetimeType
@@ -12,7 +13,7 @@ class EphemeralButtonBuilder internal constructor(
     style: ButtonStyle,
     componentController: ComponentController
 ) : AbstractButtonBuilder(componentController, style),
-    IEphemeralActionableComponent by EphemeralActionableComponentImpl(),
+    IEphemeralActionableComponent<ButtonEvent> by EphemeralActionableComponentImpl(),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 }

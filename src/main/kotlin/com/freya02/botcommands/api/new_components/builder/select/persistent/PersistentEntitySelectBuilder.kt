@@ -11,7 +11,7 @@ import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
-class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController) :
+class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: List<EntitySelectMenu.SelectTarget>) :
     EntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
@@ -20,6 +20,10 @@ class PersistentEntitySelectBuilder internal constructor(private val componentCo
     IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
+
+    init {
+        setEntityTypes(targets)
+    }
 
     @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     override fun getId(): Nothing {

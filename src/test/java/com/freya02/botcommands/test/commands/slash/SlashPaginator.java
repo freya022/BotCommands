@@ -4,8 +4,8 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.new_components.Components;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
@@ -13,6 +13,7 @@ import com.freya02.botcommands.api.utils.EmojiUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
@@ -53,17 +54,21 @@ public class SlashPaginator extends ApplicationCommand {
 				.setFirstContent(ButtonContent.withString("←"))
 				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
 					components.addComponents(
-							componentss.primaryButton(btnEvt -> {
-								paginator.setPage(2); //Pages starts at 0
+							componentss.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
+								buttonBuilder.bindTo(btnEvt -> {
+									paginator.setPage(2); //Pages starts at 0
 
-								btnEvt.editMessage(paginator.get()).queue();
-							}).build(ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up"))),
+									btnEvt.editMessage(paginator.get()).queue();
+								});
+							}),
 
-							componentss.primaryButton(btnEvt -> {
-								paginator.setPage(4); //Pages starts at 0
+							componentss.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
+								buttonBuilder.bindTo(btnEvt -> {
+									paginator.setPage(4); //Pages starts at 0
 
-								btnEvt.editMessage(paginator.get()).queue();
-							}).build(ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")))
+									btnEvt.editMessage(paginator.get()).queue();
+								});
+							})
 					);
 
 					return new EmbedBuilder()

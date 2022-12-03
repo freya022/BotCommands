@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
 @ConditionalService
 class Components internal constructor(private val componentController: ComponentController) {
@@ -47,6 +48,10 @@ class Components internal constructor(private val componentController: Component
     fun persistentButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<PersistentButtonBuilder>) =
         persistentButton(style, content.text, content.emoji, block)
 
+    @JvmSynthetic
+    internal fun ephemeralButton(style: ButtonStyle, block: ReceiverConsumer<EphemeralButtonBuilder>) =
+        EphemeralButtonBuilder(style, componentController).apply(block).build(null, null)
+
     @JvmOverloads
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
         EphemeralButtonBuilder(style, componentController).apply(block).build(label, emoji)
@@ -55,13 +60,17 @@ class Components internal constructor(private val componentController: Component
 
     fun persistentStringSelectMenu(block: ReceiverConsumer<PersistentStringSelectBuilder>) =
         PersistentStringSelectBuilder(componentController).apply(block).doBuild()
-    fun persistentEntitySelectMenu(block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
-        PersistentEntitySelectBuilder(componentController).apply(block).doBuild()
+    fun persistentEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
+        persistentEntitySelectMenu(listOf(target), block)
+    fun persistentEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<PersistentEntitySelectBuilder>) =
+        PersistentEntitySelectBuilder(componentController, targets).apply(block).doBuild()
 
     fun ephemeralStringSelectMenu(block: ReceiverConsumer<EphemeralStringSelectBuilder>) =
         EphemeralStringSelectBuilder(componentController).apply(block).doBuild()
-    fun ephemeralEntitySelectMenu(block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
-        EphemeralEntitySelectBuilder(componentController).apply(block).doBuild()
+    fun ephemeralEntitySelectMenu(target: SelectTarget, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
+        ephemeralEntitySelectMenu(listOf(target), block)
+    fun ephemeralEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
+        EphemeralEntitySelectBuilder(componentController, targets).apply(block).doBuild()
 
     fun deleteComponentsById(ids: List<Int>) = runBlocking { deleteComponentsById_(ids) }
 

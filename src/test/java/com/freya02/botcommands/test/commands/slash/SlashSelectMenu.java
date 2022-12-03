@@ -1,11 +1,14 @@
 package com.freya02.botcommands.test.commands.slash;
 
-import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.CommandPath;
-import com.freya02.botcommands.api.application.annotations.AppOption;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.commands.CommandPath;
+import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.new_components.Components;
+import com.freya02.botcommands.api.new_components.builder.ComponentBuilder;
+import com.freya02.botcommands.api.new_components.builder.IEphemeralTimeoutableComponent;
+import com.freya02.botcommands.api.new_components.builder.IUniqueComponent;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -22,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 public class SlashSelectMenu extends ApplicationCommand {
 	@NotNull
 	@Override
-	public List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, int optionIndex) {
-		if (optionIndex == 0) {
+	public List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
+		if (optionName.equals("select_type")) {
 			return List.of(
 					new Command.Choice("String", "String"),
 					new Command.Choice("Role", "Role"),
@@ -33,14 +36,14 @@ public class SlashSelectMenu extends ApplicationCommand {
 			);
 		}
 
-		return super.getOptionChoices(guild, commandPath, optionIndex);
+		return super.getOptionChoices(guild, commandPath, optionName);
 	}
 
-	private <T extends SelectMenu.Builder<R, ?> & LambdaSelectionMenuBuilder<?, ?>, R extends SelectMenu> R finishMenu(T builder) {
+	private <T extends SelectMenu.Builder<?, ?> & IEphemeralTimeoutableComponent & ComponentBuilder & IUniqueComponent> void finishMenu(T builder) {
 		builder.timeout(10, TimeUnit.SECONDS, () -> System.out.println("When the select menu is dead"));
-		builder.addPermissions(Permission.ADMINISTRATOR, Permission.MANAGE_CHANNEL);
-		builder.oneUse();
-		return builder
+		builder.constraints(c -> c.addPermissions(Permission.ADMINISTRATOR, Permission.MANAGE_CHANNEL));
+		builder.setOneUse(true);
+		builder
 				.setPlaceholder("Select something ?")
 				.setMaxValues(3)
 				.setMinValues(2)
@@ -48,13 +51,30 @@ public class SlashSelectMenu extends ApplicationCommand {
 	}
 
 	@JDASlashCommand(name = "select_menu")
-	public void onSlashSelectMenu(GuildSlashEvent event, @AppOption String selectType) {
+	public void onSlashSelectMenu(GuildSlashEvent event, @AppOption String selectType, Components components) {
 		final SelectMenu menu = switch (selectType) {
-			case "String" -> finishMenu((LambdaStringSelectionMenuBuilder) Components.stringSelectionMenu(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).addOption("Test", "Test"));
-			case "Role" -> finishMenu(Components.entitySelectionMenu(SelectTarget.ROLE, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
-			case "User" -> finishMenu(Components.entitySelectionMenu(SelectTarget.USER, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
-			case "Channel" -> finishMenu(Components.entitySelectionMenu(SelectTarget.CHANNEL, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()));
-			case "Channel (Category)" -> finishMenu((LambdaEntitySelectionMenuBuilder) Components.entitySelectionMenu(SelectTarget.CHANNEL, selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue()).setChannelTypes(ChannelType.CATEGORY));
+			case "String" -> components.ephemeralStringSelectMenu(builder -> {
+				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());
+				builder.addOption("Test", "Test");
+				finishMenu(builder);
+			});
+			case "Role" -> components.ephemeralEntitySelectMenu(SelectTarget.ROLE, builder -> {
+				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());
+				finishMenu(builder);
+			});
+			case "User" -> components.ephemeralEntitySelectMenu(SelectTarget.USER, builder -> {
+				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());
+				finishMenu(builder);
+			});
+			case "Channel" -> components.ephemeralEntitySelectMenu(SelectTarget.CHANNEL, builder -> {
+				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());
+				finishMenu(builder);
+			});
+			case "Channel (Category)" -> components.ephemeralEntitySelectMenu(SelectTarget.ROLE, builder -> {
+				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());
+				builder.setChannelTypes(ChannelType.CATEGORY);
+				finishMenu(builder);
+			});
 			default -> throw new IllegalArgumentException("Unknown select type: " + selectType);
 		};
 

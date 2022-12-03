@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.new_components.builder
 
+import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.components.InteractionConstraints
 
 abstract class AbstractComponentBuilder internal constructor() : ComponentBuilder {
@@ -8,5 +10,5 @@ abstract class AbstractComponentBuilder internal constructor() : ComponentBuilde
 
     fun oneUse() = this.also { oneUse = true }
 
-    override fun constraints(block: InteractionConstraints.() -> Unit) { constraints.apply(block) }
+    override fun constraints(block: ReceiverConsumer<InteractionConstraints>) { constraints.apply(block) }
 }

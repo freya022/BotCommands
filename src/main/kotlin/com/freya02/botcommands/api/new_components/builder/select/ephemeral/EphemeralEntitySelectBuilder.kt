@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.new_components.builder.select.ephemeral
 
+import com.freya02.botcommands.api.components.event.EntitySelectionEvent
 import com.freya02.botcommands.api.new_components.builder.*
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.ComponentType
@@ -10,16 +11,21 @@ import com.freya02.botcommands.internal.new_components.builder.UniqueComponentIm
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
-class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController) :
+class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: List<SelectTarget>) :
     EntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
     ComponentBuilder,
-    IEphemeralActionableComponent by EphemeralActionableComponentImpl(),
+    IEphemeralActionableComponent<EntitySelectionEvent> by EphemeralActionableComponentImpl(),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
+
+    init {
+        setEntityTypes(targets)
+    }
 
     @Deprecated("Cannot get an ID on components managed by the framework", level = DeprecationLevel.ERROR)
     override fun getId(): Nothing {
