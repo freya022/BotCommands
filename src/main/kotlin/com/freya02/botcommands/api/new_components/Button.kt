@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
 
-class Button internal constructor(private val componentController: ComponentController, button: JDAButton) : JDAButton by button {
+class Button internal constructor(private val componentController: ComponentController, button: JDAButton) : JDAButton by button, IdentifiableComponent {
     override fun withDisabled(disabled: Boolean): Button {
         return Button(componentController, super.withDisabled(disabled))
     }

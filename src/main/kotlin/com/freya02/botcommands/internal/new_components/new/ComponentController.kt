@@ -2,13 +2,13 @@ package com.freya02.botcommands.internal.new_components.new
 
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.new_components.ComponentGroup
+import com.freya02.botcommands.api.new_components.IdentifiableComponent
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
-import net.dv8tion.jda.api.interactions.components.ActionComponent
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.coroutines.Continuation
@@ -36,11 +36,10 @@ internal class ComponentController(
     }
 
     suspend fun insertGroup(group: ComponentGroupBuilderImpl): ComponentGroup {
-        componentRepository.insertGroup(group).also { id ->
+        return componentRepository.insertGroup(group).also { id ->
             val timeout = group.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)
-        }
-        return ComponentGroup(group.componentIds)
+        }.let { id -> ComponentGroup(this, id.toString(), group.componentIds) }
     }
 
     suspend fun deleteComponentsById(ids: List<Int>) {
@@ -61,9 +60,9 @@ internal class ComponentController(
     // it should probably share the same context as the slash command ?
     // What about localization context inside the coroutine context ?
     // This would be so java friendly...
-    suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: ActionComponent): T {
+    suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
         return suspendCancellableCoroutine { continuation ->
-            val componentId = component.id!!.toInt()
+            val componentId = component.getId()!!.toInt()
             putContinuation(componentId, continuation)
 
             continuation.invokeOnCancellation {
