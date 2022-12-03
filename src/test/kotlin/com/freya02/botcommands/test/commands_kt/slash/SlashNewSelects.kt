@@ -6,17 +6,14 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
-import com.freya02.botcommands.api.new_components.ComponentTimeoutData
-import com.freya02.botcommands.api.new_components.Components
-import com.freya02.botcommands.api.new_components.GroupTimeoutData
+import com.freya02.botcommands.api.new_components.*
 import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandler
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
@@ -24,8 +21,8 @@ import kotlin.time.Duration.Companion.seconds
 class SlashNewSelects(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "new_selects")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
-        val persistentSelect: StringSelectMenu = persistentGroupTest(event)
-        val ephemeralSelect: EntitySelectMenu = ephemeralGroupTest(event)
+        val persistentSelect = persistentGroupTest(event)
+        val ephemeralSelect = ephemeralGroupTest(event)
 
         //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
 //        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
@@ -69,7 +66,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
     }
 
     private suspend fun ephemeralGroupTest(event: GuildSlashEvent): EntitySelectMenu {
-        val firstSelect = components.ephemeralEntitySelectMenu(EntitySelectMenu.SelectTarget.ROLE) {
+        val firstSelect = components.ephemeralEntitySelectMenu(SelectTarget.ROLE) {
             oneUse = true //Cancels whole group if used
             constraints {
                 addUserIds(1234L)

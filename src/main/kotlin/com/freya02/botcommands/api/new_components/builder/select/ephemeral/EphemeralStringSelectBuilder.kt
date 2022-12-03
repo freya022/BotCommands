@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.new_components.builder.select.ephemeral
 
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
+import com.freya02.botcommands.api.new_components.StringSelectMenu
 import com.freya02.botcommands.api.new_components.builder.*
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.ComponentType
@@ -10,10 +11,10 @@ import com.freya02.botcommands.internal.new_components.builder.EphemeralTimeouta
 import com.freya02.botcommands.internal.new_components.builder.UniqueComponentImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 class EphemeralStringSelectBuilder internal constructor(private val componentController: ComponentController) :
-    StringSelectMenu.Builder(""),
+    JDAStringSelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
     ComponentBuilder,
@@ -28,7 +29,7 @@ class EphemeralStringSelectBuilder internal constructor(private val componentCon
     }
 
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun setId(customId: String): StringSelectMenu.Builder {
+    override fun setId(customId: String): JDAStringSelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwUser("Cannot set an ID on components managed by the framework")
     }
@@ -45,6 +46,6 @@ class EphemeralStringSelectBuilder internal constructor(private val componentCon
 
         super.setId(componentController.createComponent(this))
 
-        return super.build()
+        return StringSelectMenu(componentController, super.build())
     }
 }

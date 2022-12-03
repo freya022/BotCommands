@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.new_components.builder.select.persistent
 
+import com.freya02.botcommands.api.new_components.EntitySelectMenu
 import com.freya02.botcommands.api.new_components.builder.*
 import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.ComponentType
@@ -9,10 +10,10 @@ import com.freya02.botcommands.internal.new_components.builder.PersistentTimeout
 import com.freya02.botcommands.internal.new_components.builder.UniqueComponentImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu
 
-class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: List<EntitySelectMenu.SelectTarget>) :
-    EntitySelectMenu.Builder(""),
+class PersistentEntitySelectBuilder internal constructor(private val componentController: ComponentController, targets: List<JDAEntitySelectMenu.SelectTarget>) :
+    JDAEntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
     ComponentBuilder,
@@ -31,7 +32,7 @@ class PersistentEntitySelectBuilder internal constructor(private val componentCo
     }
 
     @Deprecated("Cannot set an ID on components managed by the framework", level = DeprecationLevel.ERROR)
-    override fun setId(customId: String): EntitySelectMenu.Builder {
+    override fun setId(customId: String): JDAEntitySelectMenu.Builder {
         if (customId.isEmpty()) return this //Empty ID is set by super constructor
         throwUser("Cannot set an ID on components managed by the framework")
     }
@@ -48,6 +49,6 @@ class PersistentEntitySelectBuilder internal constructor(private val componentCo
 
         super.setId(componentController.createComponent(this))
 
-        return super.build()
+        return EntitySelectMenu(componentController, super.build())
     }
 }
