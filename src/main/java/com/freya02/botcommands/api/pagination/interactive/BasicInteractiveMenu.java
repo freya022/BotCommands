@@ -41,7 +41,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	protected StringSelectMenu createSelectMenu() {
 		return componentss.ephemeralStringSelectMenu(selectBuilder -> {
 			selectBuilder.bindTo(this::handleSelection);
-			selectBuilder.oneUse();
+			selectBuilder.setOneUse(true);
 			selectBuilder.setConstraints(constraints);
 
 			final SelectOption[] options = new SelectOption[items.size()];

@@ -13,20 +13,20 @@ interface ITimeoutableComponent {
 }
 
 @OptIn(ExperimentalTime::class)
-interface IPersistentTimeoutableComponent<T : IPersistentTimeoutableComponent<T>> : ITimeoutableComponent {
-    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg args: Any?): T =
+interface IPersistentTimeoutableComponent : ITimeoutableComponent {
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handlerName: String, vararg args: Any?) =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit()), handlerName, *args)
 
     @JvmSynthetic
-    fun timeout(timeout: Duration, handlerName: String, vararg args: Any?): T
+    fun timeout(timeout: Duration, handlerName: String, vararg args: Any?)
 }
 
 @OptIn(ExperimentalTime::class)
-interface IEphemeralTimeoutableComponent<T : IEphemeralTimeoutableComponent<T>> : ITimeoutableComponent {
+interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
     //TODO (docs) warn about captured jda entities
-    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable): T =
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit, handler: Runnable) =
         timeout(timeout.toDuration(timeoutUnit.toDurationUnit())) { runBlocking { handler.run() } }
 
     @JvmSynthetic
-    fun timeout(timeout: Duration, handler: suspend () -> Unit): T
+    fun timeout(timeout: Duration, handler: suspend () -> Unit)
 }

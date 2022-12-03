@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class EphemeralStringSelectBuilder internal constructor(private val componentController: ComponentController) :
     StringSelectMenu.Builder(""),
-    IConstrainableComponent<EphemeralStringSelectBuilder> by ConstrainableComponentImpl(),
-    IUniqueComponent<EphemeralStringSelectBuilder> by UniqueComponentImpl(),
-    ComponentBuilder<EphemeralStringSelectBuilder>,
-    IEphemeralActionableComponent<EphemeralStringSelectBuilder> by EphemeralActionableComponentImpl(),
-    IEphemeralTimeoutableComponent<EphemeralStringSelectBuilder> by EphemeralTimeoutableComponentImpl() {
+    IConstrainableComponent by ConstrainableComponentImpl(),
+    IUniqueComponent by UniqueComponentImpl(),
+    ComponentBuilder,
+    IEphemeralActionableComponent by EphemeralActionableComponentImpl(),
+    IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 

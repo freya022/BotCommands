@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
 
 class EphemeralEntitySelectBuilder internal constructor(private val componentController: ComponentController) :
     EntitySelectMenu.Builder(""),
-    IConstrainableComponent<EphemeralEntitySelectBuilder> by ConstrainableComponentImpl(),
-    IUniqueComponent<EphemeralEntitySelectBuilder> by UniqueComponentImpl(),
-    ComponentBuilder<EphemeralEntitySelectBuilder>,
-    IEphemeralActionableComponent<EphemeralEntitySelectBuilder> by EphemeralActionableComponentImpl(),
-    IEphemeralTimeoutableComponent<EphemeralEntitySelectBuilder> by EphemeralTimeoutableComponentImpl() {
+    IConstrainableComponent by ConstrainableComponentImpl(),
+    IUniqueComponent by UniqueComponentImpl(),
+    ComponentBuilder,
+    IEphemeralActionableComponent by EphemeralActionableComponentImpl(),
+    IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
 

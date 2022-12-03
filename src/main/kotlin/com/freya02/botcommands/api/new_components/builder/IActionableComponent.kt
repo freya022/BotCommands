@@ -8,14 +8,14 @@ interface IActionableComponent {
     val handler: ComponentHandler?
 }
 
-interface IPersistentActionableComponent<T : IPersistentActionableComponent<T>> : IActionableComponent {
-    fun bindTo(handlerName: String, vararg data: Any?): T
+interface IPersistentActionableComponent : IActionableComponent {
+    fun bindTo(handlerName: String, vararg data: Any?)
 }
 
-interface IEphemeralActionableComponent<T : IEphemeralActionableComponent<T>> : IActionableComponent {
+interface IEphemeralActionableComponent : IActionableComponent {
     //TODO (docs) warn about captured jda entities
-    fun bindTo(handler: Consumer<ButtonEvent>): T = bindTo { handler.accept(it) }
+    fun bindTo(handler: Consumer<ButtonEvent>) = bindTo { handler.accept(it) }
 
     @JvmSynthetic
-    fun bindTo(handler: suspend (ButtonEvent) -> Unit): T
+    fun bindTo(handler: suspend (ButtonEvent) -> Unit)
 }

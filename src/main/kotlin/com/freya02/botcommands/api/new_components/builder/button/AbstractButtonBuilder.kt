@@ -8,10 +8,10 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
-abstract class AbstractButtonBuilder<T : AbstractButtonBuilder<T>> internal constructor(
+abstract class AbstractButtonBuilder internal constructor(
     private val componentController: ComponentController,
     private val style: ButtonStyle
-) : AbstractComponentBuilder<T>() {
+) : AbstractComponentBuilder() {
     final override val componentType: ComponentType = ComponentType.BUTTON
 
     @JvmSynthetic

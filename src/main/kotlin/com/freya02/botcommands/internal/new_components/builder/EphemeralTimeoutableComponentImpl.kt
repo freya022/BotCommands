@@ -5,12 +5,12 @@ import com.freya02.botcommands.internal.new_components.new.EphemeralTimeout
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 
-internal class EphemeralTimeoutableComponentImpl<T : IEphemeralTimeoutableComponent<T>> : IEphemeralTimeoutableComponent<T> {
+internal class EphemeralTimeoutableComponentImpl : IEphemeralTimeoutableComponent {
     override var timeout: EphemeralTimeout? = null
         private set
 
     @JvmSynthetic
-    override fun timeout(timeout: Duration, handler: suspend () -> Unit): T = this.also {
+    override fun timeout(timeout: Duration, handler: suspend () -> Unit) {
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)
-    } as T
+    }
 }

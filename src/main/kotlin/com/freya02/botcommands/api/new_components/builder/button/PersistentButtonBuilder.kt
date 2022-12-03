@@ -11,8 +11,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 class PersistentButtonBuilder internal constructor(
     style: ButtonStyle,
     componentController: ComponentController
-) : AbstractButtonBuilder<PersistentButtonBuilder>(componentController, style),
-    IPersistentActionableComponent<PersistentButtonBuilder> by PersistentActionableComponentImpl(),
-    IPersistentTimeoutableComponent<PersistentButtonBuilder> by PersistentTimeoutableComponentImpl() {
+) : AbstractButtonBuilder(componentController, style),
+    IPersistentActionableComponent by PersistentActionableComponentImpl(),
+    IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
 }

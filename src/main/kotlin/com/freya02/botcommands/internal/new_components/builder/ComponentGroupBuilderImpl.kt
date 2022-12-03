@@ -8,6 +8,7 @@ import kotlinx.datetime.Clock
 import kotlin.time.Duration
 
 //TODO change constraints to allow ephemeral groups
+//TODO use feature impls
 internal class ComponentGroupBuilderImpl internal constructor(internal val _componentIds: List<Int>) : ComponentGroupBuilder {
     override var oneUse: Boolean = false
     override var timeout: ComponentTimeout? = null
@@ -16,15 +17,15 @@ internal class ComponentGroupBuilderImpl internal constructor(internal val _comp
         _componentIds.map { it.toString() }
     }
 
-    override fun oneUse() = this.also { oneUse = true }
+    fun oneUse() = this.also { oneUse = true }
 
     @JvmSynthetic
-    override fun timeout(timeout: Duration, handler: suspend () -> Unit): ComponentGroupBuilder = this.also {
+    override fun timeout(timeout: Duration, handler: suspend () -> Unit) {
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)
     }
 
     @JvmSynthetic
-    override fun timeout(timeout: Duration, handlerName: String, vararg args: Any?): ComponentGroupBuilder = this.also {
+    override fun timeout(timeout: Duration, handlerName: String, vararg args: Any?) {
         this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, args)
     }
 }

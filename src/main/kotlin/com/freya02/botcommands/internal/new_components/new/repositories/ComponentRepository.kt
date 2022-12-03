@@ -10,8 +10,6 @@ import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.*
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.*
-import com.freya02.botcommands.internal.new_components.new.EphemeralComponentData
-import com.freya02.botcommands.internal.new_components.new.PersistentComponentData
 import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -44,7 +42,7 @@ internal class ComponentRepository(
 //        }
     }
 
-    fun createComponent(builder: ComponentBuilder<*>): Int = database.transactional {
+    fun createComponent(builder: ComponentBuilder): Int = database.transactional {
         runBlocking { //TODO not sure about coroutines
             // Create base component
             val componentId: Int =
