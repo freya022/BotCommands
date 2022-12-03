@@ -308,25 +308,7 @@ internal class ComponentRepository(
 
     context(Transaction)
     private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
-        val timeout = preparedStatement(
-            """
-               select pt.expiration_timestamp as timeout_expiration_timestamp,
-                      pt.handler_name         as timeout_handler_name,
-                      pt.user_data            as timeout_user_data
-               from bc_persistent_timeout pt
-               where component_id = ?;
-            """.trimIndent()
-        ) {
-            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
-
-            dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-                PersistentTimeout(
-                    timestamp.toInstant().toKotlinInstant(),
-                    dbResult["timeout_handler_name"],
-                    dbResult["timeout_user_data"]
-                )
-            }
-        }
+        val timeout = getGroupTimeout(id)
 
         val componentIds: List<Int> = preparedStatement(
             """
@@ -339,6 +321,52 @@ internal class ComponentRepository(
         }
 
         return ComponentGroupData(id, oneUse, timeout, componentIds)
+    }
+
+    context(Transaction)
+    private suspend fun getGroupTimeout(id: Int): ComponentTimeout? {
+        preparedStatement(
+            """
+               select pt.expiration_timestamp as timeout_expiration_timestamp,
+                      pt.handler_name         as timeout_handler_name,
+                      pt.user_data            as timeout_user_data
+               from bc_persistent_timeout pt
+               where component_id = ?;
+            """.trimIndent()
+        ) {
+            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
+
+            dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
+                return PersistentTimeout(
+                    timestamp.toInstant().toKotlinInstant(),
+                    dbResult["timeout_handler_name"],
+                    dbResult["timeout_user_data"]
+                )
+            }
+        }
+
+        //In case there's no persistent timeout handler
+        preparedStatement(
+            """
+               select pt.expiration_timestamp as timeout_expiration_timestamp,
+                      pt.handler_id           as timeout_handler_id
+               from bc_ephemeral_timeout pt
+               where component_id = ?;
+            """.trimIndent()
+        ) {
+            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
+
+            dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
+                val handlerId: Int = dbResult["timeout_handler_id"]
+                return EphemeralTimeout(
+                    timestamp.toInstant().toKotlinInstant(),
+                    ephemeralTimeoutHandlers[handlerId]
+                        ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
+                )
+            }
+        }
+
+        return null
     }
 
     @Suppress("SqlWithoutWhere")
