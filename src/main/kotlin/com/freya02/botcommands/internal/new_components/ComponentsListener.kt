@@ -35,7 +35,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
 @ConditionalService(dependencies = [Components::class, Database::class])
-internal class NewComponentsListener(
+internal class ComponentsListener(
     private val database: Database,
     private val context: BContextImpl,
     private val componentsConfig: BComponentsConfig,
