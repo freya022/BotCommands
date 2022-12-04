@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.components
+package com.freya02.botcommands.api.new_components
 
 import com.freya02.botcommands.internal.enumSetOf
 import gnu.trove.list.array.TLongArrayList

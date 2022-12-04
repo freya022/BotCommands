@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.new_components
 
 import com.freya02.botcommands.api.components.ComponentFilteringData
-import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectionEvent
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
@@ -10,6 +9,7 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.new_components.Components
+import com.freya02.botcommands.api.new_components.InteractionConstraints
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter

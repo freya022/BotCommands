@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination;
 
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.new_components.InteractionConstraints;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.internal.utils.Checks;

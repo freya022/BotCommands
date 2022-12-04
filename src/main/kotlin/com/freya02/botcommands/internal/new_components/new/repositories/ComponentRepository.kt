@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.new_components.new.repositories
 
-import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.new_components.InteractionConstraints
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
 import com.freya02.botcommands.internal.core.db.Database

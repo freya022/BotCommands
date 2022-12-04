@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.new_components.builder
 
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.apply
-import com.freya02.botcommands.api.components.InteractionConstraints
+import com.freya02.botcommands.api.new_components.InteractionConstraints
 import com.freya02.botcommands.api.new_components.builder.IConstrainableComponent
 import net.dv8tion.jda.api.Permission
 

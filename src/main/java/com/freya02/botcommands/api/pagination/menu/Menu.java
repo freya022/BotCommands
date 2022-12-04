@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.new_components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
