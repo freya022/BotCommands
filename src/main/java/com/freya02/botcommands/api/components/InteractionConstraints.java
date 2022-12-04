@@ -4,7 +4,7 @@ import com.google.gson.*;
 import gnu.trove.list.array.TLongArrayList;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
@@ -89,11 +89,11 @@ public class InteractionConstraints {
 		return empty().addUserIds(userIds);
 	}
 
-	public static InteractionConstraints ofUsers(User... users) {
+	public static InteractionConstraints ofUsers(UserSnowflake... users) {
 		return empty().addUsers(users);
 	}
 
-	public static InteractionConstraints ofUsers(Collection<User> users) {
+	public static InteractionConstraints ofUsers(Collection<UserSnowflake> users) {
 		return empty().addUsers(users);
 	}
 
@@ -129,16 +129,16 @@ public class InteractionConstraints {
 		return this;
 	}
 
-	public InteractionConstraints addUsers(@NotNull User @NotNull ... userIds) {
-		for (User user : userIds) {
+	public InteractionConstraints addUsers(@NotNull UserSnowflake @NotNull ... userIds) {
+		for (UserSnowflake user : userIds) {
 			userList.add(user.getIdLong());
 		}
 
 		return this;
 	}
 
-	public InteractionConstraints addUsers(@NotNull Collection<@NotNull User> users) {
-		for (User user : users) {
+	public InteractionConstraints addUsers(@NotNull Collection<@NotNull UserSnowflake> users) {
+		for (UserSnowflake user : users) {
 			userList.add(user.getIdLong());
 		}
 
@@ -175,6 +175,12 @@ public class InteractionConstraints {
 
 	public InteractionConstraints addPermissions(Permission... permissions) {
 		Collections.addAll(this.permissions, permissions);
+
+		return this;
+	}
+
+	public InteractionConstraints addPermissions(Collection<Permission> permissions) {
+		this.permissions.addAll(permissions);
 
 		return this;
 	}
