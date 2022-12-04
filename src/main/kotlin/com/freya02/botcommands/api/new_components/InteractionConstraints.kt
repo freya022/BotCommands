@@ -85,28 +85,34 @@ class InteractionConstraints private constructor() {
         permissions.addAll(otherConstraints.permissions)
     }
 
+    @JvmSynthetic
     operator fun plusAssign(role: Role) {
         addRoles(role)
     }
 
+    @JvmSynthetic
     @JvmName("plusAssignRoles")
     operator fun plusAssign(roles: Collection<Role>) {
         addRoles(roles)
     }
 
+    @JvmSynthetic
     operator fun plusAssign(user: UserSnowflake) {
         addUsers(user)
     }
 
+    @JvmSynthetic
     @JvmName("plusAssignUsers")
     operator fun plusAssign(users: Collection<UserSnowflake>) {
         addUsers(users)
     }
 
+    @JvmSynthetic
     operator fun plusAssign(permission: Permission) {
         addPermissions(permission)
     }
 
+    @JvmSynthetic
     @JvmName("plusAssignPermission")
     operator fun plusAssign(permissions: Collection<Permission>) {
         addPermissions(permissions)
