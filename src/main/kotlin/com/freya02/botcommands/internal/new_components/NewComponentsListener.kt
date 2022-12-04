@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.new_components
 
 import com.freya02.botcommands.api.components.ComponentFilteringData
+import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectionEvent
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
@@ -76,7 +77,12 @@ internal class NewComponentsListener(
                 return@launch
             }
 
-            component.constraints //TODO check
+            component.constraints?.let {
+                if (!checkConstraints(event, it)) {
+                    event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+                    return@launch
+                }
+            }
 
             if (component.oneUse) {
                 deleteRelatedComponents(component)
@@ -162,6 +168,28 @@ internal class NewComponentsListener(
         } catch (e: Throwable) {
             handleException(event, e)
         }
+    }
+
+    private fun checkConstraints(event: GenericComponentInteractionCreateEvent, constraints: InteractionConstraints): Boolean {
+        if (constraints.isEmpty) return true
+
+        if (event.user.idLong in constraints.userList) return true
+
+        val member = event.member
+        if (member != null) {
+            if (constraints.permissions.isNotEmpty()) {
+                if (member.hasPermission(event.guildChannel, constraints.permissions)) {
+                    return true
+                }
+            }
+
+            //If the member has any of these roles
+            if (member.roles.any { it.idLong in constraints.roleList }) {
+                return true
+            }
+        }
+
+        return false
     }
 
     private fun transformEvent(event: GenericComponentInteractionCreateEvent, function: KFunction<*>?): GenericComponentInteractionCreateEvent? {
