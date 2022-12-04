@@ -3,8 +3,8 @@ package com.freya02.botcommands.api.new_components.builder.select.ephemeral
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
 import com.freya02.botcommands.api.new_components.StringSelectMenu
 import com.freya02.botcommands.api.new_components.builder.*
-import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.ComponentType
+import com.freya02.botcommands.internal.new_components.LifetimeType
 import com.freya02.botcommands.internal.new_components.builder.ConstrainableComponentImpl
 import com.freya02.botcommands.internal.new_components.builder.EphemeralActionableComponentImpl
 import com.freya02.botcommands.internal.new_components.builder.EphemeralTimeoutableComponentImpl

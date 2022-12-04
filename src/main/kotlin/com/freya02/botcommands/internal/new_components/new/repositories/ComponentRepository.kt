@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
-import com.freya02.botcommands.internal.data.LifetimeType
 import com.freya02.botcommands.internal.new_components.*
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.*

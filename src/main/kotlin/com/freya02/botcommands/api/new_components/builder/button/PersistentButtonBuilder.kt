@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.new_components.builder.button
 
 import com.freya02.botcommands.api.new_components.builder.IPersistentActionableComponent
 import com.freya02.botcommands.api.new_components.builder.IPersistentTimeoutableComponent
-import com.freya02.botcommands.internal.data.LifetimeType
+import com.freya02.botcommands.internal.new_components.LifetimeType
 import com.freya02.botcommands.internal.new_components.builder.PersistentActionableComponentImpl
 import com.freya02.botcommands.internal.new_components.builder.PersistentTimeoutableComponentImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.data
+package com.freya02.botcommands.internal.new_components
 
 import com.freya02.botcommands.internal.throwUser
 

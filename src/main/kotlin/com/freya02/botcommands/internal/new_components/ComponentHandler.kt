@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.new_components
 
-import com.freya02.botcommands.internal.data.LifetimeType
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
