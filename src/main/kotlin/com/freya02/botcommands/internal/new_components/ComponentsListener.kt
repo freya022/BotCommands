@@ -23,6 +23,7 @@ import com.freya02.botcommands.internal.new_components.new.repositories.Componen
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_
+import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.*
@@ -62,7 +63,7 @@ internal class ComponentsListener(
                 componentRepository.getComponent(it)
             }
             if (component == null) {
-                event.reply_("This button is no longer usable", ephemeral = true).queue()
+                event.reply_(context.getDefaultMessages(event).componentNotFoundErrorMsg, ephemeral = true).queue()
                 return@launch
             }
 
@@ -208,8 +209,8 @@ internal class ComponentsListener(
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
-            event.isAcknowledged -> event.hook.sendMessage(generalErrorMsg).setEphemeral(true).queue()
-            else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
+            event.isAcknowledged -> event.hook.send(generalErrorMsg, ephemeral = true).queue()
+            else -> event.reply_(generalErrorMsg, ephemeral = true).queue()
         }
 
         context.dispatchException("Exception in component handler with id ${event.componentId}", baseEx)
