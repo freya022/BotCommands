@@ -22,7 +22,7 @@ public class SlashButton extends ApplicationCommand {
 						components.persistentButton(ButtonStyle.PRIMARY, "Le bouton", builder -> {
 							builder.setOneUse(true);
 							builder.bindTo(HANDLER_NAME, System.currentTimeMillis());
-							builder.timeout(1, TimeUnit.MINUTES, "nothing" /* TODO ignore handler */);
+							builder.timeout(1, TimeUnit.MINUTES);
 						}),
 						components.ephemeralButton(ButtonStyle.PRIMARY, "Le bouton 2", builder -> {
 							builder.bindTo(btnEvt -> btnEvt.deferEdit().queue());
