@@ -100,11 +100,11 @@ internal class ComponentRepository(
                 return@preparedStatement getGroup(id, oneUse)
             }
 
-            val constraints = InteractionConstraints().apply {
-                userList.addAll(dbResult.get<List<Long>>("users"))
-                roleList.addAll(dbResult.get<List<Long>>("roles"))
-                permissions += Permission.getPermissions(dbResult["permissions"])
-            }
+            val constraints = InteractionConstraints.of(
+                dbResult["users"],
+                dbResult["roles"],
+                dbResult["permissions"]
+            )
 
             when (lifetimeType) {
                 LifetimeType.PERSISTENT -> getPersistentComponent(id, componentType, lifetimeType, oneUse, constraints, groupId)

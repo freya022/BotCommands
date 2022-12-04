@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings("unchecked")
 public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T, R>, R extends BasicPagination<R>> {
-	protected InteractionConstraints constraints = new InteractionConstraints();
+	protected InteractionConstraints constraints = InteractionConstraints.empty();
 	protected TimeoutInfo<R> timeout;
 
 	/**

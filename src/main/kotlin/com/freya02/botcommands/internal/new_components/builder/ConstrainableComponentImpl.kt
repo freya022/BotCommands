@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.new_components.builder.IConstrainableComponen
 import net.dv8tion.jda.api.Permission
 
 internal class ConstrainableComponentImpl : IConstrainableComponent {
-    override var constraints: InteractionConstraints = InteractionConstraints()
+    override var constraints: InteractionConstraints = InteractionConstraints.empty()
 
     override fun constraints(block: ReceiverConsumer<InteractionConstraints>) {
         constraints.apply(block)

@@ -1,223 +1,173 @@
-package com.freya02.botcommands.api.components;
+package com.freya02.botcommands.api.components
 
-import com.google.gson.*;
-import gnu.trove.list.array.TLongArrayList;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.UserSnowflake;
-import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
+import com.freya02.botcommands.internal.enumSetOf
+import gnu.trove.list.array.TLongArrayList
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.UserSnowflake
+import java.util.*
 
 /**
  * Controls who can use interactions such as components (button, selection menu)
- * <br>This acts like a while list, if a user or a member has <b>at least one</b> of the requirements, he can use the interaction
- * <br>You can filter by:
- * <ul>
- *     <li>User ID</li>
- *     <li>Role ID</li>
- *     <li>Permissions</li>
- * </ul>
  *
- * <b>See the static methods</b>
+ * This acts like a white list, if a user or a member has **at least one** of the requirements, he can use the interaction
+ *
+ * You can filter by:
+ *
+ *  * User ID
+ *  * Role ID
+ *  * Permissions
+ *
+ * You can create interaction constraints from the static methods or by using the existing instance in the component builders
  */
-public class InteractionConstraints {
-	private static final Gson GSON = new GsonBuilder()
-			.registerTypeAdapter(TLongArrayList.class, new TLongArrayListAdapter())
-			.registerTypeHierarchyAdapter(EnumSet.class, new EnumSetAdapter())
-			.create();
+class InteractionConstraints private constructor() {
+    val userList = TLongArrayList()
+    val roleList = TLongArrayList()
+    val permissions = enumSetOf<Permission>()
 
-	private static class TLongArrayListAdapter implements
-			JsonSerializer<TLongArrayList>,
-			JsonDeserializer<TLongArrayList> {
+    val isEmpty: Boolean
+        get() = userList.isEmpty && roleList.isEmpty && permissions.isEmpty()
 
-		@Override
-		public TLongArrayList deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			final TLongArrayList list = new TLongArrayList();
+    fun addUserIds(vararg userIds: Long): InteractionConstraints = this.also {
+        userList.addAll(userIds)
+    }
 
-			for (JsonElement element : json.getAsJsonArray()) {
-				list.add(element.getAsLong());
-			}
+    fun addUserIds(userIds: Collection<Long?>?): InteractionConstraints = this.also {
+        userList.addAll(userIds)
+    }
 
-			return list;
-		}
+    fun addUsers(vararg userIds: UserSnowflake): InteractionConstraints = this.also {
+        for (user in userIds) {
+            userList.add(user.idLong)
+        }
+    }
 
-		@Override
-		public JsonElement serialize(TLongArrayList src, Type typeOfSrc, JsonSerializationContext context) {
-			final JsonArray array = new JsonArray();
+    fun addUsers(users: Collection<UserSnowflake>): InteractionConstraints = this.also {
+        for (user in users) {
+            userList.add(user.idLong)
+        }
+    }
 
-			src.forEach(value -> {
-				array.add(value);
+    fun addRoleIds(vararg roleIds: Long): InteractionConstraints = this.also {
+        roleList.addAll(roleIds)
+    }
 
-				return true;
-			});
+    fun addRoleIds(roleIds: Collection<Long?>?): InteractionConstraints = this.also {
+        roleList.addAll(roleIds)
+    }
 
-			return array;
-		}
-	}
+    fun addRoles(vararg roles: Role): InteractionConstraints = this.also {
+        for (role in roles) {
+            roleList.add(role.idLong)
+        }
+    }
 
-	private static class EnumSetAdapter implements
-			JsonSerializer<EnumSet<Permission>>,
-			JsonDeserializer<EnumSet<Permission>> {
-		@Override
-		public JsonElement serialize(EnumSet<Permission> src, Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(Permission.getRaw(src));
-		}
+    fun addRoles(roles: Collection<Role>): InteractionConstraints = this.also {
+        for (role in roles) {
+            roleList.add(role.idLong)
+        }
+    }
 
-		@Override
-		public EnumSet<Permission> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			return Permission.getPermissions(json.getAsLong());
-		}
-	}
+    fun addPermissions(vararg permissions: Permission?): InteractionConstraints = this.also {
+        Collections.addAll(this.permissions, *permissions)
+    }
 
-	private final TLongArrayList userList = new TLongArrayList();
-	private final TLongArrayList roleList = new TLongArrayList();
-	private final EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
+    fun addPermissions(permissions: Collection<Permission>?): InteractionConstraints = this.also {
+        this.permissions.addAll(permissions!!)
+    }
 
-	public static InteractionConstraints empty() {
-		return new InteractionConstraints();
-	}
+    fun setConstraints(otherConstraints: InteractionConstraints): InteractionConstraints = this.also {
+        userList.clear()
+        roleList.clear()
+        permissions.clear()
+        userList.addAll(otherConstraints.userList)
+        roleList.addAll(otherConstraints.roleList)
+        permissions.addAll(otherConstraints.permissions)
+    }
 
-	public static InteractionConstraints ofUserIds(long... userIds) {
-		return empty().addUserIds(userIds);
-	}
+    operator fun plusAssign(role: Role) {
+        addRoles(role)
+    }
 
-	public static InteractionConstraints ofUserIds(Collection<Long> userIds) {
-		return empty().addUserIds(userIds);
-	}
+    @JvmName("plusAssignRoles")
+    operator fun plusAssign(roles: Collection<Role>) {
+        addRoles(roles)
+    }
 
-	public static InteractionConstraints ofUsers(UserSnowflake... users) {
-		return empty().addUsers(users);
-	}
+    operator fun plusAssign(user: UserSnowflake) {
+        addUsers(user)
+    }
 
-	public static InteractionConstraints ofUsers(Collection<UserSnowflake> users) {
-		return empty().addUsers(users);
-	}
+    @JvmName("plusAssignUsers")
+    operator fun plusAssign(users: Collection<UserSnowflake>) {
+        addUsers(users)
+    }
 
-	public static InteractionConstraints ofRoleIds(long @NotNull ... roleIds) {
-		return empty().addRoleIds(roleIds);
-	}
+    operator fun plusAssign(permission: Permission) {
+        addPermissions(permission)
+    }
 
-	public static InteractionConstraints ofRoleIds(@NotNull Collection<@NotNull Long> roleIds) {
-		return empty().addRoleIds(roleIds);
-	}
+    @JvmName("plusAssignPermission")
+    operator fun plusAssign(permissions: Collection<Permission>) {
+        addPermissions(permissions)
+    }
 
-	public static InteractionConstraints ofRoles(@NotNull Role @NotNull ... roles) {
-		return empty().addRoles(roles);
-	}
+    companion object {
+        @JvmStatic
+        fun empty(): InteractionConstraints {
+            return InteractionConstraints()
+        }
 
-	public static InteractionConstraints ofRoles(@NotNull Collection<@NotNull Role> roles) {
-		return empty().addRoles(roles);
-	}
+        @JvmStatic
+        fun ofUserIds(vararg userIds: Long): InteractionConstraints {
+            return empty().addUserIds(*userIds)
+        }
 
-	public static InteractionConstraints ofPermissions(Permission @NotNull ... permissions) {
-		return empty().addPermissions(permissions);
-	}
+        @JvmStatic
+        fun ofUserIds(userIds: Collection<Long>): InteractionConstraints {
+            return empty().addUserIds(userIds)
+        }
 
-	public InteractionConstraints addUserIds(long @NotNull ... userIds) {
-		userList.addAll(userIds);
+        @JvmStatic
+        fun ofUsers(vararg users: UserSnowflake): InteractionConstraints {
+            return empty().addUsers(*users)
+        }
 
-		return this;
-	}
+        @JvmStatic
+        fun ofUsers(users: Collection<UserSnowflake>): InteractionConstraints {
+            return empty().addUsers(users)
+        }
 
-	public InteractionConstraints addUserIds(Collection<@NotNull Long> userIds) {
-		userList.addAll(userIds);
+        @JvmStatic
+        fun ofRoleIds(vararg roleIds: Long): InteractionConstraints {
+            return empty().addRoleIds(*roleIds)
+        }
 
-		return this;
-	}
+        @JvmStatic
+        fun ofRoleIds(roleIds: Collection<Long>): InteractionConstraints {
+            return empty().addRoleIds(roleIds)
+        }
 
-	public InteractionConstraints addUsers(@NotNull UserSnowflake @NotNull ... userIds) {
-		for (UserSnowflake user : userIds) {
-			userList.add(user.getIdLong());
-		}
+        @JvmStatic
+        fun ofRoles(vararg roles: Role): InteractionConstraints {
+            return empty().addRoles(*roles)
+        }
 
-		return this;
-	}
+        @JvmStatic
+        fun ofRoles(roles: Collection<Role>): InteractionConstraints {
+            return empty().addRoles(roles)
+        }
 
-	public InteractionConstraints addUsers(@NotNull Collection<@NotNull UserSnowflake> users) {
-		for (UserSnowflake user : users) {
-			userList.add(user.getIdLong());
-		}
+        @JvmStatic
+        fun ofPermissions(vararg permissions: Permission): InteractionConstraints {
+            return empty().addPermissions(*permissions)
+        }
 
-		return this;
-	}
-
-	public InteractionConstraints addRoleIds(long @NotNull ... roleIds) {
-		roleList.addAll(roleIds);
-
-		return this;
-	}
-
-	public InteractionConstraints addRoleIds(Collection<Long> roleIds) {
-		roleList.addAll(roleIds);
-
-		return this;
-	}
-
-	public InteractionConstraints addRoles(@NotNull Role @NotNull ... roles) {
-		for (Role role : roles) {
-			roleList.add(role.getIdLong());
-		}
-
-		return this;
-	}
-
-	public InteractionConstraints addRoles(@NotNull Collection<@NotNull Role> roles) {
-		for (Role role : roles) {
-			roleList.add(role.getIdLong());
-		}
-
-		return this;
-	}
-
-	public InteractionConstraints addPermissions(Permission... permissions) {
-		Collections.addAll(this.permissions, permissions);
-
-		return this;
-	}
-
-	public InteractionConstraints addPermissions(Collection<Permission> permissions) {
-		this.permissions.addAll(permissions);
-
-		return this;
-	}
-
-	public TLongArrayList getUserList() {
-		return userList;
-	}
-
-	public TLongArrayList getRoleList() {
-		return roleList;
-	}
-
-	public EnumSet<Permission> getPermissions() {
-		return permissions;
-	}
-
-	public boolean isEmpty() {
-		return getUserList().isEmpty() && getRoleList().isEmpty() && getPermissions().isEmpty();
-	}
-
-	public static InteractionConstraints fromJson(String json) {
-		return GSON.fromJson(json, InteractionConstraints.class);
-	}
-
-	public String toJson() {
-		return GSON.toJson(this);
-	}
-
-	public InteractionConstraints setConstraints(InteractionConstraints otherConstraints) {
-		getUserList().clear();
-		getRoleList().clear();
-		getPermissions().clear();
-
-		getUserList().addAll(otherConstraints.getUserList());
-		getRoleList().addAll(otherConstraints.getRoleList());
-		getPermissions().addAll(otherConstraints.getPermissions());
-
-		return this;
-	}
+        @JvmSynthetic
+        internal fun of(userIds: List<Long>, roleIds: List<Long>, rawPermissions: Long): InteractionConstraints = empty().apply {
+            addUserIds(userIds)
+            addRoleIds(roleIds)
+            addPermissions(Permission.getPermissions(rawPermissions))
+        }
+    }
 }

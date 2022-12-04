@@ -12,7 +12,6 @@ import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.api.new_components.GroupTimeoutData
 import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.new_components.annotations.GroupTimeoutHandler
-import com.freya02.botcommands.api.new_components.builder.IConstrainableComponent.Companion.plusAssign
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
