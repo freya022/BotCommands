@@ -16,7 +16,6 @@ import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
@@ -38,10 +37,10 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
             .queue()
 
         try {
-            withTimeout(5.seconds) {
+//            withTimeout(5.seconds) {
                 val buttonEvent: ButtonEvent = ephemeralButton.await()
                 event.hook.send("Done awaiting !", ephemeral = true).queue()
-            }
+//            }
         } catch (e: TimeoutCancellationException) {
             event.hook.send("Too slow", ephemeral = true).queue()
         }

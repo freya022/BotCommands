@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.new_components
 
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.internal.new_components.new.ComponentController
+import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
@@ -31,5 +32,9 @@ class Button internal constructor(private val componentController: ComponentCont
         return Button(componentController, super.withStyle(style))
     }
 
+    /**
+     * If the button or the group has it's timeout reached then this throws [TimeoutCancellationException]
+     */
+    @JvmSynthetic
     suspend fun await(): ButtonEvent = componentController.awaitComponent(this)
 }

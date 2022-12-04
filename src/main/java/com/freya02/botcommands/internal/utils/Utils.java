@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.utils;
 
 import com.freya02.botcommands.api.Logging;
 import kotlin.reflect.KFunction;
+import kotlinx.coroutines.TimeoutCancellationException;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -136,5 +137,10 @@ public final class Utils {
 			throw new IllegalArgumentException("Guild-only object was null, so the interaction may not have happened in a Guild");
 
 		return t;
+	}
+
+	@NotNull
+	public static TimeoutCancellationException createComponentTimeoutException() {
+		return new TimeoutCancellationException("Timed out waiting for component");
 	}
 }

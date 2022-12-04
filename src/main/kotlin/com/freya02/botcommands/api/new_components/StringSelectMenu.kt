@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.new_components
 
 import com.freya02.botcommands.api.components.event.StringSelectionEvent
 import com.freya02.botcommands.internal.new_components.new.ComponentController
+import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 class StringSelectMenu internal constructor(
@@ -12,5 +13,9 @@ class StringSelectMenu internal constructor(
         return StringSelectMenu(componentController, super.withDisabled(disabled))
     }
 
+    /**
+     * If the button or the group has it's timeout reached then this throws [TimeoutCancellationException]
+     */
+    @JvmSynthetic
     suspend fun await(): StringSelectionEvent = componentController.awaitComponent(this)
 }

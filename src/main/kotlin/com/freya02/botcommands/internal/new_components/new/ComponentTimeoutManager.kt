@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.new_components.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.new_components.ComponentType
 import com.freya02.botcommands.internal.new_components.GroupTimeoutHandlers
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
+import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -47,7 +48,10 @@ internal class ComponentTimeoutManager(
             }
 
             //Will also cancel timeouts of related components
-            componentController.deleteComponent(component)
+            componentController.deleteComponent(component, isTimeout = true)
+
+            //Throw timeout exceptions
+            throwTimeouts(component.componentId)
 
             when (val componentTimeout = component.timeout) {
                 is PersistentTimeout -> {
@@ -71,6 +75,17 @@ internal class ComponentTimeoutManager(
                     callTimeoutHandler(handler, firstParameter)
                 }
                 is EphemeralTimeout -> componentTimeout.handler?.invoke()
+            }
+        }
+    }
+
+    fun throwTimeouts(componentId: Int) {
+        componentController.removeContinuations(componentId).let { continuations ->
+            if (continuations.isNotEmpty()) {
+                val timeoutException = Utils.createComponentTimeoutException()
+                continuations.forEach {
+                    it.cancel(timeoutException)
+                }
             }
         }
     }

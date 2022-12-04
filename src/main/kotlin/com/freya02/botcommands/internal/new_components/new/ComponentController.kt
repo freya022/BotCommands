@@ -11,14 +11,13 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import kotlin.coroutines.Continuation
 
 @BService
 internal class ComponentController(
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
-    private val continuationMap = hashMapOf<Int, MutableList<Continuation<*>>>()
+    private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<*>>>()
     private val lock = ReentrantLock()
 
     fun createComponent(builder: ComponentBuilder): String {
@@ -28,10 +27,13 @@ internal class ComponentController(
         }.toString()
     }
 
-    suspend fun deleteComponent(component: ComponentData) {
+    suspend fun deleteComponent(component: ComponentData, isTimeout: Boolean = false) {
         timeoutManager.cancelTimeout(component.componentId) //Only one timeout will be executed at most, as components inside groups aren't timeout-able
         componentRepository.deleteComponent(component).forEach { componentId ->
             timeoutManager.cancelTimeout(componentId)
+            if (isTimeout) {
+                timeoutManager.throwTimeouts(componentId)
+            }
         }
     }
 
@@ -48,7 +50,7 @@ internal class ComponentController(
         }
     }
 
-    fun removeContinuations(componentId: Int): List<Continuation<*>> {
+    fun removeContinuations(componentId: Int): List<CancellableContinuation<*>> = lock.withLock {
         return continuationMap.remove(componentId) ?: emptyList()
     }
 
