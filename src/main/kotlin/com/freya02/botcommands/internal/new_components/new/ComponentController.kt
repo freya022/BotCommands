@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.concurrent.locks.ReentrantLock
@@ -19,6 +20,10 @@ internal class ComponentController(
 ) {
     private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<*>>>()
     private val lock = ReentrantLock()
+
+    init {
+        runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
+    }
 
     fun createComponent(builder: ComponentBuilder): String {
         return componentRepository.createComponent(builder).also { id ->

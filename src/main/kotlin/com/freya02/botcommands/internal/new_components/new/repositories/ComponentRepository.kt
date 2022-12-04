@@ -31,14 +31,6 @@ internal class ComponentRepository(
 
     init {
         cleanupEphemeral()
-
-//        runBlocking {
-//            val component = getComponent(9)
-//
-//            println(component)
-//
-//            exitProcess(0)
-//        }
     }
 
     fun createComponent(builder: ComponentBuilder): Int = database.transactional {
@@ -227,6 +219,18 @@ internal class ComponentRepository(
     //TODO optimize
     suspend fun deleteComponentsById(ids: List<Int>): List<Int> {
         return ids.mapNotNull { getComponent(it) }.flatMap { deleteComponent(it) }.distinct()
+    }
+
+    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional {
+        preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
+            executeQuery(*arrayOf()).forEach { dbResult ->
+                timeoutManager.scheduleTimeout(dbResult["component_id"], PersistentTimeout(
+                    dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
+                    dbResult["handler_name"],
+                    dbResult["user_data"]
+                ))
+            }
+        }
     }
 
     context(Transaction)
