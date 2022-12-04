@@ -9,6 +9,10 @@ internal class EphemeralTimeoutableComponentImpl : IEphemeralTimeoutableComponen
     override var timeout: EphemeralTimeout? = null
         private set
 
+    override fun timeout(timeout: Duration) {
+        this.timeout = EphemeralTimeout(Clock.System.now() + timeout, null)
+    }
+
     @JvmSynthetic
     override fun timeout(timeout: Duration, handler: suspend () -> Unit) {
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)

@@ -19,12 +19,14 @@ internal class ComponentGroupBuilderImpl internal constructor(internal val _comp
 
     fun oneUse() = this.also { oneUse = true }
 
-    @JvmSynthetic
     override fun timeout(timeout: Duration, handler: suspend () -> Unit) {
         this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)
     }
 
-    @JvmSynthetic
+    override fun timeout(timeout: Duration) {
+        this.timeout = PersistentTimeout(Clock.System.now() + timeout, null, emptyArray())
+    }
+
     override fun timeout(timeout: Duration, handlerName: String, vararg args: Any?) {
         this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, args)
     }

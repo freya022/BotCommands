@@ -164,7 +164,7 @@ internal class ComponentRepository(
                 executeUpdate(
                     groupId,
                     Timestamp.from(timeout.expirationTimestamp.toJavaInstant()),
-                    ephemeralTimeoutHandlers.put(timeout.handler)
+                    timeout.handler?.let { ephemeralTimeoutHandlers.put(it) }
                 )
             }
         } else if (timeout is PersistentTimeout) {
@@ -295,7 +295,7 @@ internal class ComponentRepository(
         val timeout = dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
             EphemeralTimeout(
                 timestamp.toInstant().toKotlinInstant(),
-                dbResult.get<Int>("timeout_handler_id").let { handlerId ->
+                dbResult.getOrNull<Int>("timeout_handler_id")?.let { handlerId ->
                     ephemeralTimeoutHandlers[handlerId]
                         ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
                 }

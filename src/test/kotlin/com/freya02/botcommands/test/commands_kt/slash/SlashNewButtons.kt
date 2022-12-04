@@ -28,13 +28,13 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {
         val persistentButton = persistentGroupTest(event)
         val ephemeralButton = ephemeralGroupTest(event)
-
-        //These *should* be able to store continuations and throw a TimeoutException once the timeout is met
-//        val groupEvent: GenericComponentInteractionCreateEvent = firstGroup.await()
-//        val buttonEvent: ButtonEvent = firstButton.await()
+        val noGroupButton = components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
+            bindTo { event.hook.deleteOriginal().queue() }
+            timeout(5.seconds)
+        }
 
         event.reply("OK, button ID: ${persistentButton.id}")
-            .addActionRow(persistentButton, ephemeralButton)
+            .addActionRow(persistentButton, ephemeralButton, noGroupButton)
             .queue()
 
         try {

@@ -9,6 +9,10 @@ internal class PersistentTimeoutableComponentImpl : IPersistentTimeoutableCompon
     override var timeout: PersistentTimeout? = null
         private set
 
+    override fun timeout(timeout: Duration) {
+        this.timeout = PersistentTimeout(Clock.System.now() + timeout, null, emptyArray())
+    }
+
     override fun timeout(timeout: Duration, handlerName: String, vararg args: Any?) {
         this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, args)
     }

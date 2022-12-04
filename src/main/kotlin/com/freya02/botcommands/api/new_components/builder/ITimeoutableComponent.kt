@@ -8,8 +8,14 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
+@OptIn(ExperimentalTime::class)
 interface ITimeoutableComponent {
     val timeout: ComponentTimeout? //No need to use specific types in sub-interfaces as they're internal
+
+    fun timeout(timeout: Long, timeoutUnit: TimeUnit) =
+        timeout(timeout.toDuration(timeoutUnit.toDurationUnit()))
+
+    fun timeout(timeout: Duration)
 }
 
 @OptIn(ExperimentalTime::class)

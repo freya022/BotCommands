@@ -65,14 +65,14 @@ create table bc_ephemeral_timeout
 (
     component_id         int                      not null primary key references bc_component on delete cascade,
     expiration_timestamp timestamp with time zone not null,
-    handler_id           int                      not null
+    handler_id           int                      null
 );
 
 create table bc_persistent_timeout
 (
     component_id         int                      not null primary key references bc_component on delete cascade,
     expiration_timestamp timestamp with time zone not null,
-    handler_name         text                     not null,
+    handler_name         text                     null,
     user_data            text[]                   not null
 );
 

@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.ISnowflake
 
 class PersistentTimeout(
     override val expirationTimestamp: Instant,
-    val handlerName: String,
+    val handlerName: String?,
     userData: Array<out Any?>
 ) : ComponentTimeout {
     val userData: Array<out String> = processArgs(userData)

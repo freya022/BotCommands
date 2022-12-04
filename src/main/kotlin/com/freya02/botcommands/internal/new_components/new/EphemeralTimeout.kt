@@ -4,5 +4,5 @@ import kotlinx.datetime.Instant
 
 class EphemeralTimeout(
     override val expirationTimestamp: Instant,
-    val handler: suspend () -> Unit
+    val handler: (suspend () -> Unit)?
 ) : ComponentTimeout
