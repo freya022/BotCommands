@@ -5,7 +5,7 @@
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-alpha.1-SNAPSHOT</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps developing your bots fast</description>
@@ -374,6 +374,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.minndevelopment</groupId>
+            <artifactId>jda-ktx</artifactId>
+            <version>17eb77a138</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
@@ -422,11 +427,6 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>3.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.minndevelopment</groupId>
-            <artifactId>jda-ktx</artifactId>
-            <version>081a177281</version>
         </dependency>
         <dependency>
             <groupId>info.debatty</groupId>
