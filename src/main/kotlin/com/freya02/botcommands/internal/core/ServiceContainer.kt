@@ -154,7 +154,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         //Check constructor parameters
-        findConstructor(clazz).nonInstanceParameters.forEach {
+        //It's fine if there's no constructor, it just means it's not instantiable
+        val constructorResult = findConstructor(clazz).let { it.getOrNull() ?: return it.errorMessage }
+        constructorResult.nonInstanceParameters.forEach {
             canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
         }
 
@@ -256,7 +258,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 }
             }
             else -> {
-                val constructor = findConstructor(clazz)
+                val constructor = findConstructor(clazz).getOrThrow()
 
                 val params = constructor.nonInstanceParameters.map {
                     val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
@@ -269,12 +271,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private fun findConstructor(clazz: KClass<*>): KFunction<Any> {
+    private fun findConstructor(clazz: KClass<*>): ServiceResult<KFunction<Any>> {
         val constructors = clazz.constructors
-        require(constructors.isNotEmpty()) { "Class " + clazz.simpleNestedName + " must have an accessible constructor" }
-        require(constructors.size == 1) { "Class " + clazz.simpleNestedName + " must have exactly one constructor" }
+        if (constructors.isEmpty()) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have an accessible constructor") }
+        if (constructors.size != 1) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have exactly one constructor") }
 
-        return constructors.single()
+        return ServiceResult(constructors.single(), null)
     }
 
     private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
@@ -312,6 +314,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             if (service == null && errorMessage == null) {
                 throwInternal("ServiceResult should contain either the service or the error message")
             }
+        }
+
+        fun getOrNull(): T? = when {
+            service != null -> service
+            errorMessage != null -> null
+            else -> throwInternal("ServiceResult should contain either the service or the error message")
         }
 
         fun getOrThrow(): T = when {
