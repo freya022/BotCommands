@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal.new_components
 
 import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.components.event.EntitySelectionEvent
-import com.freya02.botcommands.api.components.event.StringSelectionEvent
+import com.freya02.botcommands.api.components.event.EntitySelectEvent
+import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
@@ -142,8 +142,8 @@ internal class ComponentsListener(
     private fun transformEvent(event: GenericComponentInteractionCreateEvent, function: KFunction<*>?): GenericComponentInteractionCreateEvent? {
         return when (event) {
             is ButtonInteractionEvent -> ButtonEvent(function, context, event)
-            is StringSelectInteractionEvent -> StringSelectionEvent(function, context, event)
-            is EntitySelectInteractionEvent -> EntitySelectionEvent(function, context, event)
+            is StringSelectInteractionEvent -> StringSelectEvent(function, context, event)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(function, context, event)
             else -> {
                 logger.warn("Unhandled component event: ${event::class.simpleName}")
                 null

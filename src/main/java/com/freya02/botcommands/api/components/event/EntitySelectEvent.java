@@ -11,12 +11,12 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EntitySelectionEvent extends EntitySelectInteractionEvent implements LambdaLocalizable {
+public class EntitySelectEvent extends EntitySelectInteractionEvent implements LambdaLocalizable {
 	private final EventLocalizer localizer;
 
 	private final BContext context;
 
-	public EntitySelectionEvent(@Nullable KFunction<?> function, BContextImpl context, EntitySelectInteractionEvent event) {
+	public EntitySelectEvent(@Nullable KFunction<?> function, BContextImpl context, EntitySelectInteractionEvent event) {
 		super(event.getJDA(), event.getResponseNumber(), event.getInteraction());
 
 		this.context = context;

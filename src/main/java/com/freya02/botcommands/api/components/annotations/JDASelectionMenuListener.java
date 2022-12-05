@@ -2,8 +2,8 @@ package com.freya02.botcommands.api.components.annotations;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.prefixed.TextCommand;
-import com.freya02.botcommands.api.components.event.EntitySelectionEvent;
-import com.freya02.botcommands.api.components.event.StringSelectionEvent;
+import com.freya02.botcommands.api.components.event.EntitySelectEvent;
+import com.freya02.botcommands.api.components.event.StringSelectEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
  * Requirements:
  * <ul>
  *     <li><b>Selection menu listeners can only be put on methods that are inside a class that extends {@link TextCommand} or {@link ApplicationCommand}</b></li>
- *     <li><b>These handlers also need to have a {@link StringSelectionEvent} or {@link EntitySelectionEvent} as their first argument</b></li>
+ *     <li><b>These handlers also need to have a {@link StringSelectEvent} or {@link EntitySelectEvent} as their first argument</b></li>
  * </ul>
  *
  * <p>

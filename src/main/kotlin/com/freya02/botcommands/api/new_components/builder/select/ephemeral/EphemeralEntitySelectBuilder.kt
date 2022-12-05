@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.new_components.builder.select.ephemeral
 
-import com.freya02.botcommands.api.components.event.EntitySelectionEvent
+import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.new_components.EntitySelectMenu
 import com.freya02.botcommands.api.new_components.builder.*
 import com.freya02.botcommands.internal.new_components.ComponentType
@@ -19,7 +19,7 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
     ComponentBuilder,
-    IEphemeralActionableComponent<EntitySelectionEvent> by EphemeralActionableComponentImpl(),
+    IEphemeralActionableComponent<EntitySelectEvent> by EphemeralActionableComponentImpl(),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL

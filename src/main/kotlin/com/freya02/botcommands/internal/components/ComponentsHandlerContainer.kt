@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.components
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.components.event.EntitySelectionEvent
-import com.freya02.botcommands.api.components.event.StringSelectionEvent
+import com.freya02.botcommands.api.components.event.EntitySelectEvent
+import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
@@ -38,7 +38,7 @@ internal class ComponentsHandlerContainer {
 
         classPathContainer.functionsWithAnnotation<JDASelectionMenuListener>()
             .requireNonStatic()
-            .requireFirstArg(StringSelectionEvent::class, EntitySelectionEvent::class)
+            .requireFirstArg(StringSelectEvent::class, EntitySelectEvent::class)
             .forEach {
                 val handlerName = it.function.findAnnotation<JDASelectionMenuListener>()!!.name
 
