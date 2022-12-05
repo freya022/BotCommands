@@ -14,7 +14,9 @@ class StringSelectMenu internal constructor(
     }
 
     /**
-     * If the button or the group has it's timeout reached then this throws [TimeoutCancellationException]
+     * **Awaiting on a component that is part of a group is undefined behavior**
+     *
+     * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
      */
     @JvmSynthetic
     suspend fun await(): StringSelectionEvent = componentController.awaitComponent(this)
