@@ -29,6 +29,14 @@ public interface RegexParameterResolver {
 	 * Returns the pattern required to recognize this parameter
 	 * <br>This is used to compose a larger pattern which will represent an entire command syntax
 	 *
+	 * <p>
+	 * If you wish to apply flags to this pattern, please enable them inside the regular expression instead of on the pattern,
+	 * as the pattern aggregator will not take any flags into account.
+	 * <br>You can enable regex flags using the {@code (?[flags])} notation,
+	 * such as {@code (?i)} to enable case-insensitive matching, and {@code (?-i)} to disable it.
+	 * <br>Make sure to disable your modifiers when you are done using them, as they could affect other patterns.
+	 * <br>You can find more information about regex modifiers <a href="https://www.regular-expressions.info/modifiers.html" target="_blank">here</a>
+	 *
 	 * @return The {@link Pattern} for this parameter
 	 */
 	@NotNull

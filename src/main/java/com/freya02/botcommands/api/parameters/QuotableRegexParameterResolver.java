@@ -13,6 +13,8 @@ public interface QuotableRegexParameterResolver {
 	 * Returns a quoted pattern of the parameter resolver
 	 *
 	 * @return A quoted pattern of the original {@link RegexParameterResolver regex parameter resolver}
+	 *
+	 * @see RegexParameterResolver#getPattern()
 	 */
 	@NotNull
 	Pattern getQuotedPattern();
