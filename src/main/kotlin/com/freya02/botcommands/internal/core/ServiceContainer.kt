@@ -161,7 +161,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         return null
-    }?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
+    }
+//        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
     fun getFunctionService(function: KFunction<*>): Any {
         return when {
