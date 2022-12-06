@@ -20,11 +20,12 @@ public class CommandPattern {
 					? parameter.getResolver().getPreferredPattern() //Might be a quotable pattern
 					: parameter.getResolver().getPattern();
 
-			final String optionalSpacePattern = i == 0 ? "" : "\\s+";
+			//Don't expect spaces after the last parameter
+			final String optionalSpacePattern = i == (optionParametersSize - 1) ? "" : "\\s+";
 			if (parameter.isOptional()) {
-				patternBuilder.append("(?:").append(optionalSpacePattern).append(pattern.toString()).append(")?");
+				patternBuilder.append("(?:").append(pattern.toString()).append(optionalSpacePattern).append(")?");
 			} else {
-				patternBuilder.append(optionalSpacePattern).append(pattern.toString());
+				patternBuilder.append(pattern.toString()).append(optionalSpacePattern);
 
 				exampleBuilder.append(parameter.getResolver().getTestExample()).append(' ');
 			}
