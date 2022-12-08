@@ -14,6 +14,7 @@ public class CommandPattern {
 		List<? extends TextCommandParameter> optionParameters = commandInfo.getOptionParameters();
 		final boolean hasMultipleQuotable = com.freya02.botcommands.internal.prefixed.Utils.hasMultipleQuotable(optionParameters);
 
+		boolean hasEncounteredRequired = false;
 		for (int i = 0, optionParametersSize = optionParameters.size(); i < optionParametersSize; i++) {
 			final TextCommandParameter parameter = optionParameters.get(i);
 			final Pattern pattern = hasMultipleQuotable
@@ -24,9 +25,14 @@ public class CommandPattern {
 			if (parameter.isOptional()) {
 				patternBuilder.append("(?:").append(optionalSpacePattern).append(pattern.toString()).append(")?");
 			} else {
-				patternBuilder.append(optionalSpacePattern).append(pattern.toString());
+				//Only append the space if a required parameter has been encountered
+				// Otherwise this would expect a space at the start of the string
+				if (hasEncounteredRequired) patternBuilder.append(optionalSpacePattern);
+				patternBuilder.append(pattern.toString());
 
 				exampleBuilder.append(parameter.getResolver().getTestExample()).append(' ');
+
+				hasEncounteredRequired = true;
 			}
 		}
 
