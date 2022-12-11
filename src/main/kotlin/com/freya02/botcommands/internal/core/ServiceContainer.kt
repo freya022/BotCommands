@@ -80,10 +80,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
-
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
+
+        canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
 
         try {
             return localBeingCheckedSet.get().withServiceCreateKey(clazz) {
