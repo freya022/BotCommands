@@ -4,30 +4,40 @@ import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.lockable
 import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.events.getDefaultScope
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import java.util.concurrent.Executors
 import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 @InjectedService
 class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
-    var defaultScopeSupplier: () -> CoroutineScope = { getDefaultScope() }
+    var defaultScopeSupplier: (String, Int) -> CoroutineScope = { coroutineName, coreSize ->
+        val executor = Executors.newScheduledThreadPool(coreSize) {
+            Thread(it).apply {
+                name = coroutineName
+            }
+        }
 
-    var miscScope: CoroutineScope by ScopeDelegate()
-    var eventDispatcherScope: CoroutineScope by ScopeDelegate()
-    var cooldownScope: CoroutineScope by ScopeDelegate()
-    var textCommandsScope: CoroutineScope by ScopeDelegate()
-    var applicationCommandsScope: CoroutineScope by ScopeDelegate()
-    var componentsScope: CoroutineScope by ScopeDelegate()
-    var modalsScope: CoroutineScope by ScopeDelegate()
-    var dataTimeoutScope: CoroutineScope by ScopeDelegate()
+        getDefaultScope(pool = executor, context = CoroutineName(coroutineName))
+    }
 
-    private inner class ScopeDelegate : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
+    var commandUpdateScope: CoroutineScope by ScopeDelegate("Command update coroutine", 0) //Not used much
+    var eventDispatcherScope: CoroutineScope by ScopeDelegate("Event dispatcher coroutine", 4) //All events being listened to will go through it
+    var cooldownScope: CoroutineScope by ScopeDelegate("Cooldown coroutine", 2) //Spends time waiting
+    var textCommandsScope: CoroutineScope by ScopeDelegate("Text command coroutine", 2) //Commands that should not block threads with cpu intensive tasks
+    var applicationCommandsScope: CoroutineScope by ScopeDelegate("Application command coroutine", 2)  //Interactions that should not block threads with cpu intensive tasks
+    var componentsScope: CoroutineScope by ScopeDelegate("Component handling coroutine", 2)  //Interactions that should not block threads with cpu intensive tasks
+    var modalsScope: CoroutineScope by ScopeDelegate("Modal handling coroutine", 2) //Interactions that should not block threads with cpu intensive tasks
+    var componentTimeoutScope: CoroutineScope by ScopeDelegate("Component timeout coroutine", 2) //Spends time waiting
+
+    private inner class ScopeDelegate(private val name: String, private val coreSize: Int) : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
         private var scope: CoroutineScope? by Delegates.lockable(config)
 
         //To avoid allocating the scopes if the user wants to replace them
         override fun getValue(thisRef: BCoroutineScopesConfig, property: KProperty<*>): CoroutineScope {
-            if (scope == null) scope = defaultScopeSupplier()
+            if (scope == null) scope = defaultScopeSupplier(name, coreSize)
             return scope!!
         }
 

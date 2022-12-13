@@ -35,7 +35,7 @@ internal class ComponentTimeoutManager(
     private val timeoutMap = hashMapOf<Int, Job>()
 
     fun scheduleTimeout(id: Int, timeout: ComponentTimeout) {
-        timeoutMap[id] = scopesConfig.dataTimeoutScope.launch {
+        timeoutMap[id] = scopesConfig.componentTimeoutScope.launch {
             delay(timeout.expirationTimestamp - Clock.System.now())
 
             //Remove the ID from the timeout map even if the component doesn't exist (might have been cleaned earlier)
