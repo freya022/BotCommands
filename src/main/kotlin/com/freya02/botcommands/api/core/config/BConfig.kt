@@ -31,6 +31,11 @@ class BConfig internal constructor() {
 
     internal val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
 
+    /**
+     * Enabling dev mode only disables exception DMs currently
+     */
+    var devMode = false
+
     var defaultMessageProvider: Function<DiscordLocale, DefaultMessages> = DefaultMessagesFunction()
 
     val debugConfig = BDebugConfig()
