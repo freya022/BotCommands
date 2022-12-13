@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.new_components.new
 
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.new_components.ComponentTimeoutData
 import com.freya02.botcommands.api.new_components.GroupTimeoutData
@@ -22,7 +22,7 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-@BService
+@ConditionalService(dependencies = [ComponentRepository::class])
 internal class ComponentTimeoutManager(
     private val scopesConfig: BCoroutineScopesConfig,
     private val serviceContainer: ServiceContainer,

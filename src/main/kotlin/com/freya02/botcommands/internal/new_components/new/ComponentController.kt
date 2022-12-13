@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.new_components.new
 
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.IdentifiableComponent
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-@BService
+@ConditionalService(dependencies = [ComponentRepository::class])
 internal class ComponentController(
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager

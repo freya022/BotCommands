@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.new_components.new.repositories
 
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.api.new_components.InteractionConstraints
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
@@ -21,7 +22,7 @@ import net.dv8tion.jda.api.Permission
 import java.sql.SQLException
 import java.sql.Timestamp
 
-@BService //TODO removing it still works
+@ConditionalService(dependencies = [Components::class])
 internal class ComponentRepository(
     private val database: Database,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,
