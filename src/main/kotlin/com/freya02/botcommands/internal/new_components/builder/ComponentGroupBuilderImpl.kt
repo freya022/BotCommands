@@ -1,33 +1,34 @@
 package com.freya02.botcommands.internal.new_components.builder
 
 import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
+import com.freya02.botcommands.api.new_components.builder.IEphemeralTimeoutableComponent
+import com.freya02.botcommands.api.new_components.builder.IPersistentTimeoutableComponent
+import com.freya02.botcommands.api.new_components.builder.IUniqueComponent
 import com.freya02.botcommands.internal.new_components.new.ComponentTimeout
-import com.freya02.botcommands.internal.new_components.new.EphemeralTimeout
 import com.freya02.botcommands.internal.new_components.new.PersistentTimeout
 import kotlinx.datetime.Clock
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
-//TODO change constraints to allow ephemeral groups
-//TODO use feature impls
-internal class ComponentGroupBuilderImpl internal constructor(internal val _componentIds: List<Int>) : ComponentGroupBuilder {
-    override var oneUse: Boolean = false
-    override var timeout: ComponentTimeout? = null
+//TODO should probably separate this into one ephemeral and one persistent class
+// Currently it would be awkward if the ephemeral handlers got deleted for a persistent group
+internal class ComponentGroupBuilderImpl internal constructor(internal val _componentIds: List<Int>) :
+    ComponentGroupBuilder,
+    IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl(),
+    IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl(),
+    IUniqueComponent by UniqueComponentImpl() {
+
+    override var timeout: ComponentTimeout? = null // Can be both ephemeral and persistent...
 
     override val componentIds: List<String> by lazy {
         _componentIds.map { it.toString() }
     }
 
-    fun oneUse() = this.also { oneUse = true }
-
-    override fun timeout(timeout: Duration, handler: suspend () -> Unit) {
-        this.timeout = EphemeralTimeout(Clock.System.now() + timeout, handler)
+    override fun timeout(timeout: Long, timeoutUnit: TimeUnit) {
+        super<IPersistentTimeoutableComponent>.timeout(timeout, timeoutUnit)
     }
 
     override fun timeout(timeout: Duration) {
         this.timeout = PersistentTimeout(Clock.System.now() + timeout, null, emptyArray())
-    }
-
-    override fun timeout(timeout: Duration, handlerName: String, vararg args: Any?) {
-        this.timeout = PersistentTimeout(Clock.System.now() + timeout, handlerName, args)
     }
 }
