@@ -13,7 +13,6 @@ import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import kotlinx.coroutines.withContext
@@ -95,11 +94,15 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
             val parameters = function.nonInstanceParameters
 
             val eventErasure = parameters.first().type.jvmErasure
-            val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }.onEach {
-                context.serviceContainer.canCreateService(it)?.let { errorMessage ->
-                    throwUser(classPathFunc.function, "Unable to register event listener due to an unavailable service: $errorMessage")
-                }
-            }
+            val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
+//                .onEach { //Cannot predetermine availability of services when the framework is initializing as services may be injected and others might depend on those
+//                    context.serviceContainer.canCreateService(it)?.let { errorMessage ->
+//                        throwUser(
+//                            classPathFunc.function,
+//                            "Unable to register event listener due to an unavailable service: $errorMessage"
+//                        )
+//                    }
+//                }
             val preboundFunction = PreboundFunction(classPathFunc) {
                 //Getting services is delayed until execution, as to ensure late services can be used in listeners
                 context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
