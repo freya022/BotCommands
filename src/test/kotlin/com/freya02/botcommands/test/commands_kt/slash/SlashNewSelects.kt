@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.components.annotations.JDASelectionMenuListener
+import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.new_components.*
 import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
@@ -86,7 +86,7 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
         return firstSelect
     }
 
-    @JDASelectionMenuListener(name = PERSISTENT_SELECT_LISTENER_NAME)
+    @JDASelectMenuListener(name = PERSISTENT_SELECT_LISTENER_NAME)
     fun onFirstSelectClicked(event: StringSelectEvent) {
         event.reply_("Persistent select menu clicked", ephemeral = true).queue()
     }

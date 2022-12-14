@@ -40,7 +40,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	@NotNull
 	protected StringSelectMenu createSelectMenu() {
 		return componentss.ephemeralStringSelectMenu(selectBuilder -> {
-			selectBuilder.bindTo(this::handleSelection);
+			selectBuilder.bindTo(this::onItemSelected);
 			selectBuilder.setOneUse(true);
 			selectBuilder.setConstraints(constraints);
 
@@ -57,7 +57,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 		});
 	}
 
-	private void handleSelection(StringSelectEvent event) {
+	private void onItemSelected(StringSelectEvent event) {
 		selectedItem = Integer.parseInt(event.getValues().get(0));
 
 		event.editMessage(get()).queue();
