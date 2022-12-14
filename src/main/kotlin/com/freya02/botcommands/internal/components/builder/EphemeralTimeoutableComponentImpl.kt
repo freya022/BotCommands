@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components.builder
 
 import com.freya02.botcommands.api.components.builder.IEphemeralTimeoutableComponent
-import com.freya02.botcommands.internal.components.new.EphemeralTimeout
+import com.freya02.botcommands.internal.components.data.EphemeralTimeout
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 

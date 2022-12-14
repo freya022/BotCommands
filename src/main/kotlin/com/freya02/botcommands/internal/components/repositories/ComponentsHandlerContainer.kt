@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.components
+package com.freya02.botcommands.internal.components.repositories
 
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic

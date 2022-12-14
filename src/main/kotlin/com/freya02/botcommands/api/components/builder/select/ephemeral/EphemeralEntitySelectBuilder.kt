@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.components.builder.ConstrainableComponen
 import com.freya02.botcommands.internal.components.builder.EphemeralActionableComponentImpl
 import com.freya02.botcommands.internal.components.builder.EphemeralTimeoutableComponentImpl
 import com.freya02.botcommands.internal.components.builder.UniqueComponentImpl
-import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu

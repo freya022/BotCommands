@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.components.builder.button
 import com.freya02.botcommands.api.components.Button
 import com.freya02.botcommands.api.components.builder.AbstractComponentBuilder
 import com.freya02.botcommands.internal.components.ComponentType
-import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle

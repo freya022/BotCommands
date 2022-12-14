@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components.builder
 
 import com.freya02.botcommands.api.components.builder.IPersistentTimeoutableComponent
-import com.freya02.botcommands.internal.components.new.PersistentTimeout
+import com.freya02.botcommands.internal.components.data.PersistentTimeout
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 

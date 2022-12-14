@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.components.InteractionConstraints
 import com.freya02.botcommands.internal.components.ComponentHandler
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.LifetimeType
+import com.freya02.botcommands.internal.components.data.ComponentTimeout
 
 internal abstract class AbstractComponentData(
     componentId: Int,

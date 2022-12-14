@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.components.new.repositories
+package com.freya02.botcommands.internal.components.repositories
 
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.InteractionConstraints
@@ -7,6 +7,10 @@ import com.freya02.botcommands.api.components.builder.ITimeoutableComponent
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.components.*
+import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
+import com.freya02.botcommands.internal.components.data.ComponentTimeout
+import com.freya02.botcommands.internal.components.data.EphemeralTimeout
+import com.freya02.botcommands.internal.components.data.PersistentTimeout
 import com.freya02.botcommands.internal.components.new.*
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
@@ -229,7 +233,8 @@ internal class ComponentRepository(
                     dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
                     dbResult["handler_name"],
                     dbResult["user_data"]
-                ))
+                )
+                )
             }
         }
     }

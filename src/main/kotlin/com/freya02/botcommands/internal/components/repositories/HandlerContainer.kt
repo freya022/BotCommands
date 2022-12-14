@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.components
+package com.freya02.botcommands.internal.components.repositories
 
 import kotlin.reflect.KFunction
 

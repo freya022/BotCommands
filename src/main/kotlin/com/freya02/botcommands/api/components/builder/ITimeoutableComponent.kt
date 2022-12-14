@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components.builder
 
-import com.freya02.botcommands.internal.components.new.ComponentTimeout
+import com.freya02.botcommands.internal.components.data.ComponentTimeout
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration

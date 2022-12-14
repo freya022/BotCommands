@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.builder.IPersistentTimeoutableComp
 import com.freya02.botcommands.internal.components.LifetimeType
 import com.freya02.botcommands.internal.components.builder.PersistentActionableComponentImpl
 import com.freya02.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
-import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.controller.ComponentController
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 
 class PersistentButtonBuilder internal constructor(

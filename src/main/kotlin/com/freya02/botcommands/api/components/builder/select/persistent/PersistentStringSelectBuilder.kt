@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.components.builder.ConstrainableComponen
 import com.freya02.botcommands.internal.components.builder.PersistentActionableComponentImpl
 import com.freya02.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
 import com.freya02.botcommands.internal.components.builder.UniqueComponentImpl
-import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 

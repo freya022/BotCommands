@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.components
 
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.controller.ComponentController
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
