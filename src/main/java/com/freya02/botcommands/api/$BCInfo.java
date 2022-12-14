@@ -7,6 +7,7 @@ public class $BCInfo {
 	public static final String VERSION_MAJOR = "%%version-major%%";
 	public static final String VERSION_MINOR = "%%version-minor%%";
 	public static final String VERSION_REVISION = "%%version-revision%%";
+	public static final String VERSION_CLASSIFIER = "%%version-classifier%%";
 	public static final String GITHUB = "https://github.com/freya022/BotCommands";
 	/** May be "null" */
 	public static final String BRANCH_NAME = "%%branch-name%%";
@@ -15,7 +16,8 @@ public class $BCInfo {
 	public static final String BUILD_JDA_VERSION = "%%build-jda-version%%";
 
 	@SuppressWarnings("ConstantConditions")
-	public static final String VERSION = "%s.%s.%s%s".formatted(VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION,
+	public static final String VERSION = "%s.%s.%s%s%s".formatted(VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION,
+			VERSION_CLASSIFIER == null ? "" : "-" + VERSION_CLASSIFIER,
 			COMMIT_HASH.equals("null") ? "" : "_" + COMMIT_HASH);
 
 	static {

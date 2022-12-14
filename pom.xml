@@ -204,9 +204,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.github.freya022</groupId>
+                <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>763c9f0108</version>
+                <version>48e4678980</version>
                 <executions>
                     <execution>
                         <goals>
