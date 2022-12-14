@@ -4,6 +4,6 @@ import com.freya02.botcommands.internal.new_components.builder.ConstrainableComp
 import com.freya02.botcommands.internal.new_components.builder.UniqueComponentImpl
 
 abstract class AbstractComponentBuilder internal constructor() :
-    ComponentBuilder,
+    BaseComponentBuilder,
     IUniqueComponent by UniqueComponentImpl(),
     IConstrainableComponent by ConstrainableComponentImpl()

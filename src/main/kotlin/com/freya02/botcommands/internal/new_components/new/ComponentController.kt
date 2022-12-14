@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.new_components.new
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.IdentifiableComponent
-import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
+import com.freya02.botcommands.api.new_components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
@@ -25,7 +25,7 @@ internal class ComponentController(
         runBlocking { componentRepository.scheduleExistingTimeouts(timeoutManager) }
     }
 
-    fun createComponent(builder: ComponentBuilder): String {
+    fun createComponent(builder: BaseComponentBuilder): String {
         return componentRepository.createComponent(builder).also { id ->
             val timeout = builder.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)

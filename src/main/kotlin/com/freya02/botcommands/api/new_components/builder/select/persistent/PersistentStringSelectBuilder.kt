@@ -16,7 +16,7 @@ class PersistentStringSelectBuilder internal constructor(private val componentCo
     JDAStringSelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
-    ComponentBuilder,
+    BaseComponentBuilder,
     IPersistentActionableComponent by PersistentActionableComponentImpl(),
     IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU

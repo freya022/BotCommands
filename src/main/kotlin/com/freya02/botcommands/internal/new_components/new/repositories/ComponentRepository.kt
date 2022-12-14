@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.new_components.new.repositories
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.api.new_components.InteractionConstraints
-import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
+import com.freya02.botcommands.api.new_components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
 import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.internal.core.db.Database
@@ -34,7 +34,7 @@ internal class ComponentRepository(
         cleanupEphemeral()
     }
 
-    fun createComponent(builder: ComponentBuilder): Int = database.transactional {
+    fun createComponent(builder: BaseComponentBuilder): Int = database.transactional {
         runBlocking { //TODO not sure about coroutines
             // Create base component
             val componentId: Int =

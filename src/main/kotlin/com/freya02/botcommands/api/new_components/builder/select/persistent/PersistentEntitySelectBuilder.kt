@@ -16,7 +16,7 @@ class PersistentEntitySelectBuilder internal constructor(private val componentCo
     JDAEntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
-    ComponentBuilder,
+    BaseComponentBuilder,
     IPersistentActionableComponent by PersistentActionableComponentImpl(),
     IPersistentTimeoutableComponent by PersistentTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU

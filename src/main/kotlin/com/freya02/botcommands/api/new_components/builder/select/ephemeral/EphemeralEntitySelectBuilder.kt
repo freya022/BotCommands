@@ -18,7 +18,7 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     JDAEntitySelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
-    ComponentBuilder,
+    BaseComponentBuilder,
     IEphemeralActionableComponent<EntitySelectEvent> by EphemeralActionableComponentImpl(),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU

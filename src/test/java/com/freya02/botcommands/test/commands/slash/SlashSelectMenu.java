@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.new_components.Components;
-import com.freya02.botcommands.api.new_components.builder.ComponentBuilder;
+import com.freya02.botcommands.api.new_components.builder.BaseComponentBuilder;
 import com.freya02.botcommands.api.new_components.builder.IEphemeralTimeoutableComponent;
 import com.freya02.botcommands.api.new_components.builder.IUniqueComponent;
 import net.dv8tion.jda.api.Permission;
@@ -39,7 +39,7 @@ public class SlashSelectMenu extends ApplicationCommand {
 		return super.getOptionChoices(guild, commandPath, optionName);
 	}
 
-	private <T extends SelectMenu.Builder<?, ?> & IEphemeralTimeoutableComponent & ComponentBuilder & IUniqueComponent> void finishMenu(T builder) {
+	private <T extends SelectMenu.Builder<?, ?> & IEphemeralTimeoutableComponent & BaseComponentBuilder & IUniqueComponent> void finishMenu(T builder) {
 		builder.timeout(10, TimeUnit.SECONDS, () -> System.out.println("When the select menu is dead"));
 		builder.constraints(c -> c.addPermissions(Permission.ADMINISTRATOR, Permission.MANAGE_CHANNEL));
 		builder.setOneUse(true);

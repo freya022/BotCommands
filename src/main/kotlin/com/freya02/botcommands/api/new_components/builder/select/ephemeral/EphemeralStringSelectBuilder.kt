@@ -17,7 +17,7 @@ class EphemeralStringSelectBuilder internal constructor(private val componentCon
     JDAStringSelectMenu.Builder(""),
     IConstrainableComponent by ConstrainableComponentImpl(),
     IUniqueComponent by UniqueComponentImpl(),
-    ComponentBuilder,
+    BaseComponentBuilder,
     IEphemeralActionableComponent<StringSelectEvent> by EphemeralActionableComponentImpl(),
     IEphemeralTimeoutableComponent by EphemeralTimeoutableComponentImpl() {
     override val componentType: ComponentType = ComponentType.SELECT_MENU
