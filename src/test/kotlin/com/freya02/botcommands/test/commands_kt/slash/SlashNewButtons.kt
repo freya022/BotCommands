@@ -19,6 +19,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @CommandMarker
@@ -61,7 +62,7 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
             bindTo(PERSISTENT_BUTTON_LISTENER_NAME, ThreadLocalRandom.current().nextDouble(), event.member)
         }
 
-        components.newGroup(firstButton, secondButton) {
+        components.newPersistentGroup(firstButton, secondButton) {
             oneUse = true
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
@@ -76,9 +77,9 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
             bindTo { evt -> evt.reply_("Ephemeral button clicked", ephemeral = true).queue() }
         }
 
-        components.newGroup(firstButton) {
+        components.newEphemeralGroup(firstButton) {
             oneUse = true
-            timeout(15.seconds) {
+            timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }
                     .queue()

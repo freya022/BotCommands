@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.new_components.Components
 import com.freya02.botcommands.api.new_components.InteractionConstraints
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
 import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
+import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.new_components.*
-import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.*
 import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
@@ -106,7 +106,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun insertGroup(builder: ComponentGroupBuilderImpl): Int = database.transactional {
+    suspend fun insertGroup(builder: ComponentGroupBuilder): Int = database.transactional {
         val groupId: Int = runCatching {
             preparedStatement(
                 """
@@ -114,7 +114,7 @@ internal class ComponentRepository(
                 VALUES (?, ?, ?)
                 returning component_id""".trimIndent()
             ) {
-                executeQuery(ComponentType.GROUP.key, LifetimeType.PERSISTENT.key, builder.oneUse).readOnce()!!.get<Int>("component_id")
+                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key, builder.oneUse).readOnce()!!.get<Int>("component_id")
             }
         }.onFailure {
             if (it is SQLException && it.errorCode == 23523) { //foreign_key_violation, the component does not exist
@@ -125,7 +125,7 @@ internal class ComponentRepository(
         // Add timeout
         insertTimeoutData(builder, groupId)
 
-        builder._componentIds.forEach { componentId ->
+        builder.componentIds.forEach { componentId ->
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
@@ -139,7 +139,7 @@ internal class ComponentRepository(
                      natural left join bc_ephemeral_timeout
             where component_id = any (?)""".trimIndent()
         ) {
-            executeQuery(builder._componentIds.toTypedArray()).readOnce()!!["exists"]
+            executeQuery(builder.componentIds.toTypedArray()).readOnce()!!["exists"]
         }
 
         if (hasTimeouts) {

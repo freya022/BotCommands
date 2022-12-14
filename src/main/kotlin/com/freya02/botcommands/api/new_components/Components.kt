@@ -6,16 +6,17 @@ import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
-import com.freya02.botcommands.api.new_components.builder.ComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.button.EphemeralButtonBuilder
 import com.freya02.botcommands.api.new_components.builder.button.PersistentButtonBuilder
+import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
+import com.freya02.botcommands.api.new_components.builder.group.EphemeralComponentGroupBuilder
+import com.freya02.botcommands.api.new_components.builder.group.PersistentComponentGroupBuilder
 import com.freya02.botcommands.api.new_components.builder.select.ephemeral.EphemeralEntitySelectBuilder
 import com.freya02.botcommands.api.new_components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentEntitySelectBuilder
 import com.freya02.botcommands.api.new_components.builder.select.persistent.PersistentStringSelectBuilder
 import com.freya02.botcommands.api.utils.ButtonContent
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
 import com.freya02.botcommands.internal.new_components.new.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
@@ -33,12 +34,25 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
 class Components internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 
-    fun newGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
-        createGroup(block, *components)
+    // -------------------- Persistent groups --------------------
+
+    fun newPersistentGroup(block: PersistentComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
+        createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
     }
 
     @JvmSynthetic
-    suspend fun newGroup(vararg components: ActionComponent, block: ComponentGroupBuilder.() -> Unit): ComponentGroup = createGroup(block, *components)
+    suspend fun newPersistentGroup(vararg components: ActionComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
+        createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
+
+    // -------------------- Ephemeral groups --------------------
+
+    fun newEphemeralGroup(block: EphemeralComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
+        createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
+    }
+
+    @JvmSynthetic
+    suspend fun newEphemeralGroup(vararg components: ActionComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
+        createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
 
     // -------------------- Persistent buttons --------------------
 
@@ -82,20 +96,19 @@ class Components internal constructor(private val componentController: Component
         componentController.deleteComponentsById(ids)
     }
 
-    private suspend fun createGroup(block: ComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup {
+    private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder, vararg components: ActionComponent): ComponentGroup {
         requireUser(components.none { it.id == null }) {
             "Cannot make groups with link buttons"
         }
 
-        return components.map { it.id?.toIntOrNull() ?: throwUser("Cannot put external components in groups") }.let { componentIds ->
-            ComponentGroupBuilderImpl(componentIds)
-                .apply(block)
-                .let {
-                    withContext(Dispatchers.IO) {
-                        componentController.insertGroup(it)
-                    }
+        return components
+            .map { it.id?.toIntOrNull() ?: throwUser("Cannot put external components in groups") }
+            .let { componentIds -> factory(componentIds) }
+            .let {
+                withContext(Dispatchers.IO) {
+                    componentController.insertGroup(it)
                 }
-        }
+            }
     }
 
     internal companion object : ConditionalServiceChecker {

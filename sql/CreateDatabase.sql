@@ -30,9 +30,8 @@ drop table if exists bc_component, bc_component_constraints,
 create table bc_component
 (
     component_id   serial   not null primary key,
-    component_type smallint not null, -- Can also be a group ! (0)
-    -- Lifetime should be persistent if it's a group
-    lifetime_type  smallint not null check ((lifetime_type = 1 or lifetime_type = 2) and (lifetime_type = 1 or component_type != 0)),
+    component_type smallint not null check (lifetime_type between 0 and 2), -- Can also be a group ! (0)
+    lifetime_type  smallint not null check (lifetime_type between 1 and 2),
     one_use        bool     not null
 );
 

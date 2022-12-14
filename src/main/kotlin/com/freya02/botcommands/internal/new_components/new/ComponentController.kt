@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.new_components.ComponentGroup
 import com.freya02.botcommands.api.new_components.IdentifiableComponent
 import com.freya02.botcommands.api.new_components.builder.ComponentBuilder
-import com.freya02.botcommands.internal.new_components.builder.ComponentGroupBuilderImpl
+import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
@@ -42,11 +42,11 @@ internal class ComponentController(
         }
     }
 
-    suspend fun insertGroup(group: ComponentGroupBuilderImpl): ComponentGroup {
+    suspend fun insertGroup(group: ComponentGroupBuilder): ComponentGroup {
         return componentRepository.insertGroup(group).also { id ->
             val timeout = group.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)
-        }.let { id -> ComponentGroup(this, id.toString(), group.componentIds) }
+        }.let { id -> ComponentGroup(this, id.toString()) }
     }
 
     suspend fun deleteComponentsById(ids: List<Int>) {
