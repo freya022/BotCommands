@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.new_components
+package com.freya02.botcommands.internal.components
 
 import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.Components
@@ -11,15 +11,12 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.components.ComponentHandlerParameter
-import com.freya02.botcommands.internal.components.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.components.new.ComponentController
+import com.freya02.botcommands.internal.components.new.ComponentData
+import com.freya02.botcommands.internal.components.new.EphemeralComponentData
+import com.freya02.botcommands.internal.components.new.PersistentComponentData
+import com.freya02.botcommands.internal.components.new.repositories.ComponentRepository
 import com.freya02.botcommands.internal.core.db.Database
-import com.freya02.botcommands.internal.new_components.new.ComponentController
-import com.freya02.botcommands.internal.new_components.new.ComponentData
-import com.freya02.botcommands.internal.new_components.new.EphemeralComponentData
-import com.freya02.botcommands.internal.new_components.new.PersistentComponentData
-import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_

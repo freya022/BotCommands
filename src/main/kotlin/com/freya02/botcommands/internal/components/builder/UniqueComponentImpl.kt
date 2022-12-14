@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.new_components.builder
+package com.freya02.botcommands.internal.components.builder
 
 import com.freya02.botcommands.api.components.builder.IUniqueComponent
 

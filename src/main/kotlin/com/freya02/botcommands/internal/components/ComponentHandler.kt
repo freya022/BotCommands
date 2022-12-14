@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.new_components
+package com.freya02.botcommands.internal.components
 
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent

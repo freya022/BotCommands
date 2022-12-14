@@ -1,11 +1,11 @@
-package com.freya02.botcommands.internal.new_components.new
+package com.freya02.botcommands.internal.components.new
 
 import com.freya02.botcommands.api.components.ComponentGroup
 import com.freya02.botcommands.api.components.IdentifiableComponent
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
+import com.freya02.botcommands.internal.components.new.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine

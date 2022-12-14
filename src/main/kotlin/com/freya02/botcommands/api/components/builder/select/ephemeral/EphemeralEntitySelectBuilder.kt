@@ -3,13 +3,13 @@ package com.freya02.botcommands.api.components.builder.select.ephemeral
 import com.freya02.botcommands.api.components.EntitySelectMenu
 import com.freya02.botcommands.api.components.builder.*
 import com.freya02.botcommands.api.components.event.EntitySelectEvent
-import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.LifetimeType
-import com.freya02.botcommands.internal.new_components.builder.ConstrainableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.EphemeralActionableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.EphemeralTimeoutableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.UniqueComponentImpl
-import com.freya02.botcommands.internal.new_components.new.ComponentController
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.LifetimeType
+import com.freya02.botcommands.internal.components.builder.ConstrainableComponentImpl
+import com.freya02.botcommands.internal.components.builder.EphemeralActionableComponentImpl
+import com.freya02.botcommands.internal.components.builder.EphemeralTimeoutableComponentImpl
+import com.freya02.botcommands.internal.components.builder.UniqueComponentImpl
+import com.freya02.botcommands.internal.components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu as JDAEntitySelectMenu

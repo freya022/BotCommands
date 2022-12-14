@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.new_components.new
+package com.freya02.botcommands.internal.components.new
 
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.ISnowflake

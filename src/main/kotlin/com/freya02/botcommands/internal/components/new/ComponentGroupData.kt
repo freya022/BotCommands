@@ -1,7 +1,7 @@
-package com.freya02.botcommands.internal.new_components.new
+package com.freya02.botcommands.internal.components.new
 
-import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.LifetimeType
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.LifetimeType
 
 internal class ComponentGroupData internal constructor(
     groupId: Int,

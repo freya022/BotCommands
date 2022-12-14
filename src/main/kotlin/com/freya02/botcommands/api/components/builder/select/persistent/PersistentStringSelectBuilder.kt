@@ -2,13 +2,13 @@ package com.freya02.botcommands.api.components.builder.select.persistent
 
 import com.freya02.botcommands.api.components.StringSelectMenu
 import com.freya02.botcommands.api.components.builder.*
-import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.LifetimeType
-import com.freya02.botcommands.internal.new_components.builder.ConstrainableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.PersistentActionableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.PersistentTimeoutableComponentImpl
-import com.freya02.botcommands.internal.new_components.builder.UniqueComponentImpl
-import com.freya02.botcommands.internal.new_components.new.ComponentController
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.LifetimeType
+import com.freya02.botcommands.internal.components.builder.ConstrainableComponentImpl
+import com.freya02.botcommands.internal.components.builder.PersistentActionableComponentImpl
+import com.freya02.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
+import com.freya02.botcommands.internal.components.builder.UniqueComponentImpl
+import com.freya02.botcommands.internal.components.new.ComponentController
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 

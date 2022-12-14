@@ -1,7 +1,7 @@
-package com.freya02.botcommands.internal.new_components.builder
+package com.freya02.botcommands.internal.components.builder
 
 import com.freya02.botcommands.api.components.builder.IPersistentActionableComponent
-import com.freya02.botcommands.internal.new_components.PersistentHandler
+import com.freya02.botcommands.internal.components.PersistentHandler
 
 internal class PersistentActionableComponentImpl : IPersistentActionableComponent {
     override var handler: PersistentHandler? = null

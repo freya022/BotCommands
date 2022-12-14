@@ -1,14 +1,14 @@
-package com.freya02.botcommands.internal.new_components.new
+package com.freya02.botcommands.internal.components.new
 
 import com.freya02.botcommands.api.components.ComponentTimeoutData
 import com.freya02.botcommands.api.components.GroupTimeoutData
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
+import com.freya02.botcommands.internal.components.ComponentTimeoutHandlers
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.GroupTimeoutHandlers
+import com.freya02.botcommands.internal.components.new.repositories.ComponentRepository
 import com.freya02.botcommands.internal.core.ServiceContainer
-import com.freya02.botcommands.internal.new_components.ComponentTimeoutHandlers
-import com.freya02.botcommands.internal.new_components.ComponentType
-import com.freya02.botcommands.internal.new_components.GroupTimeoutHandlers
-import com.freya02.botcommands.internal.new_components.new.repositories.ComponentRepository
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
