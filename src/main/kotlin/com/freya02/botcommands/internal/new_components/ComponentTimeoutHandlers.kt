@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.new_components
 
+import com.freya02.botcommands.api.components.ComponentTimeoutData
+import com.freya02.botcommands.api.components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.new_components.ComponentTimeoutData
-import com.freya02.botcommands.api.new_components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.core.withFirstArg

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.StringSelectEvent;
-import com.freya02.botcommands.api.new_components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
 import com.freya02.botcommands.api.utils.ButtonContent;

@@ -1,11 +1,11 @@
 package com.freya02.botcommands.internal.new_components.new.repositories
 
+import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.InteractionConstraints
+import com.freya02.botcommands.api.components.builder.BaseComponentBuilder
+import com.freya02.botcommands.api.components.builder.ITimeoutableComponent
+import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.new_components.Components
-import com.freya02.botcommands.api.new_components.InteractionConstraints
-import com.freya02.botcommands.api.new_components.builder.BaseComponentBuilder
-import com.freya02.botcommands.api.new_components.builder.ITimeoutableComponent
-import com.freya02.botcommands.api.new_components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.new_components.*

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.new_components.builder
 
-import com.freya02.botcommands.api.new_components.builder.IEphemeralActionableComponent
+import com.freya02.botcommands.api.components.builder.IEphemeralActionableComponent
 import com.freya02.botcommands.internal.new_components.EphemeralHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 

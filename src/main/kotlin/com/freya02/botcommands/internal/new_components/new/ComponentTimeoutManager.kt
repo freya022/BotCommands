@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.new_components.new
 
+import com.freya02.botcommands.api.components.ComponentTimeoutData
+import com.freya02.botcommands.api.components.GroupTimeoutData
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
-import com.freya02.botcommands.api.new_components.ComponentTimeoutData
-import com.freya02.botcommands.api.new_components.GroupTimeoutData
 import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.new_components.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.new_components.ComponentType

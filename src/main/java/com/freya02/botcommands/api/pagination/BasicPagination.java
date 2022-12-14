@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.new_components.Components;
-import com.freya02.botcommands.api.new_components.InteractionConstraints;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
