@@ -293,7 +293,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
+                <groupId>org.codehaus.mojo</groupId> <!-- Fixes including kotlin and generated sources -->
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
 
@@ -306,6 +306,8 @@
                         <configuration>
                             <sources>
                                 <source>src/main/kotlin</source>
+                                <!-- Somehow fixes maven taking already compiled classes (by IJ) into the final JAR -->
+                                <source>${project.build.directory}/generated-sources</source>
                             </sources>
                         </configuration>
                     </execution>
