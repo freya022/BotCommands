@@ -3,7 +3,7 @@ package com.freya02.botcommands.test.commands.slash;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import com.freya02.botcommands.api.pagination.menu.Menu;

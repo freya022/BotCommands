@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components.repositories
 
-import com.freya02.botcommands.api.components.GroupTimeoutData
 import com.freya02.botcommands.api.components.annotations.GroupTimeoutHandler
+import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireNonStatic

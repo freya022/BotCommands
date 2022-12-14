@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.components.controller
 
 import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.components.InteractionConstraints
+import com.freya02.botcommands.api.components.data.InteractionConstraints
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.components.event.StringSelectEvent

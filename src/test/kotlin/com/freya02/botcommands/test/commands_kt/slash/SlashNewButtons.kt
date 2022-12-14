@@ -5,12 +5,12 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.Button
-import com.freya02.botcommands.api.components.ComponentTimeoutData
 import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.components.GroupTimeoutData
 import com.freya02.botcommands.api.components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.components.annotations.GroupTimeoutHandler
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.data.ComponentTimeoutData
+import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_

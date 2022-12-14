@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.components.new
 
-import com.freya02.botcommands.api.components.InteractionConstraints
+import com.freya02.botcommands.api.components.data.InteractionConstraints
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.LifetimeType

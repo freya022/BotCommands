@@ -1,9 +1,10 @@
 package com.freya02.botcommands.internal.components.data
 
+import com.freya02.botcommands.api.components.data.ComponentTimeout
 import kotlinx.datetime.Instant
 import net.dv8tion.jda.api.entities.ISnowflake
 
-class PersistentTimeout(
+internal class PersistentTimeout(
     override val expirationTimestamp: Instant,
     val handlerName: String?,
     userData: Array<out Any?>

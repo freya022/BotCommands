@@ -4,10 +4,14 @@ import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
-import com.freya02.botcommands.api.components.*
+import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.EntitySelectMenu
+import com.freya02.botcommands.api.components.StringSelectMenu
 import com.freya02.botcommands.api.components.annotations.ComponentTimeoutHandler
 import com.freya02.botcommands.api.components.annotations.GroupTimeoutHandler
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
+import com.freya02.botcommands.api.components.data.ComponentTimeoutData
+import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.StringSelectEvent
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.row

@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
