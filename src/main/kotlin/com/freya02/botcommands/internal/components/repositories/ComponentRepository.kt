@@ -172,38 +172,36 @@ internal class ComponentRepository(
     }
 
     /** Returns all deleted components */
-    suspend fun deleteComponent(componentId: Int): List<Int> = database.transactional {
+    suspend fun deleteComponent(componentId: Int): List<Int> = deleteComponentsById(listOf(componentId))
+
+    suspend fun deleteComponentsById(ids: List<Int>): List<Int> = database.transactional {
         // If the component is a group, then delete the component, and it's contained components
         // If the component is not a group, then delete the component as well as it's group
 
-        val deletedComponents: MutableList<Int> = arrayListOf()
-        preparedStatement(
+        val deletedComponents: List<Int> = preparedStatement(
             """
                 delete
                 from bc_component c
-                where c.component_id = any (
-                            ? || -- Delete this component
-                            array(select component_id -- (This component is a group) Delete all components from the same group 
-                                  from bc_component_component_group
-                                  where group_id = ?) ||
-                            array(select g.component_id -- (This component is not a group) Find all components from the same group and delete them
-                                  from bc_component_component_group c
-                                           join bc_component_component_group g on c.group_id = g.group_id
-                                  where c.component_id = ?))
+                where c.component_id = any (?) -- Delete this component
+                   or c.component_id = any
+                      (select component_id -- (This component is a group) Delete all components from the same group
+                       from bc_component_component_group
+                       where group_id = any (?))
+                   or c.component_id = any
+                      (select g.component_id -- (This component is not a group) Find all components from the same group and delete them
+                       from bc_component_component_group c
+                                join bc_component_component_group g on c.group_id = g.group_id
+                       where c.component_id = any (?))
                 returning c.component_id
             """.trimIndent()
         ) {
-            deletedComponents += executeQuery(componentId, componentId, componentId).map { it["component_id"] }
+            val idArray = ids.toTypedArray()
+            executeQuery(idArray, idArray, idArray).map { it["component_id"] }
         }
 
         logger.trace { "Deleted components: ${deletedComponents.joinToString()}" }
 
         return@transactional deletedComponents
-    }
-
-    //TODO optimize
-    suspend fun deleteComponentsById(ids: List<Int>): List<Int> {
-        return ids.flatMap { deleteComponent(it) }.distinct()
     }
 
     suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional {
