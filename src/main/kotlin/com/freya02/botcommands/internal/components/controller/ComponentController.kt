@@ -34,8 +34,8 @@ internal class ComponentController(
     }
 
     suspend fun deleteComponent(component: ComponentData, isTimeout: Boolean = false) {
-        timeoutManager.cancelTimeout(component.componentId) //Only one timeout will be executed at most, as components inside groups aren't timeout-able
-        componentRepository.deleteComponent(component).forEach { componentId ->
+        //Only one timeout will be executed at most, as components inside groups aren't timeout-able
+        componentRepository.deleteComponent(component.componentId).forEach { componentId ->
             timeoutManager.cancelTimeout(componentId)
             if (isTimeout) {
                 timeoutManager.throwTimeouts(componentId)
