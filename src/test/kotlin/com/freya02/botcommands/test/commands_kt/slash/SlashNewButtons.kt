@@ -29,6 +29,7 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
         val persistentButton = persistentGroupTest(event)
         val ephemeralButton = ephemeralGroupTest(event)
         val noGroupButton = components.ephemeralButton(ButtonStyle.DANGER, "Delete") {
+            oneUse = true
             bindTo { event.hook.deleteOriginal().queue() }
             timeout(5.seconds)
         }
