@@ -88,11 +88,11 @@ class Components internal constructor(private val componentController: Component
     fun ephemeralEntitySelectMenu(targets: List<SelectTarget>, block: ReceiverConsumer<EphemeralEntitySelectBuilder>) =
         EphemeralEntitySelectBuilder(componentController, targets).apply(block).doBuild()
 
-    fun deleteComponentsById(ids: List<Int>) = runBlocking { deleteComponentsById_(ids) }
+    @JvmName("deleteComponentsById")
+    fun deleteComponentsByIdJava(ids: List<Int>) = runBlocking { deleteComponentsById(ids) }
 
     @JvmSynthetic
-    @Suppress("FunctionName")
-    suspend fun deleteComponentsById_(ids: List<Int>) {
+    suspend fun deleteComponentsById(ids: List<Int>) {
         componentController.deleteComponentsById(ids)
     }
 
