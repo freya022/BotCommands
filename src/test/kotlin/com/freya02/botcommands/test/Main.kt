@@ -30,8 +30,6 @@ fun main() {
         connectionProvider = testDB.connectionSupplier
 
         components {
-//            componentManagerStrategy = DefaultComponentManager::class.java
-
             useComponents = true
         }
 
