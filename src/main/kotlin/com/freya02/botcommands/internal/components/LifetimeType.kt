@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.components
 import com.freya02.botcommands.internal.throwUser
 
 enum class LifetimeType(val key: Int) {
-    PERSISTENT(1),
-    EPHEMERAL(2);
+    PERSISTENT(0),
+    EPHEMERAL(1);
 
     companion object {
         fun fromId(key: Int): LifetimeType {
