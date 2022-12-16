@@ -34,8 +34,8 @@ public class SlashPaginator extends ApplicationCommand {
 		replyPaginator(event, InteractionConstraints.ofPermissions(Permission.MANAGE_THREADS), components);
 	}
 
-	private void replyPaginator(GuildSlashEvent event, InteractionConstraints constraints, Components componentss) {
-		final PaginatorBuilder builder = new PaginatorBuilder()
+	private void replyPaginator(GuildSlashEvent event, InteractionConstraints constraints, Components components) {
+		final PaginatorBuilder builder = new PaginatorBuilder(components)
 				.setConstraints(constraints)
 				.useDeleteButton(true)
 				.setTimeout(5, TimeUnit.SECONDS, (paginator, message) -> {
@@ -52,9 +52,9 @@ public class SlashPaginator extends ApplicationCommand {
 				})
 				.setMaxPages(5)
 				.setFirstContent(ButtonContent.withString("←"))
-				.setPaginatorSupplier((paginator, messageBuilder, components, page) -> {
-					components.addComponents(
-							componentss.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
+				.setPaginatorSupplier((paginator, messageBuilder, paginatorComponents, page) -> {
+					paginatorComponents.addComponents(
+							components.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 3", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
 								buttonBuilder.bindTo(btnEvt -> {
 									paginator.setPage(2); //Pages starts at 0
 
@@ -62,7 +62,7 @@ public class SlashPaginator extends ApplicationCommand {
 								});
 							}),
 
-							componentss.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
+							components.ephemeralButton(ButtonStyle.PRIMARY, ButtonContent.withEmoji("Go to page 5", EmojiUtils.resolveJDAEmoji("page_facing_up")), buttonBuilder -> {
 								buttonBuilder.bindTo(btnEvt -> {
 									paginator.setPage(4); //Pages starts at 0
 

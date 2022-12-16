@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.utils.ButtonContent;
@@ -14,9 +15,10 @@ import java.util.List;
  * <br><i>This does not provide pagination for each embed</i> (no arrow buttons, only the selection menu)
  */
 public final class InteractiveMenu extends BasicInteractiveMenu<InteractiveMenu> {
-	InteractiveMenu(InteractionConstraints constraints, TimeoutInfo<InteractiveMenu> timeout, boolean hasDeleteButton,
-	                ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-	                @NotNull List<InteractiveMenuItem<InteractiveMenu>> items, boolean usePaginator) {
-		super(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
+	InteractiveMenu(@NotNull Components componentsService,
+					InteractionConstraints constraints, TimeoutInfo<InteractiveMenu> timeout, boolean hasDeleteButton,
+					ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
+					@NotNull List<InteractiveMenuItem<InteractiveMenu>> items, boolean usePaginator) {
+		super(componentsService, constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
 	}
 }

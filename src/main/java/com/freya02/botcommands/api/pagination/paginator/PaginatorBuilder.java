@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
+import com.freya02.botcommands.api.components.Components;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -7,6 +8,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuilder, Paginator> {
 	private int maxPages;
+
+	public PaginatorBuilder(@NotNull Components componentsService) {
+		super(componentsService);
+	}
 
 	public PaginatorBuilder setMaxPages(int maxPages) {
 		this.maxPages = maxPages;
@@ -17,6 +22,6 @@ public final class PaginatorBuilder extends BasicPaginatorBuilder<PaginatorBuild
 	@Override
 	@NotNull
 	public Paginator build() {
-		return new Paginator(constraints, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+		return new Paginator(componentsService, constraints, timeout, maxPages, paginatorSupplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

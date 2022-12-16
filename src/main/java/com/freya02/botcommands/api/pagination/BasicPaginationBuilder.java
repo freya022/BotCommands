@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
@@ -19,9 +20,15 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 	protected InteractionConstraints constraints = InteractionConstraints.empty();
 	protected TimeoutInfo<R> timeout;
 
+	protected final Components componentsService;
+
+	protected BasicPaginationBuilder(Components componentsService) {
+		this.componentsService = componentsService;
+	}
+
 	/**
 	 * Sets the timeout for this pagination instance
-	 * <br><b>On timeout, only the consumer is called, no message are deleted and it is up to you to clean up components with {@link #cleanup()}</b>
+	 * <br><b>On timeout, only the consumer is called, no message are deleted and it is up to you to clean up components with {@link BasicPagination#cleanup()}</b>
 	 *
 	 * <br><br>How to manipulate the message on timeout, for example you want to delete the message, or replace its content:
 	 * <ul>

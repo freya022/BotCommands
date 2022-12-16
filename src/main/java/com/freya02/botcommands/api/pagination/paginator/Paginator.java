@@ -1,11 +1,13 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.PaginatorComponents;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.menu.Menu;
 import com.freya02.botcommands.api.utils.ButtonContent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Provides a paginator
@@ -20,7 +22,7 @@ import com.freya02.botcommands.api.utils.ButtonContent;
  * @see Menu
  */
 public final class Paginator extends BasicPaginator<Paginator> {
-	Paginator(InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier<Paginator> supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(constraints, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+	Paginator(@NotNull Components componentsService, InteractionConstraints constraints, TimeoutInfo<Paginator> timeout, int _maxPages, PaginatorSupplier<Paginator> supplier, boolean hasDeleteButton, ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
+		super(componentsService, constraints, timeout, _maxPages, supplier, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 	}
 }

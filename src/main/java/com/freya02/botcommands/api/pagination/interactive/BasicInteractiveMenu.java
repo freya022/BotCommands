@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.StringSelectEvent;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
@@ -25,10 +26,11 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	protected int selectedItem = 0;
 	protected final boolean usePaginator;
 
-	protected BasicInteractiveMenu(InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
-	                               ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-	                               @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
-		super(constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+	protected BasicInteractiveMenu(@NotNull Components componentsService,
+								   InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
+								   ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
+								   @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
+		super(componentsService, constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 
 		if (items.isEmpty()) throw new IllegalStateException("No interactive menu items has been added");
 
@@ -39,7 +41,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 
 	@NotNull
 	protected StringSelectMenu createSelectMenu() {
-		return componentss.ephemeralStringSelectMenu(selectBuilder -> {
+		return componentsService.ephemeralStringSelectMenu(selectBuilder -> {
 			selectBuilder.bindTo(this::onItemSelected);
 			selectBuilder.setOneUse(true);
 			selectBuilder.setConstraints(constraints);

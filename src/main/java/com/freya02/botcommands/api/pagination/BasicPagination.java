@@ -42,9 +42,10 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	//TODO Instance should be supplied in the constructor, by the builder
 	// The instance could be passed by a method in events, but for that we need to rework events
-	protected Components componentss;
+	protected final Components componentsService;
 
-	protected BasicPagination(@NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
+	protected BasicPagination(@NotNull Components componentsService, @NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
+		this.componentsService = componentsService;
 		this.constraints = constraints;
 		this.timeout = timeout;
 	}
@@ -131,7 +132,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	 * <br>This will remove every stored button IDs, even then buttons you included yourself
 	 */
 	public void cleanup() {
-		componentss.deleteComponentsById(usedIds.stream().map(Integer::valueOf).toList());
+		componentsService.deleteComponentsById(usedIds.stream().map(Integer::valueOf).toList());
 
 		usedIds.clear();
 	}

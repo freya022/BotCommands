@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -16,6 +17,10 @@ import java.util.List;
 public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenuBuilder<T, R>, R extends BasicInteractiveMenu<R>> extends BasicPaginatorBuilder<T, R> {
 	protected final List<InteractiveMenuItem<R>> items = new ArrayList<>();
 	protected boolean usePaginator = false;
+
+	protected BasicInteractiveMenuBuilder(@NotNull Components componentsService) {
+		super(componentsService);
+	}
 
 	/**
 	 * Adds a menu to this {@link InteractiveMenu}

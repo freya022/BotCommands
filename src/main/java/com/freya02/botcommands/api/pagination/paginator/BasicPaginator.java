@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
@@ -32,14 +33,15 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
-	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
-	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(constraints, timeout);
+	protected BasicPaginator(@NotNull Components componentsService,
+							 InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
+							 ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
+		super(componentsService, constraints, timeout);
 
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, firstContent, builder -> {
+		firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent, builder -> {
 			builder.bindTo(e -> {
 				page = 0;
 
@@ -48,7 +50,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			builder.setConstraints(constraints);
 		});
 
-		previousButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, previousContent, builder -> {
+		previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent, builder -> {
 			builder.bindTo(e -> {
 				page = Math.max(0, page - 1);
 
@@ -57,7 +59,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			builder.setConstraints(constraints);
 		});
 
-		nextButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, nextContent, builder -> {
+		nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent, builder -> {
 			builder.bindTo(e -> {
 				page = Math.min(maxPages - 1, page + 1);
 
@@ -66,7 +68,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			builder.setConstraints(constraints);
 		});
 
-		lastButton = componentss.ephemeralButton(ButtonStyle.PRIMARY, lastContent, builder -> {
+		lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent, builder -> {
 			builder.bindTo(e -> {
 				page = maxPages - 1;
 
@@ -77,7 +79,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = componentss.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
+			this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
 				builder.bindTo(this::onDeleteClicked);
 				builder.setConstraints(constraints);
 				builder.setOneUse(true);
