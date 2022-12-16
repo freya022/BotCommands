@@ -144,7 +144,7 @@ internal class ComponentRepository(
         // Add timeout
         insertTimeoutData(builder, groupId)
 
-        builder.componentIds.forEach { componentId ->
+        (builder.componentIds + groupId).forEach { componentId ->
             preparedStatement("insert into bc_component_component_group (group_id, component_id) VALUES (?, ?)") {
                 executeUpdate(groupId, componentId)
             }
