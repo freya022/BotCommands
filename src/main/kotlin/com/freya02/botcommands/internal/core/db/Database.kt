@@ -9,8 +9,6 @@ import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
-private const val latestVersion = "3.0.0" // Change in CreateDatabase.sql too
-
 @ConditionalService
 class Database internal constructor(private val config: BConfig) {
     init {
@@ -53,6 +51,8 @@ class Database internal constructor(private val config: BConfig) {
     }
 
     companion object : ConditionalServiceChecker {
+        private const val latestVersion = "3.0.0-alpha.1" // Change in CreateDatabase.sql too
+
         override fun checkServiceAvailability(context: BContext): String? {
             val config = (context as BContextImpl).getService<BConfig>()
             if (!config.hasConnectionProvider()) {

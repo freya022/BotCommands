@@ -10,7 +10,7 @@ create table bc_version
 );
 
 insert into bc_version
-values (true, '3.0.0'); -- Change in Database.kt too
+values (true, '3.0.0-alpha.1'); -- Change in Database.kt too
 
 create table bc_statement_result
 (
