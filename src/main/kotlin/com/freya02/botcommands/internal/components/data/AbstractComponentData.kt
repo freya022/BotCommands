@@ -13,6 +13,5 @@ internal abstract class AbstractComponentData(
     oneUse: Boolean,
     handler: ComponentHandler?,
     timeout: ComponentTimeout?,
-    final override val constraints: InteractionConstraints,
-    groupId: Int?
-): ComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+    final override val constraints: InteractionConstraints
+): ComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints)

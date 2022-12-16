@@ -78,10 +78,9 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional {
         preparedStatement(
             """
-            select lifetime_type, component_type, one_use, users, roles, permissions, group_id
+            select lifetime_type, component_type, one_use, users, roles, permissions
             from bc_component
                      natural left join bc_component_constraints
-                     natural left join bc_component_component_group
             where component_id = ?""".trimIndent()
         ) {
             val dbResult = executeQuery(id).readOnce() ?: return null
@@ -89,7 +88,6 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val oneUse: Boolean = dbResult["one_use"]
-            val groupId: Int? = dbResult.getOrNull<Int>("group_id")
 
             if (componentType == ComponentType.GROUP) {
                 return@preparedStatement getGroup(id, oneUse)
@@ -107,16 +105,14 @@ internal class ComponentRepository(
                     componentType,
                     lifetimeType,
                     oneUse,
-                    constraints,
-                    groupId
+                    constraints
                 )
                 LifetimeType.EPHEMERAL -> getEphemeralComponent(
                     id,
                     componentType,
                     lifetimeType,
                     oneUse,
-                    constraints,
-                    groupId
+                    constraints
                 )
             }
         }
@@ -242,8 +238,7 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
-        constraints: InteractionConstraints,
-        groupId: Int?
+        constraints: InteractionConstraints
     ): PersistentComponentData = preparedStatement(
         """
            select ph.handler_name         as handler_handler_name,
@@ -272,7 +267,7 @@ internal class ComponentRepository(
             )
         }
 
-        PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+        PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
     context(Transaction)
@@ -281,8 +276,7 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
-        constraints: InteractionConstraints,
-        groupId: Int?
+        constraints: InteractionConstraints
     ): EphemeralComponentData = preparedStatement(
         """
             select ph.handler_id           as handler_handler_id,
@@ -311,7 +305,7 @@ internal class ComponentRepository(
             )
         }
 
-        EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+        EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
     context(Transaction)

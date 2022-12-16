@@ -13,6 +13,5 @@ internal abstract class ComponentData(
     val oneUse: Boolean,
     open val handler: ComponentHandler?,
     open val timeout: ComponentTimeout?,
-    open val constraints: InteractionConstraints?,
-    val groupId: Int?
+    open val constraints: InteractionConstraints?
 )
