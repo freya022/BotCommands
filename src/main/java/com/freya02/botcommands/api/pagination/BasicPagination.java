@@ -40,8 +40,6 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	private boolean timeoutPassed = false;
 
-	//TODO Instance should be supplied in the constructor, by the builder
-	// The instance could be passed by a method in events, but for that we need to rework events
 	protected final Components componentsService;
 
 	protected BasicPagination(@NotNull Components componentsService, @NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
