@@ -63,7 +63,6 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
         }
 
         components.newPersistentGroup(firstSelect, secondSelect) {
-            oneUse = true
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstSelect
@@ -80,7 +79,6 @@ class SlashNewSelects(private val components: Components) : ApplicationCommand()
         }
 
         components.newEphemeralGroup(firstSelect) {
-            oneUse = true
             timeout(15.seconds) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

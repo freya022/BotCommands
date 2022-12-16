@@ -129,10 +129,10 @@ internal class ComponentRepository(
             preparedStatement(
                 """
                 insert into bc_component (component_type, lifetime_type, one_use)
-                VALUES (?, ?, ?)
+                VALUES (?, ?, false)
                 returning component_id""".trimIndent()
             ) {
-                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key, builder.oneUse).readOnce()!!
+                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key).readOnce()!!
                     .get<Int>("component_id")
             }
         }.onFailure {

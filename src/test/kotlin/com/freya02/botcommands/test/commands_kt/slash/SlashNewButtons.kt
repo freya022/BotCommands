@@ -64,7 +64,6 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
         }
 
         components.newPersistentGroup(firstButton, secondButton) {
-            oneUse = true
             timeout(10.seconds, PERSISTENT_GROUP_TIMEOUT_LISTENER_NAME)
         }
         return firstButton
@@ -79,7 +78,6 @@ class SlashNewButtons(private val components: Components) : ApplicationCommand()
         }
 
         components.newEphemeralGroup(firstButton) {
-            oneUse = true
             timeout(15.minutes) {
                 event.hook.retrieveOriginal()
                     .flatMap { event.hook.editOriginalComponents(it.components.asDisabled()) }

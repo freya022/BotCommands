@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  *  - Have handlers
  *  - Have constraints (checks before the button can be used)
  *
- * Except component groups which can only have its unique-use and timeout configured.
+ * Except component groups which can only have its timeout configured.
  *
  * **Persistent components**:
  *  - Kept after restart
