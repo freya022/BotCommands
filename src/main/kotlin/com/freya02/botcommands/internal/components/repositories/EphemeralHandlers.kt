@@ -16,7 +16,7 @@ internal abstract class EphemeralHandlers<T> {
         return@withLock id
     }
 
-    fun remove(handlerId: Int) {
+    fun remove(handlerId: Int) = lock.withLock {
         map.remove(handlerId)
     }
 }
