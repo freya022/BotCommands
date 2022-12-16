@@ -5,6 +5,7 @@ import gnu.trove.list.array.TLongArrayList
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import java.util.*
 
 /**
@@ -116,6 +117,29 @@ class InteractionConstraints private constructor() {
     @JvmName("plusAssignPermission")
     operator fun plusAssign(permissions: Collection<Permission>) {
         addPermissions(permissions)
+    }
+
+    @JvmSynthetic
+    internal fun isAllowed(event: GenericComponentInteractionCreateEvent): Boolean {
+        if (isEmpty) return true
+
+        if (event.user.idLong in userList) return true
+
+        val member = event.member
+        if (member != null) {
+            if (permissions.isNotEmpty()) {
+                if (member.hasPermission(event.guildChannel, permissions)) {
+                    return true
+                }
+            }
+
+            //If the member has any of these roles
+            if (member.roles.any { it.idLong in roleList }) {
+                return true
+            }
+        }
+
+        return false
     }
 
     companion object {
