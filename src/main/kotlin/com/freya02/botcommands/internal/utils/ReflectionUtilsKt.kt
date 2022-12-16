@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
@@ -15,6 +15,7 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.valueParameters
@@ -27,7 +28,8 @@ private val LOGGER = Logging.getLogger()
 internal object ReflectionUtilsKt {
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
-    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, LateService::class)
+    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
+    private val loadableServiceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class)
     private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     internal fun Method.asKFunction(): KFunction<*> {
@@ -85,6 +87,13 @@ internal object ReflectionUtilsKt {
             return "$shortSignatureNoSrc: $returnType ($source)"
         }
 
+    val KProperty<*>.referenceString: String
+        get() {
+            val callableReference = (this as? CallableReference)
+                ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
+            return (callableReference.owner as KClass<*>).java.simpleName + "#" + this.name
+        }
+
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
     internal fun isInstantiable(info: ClassInfo): Boolean {
         var canInstantiate = true
@@ -119,4 +128,5 @@ internal object ReflectionUtilsKt {
 
     internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
     internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
+    internal fun KClass<*>.isLoadableService() = loadableServiceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
 }

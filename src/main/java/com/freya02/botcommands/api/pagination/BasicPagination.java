@@ -1,11 +1,8 @@
 package com.freya02.botcommands.api.pagination;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.ComponentManager;
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.internal.utils.Utils;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -43,11 +40,10 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 
 	private boolean timeoutPassed = false;
 
-	//TODO Instance should be supplied in the constructor, by the builder
-	// The instance could be passed by a method in events, but for that we need to rework events
-	protected Components componentss;
+	protected final Components componentsService;
 
-	protected BasicPagination(@NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
+	protected BasicPagination(@NotNull Components componentsService, @NotNull InteractionConstraints constraints, @Nullable TimeoutInfo<T> timeout) {
+		this.componentsService = componentsService;
 		this.constraints = constraints;
 		this.timeout = timeout;
 	}
@@ -132,15 +128,9 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	/**
 	 * Cleans up the button IDs used in this paginator
 	 * <br>This will remove every stored button IDs, even then buttons you included yourself
-	 *
-	 * @param context The {@link BContext} of this bot
 	 */
-	public void cleanup(BContext context) {
-		final ComponentManager manager = Utils.getComponentManager(context);
-
-		final int deletedIds = manager.deleteIds(usedIds);
-
-		LOGGER.trace("Cleaned up {} component IDs out of {}", deletedIds, usedIds.size());
+	public void cleanup() {
+		componentsService.deleteComponentsById(usedIds.stream().map(Integer::valueOf).toList());
 
 		usedIds.clear();
 	}

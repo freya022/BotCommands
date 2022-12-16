@@ -1,15 +1,15 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
-import com.freya02.botcommands.api.components.InteractionConstraints;
-import com.freya02.botcommands.api.components.builder.LambdaSelectionMenuBuilder;
-import com.freya02.botcommands.api.components.event.SelectionEvent;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
+import com.freya02.botcommands.api.components.event.StringSelectEvent;
 import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginator;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +26,11 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	protected int selectedItem = 0;
 	protected final boolean usePaginator;
 
-	protected BasicInteractiveMenu(InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
-	                               ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
-	                               @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
-		super(constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
+	protected BasicInteractiveMenu(@NotNull Components componentsService,
+								   InteractionConstraints constraints, TimeoutInfo<T> timeout, boolean hasDeleteButton,
+								   ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent,
+								   @NotNull List<InteractiveMenuItem<T>> items, boolean usePaginator) {
+		super(componentsService, constraints, timeout, 0, (a, b, c, d) -> new EmbedBuilder().build(), hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent);
 
 		if (items.isEmpty()) throw new IllegalStateException("No interactive menu items has been added");
 
@@ -39,23 +40,26 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 	}
 
 	@NotNull
-	private SelectMenu buildSelectMenu() {
-		final LambdaSelectionMenuBuilder builder = componentss.selectionMenu(this::handleSelection).oneUse().setConstraints(constraints);
+	protected StringSelectMenu createSelectMenu() {
+		return componentsService.ephemeralStringSelectMenu(selectBuilder -> {
+			selectBuilder.bindTo(this::onItemSelected);
+			selectBuilder.setOneUse(true);
+			selectBuilder.setConstraints(constraints);
 
-		final List<SelectOption> options = builder.getOptions();
-		for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
-			InteractiveMenuItem<T> item = items.get(i);
+			final SelectOption[] options = new SelectOption[items.size()];
+			for (int i = 0, itemsSize = items.size(); i < itemsSize; i++) {
+				InteractiveMenuItem<T> item = items.get(i);
 
-			SelectOption option = item.content().toSelectOption(String.valueOf(i));
-			if (i == selectedItem) option = option.withDefault(true);
+				SelectOption option = item.content().toSelectOption(String.valueOf(i));
+				if (i == selectedItem) option = option.withDefault(true);
 
-			options.add(option);
-		}
-
-		return builder.build();
+				options[i] = option;
+			}
+			selectBuilder.addOptions(options);
+		});
 	}
 
-	private void handleSelection(SelectionEvent event) {
+	private void onItemSelected(StringSelectEvent event) {
 		selectedItem = Integer.parseInt(event.getValues().get(0));
 
 		event.editMessage(get()).queue();
@@ -118,7 +122,7 @@ public abstract class BasicInteractiveMenu<T extends BasicInteractiveMenu<T>> ex
 			putComponents();
 		}
 
-		components.addComponents(buildSelectMenu());
+		components.addComponents(createSelectMenu());
 
 		final MessageEmbed embed = items.get(selectedItem).supplier().get((T) this, getPage(), messageBuilder, components);
 		messageBuilder.setEmbeds(embed);

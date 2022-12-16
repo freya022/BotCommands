@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
 import org.jetbrains.annotations.NotNull;
 
@@ -7,10 +8,14 @@ import org.jetbrains.annotations.NotNull;
  * Builds an {@link InteractiveMenu}
  */
 public final class InteractiveMenuBuilder extends BasicInteractiveMenuBuilder<InteractiveMenuBuilder, InteractiveMenu> {
+	public InteractiveMenuBuilder(@NotNull Components componentsService) {
+		super(componentsService);
+	}
+
 	@Override
 	@NotNull
 	public InteractiveMenu build() {
-		return new InteractiveMenu(constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
+		return new InteractiveMenu(componentsService, constraints, timeout, hasDeleteButton, firstContent, previousContent, nextContent, lastContent, deleteContent, items, usePaginator);
 	}
 
 	@Override

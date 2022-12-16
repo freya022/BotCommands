@@ -74,11 +74,10 @@ internal class ResolverContainer(
         return map.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
 
-            serviceResult.onFailure {
-                rethrowUser(
+            serviceResult.errorMessage?.let { errorMessage ->
+                throwUser(
                     parameter.function,
-                    "Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.bestName}' does not have any compatible resolver and service loading failed",
-                    it
+                    "Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.bestName}' does not have any compatible resolver and service loading failed: $errorMessage"
                 )
             }
 

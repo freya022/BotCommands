@@ -78,16 +78,18 @@ internal object ReflectionMetadata {
 
         return scanned.flatMap { (scanResult, classes) ->
             classes
+                .asSequence()
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
                         return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
                     }
                     return@filter true
                 }
-                .filter { !(it.isAnonymousInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
+                .filter { !(it.isInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
                 .filter(ReflectionUtilsKt::isInstantiable)
+                .toList()
                 .also { readAnnotations(it) }
-                .loadClasses()
+                .map { it.loadClass() }
                 .also {
                     scanResult.close()
                 }
@@ -95,7 +97,7 @@ internal object ReflectionMetadata {
     }
 
 
-    private fun readAnnotations(classInfoList: ClassInfoList) {
+    private fun readAnnotations(classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {
             try {
                 val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")

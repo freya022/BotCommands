@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
-import com.freya02.botcommands.api.core.annotations.LateService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.suppliers.IDynamicInstanceSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import kotlin.reflect.KClass
 
-@LateService
+@InjectedService
 class BServiceConfig internal constructor() {
     @get:JvmSynthetic
     internal val instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()

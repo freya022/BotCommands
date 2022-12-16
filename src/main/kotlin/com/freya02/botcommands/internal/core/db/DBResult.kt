@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.core.db
 
 import java.sql.ResultSet
 import java.sql.SQLException
+import kotlin.reflect.full.isSubclassOf
 
 typealias ResultFunction<R> = (DBResult) -> R
 
@@ -20,9 +21,20 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
         }
     }
 
-    inline operator fun <reified R> get(columnLabel: String): R = getObject(columnLabel, R::class.java)
+    inline operator fun <reified R> get(columnLabel: String): R = when {
+        R::class.isSubclassOf(List::class) -> (getArray(columnLabel).array as Array<*>).toList() as R
+        R::class == Array::class -> getArray(columnLabel).array as R
+        else -> getObject(columnLabel, R::class.java)
+    }
 
-    inline operator fun <reified R> get(columnIndex: Int): R = getObject(columnIndex, R::class.java)
+    inline operator fun <reified R> get(columnIndex: Int): R = when {
+        R::class.isSubclassOf(List::class) -> (getArray(columnIndex).array as Array<*>).toList() as R
+        else -> getObject(columnIndex, R::class.java)
+    }
+
+    inline fun <reified R> getOrNull(columnLabel: String): R? = get<R>(columnLabel).let { if (wasNull()) null else it }
+
+    inline fun <reified R> getOrNull(columnIndex: Int): R? = get<R>(columnIndex).let { if (wasNull()) null else it }
 
     fun readOnce(): DBResult? = when {
         !next() -> null

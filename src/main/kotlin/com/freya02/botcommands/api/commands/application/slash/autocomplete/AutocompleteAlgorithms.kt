@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 class AutocompleteAlgorithms {
     companion object {
-        private val duoGram = NGram(2)
+        private val biGram = NGram(2)
         private val triGram = NGram(3)
 
         /**
@@ -25,7 +25,7 @@ class AutocompleteAlgorithms {
             items.forEach {
                 val str = toStringFunction.toString(it)
                 val algo = when {
-                    str.length < 3 || query.length < 3 -> duoGram
+                    str.length < 3 || query.length < 3 -> biGram
                     else -> triGram
                 }
 
@@ -60,7 +60,7 @@ class AutocompleteAlgorithms {
                 if (!str.startsWith(query, ignoreCase = true)) return@forEach
 
                 val algo = when {
-                    str.length < 3 || query.length < 3 -> duoGram
+                    str.length < 3 || query.length < 3 -> biGram
                     else -> triGram
                 }
 

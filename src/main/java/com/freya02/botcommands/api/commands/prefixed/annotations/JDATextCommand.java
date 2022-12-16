@@ -59,7 +59,7 @@ public @interface JDATextCommand {
 	int order() default 0;
 
 	/**
-	 * Secondary <b>paths</b> of the command, <b>must not contain any spaces</b>, must follow the same format as slash commands such as <code>name/group/subcommand</code>
+	 * Secondary <b>paths</b> of the command, <b>must not contain any spaces</b>, must follow the same format as slash commands such as {@code name group subcommand}
 	 *
 	 * @return Secondary paths of the command
 	 */

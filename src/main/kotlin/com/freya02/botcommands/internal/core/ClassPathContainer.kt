@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
@@ -24,6 +25,8 @@ internal class ClassPathFunction(instanceProvider: InstanceDelegate, val functio
 }
 
 internal class ClassPathContainer(private val context: BContextImpl) {
+    private val logger = KotlinLogging.logger { }
+
     val classes: List<KClass<*>>
     val functions: List<ClassPathFunction> by lazy {
         return@lazy retrieveClassFunctions()
@@ -48,6 +51,11 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 
     private fun retrieveClassFunctions(): List<ClassPathFunction> {
         return classes
+//            .filter { //Cannot predetermine availability of services when the framework is initializing as services may be injected and others might depend on those
+//                val errorMessage = context.serviceContainer.canCreateService(it)
+//                if (errorMessage != null) logger.trace { "Discarding ${it.simpleName} from ClassPathContainer, reason: $errorMessage" }
+//                errorMessage == null
+//            } //Keep services which can be loaded
             .associate { InstanceDelegate { context.getService(it) } to it.declaredMemberFunctions }
             .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
     }

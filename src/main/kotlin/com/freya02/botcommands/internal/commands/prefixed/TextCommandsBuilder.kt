@@ -80,7 +80,7 @@ internal class TextCommandsBuilder(
                     null
                 }
                 else -> {
-                    val service = context.serviceContainer.getService(HelpCommand::class, useNonClasspath = true)
+                    val service = context.serviceContainer.getService(HelpCommand::class)
                     service.declare(manager)
 
                     val info = manager.textCommands.firstOrNull { it.path.fullPath == "help" }

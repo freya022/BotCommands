@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -29,6 +30,10 @@ public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, 
 	protected ButtonContent deleteContent = DEFAULT_DELETE_CONTENT;
 
 	protected boolean hasDeleteButton;
+
+	public BasicPaginatorBuilder(@NotNull Components componentsService) {
+		super(componentsService);
+	}
 
 	/**
 	 * Sets the {@link PaginatorSupplier} for this paginator

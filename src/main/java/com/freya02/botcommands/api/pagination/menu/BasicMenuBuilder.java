@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.menu;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import com.freya02.botcommands.api.pagination.transformer.EntryTransformer;
 import com.freya02.botcommands.api.pagination.transformer.StringTransformer;
@@ -29,7 +30,8 @@ public abstract class BasicMenuBuilder<E, T extends BasicMenuBuilder<E, T, R>, R
 		return "`" + " ".repeat(spaces) + entryNum + ".` ";
 	};
 
-	protected BasicMenuBuilder(@NotNull List<E> entries) {
+	protected BasicMenuBuilder(@NotNull Components componentsService, @NotNull List<E> entries) {
+		super(componentsService);
 		this.entries = entries;
 	}
 

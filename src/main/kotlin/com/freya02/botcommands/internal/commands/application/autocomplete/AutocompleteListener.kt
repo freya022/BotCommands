@@ -11,10 +11,10 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 class AutocompleteListener(private val context: BContextImpl) {
     @BEventListener
     internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
-        val slashCommand = CommandPath.of(event.commandPath).let {
+        val slashCommand = CommandPath.of(event.fullCommandName).let {
             context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
                 ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
-                ?: throwUser("A slash command could not be found: ${event.commandPath}")
+                ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
         }
 
         for (optionParameter in slashCommand.optionParameters) {

@@ -39,7 +39,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private val guild: Guild?,
     manager: IApplicationCommandManager
 ) {
-    private val commandsCache = context.getService(ApplicationCommandsCache::class)
+    private val commandsCache = context.getService<ApplicationCommandsCache>()
     private val onlineCheck = context.config.applicationConfig.onlineAppCommandCheckEnabled
 
     private val commandsCachePath = when (guild) {

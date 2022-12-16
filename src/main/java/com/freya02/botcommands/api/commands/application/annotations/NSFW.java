@@ -9,6 +9,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Only for <b>text commands</b>, for application commands, see the {@code #nsfw} parameter of your annotation
+ *
+ * <p>
+ *
  * Marks the annotated element as being for use in NSFW channels only
  * <br><b>Using it on a method will override the values inherited from the class</b>
  * <br>NSFW commands will be shown in help content only if called in an NSFW channel, otherwise not shown, DM consent is <b>not</b> checked as text commands are guild-only

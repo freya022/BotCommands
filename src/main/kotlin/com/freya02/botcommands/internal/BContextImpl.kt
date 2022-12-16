@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
-import com.freya02.botcommands.api.components.ComponentManager
 import com.freya02.botcommands.api.core.EventDispatcher
+import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
@@ -23,9 +23,9 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.*
-import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import kotlin.reflect.KClass
+import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = Logging.getLogger()
@@ -51,9 +51,10 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     init {
         classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
-        eventDispatcher = EventDispatcher(this) //Service put in ctor
-
         config.putConfigInServices(serviceContainer)
+
+        eventDispatcher = EventDispatcher(this, EventTreeService(this)) //Services put in ctor
+
         serviceContainer.preloadServices()
     }
 
@@ -104,7 +105,7 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     }
 
     private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
-        return getService(AutocompleteHandlerContainer::class)[autocompleteHandlerName]
+        return getService<AutocompleteHandlerContainer>()[autocompleteHandlerName]
     }
 
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
@@ -117,8 +118,10 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
             .allApplicationCommands
 
     override fun dispatchException(message: String, t: Throwable?) {
+        if (config.devMode) return //Don't send DM exceptions in dev mode
+
         if (nextExceptionDispatch < System.currentTimeMillis()) {
-            nextExceptionDispatch = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10)
+            nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
 
             val exceptionStr = if (t == null) "" else "\nException : \n%s".format(t.getDeepestCause())
 
@@ -141,10 +144,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
 
     override fun addRegistrationListeners(vararg listeners: RegistrationListener) {
         registrationListeners += listeners
-    }
-
-    override fun getComponentManager(): ComponentManager {
-        return serviceContainer.getService(config.componentsConfig.componentManagerStrategy)
     }
 
     override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?

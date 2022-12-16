@@ -1,11 +1,13 @@
 package com.freya02.botcommands.api.core.annotations
 
 /**
- * Annotates a class as a service
+ * Annotates a class as a service.
  *
- * The service is loaded at startup and must be accessible in the classpath
+ * The service is eagerly loaded at startup and must be in the classpath.
  *
- * The service might not be loaded if [ConditionalService] is used
+ * @see InjectedService
+ * @see ConditionalService
+ * @see ServiceType
  */
 @Target(AnnotationTarget.CLASS)
-annotation class BService
+annotation class BService(val lazy: Boolean = false)

@@ -28,8 +28,8 @@ class NullableVar<T : Any>(config: BConfig, defaultVal: T?) : LockableVar<T?>(co
     }
 }
 
-@Suppress("unused")
+@Suppress("UnusedReceiverParameter")
 fun <T : Any> Delegates.lockableNotNull(config: BConfig, message: String = "This property cannot be null", defaultVal: T? = null): NotNullVar<T> = NotNullVar(config, message, defaultVal)
 
-@Suppress("unused")
+@Suppress("UnusedReceiverParameter")
 fun <T : Any> Delegates.lockable(config: BConfig, defaultVal: T? = null): NullableVar<T> = NullableVar(config, defaultVal)

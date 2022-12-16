@@ -51,6 +51,10 @@ internal inline fun rethrowUser(function: KFunction<*>, message: String, e: Thro
     throw RuntimeException("${function.shortSignature} : $message", e)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+internal inline fun rethrowUser(message: String, e: Throwable): Nothing =
+    throw RuntimeException(message, e)
+
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(message: String): Nothing =
     throw IllegalArgumentException(message)
 
@@ -77,6 +81,17 @@ internal inline fun requireUser(value: Boolean, function: KFunction<*>, lazyMess
 
     if (!value) {
         throwUser(function, lazyMessage())
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+internal inline fun requireUser(value: Boolean, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
+    if (!value) {
+        throwUser(lazyMessage())
     }
 }
 
@@ -121,11 +136,17 @@ fun KParameter.findOptionName(): String {
 val KType.simpleName: String
     get() = (this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")) + if (this.isMarkedNullable) "?" else ""
 
+val KClass<*>.simpleNestedName: String
+    get() = this.java.simpleNestedName
+
+val Class<*>.simpleNestedName: String
+    get() = this.canonicalName.substring(this.packageName.length + 1)
+
 fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
     this.type.jvmErasure == param.type.jvmErasure
 
 val KFunction<*>.isPublic: Boolean
-    get() = this.visibility == KVisibility.PUBLIC
+    get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
 val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)

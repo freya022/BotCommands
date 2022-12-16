@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.pagination.interactive;
 
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
@@ -17,13 +18,19 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	protected final List<InteractiveMenuItem<R>> items = new ArrayList<>();
 	protected boolean usePaginator = false;
 
+	protected BasicInteractiveMenuBuilder(@NotNull Components componentsService) {
+		super(componentsService);
+	}
+
 	/**
 	 * Adds a menu to this {@link InteractiveMenu}
 	 * <br><b>Note: The first added menu will be the first selected one</b>
 	 *
 	 * @param content  The content of the {@link SelectOption} bound to this menu
 	 * @param supplier The interactive menu supplier for this menu's page
+	 *
 	 * @return This builder for chaining convenience
+	 *
 	 * @see SelectContent#of(String, String, Emoji)
 	 */
 	public T addMenu(@NotNull SelectContent content, int maxPages, @NotNull InteractiveMenuSupplier<R> supplier) {
@@ -37,6 +44,8 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 * <br>This is disabled by default
 	 *
 	 * @param usePaginator <code>true</code> to use the paginator buttons
+	 *
+	 * @return This builder for chaining convenience
 	 */
 	public T usePaginator(boolean usePaginator) {
 		this.usePaginator = usePaginator;

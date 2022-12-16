@@ -61,7 +61,7 @@ class UserCommandInfo internal constructor(
             if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(method, context, event)
 
         for (parameter in parameters) {
-            arguments[parameter.kParameter] = when (parameter.methodParameterType) {
+            val value = when (parameter.methodParameterType) {
                 MethodParameterType.OPTION -> {
                     parameter as UserContextCommandParameter
 
@@ -79,6 +79,14 @@ class UserCommandInfo internal constructor(
                 }
                 else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
+
+            if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
+                continue
+            } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
+                throwUser("Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null")
+            }
+
+            arguments[parameter.kParameter] = value
         }
 
         cooldownService.applyCooldown(this, event)

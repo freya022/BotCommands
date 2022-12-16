@@ -1,17 +1,19 @@
 package com.freya02.botcommands.test
 
-import com.freya02.botcommands.api.components.DefaultComponentManager
 import com.freya02.botcommands.api.core.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import dev.minn.jda.ktx.jdabuilder.light
+import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.events.ShutdownEvent
+import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import kotlin.time.Duration.Companion.minutes
 
 fun main() {
+    DecoroutinatorRuntime.load()
+
     val config = Config.readConfig()
     val testDB = TestDB(config.dbConfig)
 
@@ -28,7 +30,7 @@ fun main() {
         connectionProvider = testDB.connectionSupplier
 
         components {
-            componentManagerStrategy = DefaultComponentManager::class.java
+            useComponents = true
         }
 
         textCommands {

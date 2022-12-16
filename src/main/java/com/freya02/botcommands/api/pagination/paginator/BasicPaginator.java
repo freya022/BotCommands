@@ -1,7 +1,8 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -11,6 +12,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.NotNull;
@@ -31,43 +33,57 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 	protected int page = 0;
 	private Button firstButton, previousButton, nextButton, lastButton;
 
-	protected BasicPaginator(InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
-	                         ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
-		super(constraints, timeout);
+	protected BasicPaginator(@NotNull Components componentsService,
+							 InteractionConstraints constraints, TimeoutInfo<T> timeout, int _maxPages, PaginatorSupplier<T> supplier, boolean hasDeleteButton,
+							 ButtonContent firstContent, ButtonContent previousContent, ButtonContent nextContent, ButtonContent lastContent, ButtonContent deleteContent) {
+		super(componentsService, constraints, timeout);
 
 		this.maxPages = _maxPages;
 		this.supplier = supplier;
 
-		firstButton = componentss.primaryButton(e -> {
-			page = 0;
+		firstButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, firstContent, builder -> {
+			builder.bindTo(e -> {
+				page = 0;
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(firstContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		previousButton = componentss.primaryButton(e -> {
-			page = Math.max(0, page - 1);
+		previousButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, previousContent, builder -> {
+			builder.bindTo(e -> {
+				page = Math.max(0, page - 1);
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(previousContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		nextButton = componentss.primaryButton(e -> {
-			page = Math.min(maxPages - 1, page + 1);
+		nextButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, nextContent, builder -> {
+			builder.bindTo(e -> {
+				page = Math.min(maxPages - 1, page + 1);
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(nextContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
-		lastButton = componentss.primaryButton(e -> {
-			page = maxPages - 1;
+		lastButton = this.componentsService.ephemeralButton(ButtonStyle.PRIMARY, lastContent, builder -> {
+			builder.bindTo(e -> {
+				page = maxPages - 1;
 
-			e.editMessage(get()).queue();
-		}).setConstraints(constraints).build(lastContent);
+				e.editMessage(get()).queue();
+			});
+			builder.setConstraints(constraints);
+		});
 
 		if (hasDeleteButton) {
 			//Unique use in the case the message isn't ephemeral
-			this.deleteButton = componentss.dangerButton(this::onDeleteClicked)
-					.setConstraints(constraints)
-					.oneUse()
-					.build(deleteContent);
+			this.deleteButton = this.componentsService.ephemeralButton(ButtonStyle.DANGER, deleteContent, builder -> {
+				builder.bindTo(this::onDeleteClicked);
+				builder.setConstraints(constraints);
+				builder.setOneUse(true);
+			});
 		} else {
 			this.deleteButton = null;
 		}
@@ -113,7 +129,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 			LOGGER.warn("Attempted to delete a ephemeral message using a Paginator delete button, consider disabling the delete button in the constructor or making your message not ephemeral, pagination supplier comes from {}", supplier.getClass().getName());
 		}
 
-		cleanup(e.getContext());
+		cleanup();
 	}
 
 	/**
