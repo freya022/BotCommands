@@ -104,8 +104,22 @@ internal class ComponentRepository(
             )
 
             when (lifetimeType) {
-                LifetimeType.PERSISTENT -> getPersistentComponent(id, componentType, lifetimeType, oneUse, constraints, groupId)
-                LifetimeType.EPHEMERAL -> getEphemeralComponent(id, componentType, lifetimeType, oneUse, constraints, groupId)
+                LifetimeType.PERSISTENT -> getPersistentComponent(
+                    id,
+                    componentType,
+                    lifetimeType,
+                    oneUse,
+                    constraints,
+                    groupId
+                )
+                LifetimeType.EPHEMERAL -> getEphemeralComponent(
+                    id,
+                    componentType,
+                    lifetimeType,
+                    oneUse,
+                    constraints,
+                    groupId
+                )
             }
         }
     }
@@ -118,7 +132,8 @@ internal class ComponentRepository(
                 VALUES (?, ?, ?)
                 returning component_id""".trimIndent()
             ) {
-                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key, builder.oneUse).readOnce()!!.get<Int>("component_id")
+                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key, builder.oneUse).readOnce()!!
+                    .get<Int>("component_id")
             }
         }.onFailure {
             if (it is SQLException && it.errorCode == 23523) { //foreign_key_violation, the component does not exist
@@ -166,7 +181,12 @@ internal class ComponentRepository(
             }
         } else if (timeout is PersistentTimeout) {
             preparedStatement("insert into bc_persistent_timeout (component_id, expiration_timestamp, handler_name, user_data) VALUES (?, ?, ?, ?)") {
-                executeUpdate(groupId, timeout.expirationTimestamp.toSqlTimestamp(), timeout.handlerName, timeout.userData)
+                executeUpdate(
+                    groupId,
+                    timeout.expirationTimestamp.toSqlTimestamp(),
+                    timeout.handlerName,
+                    timeout.userData
+                )
             }
         }
     }
@@ -207,11 +227,12 @@ internal class ComponentRepository(
     suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional {
         preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
             executeQuery(*arrayOf()).forEach { dbResult ->
-                timeoutManager.scheduleTimeout(dbResult["component_id"], PersistentTimeout(
-                    dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
-                    dbResult["handler_name"],
-                    dbResult["user_data"]
-                )
+                timeoutManager.scheduleTimeout(
+                    dbResult["component_id"], PersistentTimeout(
+                        dbResult.get<Timestamp>("expiration_timestamp").toInstant().toKotlinInstant(),
+                        dbResult["handler_name"],
+                        dbResult["user_data"]
+                    )
                 )
             }
         }
@@ -237,7 +258,8 @@ internal class ComponentRepository(
            where ph.component_id = ?;
         """.trimIndent()
     ) {
-        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component $id seem to have been deleted in the same transaction")
+        val dbResult = executeQuery(id).readOnce()
+            ?: throwInternal("Component $id seem to have been deleted in the same transaction")
 
         val handler = PersistentHandler(
             dbResult["handler_handler_name"],
@@ -273,7 +295,8 @@ internal class ComponentRepository(
             where component_id = ?;
         """.trimIndent()
     ) {
-        val dbResult = executeQuery(id).readOnce() ?: throwInternal("Component $id seem to have been deleted in the same transaction")
+        val dbResult = executeQuery(id).readOnce()
+            ?: throwInternal("Component $id seem to have been deleted in the same transaction")
 
         val handler = dbResult.get<Int>("handler_handler_id").let { handlerId ->
             ephemeralComponentHandlers[handlerId]
