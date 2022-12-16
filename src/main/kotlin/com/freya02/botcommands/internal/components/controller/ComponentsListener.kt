@@ -15,7 +15,6 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
-import com.freya02.botcommands.internal.components.new.ComponentData
 import com.freya02.botcommands.internal.components.new.EphemeralComponentData
 import com.freya02.botcommands.internal.components.new.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
@@ -76,7 +75,7 @@ internal class ComponentsListener(
             }
 
             if (component.oneUse) {
-                deleteRelatedComponents(component)
+                componentController.deleteComponent(component)
             }
 
             when (component) {
@@ -150,10 +149,6 @@ internal class ComponentsListener(
                 null
             }
         }
-    }
-
-    private suspend fun deleteRelatedComponents(component: ComponentData): Unit = database.transactional {
-        componentController.deleteComponent(component)
     }
 
     private suspend fun handlePersistentComponent(
