@@ -13,29 +13,29 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import java.util.concurrent.TimeUnit;
 
 public class SlashButton extends ApplicationCommand {
-	private static final String HANDLER_NAME = "leBouton";
+	private static final String PERSISTENT_BUTTON_LISTENER_NAME = "leBouton";
 
 	@JDASlashCommand(name = "button")
-	public void button(GuildSlashEvent event, Components components) {
-		event.reply("Button")
+	public void onSlashButton(GuildSlashEvent event, Components components) {
+		event.reply("Buttons")
 				.addActionRow(
-						components.persistentButton(ButtonStyle.PRIMARY, "Le bouton", builder -> {
+						components.persistentButton(ButtonStyle.PRIMARY, "Persistent button (1 minute timeout)", builder -> {
 							builder.setOneUse(true);
-							builder.bindTo(HANDLER_NAME, System.currentTimeMillis());
+							builder.bindTo(PERSISTENT_BUTTON_LISTENER_NAME, System.currentTimeMillis());
 							builder.timeout(1, TimeUnit.MINUTES);
 						}),
-						components.ephemeralButton(ButtonStyle.PRIMARY, "Le bouton 2", builder -> {
+						components.ephemeralButton(ButtonStyle.PRIMARY, "Ephemeral button (1 second timeout)", builder -> {
 							builder.bindTo(btnEvt -> btnEvt.deferEdit().queue());
-							builder.timeout(1, TimeUnit.SECONDS, () -> event.getHook().editOriginal("big oof").queue());
+							builder.timeout(1, TimeUnit.SECONDS, () -> event.getHook().editOriginal("Ephemeral expired :/").queue());
 						})
 				)
 				.setEphemeral(true)
 				.queue();
 	}
 
-	@JDAButtonListener(name = HANDLER_NAME)
-	public void leBouton(ButtonEvent event, @AppOption long xd, JDA jda) {
-		event.reply("Le bouton c le bouton " + xd + " : " + jda)
+	@JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
+	public void onPersistentButtonClicked(ButtonEvent event, @AppOption long timeCreated, JDA jda) {
+		event.replyFormat("Button created on %s and I am %s", timeCreated, jda.getSelfUser().getAsTag())
 				.setEphemeral(true)
 				.queue();
 	}

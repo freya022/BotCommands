@@ -30,6 +30,63 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
+/**
+ * This class lets you create smart components such as buttons, select menus and groups.
+ *
+ * Every component can either be persistent or ephemeral, all components can be configured to:
+ *  - Be used once
+ *  - Have timeouts
+ *  - Have handlers
+ *  - Have constraints (checks before the button can be used)
+ *
+ * Except component groups which can only have its unique-use and timeout configured.
+ *
+ * **Persistent components**:
+ *  - Kept after restart
+ *  - Handlers are methods, they can have arguments passed to them
+ *  - Timeouts are also methods, additionally they will be rescheduled when the bot restarts
+ *
+ * **Ephemeral components**:
+ *  - Are deleted once the bot restarts
+ *  - Handlers are closures, they can capture objects, but you [shouldn't capture JDA entities](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)
+ *  - Timeouts are also closures, but are not rescheduled when restarting
+ *
+ * **Component groups**:
+ *  - If deleted, all contained components are deleted
+ *  - If one of the contained components is deleted, then all of its subsequent groups are also deleted
+ *
+ * **Example**:
+ * ```java
+ * public class SlashButton extends ApplicationCommand {
+ * 	private static final String PERSISTENT_BUTTON_LISTENER_NAME = "leBouton";
+ *
+ * 	@JDASlashCommand(name = "button")
+ * 	public void onSlashButton(GuildSlashEvent event, Components components) {
+ * 		event.reply("Buttons")
+ * 				.addActionRow(
+ * 						components.persistentButton(ButtonStyle.PRIMARY, "Persistent button (1 minute timeout)", builder -> {
+ * 							builder.setOneUse(true);
+ * 							builder.bindTo(PERSISTENT_BUTTON_LISTENER_NAME, System.currentTimeMillis());
+ * 							builder.timeout(1, TimeUnit.MINUTES);
+ * 						}),
+ * 						components.ephemeralButton(ButtonStyle.PRIMARY, "Ephemeral button (1 second timeout)", builder -> {
+ * 							builder.bindTo(btnEvt -> btnEvt.deferEdit().queue());
+ * 							builder.timeout(1, TimeUnit.SECONDS, () -> event.getHook().editOriginal("Ephemeral expired :/").queue());
+ * 						})
+ * 				)
+ * 				.setEphemeral(true)
+ * 				.queue();
+ * 	}
+ *
+ * 	@JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
+ * 	public void onPersistentButtonClicked(ButtonEvent event, @AppOption long timeCreated, JDA jda) {
+ * 		event.replyFormat("Button created on %s and I am %s", timeCreated, jda.getSelfUser().getAsTag())
+ * 				.setEphemeral(true)
+ * 				.queue();
+ * 	}
+ * }
+ * ```
+ */
 @ConditionalService
 class Components internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
@@ -56,17 +113,21 @@ class Components internal constructor(private val componentController: Component
 
     // -------------------- Persistent buttons --------------------
 
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmOverloads
     fun persistentButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<PersistentButtonBuilder>) =
         PersistentButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun persistentButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<PersistentButtonBuilder>) =
         persistentButton(style, content.text, content.emoji, block)
 
     // -------------------- Ephemeral buttons --------------------
 
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     @JvmOverloads
     fun ephemeralButton(style: ButtonStyle, label: String? = null, emoji: Emoji? = null, block: ReceiverConsumer<EphemeralButtonBuilder>) =
         EphemeralButtonBuilder(style, componentController).apply(block).build(label, emoji)
+    /** See [Button.of][net.dv8tion.jda.api.interactions.components.buttons.Button.of] */
     fun ephemeralButton(style: ButtonStyle, content: ButtonContent, block: ReceiverConsumer<EphemeralButtonBuilder>) =
         ephemeralButton(style, content.text, content.emoji, block)
 
