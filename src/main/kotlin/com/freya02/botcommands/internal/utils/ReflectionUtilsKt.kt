@@ -90,7 +90,7 @@ internal object ReflectionUtilsKt {
     val KProperty<*>.referenceString: String
         get() {
             val callableReference = (this as? CallableReference)
-                ?: throwInternal("Referenced field doesn't seem to be compiled generated, exact type: ${this::class}")
+                ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
             return (callableReference.owner as KClass<*>).java.simpleName + "#" + this.name
         }
 
