@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application.slash.autocomplete
+package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
-import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.core.CooldownService
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
