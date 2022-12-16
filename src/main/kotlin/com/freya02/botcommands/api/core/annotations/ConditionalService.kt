@@ -26,10 +26,5 @@ annotation class ConditionalService(
      *
      * This may be useful in situations where the service shares some checks with another service
      */
-    val dependencies: Array<KClass<*>> = [],
-    /**
-     * The message displayed if this class cannot be instantiated
-     */
-    @Deprecated("Replaced with the interface return value")
-    val message: String = "Conditional object"
+    val dependencies: Array<KClass<*>> = []
 )
