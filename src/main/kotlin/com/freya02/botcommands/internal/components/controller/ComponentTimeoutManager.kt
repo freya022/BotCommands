@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralTimeout
 import com.freya02.botcommands.internal.components.data.PersistentTimeout
-import com.freya02.botcommands.internal.components.new.ComponentGroupData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.components.repositories.GroupTimeoutHandlers

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.components.new
+package com.freya02.botcommands.internal.components.data
 
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints

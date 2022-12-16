@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.IdentifiableComponent
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.internal.components.new.ComponentData
+import com.freya02.botcommands.internal.components.data.ComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.runBlocking

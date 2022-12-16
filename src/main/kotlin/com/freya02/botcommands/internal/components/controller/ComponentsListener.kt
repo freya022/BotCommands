@@ -14,8 +14,8 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
-import com.freya02.botcommands.internal.components.new.EphemeralComponentData
-import com.freya02.botcommands.internal.components.new.PersistentComponentData
+import com.freya02.botcommands.internal.components.data.EphemeralComponentData
+import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
 import com.freya02.botcommands.internal.core.db.Database
