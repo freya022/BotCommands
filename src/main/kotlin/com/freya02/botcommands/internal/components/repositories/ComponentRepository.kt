@@ -39,7 +39,7 @@ internal class ComponentRepository(
     }
 
     fun createComponent(builder: BaseComponentBuilder): Int = database.transactional {
-        runBlocking { //TODO not sure about coroutines
+        runBlocking {
             // Create base component
             val componentId: Int =
                 preparedStatement("insert into bc_component (component_type, lifetime_type, one_use) VALUES (?, ?, ?) returning component_id") {

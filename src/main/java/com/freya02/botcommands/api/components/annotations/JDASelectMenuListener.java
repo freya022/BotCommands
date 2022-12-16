@@ -2,10 +2,11 @@ package com.freya02.botcommands.api.components.annotations;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.prefixed.TextCommand;
+import com.freya02.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder;
+import com.freya02.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder;
 import com.freya02.botcommands.api.components.event.EntitySelectEvent;
 import com.freya02.botcommands.api.components.event.StringSelectEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -14,7 +15,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation for defining a selection menu listener,
- * this has to be the same name as the one given to {@link Components#stringSelectionMenu(String, Object...)} or {@link Components#entitySelectionMenu(SelectTarget, String, Object...)}
+ * this has to be the same name as the one given to {@link PersistentStringSelectBuilder#bindTo(String, Object...)} or {@link PersistentEntitySelectBuilder#bindTo(String, Object...)}
  *
  * <p>
  *

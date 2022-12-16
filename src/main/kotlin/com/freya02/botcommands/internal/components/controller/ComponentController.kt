@@ -64,10 +64,6 @@ internal class ComponentController(
         continuationMap.computeIfAbsent(componentId) { arrayListOf() }.add(cont)
     }
 
-    //TODO Events returned to the continuations shares the localization context of the target handler,
-    // it should probably share the same context as the slash command ?
-    // What about localization context inside the coroutine context ?
-    // This would be so java friendly...
     suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
         return suspendCancellableCoroutine { continuation ->
             val componentId = component.getId()!!.toInt()
