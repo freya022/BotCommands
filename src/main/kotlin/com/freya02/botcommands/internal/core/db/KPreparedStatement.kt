@@ -15,27 +15,30 @@ class KPreparedStatement(val database: Database, val preparedStatement: Prepared
     }
 
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
-        val sqlStr: String = addParametersAndGetQuery(params)
+        val sqlStr: String? = addParametersAndGetQuery(params)
         withLoggedQuery(sqlStr) { execute() }
     }
 
     suspend fun executeUpdate(vararg params: Any?): Int = withContext(Dispatchers.IO) {
-        val sqlStr: String = addParametersAndGetQuery(params)
+        val sqlStr: String? = addParametersAndGetQuery(params)
         withLoggedQuery(sqlStr) { executeUpdate() }
     }
 
     suspend fun executeQuery(vararg params: Any?): DBResult = withContext(Dispatchers.IO) {
-        val sqlStr: String = addParametersAndGetQuery(params)
+        val sqlStr: String? = addParametersAndGetQuery(params)
         DBResult(withLoggedQuery(sqlStr) { executeQuery() })
     }
 
-    private fun addParametersAndGetQuery(params: Array<out Any?>): String = when {
+    private fun addParametersAndGetQuery(params: Array<out Any?>): String? = when {
+        !database.config.logQueries -> setParameters(params).let { null }
         database.config.logQueryParameters -> setParameters(params).let { this@KPreparedStatement.toSQLString() }
         else -> toSQLString().also { setParameters(params) }
     }
 
     @OptIn(ExperimentalTime::class)
-    private inline fun <R> withLoggedQuery(sqlStr: String, block: () -> R): R {
+    private inline fun <R> withLoggedQuery(sqlStr: String?, block: () -> R): R {
+        if (sqlStr == null) return block()
+
         val timedValue = measureTimedValue {
             runCatching { block() }
         }
