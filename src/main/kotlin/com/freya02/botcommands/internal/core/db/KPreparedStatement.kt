@@ -2,45 +2,49 @@ package com.freya02.botcommands.internal.core.db
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import java.sql.PreparedStatement
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 class KPreparedStatement(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
-    private fun setParameters(vararg params: Any?) {
+    private fun setParameters(params: Array<out Any?>) {
         for ((i, param) in params.withIndex()) {
             setObject(i + 1, param)
         }
     }
 
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
-        setParameters(*params)
-        withLoggedQuery { execute() }
+        val sqlStr: String = addParametersAndGetQuery(params)
+        withLoggedQuery(sqlStr) { execute() }
     }
 
     suspend fun executeUpdate(vararg params: Any?): Int = withContext(Dispatchers.IO) {
-        setParameters(*params)
-        withLoggedQuery { executeUpdate() }
+        val sqlStr: String = addParametersAndGetQuery(params)
+        withLoggedQuery(sqlStr) { executeUpdate() }
     }
 
     suspend fun executeQuery(vararg params: Any?): DBResult = withContext(Dispatchers.IO) {
-        setParameters(*params)
-        DBResult(withLoggedQuery { executeQuery() })
+        val sqlStr: String = addParametersAndGetQuery(params)
+        DBResult(withLoggedQuery(sqlStr) { executeQuery() })
+    }
+
+    private fun addParametersAndGetQuery(params: Array<out Any?>): String = when {
+        database.config.logQueryParameters -> setParameters(params).let { this@KPreparedStatement.toSQLString() }
+        else -> toSQLString().also { setParameters(params) }
     }
 
     @OptIn(ExperimentalTime::class)
-    private suspend fun <R> withLoggedQuery(block: suspend () -> R): R {
+    private inline fun <R> withLoggedQuery(sqlStr: String, block: () -> R): R {
         val timedValue = measureTimedValue {
             runCatching { block() }
         }
 
         val result = timedValue.value
-        val duration = timedValue.duration
-        preparedStatement.connection.prepareStatement("insert into bc_statement_result (query, success, time_nanos) values (?, ?, ?)").use { statement ->
-            statement.setString(1, this.toSQLString())
-            statement.setInt(2, if (result.isFailure) 0 else 1)
-            statement.setLong(3, duration.inWholeNanoseconds)
-            statement.executeUpdate()
+        if (logger.isTraceEnabled) {
+            val duration = timedValue.duration
+            val prefix = if (result.isSuccess) "Ran" else "Failed"
+            logger.trace("$prefix query in %.3f ms: $sqlStr".format(duration.inWholeNanoseconds / 1000000.0))
         }
 
         return result.getOrThrow()
@@ -62,5 +66,9 @@ class KPreparedStatement(val database: Database, val preparedStatement: Prepared
 
     override fun toString(): String {
         return preparedStatement.toString()
+    }
+
+    companion object {
+        private val logger = KotlinLogging.logger { }
     }
 }

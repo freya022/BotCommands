@@ -71,6 +71,11 @@ class BConfig internal constructor() {
     fun hasConnectionProvider() = ::connectionProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
+     * Determines if the SQL query logger will replace query parameters by their value.
+     */
+    var logQueryParameters: Boolean = true
+
+    /**
      * Adds owners, they can access the commands annotated with [RequireOwner]
      *
      * @param ownerIds Owners Long IDs to add
