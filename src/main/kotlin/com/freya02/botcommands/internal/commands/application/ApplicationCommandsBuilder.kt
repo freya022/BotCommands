@@ -88,7 +88,6 @@ internal class ApplicationCommandsBuilder(
         }
 
         val guild = event.guild
-        LOGGER.debug("Guild ready: $guild")
 
         try {
             updateCatching(guild) {

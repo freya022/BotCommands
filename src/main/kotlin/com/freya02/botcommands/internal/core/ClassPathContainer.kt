@@ -44,7 +44,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
             this.classes = ReflectionMetadata.runScan(packages, userClasses).map(Class<*>::kotlin)
         }
 
-        println("Reflection took ${nano / 1000000.0} ms")
+        logger.trace { "Reflection took ${nano / 1000000.0} ms" }
     }
 
     inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.function.hasAnnotation<T>() }

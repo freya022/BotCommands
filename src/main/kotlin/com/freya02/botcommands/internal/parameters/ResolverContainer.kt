@@ -44,7 +44,6 @@ internal class ResolverContainer(
 
     @BEventListener
     fun onLoad(event: LoadEvent) = runInitialization {
-        logger.debug("ResolverContainer loaded")
         if (map.isEmpty()) {
             logger.trace("Found no resolvers")
         } else {
