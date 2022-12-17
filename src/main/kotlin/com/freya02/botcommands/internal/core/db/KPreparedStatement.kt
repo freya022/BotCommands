@@ -53,6 +53,10 @@ class KPreparedStatement(val database: Database, val preparedStatement: Prepared
 
         return preparedStatement.toString().substring(index + indexMarker.length)
             .lines()
+            .map {
+                val endIndex = Regex("--(?!.*')").find(it)?.range?.start ?: it.length
+                it.substring(0, endIndex)
+            }
             .joinToString(" ") { it.trim() }
     }
 
