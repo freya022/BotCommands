@@ -7,10 +7,10 @@ import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.events.LoadEvent
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.runInitialization
@@ -24,7 +24,7 @@ internal class ComponentsHandlerContainer {
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
 
     @BEventListener
-    internal fun onFirstReady(event: FirstReadyEvent, context: BContextImpl, classPathContainer: ClassPathContainer) = runInitialization {
+    internal fun onLoad(event: LoadEvent, context: BContextImpl, classPathContainer: ClassPathContainer) = runInitialization {
         classPathContainer.functionsWithAnnotation<JDAButtonListener>()
             .requireNonStatic()
             .requireFirstArg(ButtonEvent::class)
