@@ -15,7 +15,7 @@ object CommandPattern {
 
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
-        val exampleStr = optionParameters.joinToString(" ") { it.resolver.testExample }
+        val exampleStr = optionParameters.filter { !it.isOptional }.joinToString(" ") { it.resolver.testExample }
         require(pattern.matcher(exampleStr).matches()) {
             """
             Failed building pattern for method ${variation.method.shortSignature} with pattern '$pattern' and example '$exampleStr'
