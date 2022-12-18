@@ -190,6 +190,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private fun <T> CommandData.configureTopLevel(info: T): CommandData
             where T : ITopLevelApplicationCommandInfo,
                   T : ApplicationCommandInfo = apply {
+        if (info.nsfw) isNSFW = true
         if (info.scope == CommandScope.GLOBAL_NO_DM) isGuildOnly = true
         if (info.isDefaultLocked) {
             defaultPermissions = DefaultMemberPermissions.DISABLED

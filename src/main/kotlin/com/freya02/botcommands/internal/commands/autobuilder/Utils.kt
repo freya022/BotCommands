@@ -83,13 +83,6 @@ fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
         }
     }
 
-    func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
-        nsfw {
-            allowInDMs = nsfwAnnotation.dm
-            allowInGuild = nsfwAnnotation.guild
-        }
-    }
-
     userPermissions = AnnotationUtils.getUserPermissions(func)
     botPermissions = AnnotationUtils.getBotPermissions(func)
 }
@@ -99,8 +92,12 @@ internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
     function = func as KFunction<Any>
 }
 
-fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>) {
+fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
+    if (func.hasAnnotation<NSFW>()) {
+        throwUser(func, "@${NSFW::class.simpleName} can only be used on text commands, use the #nsfw method on your annotation instead")
+    }
 
+    nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw")
 }
 
 internal inline fun <reified R> ClassPathFunction.asCommandInstance(): R =

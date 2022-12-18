@@ -17,11 +17,9 @@ abstract class AbstractCommandInfo internal constructor(
 
     val userPermissions: EnumSet<Permission>
     val botPermissions: EnumSet<Permission>
-    val nsfwStrategy: NSFWStrategy?
 
     init {
         name = builder.name
-        nsfwStrategy = builder.nsfwStrategy
         userPermissions = builder.userPermissions
         botPermissions = builder.botPermissions
     }

@@ -161,7 +161,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
 
     private fun SlashCommandBuilder.configureBuilder(metadata: SlashFunctionMetadata) {
         fillCommandBuilder(metadata.func)
-        fillApplicationCommandBuilder(metadata.func)
+        fillApplicationCommandBuilder(metadata.func, metadata.annotation)
     }
 
     private fun SlashCommandBuilder.processOptions(

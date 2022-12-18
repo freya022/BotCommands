@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaMethod
@@ -86,7 +86,7 @@ object AnnotationUtils {
 
     @Suppress("UNCHECKED_CAST")
     fun <T, A : Annotation> getAnnotationValue(annotation: A, methodName: String): T {
-        val kFunction = annotation.annotationClass.declaredFunctions.find { it.name == methodName }
+        val kFunction = annotation.annotationClass.declaredMemberProperties.find { it.name == methodName }
             ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}'")
         return kFunction.call(annotation) as? T
             ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}' as the type is incorrect, annotation type: ${kFunction.returnType.simpleName}")

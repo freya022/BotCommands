@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
+import com.freya02.botcommands.internal.commands.NSFWStrategy
 import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
@@ -20,6 +21,7 @@ abstract class TextCommandInfo(
 
     val description: String = builder.description
 
+    val nsfwStrategy: NSFWStrategy? = builder.nsfwStrategy
     val isOwnerRequired: Boolean = builder.ownerRequired
     val hidden: Boolean = builder.hidden
 

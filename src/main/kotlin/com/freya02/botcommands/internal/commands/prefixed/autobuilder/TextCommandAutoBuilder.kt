@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed.autobuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
+import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
@@ -135,6 +136,13 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
 
         hidden = func.hasAnnotation<Hidden>()
         ownerRequired = func.hasAnnotation<RequireOwner>()
+
+        func.findAnnotation<NSFW>()?.let { nsfwAnnotation ->
+            nsfw {
+                allowInDMs = nsfwAnnotation.dm
+                allowInGuild = nsfwAnnotation.guild
+            }
+        }
 
         detailedDescription = instance.detailedDescription
     }

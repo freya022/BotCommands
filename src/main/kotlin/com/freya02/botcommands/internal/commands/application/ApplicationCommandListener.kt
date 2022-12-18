@@ -113,7 +113,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         }
 
         val isNotOwner = !context.isOwner(event.user.idLong)
-        val usability = Usability.of(context, event, applicationCommand, isNotOwner)
+        val usability = Usability.of(event, applicationCommand, isNotOwner)
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             when {

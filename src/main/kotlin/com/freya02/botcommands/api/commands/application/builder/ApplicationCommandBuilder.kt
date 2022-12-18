@@ -11,7 +11,9 @@ abstract class ApplicationCommandBuilder internal constructor(
 ) : CommandBuilder(name), IBuilderFunctionHolder<Any> by BuilderFunctionHolder() {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
-    var defaultLocked = DEFAULT_DEFAULT_LOCKED
+    var defaultLocked: Boolean = DEFAULT_DEFAULT_LOCKED
+
+    var nsfw: Boolean = false
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

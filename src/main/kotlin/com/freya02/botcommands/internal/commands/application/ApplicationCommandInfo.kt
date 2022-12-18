@@ -15,4 +15,6 @@ abstract class ApplicationCommandInfo internal constructor(
     override val optionParameters: List<ApplicationCommandParameter> by lazy { parameters.filterOptions() }
 
     abstract val topLevelInstance: ITopLevelApplicationCommandInfo
+
+    val nsfw: Boolean = builder.nsfw
 }

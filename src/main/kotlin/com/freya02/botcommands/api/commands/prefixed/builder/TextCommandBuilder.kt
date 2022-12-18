@@ -1,7 +1,9 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.builder.CommandBuilder
+import com.freya02.botcommands.api.builder.NSFWStrategyBuilder
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
@@ -11,6 +13,10 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
 
     @get:JvmSynthetic
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
+
+    @get:JvmSynthetic
+    internal var nsfwStrategy: NSFWStrategy? = null
+        private set
 
     var aliases: MutableList<String> = arrayListOf()
 
@@ -36,6 +42,10 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
 
     fun variation(block: TextCommandVariationBuilder.() -> Unit) {
         variations += TextCommandVariationBuilder(context).apply(block)
+    }
+
+    fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {
+        nsfwStrategy = NSFWStrategyBuilder().apply(block).build()
     }
 
     companion object {

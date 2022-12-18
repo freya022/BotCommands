@@ -2,14 +2,12 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.Usability.UnusableReason.*
-import com.freya02.botcommands.internal.commands.AbstractCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import java.util.*
@@ -64,8 +62,8 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
         private fun checkNSFW(
             context: BContext,
             unusableReasons: EnumSet<UnusableReason>,
-            channel: MessageChannel,
-            cmdInfo: AbstractCommandInfo
+            channel: GuildMessageChannel,
+            cmdInfo: TextCommandInfo
         ) {
             val nsfwStrategy = cmdInfo.nsfwStrategy ?: return
 
@@ -116,10 +114,8 @@ class Usability private constructor(val unusableReasons: EnumSet<UnusableReason>
         }
 
         @JvmStatic
-        fun of(context: BContext, event: GenericCommandInteractionEvent, cmdInfo: ApplicationCommandInfo, isNotOwner: Boolean): Usability {
+        fun of(event: GenericCommandInteractionEvent, cmdInfo: ApplicationCommandInfo, isNotOwner: Boolean): Usability {
             with(EnumSet.noneOf(UnusableReason::class.java)) {
-                checkNSFW(context, this, event.messageChannel, cmdInfo)
-
                 if (!event.isFromGuild) return Usability(this)
 
                 val channel = event.guildChannel
