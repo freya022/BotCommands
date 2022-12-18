@@ -5,32 +5,28 @@ import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import io.github.classgraph.*
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
+import java.lang.reflect.Method
 import java.util.*
+import kotlin.coroutines.Continuation
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
-import kotlin.reflect.jvm.kotlinFunction
+import kotlin.reflect.jvm.javaGetter
+import kotlin.reflect.jvm.javaMethod
+
+private typealias IsNullableAnnotated = Boolean
 
 internal object ReflectionMetadata {
-    internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean, val line: Int)
-
-    internal class KParameterMetadata(val isNullable: Boolean, val function: KFunction<*>)
+    internal class KFunctionMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
 
     private var scannedParams: Boolean = false
 
-    private val paramMetadataMap_: MutableMap<KParameter, KParameterMetadata> = hashMapOf()
-    private val paramMetadataMap: Map<KParameter, KParameterMetadata> by lazy {
-        if (!scannedParams)
-            throwInternal("Tried to access a KParameter metadata but they haven't been scanned yet")
-
-        Collections.unmodifiableMap(paramMetadataMap_)
-    }
-
-    private val functionMetadataMap_: MutableMap<KFunction<*>, KFunctionMetadata> = hashMapOf()
-    private val functionMetadataMap: Map<KFunction<*>, KFunctionMetadata> by lazy {
+    private val functionMetadataMap_: MutableMap<Method, KFunctionMetadata> = hashMapOf()
+    private val functionMetadataMap: Map<Method, KFunctionMetadata> by lazy {
         if (!scannedParams)
             throwInternal("Tried to access a function metadata but they haven't been scanned yet")
 
@@ -92,31 +88,17 @@ internal object ReflectionMetadata {
     private fun readAnnotations(classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {
             try {
-                val isJavaParameter = !classInfo.hasAnnotation("kotlin.Metadata")
-
                 for (methodInfo in classInfo.declaredMethodInfo) {
-                    if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue //Don't inspect methods with generics
+                    //Don't inspect methods with generics
+                    if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue
 
-                    val kFunction = methodInfo.loadClassAndGetMethod().kotlinFunction ?: continue
-                    val parameters = kFunction.nonInstanceParameters
-                    for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
-                        val parameter = parameters[j]
-
-                        val isNullableAnnotated =
-                            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") } or parameter.hasAnnotation<Optional>()
-                        val isNullableMarked = parameter.type.isMarkedNullable
-                        if (!isJavaParameter && isNullableAnnotated && !isNullableMarked) {
-                            throwUser("Parameter $parameter is annotated as being nullable/optional but runtime checks from annotations will prevent this from being nullable")
-                        }
-
-                        paramMetadataMap_[parameter] =
-                            KParameterMetadata(
-                                isNullableAnnotated || isNullableMarked,
-                                kFunction
-                            )
+                    val method = methodInfo.loadClassAndGetMethod()
+                    val nullabilities = methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
+                        parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
+                                || parameterInfo.hasAnnotation(Optional::class.java)
                     }
 
-                    functionMetadataMap_[kFunction] = KFunctionMetadata(kFunction, isJavaParameter, methodInfo.minLineNum)
+                    functionMetadataMap_[method] = KFunctionMetadata(methodInfo.minLineNum, nullabilities)
                 }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
@@ -127,18 +109,33 @@ internal object ReflectionMetadata {
     }
 
     internal val KParameter.isNullable: Boolean
-        get() = (paramMetadataMap[this]
-            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).isNullable
+        get() {
+            val metadata = functionMetadataMap[function.javaMethod]
+                ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
+            val isNullableAnnotated = metadata.nullabilities[index - 1] // -1 because 0 is actually the instance parameter
+            val isNullableMarked = type.isMarkedNullable
 
-    internal val KParameter.function
-        get() = (paramMetadataMap[this]
-            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).function
+            return isNullableAnnotated || isNullableMarked
+        }
+
+    private val handle: MethodHandle by lazy {
+        val kParameterImplClazz = Class.forName("kotlin.reflect.jvm.internal.KParameterImpl")
+        MethodHandles.publicLookup().unreflect(kParameterImplClazz.kotlin.memberProperties.find { it.name == "callable" }!!.javaGetter!!)
+    }
+    internal val KParameter.function: KFunction<*>
+        get() {
+            val callable = handle.invoke(this)
+            return callable as? KFunction<*>
+                ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
+        }
 
     internal val KFunction<*>.isJava
-        get() = (functionMetadataMap[this]
-            ?: throwUser("Tried to access a KFunction which hasn't been scanned: $this, the function must be accessible and in the search path")).isJava
+        get() = javaMethod?.declaringClass?.isAnnotationPresent(Metadata::class.java)?.not() ?: false //If there's no java method then it's def not java ?
 
-    internal val KFunction<*>.lineNumber
-        get() = (functionMetadataMap[this]
-            ?: throwUser("Tried to access a KFunction which hasn't been scanned: $this, the function must be accessible and in the search path")).line
+    internal val KFunction<*>.lineNumber: Int
+        get() = (functionMetadataMap[this.javaMethod]
+            ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).line
+
+    private val Method.isSuspend: Boolean
+        get() = parameters.any { it.type == Continuation::class.java }
 }
