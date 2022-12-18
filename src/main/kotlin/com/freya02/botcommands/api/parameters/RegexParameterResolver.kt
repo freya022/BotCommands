@@ -40,6 +40,16 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
      *
      * This is used to compose a larger pattern which will represent an entire command syntax
      *
+     * If you wish to apply flags to this pattern, please enable them inside the regular expression instead of on the pattern,
+     * as the pattern aggregator will not take any flags into account.
+     *
+     * You can enable regex flags using the `(?[flags])` notation,
+     * such as `(?i)` to enable case-insensitive matching, and `(?-i)` to disable it.
+     *
+     * Make sure to disable your modifiers when you are done using them, as they could affect other patterns.
+     *
+     * You can find more information about regex modifiers [here](https://www.regular-expressions.info/modifiers.html)
+     *
      * @return The [Pattern] for this parameter
      */
     val pattern: Pattern

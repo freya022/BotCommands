@@ -1,38 +1,21 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
+import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.util.regex.Pattern
 
 object CommandPattern {
     fun of(variation: TextCommandVariation): Pattern {
-        val exampleBuilder = StringBuilder(variation.parameters.optionCount * 16)
-        val patternBuilder = StringBuilder(variation.parameters.optionCount * 16)
-        patternBuilder.append('^')
-
         val optionParameters: List<TextCommandParameter> = variation.optionParameters
         val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
 
-        optionParameters.forEachIndexed { i, parameter ->
-            val pattern = when {
-                hasMultipleQuotable -> parameter.resolver.preferredPattern //Might be a quotable pattern
-                else -> parameter.resolver.pattern
-            }
-
-            val optionalSpacePattern = if (i == 0) "" else "\\s+"
-            if (parameter.isOptional) {
-                patternBuilder.append("(?:").append(optionalSpacePattern).append(pattern.toString()).append(")?")
-            } else {
-                patternBuilder.append(optionalSpacePattern).append(pattern.toString())
-                exampleBuilder.append(parameter.resolver.testExample).append(' ')
-            }
-        }
-
-        val pattern = Pattern.compile(patternBuilder.toString())
+        val patterns = optionParameters.map { ParameterPattern(it.resolver, it.isOptional, hasMultipleQuotable) }
+        val pattern = joinPatterns(patterns)
 
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
-        val exampleStr = exampleBuilder.toString().trim()
+        val exampleStr = optionParameters.joinToString(" ") { it.resolver.testExample }
         require(pattern.matcher(exampleStr).matches()) {
             """
             Failed building pattern for method ${variation.method.shortSignature} with pattern '$pattern' and example '$exampleStr'
@@ -40,5 +23,36 @@ object CommandPattern {
         }
 
         return pattern
+    }
+
+    class ParameterPattern(
+        resolver: RegexParameterResolver<*, *>,
+        private val optional: Boolean,
+        hasMultipleQuotable: Boolean
+    ) {
+        private val pattern: Pattern = when {
+            hasMultipleQuotable -> resolver.preferredPattern //Might be a quotable pattern
+            else -> resolver.pattern
+        }
+
+        fun toString(includeSpace: Boolean): String {
+            return if (optional) {
+                if (includeSpace) "(?:$pattern\\s+)?" else "(?:$pattern)?"
+            } else {
+                if (includeSpace) "$pattern\\s+" else pattern.toString()
+            }
+        }
+    }
+
+    @JvmStatic
+    fun joinPatterns(patterns: List<ParameterPattern>): Pattern {
+        return buildString(16 * patterns.size) {
+            append("^")
+
+            patterns.forEachIndexed { i, pattern ->
+                val includeSpace = i <= patterns.size - 2
+                append(pattern.toString(includeSpace))
+            }
+        }.let { Pattern.compile(it) }
     }
 }

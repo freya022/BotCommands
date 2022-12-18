@@ -1,13 +1,14 @@
 package com.freya02.botcommands.othertests;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
-import com.freya02.botcommands.internal.parameters.LongResolver;
-import com.freya02.botcommands.internal.parameters.StringResolver;
-import com.freya02.botcommands.internal.parameters.UserResolver;
-import com.freya02.botcommands.internal.prefixed.CommandPattern;
-import com.freya02.botcommands.internal.prefixed.CommandPattern.ParameterPattern;
-import com.freya02.botcommands.internal.prefixed.TextCommandInfo;
+import com.freya02.botcommands.internal.commands.prefixed.CommandPattern;
+import com.freya02.botcommands.internal.commands.prefixed.CommandPattern.ParameterPattern;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
+import com.freya02.botcommands.internal.parameters.resolvers.LongResolver;
+import com.freya02.botcommands.internal.parameters.resolvers.StringResolver;
+import com.freya02.botcommands.internal.parameters.resolvers.UserResolver;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,9 +41,14 @@ public class CommandPatternTest {
         System.out.println(CommandPattern.joinPatterns(patterns));
     }
 
-    private static class LibResolver implements RegexParameterResolver {
+    private static class LibResolver extends ParameterResolver<LibResolver, Object> implements RegexParameterResolver<LibResolver, Object> {
+        public LibResolver() {
+            super(Object.class);
+        }
+
+        @Nullable
         @Override
-        public @Nullable Object resolve(@NotNull BContext context, @NotNull TextCommandInfo info, @NotNull MessageReceivedEvent event, @NotNull String[] args) {
+        public Object resolve(@NotNull BContext context, @NotNull TextCommandVariation variation, @NotNull MessageReceivedEvent event, @NotNull String[] args) {
             return null;
         }
 
