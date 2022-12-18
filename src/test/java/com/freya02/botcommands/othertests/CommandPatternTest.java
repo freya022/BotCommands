@@ -6,9 +6,7 @@ import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern.ParameterPattern;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
-import com.freya02.botcommands.internal.parameters.resolvers.LongResolver;
-import com.freya02.botcommands.internal.parameters.resolvers.StringResolver;
-import com.freya02.botcommands.internal.parameters.resolvers.UserResolver;
+import com.freya02.botcommands.internal.parameters.resolvers.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CommandPatternTest {
-    private record TestParameterPattern(RegexParameterResolver resolver, boolean optional,
+    private record TestParameterPattern(RegexParameterResolver<?, ?> resolver, boolean optional,
                                         boolean hasMultipleQuotable) {
         public ParameterPattern toParameterPattern() {
             return new ParameterPattern(resolver, optional, hasMultipleQuotable);

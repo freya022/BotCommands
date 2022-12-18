@@ -25,9 +25,13 @@ object CommandPattern {
         return pattern
     }
 
+    enum class SpacePosition {
+        LEFT, RIGHT
+    }
+
     class ParameterPattern(
         resolver: RegexParameterResolver<*, *>,
-        private val optional: Boolean,
+        val optional: Boolean,
         hasMultipleQuotable: Boolean
     ) {
         private val pattern: Pattern = when {
@@ -35,23 +39,49 @@ object CommandPattern {
             else -> resolver.pattern
         }
 
-        fun toString(includeSpace: Boolean): String {
+        fun toString(position: SpacePosition?): String {
             return if (optional) {
-                if (includeSpace) "(?:$pattern\\s+)?" else "(?:$pattern)?"
+                when (position) {
+                    SpacePosition.LEFT -> "(?:\\s+$pattern)?"
+                    SpacePosition.RIGHT -> "(?:$pattern\\s+)?"
+                    else -> "(?:$pattern)?"
+                }
             } else {
-                if (includeSpace) "$pattern\\s+" else pattern.toString()
+                when (position) {
+                    SpacePosition.LEFT -> "\\s+$pattern"
+                    SpacePosition.RIGHT -> "$pattern\\s+"
+                    else -> pattern.toString()
+                }
             }
         }
     }
 
     @JvmStatic
     fun joinPatterns(patterns: List<ParameterPattern>): Pattern {
+        // The space must stick to the optional part when in between, while being the nearest from the middle point
+        // So if arg0 is optional, but arg1 is not, the space goes on the right part of the regex of arg0
+        // If arg0 is required, but arg1 is optional, the space goes on the left part of the regex of arg1
+        val positions = arrayOfNulls<SpacePosition>(patterns.size)
+        for (i in 0 until patterns.size - 1) {
+            val arg0 = patterns[i]
+            val arg1 = patterns[i + 1]
+            if (arg0.optional && !arg1.optional) {
+                positions[i] = SpacePosition.RIGHT
+            } else if (!arg0.optional && arg1.optional) {
+                positions[i + 1] = SpacePosition.LEFT
+            } else if (arg0.optional /*&& arg1.optional*/) {
+                positions[i + 1] = SpacePosition.LEFT
+            } else { //Both are required
+                positions[i + 1] = SpacePosition.LEFT
+            }
+        }
+
         return buildString(16 * patterns.size) {
             append("^")
 
             patterns.forEachIndexed { i, pattern ->
-                val includeSpace = i <= patterns.size - 2
-                append(pattern.toString(includeSpace))
+                val position = positions[i]
+                append(pattern.toString(position))
             }
         }.let { Pattern.compile(it) }
     }
