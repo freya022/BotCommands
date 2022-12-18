@@ -18,8 +18,10 @@ import mu.KotlinLogging
 import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -186,6 +188,16 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
         return types.map {
             map[it] ?: getService(it)
+        }
+    }
+
+    inline fun <T, reified R : Any> lazy(): ReadOnlyProperty<T, R> {
+        val kClass = R::class
+
+        return object : ReadOnlyProperty<T, R> {
+            val value: R by lazy { getService(kClass) }
+
+            override fun getValue(thisRef: T, property: KProperty<*>) = value
         }
     }
 
