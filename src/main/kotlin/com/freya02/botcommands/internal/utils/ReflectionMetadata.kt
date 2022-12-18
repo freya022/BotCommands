@@ -35,33 +35,35 @@ internal object ReflectionMetadata {
 
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
         val scanned: List<Pair<ScanResult, ClassInfoList>> = Benchmark.printTimings("ClassGraph") { buildList {
-            ClassGraph()
+            Benchmark.printTimings("ClassGraph 1") { ClassGraph()
                 .acceptPackages("com.freya02.botcommands")
+                .rejectPackages("com.freya02.botcommands.test")
                 .enableMethodInfo()
                 .enableAnnotationInfo()
+                .disableModuleScanning()
+                .disableNestedJarScanning()
                 .scan()
                 .also { scanResult -> // Don't keep test classes
                     add(scanResult to scanResult.allStandardClasses.filter {
-                        if (it.packageName.startsWith("com.freya02.botcommands.test")) {
-                            return@filter false
-                        } else {
-                            return@filter it.isService()
-                                    || it.outerClasses.any { outer -> outer.isService() }
-                                    || it.hasAnnotation(IncludeClasspath::class.java.name)
-                        }
+                        return@filter it.isService()
+                                || it.outerClasses.any { outer -> outer.isService() }
+                                || it.hasAnnotation(IncludeClasspath::class.java.name)
                     })
                 }
+            }
 
-            ClassGraph()
+            Benchmark.printTimings("ClassGraph 2") { ClassGraph()
                 .acceptPackages(*packages.toTypedArray())
                 .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
                 .enableMethodInfo()
                 .enableAnnotationInfo()
+                .disableModuleScanning()
+                .disableNestedJarScanning()
                 .scan()
                 .also { scanResult ->
                     add(scanResult to scanResult.allStandardClasses)
                 }
-            }
+            } }
         }
 
         return Benchmark.printTimings("Process") { scanned.flatMap { (scanResult, classes) ->
