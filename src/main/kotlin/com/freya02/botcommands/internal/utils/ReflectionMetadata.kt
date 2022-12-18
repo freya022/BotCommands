@@ -34,8 +34,8 @@ internal object ReflectionMetadata {
     }
 
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
-        val scanned: List<Pair<ScanResult, ClassInfoList>> = Benchmark.printTimings("ClassGraph") { buildList {
-            Benchmark.printTimings("ClassGraph 1") { ClassGraph()
+        val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
+            ClassGraph()
                 .acceptPackages("com.freya02.botcommands")
                 .rejectPackages("com.freya02.botcommands.test")
                 .enableMethodInfo()
@@ -50,9 +50,8 @@ internal object ReflectionMetadata {
                                 || it.hasAnnotation(IncludeClasspath::class.java.name)
                     })
                 }
-            }
 
-            Benchmark.printTimings("ClassGraph 2") { ClassGraph()
+            ClassGraph()
                 .acceptPackages(*packages.toTypedArray())
                 .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
                 .enableMethodInfo()
@@ -63,10 +62,9 @@ internal object ReflectionMetadata {
                 .also { scanResult ->
                     add(scanResult to scanResult.allStandardClasses)
                 }
-            } }
         }
 
-        return Benchmark.printTimings("Process") { scanned.flatMap { (scanResult, classes) ->
+        return scanned.flatMap { (scanResult, classes) ->
             classes
                 .asSequence()
                 .filter {
@@ -83,7 +81,7 @@ internal object ReflectionMetadata {
                 .also {
                     scanResult.close()
                 }
-        } }
+        }
     }
 
 
@@ -95,10 +93,11 @@ internal object ReflectionMetadata {
                     if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue
 
                     val method = methodInfo.loadClassAndGetMethod()
-                    val nullabilities = methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
-                        parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
-                                || parameterInfo.hasAnnotation(Optional::class.java)
-                    }
+                    val nullabilities =
+                        methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
+                            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
+                                    || parameterInfo.hasAnnotation(Optional::class.java)
+                        }
 
                     functionMetadataMap_[method] = KFunctionMetadata(methodInfo.minLineNum, nullabilities)
                 }
@@ -114,7 +113,8 @@ internal object ReflectionMetadata {
         get() {
             val metadata = functionMetadataMap[function.javaMethod]
                 ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
-            val isNullableAnnotated = metadata.nullabilities[index - 1] // -1 because 0 is actually the instance parameter
+            val isNullableAnnotated =
+                metadata.nullabilities[index - 1] // -1 because 0 is actually the instance parameter
             val isNullableMarked = type.isMarkedNullable
 
             return isNullableAnnotated || isNullableMarked
@@ -122,7 +122,8 @@ internal object ReflectionMetadata {
 
     private val handle: MethodHandle by lazy {
         val kParameterImplClazz = Class.forName("kotlin.reflect.jvm.internal.KParameterImpl")
-        MethodHandles.publicLookup().unreflect(kParameterImplClazz.kotlin.memberProperties.find { it.name == "callable" }!!.javaGetter!!)
+        MethodHandles.publicLookup()
+            .unreflect(kParameterImplClazz.kotlin.memberProperties.find { it.name == "callable" }!!.javaGetter!!)
     }
     internal val KParameter.function: KFunction<*>
         get() {
@@ -132,7 +133,8 @@ internal object ReflectionMetadata {
         }
 
     internal val KFunction<*>.isJava
-        get() = javaMethod?.declaringClass?.isAnnotationPresent(Metadata::class.java)?.not() ?: false //If there's no java method then it's def not java ?
+        get() = javaMethod?.declaringClass?.isAnnotationPresent(Metadata::class.java)?.not()
+            ?: false //If there's no java method then it's def not java ?
 
     internal val KFunction<*>.lineNumber: Int
         get() = (functionMetadataMap[this.javaMethod]
