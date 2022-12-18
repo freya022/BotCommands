@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.prefixed;
 
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.internal.utils.Utils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -30,6 +31,11 @@ public class CommandPattern {
 		return pattern;
 	}
 
+	private enum SpacePosition {
+		LEFT,
+		RIGHT
+	}
+
 	public static class ParameterPattern {
 		private final Pattern pattern;
 		private final boolean optional;
@@ -41,15 +47,19 @@ public class CommandPattern {
 					: resolver.getPattern();
 		}
 
-		public String toString(boolean includeSpace) {
+		public String toString(@Nullable SpacePosition position) {
 			if (optional) {
-				if (includeSpace) {
+				if (position == SpacePosition.LEFT) {
+					return "(?:" + "\\s+" + pattern.toString() + ")?";
+				} else if (position == SpacePosition.RIGHT) {
 					return "(?:" + pattern.toString() + "\\s+" + ")?";
 				} else {
 					return "(?:" + pattern.toString() + ")?";
 				}
 			} else {
-				if (includeSpace) {
+				if (position == SpacePosition.LEFT) {
+					return "\\s+" + pattern.toString();
+				} else if (position == SpacePosition.RIGHT) {
 					return pattern.toString() + "\\s+";
 				} else {
 					return pattern.toString();
@@ -62,11 +72,29 @@ public class CommandPattern {
 		final StringBuilder builder = new StringBuilder(16 * patterns.size());
 		builder.append("^");
 
-		for (int i = 0, patternsSize = patterns.size(); i < patternsSize; i++) {
-			ParameterPattern pattern = patterns.get(i);
+		// The space must stick to the optional part when in between, while being the nearest from the middle point
+		// So if arg0 is optional, but arg1 is not, the space goes on the right part of the regex of arg0
+		// If arg0 is required, but arg1 is optional, the space goes on the left part of the regex of arg1
+		final SpacePosition[] positions = new SpacePosition[patterns.size()];
+		for (int i = 0; i < patterns.size() - 1; i++) {
+			final ParameterPattern arg0 = patterns.get(i);
+			final ParameterPattern arg1 = patterns.get(i + 1);
 
-			boolean includeSpace = i <= patternsSize - 2; //TODO should be positioned on left if last index
-			builder.append(pattern.toString(includeSpace));
+			if (arg0.optional && !arg1.optional) {
+				positions[i] = SpacePosition.RIGHT;
+			} else if (!arg0.optional && arg1.optional) {
+				positions[i + 1] = SpacePosition.LEFT;
+			} else if (arg0.optional /*&& arg1.optional*/) {
+				positions[i + 1] = SpacePosition.LEFT;
+			} else { //Both are required
+				positions[i + 1] = SpacePosition.LEFT;
+			}
+		}
+
+		for (int i = 0, patternsSize = patterns.size(); i < patternsSize; i++) {
+			final ParameterPattern pattern = patterns.get(i);
+			final SpacePosition position = positions[i];
+			builder.append(pattern.toString(position));
 		}
 
 		return Pattern.compile(builder.toString());
