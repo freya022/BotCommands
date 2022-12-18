@@ -1,7 +1,6 @@
 ------------ Base framework
 
 drop table if exists bc_version cascade;
-drop table if exists bc_statement_result cascade;
 
 create table bc_version
 (
@@ -11,14 +10,6 @@ create table bc_version
 
 insert into bc_version
 values (true, '3.0.0-alpha.1'); -- Change in Database.kt too
-
-create table bc_statement_result
-(
-    id         serial   not null primary key,
-    query      text     not null,
-    success    smallint not null,
-    time_nanos bigint   not null
-);
 
 ------------ Components
 

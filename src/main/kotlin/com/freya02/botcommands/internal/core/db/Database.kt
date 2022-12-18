@@ -10,7 +10,7 @@ import org.intellij.lang.annotations.Language
 import java.sql.Connection
 
 @ConditionalService
-class Database internal constructor(private val config: BConfig) {
+class Database internal constructor(internal val config: BConfig) {
     init {
         config.connectionProvider.get().use { conn ->
             conn.prepareStatement("select version from bc_version").use {
