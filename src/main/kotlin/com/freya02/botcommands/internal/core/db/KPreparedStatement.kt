@@ -61,7 +61,7 @@ class KPreparedStatement(val database: Database, val preparedStatement: Prepared
         return preparedStatement.toString().substring(index + indexMarker.length)
             .lines()
             .map {
-                val endIndex = Regex("--(?!.*')").find(it)?.range?.start ?: it.length
+                val endIndex = commentRegex.find(it)?.range?.start ?: it.length
                 it.substring(0, endIndex)
             }
             .joinToString(" ") { it.trim() }
@@ -73,5 +73,7 @@ class KPreparedStatement(val database: Database, val preparedStatement: Prepared
 
     companion object {
         private val logger = KotlinLogging.logger { }
+
+        private val commentRegex = Regex("--(?!.*')")
     }
 }
