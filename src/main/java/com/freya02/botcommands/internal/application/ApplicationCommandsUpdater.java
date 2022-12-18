@@ -245,6 +245,7 @@ public class ApplicationCommandsUpdater {
 	}
 
 	private void configureTopLevel(ApplicationCommandInfo info, CommandData rightCommand) {
+		rightCommand.setNSFW(info.isNsfw());
 		if (info.isDefaultLocked()) {
 			rightCommand.setDefaultPermissions(DefaultMemberPermissions.DISABLED);
 		} else if (!info.getUserPermissions().isEmpty()) {
