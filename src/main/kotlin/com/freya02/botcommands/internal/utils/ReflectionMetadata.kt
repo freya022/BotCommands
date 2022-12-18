@@ -8,10 +8,8 @@ import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import io.github.classgraph.*
 import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 import kotlin.reflect.jvm.kotlinFunction
@@ -19,14 +17,7 @@ import kotlin.reflect.jvm.kotlinFunction
 internal object ReflectionMetadata {
     internal class KFunctionMetadata(val function: KFunction<*>, val isJava: Boolean, val line: Int)
 
-    internal class KParameterMetadata(
-        annotationMap: Map<KClass<*>, Annotation>,
-        val isNullable: Boolean,
-        val isJava: Boolean,
-        val function: KFunction<*>
-    ) {
-        val annotationMap: Map<KClass<*>, Annotation> = Collections.unmodifiableMap(annotationMap)
-    }
+    internal class KParameterMetadata(val isNullable: Boolean, val function: KFunction<*>)
 
     private var scannedParams: Boolean = false
 
@@ -47,7 +38,7 @@ internal object ReflectionMetadata {
     }
 
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
-        val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
+        val scanned: List<Pair<ScanResult, ClassInfoList>> = Benchmark.printTimings("ClassGraph") { buildList {
             ClassGraph()
                 .acceptPackages("com.freya02.botcommands")
                 .enableMethodInfo()
@@ -74,9 +65,10 @@ internal object ReflectionMetadata {
                 .also { scanResult ->
                     add(scanResult to scanResult.allStandardClasses)
                 }
+            }
         }
 
-        return scanned.flatMap { (scanResult, classes) ->
+        return Benchmark.printTimings("Process") { scanned.flatMap { (scanResult, classes) ->
             classes
                 .asSequence()
                 .filter {
@@ -93,7 +85,7 @@ internal object ReflectionMetadata {
                 .also {
                     scanResult.close()
                 }
-        }
+        } }
     }
 
 
@@ -110,15 +102,6 @@ internal object ReflectionMetadata {
                     for ((j, parameterInfo) in methodInfo.parameterInfo.dropLast(if (kFunction.isSuspend) 1 else 0).withIndex()) {
                         val parameter = parameters[j]
 
-                        val annotationMap: MutableMap<KClass<*>, Annotation> = hashMapOf()
-
-                        for (annotationInfo in parameterInfo.annotationInfo) {
-                            @Suppress("UNCHECKED_CAST")
-                            annotationMap[annotationInfo.classInfo.loadClass().kotlin] =
-                                parameter.findAnnotations(annotationInfo.classInfo.loadClass().kotlin as KClass<out Annotation>)
-                                    .firstOrNull() ?: annotationInfo.loadClassAndInstantiate()
-                        }
-
                         val isNullableAnnotated =
                             parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") } or parameter.hasAnnotation<Optional>()
                         val isNullableMarked = parameter.type.isMarkedNullable
@@ -128,9 +111,7 @@ internal object ReflectionMetadata {
 
                         paramMetadataMap_[parameter] =
                             KParameterMetadata(
-                                annotationMap,
-                                isNullableAnnotated or isNullableMarked,
-                                isJavaParameter,
+                                isNullableAnnotated || isNullableMarked,
                                 kFunction
                             )
                     }
@@ -145,16 +126,6 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    internal inline fun <reified A : Annotation> KParameter.hasAnnotation_(): Boolean {
-        return (paramMetadataMap[this]
-            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).annotationMap[A::class] != null
-    }
-
-    internal inline fun <reified A : Annotation> KParameter.findAnnotation_(): A? {
-        return (paramMetadataMap[this]
-            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).annotationMap[A::class] as? A
-    }
-
     internal val KParameter.isNullable: Boolean
         get() = (paramMetadataMap[this]
             ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).isNullable
@@ -162,10 +133,6 @@ internal object ReflectionMetadata {
     internal val KParameter.function
         get() = (paramMetadataMap[this]
             ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).function
-
-    internal val KParameter.isJava
-        get() = (paramMetadataMap[this]
-            ?: throwUser("Tried to access a KParameter which hasn't been scanned: $this, the parameter must be accessible and in the search path")).isJava
 
     internal val KFunction<*>.isJava
         get() = (functionMetadataMap[this]
