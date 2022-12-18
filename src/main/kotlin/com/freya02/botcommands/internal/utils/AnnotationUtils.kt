@@ -6,12 +6,15 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
+import com.freya02.botcommands.internal.simpleName
+import com.freya02.botcommands.internal.throwInternal
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaMethod
@@ -79,5 +82,13 @@ object AnnotationUtils {
 
             set += func.javaMethod!!.declaringClass.getAnnotation(BotPermissions::class.java).value
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T, A : Annotation> getAnnotationValue(annotation: A, methodName: String): T {
+        val kFunction = annotation.annotationClass.declaredFunctions.find { it.name == methodName }
+            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}'")
+        return kFunction.call(annotation) as? T
+            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}' as the type is incorrect, annotation type: ${kFunction.returnType.simpleName}")
     }
 }
