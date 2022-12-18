@@ -20,6 +20,7 @@ public class CommandPattern {
 		//Try to match the built pattern to a built example string,
 		// if this fails then the pattern (and the command) is deemed too complex to be used
 		final String exampleStr = optionParameters.stream()
+				.filter(p -> !p.isOptional())
 				.map(p -> p.getResolver().getTestExample())
 				.collect(Collectors.joining(" "));
 		if (!pattern.matcher(exampleStr).matches())
