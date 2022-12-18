@@ -15,7 +15,7 @@ import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
@@ -67,7 +67,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
-        withContext(context.config.coroutineScopesConfig.eventDispatcherScope.coroutineContext) {
+        context.config.coroutineScopesConfig.eventDispatcherScope.launch {
             handlers.forEach { preboundFunction ->
                 try {
                     val classPathFunction = preboundFunction.classPathFunction

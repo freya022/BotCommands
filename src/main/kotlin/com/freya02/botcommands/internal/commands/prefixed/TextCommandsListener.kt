@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.getDeepestCause
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -48,36 +48,38 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
 
         logger.trace { "Received prefixed command: $msg" }
 
-        try {
-            val isNotOwner = !context.config.isOwner(member.idLong)
+        context.config.coroutineScopesConfig.textCommandsScope.launch {
+            try {
+                val isNotOwner = !context.config.isOwner(member.idLong)
 
-            val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
+                val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
 //                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
-                return
-            }
+                    return@launch
+                }
 
-            commandInfo.variations.forEach {
-                when (it.completePattern) {
-                    null -> { //Fallback method
-                        if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return
-                    }
-                    else -> { //Regex text command
-                        val matcher = it.completePattern.matcher(args)
-                        if (matcher.matches()) {
-                            if (tryExecute(event, args, it, isNotOwner, matcher) != ExecutionResult.CONTINUE) return
+                commandInfo.variations.forEach {
+                    when (it.completePattern) {
+                        null -> { //Fallback method
+                            if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return@launch
+                        }
+                        else -> { //Regex text command
+                            val matcher = it.completePattern.matcher(args)
+                            if (matcher.matches()) {
+                                if (tryExecute(event, args, it, isNotOwner, matcher) != ExecutionResult.CONTINUE) return@launch
+                            }
                         }
                     }
                 }
-            }
 
-            helpCommandInfo?.let { (helpCommand, _) ->
-                helpCommand.onInvalidCommand(
-                    BaseCommandEventImpl(context, null, event, ""),
-                    commandInfo
-                )
+                helpCommandInfo?.let { (helpCommand, _) ->
+                    helpCommand.onInvalidCommand(
+                        BaseCommandEventImpl(context, null, event, ""),
+                        commandInfo
+                    )
+                }
+            } catch (e: Throwable) {
+                handleException(event, e, msg)
             }
-        } catch (e: Throwable) {
-            handleException(event, e, msg)
         }
     }
 
@@ -191,9 +193,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             }
         }
 
-        return withContext(context.config.coroutineScopesConfig.textCommandsScope.coroutineContext) {
-            variation.execute(event, cooldownService, args, matcher)
-        }
+        return variation.execute(event, cooldownService, args, matcher)
     }
 
     private fun replyError(event: MessageReceivedEvent, msg: String) {

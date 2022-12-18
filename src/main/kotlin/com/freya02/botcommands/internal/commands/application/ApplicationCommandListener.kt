@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
@@ -25,19 +25,19 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${reconstructCommand(event)}" }
 
-        try {
-            val slashCommand = CommandPath.of(event.fullCommandName).let {
-                context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                    ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
-                    ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
-            }
+        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+            try {
+                val slashCommand = CommandPath.of(event.fullCommandName).let {
+                    context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
+                        ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
+                        ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
+                }
 
-            if (!canRun(event, slashCommand)) return
-            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                if (!canRun(event, slashCommand)) return@launch
                 slashCommand.execute(event, cooldownService)
+            } catch (e: Throwable) {
+                handleException(e, event)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 
@@ -45,19 +45,19 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${reconstructCommand(event)}" }
 
-        try {
-            val userCommand = event.name.let {
-                context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
-                    ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
-                    ?: throwUser("A user context command could not be found: ${event.name}")
-            }
+        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+            try {
+                val userCommand = event.name.let {
+                    context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
+                        ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
+                        ?: throwUser("A user context command could not be found: ${event.name}")
+                }
 
-            if (!canRun(event, userCommand)) return
-            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                if (!canRun(event, userCommand)) return@launch
                 userCommand.execute(context, cooldownService, event)
+            } catch (e: Throwable) {
+                handleException(e, event)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 
@@ -65,19 +65,19 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${reconstructCommand(event)}" }
 
-        try {
-            val messageCommand = event.name.let {
-                context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
-                    ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
-                    ?: throwUser("A message context command could not be found: ${event.name}")
-            }
+        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+            try {
+                val messageCommand = event.name.let {
+                    context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
+                        ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
+                        ?: throwUser("A message context command could not be found: ${event.name}")
+                }
 
-            if (!canRun(event, messageCommand)) return
-            withContext(context.config.coroutineScopesConfig.applicationCommandsScope.coroutineContext) {
+                if (!canRun(event, messageCommand)) return@launch
                 messageCommand.execute(context, cooldownService, event)
+            } catch (e: Throwable) {
+                handleException(e, event)
             }
-        } catch (e: Throwable) {
-            handleException(e, event)
         }
     }
 

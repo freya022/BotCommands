@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
@@ -17,35 +17,34 @@ internal class ModalListener(private val context: BContextImpl, private val moda
 
     @BEventListener
     suspend fun onModalEvent(event: ModalInteractionEvent) {
-        try {
-            val modalData = modalMaps.consumeModal(event.modalId)
+        context.config.coroutineScopesConfig.modalsScope.launch {
+            try {
+                val modalData = modalMaps.consumeModal(event.modalId)
+                if (modalData == null) { //Probably the modal expired
+                    event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()
+                    return@launch
+                }
 
-            if (modalData == null) { //Probably the modal expired
-                event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()
-                return
-            }
+                val modalHandler: ModalHandlerInfo = modalHandlerContainer[modalData.handlerName]
+                    ?: throwUser("Found no modal handler with handler name: '${modalData.handlerName}'")
 
-            val modalHandler: ModalHandlerInfo = modalHandlerContainer[modalData.handlerName]
-                ?: throwUser("Found no modal handler with handler name: '${modalData.handlerName}'")
-
-            withContext(context.config.coroutineScopesConfig.modalsScope.coroutineContext) {
                 modalHandler.execute(context, modalData, event)
-            }
-        } catch (e: Throwable) {
-            context.uncaughtExceptionHandler?.let { handler ->
-                handler.onException(context, event, e)
-                return
-            }
+            } catch (e: Throwable) {
+                context.uncaughtExceptionHandler?.let { handler ->
+                    handler.onException(context, event, e)
+                    return@launch
+                }
 
-            val baseEx = e.getDeepestCause()
+                val baseEx = e.getDeepestCause()
 
-            logger.error("Unhandled exception while executing a modal handler", baseEx)
-            when {
-                event.isAcknowledged -> event.hook.send(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
-                else -> event.reply_(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
+                logger.error("Unhandled exception while executing a modal handler", baseEx)
+                when {
+                    event.isAcknowledged -> event.hook.send(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
+                    else -> event.reply_(context.getDefaultMessages(event.guild).generalErrorMsg, ephemeral = true).queue()
+                }
+
+                context.dispatchException("Exception in modal handler", baseEx)
             }
-
-            context.dispatchException("Exception in modal handler", baseEx)
         }
     }
 }
