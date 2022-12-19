@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.builder
+package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder

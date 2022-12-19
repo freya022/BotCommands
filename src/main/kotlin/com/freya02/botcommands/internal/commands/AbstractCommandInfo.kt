@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.api.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo.Companion.computePath
 import net.dv8tion.jda.api.Permission

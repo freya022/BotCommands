@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
+import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter

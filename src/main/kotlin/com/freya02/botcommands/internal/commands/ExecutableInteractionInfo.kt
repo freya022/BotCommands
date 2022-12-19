@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.MethodParameter

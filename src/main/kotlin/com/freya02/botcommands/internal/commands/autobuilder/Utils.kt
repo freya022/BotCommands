@@ -1,7 +1,5 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
-import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
@@ -11,6 +9,8 @@ import com.freya02.botcommands.api.commands.application.IApplicationCommandManag
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathFunction

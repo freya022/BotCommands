@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.commands.application.builder
 
-import com.freya02.botcommands.api.builder.BuilderFunctionHolder
-import com.freya02.botcommands.api.builder.CommandBuilder
-import com.freya02.botcommands.api.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.builder.BuilderFunctionHolder
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 
 abstract class ApplicationCommandBuilder internal constructor(
     name: String
