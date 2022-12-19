@@ -6,16 +6,12 @@ import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
 import io.github.classgraph.*
-import java.lang.invoke.MethodHandle
-import java.lang.invoke.MethodHandles
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
-import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.javaMethod
 
 private typealias IsNullableAnnotated = Boolean
@@ -120,14 +116,9 @@ internal object ReflectionMetadata {
             return isNullableAnnotated || isNullableMarked
         }
 
-    private val handle: MethodHandle by lazy {
-        val kParameterImplClazz = Class.forName("kotlin.reflect.jvm.internal.KParameterImpl")
-        MethodHandles.publicLookup()
-            .unreflect(kParameterImplClazz.kotlin.memberProperties.find { it.name == "callable" }!!.javaGetter!!)
-    }
     internal val KParameter.function: KFunction<*>
         get() {
-            val callable = handle.invoke(this)
+            val callable = ReflectionMetadataAccessor.getParameterCallable(this)
             return callable as? KFunction<*>
                 ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
         }
