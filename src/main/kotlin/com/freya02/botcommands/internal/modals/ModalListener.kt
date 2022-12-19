@@ -25,10 +25,16 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                     return@launch
                 }
 
-                val modalHandler: ModalHandlerInfo = modalHandlerContainer[modalData.handlerName]
-                    ?: throwUser("Found no modal handler with handler name: '${modalData.handlerName}'")
+                val handlerData = modalData.handlerData ?: return@launch
+                when (handlerData) {
+                    is EphemeralModalHandlerData -> handlerData.handler(event)
+                    is PersistentModalHandlerData -> {
+                        val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
+                            ?: throwUser("Found no modal handler with handler name: '${handlerData.handlerName}'")
 
-                modalHandler.execute(context, modalData, event)
+                        modalHandler.execute(context, modalData, event)
+                    }
+                }
             } catch (e: Throwable) {
                 context.uncaughtExceptionHandler?.let { handler ->
                     handler.onException(context, event, e)

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.modals;
 
-import com.freya02.botcommands.internal.modals.InputData;
-import com.freya02.botcommands.internal.modals.ModalMaps;
-import com.freya02.botcommands.internal.modals.PartialModalData;
+import com.freya02.botcommands.api.modals.annotations.ModalData;
+import com.freya02.botcommands.api.modals.annotations.ModalHandler;
+import com.freya02.botcommands.internal.modals.*;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -16,20 +16,33 @@ import java.util.concurrent.TimeUnit;
 
 public class ModalBuilder extends Modal.Builder {
 	private final ModalMaps modalMaps;
-	private final String handlerName;
-	private final Object[] userData;
+	private IModalHandlerData handlerData;
 	private ModalTimeoutInfo timeoutInfo;
 
 	@ApiStatus.Internal
-	public ModalBuilder(ModalMaps modalMaps, @NotNull String title, @NotNull String handlerName, Object[] userData) {
+	public ModalBuilder(ModalMaps modalMaps, @NotNull String title) {
 		super("0", title);
 
+		this.modalMaps = modalMaps;
+	}
+
+	/**
+	 * Binds the following handler (defined by {@link ModalHandler}) with its arguments
+	 *
+	 * <br>This step is optional if you do not wish to use methods for that
+	 *
+	 * @param handlerName The name of the modal handler, must be the same as your {@link ModalHandler}
+	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData}
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public ModalBuilder bindTo(@NotNull String handlerName, Object... userData) {
 		Checks.notNull(handlerName, "Modal handler name");
 		Checks.notNull(userData, "Modal user data");
 
-		this.modalMaps = modalMaps;
-		this.handlerName = handlerName;
-		this.userData = userData;
+		this.handlerData = new PersistentModalHandlerData(handlerName, userData);
+
+		return this;
 	}
 
 	/**
@@ -91,7 +104,7 @@ public class ModalBuilder extends Modal.Builder {
 			}
 		}
 
-		final String actualId = modalMaps.insertModal(new PartialModalData(handlerName, userData, inputDataMap, timeoutInfo), getId());
+		final String actualId = modalMaps.insertModal(new PartialModalData(handlerData, inputDataMap, timeoutInfo), getId());
 
 		setId(actualId);
 

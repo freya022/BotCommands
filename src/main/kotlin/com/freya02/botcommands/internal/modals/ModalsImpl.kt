@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 @BService
 @ServiceType(type = Modals::class)
 internal class ModalsImpl(private val modalMaps: ModalMaps) : Modals {
-    override fun create(title: String, handlerName: String, vararg userData: Any?): ModalBuilder {
-        return ModalBuilder(modalMaps, title, handlerName, userData)
+    override fun create(title: String): ModalBuilder {
+        return ModalBuilder(modalMaps, title)
     }
 
     override fun createTextInput(inputName: String, label: String, style: TextInputStyle): TextInputBuilder {

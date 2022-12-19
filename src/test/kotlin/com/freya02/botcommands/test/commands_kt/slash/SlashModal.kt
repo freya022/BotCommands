@@ -28,8 +28,10 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 class SlashModal(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "modal_annotated")
     fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
-        val modal = modals.create("Title", SLASH_MODAL_MODAL_HANDLER, "User data", 420) {
+        val modal = modals.create("Title") {
             shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
+
+            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
 
             setTimeout(30, TimeUnit.SECONDS) {
                 println("Timeout")
