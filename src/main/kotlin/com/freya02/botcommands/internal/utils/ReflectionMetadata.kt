@@ -9,6 +9,7 @@ import io.github.classgraph.*
 import java.lang.reflect.Method
 import java.util.*
 import kotlin.coroutines.Continuation
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
@@ -17,14 +18,23 @@ import kotlin.reflect.jvm.javaMethod
 private typealias IsNullableAnnotated = Boolean
 
 internal object ReflectionMetadata {
-    internal class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
+    private class ClassMetadata(val sourceFile: String)
+    private class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
 
     private var scannedParams: Boolean = false
+
+    private val classMetadataMap_: MutableMap<Class<*>, ClassMetadata> = hashMapOf()
+    private val classMetadataMap: Map<Class<*>, ClassMetadata> by lazy {
+        if (!scannedParams)
+            throwInternal("Tried to access class metadata but they haven't been scanned yet")
+
+        Collections.unmodifiableMap(classMetadataMap_)
+    }
 
     private val methodMetadataMap_: MutableMap<Method, MethodMetadata> = hashMapOf()
     private val methodMetadataMap: Map<Method, MethodMetadata> by lazy {
         if (!scannedParams)
-            throwInternal("Tried to access a function metadata but they haven't been scanned yet")
+            throwInternal("Tried to access method metadata but they haven't been scanned yet")
 
         Collections.unmodifiableMap(methodMetadataMap_)
     }
@@ -96,6 +106,8 @@ internal object ReflectionMetadata {
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
                 }
+
+                classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
@@ -103,6 +115,10 @@ internal object ReflectionMetadata {
 
         scannedParams = true
     }
+
+    internal val KClass<*>.sourceFile: String
+        get() = (classMetadataMap[this.java]
+            ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
 
     internal val KParameter.isNullable: Boolean
         get() {
