@@ -17,6 +17,7 @@ import com.freya02.botcommands.api.modals.shortTextInput
 import com.freya02.botcommands.test.CustomObject
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
+import dev.minn.jda.ktx.messages.send
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
@@ -27,22 +28,26 @@ private const val SLASH_MODAL_TEXT_INPUT = "SlashModal: textInput"
 @CommandMarker
 class SlashModal(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "modal_annotated")
-    fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
+    suspend fun onSlashModal(event: GuildSlashEvent, modals: Modals) {
         val modal = modals.create("Title") {
             shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
 
 //            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
 
-            bindTo { event, _ ->
-                onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject())
-            }
+//            bindTo { event, _ ->
+//                onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject())
+//            }
 
-            setTimeout(30, TimeUnit.SECONDS) {
-                println("Timeout")
+            setTimeout(5, TimeUnit.SECONDS) {
+                event.hook.send("Timeout !", ephemeral = true).queue()
             }
         }
 
         event.replyModal(modal).queue()
+
+        val modalEvent = modal.await()
+
+        onModalSubmitted(modalEvent, "User data", 420, modalEvent.values[0].asString, CustomObject())
     }
 
     @ModalHandler(name = SLASH_MODAL_MODAL_HANDLER)

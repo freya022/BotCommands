@@ -143,4 +143,9 @@ public final class Utils {
 	public static TimeoutCancellationException createComponentTimeoutException() {
 		return new TimeoutCancellationException("Timed out waiting for component");
 	}
+
+	@NotNull
+	public static TimeoutCancellationException createModalTimeoutException() {
+		return new TimeoutCancellationException("Timed out waiting for modal");
+	}
 }

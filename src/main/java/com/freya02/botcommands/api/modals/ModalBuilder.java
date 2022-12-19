@@ -8,7 +8,7 @@ import kotlin.jvm.functions.Function2;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.modals.Modal;
+import net.dv8tion.jda.api.interactions.modals.Modal.Builder;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 //TODO use kotlin lmao
-public class ModalBuilder extends Modal.Builder {
+public class ModalBuilder extends Builder {
 	private final ModalMaps modalMaps;
 	private IModalHandlerData handlerData;
 	private ModalTimeoutInfo timeoutInfo;
@@ -129,6 +129,6 @@ public class ModalBuilder extends Modal.Builder {
 
 		setId(actualId);
 
-		return super.build();
+		return new Modal(super.build(), modalMaps);
 	}
 }

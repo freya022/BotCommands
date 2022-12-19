@@ -10,6 +10,7 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.coroutines.resume
 
 @BService
 internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer, private val modalMaps: ModalMaps) {
@@ -23,6 +24,10 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                 if (modalData == null) { //Probably the modal expired
                     event.reply_(context.getDefaultMessages(event).modalExpiredErrorMsg, ephemeral = true).queue()
                     return@launch
+                }
+
+                for (continuation in modalData.continuations) {
+                    continuation.resume(event)
                 }
 
                 val handlerData = modalData.handlerData ?: return@launch
