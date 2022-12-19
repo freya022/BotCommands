@@ -31,7 +31,11 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
         val modal = modals.create("Title") {
             shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
 
-            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
+//            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
+
+            bindTo { event, _ ->
+                onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject())
+            }
 
             setTimeout(30, TimeUnit.SECONDS) {
                 println("Timeout")

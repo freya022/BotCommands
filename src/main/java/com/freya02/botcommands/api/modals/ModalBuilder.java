@@ -3,6 +3,9 @@ package com.freya02.botcommands.api.modals;
 import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.internal.modals.*;
+import kotlin.coroutines.Continuation;
+import kotlin.jvm.functions.Function2;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.modals.Modal;
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+//TODO use kotlin lmao
 public class ModalBuilder extends Modal.Builder {
 	private final ModalMaps modalMaps;
 	private IModalHandlerData handlerData;
@@ -41,6 +45,23 @@ public class ModalBuilder extends Modal.Builder {
 		Checks.notNull(userData, "Modal user data");
 
 		this.handlerData = new PersistentModalHandlerData(handlerName, userData);
+
+		return this;
+	}
+
+	/**
+	 * Binds the following handler to this modal
+	 *
+	 * <br>This step is optional if you do not wish to use handlers for that
+	 *
+	 * @param handler The modal handler to run when the modal is used
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	public ModalBuilder bindTo(@NotNull Function2<ModalInteractionEvent, Continuation<?>, Object> handler) {
+		Checks.notNull(handler, "Modal handler");
+
+		this.handlerData = new EphemeralModalHandlerData(handler);
 
 		return this;
 	}
