@@ -74,7 +74,7 @@ internal fun checkTestCommand(manager: IApplicationCommandManager, func: KFuncti
     return true
 }
 
-fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
+internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {
             scope = cooldownAnnotation.cooldownScope
@@ -92,7 +92,7 @@ internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
     function = func as KFunction<Any>
 }
 
-fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
+internal fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
     if (func.hasAnnotation<NSFW>()) {
         throwUser(func, "@${NSFW::class.simpleName} can only be used on text commands, use the #nsfw method on your annotation instead")
     }

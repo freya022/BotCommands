@@ -19,7 +19,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.findAnnotations
 import kotlin.reflect.jvm.javaMethod
 
-object AnnotationUtils {
+internal object AnnotationUtils {
     //List order is from deepest to most effective
     //aka class --> method
     private fun <A : Annotation> getEffectiveAnnotations(method: KFunction<*>, annotation: KClass<A>): List<A> {
