@@ -6,8 +6,8 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isJava
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -76,7 +76,7 @@ internal object ReflectionUtilsKt {
             val source = this.javaMethod.let { method ->
                 return@let when {
                     method != null && this.lineNumber != 0 -> {
-                        val sourceFile = method.declaringClass.simpleName + if (this.isJava) ".java" else ".kt"
+                        val sourceFile = method.declaringClass.sourceFile
                         val lineNumber = this.lineNumber
 
                         "$sourceFile:$lineNumber"

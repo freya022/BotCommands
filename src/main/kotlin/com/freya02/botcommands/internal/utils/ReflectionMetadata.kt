@@ -116,9 +116,12 @@ internal object ReflectionMetadata {
         scannedParams = true
     }
 
-    internal val KClass<*>.sourceFile: String
-        get() = (classMetadataMap[this.java]
+    internal val Class<*>.sourceFile: String
+        get() = (classMetadataMap[this]
             ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).sourceFile
+
+    internal val KClass<*>.sourceFile: String
+        get() = this.java.sourceFile
 
     internal val KParameter.isNullable: Boolean
         get() {
