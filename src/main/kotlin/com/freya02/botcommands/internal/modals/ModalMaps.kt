@@ -17,7 +17,8 @@ private const val MAX_ID = Long.MAX_VALUE
 //Same amount of digits except every digit is 0 but the first one is 1
 private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
-@BService class ModalMaps(private val config: BConfig) {
+@BService
+internal class ModalMaps(private val config: BConfig) {
     private val modalMap: MutableMap<String, ModalData> = hashMapOf()
 
     //Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
