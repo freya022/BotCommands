@@ -32,8 +32,7 @@ internal object ReflectionMetadata {
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
         val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
             ClassGraph()
-                .acceptPackages("com.freya02.botcommands")
-                .rejectPackages("com.freya02.botcommands.test")
+                .acceptPackages("com.freya02.botcommands.api", "com.freya02.botcommands.internal")
                 .enableMethodInfo()
                 .enableAnnotationInfo()
                 .disableModuleScanning()
