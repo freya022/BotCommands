@@ -2,7 +2,7 @@ package com.freya02.botcommands.test.commands_kt.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
-import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -69,7 +69,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
     }
 
     @AppDeclaration
-    fun declare(applicationCommandManager: GuildApplicationCommandManager) {
+    fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
         applicationCommandManager.slashCommand("modal") {
             customOption("modals")
 
