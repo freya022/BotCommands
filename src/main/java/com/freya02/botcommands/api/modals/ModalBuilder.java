@@ -2,11 +2,13 @@ package com.freya02.botcommands.api.modals;
 
 import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
-public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.modals.Modal.Builder {
+public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.modals.Modal.Builder implements IModalBuilder {
 	protected ModalBuilder(@NotNull String customId, @NotNull String title) {
 		super(customId, title);
 	}
@@ -34,7 +36,7 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	 * @return This builder for chaining convenience
 	 */
 	@NotNull
-	public abstract ModalBuilder bindTo(@NotNull EphemeralModalHandler handler);
+	public abstract ModalBuilder bindTo(@NotNull Consumer<ModalInteractionEvent> handler);
 
 	/**
 	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed

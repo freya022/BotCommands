@@ -1,9 +1,14 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.modals.*
+import com.freya02.botcommands.api.modals.Modal
+import com.freya02.botcommands.api.modals.ModalBuilder
+import com.freya02.botcommands.api.modals.ModalTimeoutInfo
+import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.internal.throwInternal
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 
 internal class ModalBuilderImpl internal constructor(
     private val modalMaps: ModalMaps,
@@ -16,8 +21,12 @@ internal class ModalBuilderImpl internal constructor(
         handlerData = PersistentModalHandlerData(handlerName, userData)
     }
 
-    override fun bindTo(handler: EphemeralModalHandler): ModalBuilderImpl = this.also {
+    override fun bindTo(handler: suspend (ModalInteractionEvent) -> Unit): ModalBuilderImpl = this.also {
         handlerData = EphemeralModalHandlerData(handler)
+    }
+
+    override fun bindTo(handler: Consumer<ModalInteractionEvent>): ModalBuilderImpl = this.also {
+        return bindTo { handler.accept(it) }
     }
 
     override fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilderImpl = this.also {

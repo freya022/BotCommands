@@ -34,9 +34,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
 
 //            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
 
-//            bindTo { event, _ ->
-//                onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject())
-//            }
+//            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
             setTimeout(5, TimeUnit.SECONDS) {
                 event.hook.send("Timeout !", ephemeral = true).queue()

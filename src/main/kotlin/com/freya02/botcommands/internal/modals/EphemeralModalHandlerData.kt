@@ -1,5 +1,5 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.modals.EphemeralModalHandler
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class EphemeralModalHandlerData(val handler: EphemeralModalHandler) : IModalHandlerData
+class EphemeralModalHandlerData(val handler: suspend (ModalInteractionEvent) -> Unit) : IModalHandlerData
