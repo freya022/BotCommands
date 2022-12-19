@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
 fun Modals.create(title: String, handlerName: String, vararg userData: Any?, block: context(Modals) ModalBuilder.() -> Unit): Modal {
-    return create(title, handlerName, userData).apply {
+    return create(title, handlerName, *userData).apply {
         block(this@create, this)
     }.build()
 }
