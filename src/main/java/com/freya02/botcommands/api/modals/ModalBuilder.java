@@ -2,13 +2,12 @@ package com.freya02.botcommands.api.modals;
 
 import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
-import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractModalBuilder extends net.dv8tion.jda.api.interactions.modals.Modal.Builder {
-	protected AbstractModalBuilder(@NotNull String customId, @NotNull String title) {
+public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.modals.Modal.Builder {
+	protected ModalBuilder(@NotNull String customId, @NotNull String title) {
 		super(customId, title);
 	}
 
@@ -64,13 +63,16 @@ public abstract class AbstractModalBuilder extends net.dv8tion.jda.api.interacti
 	 * so you should do something like appending the interacting user's ID at the end of the modal ID
 	 */
 	@NotNull
-	public net.dv8tion.jda.api.interactions.modals.Modal.Builder setId(@NotNull String customId) {
+	public ModalBuilder setId(@NotNull String customId) {
 		super.setId(customId);
 		return this;
 	}
 
 	@NotNull
-	public Modal build() {
+	protected final net.dv8tion.jda.api.interactions.modals.Modal jdaBuild() {
 		return super.build();
 	}
+
+	@NotNull
+	public abstract Modal build();
 }

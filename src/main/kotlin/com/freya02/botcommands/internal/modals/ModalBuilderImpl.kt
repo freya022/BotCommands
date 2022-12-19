@@ -1,31 +1,31 @@
-package com.freya02.botcommands.api.modals
+package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.internal.modals.*
+import com.freya02.botcommands.api.modals.*
 import com.freya02.botcommands.internal.throwInternal
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.concurrent.TimeUnit
 
-class ModalBuilder internal constructor(
+internal class ModalBuilderImpl internal constructor(
     private val modalMaps: ModalMaps,
     title: String
-) : AbstractModalBuilder("0", title) {
+) : ModalBuilder("0", title) {
     private var handlerData: IModalHandlerData? = null
     private var timeoutInfo: ModalTimeoutInfo? = null
 
-    override fun bindTo(handlerName: String, vararg userData: Any): ModalBuilder = this.also {
+    override fun bindTo(handlerName: String, vararg userData: Any): ModalBuilderImpl = this.also {
         handlerData = PersistentModalHandlerData(handlerName, userData)
     }
 
-    override fun bindTo(handler: EphemeralModalHandler): ModalBuilder = this.also {
+    override fun bindTo(handler: EphemeralModalHandler): ModalBuilderImpl = this.also {
         handlerData = EphemeralModalHandlerData(handler)
     }
 
-    override fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilder = this.also {
+    override fun setTimeout(timeout: Long, unit: TimeUnit, onTimeout: Runnable): ModalBuilderImpl = this.also {
         Checks.positive(timeout, "Timeout")
         timeoutInfo = ModalTimeoutInfo(timeout, unit, onTimeout)
     }
 
-    override fun setId(customId: String): ModalBuilder = this.also {
+    override fun setId(customId: String): ModalBuilderImpl = this.also {
         super.setId(customId)
     }
 
@@ -44,6 +44,6 @@ class ModalBuilder internal constructor(
 
         id = modalMaps.insertModal(PartialModalData(handlerData, inputDataMap, timeoutInfo), id)
 
-        return Modal(super.build(), modalMaps)
+        return Modal(jdaBuild(), modalMaps)
     }
 }
