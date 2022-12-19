@@ -17,16 +17,16 @@ import kotlin.reflect.jvm.javaMethod
 private typealias IsNullableAnnotated = Boolean
 
 internal object ReflectionMetadata {
-    internal class KFunctionMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
+    internal class MethodMetadata(val line: Int, val nullabilities: List<IsNullableAnnotated>)
 
     private var scannedParams: Boolean = false
 
-    private val functionMetadataMap_: MutableMap<Method, KFunctionMetadata> = hashMapOf()
-    private val functionMetadataMap: Map<Method, KFunctionMetadata> by lazy {
+    private val methodMetadataMap_: MutableMap<Method, MethodMetadata> = hashMapOf()
+    private val methodMetadataMap: Map<Method, MethodMetadata> by lazy {
         if (!scannedParams)
             throwInternal("Tried to access a function metadata but they haven't been scanned yet")
 
-        Collections.unmodifiableMap(functionMetadataMap_)
+        Collections.unmodifiableMap(methodMetadataMap_)
     }
 
     internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
@@ -48,7 +48,7 @@ internal object ReflectionMetadata {
 
             ClassGraph()
                 .acceptPackages(*packages.toTypedArray())
-                .acceptClasses(*userClasses.map { it.simpleName }.toTypedArray())
+                .acceptClasses(*userClasses.map { it.name }.toTypedArray())
                 .enableMethodInfo()
                 .enableAnnotationInfo()
                 .disableModuleScanning()
@@ -94,7 +94,7 @@ internal object ReflectionMetadata {
                                     || parameterInfo.hasAnnotation(Optional::class.java)
                         }
 
-                    functionMetadataMap_[method] = KFunctionMetadata(methodInfo.minLineNum, nullabilities)
+                    methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
                 }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
@@ -106,7 +106,7 @@ internal object ReflectionMetadata {
 
     internal val KParameter.isNullable: Boolean
         get() {
-            val metadata = functionMetadataMap[function.javaMethod]
+            val metadata = methodMetadataMap[function.javaMethod]
                 ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
             val isNullableAnnotated =
                 metadata.nullabilities[index - 1] // -1 because 0 is actually the instance parameter
@@ -127,7 +127,7 @@ internal object ReflectionMetadata {
             ?: false //If there's no java method then it's def not java ?
 
     internal val KFunction<*>.lineNumber: Int
-        get() = (functionMetadataMap[this.javaMethod]
+        get() = (methodMetadataMap[this.javaMethod]
             ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")).line
 
     private val Method.isSuspend: Boolean
