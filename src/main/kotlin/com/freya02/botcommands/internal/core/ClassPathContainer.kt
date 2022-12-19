@@ -10,7 +10,6 @@ import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.system.exitProcess
 import kotlin.system.measureNanoTime
 
 internal class InstanceDelegate(private val getter: () -> Any) {
@@ -46,9 +45,6 @@ internal class ClassPathContainer(private val context: BContextImpl) {
         }
 
         logger.trace { "Reflection took ${nano / 1000000.0} ms" }
-
-        if (true)
-            exitProcess(0)
     }
 
     inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.function.hasAnnotation<T>() }
