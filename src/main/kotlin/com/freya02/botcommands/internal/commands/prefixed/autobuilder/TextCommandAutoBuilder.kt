@@ -160,7 +160,10 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
                         )
                     )
                 }
-                else -> option(optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()) {
+                else -> option(
+                    kParameter.findDeclarationName(),
+                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()
+                ) {
                     helpExample = optionAnnotation.example.nullIfEmpty()
                     isId = kParameter.hasAnnotation<ID>()
                 }
