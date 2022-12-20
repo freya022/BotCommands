@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.modals
 
+import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.internal.BContextImpl
@@ -10,7 +11,7 @@ import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-@BService
+@BService(start = ServiceStart.POST_LOAD)
 internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: ClassPathContainer) {
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 

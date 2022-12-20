@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.core.annotations
 
+import com.freya02.botcommands.api.core.ServiceStart
+
 /**
  * Annotates a class as a service.
  *
@@ -10,4 +12,10 @@ package com.freya02.botcommands.api.core.annotations
  * @see ServiceType
  */
 @Target(AnnotationTarget.CLASS)
-annotation class BService(val lazy: Boolean = false)
+annotation class BService(
+    /**
+     * When the service should be started
+     * @see ServiceStart
+     */
+    val start: ServiceStart = ServiceStart.DEFAULT
+)

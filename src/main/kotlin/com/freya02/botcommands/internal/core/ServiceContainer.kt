@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.EventDispatcher
+import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.InjectedService
@@ -11,7 +12,6 @@ import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isLoadableService
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -55,15 +55,29 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
         }
 
+        val loadableServices = hashMapOf<KClass<*>, ServiceStart>()
         context.classPathContainer.classes.forEach { clazz ->
-            if (clazz.isLoadableService()) {
-                if (clazz.findAnnotation<BService>()?.lazy == true) return@forEach
-                if (clazz.findAnnotation<ConditionalService>()?.lazy == true) return@forEach
+            clazz.findAnnotation<BService>()?.let {
+                loadableServices[clazz] = it.start
+                return@forEach
+            }
+            clazz.findAnnotation<ConditionalService>()?.let {
+                loadableServices[clazz] = it.start
+                return@forEach
+            }
+        }
 
-                if (clazz in serviceMap || clazz in unavailableServices) return@forEach //Skip classes that have been already loaded/checked
-                tryGetService(clazz).errorMessage?.let { errorMessage ->
-                    logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
-                }
+        loadServices(loadableServices, ServiceStart.DEFAULT)
+        loadServices(loadableServices, ServiceStart.POST_LOAD)
+    }
+
+    private fun loadServices(loadableServices: Map<KClass<*>, ServiceStart>, requestedStart: ServiceStart) {
+        for ((clazz, start) in loadableServices) {
+            if (start != requestedStart) continue
+
+            if (clazz in serviceMap || clazz in unavailableServices) continue //Skip classes that have been already loaded/checked
+            tryGetService(clazz).errorMessage?.let { errorMessage ->
+                logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
             }
         }
     }

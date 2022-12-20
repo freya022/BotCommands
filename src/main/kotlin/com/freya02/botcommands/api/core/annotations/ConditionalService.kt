@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core.annotations
 
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
+import com.freya02.botcommands.api.core.ServiceStart
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 
@@ -18,9 +19,10 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS)
 annotation class ConditionalService(
     /**
-     * Whether the service should be initialized lazily
+     * When the service should be started
+     * @see ServiceStart
      */
-    val lazy: Boolean = false,
+    val start: ServiceStart = ServiceStart.DEFAULT,
     /**
      * Makes this service depend on others, this also makes you able to skip the [ConditionalServiceChecker] implementation
      *
