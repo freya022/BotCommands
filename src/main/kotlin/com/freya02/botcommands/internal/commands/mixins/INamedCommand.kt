@@ -2,14 +2,14 @@ package com.freya02.botcommands.internal.commands.mixins
 
 import com.freya02.botcommands.api.commands.CommandPath
 
-interface INamedCommandInfo {
-    val parentInstance: INamedCommandInfo?
+interface INamedCommand {
+    val parentInstance: INamedCommand?
 
     val name: String
     val path: CommandPath
 
     companion object {
-        fun INamedCommandInfo.computePath(): CommandPath {
+        fun INamedCommand.computePath(): CommandPath {
             val components: MutableList<String> = arrayListOf()
             var info = this
 

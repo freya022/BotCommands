@@ -2,10 +2,10 @@ package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder
-import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
-import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo.Companion.computePath
+import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
 
-class SlashSubcommandGroupInfo(topLevelInstance: TopLevelSlashCommandInfo, builder: SlashSubcommandGroupBuilder) : INamedCommandInfo {
+class SlashSubcommandGroupInfo(topLevelInstance: TopLevelSlashCommandInfo, builder: SlashSubcommandGroupBuilder) : INamedCommand {
     override val parentInstance = topLevelInstance
     override val name = builder.name
     override val path: CommandPath by lazy { computePath() }

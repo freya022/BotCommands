@@ -15,7 +15,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashSubcomma
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.overwriteBytes
 import com.freya02.botcommands.internal.rethrowUser
 import dev.minn.jda.ktx.coroutines.await
@@ -177,7 +177,7 @@ internal class ApplicationCommandsUpdater private constructor(
             }
     }
 
-    private fun <T : INamedCommandInfo> Collection<T>.filterCommands() = filter { info ->
+    private fun <T : INamedCommand> Collection<T>.filterCommands() = filter { info ->
         context.settingsProvider?.let { settings ->
             guild?.let { guild ->
                 return@filter settings.getGuildCommands(guild).filter.test(info.path)

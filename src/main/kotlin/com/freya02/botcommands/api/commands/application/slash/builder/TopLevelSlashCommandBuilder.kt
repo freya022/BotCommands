@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.Top
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.throwUser
 
 class TopLevelSlashCommandBuilder internal constructor(
@@ -17,7 +17,7 @@ class TopLevelSlashCommandBuilder internal constructor(
     scope: CommandScope
 ) : SlashCommandBuilder(context, name), ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
-    override val parentInstance: INamedCommandInfo? = null
+    override val parentInstance: INamedCommand? = null
 
     @get:JvmSynthetic
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
