@@ -2,8 +2,12 @@ package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.Utils
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.floor
 import kotlin.math.log10
@@ -31,8 +35,12 @@ internal class ModalMaps(private val config: BConfig) {
                     delay(timeoutInfo.unit.toMillis(timeoutInfo.timeout))
 
                     synchronized(modalMap) {
-                        if (modalMap.remove(id) != null) { //If the timeout was reached without the modal being used
+                        val data = modalMap.remove(id)
+                        if (data != null) { //If the timeout was reached without the modal being used
                             timeoutInfo.onTimeout.run()
+                            for (continuation in data.continuations) {
+                                continuation.cancel(Utils.createModalTimeoutException())
+                            }
                         }
                     }
                 }
@@ -54,6 +62,16 @@ internal class ModalMaps(private val config: BConfig) {
         }
 
         return id
+    }
+
+    fun insertContinuation(id: String, continuation: CancellableContinuation<ModalInteractionEvent>) {
+        val data = modalMap[id] ?: throwUser("Unable to find a modal with id '$id' ; Is the modal created with the framework ?")
+        data.continuations.add(continuation)
+    }
+
+    fun removeContinuation(id: String, continuation: CancellableContinuation<ModalInteractionEvent>) {
+        val data = modalMap[id]
+        data?.continuations?.remove(continuation)
     }
 
     fun consumeModal(modalId: String): ModalData? {

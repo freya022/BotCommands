@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.core.events.LoadEvent
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
@@ -23,7 +24,7 @@ internal class ResolverContainer(
 ) {
     private val logger = KotlinLogging.logger {  }
 
-    private val map: MutableMap<KClass<*>, Any> = hashMapOf()
+    private val map: MutableMap<KClass<*>, Any> = Collections.synchronizedMap(hashMapOf())
 
     init {
         classPathContainer

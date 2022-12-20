@@ -1,9 +1,7 @@
 package com.freya02.botcommands.api.modals;
 
 import com.freya02.botcommands.api.core.annotations.InjectedService;
-import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import com.freya02.botcommands.api.modals.annotations.ModalInput;
-import com.freya02.botcommands.internal.modals.ModalData;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,14 +13,12 @@ public interface Modals {
 	/**
 	 * Creates a new modal with the specified handler name, and the passed user data
 	 *
-	 * @param title       The title of the modal
-	 * @param handlerName The name of the modal handler, must be the same as your {@link ModalHandler}
-	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData}
+	 * @param title The title of the modal
 	 *
 	 * @return The new ModalBuilder
 	 */
 	@NotNull
-	ModalBuilder create(@NotNull String title, @NotNull String handlerName, Object... userData);
+	ModalBuilder create(@NotNull String title);
 
 	/**
 	 * Creates a new text input component

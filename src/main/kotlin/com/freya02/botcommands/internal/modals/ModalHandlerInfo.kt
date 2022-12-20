@@ -69,6 +69,8 @@ class ModalHandlerInfo(
         modalData: ModalData,
         event: ModalInteractionEvent
     ): Boolean {
+        val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
+
         val inputDataMap = modalData.inputDataMap
         val inputNameToInputIdMap: MutableMap<String, String> = HashMap()
         inputDataMap.forEach { (inputId: String, inputData: InputData) ->
@@ -79,7 +81,7 @@ class ModalHandlerInfo(
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] = event
 
-        val userDatas = modalData.userData
+        val userDatas = handlerData.userData
         val expectedModalDatas = parameters.filterIsInstance<ModalHandlerDataParameter>().count()
         val expectedModalInputs = parameters.filterIsInstance<ModalHandlerInputParameter>().count()
 

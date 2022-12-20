@@ -10,6 +10,7 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.coroutines.resume
 
 @BService
 internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer, private val modalMaps: ModalMaps) {
@@ -25,10 +26,20 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                     return@launch
                 }
 
-                val modalHandler: ModalHandlerInfo = modalHandlerContainer[modalData.handlerName]
-                    ?: throwUser("Found no modal handler with handler name: '${modalData.handlerName}'")
+                for (continuation in modalData.continuations) {
+                    continuation.resume(event)
+                }
 
-                modalHandler.execute(context, modalData, event)
+                val handlerData = modalData.handlerData ?: return@launch
+                when (handlerData) {
+                    is EphemeralModalHandlerData -> handlerData.handler(event)
+                    is PersistentModalHandlerData -> {
+                        val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
+                            ?: throwUser("Found no modal handler with handler name: '${handlerData.handlerName}'")
+
+                        modalHandler.execute(context, modalData, event)
+                    }
+                }
             } catch (e: Throwable) {
                 context.uncaughtExceptionHandler?.let { handler ->
                     handler.onException(context, event, e)
