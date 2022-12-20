@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.commands.prefixed.TopLevelTextCommandInf
 
 class TextCommandManager internal constructor(private val context: BContextImpl) {
     @get:JvmSynthetic
-    internal val textCommands: SimpleCommandMap<TopLevelTextCommandInfo> = SimpleCommandMap({ it.name }, null)
+    internal val textCommands: SimpleCommandMap<TopLevelTextCommandInfo> = SimpleCommandMap(null)
 
     fun textCommand(name: String, builder: TopLevelTextCommandBuilder.() -> Unit) {
         TopLevelTextCommandBuilder(context, name)

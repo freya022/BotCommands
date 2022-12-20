@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.Top
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 import com.freya02.botcommands.internal.throwUser
 
 class TopLevelSlashCommandBuilder internal constructor(
@@ -16,11 +17,12 @@ class TopLevelSlashCommandBuilder internal constructor(
     scope: CommandScope
 ) : SlashCommandBuilder(context, name), ITopLevelSlashCommandBuilder by TopLevelSlashCommandBuilderMixin(scope) {
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
+    override val parentInstance: INamedCommandInfo? = null
 
     @get:JvmSynthetic
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
     @get:JvmSynthetic
-    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap(SlashSubcommandGroupBuilder::name, null)
+    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap(null)
 
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
@@ -32,7 +34,7 @@ class TopLevelSlashCommandBuilder internal constructor(
     fun subcommand(name: String, block: SlashSubcommandBuilder.() -> Unit) {
         if (!allowSubcommands) throwUser("Cannot add subcommands as this already contains options")
 
-        SlashSubcommandBuilder(context, name, this).apply(block).also(subcommands::putNewCommand)
+        SlashSubcommandBuilder(context, name, this, this).apply(block).also(subcommands::putNewCommand)
     }
 
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {

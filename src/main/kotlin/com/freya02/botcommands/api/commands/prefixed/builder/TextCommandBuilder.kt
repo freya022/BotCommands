@@ -37,7 +37,7 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
     var detailedDescription: Consumer<EmbedBuilder>? = null
 
     fun subcommand(name: String, block: TextCommandBuilder.() -> Unit) {
-        subcommands += TextSubcommandBuilder(context, name).apply(block)
+        subcommands += TextSubcommandBuilder(context, name, this).apply(block)
     }
 
     fun variation(block: TextCommandVariationBuilder.() -> Unit) {

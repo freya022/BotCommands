@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.Top
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
+import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 
 class UserCommandBuilder internal constructor(
     private val context: BContextImpl,
@@ -16,6 +17,7 @@ class UserCommandBuilder internal constructor(
     scope: CommandScope
 ) : ApplicationCommandBuilder(name), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
+    override val parentInstance: INamedCommandInfo? = null
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

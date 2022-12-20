@@ -9,7 +9,8 @@ import com.freya02.botcommands.internal.commands.mixins.INamedCommandInfo
 class SlashSubcommandBuilder internal constructor(
     context: BContextImpl,
     name: String,
-    override val topLevelBuilder: ITopLevelApplicationCommandBuilder
+    override val topLevelBuilder: ITopLevelApplicationCommandBuilder,
+    override val parentInstance: INamedCommandInfo
 ) : SlashCommandBuilder(context, name) {
     override val allowOptions: Boolean = true
     override val allowSubcommands: Boolean = false
