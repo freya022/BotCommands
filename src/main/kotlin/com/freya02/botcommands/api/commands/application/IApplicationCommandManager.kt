@@ -4,13 +4,12 @@ import com.freya02.botcommands.api.commands.application.context.builder.MessageC
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 
 sealed class IApplicationCommandManager {
-    private val mutableApplicationCommands: MutableMap<String, ApplicationCommandInfo> = hashMapOf()
+    private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
-        @JvmSynthetic get() = mutableApplicationCommands
+        @JvmSynthetic get() = commandMap.map
 
     @JvmSynthetic
     internal abstract fun isValidScope(scope: CommandScope): Boolean
@@ -35,14 +34,6 @@ sealed class IApplicationCommandManager {
     }
 
     protected fun putNewCommand(newInfo: ApplicationCommandInfo) {
-        mutableApplicationCommands.putIfAbsent(newInfo.name, newInfo)?.let { oldInfo ->
-            throwUser(
-                """
-                Top level command '${newInfo.name}' is already defined
-                Existing command: ${oldInfo.method.shortSignature}
-                Current command: ${newInfo.method.shortSignature}
-                """.trimIndent()
-            )
-        }
+        commandMap.putNewCommand(newInfo)
     }
 }

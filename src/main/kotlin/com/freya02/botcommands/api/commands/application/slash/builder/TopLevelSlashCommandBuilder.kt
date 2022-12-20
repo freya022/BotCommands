@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITo
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.throwUser
 
@@ -17,9 +18,9 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
 
     @get:JvmSynthetic
-    internal val subcommands: MutableList<SlashSubcommandBuilder> = mutableListOf()
+    internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
     @get:JvmSynthetic
-    internal val subcommandGroups: MutableList<SlashSubcommandGroupBuilder> = mutableListOf()
+    internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap(SlashSubcommandGroupBuilder::name, null)
 
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
@@ -31,18 +32,18 @@ class TopLevelSlashCommandBuilder internal constructor(
     fun subcommand(name: String, block: SlashSubcommandBuilder.() -> Unit) {
         if (!allowSubcommands) throwUser("Cannot add subcommands as this already contains options")
 
-        subcommands += SlashSubcommandBuilder(context, name, this).apply(block)
+        SlashSubcommandBuilder(context, name, this).apply(block).also(subcommands::putNewCommand)
     }
 
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {
         if (!allowSubcommandGroups) throwUser("Cannot add subcommand groups as this already contains options")
 
-        subcommandGroups += SlashSubcommandGroupBuilder(context, name, this).apply(block)
+        SlashSubcommandGroupBuilder(context, name, this).apply(block).also(subcommandGroups::putNewCommand)
     }
 
     internal fun build(): TopLevelSlashCommandInfo {
         //If there is no subcommands or no subcommands in all the subcommand groups
-        if (subcommands.isEmpty() && subcommandGroups.all { it.subcommands.isEmpty() }) {
+        if (subcommands.isEmpty() && subcommandGroups.map.values.all { it.subcommands.isEmpty() }) {
             checkFunction()
         } else {
             if (isFunctionInitialized()) throwUser("Cannot have a top level command with subcommands / groups")

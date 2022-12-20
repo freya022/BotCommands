@@ -12,5 +12,5 @@ class SlashSubcommandGroupInfo(topLevelInstance: TopLevelSlashCommandInfo, build
 
     val description = builder.description
 
-    val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.associate { it.name to it.build(topLevelInstance, this) }
+    val subcommands: Map<String, SlashSubcommandInfo> = builder.subcommands.map.mapValues { it.value.build(topLevelInstance, this) }
 }
