@@ -67,6 +67,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             }
         }
 
+        loadServices(loadableServices, ServiceStart.PRE_LOAD)
         loadServices(loadableServices, ServiceStart.DEFAULT)
         loadServices(loadableServices, ServiceStart.POST_LOAD)
     }
