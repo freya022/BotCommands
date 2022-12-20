@@ -100,7 +100,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 3 -> subcommandGroups
                     .computeIfAbsent(metadata.path.name) { SlashSubcommandGroupMetadata(metadata.path.group!!, metadata.annotation.description) }
                     .subcommands
-                    .computeIfAbsent(metadata.path.group!!) { arrayListOf() }
+                    .computeIfAbsent(metadata.path.subname!!) { arrayListOf() }
                     .add(metadata)
             }
         }
