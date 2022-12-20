@@ -175,7 +175,7 @@ internal class ApplicationCommandsBuilder(
     private fun getCheckTypeString(): String =
         if (context.config.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
 
-    private fun List<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
+    private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
     private suspend fun onFirstRun(context: BContextImpl, jda: JDA) {
         LOGGER.debug("First ready")

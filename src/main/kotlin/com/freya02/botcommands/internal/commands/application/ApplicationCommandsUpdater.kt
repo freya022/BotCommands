@@ -47,13 +47,13 @@ internal class ApplicationCommandsUpdater private constructor(
         else -> commandsCache.getGuildCommandsPath(guild)
     }
 
-    val applicationCommands: List<ApplicationCommandInfo>
+    val applicationCommands: Collection<ApplicationCommandInfo>
     private val allCommandData: Collection<CommandData>
 
     init {
         Files.createDirectories(commandsCachePath.parent)
 
-        applicationCommands = manager.applicationCommands
+        applicationCommands = manager.applicationCommands.values
         allCommandData = computeCommands().allCommandData
 
         //Apply localization
@@ -112,7 +112,7 @@ internal class ApplicationCommandsUpdater private constructor(
         computeContextCommands(applicationCommands, map, MessageCommandInfo::class.java, Command.Type.MESSAGE)
     }
 
-    private fun computeSlashCommands(guildApplicationCommands: List<ApplicationCommandInfo>, map: ApplicationCommandDataMap) {
+    private fun computeSlashCommands(guildApplicationCommands: Collection<ApplicationCommandInfo>, map: ApplicationCommandDataMap) {
         guildApplicationCommands
             .filterIsInstance<TopLevelSlashCommandInfo>()
             .filterCommands()
@@ -154,7 +154,7 @@ internal class ApplicationCommandsUpdater private constructor(
         }
 
     private fun <T> computeContextCommands(
-        guildApplicationCommands: List<ApplicationCommandInfo>,
+        guildApplicationCommands: Collection<ApplicationCommandInfo>,
         map: ApplicationCommandDataMap,
         targetClazz: Class<T>,
         type: Command.Type

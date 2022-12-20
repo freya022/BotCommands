@@ -36,7 +36,7 @@ class MutableApplicationCommandMap : ApplicationCommandMap() {
 
     companion object {
         @JvmStatic
-        fun fromCommandList(guildApplicationCommands: List<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
+        fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
                 val type = when (info) {
                     is MessageCommandInfo -> CommandType.MESSAGE
