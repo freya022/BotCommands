@@ -1,6 +1,9 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
+import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
+import com.freya02.botcommands.internal.IExecutableInteractionInfo
+import com.freya02.botcommands.internal.commands.AbstractCommandInfo
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
 import java.util.*
@@ -26,12 +29,14 @@ internal class SimpleCommandMap<T>(private val nameSupplier: (T) -> String, priv
     fun isEmpty(): Boolean = mutableMap.isEmpty()
 
     companion object {
-        fun <T : ApplicationCommandBuilder> ofBuilders(): SimpleCommandMap<T> {
-            return SimpleCommandMap(ApplicationCommandBuilder::name, ApplicationCommandBuilder::function)
+        fun <T> ofBuilders(): SimpleCommandMap<T> where T : CommandBuilder,
+                                                        T : IBuilderFunctionHolder<*> {
+            return SimpleCommandMap(CommandBuilder::name, IBuilderFunctionHolder<*>::function)
         }
 
-        fun <T : ApplicationCommandInfo> ofInfos(): SimpleCommandMap<T> {
-            return SimpleCommandMap({ it.path.fullPath }, ApplicationCommandInfo::method)
+        fun <T> ofInfos(): SimpleCommandMap<T> where T : AbstractCommandInfo,
+                                                     T : IExecutableInteractionInfo {
+            return SimpleCommandMap({ it.path.fullPath }, IExecutableInteractionInfo::method)
         }
     }
 }

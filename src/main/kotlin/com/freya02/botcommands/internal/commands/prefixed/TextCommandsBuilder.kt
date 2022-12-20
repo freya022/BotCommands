@@ -53,7 +53,7 @@ internal class TextCommandsBuilder(
 
             val helpCommandInfo: HelpCommandInfo? = getHelpCommandInfo(manager, context)
 
-            manager.textCommands.forEach { context.textCommandsContext.addTextCommand(it) }
+            manager.textCommands.map.values.forEach { context.textCommandsContext.addTextCommand(it) }
 
             context.eventDispatcher.addEventListener(TextCommandsListener(context, cooldownService, helpCommandInfo))
         } catch (e: Throwable) {
@@ -62,7 +62,7 @@ internal class TextCommandsBuilder(
     }
 
     private fun getHelpCommandInfo(manager: TextCommandManager, context: BContextImpl): HelpCommandInfo? {
-        val helpCommandInfo = manager.textCommands.firstOrNull { it.path.fullPath == "help" }
+        val helpCommandInfo = manager.textCommands.map.values.firstOrNull { it.path.fullPath == "help" }
 
         return when {
             helpCommandInfo != null -> {
@@ -83,7 +83,7 @@ internal class TextCommandsBuilder(
                     val service = context.serviceContainer.getService(HelpCommand::class)
                     service.declare(manager)
 
-                    val info = manager.textCommands.firstOrNull { it.path.fullPath == "help" }
+                    val info = manager.textCommands.map.values.firstOrNull { it.path.fullPath == "help" }
                         ?: throwInternal("Default help command was declared incorrectly")
                     HelpCommandInfo(service, info)
                 }
