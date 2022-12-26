@@ -1,9 +1,6 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
-import com.freya02.botcommands.api.core.EventDispatcher
-import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.InjectedService

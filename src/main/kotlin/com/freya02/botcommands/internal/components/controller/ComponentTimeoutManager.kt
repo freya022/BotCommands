@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.components.controller
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
+import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.components.ComponentType
@@ -12,7 +13,6 @@ import com.freya02.botcommands.internal.components.data.PersistentTimeout
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.components.repositories.GroupTimeoutHandlers
-import com.freya02.botcommands.internal.core.ServiceContainer
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
