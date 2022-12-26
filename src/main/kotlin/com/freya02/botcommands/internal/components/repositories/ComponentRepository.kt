@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.components.*
 import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
 import com.freya02.botcommands.internal.components.data.*
 import com.freya02.botcommands.internal.core.db.Database
+import com.freya02.botcommands.internal.core.db.KConnection
 import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
@@ -75,7 +76,7 @@ internal class ComponentRepository(
         }
     }
 
-    suspend fun getComponent(id: Int): ComponentData? = database.transactional {
+    suspend fun getComponent(id: Int): ComponentData? = database.withConnection(readOnly = true) {
         preparedStatement(
             """
             select lifetime_type, component_type, one_use, users, roles, permissions
@@ -218,7 +219,7 @@ internal class ComponentRepository(
         return@transactional deletedComponents
     }
 
-    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional {
+    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.withConnection(readOnly = true) {
         preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
             executeQuery(*arrayOf()).forEach { dbResult ->
                 timeoutManager.scheduleTimeout(
@@ -232,7 +233,7 @@ internal class ComponentRepository(
         }
     }
 
-    context(Transaction)
+    context(KConnection)
     private suspend fun getPersistentComponent(
         id: Int,
         componentType: ComponentType,
@@ -270,7 +271,7 @@ internal class ComponentRepository(
         PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
-    context(Transaction)
+    context(KConnection)
     private suspend fun getEphemeralComponent(
         id: Int,
         componentType: ComponentType,
@@ -308,7 +309,7 @@ internal class ComponentRepository(
         EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
-    context(Transaction)
+    context(KConnection)
     private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
         val timeout = getGroupTimeout(id)
 
@@ -325,7 +326,7 @@ internal class ComponentRepository(
         return ComponentGroupData(id, oneUse, timeout, componentIds)
     }
 
-    context(Transaction)
+    context(KConnection)
     private suspend fun getGroupTimeout(id: Int): ComponentTimeout? {
         preparedStatement(
             """

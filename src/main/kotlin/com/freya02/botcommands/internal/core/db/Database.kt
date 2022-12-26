@@ -6,8 +6,6 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
-import org.intellij.lang.annotations.Language
-import java.sql.Connection
 
 @ConditionalService
 class Database internal constructor(internal val config: BConfig) {
@@ -28,10 +26,12 @@ class Database internal constructor(internal val config: BConfig) {
         }
     }
 
-    fun fetchConnection(): Connection = config.connectionProvider.get()
+    fun fetchConnection(readOnly: Boolean = false): KConnection = KConnection(this, config.connectionProvider.get()).also {
+        it.isReadOnly = readOnly
+    }
 
-    inline fun <R> transactional(block: Transaction.() -> R): R {
-        val connection = fetchConnection()
+    inline fun <R> transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
+        val connection = fetchConnection(readOnly)
 
         try {
             connection.autoCommit = false
@@ -46,8 +46,8 @@ class Database internal constructor(internal val config: BConfig) {
         }
     }
 
-    suspend fun <R> preparedStatement(@Language("PostgreSQL") sql: String, block: suspend KPreparedStatement.() -> R): R {
-        return fetchConnection().use { connection -> block(KPreparedStatement(this, connection.prepareStatement(sql))) }
+    inline fun <R> withConnection(readOnly: Boolean = false, block: KConnection.() -> R): R {
+        return fetchConnection(readOnly).use(block)
     }
 
     companion object : ConditionalServiceChecker {
