@@ -7,7 +7,7 @@ import java.sql.PreparedStatement
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-class KPreparedStatement(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
+class KPreparedStatement @PublishedApi internal constructor(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
     private fun setParameters(params: Array<out Any?>) {
         for ((i, param) in params.withIndex()) {
             setObject(i + 1, param)
