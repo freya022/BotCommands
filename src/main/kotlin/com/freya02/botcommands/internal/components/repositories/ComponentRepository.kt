@@ -7,12 +7,12 @@ import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilde
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.db.Database
+import com.freya02.botcommands.api.core.db.KConnection
+import com.freya02.botcommands.api.core.db.Transaction
 import com.freya02.botcommands.internal.components.*
 import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
 import com.freya02.botcommands.internal.components.data.*
-import com.freya02.botcommands.internal.core.db.Database
-import com.freya02.botcommands.internal.core.db.KConnection
-import com.freya02.botcommands.internal.core.db.Transaction
 import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser

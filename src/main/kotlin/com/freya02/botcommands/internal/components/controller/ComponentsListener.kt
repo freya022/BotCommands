@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
+import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerParameter
@@ -18,7 +19,6 @@ import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
-import com.freya02.botcommands.internal.core.db.Database
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_

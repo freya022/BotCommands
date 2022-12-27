@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core.db
+package com.freya02.botcommands.api.core.db
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
