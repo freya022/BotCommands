@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.Version
 import com.freya02.botcommands.internal.core.events.LoadEvent
+import com.freya02.botcommands.internal.core.events.PostLoadEvent
 import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
@@ -50,6 +51,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
             }
 
             context.eventDispatcher.dispatchEvent(LoadEvent())
+            context.eventDispatcher.dispatchEvent(PostLoadEvent())
         }
     }
 
