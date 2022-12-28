@@ -44,9 +44,17 @@ public class ModalListener implements EventListener {
 				final ModalData modalData = context.getModalMaps().consumeModal(event.getModalId());
 
 				if (modalData == null) { //Probably the modal expired
-					event.reply(context.getDefaultMessages(event).getModalExpiredErrorMsg())
-							.setEphemeral(true)
-							.queue();
+					if (!ModalMaps.hasBeenUsed) {
+						LOGGER.error("Tried to handle a modal that was not constructed with the framework, you need to use the Modals class to make modals/text inputs");
+
+						event.reply(context.getDefaultMessages(event).getGeneralErrorMsg())
+								.setEphemeral(true)
+								.queue();
+					} else {
+						event.reply(context.getDefaultMessages(event).getModalExpiredErrorMsg())
+								.setEphemeral(true)
+								.queue();
+					}
 
 					return;
 				}

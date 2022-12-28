@@ -10,6 +10,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ModalMaps {
+	public static boolean hasBeenUsed = false;
+
 	private static final ScheduledExecutorService TIMEOUT_SERVICE = Executors.newSingleThreadScheduledExecutor();
 
 	private static final long MAX_ID = Long.MAX_VALUE;
@@ -35,6 +37,7 @@ public class ModalMaps {
 	}
 
 	public String insertModal(ModalData data, String id) {
+		if (!hasBeenUsed) hasBeenUsed = true;
 		synchronized (modalMap) {
 			if (id == null || id.equals("0")) {
 				id = nextModalId();
@@ -85,6 +88,7 @@ public class ModalMaps {
 	}
 
 	public String insertInput(InputData data, String id) {
+		if (!hasBeenUsed) hasBeenUsed = true;
 		synchronized (inputMap) {
 			if (id == null || id.equals("0")) {
 				id = nextInputId();
