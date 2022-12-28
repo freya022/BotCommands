@@ -9,12 +9,11 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.core.requireReturnType
-import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtils
+import com.freya02.botcommands.internal.requireUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.javaType
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
@@ -27,11 +26,9 @@ internal class AutocompleteInfoContainer(classPathContainer: ClassPathContainer)
             .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
             .requireReturnType(Collection::class)
             .associate {
-                val returnType = it.function.returnType
-                ReflectionUtils.getCollectionReturnType(returnType.jvmErasure.java, returnType.javaType) ?: throwUser(
-                    it.function,
+                requireUser(it.function.returnType.jvmErasure.isSubclassOf(Collection::class), it.function) {
                     "Autocomplete handler needs to return a Collection"
-                )
+                }
 
                 @Suppress("UNCHECKED_CAST")
                 val autocompleteFunction = it.function as KFunction<Collection<*>>

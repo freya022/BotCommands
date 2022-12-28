@@ -87,11 +87,27 @@ internal object ReflectionUtilsKt {
             return "$shortSignatureNoSrc: $returnType ($source)"
         }
 
-    val KProperty<*>.referenceString: String
+    internal val KProperty<*>.referenceString: String
         get() {
             val callableReference = (this as? CallableReference)
                 ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
             return (callableReference.owner as KClass<*>).java.simpleName + "#" + this.name
+        }
+
+    private val trustedCollections = listOf(Collection::class, List::class, Set::class)
+
+    internal val KFunction<*>.collectionElementType: KClass<*>?
+        get() {
+            val type = this.returnType
+
+            //Type is a trusted collection, such as the Java collections
+            if (type.jvmErasure in trustedCollections) {
+                return type.arguments.first().type?.jvmErasure
+            }
+
+            //Maybe a subtype of Collection
+            val collectionType = type.jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
+            return collectionType.arguments.first().type?.jvmErasure
         }
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
