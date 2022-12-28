@@ -12,8 +12,8 @@ import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Compa
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Matcher
 import java.util.regex.Pattern

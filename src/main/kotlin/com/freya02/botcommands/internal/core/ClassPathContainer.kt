@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

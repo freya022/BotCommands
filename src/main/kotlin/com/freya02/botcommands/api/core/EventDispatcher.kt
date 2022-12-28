@@ -13,8 +13,8 @@ import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent

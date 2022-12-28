@@ -21,7 +21,7 @@ import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.T
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation

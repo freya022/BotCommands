@@ -1,6 +1,6 @@
 package com.freya02.botcommands.othertests
 
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.collectionElementType
+import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 

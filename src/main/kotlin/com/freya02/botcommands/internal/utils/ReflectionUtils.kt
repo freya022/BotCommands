@@ -23,7 +23,7 @@ import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
-internal object ReflectionUtilsKt {
+internal object ReflectionUtils {
     private val logger = Logging.getLogger()
 
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()

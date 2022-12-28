@@ -20,7 +20,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
+import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext

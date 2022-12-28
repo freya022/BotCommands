@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import java.util.*
 
 interface CommandMap<T : ApplicationCommandInfo> : Map<CommandPath, T>

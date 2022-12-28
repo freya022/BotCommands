@@ -17,7 +17,7 @@ import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.AnnotationUtils
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation

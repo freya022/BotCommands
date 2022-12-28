@@ -12,7 +12,7 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlin.reflect.full.findAnnotation
 
 @BService

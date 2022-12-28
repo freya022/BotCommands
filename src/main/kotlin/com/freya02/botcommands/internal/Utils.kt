@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.api.core.exceptions.ServiceException
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse

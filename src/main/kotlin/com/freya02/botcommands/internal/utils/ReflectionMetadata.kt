@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.isService
+import com.freya02.botcommands.internal.utils.ReflectionUtils.isService
 import io.github.classgraph.*
 import java.lang.reflect.Method
 import java.util.*
@@ -79,7 +79,7 @@ internal object ReflectionMetadata {
                     return@filter true
                 }
                 .filter { !(it.isInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
-                .filter(ReflectionUtilsKt::isInstantiable)
+                .filter(ReflectionUtils::isInstantiable)
                 .toList()
                 .also { readAnnotations(it) }
                 .map { it.loadClass() }

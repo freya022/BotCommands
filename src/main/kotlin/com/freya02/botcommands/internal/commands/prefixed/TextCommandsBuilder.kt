@@ -12,8 +12,8 @@ import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextComman
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import mu.KotlinLogging
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure

@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import java.util.regex.Pattern
 
 object CommandPattern {

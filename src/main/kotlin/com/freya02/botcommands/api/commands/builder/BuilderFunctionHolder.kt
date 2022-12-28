@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.reflectReference
+import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 

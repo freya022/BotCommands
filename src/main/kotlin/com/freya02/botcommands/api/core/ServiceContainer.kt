@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import java.lang.reflect.Modifier

@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.utils.ReflectionUtilsKt.referenceString
+import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import org.intellij.lang.annotations.Language
 
 @ConditionalService
