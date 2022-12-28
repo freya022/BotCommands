@@ -9,7 +9,7 @@ public class $BCInfo {
 	public static final String VERSION_REVISION = "%%version-revision%%";
 	public static final String VERSION_CLASSIFIER = "%%version-classifier%%";
 	public static final String GITHUB = "https://github.com/freya022/BotCommands";
-	/** May be "null" */
+	/** May be "null", may also be a full commit hash in Jitpack builds */
 	public static final String BRANCH_NAME = "%%branch-name%%";
 	/** May be "null" */
 	public static final String COMMIT_HASH = "%%commit-hash%%";
