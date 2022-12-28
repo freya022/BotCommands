@@ -23,9 +23,9 @@ import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
-private val LOGGER = Logging.getLogger()
-
 internal object ReflectionUtilsKt {
+    private val logger = Logging.getLogger()
+
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
     private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
@@ -105,18 +105,10 @@ internal object ReflectionUtilsKt {
                         requireUser(function.isPublic, function) { "Method must be public" }
                         canInstantiate = function.call() as Boolean
                     } else {
-                        LOGGER.warn(
-                            "Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)",
-                            info.simpleName,
-                            function.name
-                        )
+                        logger.warn("Method ${info.simpleName}#${function.name} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)")
                     }
                 } else {
-                    LOGGER.warn(
-                        "Method {}#{} is annotated @ConditionalUse but is not static",
-                        info.simpleName,
-                        methodInfo.name
-                    )
+                    logger.warn("Method ${info.simpleName}#${methodInfo.name} is annotated @ConditionalUse but is not static")
                 }
 
                 break
