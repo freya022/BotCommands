@@ -64,7 +64,7 @@ public class ModalMaps {
 	public ModalData consumeModal(String modalId) {
 		synchronized (modalMap) {
 			final ModalData data = modalMap.remove(modalId);
-			data.cancelTimeoutFuture();
+			if (data != null) data.cancelTimeoutFuture();
 
 			return data;
 		}
