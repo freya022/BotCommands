@@ -26,7 +26,7 @@ internal class AutocompleteHandler(
     slashCmdOptionBuilders: Map<String, OptionBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) {
-    private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.method)
+    private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
     internal val methodParameters: MethodParameters
     internal val compositeParameters: List<AutocompleteCommandParameter>
 
@@ -38,7 +38,7 @@ internal class AutocompleteHandler(
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
         methodParameters = MethodParameters.transform<SlashParameterResolver<*, *>>( //Same transform method as in SlashCommandInfo, but option transformer is different
             slashCommandInfo.context,
-            autocompleteInfo.method,
+            autocompleteInfo.function,
             slashCmdOptionBuilders
         ) {
             optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
@@ -53,7 +53,7 @@ internal class AutocompleteHandler(
             .map { it as AutocompleteCommandParameter }
             .filter { it.isCompositeKey }
 
-        val collectionElementType = autocompleteInfo.method.collectionElementType
+        val collectionElementType = autocompleteInfo.function.collectionElementType
             ?: throwUser("Unable to determine return type, it should inherit Collection")
 
         choiceSupplier = when {
@@ -83,8 +83,8 @@ internal class AutocompleteHandler(
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
-        objects[autocompleteInfo.method.instanceParameter!!] = instance
-        objects[autocompleteInfo.method.valueParameters.first()] = event
+        objects[autocompleteInfo.function.instanceParameter!!] = instance
+        objects[autocompleteInfo.function.valueParameters.first()] = event
 
         slashCommandInfo.putSlashOptions(event, objects, methodParameters)
 
@@ -93,7 +93,7 @@ internal class AutocompleteHandler(
         }
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
-        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.method.callSuspendBy(objects))
+        val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.function.callSuspendBy(objects))
         val autoCompleteQuery = event.focusedOption
 
         //If something is typed but there are no choices, don't display user input

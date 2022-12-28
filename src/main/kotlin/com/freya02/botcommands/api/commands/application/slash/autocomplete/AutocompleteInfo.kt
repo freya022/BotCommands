@@ -10,7 +10,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 class AutocompleteInfo internal constructor(builder: AutocompleteInfoBuilder) {
     val name: String = builder.name
-    val method: KFunction<Collection<*>> = builder.function
+    val function: KFunction<Collection<*>> = builder.function
     val mode: AutocompleteMode = builder.mode
     val showUserInput: Boolean = builder.showUserInput
     val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
@@ -19,7 +19,7 @@ class AutocompleteInfo internal constructor(builder: AutocompleteInfoBuilder) {
     internal val cache = AbstractAutocompleteCache.fromMode(this)
 
     init {
-        requireUser(method.valueParameters.firstOrNull()?.type?.jvmErasure == CommandAutoCompleteInteractionEvent::class, method) {
+        requireUser(function.valueParameters.firstOrNull()?.type?.jvmErasure == CommandAutoCompleteInteractionEvent::class, function) {
             "First parameter must be a CommandAutoCompleteInteractionEvent"
         }
     }
@@ -31,7 +31,7 @@ class AutocompleteInfo internal constructor(builder: AutocompleteInfoBuilder) {
         other as AutocompleteInfo
 
         if (name != other.name) return false
-        if (method != other.method) return false
+        if (function != other.function) return false
         if (mode != other.mode) return false
         if (showUserInput != other.showUserInput) return false
         if (autocompleteCache != other.autocompleteCache) return false
@@ -41,7 +41,7 @@ class AutocompleteInfo internal constructor(builder: AutocompleteInfoBuilder) {
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + method.hashCode()
+        result = 31 * result + function.hashCode()
         result = 31 * result + mode.hashCode()
         result = 31 * result + showUserInput.hashCode()
         result = 31 * result + (autocompleteCache?.hashCode() ?: 0)

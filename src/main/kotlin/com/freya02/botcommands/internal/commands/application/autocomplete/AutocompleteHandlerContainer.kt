@@ -23,8 +23,8 @@ internal class AutocompleteHandlerContainer {
             throwUser(
                 """
                 Tried to add an autocomplete handler with the same name, but with different characteristics: '${handler.autocompleteInfo.name}'
-                Old function: ${it.autocompleteInfo.method.shortSignatureNoSrc}
-                New function: ${handler.autocompleteInfo.method.shortSignatureNoSrc}""".trimIndent()
+                Old function: ${it.autocompleteInfo.function.shortSignatureNoSrc}
+                New function: ${handler.autocompleteInfo.function.shortSignatureNoSrc}""".trimIndent()
             )
         }
 
