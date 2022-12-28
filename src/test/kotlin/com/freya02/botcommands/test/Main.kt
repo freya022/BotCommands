@@ -6,13 +6,22 @@ import dev.minn.jda.ktx.events.getDefaultScope
 import dev.minn.jda.ktx.jdabuilder.light
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import kotlinx.coroutines.cancel
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import java.lang.management.ManagementFactory
 import kotlin.time.Duration.Companion.minutes
 
+private val logger = KotlinLogging.logger { }
+
 fun main() {
-    DecoroutinatorRuntime.load()
+    //stacktrace-decoroutinator seems to have issues when reloading with hotswap agent
+    if ("-XX:HotswapAgent=fatjar" !in ManagementFactory.getRuntimeMXBean().inputArguments) {
+        DecoroutinatorRuntime.load()
+    } else {
+        logger.info("Skipping stacktrace-decoroutinator as HotswapAgent is active")
+    }
 
     val config = Config.readConfig()
     val testDB = TestDB(config.dbConfig)
