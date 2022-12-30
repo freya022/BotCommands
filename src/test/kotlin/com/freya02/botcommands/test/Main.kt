@@ -24,7 +24,6 @@ fun main() {
     }
 
     val config = Config.readConfig()
-    val testDB = TestDB(config.dbConfig)
 
     val scope = getDefaultScope()
     val manager = CoroutineEventManager(scope, 1.minutes)
@@ -35,8 +34,11 @@ fun main() {
     BBuilder.newBuilder({
         addSearchPath("com.freya02.botcommands.test.commands_kt")
         addSearchPath("com.freya02.botcommands.test.resolvers")
+        addClass(TestDB::class.java)
 
-        connectionProvider = testDB.connectionSupplier
+        services {
+            registerInstanceSupplier(Config::class.java) { config }
+        }
 
         components {
             useComponents = true

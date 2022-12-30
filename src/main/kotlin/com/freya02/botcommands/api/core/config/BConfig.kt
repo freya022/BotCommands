@@ -11,9 +11,7 @@ import com.freya02.botcommands.internal.toDelegate
 import com.freya02.botcommands.internal.utils.Utils
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
-import java.sql.Connection
 import java.util.function.Function
-import java.util.function.Supplier
 import kotlin.properties.Delegates
 
 @InjectedService
@@ -72,9 +70,6 @@ class BConfig internal constructor() {
      */
     var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
     fun hasUncaughtExceptionHandler() = ::uncaughtExceptionHandler.toDelegate<LockableVar<*>>().hasValue()
-
-    var connectionProvider: Supplier<Connection> by Delegates.lockableNotNull(this, "Connection provider needs to be set!")
-    fun hasConnectionProvider() = ::connectionProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Determines whether the SQL queries should be logged

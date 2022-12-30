@@ -1,36 +1,34 @@
 package com.freya02.botcommands.api.core.db
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BConfig
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
+import kotlinx.coroutines.runBlocking
 import org.intellij.lang.annotations.Language
+import java.sql.SQLException
 
-@ConditionalService
-class Database internal constructor(internal val config: BConfig) {
+@ConditionalService(dependencies = [ConnectionSupplier::class])
+class Database internal constructor(private val connectionSupplier: ConnectionSupplier, internal val config: BConfig) {
     init {
-        config.connectionProvider.get().use { conn ->
-            conn.prepareStatement("select version from bc_version").use {
-                it.executeQuery().use { rs ->
-                    if (!rs.next())
-                        throw IllegalStateException("No version found, please create the BotCommands tables with the 'sql/CreateDatabase.sql' file")
+        runBlocking {
+            preparedStatement("select version from bc_version", readOnly = true) {
+                val rs = executeQuery(*emptyArray()).readOnce() ?:
+                    throw IllegalStateException("No version found, please create the BotCommands tables with the 'sql/CreateDatabase.sql' file")
 
-                    val version = rs.getString("version")
+                val version = rs.getString("version")
 
-                    if (version != latestVersion) {
-                        throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed")
-                    }
+                if (version != latestVersion) {
+                    throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed")
                 }
             }
         }
     }
 
-    fun fetchConnection(readOnly: Boolean = false): KConnection = KConnection(this, config.connectionProvider.get()).also {
+    @Throws(SQLException::class)
+    fun fetchConnection(readOnly: Boolean = false): KConnection = KConnection(this, connectionSupplier.connection).also {
         it.isReadOnly = readOnly
     }
 
+    @Throws(SQLException::class)
     inline fun <R> transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
         val connection = fetchConnection(readOnly)
 
@@ -47,26 +45,20 @@ class Database internal constructor(internal val config: BConfig) {
         }
     }
 
+    @Throws(SQLException::class)
     inline fun <R> withConnection(readOnly: Boolean = false, block: KConnection.() -> R): R {
         return fetchConnection(readOnly).use(block)
     }
 
+    @Throws(SQLException::class)
+    @Suppress("MemberVisibilityCanBePrivate")
     inline fun <R> preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
         return withConnection(readOnly) {
             preparedStatement(sql, block)
         }
     }
 
-    companion object : ConditionalServiceChecker {
+    companion object {
         private const val latestVersion = "3.0.0-alpha.1" // Change in CreateDatabase.sql too
-
-        override fun checkServiceAvailability(context: BContext): String? {
-            val config = (context as BContextImpl).getService<BConfig>()
-            if (!config.hasConnectionProvider()) {
-                return "${BConfig::connectionProvider.referenceString} needs to be set"
-            }
-
-            return null
-        }
     }
 }
