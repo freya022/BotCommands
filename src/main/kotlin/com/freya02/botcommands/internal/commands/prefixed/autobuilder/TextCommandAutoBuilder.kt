@@ -22,12 +22,15 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import mu.KotlinLogging
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 @BService
 internal class TextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
+    private val logger = KotlinLogging.logger { }
+
     private val functions: List<TextFunctionMetadata>
 
     init {
@@ -70,13 +73,23 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
             container.variations.add(metadata)
         }
 
-        containers.values.forEach { container -> processCommand(manager, container) }
+        containers.values.forEach { container ->
+            try {
+                processCommand(manager, container)
+            } catch (e: Exception) {
+                logger.error("An exception occurred while registering annotated text command '${container.name}'", e)
+            }
+        }
     }
 
     private fun processCommand(manager: TextCommandManager, container: TextCommandContainer) {
         manager.textCommand(container.name) {
             container.metadata?.let { metadata ->
-                processBuilder(metadata)
+                try {
+                    processBuilder(metadata)
+                } catch (e: Exception) {
+                    rethrowUser(metadata.func, "Unable to construct a text command", e)
+                }
             }
 
             processVariations(container)
@@ -90,14 +103,18 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
     private fun TextCommandBuilder.processSubcontainer(subContainer: TextCommandContainer) {
         subcommand(subContainer.name) {
             subContainer.metadata?.let { metadata ->
-                processBuilder(metadata)
+                try {
+                    processBuilder(metadata)
+                } catch (e: Exception) {
+                    rethrowUser(metadata.func, "Unable to construct a text subcommand", e)
+                }
             }
+
+            processVariations(subContainer)
 
             subContainer.subcommands.values.forEach {
                 processSubcontainer(it)
             }
-
-            processVariations(subContainer)
         }
     }
 
@@ -107,7 +124,11 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
             .sortedWith(TextCommandComparator(context)) //Sort variations as to put most complex variations first, and fallback last
             .forEach {
                 variation {
-                    processVariation(it)
+                    try {
+                        processVariation(it)
+                    } catch (e: Exception) {
+                        rethrowUser(it.func, "Unable to construct a text command variation", e)
+                    }
                 }
             }
     }
