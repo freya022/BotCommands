@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashSubcomma
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import net.dv8tion.jda.internal.utils.Checks
 
 class SlashSubcommandGroupBuilder(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
     override val parentInstance: INamedCommand = topLevelBuilder
@@ -17,6 +18,10 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, override va
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
 
     var description: String = DEFAULT_DESCRIPTION
+
+    init {
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
+    }
 
     fun subcommand(name: String, block: SlashSubcommandBuilder.() -> Unit) {
         SlashSubcommandBuilder(context, name, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)

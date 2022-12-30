@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.throwUser
+import net.dv8tion.jda.internal.utils.Checks
 
 abstract class SlashCommandBuilder internal constructor(
     protected val context: BContextImpl,
@@ -17,6 +18,10 @@ abstract class SlashCommandBuilder internal constructor(
     protected abstract val allowOptions: Boolean
     protected abstract val allowSubcommands: Boolean
     protected abstract val allowSubcommandGroups: Boolean
+
+    init {
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
+    }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]

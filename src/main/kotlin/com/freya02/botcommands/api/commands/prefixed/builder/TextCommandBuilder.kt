@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.builder.NSFWStrategyBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
 
 abstract class TextCommandBuilder internal constructor(protected val context: BContextImpl, name: String) : CommandBuilder(name) {
@@ -24,6 +25,10 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
 
     var ownerRequired: Boolean = false
     var hidden: Boolean = false
+
+    init {
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
+    }
 
     /**
      * Returns a detailed embed of what the command is, it is used by the internal <code>'help'</code> command
