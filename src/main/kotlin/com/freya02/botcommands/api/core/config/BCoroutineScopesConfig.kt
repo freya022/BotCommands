@@ -1,8 +1,10 @@
 package com.freya02.botcommands.api.core.config
 
+import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.lockable
 import com.freya02.botcommands.internal.throwUser
+import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +26,10 @@ class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
     }
 
     var commandUpdateScope: CoroutineScope by ScopeDelegate("Command update coroutine", 0) //Not used much
-    var eventDispatcherScope: CoroutineScope by ScopeDelegate("Event dispatcher coroutine", 4) //All events being listened to will go through it
+    /**
+     * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync], all JDA events are executed sequentially on the same scope as the supplied [CoroutineEventManager]
+     */
+    var eventDispatcherScope: CoroutineScope by ScopeDelegate("Event dispatcher coroutine", 4) //Only used by EventDispatcher#dispatchEventAsync
     var cooldownScope: CoroutineScope by ScopeDelegate("Cooldown coroutine", 2) //Spends time waiting
     var textCommandsScope: CoroutineScope by ScopeDelegate("Text command coroutine", 2) //Commands that should not block threads with cpu intensive tasks
     var applicationCommandsScope: CoroutineScope by ScopeDelegate("Application command coroutine", 2)  //Interactions that should not block threads with cpu intensive tasks

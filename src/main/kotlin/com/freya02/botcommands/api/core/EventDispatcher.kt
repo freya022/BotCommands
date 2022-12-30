@@ -15,7 +15,8 @@ import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
@@ -63,25 +64,38 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     }
 
     suspend fun dispatchEvent(event: Any) {
-        // Try not to switch context on non-handled events
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
-        context.config.coroutineScopesConfig.eventDispatcherScope.launch {
-            handlers.forEach { preboundFunction ->
-                try {
-                    val classPathFunction = preboundFunction.classPathFunction
+        handlers.forEach { preboundFunction -> runEventHandler(preboundFunction, event) }
+    }
 
-                    classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
-                } catch (e: InvocationTargetException) {
-                    when (e.cause) {
-                        is InitializationException -> throw e.cause!!
-                        else -> printException(preboundFunction, e)
-                    }
-                } catch (e: Throwable) {
-                    printException(preboundFunction, e)
-                }
+    suspend fun dispatchEventAsync(event: Any): List<Deferred<Unit>> {
+        // Try not to switch context on non-handled events
+        // No need to check for `event` type as if it's in the map, then it's recognized
+        val handlers = map[event::class] ?: return emptyList()
+
+        val scope = context.config.coroutineScopesConfig.eventDispatcherScope
+        return handlers.map { preboundFunction ->
+            scope.async { runEventHandler(preboundFunction, event) }
+        }
+    }
+
+    private suspend fun runEventHandler(
+        preboundFunction: PreboundFunction,
+        event: Any
+    ) {
+        try {
+            val classPathFunction = preboundFunction.classPathFunction
+
+            classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
+        } catch (e: InvocationTargetException) {
+            when (e.cause) {
+                is InitializationException -> throw e.cause!!
+                else -> printException(preboundFunction, e)
             }
+        } catch (e: Throwable) {
+            printException(preboundFunction, e)
         }
     }
 
