@@ -209,9 +209,9 @@ internal class ApplicationCommandsBuilder(
     }
 
     private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: IApplicationCommandManager) {
-        val function = classPathFunction.function
+        val (instance, function) = classPathFunction
         val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
 
-        function.callSuspend(classPathFunction.instance, manager, *args)
+        function.callSuspend(instance, manager, *args)
     }
 }

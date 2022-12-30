@@ -86,9 +86,9 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         event: Any
     ) {
         try {
-            val classPathFunction = preboundFunction.classPathFunction
+            val (instance, function) = preboundFunction.classPathFunction
 
-            classPathFunction.function.callSuspend(classPathFunction.instance, event, *preboundFunction.parameters)
+            function.callSuspend(instance, event, *preboundFunction.parameters)
         } catch (e: InvocationTargetException) {
             when (e.cause) {
                 is InitializationException -> throw e.cause!!

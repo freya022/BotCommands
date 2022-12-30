@@ -22,6 +22,9 @@ internal class ClassPathFunction(instanceProvider: InstanceDelegate, val functio
     val instance: Any by instanceProvider
 
     constructor(obj: Any, function: KFunction<*>) : this(InstanceDelegate { obj }, function)
+
+    operator fun component1(): Any = instance
+    operator fun component2(): KFunction<*> = function
 }
 
 internal class ClassPathContainer(private val context: BContextImpl) {
