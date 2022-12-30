@@ -150,11 +150,11 @@ class Components internal constructor(private val componentController: Component
         EphemeralEntitySelectBuilder(componentController, targets).apply(block).doBuild()
 
     @JvmName("deleteComponentsById")
-    fun deleteComponentsByIdJava(ids: List<Int>) = runBlocking { deleteComponentsById(ids) }
+    fun deleteComponentsByIdJava(ids: Collection<String>) = runBlocking { deleteComponentsById(ids) }
 
     @JvmSynthetic
-    suspend fun deleteComponentsById(ids: List<Int>) {
-        componentController.deleteComponentsById(ids)
+    suspend fun deleteComponentsById(ids: Collection<String>) {
+        componentController.deleteComponentsById(ids.mapNotNull { it.toIntOrNull() })
     }
 
     private suspend fun createGroup(factory: (List<Int>) -> ComponentGroupBuilder, vararg components: ActionComponent): ComponentGroup {

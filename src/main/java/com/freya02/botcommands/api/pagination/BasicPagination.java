@@ -130,7 +130,7 @@ public abstract class BasicPagination<T extends BasicPagination<T>> {
 	 * <br>This will remove every stored button IDs, even then buttons you included yourself
 	 */
 	public void cleanup() {
-		componentsService.deleteComponentsById(usedIds.stream().map(Integer::valueOf).toList());
+		componentsService.deleteComponentsById(usedIds);
 
 		usedIds.clear();
 	}
