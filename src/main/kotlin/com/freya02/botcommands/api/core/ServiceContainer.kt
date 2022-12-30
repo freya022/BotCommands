@@ -111,7 +111,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 when (val serviceType = clazz.findAnnotation<ServiceType>()) {
                     null -> serviceMap[clazz] = instance
                     else -> {
-                        serviceMap[serviceType.type] = instance
+                        val requestedType = serviceType.type
+                        if (!requestedType.isInstance(instance)) {
+                            throwService("Service ${clazz.simpleNestedName} was requested to be registered as a ${requestedType.simpleNestedName} but type is incorrect")
+                        }
+
+                        serviceMap[requestedType] = instance
                         if (serviceType.keepOriginalType) serviceMap[clazz] = instance
                     }
                 }
