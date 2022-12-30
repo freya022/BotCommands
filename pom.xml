@@ -22,7 +22,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.test.skip>true</maven.test.skip>
-        <kotlin.version>1.7.22</kotlin.version>
+        <kotlin.version>1.8.0</kotlin.version>
         <kotlin.coroutine.version>1.6.4</kotlin.coroutine.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
     </properties>
@@ -226,6 +226,7 @@
                         <arg>-opt-in=kotlin.ExperimentalStdlibApi</arg>
                         <arg>-Xjvm-default=all</arg>
                         <arg>-Xcontext-receivers</arg>
+                        <arg>-Xlambdas=indy</arg>
                     </args>
                 </configuration>
                 <executions>
