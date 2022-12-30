@@ -59,7 +59,7 @@ object TextUtils {
 
             if (commandInfo.variations.size == 1) {
                 builder.addField("Usage", "$effectiveCandidateDescription$syntax\n$example", false)
-            } else {
+            } else if (commandInfo.variations.size > 1) {
                 builder.addField("Overload #${i + 1}", "$effectiveCandidateDescription$syntax\n$example", false)
             }
         }
