@@ -23,7 +23,12 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
 
     companion object {
         @JvmStatic
-        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager = getDefaultManager()) {
+        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>) {
+            return newBuilder(configConsumer, getDefaultManager())
+        }
+
+        @JvmSynthetic
+        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {
             BBuilder(configConsumer).build(manager)
         }
 
