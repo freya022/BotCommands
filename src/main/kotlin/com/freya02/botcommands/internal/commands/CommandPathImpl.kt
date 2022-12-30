@@ -4,8 +4,11 @@ import com.freya02.botcommands.api.commands.CommandPath
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.math.min
 
-class CommandPathImpl(private val name: String, private val group: String?, private val subname: String?) :
-    CommandPath {
+internal class CommandPathImpl internal constructor(
+    private val name: String,
+    private val group: String?,
+    private val subname: String?
+) : CommandPath {
     private val path: String
     private val count: Int
 
