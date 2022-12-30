@@ -1,9 +1,6 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.DefaultMessages
-import com.freya02.botcommands.api.ExceptionHandler
-import com.freya02.botcommands.api.ExceptionHandlerAdapter
-import com.freya02.botcommands.api.SettingsProvider
+import com.freya02.botcommands.api.*
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.InjectedService
@@ -25,10 +22,13 @@ class BConfig internal constructor() {
     internal var locked = false
         private set
 
+    @JvmSynthetic
     internal val packages: MutableSet<String> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
     //TODO backed collection as mutable, exposed collection as immutable
+    @JvmSynthetic
     internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
 
+    @JvmSynthetic
     internal val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
 
     /**
@@ -38,17 +38,23 @@ class BConfig internal constructor() {
 
     var defaultMessageProvider: Function<DiscordLocale, DefaultMessages> = DefaultMessagesFunction()
 
-    val debugConfig = BDebugConfig()
+    @JvmSynthetic
+    internal val debugConfig = BDebugConfig()
 
-    val serviceConfig = BServiceConfig()
+    @JvmSynthetic
+    internal val serviceConfig = BServiceConfig()
 
-    val textConfig = BTextConfig()
+    @JvmSynthetic
+    internal val textConfig = BTextConfig()
 
-    val applicationConfig = BApplicationConfig(this)
+    @JvmSynthetic
+    internal val applicationConfig = BApplicationConfig(this)
 
-    val componentsConfig = BComponentsConfig(this)
+    @JvmSynthetic
+    internal val componentsConfig = BComponentsConfig(this)
 
-    val coroutineScopesConfig = BCoroutineScopesConfig(this)
+    @JvmSynthetic
+    internal val coroutineScopesConfig = BCoroutineScopesConfig(this)
 
     /**
      * Used to take guild-specific settings such as prefixes
@@ -122,18 +128,31 @@ class BConfig internal constructor() {
         classes.add(clazz)
     }
 
-    fun textCommands(block: BTextConfig.() -> Unit) {
-        block(textConfig)
+    fun services(block: ReceiverConsumer<BServiceConfig>) {
+        serviceConfig.apply(block)
     }
 
-    fun applicationCommands(block: BApplicationConfig.() -> Unit) {
-        block(applicationConfig)
+    fun coroutineScopes(block: ReceiverConsumer<BCoroutineScopesConfig>) {
+        coroutineScopesConfig.apply(block)
     }
 
-    fun components(block: BComponentsConfig.() -> Unit) {
-        block(componentsConfig)
+    fun debug(block: ReceiverConsumer<BDebugConfig>) {
+        debugConfig.apply(block)
     }
 
+    fun textCommands(block: ReceiverConsumer<BTextConfig>) {
+        textConfig.apply(block)
+    }
+
+    fun applicationCommands(block: ReceiverConsumer<BApplicationConfig>) {
+        applicationConfig.apply(block)
+    }
+
+    fun components(block: ReceiverConsumer<BComponentsConfig>) {
+        componentsConfig.apply(block)
+    }
+
+    @JvmSynthetic
     internal fun putConfigInServices(serviceContainer: ServiceContainer) {
         serviceContainer.putService(serviceConfig)
         serviceContainer.putService(applicationConfig)
@@ -143,6 +162,7 @@ class BConfig internal constructor() {
         serviceContainer.putService(textConfig)
     }
 
+    @JvmSynthetic
     internal fun lock() {
         locked = true
     }
