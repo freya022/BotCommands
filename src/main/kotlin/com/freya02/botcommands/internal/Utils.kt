@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
@@ -151,6 +152,9 @@ val KFunction<*>.isPublic: Boolean
 
 val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
+
+val KFunction<*>.javaMethodInternal: Method
+    get() = javaMethod ?: throwInternal("Could not resolve java method for $this")
 
 inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 

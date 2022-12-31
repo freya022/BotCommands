@@ -3,13 +3,9 @@ package com.freya02.botcommands.test
 import com.freya02.botcommands.api.core.BBuilder
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
-import dev.minn.jda.ktx.jdabuilder.light
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
-import kotlinx.coroutines.cancel
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.session.ShutdownEvent
-import net.dv8tion.jda.api.requests.GatewayIntent
 import java.lang.management.ManagementFactory
 import kotlin.time.Duration.Companion.minutes
 
@@ -23,22 +19,18 @@ fun main() {
         logger.info("Skipping stacktrace-decoroutinator as HotswapAgent is active")
     }
 
-    val config = Config.readConfig()
-
     val scope = getDefaultScope()
     val manager = CoroutineEventManager(scope, 1.minutes)
     manager.listener<ShutdownEvent> {
-        scope.cancel()
+        this.cancel() //"this" is a scope delegate
     }
 
     BBuilder.newBuilder({
         addSearchPath("com.freya02.botcommands.test.commands_kt")
         addSearchPath("com.freya02.botcommands.test.resolvers")
+        addClass(JDAService::class.java)
+        addClass(Config::class.java)
         addClass(TestDB::class.java)
-
-        services {
-            registerInstanceSupplier(Config::class.java) { config }
-        }
 
         components {
             useComponents = true
@@ -52,10 +44,4 @@ fun main() {
             onlineAppCommandCheckEnabled = true
         }
     }, manager)
-
-    light(config.token, enableCoroutines = false) {
-        enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
-        setActivity(Activity.playing("coroutines go brrr"))
-        setEventManager(manager)
-    }
 }

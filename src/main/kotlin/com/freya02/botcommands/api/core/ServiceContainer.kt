@@ -8,11 +8,14 @@ import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
+import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.filterWithAnnotation
 import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.dv8tion.jda.api.hooks.IEventManager
 import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -45,7 +48,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     init {
         putService(this)
         putService(context)
-        putService(context.eventManager)
+        putServiceAs<IEventManager>(context.eventManager) //Should be used if JDA is constructed as a service
         putService(context.classPathContainer)
         putServiceAs<BContext>(context)
         putServiceAs(context.config)
@@ -175,8 +178,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
-        val constructorResult = findConstructor(clazz).let { it.getOrNull() ?: return it.errorMessage }
-        constructorResult.nonInstanceParameters.forEach {
+        val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.errorMessage }
+        constructingFunction.nonInstanceParameters.forEach {
             canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
         }
 
@@ -285,25 +288,45 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                 }
             }
             else -> {
-                val constructor = findConstructor(clazz).getOrThrow()
+                val constructingFunction = findConstructingFunction(clazz).getOrThrow()
 
-                val params = constructor.nonInstanceParameters.map {
+                val params = constructingFunction.nonInstanceParameters.map {
                     val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
                     dependencyResult.service ?: return TimedInstantiation(ServiceResult(null, dependencyResult.errorMessage!!), Duration.INFINITE)
                 }
-                measureTimedValue { constructor.call(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
+                measureTimedValue { constructingFunction.call(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
         }.let {
             TimedInstantiation(ServiceResult(it.value, null), it.duration)
         }
     }
 
-    private fun findConstructor(clazz: KClass<*>): ServiceResult<KFunction<Any>> {
+    private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
+        //Find in companion object or in static methods
+        val instanceSupplier = clazz.companionObject?.let { findInstanceSupplier(clazz, it.declaredMemberFunctions) }
+            ?: findInstanceSupplier(clazz, clazz.staticFunctions)
+
+        if (instanceSupplier != null) {
+            return ServiceResult(instanceSupplier, null)
+        }
+
         val constructors = clazz.constructors
         if (constructors.isEmpty()) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have an accessible constructor") }
         if (constructors.size != 1) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have exactly one constructor") }
 
         return ServiceResult(constructors.single(), null)
+    }
+
+    private fun findInstanceSupplier(classType: KClass<*>, functions: Collection<KFunction<*>>): KFunction<*>? {
+        return functions.filterWithAnnotation<InstanceSupplier>().let { supplierFunctions ->
+            if (supplierFunctions.size > 1)
+                throwUser("Class ${classType.simpleNestedName} needs to have only one method annotated with @${InstanceSupplier::class.simpleNestedName}")
+
+            supplierFunctions.firstOrNull()?.also { function ->
+                if (function.returnType.jvmErasure != classType)
+                    throwUser(function, "Function needs to return a ${classType.simpleNestedName} as specified by @${InstanceSupplier::class.simpleNestedName}")
+            }
+        }
     }
 
     private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
