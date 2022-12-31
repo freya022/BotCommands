@@ -4,5 +4,6 @@ enum class ServiceStart {
     DEFAULT,
     PRE_LOAD,
     LAZY,
-    POST_LOAD
+    POST_LOAD,
+    READY
 }

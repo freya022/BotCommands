@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 
-@BService(ServiceStart.POST_LOAD)
+@BService(ServiceStart.READY)
 class JDAService(config: Config, eventManager: IEventManager) {
     init {
         light(config.token, enableCoroutines = false) {

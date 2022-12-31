@@ -41,6 +41,9 @@ public interface BContext {
 	@NotNull
 	JDA getJDA();
 
+	@NotNull
+	Status getStatus();
+
 	/**
 	 * Returns the full list of prefixes used to trigger the bot
 	 *
@@ -211,4 +214,11 @@ public interface BContext {
 	 * @param autocompleteHandlerName The name of the autocomplete handler, supplied at {@link AutocompleteHandler#name()}
 	 */
 	void invalidateAutocompleteCache(String autocompleteHandlerName);
+
+	enum Status {
+		PRE_LOAD,
+		LOAD,
+		POST_LOAD,
+		READY
+	}
 }

@@ -45,6 +45,21 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private val localBeingCheckedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
 
+    internal val loadableServices: Map<KClass<*>, ServiceStart>
+        @JvmSynthetic get() =
+            hashMapOf<KClass<*>, ServiceStart>().also { loadableServices ->
+                context.classPathContainer.classes.forEach { clazz ->
+                    clazz.findAnnotation<BService>()?.let {
+                        loadableServices[clazz] = it.start
+                        return@forEach
+                    }
+                    clazz.findAnnotation<ConditionalService>()?.let {
+                        loadableServices[clazz] = it.start
+                        return@forEach
+                    }
+                }
+            }
+
     init {
         putService(this)
         putService(context)
@@ -59,25 +74,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         runBlocking {
             getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
         }
-
-        val loadableServices = hashMapOf<KClass<*>, ServiceStart>()
-        context.classPathContainer.classes.forEach { clazz ->
-            clazz.findAnnotation<BService>()?.let {
-                loadableServices[clazz] = it.start
-                return@forEach
-            }
-            clazz.findAnnotation<ConditionalService>()?.let {
-                loadableServices[clazz] = it.start
-                return@forEach
-            }
-        }
-
-        loadServices(loadableServices, ServiceStart.PRE_LOAD)
-        loadServices(loadableServices, ServiceStart.DEFAULT)
-        loadServices(loadableServices, ServiceStart.POST_LOAD)
     }
 
-    private fun loadServices(loadableServices: Map<KClass<*>, ServiceStart>, requestedStart: ServiceStart) {
+    @JvmSynthetic
+    internal fun loadServices(loadableServices: Map<KClass<*>, ServiceStart>, requestedStart: ServiceStart) {
         for ((clazz, start) in loadableServices) {
             if (start != requestedStart) continue
 

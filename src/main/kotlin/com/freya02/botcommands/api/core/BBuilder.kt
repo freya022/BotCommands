@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BCInfo
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.core.config.BConfig
@@ -55,8 +56,20 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
                 logger.info("Developer mode enabled, exceptions won't be sent to owners")
             }
 
+            val loadableServices = context.serviceContainer.loadableServices
+            context.status = BContext.Status.PRE_LOAD
+            context.serviceContainer.loadServices(loadableServices, ServiceStart.PRE_LOAD)
+
+            context.status = BContext.Status.LOAD
+            context.serviceContainer.loadServices(loadableServices, ServiceStart.DEFAULT)
             context.eventDispatcher.dispatchEvent(LoadEvent())
+
+            context.status = BContext.Status.POST_LOAD
+            context.serviceContainer.loadServices(loadableServices, ServiceStart.POST_LOAD)
             context.eventDispatcher.dispatchEvent(PostLoadEvent())
+
+            context.status = BContext.Status.READY
+            context.serviceContainer.loadServices(loadableServices, ServiceStart.READY)
         }
     }
 

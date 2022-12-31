@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.*
+import com.freya02.botcommands.api.BContext.Status
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
@@ -12,7 +13,9 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.events.BStatusChangeEvent
 import dev.minn.jda.ktx.events.CoroutineEventManager
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
@@ -33,6 +36,8 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     internal val classPathContainer: ClassPathContainer
     val serviceContainer: ServiceContainer
     val eventDispatcher: EventDispatcher
+
+    private var status : Status = Status.PRE_LOAD
 
     //TODO replace by events
     private val registrationListeners: MutableList<RegistrationListener> = arrayListOf()
@@ -74,6 +79,13 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
 
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
+    }
+
+    override fun getStatus(): Status = status
+
+    fun setStatus(newStatus: Status) {
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(status, newStatus)) }
+        this.status = newStatus
     }
 
     override fun getPrefixes(): List<String> = config.textConfig.prefixes
