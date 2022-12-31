@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
-import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
+import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -320,7 +320,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     private fun findSupplierFunction(supplier: Any): KFunction<*> {
         val suppliers = supplier::class
             .declaredMemberFunctions
-            .filter { it.hasAnnotation<Supplier>() }
+            .filter { it.hasAnnotation<DynamicSupplier>() }
 
         if (suppliers.size != 1) {
             throwService("Class ${supplier::class.jvmName} should have only one supplier function")
