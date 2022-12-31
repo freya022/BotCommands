@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 @BService(start = ServiceStart.PRE_LOAD)
 @ServiceType(type = ConnectionSupplier.class)
-public class TestDB {
+public class TestDB implements ConnectionSupplier {
 	private final HikariDataSource source = new HikariDataSource();
 
 	public TestDB(Config config) {

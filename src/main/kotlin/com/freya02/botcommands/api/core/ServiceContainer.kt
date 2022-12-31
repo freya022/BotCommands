@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.Supplier
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -31,7 +32,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
     private val serviceConfig: BServiceConfig = context.config.serviceConfig
-    private val serviceMap: MutableMap<KClass<*>, Any> = hashMapOf()
+
+    @PublishedApi
+    @JvmSynthetic
+    internal val serviceMap = ServiceMap()
+
     private val unavailableServices: MutableMap<KClass<*>, String> = hashMapOf() //Must not contain InjectedService(s) !
     private val lock = ReentrantLock()
 
@@ -84,6 +89,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return getService(clazz.kotlin)
     }
 
+    @JvmSynthetic
     inline fun <reified T : Any> getService(): T {
         return getService(T::class)
     }
@@ -109,15 +115,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                 val instance = result.getOrThrow()
                 when (val serviceType = clazz.findAnnotation<ServiceType>()) {
-                    null -> serviceMap[clazz] = instance
+                    null -> serviceMap.put(instance)
                     else -> {
-                        val requestedType = serviceType.type
-                        if (!requestedType.isInstance(instance)) {
-                            throwService("Service ${clazz.simpleNestedName} was requested to be registered as a ${requestedType.simpleNestedName} but type is incorrect")
-                        }
-
-                        serviceMap[requestedType] = instance
-                        if (serviceType.keepOriginalType) serviceMap[clazz] = instance
+                        serviceMap.put(instance, serviceType.type)
+                        if (serviceType.keepOriginalType) serviceMap.put(instance)
                     }
                 }
 
@@ -191,15 +192,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     fun <T : Any> putService(t: T) {
-        if (t::class in serviceMap)
-            throwUser("Cannot put service ${t::class.simpleNestedName} as it already exists")
-        serviceMap[t::class] = t
+        serviceMap.put(t)
     }
 
-    internal inline fun <reified T : Any> putServiceAs(t: T) {
-        if (T::class in serviceMap)
-            throwUser("Cannot put service ${t::class.simpleNestedName} as it already exists")
-        serviceMap[T::class] = t
+    inline fun <reified T : Any> putServiceAs(t: T) {
+        serviceMap.put(t, T::class)
     }
 
     fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
