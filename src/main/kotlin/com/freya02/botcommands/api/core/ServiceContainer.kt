@@ -309,9 +309,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
         val supplierFunction = findSupplierFunction(supplier)
 
-        val params = supplierFunction.nonInstanceParameters.map {
-            val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then skip this supplier
-            dependencyResult.service ?: return null
+        val params: List<Any> = supplierFunction.nonInstanceParameters.map {
+            //Try to get a dependency, if it doesn't work then skip this supplier
+            tryGetService(it.type.jvmErasure).service ?: return null
         }
 
         return supplierFunction.call(*params.toTypedArray())
@@ -326,14 +326,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             throwService("Class ${supplier::class.jvmName} should have only one supplier function")
         }
 
-        val supplierFunction = suppliers.single()
-        val annotation = supplierFunction.findAnnotation<Supplier>()
-            ?: throwInternal("Supplier annotation should have been checked but was not found")
-
-        if (supplierFunction.returnType.jvmErasure != annotation.type) {
-            throwService("Function should return the type declared in @Supplier", supplierFunction)
-        }
-        return supplierFunction
+        return suppliers.single()
     }
 
     data class ServiceResult<T>(val service: T?, val errorMessage: String?) {
