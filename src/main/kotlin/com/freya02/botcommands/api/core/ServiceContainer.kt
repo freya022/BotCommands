@@ -144,10 +144,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
                 val instance = result.getOrThrow()
                 when (val serviceType = clazz.findAnnotation<ServiceType>()) {
-                    null -> serviceMap.put(instance)
+                    null -> serviceMap.put(instance, clazz)
                     else -> {
                         serviceMap.put(instance, serviceType.type)
-                        if (serviceType.keepOriginalType) serviceMap.put(instance)
+                        if (serviceType.keepOriginalType) serviceMap.put(instance, clazz)
                     }
                 }
 
@@ -221,7 +221,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     fun <T : Any> putService(t: T) {
-        serviceMap.put(t)
+        serviceMap.put(t, t::class)
     }
 
     inline fun <reified T : Any> putServiceAs(t: T) {
