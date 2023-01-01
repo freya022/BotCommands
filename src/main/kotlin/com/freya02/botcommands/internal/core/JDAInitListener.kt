@@ -8,7 +8,6 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.core.events.BStatusChangeEvent
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.StatusChangeEvent
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -30,20 +29,15 @@ class JDAInitListener(private val context: BContext) {
             """.trimIndent())
                 logger.error("An exception occurred while initializing the framework", exception)
 
-                Runtime.getRuntime().halt(-1) //No choice, the events are async and can't stop initialization
+                Runtime.getRuntime().halt(112) //No choice, the events are async and can't stop initialization
             }
         }
     }
 
     @BEventListener
     fun onBStatusChange(event: BStatusChangeEvent, eventDispatcher: EventDispatcher) {
-        if (event.newStatus == BContext.Status.READY) {
+        if (event.newStatus == BContext.Status.READY) { //This listener isn't needed anymore after the framework is ready
             eventDispatcher.removeEventListener(this)
         }
-    }
-
-    @BEventListener
-    fun onEvent(event: Event) {
-        println("jda event $event")
     }
 }

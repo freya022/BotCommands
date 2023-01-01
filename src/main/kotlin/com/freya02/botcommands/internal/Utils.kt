@@ -154,7 +154,7 @@ val KFunction<*>.isStatic: Boolean
     get() = Modifier.isStatic(this.javaMethod!!.modifiers)
 
 val KFunction<*>.javaMethodInternal: Method
-    get() = javaMethod ?: throwInternal("Could not resolve java method for $this")
+    get() = javaMethod ?: throwInternal("Could not resolve Java method for $this")
 
 inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
