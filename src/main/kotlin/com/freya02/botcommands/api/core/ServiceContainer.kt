@@ -15,7 +15,7 @@ import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.ReflectionUtils.staticAndCompanionMemberFunctions
+import com.freya02.botcommands.internal.utils.ReflectionUtils.staticAndCompanionDeclaredMemberFunctions
 import com.freya02.botcommands.internal.utils.requiredFilter
 import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
@@ -329,8 +329,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
         //Find in companion object or in static methods
-        val instanceSupplier = clazz.companionObject?.let { findInstanceSupplier(clazz, it.declaredMemberFunctions) }
-            ?: findInstanceSupplier(clazz, clazz.staticFunctions)
+        val instanceSupplier = findInstanceSupplier(clazz, clazz.staticAndCompanionDeclaredMemberFunctions)
 
         if (instanceSupplier != null) {
             return ServiceResult(instanceSupplier, null)

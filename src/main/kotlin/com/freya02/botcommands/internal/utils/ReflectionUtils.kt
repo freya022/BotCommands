@@ -113,8 +113,8 @@ internal object ReflectionUtils {
         //Take everything except extension functions
         get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
 
-    /** Everything but extensions, includes static methods, same but for companion object as well */
-    internal val KClass<*>.staticAndCompanionMemberFunctions
+    /** Static methods and declared member functions of the companion object */
+    internal val KClass<*>.staticAndCompanionDeclaredMemberFunctions
         get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
