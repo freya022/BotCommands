@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
-class CooldownService(private val context: BContextImpl) {
+internal class CooldownService(private val context: BContextImpl) {
     @JvmRecord
     private data class CooldownKey(private val commandPath: CommandPath, private val placeId: Long?, private val userId: Long)
 

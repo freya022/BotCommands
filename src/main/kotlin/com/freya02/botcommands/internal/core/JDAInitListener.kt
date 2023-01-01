@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.core.events.BStatusChangeEvent
+import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.StatusChangeEvent
@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 @BService(start = ServiceStart.LAZY)
-class JDAInitListener(private val context: BContext) {
+internal class JDAInitListener(private val context: BContext) {
     private val logger = KotlinLogging.logger { }
     private val lock = ReentrantLock()
 

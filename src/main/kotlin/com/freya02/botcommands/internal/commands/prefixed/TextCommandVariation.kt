@@ -57,7 +57,7 @@ class TextCommandVariation internal constructor(
         }
     }
 
-    suspend fun execute(
+    internal suspend fun execute(
         _event: MessageReceivedEvent,
         cooldownService: CooldownService,
         args: String,

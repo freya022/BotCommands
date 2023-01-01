@@ -84,7 +84,7 @@ abstract class SlashCommandInfo internal constructor(
         }
     }
 
-    suspend fun execute(event: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
+    internal suspend fun execute(event: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
@@ -177,10 +177,6 @@ abstract class SlashCommandInfo internal constructor(
                 throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
-    }
-
-    fun getAutocompleteHandlerName(event: CommandAutoCompleteInteractionEvent): String? {
-        throw UnsupportedOperationException()
     }
 
     companion object {

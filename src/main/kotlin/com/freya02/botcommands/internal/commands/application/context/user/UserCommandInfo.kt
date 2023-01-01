@@ -50,7 +50,7 @@ class UserCommandInfo internal constructor(
         }
     }
 
-    suspend fun execute(
+    internal suspend fun execute(
         context: BContextImpl,
         cooldownService: CooldownService,
         event: UserContextInteractionEvent

@@ -7,13 +7,13 @@ import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.events.BStatusChangeEvent
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
