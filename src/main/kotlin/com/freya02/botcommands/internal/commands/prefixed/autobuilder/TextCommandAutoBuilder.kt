@@ -19,8 +19,8 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
@@ -35,8 +35,9 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
 
     init {
         functions = classPathContainer.functionsWithAnnotation<JDATextCommand>()
-            .requireNonStatic()
-            .requireFirstArg(BaseCommandEvent::class).map {
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
+            .map {
                 val instanceSupplier: () -> TextCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")

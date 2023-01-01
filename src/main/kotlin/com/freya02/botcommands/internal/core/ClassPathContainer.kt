@@ -1,15 +1,16 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.jvm.jvmErasure
 import kotlin.system.measureNanoTime
+
+private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
 
 internal sealed interface ClassPathFunction {
     val instance: Any
@@ -77,7 +78,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
         logger.trace { "Reflection took ${nano / 1000000.0} ms" }
     }
 
-    inline fun <reified T : Annotation> functionsWithAnnotation() = functions.filter { it.function.hasAnnotation<T>() }
+    inline fun <reified A : Annotation> functionsWithAnnotation() = functions.withFilter(FunctionFilter.annotation<A>())
 
     private fun retrieveClassFunctions(): List<ClassPathFunction> {
         return classes
@@ -98,45 +99,5 @@ internal class ClassPathContainer(private val context: BContextImpl) {
     }
 }
 
-internal fun List<ClassPathFunction>.withReturnType(vararg types: KClass<*>) =
-    this.filter { it.function.returnType.jvmErasure.isSubclassOfAny(*types) }
-
-internal fun <C : Iterable<ClassPathFunction>> C.requireReturnType(vararg types: KClass<*>): C = this.onEach {
-    requireUser(it.function.returnType.jvmErasure.isSubclassOfAny(*types), it.function) {
-        "Function must return any a superclass of: ${
-            types.joinToString(
-                prefix = "[",
-                postfix = "]"
-            ) { type -> type.java.simpleName }
-        }"
-    }
-}
-
-private fun hasFirstArg(
-    it: KFunction<*>,
-    types: Array<out KClass<*>>
-) = when (val firstParam = it.nonInstanceParameters.firstOrNull()) {
-    null -> false
-    else -> firstParam.type.jvmErasure.isSubclassOfAny(*types)
-}
-
-internal fun List<ClassPathFunction>.withFirstArg(vararg types: KClass<*>) = this.filter { hasFirstArg(it.function, types) }
-
-internal fun <C : Iterable<ClassPathFunction>> C.requireFirstArg(vararg types: KClass<*>): C = this.onEach {
-    requireUser(hasFirstArg(it.function, types), it.function) {
-        "Function must have a first parameter with a superclass of: ${
-            types.joinToString(
-                prefix = "[",
-                postfix = "]"
-            ) { type -> type.java.simpleName }
-        }"
-    }
-}
-
-internal fun List<ClassPathFunction>.withNonStatic() = this.filter { !it.function.isStatic }
-
-internal fun <C : Iterable<ClassPathFunction>> C.requireNonStatic(): C = this.onEach {
-    requireUser(!it.function.isStatic, it.function) {
-        "Function must be static"
-    }
-}
+internal fun <C : ClassPathFunctionIterable> C.withFilter(filter: FunctionFilter) = this.filter { filter(it.function, false) }
+internal fun <C : ClassPathFunctionIterable> C.requiredFilter(filter: FunctionFilter) = this.onEach { filter(it.function, true) }

@@ -4,17 +4,15 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.filterWithAnnotation
+import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
-import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.core.PreboundFunction
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.javaMethodInternal
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -50,7 +48,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         addEventListeners(
             listener::class
                 .functions
-                .filterWithAnnotation<BEventListener>()
+                .withFilter(FunctionFilter.annotation<BEventListener>())
                 .toClassPathFunctions(listener)
         )
     }
@@ -103,8 +101,8 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     }
 
     private fun addEventListeners(functions: List<ClassPathFunction>) = functions
-        .requireNonStatic()
-        .requireFirstArg(GenericEvent::class, BEvent::class)
+        .requiredFilter(FunctionFilter.nonStatic())
+        .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->
             val function = classPathFunc.function
 

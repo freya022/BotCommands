@@ -22,8 +22,8 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.metadat
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
@@ -36,8 +36,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
 
     init {
         messageFunctions = classPathContainer.functionsWithAnnotation<JDAMessageCommand>()
-            .requireNonStatic()
-            .requireFirstArg(GlobalMessageEvent::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
             .map {
                 val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
@@ -49,8 +49,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
             }
 
         userFunctions = classPathContainer.functionsWithAnnotation<JDAUserCommand>()
-            .requireNonStatic()
-            .requireFirstArg(GlobalUserEvent::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
             .map {
                 val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function

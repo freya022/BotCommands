@@ -11,9 +11,10 @@ import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.*
-import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.filterWithAnnotation
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.hooks.IEventManager
@@ -50,7 +51,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         context.classPathContainer.classes.flatMap { clazz ->
             val functions = clazz.functions
             val companionFunctions = clazz.companionObject?.functions ?: emptyList()
-            (functions + companionFunctions).filterWithAnnotation<DynamicSupplier>().onEach { function ->
+            (functions + companionFunctions).withFilter(FunctionFilter.annotation<DynamicSupplier>()).onEach { function ->
                 if (!function.hasAnnotation<DynamicSupplier>()) //TODO filters
                     throwUser(function, "bruh")
             }
@@ -345,7 +346,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     private fun findInstanceSupplier(classType: KClass<*>, functions: Collection<KFunction<*>>): KFunction<*>? {
-        return functions.filterWithAnnotation<InstanceSupplier>().let { supplierFunctions ->
+        return functions.withFilter(FunctionFilter.annotation<InstanceSupplier>()).let { supplierFunctions ->
             if (supplierFunctions.size > 1)
                 throwUser("Class ${classType.simpleNestedName} needs to have only one method annotated with @${InstanceSupplier::class.simpleNestedName}")
 

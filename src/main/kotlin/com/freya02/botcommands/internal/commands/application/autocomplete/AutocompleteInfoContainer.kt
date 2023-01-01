@@ -5,11 +5,9 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.core.requireReturnType
+import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.requireUser
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -22,9 +20,9 @@ internal class AutocompleteInfoContainer(classPathContainer: ClassPathContainer)
 
     init {
         infoMap = classPathContainer.functionsWithAnnotation<AutocompleteHandler>()
-            .requireNonStatic()
-            .requireFirstArg(CommandAutoCompleteInteractionEvent::class)
-            .requireReturnType(Collection::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
+            .requiredFilter(FunctionFilter.returnType(Collection::class))
             .associate {
                 requireUser(it.function.returnType.jvmErasure.isSubclassOf(Collection::class), it.function) {
                     "Autocomplete handler needs to return a Collection"

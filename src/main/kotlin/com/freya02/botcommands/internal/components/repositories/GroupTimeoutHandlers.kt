@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.components.annotations.GroupTimeoutHandler
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.core.withFirstArg
+import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
@@ -16,8 +16,8 @@ internal class GroupTimeoutHandlers(classPathContainer: ClassPathContainer) : Ha
 
     init {
         map = classPathContainer.functionsWithAnnotation<GroupTimeoutHandler>()
-            .requireNonStatic()
-            .withFirstArg(GroupTimeoutData::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GroupTimeoutData::class))
             .associate {
                 it.function.findAnnotation<GroupTimeoutHandler>()!!.name to it.function
             }

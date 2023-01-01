@@ -10,9 +10,9 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlin.reflect.full.findAnnotation
 
@@ -23,8 +23,8 @@ internal class ComponentsHandlerContainer(context: BContextImpl, classPathContai
 
     init {
         classPathContainer.functionsWithAnnotation<JDAButtonListener>()
-            .requireNonStatic()
-            .requireFirstArg(ButtonEvent::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(ButtonEvent::class))
             .forEach {
                 val handlerName = it.function.findAnnotation<JDAButtonListener>()!!.name
 
@@ -35,8 +35,8 @@ internal class ComponentsHandlerContainer(context: BContextImpl, classPathContai
             }
 
         classPathContainer.functionsWithAnnotation<JDASelectMenuListener>()
-            .requireNonStatic()
-            .requireFirstArg(StringSelectEvent::class, EntitySelectEvent::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(StringSelectEvent::class, EntitySelectEvent::class))
             .forEach {
                 val handlerName = it.function.findAnnotation<JDASelectMenuListener>()!!.name
 

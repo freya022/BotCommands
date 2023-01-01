@@ -10,9 +10,9 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.Context
 import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.core.requireFirstArg
-import com.freya02.botcommands.internal.core.requireNonStatic
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlinx.coroutines.sync.Mutex
@@ -56,8 +56,13 @@ internal class ApplicationCommandsBuilder(
 
         for (classPathFunction in classPathContainer
             .functionsWithAnnotation<AppDeclaration>()
-            .requireNonStatic()
-            .requireFirstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(
+                FunctionFilter.firstArg(
+                    GlobalApplicationCommandManager::class,
+                    GuildApplicationCommandManager::class
+                )
+            )
         ) {
             when (classPathFunction.function.valueParameters.first().type.jvmErasure) {
                 GlobalApplicationCommandManager::class -> globalDeclarationFunctions.add(classPathFunction)

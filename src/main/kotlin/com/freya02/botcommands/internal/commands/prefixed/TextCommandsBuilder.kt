@@ -9,9 +9,13 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import mu.KotlinLogging
@@ -32,8 +36,8 @@ internal class TextCommandsBuilder(
 
         for (classPathFunction in classPathContainer
             .functionsWithAnnotation<TextDeclaration>()
-            .requireNonStatic()
-            .requireFirstArg(TextCommandManager::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(TextCommandManager::class))
         ) {
             declarationFunctions.add(classPathFunction)
         }

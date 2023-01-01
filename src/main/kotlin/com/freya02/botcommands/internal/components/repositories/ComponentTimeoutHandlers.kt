@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.components.annotations.ComponentTimeoutHandle
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requireNonStatic
-import com.freya02.botcommands.internal.core.withFirstArg
+import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.utils.FunctionFilter
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 
@@ -16,8 +16,8 @@ internal class ComponentTimeoutHandlers(classPathContainer: ClassPathContainer) 
 
     init {
         map = classPathContainer.functionsWithAnnotation<ComponentTimeoutHandler>()
-            .requireNonStatic()
-            .withFirstArg(ComponentTimeoutData::class)
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(ComponentTimeoutData::class))
             .associate {
                 it.function.findAnnotation<ComponentTimeoutHandler>()!!.name to it.function
             }
