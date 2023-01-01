@@ -12,8 +12,11 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.ReflectionUtils.staticAndCompanionMemberFunctions
+import com.freya02.botcommands.internal.utils.requiredFilter
 import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -49,17 +52,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private val dynamicSuppliers: List<KFunction<*>> by lazy {
         context.classPathContainer.classes.flatMap { clazz ->
-            val functions = clazz.functions
-            val companionFunctions = clazz.companionObject?.functions ?: emptyList()
-            (functions + companionFunctions).withFilter(FunctionFilter.annotation<DynamicSupplier>()).onEach { function ->
-                if (!function.hasAnnotation<DynamicSupplier>()) //TODO filters
-                    throwUser(function, "bruh")
-            }
+            clazz.nonExtensionFunctions //Companion objects are included in those classes, no need to get them
+                .withFilter(FunctionFilter.annotation<DynamicSupplier>())
+                .requiredFilter(FunctionFilter.staticOrCompanion())
+                .requiredFilter(FunctionFilter.firstArg(Class::class))
+                .requiredFilter(FunctionFilter.returnType(Any::class))
         }
-//            .functionsWithAnnotation<DynamicSupplier>()
-//            .requireStatic()
-//            .requireFirstArg(Class::class)
-//            .requireReturnType(Any::class)
     }
 
     internal val loadableServices: Map<KClass<*>, ServiceStart>

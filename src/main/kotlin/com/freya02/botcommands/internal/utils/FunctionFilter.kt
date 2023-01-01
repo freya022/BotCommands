@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 
 private typealias Function = KFunction<*>
@@ -56,6 +57,13 @@ internal abstract class FunctionFilter {
                 get() = "Function must be static"
 
             override fun filter(function: Function): Boolean = function.isStatic
+        }
+
+        fun staticOrCompanion() = object : FunctionFilter() {
+            override val errorMessage: String
+                get() = "Function must be static"
+
+            override fun filter(function: Function): Boolean = function.isStatic || (function.instanceParameter?.type?.jvmErasure?.isCompanion ?: false)
         }
 
         fun nonStatic() = object : FunctionFilter() {

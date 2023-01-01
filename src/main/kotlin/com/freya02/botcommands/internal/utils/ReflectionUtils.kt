@@ -16,9 +16,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.findAnnotations
-import kotlin.reflect.full.valueParameters
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
@@ -109,6 +107,15 @@ internal object ReflectionUtils {
             val collectionType = type.jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
             return collectionType.arguments.first().type?.jvmErasure
         }
+
+    /** Everything but extensions, includes static methods */
+    internal val KClass<*>.nonExtensionFunctions
+        //Take everything except extension functions
+        get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
+
+    /** Everything but extensions, includes static methods, same but for companion object as well */
+    internal val KClass<*>.staticAndCompanionMemberFunctions
+        get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
 
     @Throws(IllegalAccessException::class, InvocationTargetException::class)
     internal fun isInstantiable(info: ClassInfo): Boolean {
