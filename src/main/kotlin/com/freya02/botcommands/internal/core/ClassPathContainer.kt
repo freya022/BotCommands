@@ -6,25 +6,52 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KProperty
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.system.measureNanoTime
 
-internal class InstanceDelegate(private val getter: () -> Any) {
-    operator fun getValue(thisRef: Any, property: KProperty<*>): Any {
-        return getter()
-    }
-}
+internal sealed interface ClassPathFunction {
+    val instance: Any
+    val instanceOrNull: Any?
 
-internal class ClassPathFunction(instanceProvider: InstanceDelegate, val function: KFunction<*>) {
-    val instance: Any by instanceProvider
-
-    constructor(obj: Any, function: KFunction<*>) : this(InstanceDelegate { obj }, function)
+    val function: KFunction<*>
 
     operator fun component1(): Any = instance
     operator fun component2(): KFunction<*> = function
+
+    fun hasInstance() = instanceOrNull != null
+}
+
+internal class LazyClassPathFunction internal constructor(
+    private val context: BContextImpl,
+    private val clazz: KClass<*>,
+    override val function: KFunction<*>
+) : ClassPathFunction {
+    override val instance
+        get() = context.serviceContainer.getService(clazz)
+    override val instanceOrNull: Any?
+        get() {
+            return when (context.serviceContainer.canCreateService(clazz)) {
+                null -> instance //No error message
+                else -> null
+            }
+        }
+}
+
+internal fun ClassPathFunction(context: BContextImpl, clazz: KClass<*>, function: KFunction<*>): ClassPathFunction {
+    return LazyClassPathFunction(context, clazz, function)
+}
+
+internal class InstanceClassPathFunction internal constructor(
+    override val instance: Any,
+    override val function: KFunction<*>
+) : ClassPathFunction {
+    override val instanceOrNull: Any = instance
+}
+
+internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPathFunction {
+    return InstanceClassPathFunction(instance, function)
 }
 
 internal class ClassPathContainer(private val context: BContextImpl) {
@@ -59,8 +86,9 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 //                if (errorMessage != null) logger.trace { "Discarding ${it.simpleName} from ClassPathContainer, reason: $errorMessage" }
 //                errorMessage == null
 //            } //Keep services which can be loaded
-            .associate { InstanceDelegate { context.getService(it) } to it.declaredMemberFunctions }
-            .flatMap { entry -> entry.value.map { ClassPathFunction(entry.key, it) } }
+            .flatMap { clazz ->
+                clazz.declaredMemberFunctions.map { ClassPathFunction(context, clazz, it) }
+            }
     }
 
     companion object {

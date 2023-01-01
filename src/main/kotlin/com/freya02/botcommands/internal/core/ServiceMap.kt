@@ -10,6 +10,7 @@ internal class ServiceMap {
 
     operator fun get(clazz: KClass<*>) = map[clazz]
 
+    //TODO type should never be deduced, this could example allow a bug where Service1 is being registered as Service2 by a #put(Service1)
     fun put(instance: Any, asType: KClass<*> = instance::class) {
         if (asType in map)
             throwUser("Cannot put service ${asType.simpleNestedName} as it already exists")

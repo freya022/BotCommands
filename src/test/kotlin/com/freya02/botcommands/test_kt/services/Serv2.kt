@@ -1,5 +1,10 @@
 package com.freya02.botcommands.test_kt.services
 
-class Serv2() {
+import com.freya02.botcommands.api.core.annotations.BService
 
+@BService
+class Serv2 private constructor() {
+    companion object {
+        operator fun invoke() = Serv2()
+    }
 }

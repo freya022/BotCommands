@@ -10,9 +10,10 @@ import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.filterWithAnnotation
-import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.hooks.IEventManager
@@ -45,6 +46,21 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private val localBeingCheckedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
 
+    private val dynamicSuppliers: List<KFunction<*>> by lazy {
+        context.classPathContainer.classes.flatMap { clazz ->
+            val functions = clazz.functions
+            val companionFunctions = clazz.companionObject?.functions ?: emptyList()
+            (functions + companionFunctions).filterWithAnnotation<DynamicSupplier>().onEach { function ->
+                if (!function.hasAnnotation<DynamicSupplier>()) //TODO filters
+                    throwUser(function, "bruh")
+            }
+        }
+//            .functionsWithAnnotation<DynamicSupplier>()
+//            .requireStatic()
+//            .requireFirstArg(Class::class)
+//            .requireReturnType(Any::class)
+    }
+
     internal val loadableServices: Map<KClass<*>, ServiceStart>
         @JvmSynthetic get() =
             hashMapOf<KClass<*>, ServiceStart>().also { loadableServices ->
@@ -72,6 +88,17 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     @JvmSynthetic
     internal fun preloadServices() {
         runBlocking {
+            dynamicSuppliers.let {
+                if (it.isEmpty()) return@let
+
+                logger.trace {
+                    val functionsListStr = it.joinToString("\n\t - ", "\t - ", "") { dynamicSupplierFunction ->
+                        dynamicSupplierFunction.shortSignatureNoSrc
+                    }
+                    "Loaded ${it.size} dynamic suppliers:\n$functionsListStr"
+                }
+            }
+
             getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
         }
     }
@@ -170,8 +197,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
 
         //Check parameters of dynamic resolvers
-        for (supplier in serviceConfig.dynamicInstanceSuppliers) {
-            findSupplierFunction(supplier).nonInstanceParameters.forEach {
+        dynamicSuppliers.forEach { dynamicSupplierFunction ->
+            dynamicSupplierFunction.nonInstanceParameters.drop(1).forEach {
                 canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
             }
         }
@@ -266,9 +293,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     @OptIn(ExperimentalTime::class)
     private fun constructInstance(clazz: KClass<*>): TimedInstantiation {
-        for (dynamicInstanceSupplier in serviceConfig.dynamicInstanceSuppliers) {
+        dynamicSuppliers.forEach { dynamicSupplierFunction ->
             measureTimedValue {
-                runSupplierFunction(dynamicInstanceSupplier)
+                runDynamicSupplier(clazz, dynamicSupplierFunction)
             }.let {
                 it.value?.let { service ->
                     return TimedInstantiation(ServiceResult(service, null), it.duration)
@@ -294,7 +321,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
                     dependencyResult.service ?: return TimedInstantiation(ServiceResult(null, dependencyResult.errorMessage!!), Duration.INFINITE)
                 }
-                measureTimedValue { constructingFunction.call(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
+                measureTimedValue { constructingFunction.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
         }.let {
             TimedInstantiation(ServiceResult(it.value, null), it.duration)
@@ -329,30 +356,31 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    private fun runSupplierFunction(supplier: Any): Any? { //TODO test supplier func
-        val supplierFunction = findSupplierFunction(supplier)
-
-        val params: List<Any> = supplierFunction.nonInstanceParameters.map {
+    private fun runDynamicSupplier(requestedType: KClass<*>, dynamicSupplierFunction: KFunction<*>): Any? {
+        val params: List<Any> = dynamicSupplierFunction.nonInstanceParameters.drop(1).map {
             //Try to get a dependency, if it doesn't work then skip this supplier
             tryGetService(it.type.jvmErasure).service ?: return null
         }
 
-        return supplierFunction.call(*params.toTypedArray())
+        return dynamicSupplierFunction.callStatic(requestedType.java, *params.toTypedArray())
     }
 
-    private fun findSupplierFunction(supplier: Any): KFunction<*> {
-        val suppliers = supplier::class
-            .declaredMemberFunctions
-            .filter { it.hasAnnotation<DynamicSupplier>() }
+    private fun <R> KFunction<R>.callStatic(vararg args: Any?): R {
+        return when (val instanceParameter = this.instanceParameter) {
+            null -> this.call(*args)
+            else -> {
+                val companionObjectClazz = instanceParameter.type.jvmErasure
+                if (!companionObjectClazz.isCompanion)
+                    throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
+                val companionObjectInstance = companionObjectClazz.objectInstance
+                    ?: throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
 
-        if (suppliers.size != 1) {
-            throwService("Class ${supplier::class.jvmName} should have only one supplier function")
+                this.call(companionObjectInstance, *args)
+            }
         }
-
-        return suppliers.single()
     }
 
-    data class ServiceResult<T>(val service: T?, val errorMessage: String?) {
+    data class ServiceResult<T : Any>(val service: T?, val errorMessage: String?) {
         init {
             if (service == null && errorMessage == null) {
                 throwInternal("ServiceResult should contain either the service or the error message")
