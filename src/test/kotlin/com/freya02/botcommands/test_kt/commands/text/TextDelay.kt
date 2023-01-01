@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands.text
+package com.freya02.botcommands.test_kt.commands.text
 
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent

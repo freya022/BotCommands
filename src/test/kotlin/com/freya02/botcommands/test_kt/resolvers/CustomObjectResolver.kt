@@ -1,11 +1,11 @@
-package com.freya02.botcommands.test.resolvers
+package com.freya02.botcommands.test_kt.resolvers
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.test.CustomObject
+import com.freya02.botcommands.test_kt.CustomObject
 import net.dv8tion.jda.api.events.Event
 
 @CommandMarker

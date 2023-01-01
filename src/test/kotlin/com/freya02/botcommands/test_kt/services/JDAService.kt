@@ -1,7 +1,8 @@
-package com.freya02.botcommands.test
+package com.freya02.botcommands.test_kt.services
 
 import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.test.Config
 import dev.minn.jda.ktx.jdabuilder.light
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.hooks.IEventManager

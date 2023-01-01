@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands_kt.text
+package com.freya02.botcommands.test_kt.commands.text
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.annotations.CommandMarker

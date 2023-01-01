@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test.commands_kt.slash
+package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
@@ -14,7 +14,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.modals.create
 import com.freya02.botcommands.api.modals.shortTextInput
-import com.freya02.botcommands.test.CustomObject
+import com.freya02.botcommands.test_kt.CustomObject
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
