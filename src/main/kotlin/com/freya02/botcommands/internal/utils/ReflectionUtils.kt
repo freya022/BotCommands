@@ -64,9 +64,9 @@ internal object ReflectionUtils {
 
     internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
-            val declaringClassName = this.javaMethod?.declaringClass?.simpleName ?: "<no-java-method>"
+            val declaringClassName = this.javaMethod?.declaringClass?.simpleNestedName ?: "<no-java-method>"
             val methodName = this.name
-            val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleName }
+            val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleNestedName }
             return "$declaringClassName#$methodName($parameters)"
         }
 
