@@ -78,7 +78,7 @@ internal object ReflectionMetadata {
                     }
                     return@filter true
                 }
-                .filter { !(it.isInnerClass || it.isSynthetic || it.isEnum || it.isAbstract) }
+                .filter { !((it.isInnerClass && it.simpleName != "Companion") || it.isSynthetic || it.isEnum || it.isAbstract) }
                 .filter(ReflectionUtils::isInstantiable)
                 .toList()
                 .also { readAnnotations(it) }
