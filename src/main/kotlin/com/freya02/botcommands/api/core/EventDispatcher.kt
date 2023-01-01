@@ -12,6 +12,7 @@ import com.freya02.botcommands.internal.core.PreboundFunction
 import com.freya02.botcommands.internal.core.requireFirstArg
 import com.freya02.botcommands.internal.core.requireNonStatic
 import com.freya02.botcommands.internal.getDeepestCause
+import com.freya02.botcommands.internal.javaMethodInternal
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
@@ -20,6 +21,7 @@ import kotlinx.coroutines.async
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.functions
@@ -31,12 +33,12 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     private val logger = Logging.getLogger()
 
     private val map: EventMap = hashMapOf()
-    private val listeners: MutableMap<Any, EventMap> = hashMapOf()
+    private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()
 
     init {
         context.serviceContainer.putService(this)
 
-        addEventListeners(null, context.classPathContainer.functionsWithAnnotation<BEventListener>())
+        addEventListeners(context.classPathContainer.functionsWithAnnotation<BEventListener>())
 
         context.eventManager.listener<Event> {
             dispatchEvent(it)
@@ -45,7 +47,6 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
     fun addEventListener(listener: Any) {
         addEventListeners(
-            listener,
             listener::class
                 .functions
                 .filterWithAnnotation<BEventListener>()
@@ -54,7 +55,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     }
 
     fun removeEventListener(listener: Any) {
-        listeners[listener]?.let { instanceMap ->
+        listeners[listener::class.java]?.let { instanceMap ->
             instanceMap.forEach { (kClass, functions) ->
                 val functionMap = map[kClass]
                     ?: throwInternal("Listener was registered without having its functions added to the listener map")
@@ -99,7 +100,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
-    private fun addEventListeners(instance: Any?, functions: List<ClassPathFunction>) = functions
+    private fun addEventListeners(functions: List<ClassPathFunction>) = functions
         .requireNonStatic()
         .requireFirstArg(GenericEvent::class, BEvent::class)
         .forEach { classPathFunc ->
@@ -121,18 +122,17 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
                 //Getting services is delayed until execution, as to ensure late services can be used in listeners
                 context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
             }
-            instance?.let { instance ->
-                //Skip adding event listeners if the instance is already registered
-                if (listeners[instance] != null) return
 
-                val instanceMap: EventMap = hashMapOf()
-                instanceMap.getOrPut(eventErasure) { mutableListOf() }.add(preboundFunction)
+            classPathFunc.function.javaMethodInternal.declaringClass.let { clazz: Class<*> ->
+                val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
-                listeners[instance] = instanceMap
+                (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
+                    instanceMap.getOrPut(it) { mutableListOf() }.add(preboundFunction)
+                }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.getOrPut(it) { mutableListOf() }.add(preboundFunction)
+                map.getOrPut(it) { CopyOnWriteArrayList() }.add(preboundFunction)
             }
         }
 
