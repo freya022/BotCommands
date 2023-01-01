@@ -17,6 +17,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
@@ -64,6 +65,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
+    @JvmSynthetic
     suspend fun dispatchEvent(event: Any) {
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
@@ -71,7 +73,10 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         handlers.forEach { preboundFunction -> runEventHandler(preboundFunction, event) }
     }
 
-    suspend fun dispatchEventAsync(event: Any): List<Deferred<Unit>> {
+    @JvmName("dispatchEvent")
+    fun dispatchEventJava(event: Any) = runBlocking { dispatchEvent(event) }
+
+    fun dispatchEventAsync(event: Any): List<Deferred<Unit>> {
         // Try not to switch context on non-handled events
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return emptyList()
@@ -82,10 +87,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
-    private suspend fun runEventHandler(
-        preboundFunction: PreboundFunction,
-        event: Any
-    ) {
+    private suspend fun runEventHandler(preboundFunction: PreboundFunction, event: Any) {
         try {
             val (instance, function) = preboundFunction.classPathFunction
 
