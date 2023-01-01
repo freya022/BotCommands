@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.localization
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.SingleLogger
+import mu.KotlinLogging
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
@@ -54,7 +54,7 @@ class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFu
     }
 
     companion object {
-        private val logger = Logging.getLogger()
+        private val logger = KotlinLogging.logger { }
 
         private fun Locale.toDiscordLocale() = DiscordLocale.from(this)
     }

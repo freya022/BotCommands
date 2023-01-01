@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.events.BStatusChangeEvent
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
@@ -31,7 +32,7 @@ import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
 
     internal val classPathContainer: ClassPathContainer
     val serviceContainer: ServiceContainer

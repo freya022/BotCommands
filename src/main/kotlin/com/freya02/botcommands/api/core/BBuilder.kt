@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
@@ -14,12 +13,13 @@ import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
     private val config = configConsumer.applyTo(BConfig())
 
     companion object {

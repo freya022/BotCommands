@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.core
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
@@ -18,6 +17,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
@@ -30,7 +30,7 @@ import kotlin.reflect.jvm.jvmErasure
 private typealias EventMap = MutableMap<KClass<*>, MutableList<PreboundFunction>>
 
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
 
     private val map: EventMap = hashMapOf()
     private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()

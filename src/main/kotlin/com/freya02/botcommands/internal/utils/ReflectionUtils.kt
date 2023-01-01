@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.annotations.ConditionalUse
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
@@ -9,6 +8,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
+import mu.KotlinLogging
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
@@ -24,7 +24,7 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionUtils {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
 
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 

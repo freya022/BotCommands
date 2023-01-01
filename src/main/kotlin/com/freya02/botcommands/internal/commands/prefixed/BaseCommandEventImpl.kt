@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.utils.EmojiUtils
 import com.freya02.botcommands.internal.BContextImpl
+import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -33,7 +33,7 @@ open class BaseCommandEventImpl(
     override fun getArgumentsStr(): String = argumentsStr
 
     override fun reportError(message: String, e: Throwable) {
-        channel.sendMessage(message).queue(null) { t: Throwable? -> LOGGER.error("Could not send message to channel : {}", message, t) }
+        channel.sendMessage(message).queue(null) { t: Throwable? -> logger.error("Could not send message to channel : {}", message, t) }
         context.dispatchException(message, e)
     }
 
@@ -115,7 +115,7 @@ open class BaseCommandEventImpl(
     }
 
     companion object {
-        private val LOGGER = Logging.getLogger()
+        private val logger = KotlinLogging.logger { }
 
         @JvmField val SUCCESS = EmojiUtils.resolveJDAEmoji(":white_check_mark:")
         @JvmField val ERROR = EmojiUtils.resolveJDAEmoji(":x:")

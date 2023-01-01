@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.exceptions.BadIdException
 import com.freya02.botcommands.api.commands.prefixed.exceptions.NoIdException
@@ -10,6 +9,7 @@ import com.freya02.botcommands.api.utils.RichTextType
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
 import dev.minn.jda.ktx.coroutines.await
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
@@ -109,7 +109,7 @@ class CommandEventImpl private constructor(
     }
 
     companion object {
-        private val LOGGER = Logging.getLogger()
+        private val logger = KotlinLogging.logger { }
         private val idRegex = Regex("(\\d+)")
 
         private operator fun RichText.component1(): String = substring
@@ -164,7 +164,7 @@ class CommandEventImpl private constructor(
                 if (mentionable != null) {
                     arguments.add(mentionable)
                 } else {
-                    LOGGER.error(
+                    logger.error(
                         "Unresolved mentionable : '{}' of type {}, maybe you haven't enabled a cache flag / intent ?",
                         substring,
                         type.name

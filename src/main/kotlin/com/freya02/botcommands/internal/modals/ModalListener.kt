@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
@@ -9,12 +8,13 @@ import com.freya02.botcommands.internal.throwUser
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.coroutines.resume
 
 @BService
 internal class ModalListener(private val context: BContextImpl, private val modalHandlerContainer: ModalHandlerContainer, private val modalMaps: ModalMaps) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
 
     @BEventListener
     suspend fun onModalEvent(event: ModalInteractionEvent) {

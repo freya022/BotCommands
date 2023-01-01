@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
@@ -11,7 +11,7 @@ import java.util.*
 
 @BService
 internal class ApplicationUpdaterListener(private val applicationCommandsBuilder: ApplicationCommandsBuilder) {
-    private val logger = Logging.getLogger()
+    private val logger = KotlinLogging.logger { }
 
     private val failedGuilds: MutableSet<Long> = Collections.synchronizedSet(hashSetOf())
 

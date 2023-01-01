@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
@@ -14,6 +13,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -98,7 +98,7 @@ class TextCommandVariation internal constructor(
 
                         resolved
                     } else if (!parameter.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                        LOGGER.warn(
+                        logger.warn(
                             "Could not find parameter #{} in {} for input args {}",
                             parameter.index,
                             method.shortSignatureNoSrc,
@@ -139,6 +139,6 @@ class TextCommandVariation internal constructor(
     }
 
     companion object {
-        private val LOGGER = Logging.getLogger()
+        private val logger = KotlinLogging.logger { }
     }
 }

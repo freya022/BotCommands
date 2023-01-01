@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
@@ -16,6 +15,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.to
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
@@ -148,7 +148,7 @@ abstract class SlashCommandInfo internal constructor(
                         }
 
                         //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                        LOGGER.trace(
+                        logger.trace(
                             "The parameter '{}' of value '{}' could not be resolved into a {}",
                             parameter.name,
                             optionMapping.asString,
@@ -184,6 +184,6 @@ abstract class SlashCommandInfo internal constructor(
     }
 
     companion object {
-        private val LOGGER = Logging.getLogger()
+        private val logger = KotlinLogging.logger { }
     }
 }
