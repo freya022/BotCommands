@@ -22,57 +22,67 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * The only class you'll need to initialize the framework.
  *
- * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
- * starting it when [newBuilder] returns is also fine.
- *
- * Example - Main.kt:
- * ```kt
- * val scope = getDefaultScope()
- * val manager = CoroutineEventManager(scope, 1.minutes)
- * manager.listener<ShutdownEvent> {
- *     this.cancel() //"this" is a scope delegate
- * }
- *
- * BBuilder.newBuilder({
- *     addSearchPath("io.github.name.bot") //Change this
- *
- *     components {
- *         useComponents = true
- *     }
- *
- *     textCommands {
- *         usePingAsPrefix = true
- *     }
- * }, manager)
- * ```
- *
- * JDAService.kt:
- * ```kt
- * @BService(ServiceStart.READY) //Initializing JDA before the framework is ready will error.
- * class JDAService(config: Config, eventManager: IEventManager) {
- *     init {
- *         light(config.token, enableCoroutines = false /* required */) {
- *             //Configure JDA
- *
- *             setEventManager(eventManager) //Required
- *         }
- *     }
- * }
- * ```
+ * See `newBuilder` methods
  */
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
     private val logger = KotlinLogging.logger { }
     private val config = configConsumer.applyTo(BConfig())
 
     /**
-     * @see BBuilder
+     * The only class you'll need to initialize the framework.
+     *
+     * See `newBuilder` methods
      */
     companion object {
+        /**
+         * See `newBuilder` methods
+         */
         @JvmStatic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>) {
             return newBuilder(configConsumer, getDefaultManager())
         }
 
+        /**
+         * Creates a new instance of the framework.
+         *
+         * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
+         * starting it when [newBuilder] returns is also fine.
+         *
+         * Example - Main.kt:
+         * ```kt
+         * val scope = getDefaultScope()
+         * val manager = CoroutineEventManager(scope, 1.minutes)
+         * manager.listener<ShutdownEvent> {
+         *     this.cancel() //"this" is a scope delegate
+         * }
+         *
+         * BBuilder.newBuilder({
+         *     addSearchPath("io.github.name.bot") //Change this
+         *
+         *     components {
+         *         useComponents = true
+         *     }
+         *
+         *     textCommands {
+         *         usePingAsPrefix = true
+         *     }
+         * }, manager)
+         * ```
+         *
+         * JDAService.kt:
+         * ```kt
+         * @BService(ServiceStart.READY) //Initializing JDA before the framework is ready will error.
+         * class JDAService(config: Config, eventManager: IEventManager) {
+         *     init {
+         *         light(config.token, enableCoroutines = false /* required */) {
+         *             //Configure JDA
+         *
+         *             setEventManager(eventManager) //Required
+         *         }
+         *     }
+         * }
+         * ```
+         */
         @JvmSynthetic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {
             BBuilder(configConsumer).build(manager)
