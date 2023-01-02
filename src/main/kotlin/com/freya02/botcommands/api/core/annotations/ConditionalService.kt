@@ -2,6 +2,8 @@ package com.freya02.botcommands.api.core.annotations
 
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.ServiceStart
+import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
+import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 
@@ -14,6 +16,9 @@ import kotlin.reflect.KClass
  * @see InjectedService
  * @see ConditionalServiceChecker
  * @see ServiceType
+ *
+ * @see InstanceSupplier
+ * @see DynamicSupplier
  */
 @Inherited
 @Target(AnnotationTarget.CLASS)

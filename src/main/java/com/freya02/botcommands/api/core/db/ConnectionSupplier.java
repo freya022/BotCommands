@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core.db;
 import com.freya02.botcommands.api.core.annotations.BService;
 import com.freya02.botcommands.api.core.annotations.InjectedService;
 import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.config.BComponentsConfig;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -20,6 +21,7 @@ import java.sql.SQLException;
  * @see BService
  * @see ServiceType
  * @see InjectedService
+ * @see BComponentsConfig#setUseComponents(boolean)
  */
 @InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService(start = ServiceStart.PRE_LOAD) and @ServiceType(type = ConnectionSupplier.class) " +
 		"needs to be set in order to use the database")

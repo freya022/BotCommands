@@ -2,9 +2,17 @@ package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.db.ConnectionSupplier
 
 @InjectedService
 class BComponentsConfig internal constructor(config: BConfig) {
+    /**
+     * Allows loading component services.
+     *
+     * This requires a [ConnectionSupplier] service to be present
+     *
+     * @see ConnectionSupplier
+     */
     var useComponents: Boolean = false
 
     /**

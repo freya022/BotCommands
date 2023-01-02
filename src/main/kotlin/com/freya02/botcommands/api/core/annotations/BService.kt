@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.core.annotations
 
 import com.freya02.botcommands.api.core.ServiceStart
+import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
+import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 
 /**
  * Annotates a class as a service.
@@ -10,6 +12,9 @@ import com.freya02.botcommands.api.core.ServiceStart
  * @see InjectedService
  * @see ConditionalService
  * @see ServiceType
+ *
+ * @see InstanceSupplier
+ * @see DynamicSupplier
  */
 @Target(AnnotationTarget.CLASS)
 annotation class BService(
