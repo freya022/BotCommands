@@ -21,7 +21,6 @@
 
     "component.not.allowed.error.message": "You are not allowed to use this",
     "component.expired.error.message": "This component is not usable anymore",
-    "component.not.found.error.message": "This component could not be found",
 
     "modal.expired.error.message": "This modal is no longer available"
 }

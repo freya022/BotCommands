@@ -172,13 +172,6 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when a user tries to use a component which is not know by this library
-	 */
-	public String getComponentNotFoundErrorMsg() {
-		return getLocalizationTemplate("component.not.found.error.message").localize();
-	}
-
-	/**
 	 * @return Message to display when a user tries to use a modal which has reached timeout
 	 */
 	public String getModalExpiredErrorMsg() {

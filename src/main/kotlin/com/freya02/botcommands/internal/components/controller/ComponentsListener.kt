@@ -62,7 +62,7 @@ internal class ComponentsListener(
                 componentRepository.getComponent(it)
             }
             if (component == null) {
-                event.reply_(context.getDefaultMessages(event).componentNotFoundErrorMsg, ephemeral = true).queue()
+                event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
                 return@launch
             }
 
