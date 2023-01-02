@@ -24,8 +24,7 @@ import kotlin.time.Duration.Companion.minutes
  * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
  * starting it when [build] returns is also fine.
  *
- * Example:
- *
+ * Example - Main.kt:
  * ```kt
  * val scope = getDefaultScope()
  * val manager = CoroutineEventManager(scope, 1.minutes)
@@ -46,6 +45,7 @@ import kotlin.time.Duration.Companion.minutes
  * }, manager)
  * ```
  *
+ * JDAService.kt:
  * ```kt
  * @BService(ServiceStart.READY) //Initializing JDA before the framework is ready will error.
  * class JDAService(config: Config, eventManager: IEventManager) {
@@ -63,6 +63,9 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
     private val logger = KotlinLogging.logger { }
     private val config = configConsumer.applyTo(BConfig())
 
+    /**
+     * @see BBuilder
+     */
     companion object {
         @JvmStatic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>) {
