@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
@@ -22,7 +23,7 @@ import kotlin.time.Duration.Companion.minutes
  * The only class you'll need to initialize the framework.
  *
  * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
- * starting it when [build] returns is also fine.
+ * starting it when [newBuilder] returns is also fine.
  *
  * Example - Main.kt:
  * ```kt
