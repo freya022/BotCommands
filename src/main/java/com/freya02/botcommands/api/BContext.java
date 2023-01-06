@@ -151,20 +151,6 @@ public interface BContext {
 	void dispatchException(@NotNull String message, @Nullable Throwable t);
 
 	/**
-	 * Returns an immutable list of the registration listeners
-	 *
-	 * @return Immutable list of the registration listeners
-	 */
-	List<RegistrationListener> getRegistrationListeners();
-
-	/**
-	 * Adds registration listeners
-	 *
-	 * @param listeners Registration listeners to add
-	 */
-	void addRegistrationListeners(RegistrationListener... listeners);
-
-	/**
 	 * Returns the {@linkplain SettingsProvider} for this context
 	 *
 	 * @return The current {@linkplain SettingsProvider}

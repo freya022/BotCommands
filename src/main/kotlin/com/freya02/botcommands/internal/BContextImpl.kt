@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.*
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.BContext.Status
+import com.freya02.botcommands.api.DefaultMessages
+import com.freya02.botcommands.api.ExceptionHandler
+import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
@@ -26,7 +29,6 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
-import java.util.*
 import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.minutes
@@ -39,9 +41,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
     val eventDispatcher: EventDispatcher
 
     private var status : Status = Status.PRE_LOAD
-
-    //TODO replace by events
-    private val registrationListeners: MutableList<RegistrationListener> = arrayListOf()
 
     private var nextExceptionDispatch: Long = 0
 
@@ -149,14 +148,6 @@ class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEven
                     ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER) { logger.warn("Could not send exception DM to owner") }
                 )
         }
-    }
-
-    override fun getRegistrationListeners(): List<RegistrationListener> {
-        return Collections.unmodifiableList(registrationListeners)
-    }
-
-    override fun addRegistrationListeners(vararg listeners: RegistrationListener) {
-        registrationListeners += listeners
     }
 
     override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?

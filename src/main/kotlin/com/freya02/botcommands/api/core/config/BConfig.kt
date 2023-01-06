@@ -21,13 +21,12 @@ class BConfig internal constructor() {
         private set
 
     @JvmSynthetic
-    internal val packages: MutableSet<String> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
-    //TODO backed collection as mutable, exposed collection as immutable
+    internal val packages: MutableSet<String> = HashSet()
     @JvmSynthetic
-    internal val classes: MutableSet<Class<*>> = HashSet() //TODO treat as being potential classes, not all of them would be valid to use
+    internal val classes: MutableSet<Class<*>> = HashSet()
 
     @JvmSynthetic
-    internal val ownerIds: MutableSet<Long> = HashSet() //TODO backed collection as mutable, exposed collection as immutable
+    internal val ownerIds: MutableSet<Long> = HashSet()
 
     /**
      * Enabling dev mode only disables exception DMs currently
