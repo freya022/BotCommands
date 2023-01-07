@@ -33,8 +33,8 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.minutes
 
-class BContextImpl(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
-    private val logger = KotlinLogging.logger { }
+class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+    private val logger = KotlinLogging.logger<BContext>()
 
     internal val classPathContainer: ClassPathContainer
     val serviceContainer: ServiceContainer

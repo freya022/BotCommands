@@ -4,9 +4,13 @@ import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.api.core.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import mu.KLogger
+import mu.KotlinLogging
+import mu.toKLogger
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
+import org.slf4j.LoggerFactory
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
@@ -189,3 +193,7 @@ inline fun <T> Result<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResp
 internal inline fun <reified T> Any.throwMixin(): Nothing {
     throwInternal("${this::class.simpleName} should implement ${T::class.simpleName}")
 }
+
+@Suppress("UnusedReceiverParameter")
+internal inline fun <reified T : Any> KotlinLogging.logger(): KLogger =
+    LoggerFactory.getLogger(T::class.java).toKLogger()
