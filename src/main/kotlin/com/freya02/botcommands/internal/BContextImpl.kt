@@ -5,7 +5,9 @@ import com.freya02.botcommands.api.BContext.Status
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.ExceptionHandler
 import com.freya02.botcommands.api.SettingsProvider
+import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
+import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.ServiceContainer
@@ -49,7 +51,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     internal val isHelpDisabled: Boolean
         get() = config.textConfig.isHelpDisabled
 
-    internal val textCommandsContext = TextCommandsContextImpl(this)
+    internal val textCommandsContext = TextCommandsContextImpl()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
@@ -57,6 +59,8 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
         config.putConfigInServices(serviceContainer)
+        serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
+        serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
 
         eventDispatcher = EventDispatcher(this, EventTreeService(this)) //Services put in ctor
 

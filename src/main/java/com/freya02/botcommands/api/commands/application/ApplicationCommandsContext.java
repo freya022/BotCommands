@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application;
 
 import com.freya02.botcommands.api.commands.CommandPath;
+import com.freya02.botcommands.api.core.annotations.InjectedService;
 import com.freya02.botcommands.internal.commands.application.CommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@InjectedService
 public interface ApplicationCommandsContext {
 	/**
 	 * Returns the {@link SlashCommandInfo} object of the specified full slash command name, in the specific guild

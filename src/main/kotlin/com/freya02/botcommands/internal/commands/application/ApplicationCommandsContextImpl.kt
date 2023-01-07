@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 
-//TODO should be a service ?
-class ApplicationCommandsContextImpl(private val context: BContextImpl) : ApplicationCommandsContext {
+class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
     val mutableApplicationCommandMap = MutableApplicationCommandMap()
 
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
