@@ -1,13 +1,14 @@
 package com.freya02.botcommands.api.core.annotations
 
 import com.freya02.botcommands.api.core.ServiceStart
+import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 
 /**
- * Annotates a class as a service.
+ * Marks this class as a service.
  *
- * The service is eagerly loaded at startup and must be in the classpath.
+ * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfig.addSearchPath].
  *
  * @see InjectedService
  * @see ConditionalService
