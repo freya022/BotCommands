@@ -30,6 +30,8 @@ object Main {
         }
 
         BBuilder.newBuilder({
+            devMode = true
+
             addSearchPath("com.freya02.botcommands.test_kt")
 
             //Still kept in the java test package
