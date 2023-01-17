@@ -40,10 +40,6 @@ class PersistentStringSelectBuilder internal constructor(private val componentCo
 
     @JvmSynthetic
     internal fun doBuild(): StringSelectMenu {
-        require(handler != null) {
-            throwUser("A component handler needs to be set using #bindTo methods")
-        }
-
         super.setId(componentController.createComponent(this))
 
         return StringSelectMenu(componentController, super.build())

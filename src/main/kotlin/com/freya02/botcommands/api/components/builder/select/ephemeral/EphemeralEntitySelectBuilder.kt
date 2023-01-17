@@ -45,10 +45,6 @@ class EphemeralEntitySelectBuilder internal constructor(private val componentCon
     }
 
     internal fun doBuild(): EntitySelectMenu {
-        require(handler != null) {
-            throwUser("A component handler needs to be set using #bindTo methods")
-        }
-
         super.setId(componentController.createComponent(this))
 
         return EntitySelectMenu(componentController, super.build())

@@ -248,17 +248,20 @@ internal class ComponentRepository(
                   pt.handler_name         as timeout_handler_name,
                   pt.user_data            as timeout_user_data
            from bc_persistent_handler ph
-                    left join bc_persistent_timeout pt using (component_id)
+                    full outer join bc_persistent_timeout pt using (component_id)
            where ph.component_id = ?;
         """.trimIndent()
     ) {
+        // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOnce()
-            ?: throwInternal("Component $id seem to have been deleted in the same transaction")
+            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints)
 
-        val handler = PersistentHandler(
-            dbResult["handler_handler_name"],
-            dbResult["handler_user_data"]
-        )
+        val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
+            PersistentHandler(
+                handlerName,
+                dbResult["handler_user_data"]
+            )
+        }
 
         val timeout = dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
             PersistentTimeout(
@@ -284,14 +287,15 @@ internal class ComponentRepository(
                    pt.expiration_timestamp as timeout_expiration_timestamp,
                    pt.handler_id           as timeout_handler_id
             from bc_ephemeral_handler ph
-                     left join bc_ephemeral_timeout pt using (component_id)
+                     full outer join bc_ephemeral_timeout pt using (component_id)
             where component_id = ?;
         """.trimIndent()
     ) {
+        // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOnce()
-            ?: throwInternal("Component $id seem to have been deleted in the same transaction")
+            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints)
 
-        val handler = dbResult.get<Int>("handler_handler_id").let { handlerId ->
+        val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
             ephemeralComponentHandlers[handlerId]
                 ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
         }

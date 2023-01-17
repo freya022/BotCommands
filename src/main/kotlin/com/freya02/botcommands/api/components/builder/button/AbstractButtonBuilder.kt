@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.components.Button
 import com.freya02.botcommands.api.components.builder.AbstractComponentBuilder
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.controller.ComponentController
-import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.buttons.Button as JDAButton
@@ -17,9 +16,6 @@ abstract class AbstractButtonBuilder internal constructor(
 
     @JvmSynthetic
     internal fun build(label: String?, emoji: Emoji?): Button {
-        require(handler != null) {
-            throwUser("A component handler needs to be set using #bindTo methods")
-        }
         return Button(componentController, JDAButton.of(style, componentController.createComponent(this), label, emoji))
     }
 }

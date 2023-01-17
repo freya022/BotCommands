@@ -28,7 +28,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.component.*
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
@@ -36,7 +35,6 @@ import kotlin.reflect.full.valueParameters
 
 @ConditionalService(dependencies = [Components::class, Database::class])
 internal class ComponentsListener(
-    private val database: Database,
     private val context: BContextImpl,
     private val componentsConfig: BComponentsConfig,
     private val componentRepository: ComponentRepository,
@@ -79,32 +77,33 @@ internal class ComponentsListener(
 
             when (component) {
                 is PersistentComponentData -> {
-                    val (handlerName, userData) = component.handler
-                    val descriptor = when (component.componentType) {
-                        ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
-                            ?: throwUser("Could not find a button handler named $handlerName")
-                        ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
-                            ?: throwUser("Could not find a select menu handler named $handlerName")
-                        else -> throwInternal("Invalid component type being handled: ${component.componentType}")
-                    }
-
-                    transformEvent(event, descriptor.method)?.let { evt ->
+                    transformEvent(event)?.let { evt ->
                         componentController.removeContinuations(component.componentId).forEach {
                             @Suppress("UNCHECKED_CAST")
                             (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+                        }
+
+                        val (handlerName, userData) = component.handler ?: return@launch
+
+                        val descriptor = when (component.componentType) {
+                            ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
+                                ?: throwUser("Could not find a button handler named $handlerName")
+                            ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
+                                ?: throwUser("Could not find a select menu handler named $handlerName")
+                            else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                         }
 
                         handlePersistentComponent(descriptor, evt, userData)
                     }
                 }
                 is EphemeralComponentData -> {
-                    val ephemeralHandler = component.handler
-
-                    transformEvent(event, null)?.let { evt ->
+                    transformEvent(event)?.let { evt ->
                         componentController.removeContinuations(component.componentId).forEach {
                             @Suppress("UNCHECKED_CAST")
                             (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
                         }
+
+                        val ephemeralHandler = component.handler ?: return@launch
 
                         @Suppress("UNCHECKED_CAST")
                         (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
@@ -116,11 +115,11 @@ internal class ComponentsListener(
         }
     }
 
-    private fun transformEvent(event: GenericComponentInteractionCreateEvent, function: KFunction<*>?): GenericComponentInteractionCreateEvent? {
+    private fun transformEvent(event: GenericComponentInteractionCreateEvent): GenericComponentInteractionCreateEvent? {
         return when (event) {
-            is ButtonInteractionEvent -> ButtonEvent(function, context, event)
-            is StringSelectInteractionEvent -> StringSelectEvent(function, context, event)
-            is EntitySelectInteractionEvent -> EntitySelectEvent(function, context, event)
+            is ButtonInteractionEvent -> ButtonEvent(null, context, event)
+            is StringSelectInteractionEvent -> StringSelectEvent(null, context, event)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(null, context, event)
             else -> {
                 logger.warn("Unhandled component event: ${event::class.simpleName}")
                 null
