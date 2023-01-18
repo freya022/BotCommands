@@ -24,39 +24,50 @@ internal class ResolverContainer(
 ) {
     private val logger = KotlinLogging.logger {  }
 
-    private val map: MutableMap<KClass<*>, Any> = Collections.synchronizedMap(hashMapOf())
+    private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
         classPathContainer
             .classes
-            .filter { it.isSubclassOf(ParameterResolver::class) }
-            .forEach { clazz -> addResolver(serviceContainer.getService(clazz) as ParameterResolver<*, *>) }
+            .forEach { clazz ->
+                if (clazz.isSubclassOf(ParameterResolver::class)) {
+                    addResolver(serviceContainer.getService(clazz) as ParameterResolver<*, *>)
+                } else if (clazz.isSubclassOf(ParameterResolverFactory::class)) {
+                    addResolverFactory(serviceContainer.getService(clazz) as ParameterResolverFactory<*, *>)
+                }
+            }
     }
 
-    fun addResolver(resolver: ParameterResolver<*, *>) {
+    fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
         if (!hasCompatibleInterface(resolver)) {
             throwUser("The resolver should implement at least one of these interfaces: ${compatibleInterfaces.joinToString { it.simpleName!! }}")
         }
 
-        map[resolver.jvmErasure]?.let { throwUser("Resolver for ${resolver.jvmErasure.qualifiedName} already exists") }
+        addResolverFactory(ParameterResolverFactory.singleton(resolver))
+    }
 
-        map[resolver.jvmErasure] = resolver
+    fun addResolverFactory(resolver: ParameterResolverFactory<*, *>) {
+        factories[resolver.jvmErasure]?.let { throwUser("Resolver for ${resolver.jvmErasure.qualifiedName} already exists") }
+
+        factories[resolver.jvmErasure] = resolver
     }
 
     @BEventListener
     fun onLoad(event: LoadEvent) = runInitialization {
-        if (map.isEmpty()) {
+        if (factories.isEmpty()) {
             logger.trace("Found no resolvers")
         } else {
             val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
                 buildString {
-                    val entriesOfType = map.entries
-                        .filter { it.value::class.isSubclassOf(interfaceClass) }
+                    val entriesOfType = factories
+                        .mapValues { it.value.resolverType }
+                        .filterValues { resolverType -> resolverType.isSubclassOf(interfaceClass) }
+                        .entries
                         .sortedBy { (type, _) -> type.simpleName }
 
                     append(interfaceClass.simpleName).append(" (${entriesOfType.size}):\n")
                     append(entriesOfType.joinToString("\n") { (type, resolver) ->
-                        "\t- ${resolver::class.simpleName} (${type.simpleName})"
+                        "\t- ${resolver.simpleName} (${type.simpleName})"
                     })
                 }
             }
@@ -66,12 +77,12 @@ internal class ResolverContainer(
     }
 
     @JvmSynthetic
-    internal fun getResolverOrNull(parameter: KParameter) = map[parameter.type.jvmErasure]
+    internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
     fun getResolver(parameter: KParameter): Any {
         val requestedType = parameter.type.jvmErasure
 
-        return map.computeIfAbsent(requestedType) { type ->
+        return factories.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
 
             serviceResult.errorMessage?.let { errorMessage ->
@@ -81,8 +92,8 @@ internal class ResolverContainer(
                 )
             }
 
-            ServiceCustomResolver(serviceResult.getOrThrow())
-        }
+            ParameterResolverFactory.singleton(ServiceCustomResolver(serviceResult.getOrThrow()))
+        }.get(parameter)
     }
 
     private fun hasCompatibleInterface(resolver: ParameterResolver<*, *>): Boolean {

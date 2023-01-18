@@ -148,6 +148,9 @@ val KClass<*>.simpleNestedName: String
 val Class<*>.simpleNestedName: String
     get() = this.canonicalName.substring(this.packageName.length + 1)
 
+fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
+fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
+
 fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
     this.type.jvmErasure == param.type.jvmErasure
 
