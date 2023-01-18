@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.localization.annotations.LocalizationOptions
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.LocalizationContext
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterResolver
@@ -26,11 +26,11 @@ internal class LocalizationContextResolverFactory : ParameterResolverFactory<Loc
     LocalizationContext::class
 ) {
     override fun get(parameter: KParameter): LocalizationContextResolver {
-        val annotation = parameter.findAnnotation<LocalizationOptions>()
-            ?: throwUser(parameter.function, "${LocalizationContext::class.simpleName} parameters must be annotated with @${LocalizationOptions::class.simpleName}")
+        val annotation = parameter.findAnnotation<LocalizationBundle>()
+            ?: throwUser(parameter.function, "${LocalizationContext::class.simpleName} parameters must be annotated with @${LocalizationBundle::class.simpleName}")
 
         return LocalizationContextResolver(LocalizationContextImpl(
-            localizationBundle = annotation.bundle,
+            localizationBundle = annotation.value,
             localizationPrefix = annotation.prefix.nullIfEmpty(),
             guildLocale = null,
             userLocale = null

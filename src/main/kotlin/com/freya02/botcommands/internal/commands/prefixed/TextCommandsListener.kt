@@ -73,7 +73,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
 
                 helpCommandInfo?.let { (helpCommand, _) ->
                     helpCommand.onInvalidCommand(
-                        BaseCommandEventImpl(context, null, event, ""),
+                        BaseCommandEventImpl(context, event, ""),
                         commandInfo
                     )
                 }

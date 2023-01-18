@@ -2,15 +2,14 @@ package com.freya02.botcommands.api.commands.application.slash;
 
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.commands.application.slash.GlobalSlashEventImpl;
-import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildSlashEvent extends GlobalSlashEventImpl {
-	public GuildSlashEvent(@NotNull BContextImpl context, @NotNull KFunction<?> function, @NotNull SlashCommandInteractionEvent event) {
-		super(context, function, event);
+	public GuildSlashEvent(@NotNull BContextImpl context, @NotNull SlashCommandInteractionEvent event) {
+		super(context, event);
 
 		if (!event.isFromGuild()) throw new IllegalArgumentException("Event is not from a guild");
 	}

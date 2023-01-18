@@ -58,7 +58,7 @@ class MessageCommandInfo internal constructor(
         val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
         arguments[method.instanceParameter!!] = instance
         arguments[method.valueParameters.first()] =
-            if (isGuildOnly) GuildMessageEvent(method, context, event) else GlobalMessageEvent(method, context, event)
+            if (isGuildOnly) GuildMessageEvent(context, event) else GlobalMessageEvent(context, event)
 
         for (parameter in parameters) {
             val value = when (parameter.methodParameterType) {

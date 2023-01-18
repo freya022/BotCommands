@@ -19,15 +19,13 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.internal.utils.Helpers
-import kotlin.reflect.KFunction
 
 class CommandEventImpl private constructor(
     context: BContextImpl,
-    function: KFunction<*>,
     private val event: MessageReceivedEvent,
     argumentsStr: String?,
     private val arguments: MutableList<Any>
-) : CommandEvent(function, context, event, argumentsStr) {
+) : CommandEvent(context, event, argumentsStr) {
     override fun getArguments(): List<Any> = arguments
 
     override fun <T> hasNext(clazz: Class<T>): Boolean {
@@ -124,7 +122,6 @@ class CommandEventImpl private constructor(
 
         internal suspend fun create(
             context: BContextImpl,
-            function: KFunction<*>,
             event: MessageReceivedEvent,
             argumentsStr: String?
         ): CommandEventImpl {
@@ -136,7 +133,7 @@ class CommandEventImpl private constructor(
                     processText(arguments, event.guild, substring, type)
                 }
 
-            return CommandEventImpl(context, function, event, argumentsStr, arguments)
+            return CommandEventImpl(context, event, argumentsStr, arguments)
         }
 
         private suspend fun processText(arguments: MutableList<Any>, guild: Guild, substring: String, type: RichTextType) {

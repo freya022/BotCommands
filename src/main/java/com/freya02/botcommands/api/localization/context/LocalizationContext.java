@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.localization.context;
 
 import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.annotations.LocalizationOptions;
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public interface LocalizationContext {
     /**
      * Returns the localization bundle of the current context.
-     * <br>The localization bundle can either come from {@link LocalizationOptions#bundle()} from {@link #withBundle(String)}.
+     * <br>The localization bundle can either come from {@link LocalizationBundle#value()} from {@link #withBundle(String)}.
      *
      * @return The localization bundle for this context
      *
@@ -24,7 +24,7 @@ public interface LocalizationContext {
 
     /**
      * Returns the localization prefix of the current context.
-     * <br>The localization prefix can either come from {@link LocalizationOptions#prefix()} from {@link #withPrefix(String)}.
+     * <br>The localization prefix can either come from {@link LocalizationBundle#prefix()} from {@link #withPrefix(String)}.
      *
      * @return The localization prefix for this context, or {@code null} if none has been set
      *
@@ -77,9 +77,9 @@ public interface LocalizationContext {
     /**
      * Localizes the provided path, in the current context's bundle, with the provided locale
      *
-     * @param locale             The DiscordLocale to use when fetching the localization bundle
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
+     * @param locale           The DiscordLocale to use when fetching the localization bundle
+     * @param localizationPath The localization path to search for
+     * @param entries          The entries to fill the template
      *
      * @return The localized string
      */
@@ -89,8 +89,8 @@ public interface LocalizationContext {
     /**
      * Localizes the provided path, in the current context's bundle, with the best locale available (User > Guild > Default)
      *
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
+     * @param localizationPath The localization path to search for
+     * @param entries          The entries to fill the template
      *
      * @return The localized string
      */

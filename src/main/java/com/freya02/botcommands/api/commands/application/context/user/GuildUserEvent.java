@@ -1,14 +1,13 @@
 package com.freya02.botcommands.api.commands.application.context.user;
 
 import com.freya02.botcommands.internal.BContextImpl;
-import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class GuildUserEvent extends GlobalUserEvent {
-	public GuildUserEvent(@NotNull KFunction<?> function, BContextImpl context, UserContextInteractionEvent event) {
-		super(function, context, event);
+	public GuildUserEvent(BContextImpl context, UserContextInteractionEvent event) {
+		super(context, event);
 
 		if (!event.isFromGuild())
 			throw new IllegalStateException("Event is not from a Guild");

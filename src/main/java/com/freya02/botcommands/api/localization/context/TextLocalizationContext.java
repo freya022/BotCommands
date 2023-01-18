@@ -34,7 +34,6 @@ public interface TextLocalizationContext extends LocalizationContext {
      * @return the DiscordLocale of the guild
      *
      * @throws IllegalStateException If the event did not happen in a Guild and the guild locale was not supplied
-     *
      * @see #hasGuildLocale()
      * @see #withGuildLocale(DiscordLocale)
      */
@@ -58,7 +57,6 @@ public interface TextLocalizationContext extends LocalizationContext {
      * @param entries            The entries to fill the template
      *
      * @throws IllegalStateException If the event did not happen in a Guild
-     *
      * @see Guild#getLocale()
      */
     @NotNull
@@ -74,7 +72,6 @@ public interface TextLocalizationContext extends LocalizationContext {
      * @param entries          The entries to fill the template
      *
      * @throws IllegalStateException If the event did not happen in a Guild
-     *
      * @see Guild#getLocale()
      */
     @NotNull
