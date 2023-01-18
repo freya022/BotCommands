@@ -22,11 +22,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
-fun String.nullIfEmpty(): String? = when {
-    isEmpty() -> null
-    else -> this
-}
-
 //This is used so commands can't prevent other commands from being registered when an exception happens
 internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
     var ex: Throwable? = null

@@ -167,6 +167,11 @@ inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T =
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
 
+fun String.nullIfEmpty(): String? = when {
+    isEmpty() -> null
+    else -> this
+}
+
 tailrec fun Throwable.getDeepestCause(): Throwable {
     if (cause == null) return this
 
