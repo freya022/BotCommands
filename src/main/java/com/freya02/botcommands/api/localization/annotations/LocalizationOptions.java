@@ -29,5 +29,5 @@ public @interface LocalizationOptions {
      * <b>Example:</b> If the method is annotated a prefix of {@code commands.ban} and you ask for {@code responses.cannot_ban},
      * then it will search for {@code commands.ban.responses.cannot_ban}
      */
-    String prefix();
+    String prefix() default "";
 }

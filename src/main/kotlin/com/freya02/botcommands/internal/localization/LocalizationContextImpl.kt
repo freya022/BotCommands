@@ -29,7 +29,7 @@ internal class LocalizationContextImpl(
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
-    fun withLocalizationOptions(localizationBundle: String, localizationPrefix: String): LocalizationContextImpl {
+    fun withLocales(guildLocale: DiscordLocale, userLocale: DiscordLocale): LocalizationContextImpl {
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
