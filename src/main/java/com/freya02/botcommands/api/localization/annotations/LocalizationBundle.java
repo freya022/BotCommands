@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.localization.annotations;
 
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext;
-import com.freya02.botcommands.api.localization.context.LocalizationContext;
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext;
 
 import java.lang.annotation.ElementType;
@@ -10,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to specify the bundle name and path prefix for injected {@link LocalizationContext} parameters
+ * An annotation to specify the bundle name and path prefix for injected {@link TextLocalizationContext} / {@link AppLocalizationContext} parameters
  *
  * @see TextLocalizationContext
  * @see AppLocalizationContext
