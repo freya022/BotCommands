@@ -5,7 +5,7 @@
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>3.0.0-alpha.3-SNAPSHOT</version>
+    <version>3.0.0-alpha.4-SNAPSHOT</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps to develop your bots faster</description>
