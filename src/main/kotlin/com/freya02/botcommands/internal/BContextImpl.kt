@@ -46,8 +46,6 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
 
     private var nextExceptionDispatch: Long = 0
 
-    val localizationManager = LocalizationManager()
-
     internal val isHelpDisabled: Boolean
         get() = config.textConfig.isHelpDisabled
 

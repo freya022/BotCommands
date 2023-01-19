@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.prefixed.exceptions.BadIdException;
 import com.freya02.botcommands.api.commands.prefixed.exceptions.NoIdException;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.commands.prefixed.BaseCommandEventImpl;
-import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -23,8 +22,8 @@ import java.util.NoSuchElementException;
  * @see BaseCommandEvent
  */
 public abstract class CommandEvent extends BaseCommandEventImpl {
-	public CommandEvent(@NotNull KFunction<?> function, BContextImpl context, MessageReceivedEvent event, String args) {
-		super(context, function, event, args);
+	public CommandEvent(BContextImpl context, MessageReceivedEvent event, String args) {
+		super(context, event, args);
 	}
 
 	/**

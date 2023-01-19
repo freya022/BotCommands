@@ -1,8 +1,13 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.internal.UtilsKt;
 import kotlin.reflect.KClass;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -41,26 +46,27 @@ import org.slf4j.Logger;
 public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
 	protected final Logger LOGGER = Logging.getLogger(this);
 
-	private final KClass<?> jvmErasure;
+	private final KClass<R> jvmErasure;
 
+	/**
+	 * Constructs a new parameter resolver
+	 *
+	 * @param clazz Class of the parameter being resolved
+	 */
 	public ParameterResolver(@NotNull Class<R> clazz) {
-		this(ParameterType.ofClass(clazz));
-	}
-
-	public ParameterResolver(@NotNull KClass<R> clazz) {
-		this.jvmErasure = clazz;
+		this.jvmErasure = UtilsKt.toKotlin(clazz);
 	}
 
 	/**
 	 * Constructs a new parameter resolver
 	 *
-	 * @param parameterType Type of the parameter being resolved
+	 * @param clazz Class of the parameter being resolved
 	 */
-	public ParameterResolver(@NotNull ParameterType parameterType) {
-		this.jvmErasure = parameterType.kotlinErasure();
+	public ParameterResolver(@NotNull KClass<R> clazz) {
+		this.jvmErasure = clazz;
 	}
 
-	public KClass<?> getJvmErasure() {
+	public KClass<R> getJvmErasure() {
 		return jvmErasure;
 	}
 }

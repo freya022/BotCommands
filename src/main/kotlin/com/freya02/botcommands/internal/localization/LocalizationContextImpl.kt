@@ -1,38 +1,50 @@
 package com.freya02.botcommands.internal.localization
 
-import com.freya02.botcommands.api.localization.GuildLocalizable
-import com.freya02.botcommands.api.localization.Localizable
 import com.freya02.botcommands.api.localization.Localization
-import com.freya02.botcommands.api.localization.UserLocalizable
-import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.api.localization.context.AppLocalizationContext
+import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
-import kotlin.reflect.KFunction
 
-internal class EventLocalizer(
-    private val context: BContextImpl,
-    private val function: KFunction<*>?,
+internal class LocalizationContextImpl(
+    private val localizationBundle: String,
+    private val localizationPrefix: String?,
     private val guildLocale: DiscordLocale?,
     private val userLocale: DiscordLocale?
-) : UserLocalizable, GuildLocalizable, Localizable {
+) : TextLocalizationContext, AppLocalizationContext {
+    override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
+        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+    }
+
+    override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
+        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+    }
+
+    override fun withBundle(localizationBundle: String): LocalizationContextImpl {
+        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+    }
+
+    override fun withPrefix(localizationPrefix: String?): LocalizationContextImpl {
+        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+    }
+
+    fun withLocales(guildLocale: DiscordLocale, userLocale: DiscordLocale): LocalizationContextImpl {
+        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+    }
+
     override fun localize(
         locale: DiscordLocale,
         localizationBundle: String,
         localizationPath: String,
         vararg entries: Localization.Entry
     ): String {
-        val localizationManager = context.localizationManager
         val instance = Localization.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
             ?: throwUser("Found no localization instance for bundle '$localizationBundle' and locale '$locale'")
 
-        val effectivePath = when {
-            function != null -> when (val localizationPrefix = localizationManager.getLocalizationPrefix(function)) {
-                null -> localizationPath
-                else -> "$localizationPrefix.$localizationPath"
-            }
-            else -> localizationPath
+        val effectivePath = when (localizationPrefix) {
+            null -> localizationPath
+            else -> "$localizationPrefix.$localizationPath"
         }
 
         val template = instance[effectivePath]
@@ -56,19 +68,21 @@ internal class EventLocalizer(
         else -> localize(DiscordLocale.ENGLISH_US, localizationPath, *entries)
     }
 
-    override fun getLocalizationBundle(): String {
-        checkNotNull(function) { "Cannot use predefined localization bundles in this event" }
+    override fun getLocalizationPrefix(): String? {
+        return localizationPrefix
+    }
 
-        return context.localizationManager.getLocalizationBundle(function)
-            ?: throwUser(
-                function,
-                "You cannot use this localization method without having the command, or the class which contains it, be annotated with @" + LocalizationBundle::class.simpleName
-            )
+    override fun getLocalizationBundle(): String {
+        return localizationBundle
+    }
+
+    override fun hasGuildLocale(): Boolean {
+        return guildLocale != null
     }
 
     override fun getGuildLocale(): DiscordLocale =
         guildLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
 
     override fun getUserLocale(): DiscordLocale =
-        userLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
+        userLocale ?: throwUser("Cannot user localize on an event which doesn't provide user localization")
 }

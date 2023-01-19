@@ -117,9 +117,9 @@ internal class ComponentsListener(
 
     private fun transformEvent(event: GenericComponentInteractionCreateEvent): GenericComponentInteractionCreateEvent? {
         return when (event) {
-            is ButtonInteractionEvent -> ButtonEvent(null, context, event)
-            is StringSelectInteractionEvent -> StringSelectEvent(null, context, event)
-            is EntitySelectInteractionEvent -> EntitySelectEvent(null, context, event)
+            is ButtonInteractionEvent -> ButtonEvent(context, event)
+            is StringSelectInteractionEvent -> StringSelectEvent(context, event)
+            is EntitySelectInteractionEvent -> EntitySelectEvent(context, event)
             else -> {
                 logger.warn("Unhandled component event: ${event::class.simpleName}")
                 null

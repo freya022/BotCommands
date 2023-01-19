@@ -88,7 +88,7 @@ abstract class SlashCommandInfo internal constructor(
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.valueParameters.first()] =
-            if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, method, event) else GlobalSlashEventImpl(context, method, event)
+            if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, event) else GlobalSlashEventImpl(context, event)
 
         putSlashOptions(event, objects, parameters)
 

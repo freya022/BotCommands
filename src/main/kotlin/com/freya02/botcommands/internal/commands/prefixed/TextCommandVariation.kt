@@ -64,8 +64,8 @@ class TextCommandVariation internal constructor(
         matcher: Matcher?
     ): ExecutionResult {
         val event = when {
-            useTokenizedEvent -> CommandEventImpl.create(context, method, _event, args)
-            else -> BaseCommandEventImpl(context, method, _event, args)
+            useTokenizedEvent -> CommandEventImpl.create(context, _event, args)
+            else -> BaseCommandEventImpl(context, _event, args)
         }
 
         val objects: MutableMap<KParameter, Any?> = hashMapOf()

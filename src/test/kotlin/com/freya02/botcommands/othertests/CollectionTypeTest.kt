@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.entities.User
 
 class MyCollection<T, R>(collection: Collection<Int>) : Collection<Int> by collection
 
-fun test(): Collection<String> = TODO()
-fun testCustom(): MyCollection<User, Member> = TODO()
+fun test(): Collection<String> = throw UnsupportedOperationException()
+fun testCustom(): MyCollection<User, Member> = throw UnsupportedOperationException()
 
 fun main() {
     println(::test.collectionElementType)

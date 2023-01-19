@@ -58,7 +58,7 @@ class UserCommandInfo internal constructor(
         val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
         arguments[method.instanceParameter!!] = instance
         arguments[method.valueParameters.first()] =
-            if (isGuildOnly) GuildUserEvent(method, context, event) else GlobalUserEvent(method, context, event)
+            if (isGuildOnly) GuildUserEvent(context, event) else GlobalUserEvent(context, event)
 
         for (parameter in parameters) {
             val value = when (parameter.methodParameterType) {

@@ -15,14 +15,12 @@ import net.dv8tion.jda.api.utils.FileUpload
 import java.io.InputStream
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
-import kotlin.reflect.KFunction
 
 open class BaseCommandEventImpl(
     context: BContextImpl,
-    function: KFunction<*>?,
     event: MessageReceivedEvent,
     arguments: String
-) : BaseCommandEvent(context, function, event.jda, event.responseNumber, event.message) {
+) : BaseCommandEvent(context, event.jda, event.responseNumber, event.message) {
     private val argumentsStr: String = arguments
 
     override fun getArgumentsStrList(): List<String> = when {

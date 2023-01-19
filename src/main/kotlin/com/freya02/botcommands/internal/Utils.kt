@@ -148,6 +148,9 @@ val KClass<*>.simpleNestedName: String
 val Class<*>.simpleNestedName: String
     get() = this.canonicalName.substring(this.packageName.length + 1)
 
+fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
+fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
+
 fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
     this.type.jvmErasure == param.type.jvmErasure
 
@@ -163,6 +166,11 @@ val KFunction<*>.javaMethodInternal: Method
 inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
+
+fun String.nullIfEmpty(): String? = when {
+    isEmpty() -> null
+    else -> this
+}
 
 tailrec fun Throwable.getDeepestCause(): Throwable {
     if (cause == null) return this
