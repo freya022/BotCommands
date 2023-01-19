@@ -50,7 +50,7 @@ internal object LocalizationContextResolverFactories {
 
         val firstParamErasure = parameterFunction.valueParameters.first().type.jvmErasure
         requireUser(firstParamErasure.isSubclassOfAny(*requiredEventTypes), parameterFunction) {
-            "${parameter.type.jvmErasure.simpleName} parameters only works with ${requiredEventTypes.joinToString(", ")} events"
+            "${parameter.type.jvmErasure.simpleName} parameters only works with ${requiredEventTypes.joinToString(" or ")} as the first parameter"
         }
 
         return LocalizationContextImpl(
