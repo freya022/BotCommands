@@ -9,9 +9,10 @@ import org.jetbrains.annotations.NotNull;
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes and context-aware localization.
  *
- * <p>This interface also includes the user's locale by default.
+ * <p>This interface also includes the user's and the guild's locale by default.
  *
  * @see #getUserLocale()
+ * @see #getGuildLocale()
  */
 public interface AppLocalizationContext extends TextLocalizationContext {
     /**

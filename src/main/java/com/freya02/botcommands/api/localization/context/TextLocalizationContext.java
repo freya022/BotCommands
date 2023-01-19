@@ -29,7 +29,7 @@ public interface TextLocalizationContext extends LocalizationContext {
      * Returns the {@link DiscordLocale} of the guild.
      * <br>The locale can either come from the Guild or from a {@link #withGuildLocale(DiscordLocale)}.
      *
-     * <p><b>Note:</b> If the context does not provide a guild locale but the event comes from a {@link Guild}, then {@link DiscordLocale#ENGLISH_US} will be returned.
+     * <p><b>Note:</b> If the context does not provide a guild locale (such as text commands) but the event comes from a {@link Guild}, then {@link DiscordLocale#ENGLISH_US} will be returned.
      *
      * @return the DiscordLocale of the guild
      *
