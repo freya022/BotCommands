@@ -11,8 +11,13 @@ import org.jetbrains.annotations.NotNull;
  *
  * <p>This interface also includes the user's and the guild's locale by default.
  *
+ * <p>While instances of this interface are primarily injected,
+ * you can also construct instances of this interface with {@link #create(String, String, DiscordLocale, DiscordLocale)}.
+ *
  * @see #getUserLocale()
  * @see #getGuildLocale()
+ *
+ * @see #create(String, String, DiscordLocale, DiscordLocale)
  */
 public interface AppLocalizationContext extends TextLocalizationContext {
     /**

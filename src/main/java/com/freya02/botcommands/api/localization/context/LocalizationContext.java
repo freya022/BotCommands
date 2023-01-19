@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.localization.context;
 
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
+import com.freya02.botcommands.internal.localization.LocalizationContextImpl;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,8 +10,32 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes and context-aware localization.
+ *
+ * <p>While this interface cannot be injected, sub-interfaces can.
+ *
+ * @see TextLocalizationContext
+ * @see AppLocalizationContext
+ * @see #create(String, String)
  */
 public interface LocalizationContext {
+    static LocalizationContext create(@NotNull String localizationBundle,
+                                      @Nullable String localizationPrefix) {
+        return new LocalizationContextImpl(localizationBundle, localizationPrefix, null, null);
+    }
+
+    static TextLocalizationContext create(@NotNull String localizationBundle,
+                                          @Nullable String localizationPrefix,
+                                          @Nullable DiscordLocale guildLocale) {
+        return new LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, null);
+    }
+
+    static AppLocalizationContext create(@NotNull String localizationBundle,
+                                         @Nullable String localizationPrefix,
+                                         @Nullable DiscordLocale guildLocale,
+                                         @Nullable DiscordLocale userLocale) {
+        return new LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale);
+    }
+
     /**
      * Returns the localization bundle of the current context.
      * <br>The localization bundle can either come from {@link LocalizationBundle#value()} from {@link #withBundle(String)}.
