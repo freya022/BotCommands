@@ -14,7 +14,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
 @IncludeClasspath
-internal class LocalizationContextResolverFactory : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
+internal class AppLocalizationContextResolverFactory : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
     AppLocalizationContextResolver::class,
     AppLocalizationContext::class
 ) {
