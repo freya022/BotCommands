@@ -22,7 +22,7 @@ internal class ResolverContainer(
     classPathContainer: ClassPathContainer,
     private val serviceContainer: ServiceContainer
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
@@ -55,24 +55,26 @@ internal class ResolverContainer(
     @BEventListener
     fun onLoad(event: LoadEvent) = runInitialization {
         if (factories.isEmpty()) {
-            logger.trace("Found no resolvers")
+            throwInternal("No resolvers/factories were found") //Never happens
         } else {
-            val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
-                buildString {
-                    val entriesOfType = factories
-                        .mapValues { it.value.resolverType }
-                        .filterValues { resolverType -> resolverType.isSubclassOf(interfaceClass) }
-                        .entries
-                        .sortedBy { (type, _) -> type.simpleName }
+            logger.trace {
+                val resolversStr = compatibleInterfaces.joinToString("\n") { interfaceClass ->
+                    buildString {
+                        val entriesOfType = factories
+                            .mapValues { it.value.resolverType }
+                            .filterValues { resolverType -> resolverType.isSubclassOf(interfaceClass) }
+                            .entries
+                            .sortedBy { (type, _) -> type.simpleName }
 
-                    append(interfaceClass.simpleName).append(" (${entriesOfType.size}):\n")
-                    append(entriesOfType.joinToString("\n") { (type, resolver) ->
-                        "\t- ${resolver.simpleName} (${type.simpleName})"
-                    })
+                        append(interfaceClass.simpleName).append(" (${entriesOfType.size}):\n")
+                        append(entriesOfType.joinToString("\n") { (type, resolver) ->
+                            "\t- ${resolver.simpleName} (${type.simpleName})"
+                        })
+                    }
                 }
-            }
 
-            logger.trace { "Found resolvers:\n$resolversStr" }
+                "Found resolvers:\n$resolversStr"
+            }
         }
     }
 
