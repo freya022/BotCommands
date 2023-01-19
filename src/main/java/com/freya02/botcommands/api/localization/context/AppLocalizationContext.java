@@ -4,6 +4,9 @@ import com.freya02.botcommands.api.localization.Localization;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
@@ -22,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 public interface AppLocalizationContext extends TextLocalizationContext {
     /**
      * Returns the Locale of the user
-     * <br>The locale can either come from the {@link Interaction} or from {@link #withGuildLocale(DiscordLocale)}.
+     * <br>The locale can either come from the {@link Interaction} or from {@link LocalizationContext#withGuildLocale(DiscordLocale)}.
      *
      * @return The Locale of the user
      *
@@ -33,15 +36,18 @@ public interface AppLocalizationContext extends TextLocalizationContext {
 
     @NotNull
     @Override
-    AppLocalizationContext withGuildLocale(@NotNull DiscordLocale guildLocale);
+    @CheckReturnValue
+    AppLocalizationContext withGuildLocale(@Nullable DiscordLocale guildLocale);
 
     @NotNull
     @Override
+    @CheckReturnValue
     AppLocalizationContext withBundle(@NotNull String localizationBundle);
 
     @NotNull
     @Override
-    AppLocalizationContext withPrefix(@NotNull String localizationPrefix);
+    @CheckReturnValue
+    AppLocalizationContext withPrefix(@Nullable String localizationPrefix);
 
     /**
      * Localizes the provided path, in the specified bundle, with the user's locale

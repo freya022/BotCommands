@@ -13,11 +13,11 @@ internal class LocalizationContextImpl(
     private val guildLocale: DiscordLocale?,
     private val userLocale: DiscordLocale?
 ) : TextLocalizationContext, AppLocalizationContext {
-    override fun withGuildLocale(guildLocale: DiscordLocale): LocalizationContextImpl {
+    override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
-    override fun withUserLocale(userLocale: DiscordLocale): LocalizationContextImpl {
+    override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
@@ -25,7 +25,7 @@ internal class LocalizationContextImpl(
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
-    override fun withPrefix(localizationPrefix: String): LocalizationContextImpl {
+    override fun withPrefix(localizationPrefix: String?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 

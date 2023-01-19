@@ -4,6 +4,9 @@ import com.freya02.botcommands.api.localization.Localization;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.CheckReturnValue;
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
@@ -48,11 +51,13 @@ public interface TextLocalizationContext extends LocalizationContext {
 
     @NotNull
     @Override
+    @CheckReturnValue
     TextLocalizationContext withBundle(@NotNull String localizationBundle);
 
     @NotNull
     @Override
-    TextLocalizationContext withPrefix(@NotNull String localizationPrefix);
+    @CheckReturnValue
+    TextLocalizationContext withPrefix(@Nullable String localizationPrefix);
 
     /**
      * Localizes the provided path, in the specified bundle, with the guild's locale

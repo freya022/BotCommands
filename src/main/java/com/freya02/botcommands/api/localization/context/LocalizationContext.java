@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.CheckReturnValue;
+
 /**
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes and context-aware localization.
@@ -58,21 +60,49 @@ public interface LocalizationContext {
     @Nullable
     String getLocalizationPrefix();
 
-    //TODO docs
+    /**
+     * Returns a new {@link TextLocalizationContext} with the specified guild locale.
+     *
+     * @param guildLocale The guild locale to use, or {@code null} to remove it
+     *
+     * @return the new {@link TextLocalizationContext}
+     */
     @NotNull
-    TextLocalizationContext withGuildLocale(@NotNull DiscordLocale guildLocale);
+    @CheckReturnValue
+    TextLocalizationContext withGuildLocale(@Nullable DiscordLocale guildLocale);
 
-    //TODO docs
+    /**
+     * Returns a new {@link AppLocalizationContext} with the specified user locale.
+     *
+     * @param userLocale The user locale to use, or {@code null} to remove it
+     *
+     * @return the new {@link AppLocalizationContext}
+     */
     @NotNull
-    AppLocalizationContext withUserLocale(@NotNull DiscordLocale userLocale);
+    @CheckReturnValue
+    AppLocalizationContext withUserLocale(@Nullable DiscordLocale userLocale);
 
-    //TODO docs
+    /**
+     * Returns a new localization context with the specified localization bundle.
+     *
+     * @param localizationBundle The localization bundle to use
+     *
+     * @return the new localization context
+     */
     @NotNull
+    @CheckReturnValue
     LocalizationContext withBundle(@NotNull String localizationBundle);
 
-    //TODO docs
+    /**
+     * Returns a new localization context with the specified localization prefix.
+     *
+     * @param localizationPrefix The localization prefix to use, or {@code null} to remove it
+     *
+     * @return the new localization context
+     */
     @NotNull
-    LocalizationContext withPrefix(@NotNull String localizationPrefix);
+    @CheckReturnValue
+    LocalizationContext withPrefix(@Nullable String localizationPrefix);
 
     /**
      * Localizes the provided path, in the specified bundle, with the provided locale
