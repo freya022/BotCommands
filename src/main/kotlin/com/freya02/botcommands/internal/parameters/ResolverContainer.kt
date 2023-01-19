@@ -46,7 +46,7 @@ internal class ResolverContainer(
         addResolverFactory(ParameterResolverFactory.singleton(resolver))
     }
 
-    fun addResolverFactory(resolver: ParameterResolverFactory<*, *>) {
+    fun <R : Any> addResolverFactory(resolver: ParameterResolverFactory<*, R>) {
         factories[resolver.jvmErasure]?.let { throwUser("Resolver for ${resolver.jvmErasure.qualifiedName} already exists") }
 
         factories[resolver.jvmErasure] = resolver
