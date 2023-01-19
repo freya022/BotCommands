@@ -19,10 +19,7 @@ internal class AppLocalizationContextResolver(private val baseContext: Localizat
     override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event): AppLocalizationContext {
         return when (event) {
             is Interaction -> baseContext.withLocales(event.guildLocale, event.userLocale)
-            is MessageReceivedEvent -> when {
-                event.isFromGuild -> baseContext.withGuildLocale(event.guild.locale)
-                else -> baseContext
-            }
+            //MessageReceivedEvent does not provide user locale
             else -> throwInternal("Unsupported event type for localization contexts: ${event.javaClass.name}")
         }
     }
