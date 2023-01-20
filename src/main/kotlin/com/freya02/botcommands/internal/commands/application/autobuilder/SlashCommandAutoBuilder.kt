@@ -125,6 +125,8 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
                     subcommand(subMetadata.path.subname!!) {
+                        //TODO replace with #subcommandDescription in annotation
+                        this@subcommand.description = annotation.description
                         this@subcommand.configureBuilder(subMetadata)
                         this@subcommand.addFunction(subMetadata.func)
                         this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
