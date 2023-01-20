@@ -40,7 +40,7 @@ internal class ConstantByKeyAutocompleteCache(cacheInfo: AutocompleteCacheInfo) 
     ): List<Command.Choice> {
         val compositeKey = getCompositeKey(handler, event)
 
-        lock.withLock(this) {
+        lock.withLock() {
             return cache.getIfPresent(compositeKey)
                 ?: withTimeout(1.minutes) {
                     return@withTimeout valueComputer(event).also { computedChoices ->
