@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.core.EventDispatcher
+import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.lockable
 import com.freya02.botcommands.internal.throwUser
@@ -27,7 +28,7 @@ class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
 
     var commandUpdateScope: CoroutineScope by ScopeDelegate("Command update coroutine", 0) //Not used much
     /**
-     * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync], all JDA events are executed sequentially on the same scope as the supplied [CoroutineEventManager]
+     * Only used for [parallel event execution][EventDispatcher.dispatchEventAsync], including if [BEventListener.async] is enabled, all JDA events are executed sequentially on the same scope as the supplied [CoroutineEventManager]
      */
     var eventDispatcherScope: CoroutineScope by ScopeDelegate("Event dispatcher coroutine", 4) //Only used by EventDispatcher#dispatchEventAsync
     var cooldownScope: CoroutineScope by ScopeDelegate("Cooldown coroutine", 2) //Spends time waiting

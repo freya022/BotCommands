@@ -14,10 +14,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.withFilter
 import dev.minn.jda.ktx.events.CoroutineEventManager
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
@@ -25,11 +22,14 @@ import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
+import kotlin.time.toDuration
+import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<KClass<*>, MutableList<PreboundFunction>>
+private typealias EventMap = MutableMap<KClass<*>, MutableList<EventHandlerFunction>>
 
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
     private val logger = KotlinLogging.logger { }
@@ -74,7 +74,15 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
-        handlers.forEach { preboundFunction -> runEventHandler(preboundFunction, event) }
+        handlers.forEach { preboundFunction ->
+            if (preboundFunction.isAsync) {
+                context.config.coroutineScopesConfig.eventDispatcherScope.launch {
+                    runEventHandler(preboundFunction, event)
+                }
+            } else {
+                runEventHandler(preboundFunction, event)
+            }
+        }
     }
 
     @JvmName("dispatchEvent")
@@ -91,32 +99,32 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
-    private suspend fun runEventHandler(preboundFunction: PreboundFunction, event: Any) {
+    private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val (instance, function) = preboundFunction.classPathFunction
+            val (instance, function) = eventHandlerFunction.classPathFunction
 
             /**
              * See [CoroutineEventManager.handle]
              */
-            val actualTimeout = eventManager.timeout
+            val actualTimeout = eventHandlerFunction.timeout
             if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
                 // Timeout only works when the continuations implement a cancellation handler
                 val result = withTimeoutOrNull(actualTimeout.inWholeMilliseconds) {
-                    function.callSuspend(instance, event, *preboundFunction.parameters)
+                    function.callSuspend(instance, event, *eventHandlerFunction.parameters)
                 }
                 if (result == null) {
                     logger.debug("Event of type ${event.javaClass.simpleName} timed out.")
                 }
             } else {
-                function.callSuspend(instance, event, *preboundFunction.parameters)
+                function.callSuspend(instance, event, *eventHandlerFunction.parameters)
             }
         } catch (e: InvocationTargetException) {
             when (e.cause) {
                 is InitializationException -> throw e.cause!!
-                else -> printException(preboundFunction, e)
+                else -> printException(eventHandlerFunction, e)
             }
         } catch (e: Throwable) {
-            printException(preboundFunction, e)
+            printException(eventHandlerFunction, e)
         }
     }
 
@@ -125,6 +133,8 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->
             val function = classPathFunc.function
+            val annotation = function.findAnnotation<BEventListener>()
+                ?: throwInternal("Function $function was asserted to have BEventListener but it was not found")
 
             val parameters = function.nonInstanceParameters
 
@@ -138,26 +148,34 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 //                        )
 //                    }
 //                }
-            val preboundFunction = PreboundFunction(classPathFunc) {
-                //Getting services is delayed until execution, as to ensure late services can be used in listeners
-                context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
-            }
+            val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
+                isAsync = annotation.async,
+                timeout = annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
+                    when {
+                        it.isPositive() && it.isFinite() -> it
+                        else -> eventManager.timeout
+                    }
+                },
+                parametersBlock = {
+                    //Getting services is delayed until execution, as to ensure late services can be used in listeners
+                    context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
+                })
 
             classPathFunc.function.javaMethodInternal.declaringClass.let { clazz: Class<*> ->
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.getOrPut(it) { mutableListOf() }.add(preboundFunction)
+                    instanceMap.getOrPut(it) { mutableListOf() }.add(eventHandlerFunction)
                 }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.getOrPut(it) { CopyOnWriteArrayList() }.add(preboundFunction)
+                map.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
             }
         }
 
-    private fun printException(preboundFunction: PreboundFunction, e: Throwable) = logger.error(
-        "An exception occurred while dispatching an event for ${preboundFunction.classPathFunction.function.shortSignature}",
+    private fun printException(eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
+        "An exception occurred while dispatching an event for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
         e.getDeepestCause()
     )
 }
