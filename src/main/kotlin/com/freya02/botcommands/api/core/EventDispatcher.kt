@@ -13,9 +13,11 @@ import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.withFilter
+import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
@@ -25,11 +27,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.time.Duration
 
 private typealias EventMap = MutableMap<KClass<*>, MutableList<PreboundFunction>>
 
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
     private val logger = KotlinLogging.logger { }
+    private val eventManager: CoroutineEventManager = context.eventManager
 
     private val map: EventMap = hashMapOf()
     private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()
@@ -39,7 +43,9 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
         addEventListeners(context.classPathContainer.functionsWithAnnotation<BEventListener>())
 
-        context.eventManager.listener<Event> {
+        //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
+        // as jda-ktx takes this group of listeners as only being one.
+        eventManager.listener<Event>(timeout = Duration.INFINITE) {
             dispatchEvent(it)
         }
     }
@@ -89,7 +95,21 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         try {
             val (instance, function) = preboundFunction.classPathFunction
 
-            function.callSuspend(instance, event, *preboundFunction.parameters)
+            /**
+             * See [CoroutineEventManager.handle]
+             */
+            val actualTimeout = eventManager.timeout
+            if (actualTimeout.isPositive() && actualTimeout.isFinite()) {
+                // Timeout only works when the continuations implement a cancellation handler
+                val result = withTimeoutOrNull(actualTimeout.inWholeMilliseconds) {
+                    function.callSuspend(instance, event, *preboundFunction.parameters)
+                }
+                if (result == null) {
+                    logger.debug("Event of type ${event.javaClass.simpleName} timed out.")
+                }
+            } else {
+                function.callSuspend(instance, event, *preboundFunction.parameters)
+            }
         } catch (e: InvocationTargetException) {
             when (e.cause) {
                 is InitializationException -> throw e.cause!!

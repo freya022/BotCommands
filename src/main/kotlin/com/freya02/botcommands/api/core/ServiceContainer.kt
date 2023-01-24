@@ -78,6 +78,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     init {
         putService(this)
         putService(context)
+        putService(context.eventManager)
         putServiceAs<IEventManager>(context.eventManager) //Should be used if JDA is constructed as a service
         putService(context.classPathContainer)
         putServiceAs<BContext>(context)
