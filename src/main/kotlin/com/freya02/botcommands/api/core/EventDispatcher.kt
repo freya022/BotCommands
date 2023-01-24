@@ -150,12 +150,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 //                }
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
                 isAsync = annotation.async,
-                timeout = annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
-                    when {
-                        it.isPositive() && it.isFinite() -> it
-                        else -> eventManager.timeout
-                    }
-                },
+                timeout = getTimeout(annotation),
                 parametersBlock = {
                     //Getting services is delayed until execution, as to ensure late services can be used in listeners
                     context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
@@ -173,6 +168,17 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
                 map.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
             }
         }
+
+    private fun getTimeout(annotation: BEventListener): Duration {
+        if (annotation.timeout < 0) return Duration.INFINITE
+
+        return annotation.timeout.toDuration(annotation.timeoutUnit.toDurationUnit()).let {
+            when {
+                it.isPositive() && it.isFinite() -> it
+                else -> eventManager.timeout
+            }
+        }
+    }
 
     private fun printException(eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
         "An exception occurred while dispatching an event for ${eventHandlerFunction.classPathFunction.function.shortSignature}",

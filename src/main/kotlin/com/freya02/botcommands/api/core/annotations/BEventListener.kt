@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 annotation class BEventListener(
     /** Whether this event listener is executed on its own coroutine, using the [event dispatcher scope][BCoroutineScopesConfig.eventDispatcherScope] */
     val async: Boolean = false,
-    /** The time before the coroutine is cancelled */
+    /** The time before the coroutine is cancelled, using a negative value means no timeout */
     val timeout: Long = 0,
     /** The time unit used for the timeout */
     val timeoutUnit: TimeUnit = TimeUnit.SECONDS)
