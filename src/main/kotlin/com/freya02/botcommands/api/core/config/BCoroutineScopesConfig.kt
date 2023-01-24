@@ -10,6 +10,8 @@ import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import java.util.concurrent.Executors
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -17,9 +19,13 @@ import kotlin.reflect.KProperty
 @InjectedService
 class BCoroutineScopesConfig internal constructor(private val config: BConfig) {
     var defaultScopeSupplier: (String, Int) -> CoroutineScope = { coroutineName, coreSize ->
+        val lock = ReentrantLock()
+        var count = 0
         val executor = Executors.newScheduledThreadPool(coreSize) {
             Thread(it).apply {
-                name = coroutineName
+                lock.withLock {
+                    name = "$coroutineName ${++count}"
+                }
             }
         }
 
