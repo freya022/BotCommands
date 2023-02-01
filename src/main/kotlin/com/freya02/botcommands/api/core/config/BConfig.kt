@@ -30,9 +30,9 @@ class BConfig internal constructor() {
     internal val ownerIds: MutableSet<Long> = HashSet()
 
     /**
-     * Enabling dev mode only disables exception DMs currently
+     * Disables sending exceptions to the bot owners
      */
-    var devMode = false
+    var disableExceptionsInDMs = false
 
     /**
      * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.

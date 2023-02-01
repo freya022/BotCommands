@@ -105,11 +105,10 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
 
             val context = BContextImpl(config, manager)
 
-            if (context.ownerIds.isEmpty()) {
+            if (context.ownerIds.isEmpty())
                 logger.info("No owner ID specified, exceptions won't be sent to owners")
-            } else if (config.devMode) {
-                logger.info("Developer mode enabled, exceptions won't be sent to owners")
-            }
+            if (config.disableExceptionsInDMs)
+                logger.info("Configuration disabled sending exception in bot owners DMs")
 
             val loadableServices = context.serviceContainer.loadableServices
             context.status = BContext.Status.PRE_LOAD

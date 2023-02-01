@@ -132,7 +132,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
             .allApplicationCommands
 
     override fun dispatchException(message: String, t: Throwable?) {
-        if (config.devMode) return //Don't send DM exceptions in dev mode
+        if (config.disableExceptionsInDMs) return //Don't send DM exceptions in dev mode
 
         if (nextExceptionDispatch < System.currentTimeMillis()) {
             nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds

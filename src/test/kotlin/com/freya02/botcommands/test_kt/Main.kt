@@ -30,7 +30,7 @@ object Main {
         }
 
         BBuilder.newBuilder({
-            devMode = true
+            disableExceptionsInDMs = true
 
             addSearchPath("com.freya02.botcommands.test_kt")
 
