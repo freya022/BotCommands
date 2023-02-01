@@ -23,8 +23,10 @@ import java.util.List;
 public interface GuildApplicationSettings {
 	/**
 	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
-	 * <p>
-	 * <br><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
+	 *
+	 * <p><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
+	 *
+	 * <p><b>Note:</b> This method is only used for annotation-declared application commands.
 	 *
 	 * @param guild       The {@link Guild} in which the command is, might be <code>null</code> for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
