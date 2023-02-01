@@ -33,6 +33,7 @@ class SlashCommandParameter(
         else -> null
     }
 
+    val usePredefinedChoices = optionBuilder.usePredefinedChoices
     val choices: List<Command.Choice>? = optionBuilder.choices
     val range: ValueRange? = optionBuilder.valueRange
     val length: LengthRange? = optionBuilder.lengthRange

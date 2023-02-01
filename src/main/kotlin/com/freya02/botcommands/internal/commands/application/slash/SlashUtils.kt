@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -106,11 +107,11 @@ object SlashUtils {
 
                     if (!parameter.choices.isNullOrEmpty()) {
                         choices = parameter.choices
-                    } else {
+                    } else if (parameter.usePredefinedChoices) { //Opt in
                         val predefinedChoices = resolver.getPredefinedChoices(guild)
-                        if (predefinedChoices.isNotEmpty()) {
-                            choices = predefinedChoices
-                        }
+                        if (predefinedChoices.isEmpty())
+                            throwUser(parameter.kParameter.function, "Predefined choices were used for parameter '${parameter.name}' but no choices were returned")
+                        choices = predefinedChoices
                     }
 
                     if (choices != null) {

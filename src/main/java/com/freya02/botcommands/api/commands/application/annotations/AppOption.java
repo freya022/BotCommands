@@ -1,10 +1,14 @@
 package com.freya02.botcommands.api.commands.application.annotations;
 
+import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.annotations.Optional;
+import com.freya02.botcommands.api.commands.application.GuildApplicationSettings;
 import com.freya02.botcommands.api.commands.application.slash.annotations.*;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CompositeKey;
+import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +57,15 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 * @return Description of the option
 	 */
 	String description() default "";
+
+	/**
+	 * Enables using choices from {@link SlashParameterResolver#getPredefinedChoices(Guild)}.
+	 *
+	 * <p><b>Note:</b> Predefined choices can still be overridden by {@link GuildApplicationSettings#getOptionChoices(Guild, CommandPath, String)}.
+	 *
+	 * @return {@code true} to enable using choices from {@link SlashParameterResolver#getPredefinedChoices(Guild)}
+	 */
+	boolean usePredefinedChoices() default false;
 
 	/**
 	 * Name of the autocomplete handler, must match a method annotated with {@link AutocompleteHandler} with the same name in it

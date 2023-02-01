@@ -1,10 +1,12 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
+import com.freya02.botcommands.api.commands.application.GuildApplicationSettings
 import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
 import com.freya02.botcommands.internal.throwUser
@@ -14,6 +16,13 @@ import java.util.*
 
 class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
     var description: String = "No description"
+
+    /**
+     * Required for [SlashParameterResolver.getPredefinedChoices] to be used.
+     *
+     * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
+     */
+    var usePredefinedChoices: Boolean = false
     var choices: List<Choice>? = null
 
     var valueRange: ValueRange? = null
