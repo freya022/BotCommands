@@ -39,8 +39,7 @@ internal class AutocompleteInfoContainer(classPathContainer: ClassPathContainer)
                     showUserInput = autocompleteHandlerAnnotation.showUserInput
 
                     autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
-                        cache {
-                            cacheMode = autocompleteCacheAnnotation.cacheMode
+                        cache(autocompleteCacheAnnotation.cacheMode) {
                             cacheSize = autocompleteCacheAnnotation.cacheSize
 
                             userLocal = autocompleteCacheAnnotation.userLocal

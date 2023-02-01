@@ -21,7 +21,6 @@ internal sealed class AbstractAutocompleteCache {
             val autocompleteCache = autocompleteInfo.autocompleteCache ?: return NoCacheAutocomplete
 
             return when (autocompleteCache.cacheMode) {
-                AutocompleteCacheMode.NO_CACHE -> NoCacheAutocomplete
                 AutocompleteCacheMode.CONSTANT_BY_KEY -> ConstantByKeyAutocompleteCache(autocompleteCache)
             }
         }

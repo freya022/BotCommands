@@ -131,9 +131,7 @@ class SlashMyCommand : ApplicationCommand() {
                         autocomplete("MyCommand: autocompleteStr") {
                             function = ::runAutocomplete
 
-                            cache {
-                                cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY
-                            }
+                            cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
                         }
                     }
 
