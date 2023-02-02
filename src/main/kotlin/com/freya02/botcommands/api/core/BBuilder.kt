@@ -109,6 +109,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
                 logger.info("No owner ID specified, exceptions won't be sent to owners")
             if (config.disableExceptionsInDMs)
                 logger.info("Configuration disabled sending exception in bot owners DMs")
+            if (config.disableAutocompleteCache)
+                logger.info("Configuration disabled autocomplete cache, except forced caches")
 
             val loadableServices = context.serviceContainer.loadableServices
             context.status = BContext.Status.PRE_LOAD
