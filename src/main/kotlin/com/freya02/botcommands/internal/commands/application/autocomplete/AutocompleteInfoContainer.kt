@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.FunctionFilter
@@ -15,7 +16,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class AutocompleteInfoContainer(classPathContainer: ClassPathContainer) {
+internal class AutocompleteInfoContainer(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
     private val infoMap: Map<String, AutocompleteInfo>
 
     init {
@@ -32,7 +33,7 @@ internal class AutocompleteInfoContainer(classPathContainer: ClassPathContainer)
                 val autocompleteFunction = it.function as KFunction<Collection<*>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
-                val info = AutocompleteInfoBuilder(autocompleteHandlerAnnotation.name).apply {
+                val info = AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name).apply {
                     function = autocompleteFunction
 
                     mode = autocompleteHandlerAnnotation.mode

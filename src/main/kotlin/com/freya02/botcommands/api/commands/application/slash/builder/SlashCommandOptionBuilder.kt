@@ -40,7 +40,7 @@ class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName:
      * Example: `SlashTag: tagName`
      */
     fun autocomplete(name: String, block: AutocompleteInfoBuilder.() -> Unit) {
-        autocompleteInfo = AutocompleteInfoBuilder(name).apply(block).build()
+        autocompleteInfo = AutocompleteInfoBuilder(context, name).apply(block).build()
     }
 
     fun autocompleteReference(name: String) {
