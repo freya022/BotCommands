@@ -208,6 +208,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
 
                     processAutocomplete(optionAnnotation)
 
+                    usePredefinedChoices = optionAnnotation.usePredefinedChoices
                     choices = instance.getOptionChoices(guild, path, optionName)
 
                     optionIndex++
