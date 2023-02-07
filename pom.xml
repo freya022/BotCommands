@@ -75,7 +75,7 @@
                         <configuration>
                             <release>17</release>
                             <additionalJOptions>
-                                <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption> <!-- No need to print "no comment" warnings -->
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
