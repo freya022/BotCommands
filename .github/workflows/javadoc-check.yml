@@ -1,4 +1,4 @@
-name: 'Check javadocs'
+name: Check javadocs
 on:
   workflow_dispatch:
   push:
