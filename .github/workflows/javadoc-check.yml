@@ -5,3 +5,16 @@ on:
     paths: 
       - 'pom.xml'
       - '**.java'
+jobs:
+  check-javadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Build Javadocs with Maven
+        run: mvn -P check-docs -B javadoc --file pom.xml
