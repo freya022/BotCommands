@@ -35,7 +35,7 @@ public interface BContext {
 	/**
 	 * Returns the JDA instance associated with this context
 	 *
-	 * @returnnn the JDA instance of this context
+	 * @returnnnn the JDA instance of this context
 	 */
 	@NotNull
 	JDA getJDA();
