@@ -4,7 +4,7 @@ on:
   push:
     paths: 
       - 'pom.xml'
-      - '**.java'
+      - 'src/main/**.java'
 jobs:
   check-javadoc:
     runs-on: ubuntu-latest
