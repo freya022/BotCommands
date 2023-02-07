@@ -1,0 +1,7 @@
+name: 'Check javadocs'
+on:
+  workflow_dispatch:
+  push:
+    paths: 
+      - 'pom.xml'
+      - '**.java'
