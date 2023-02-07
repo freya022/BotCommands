@@ -17,4 +17,4 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Build Javadocs with Maven
-        run: mvn -P check-docs -B javadoc --file pom.xml
+        run: mvn -P check-docs -B javadoc:javadoc --file pom.xml
