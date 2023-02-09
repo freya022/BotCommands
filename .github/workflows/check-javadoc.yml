@@ -1,6 +1,12 @@
 name: Check javadocs
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'pom.xml'
+      - 'src/main/**.java'
   push:
     paths: 
       - 'pom.xml'
