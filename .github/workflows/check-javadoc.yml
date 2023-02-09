@@ -1,4 +1,4 @@
-name: Check javadocs
+name: Check compile & javadocs
 on:
   workflow_dispatch:
   pull_request:
@@ -22,5 +22,5 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-      - name: Build Javadocs with Maven
-        run: mvn -P check-docs -B javadoc:javadoc --file pom.xml
+      - name: Compile and Build Javadocs with Maven
+        run: mvn -P check-docs -B compile javadoc:javadoc --file pom.xml
