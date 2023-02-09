@@ -36,8 +36,6 @@ import java.util.List;
  *
  * You can add more List element types with {@link ExtensionsBuilder#registerAutocompletionTransformer(Class, AutocompletionTransformer)}
  *
- * <p>
- *
  * <h2>State aware autocompletion</h2>
  * You can also use "state aware autocompletion", this means you can retrieve parameters the user has already entered and use it to make your autocompletion better
  *

@@ -55,12 +55,6 @@
 
     <profiles>
         <profile>
-            <id>no-docs</id>
-            <properties>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-            </properties>
-        </profile>
-        <profile>
             <id>check-docs</id>
             <properties>
                 <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
@@ -75,7 +69,7 @@
                         <configuration>
                             <release>17</release>
                             <additionalJOptions>
-                                <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption> <!-- No need to print "no comment" warnings -->
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>

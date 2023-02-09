@@ -17,14 +17,14 @@ import java.util.*;
  * <br>Those localization bundles are in the JSON format and can have any name, with the extension being <code>.json</code>
  * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as "<code>"my_command.name": "my_command_in_en_US"</code>"
  * <br>But you can also use nesting as a way to not copy the same path prefix everytime, such as:
- * <code><pre>
+ * <pre><code>
  *     {
  *         "my_command": {
  *             "name": "my_command_in_en_US",
  *             "description": "my_command_description_in_en_US"
  *         }
  *     }
- * </pre></code>
+ * </code></pre>
  * <p>
  * About localization bundle loading:
  * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProvidersNoParent(String, Locale)}
