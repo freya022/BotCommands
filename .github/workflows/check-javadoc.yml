@@ -8,6 +8,8 @@ on:
       - 'pom.xml'
       - 'src/main/**.java'
   push:
+    branches: 
+      - master
     paths: 
       - 'pom.xml'
       - 'src/main/**.java'
