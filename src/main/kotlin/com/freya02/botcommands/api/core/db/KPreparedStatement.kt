@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.sql.PreparedStatement
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
@@ -47,7 +48,7 @@ class KPreparedStatement @PublishedApi internal constructor(val database: Databa
         if (logger.isTraceEnabled) {
             val duration = timedValue.duration
             val prefix = if (result.isSuccess) "Ran" else "Failed"
-            logger.trace("$prefix query in %.3f ms: $sqlStr".format(duration.inWholeNanoseconds / 1000000.0))
+            logger.trace("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $sqlStr")
         }
 
         return result.getOrThrow()
@@ -74,6 +75,6 @@ class KPreparedStatement @PublishedApi internal constructor(val database: Databa
     companion object {
         private val logger = KotlinLogging.logger { }
 
-        private val commentRegex = Regex("--(?!.*')")
+        private val commentRegex = Regex("""--(?!.* ')""")
     }
 }
