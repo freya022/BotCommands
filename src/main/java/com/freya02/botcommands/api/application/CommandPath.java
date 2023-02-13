@@ -101,7 +101,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the full <i>encoded</i> path of this command path
-	 * <br>Each path component is joined with a <code>/</code> delimiter
+	 * <br>Each path component is joined with a space delimiter
 	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>show me something</code>"
 	 *
 	 * @return The full encoded path of this command path
