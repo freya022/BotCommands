@@ -33,11 +33,13 @@ public abstract class AbstractChannelResolver<T extends GuildChannel>
 		           ChannelResolver {
 	private static final Pattern PATTERN = Pattern.compile("(?:<#)?(\\d+)>?");
 
+	private final Class<T> channelClass;
 	private final EnumSet<ChannelType> channelTypes;
 	private final BiFunction<Guild, String, T> channelResolver;
 
 	public AbstractChannelResolver(Class<T> channelClass, @Nullable ChannelType channelType, BiFunction<Guild, String, T> channelResolver) {
 		super(channelClass);
+		this.channelClass = channelClass;
 
 		this.channelTypes = channelType == null ? EnumSet.noneOf(ChannelType.class) : EnumSet.of(channelType);
 		this.channelResolver = channelResolver;
@@ -73,14 +75,12 @@ public abstract class AbstractChannelResolver<T extends GuildChannel>
 		return OptionType.CHANNEL;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Nullable
 	public T resolve(@NotNull BContext context, @NotNull SlashCommandInfo info, @NotNull CommandInteractionPayload event, @NotNull OptionMapping optionMapping) {
 		final GuildChannelUnion channel = optionMapping.getAsChannel();
-		if (channelTypes.contains(channel.getType())) {
-			return (T) channel;
-		}
+		if (channelClass.isInstance(channel))
+			return channelClass.cast(channel);
 
 		return null;
 	}
