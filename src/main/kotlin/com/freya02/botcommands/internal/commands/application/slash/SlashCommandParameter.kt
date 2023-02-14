@@ -38,11 +38,9 @@ class SlashCommandParameter(
     val range: ValueRange? = optionBuilder.valueRange
     val length: LengthRange? = optionBuilder.lengthRange
 
-    val channelTypes: EnumSet<ChannelType>?
+    val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
 
     init {
-        this.channelTypes = optionBuilder.channelTypes ?: enumSetOf()
-
         if (range != null) {
             if (resolver.optionType != OptionType.NUMBER && resolver.optionType != OptionType.INTEGER) {
                 throw IllegalStateException("Cannot use ranges on an option that doesn't accept an integer/number")
