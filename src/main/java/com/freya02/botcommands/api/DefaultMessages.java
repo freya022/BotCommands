@@ -124,8 +124,8 @@ public final class DefaultMessages {
 	 */
 	public String getSlashCommandUnresolvableParameterMsg(String parameterName, String parameterType) {
 		return getLocalizationTemplate("slash.command.unresolvable.parameter.message").localize(
-				entry(parameterName, parameterName),
-				entry(parameterType, parameterType)
+				entry("parameterName", parameterName),
+				entry("parameterType", parameterType)
 		);
 	}
 
