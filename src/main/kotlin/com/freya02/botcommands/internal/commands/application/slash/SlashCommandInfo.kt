@@ -90,7 +90,9 @@ abstract class SlashCommandInfo internal constructor(
         objects[method.valueParameters.first()] =
             if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, event) else GlobalSlashEventImpl(context, event)
 
-        putSlashOptions(event, objects, parameters)
+        if (!putSlashOptions(event, objects, parameters)) {
+            return false
+        }
 
         cooldownService.applyCooldown(this, event)
 
@@ -103,7 +105,7 @@ abstract class SlashCommandInfo internal constructor(
         event: T,
         objects: MutableMap<KParameter, Any?>,
         methodParameters: MethodParameters
-    ) where T : CommandInteractionPayload,
+    ): Boolean where T : CommandInteractionPayload,
             T : Event {
         parameterLoop@ for (parameter in methodParameters) {
             if (parameter.methodParameterType == MethodParameterType.OPTION) {
@@ -155,7 +157,7 @@ abstract class SlashCommandInfo internal constructor(
                             parameter.type.jvmErasure.simpleName
                         )
 
-                        return
+                        return false
                     }
 
                     objectList.add(resolved)
@@ -177,6 +179,8 @@ abstract class SlashCommandInfo internal constructor(
                 throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
             }
         }
+
+        return true
     }
 
     companion object {
