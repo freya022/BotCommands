@@ -29,9 +29,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ErrorHandler;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.ErrorResponse;
@@ -319,8 +317,14 @@ public class BContextImpl implements BContext {
 			String exceptionStr = t == null ? "" : "\nException : \n%s".formatted(Utils.getException(t));
 
 			jda.retrieveApplicationInfo()
-					.map(ApplicationInfo::getOwner)
-					.flatMap(User::openPrivateChannel)
+					.map(applicationInfo -> {
+						if (applicationInfo.getTeam() != null) {
+							return applicationInfo.getTeam().getOwnerIdLong();
+						} else {
+							return applicationInfo.getOwner().getIdLong();
+						}
+					})
+					.flatMap(jda::openPrivateChannelById)
 					.flatMap(channel -> channel.sendMessage("%s%s\n\nPlease check the logs for more detail and possible exceptions".formatted(message, exceptionStr)))
 					.queue(null, new ErrorHandler().handle(ErrorResponse.CANNOT_SEND_TO_USER,
 							x -> LOGGER.warn("Could not send exception DM to owner")));
