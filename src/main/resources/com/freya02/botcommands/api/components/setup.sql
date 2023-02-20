@@ -23,7 +23,8 @@ create table if not exists PersistentComponentData
     args        text not null
 );
 
+truncate lambdacomponentdata;
+
 delete
 from componentdata
-    USING lambdacomponentdata
-WHERE type in (1, 3);
+where type in (1, 3);
