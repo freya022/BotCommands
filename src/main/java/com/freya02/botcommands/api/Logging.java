@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+//TODO put a dot to delimit which part of the docs gets shown in allclasses-index.html
 /**
- * Static methods which returns a {@link Logger} for the current class (the class which calls these methods)
+ * Static methods which returns a {@link Logger} for the current class (the class which calls these methods).
  * <br>The logger is implemented by the implementation you provide, such as logback-classic, or fallback to the default JDA logger
  */
 public class Logging {
