@@ -126,6 +126,9 @@
                                         <requireActiveProfile>
                                             <profiles>check-docs</profiles>
                                         </requireActiveProfile>
+                                        <requireJavaVersion>
+                                            <version>[17, 18)</version> <!-- Generating docs on the right version is important -->
+                                        </requireJavaVersion>
                                     </rules>
                                     <fail>true</fail>
                                 </configuration>
