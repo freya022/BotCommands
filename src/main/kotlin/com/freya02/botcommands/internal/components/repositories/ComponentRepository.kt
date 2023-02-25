@@ -379,19 +379,19 @@ internal class ComponentRepository(
     @Suppress("SqlWithoutWhere")
     private fun cleanupEphemeral() = runBlocking {
         database.transactional {
-            preparedStatement("delete from bc_component where lifetime_type = ?") {
-                val deletedRows = executeUpdate(LifetimeType.EPHEMERAL.key)
-                logger.trace { "Deleted $deletedRows ephemeral components" }
-            }
-
-            preparedStatement("delete from bc_ephemeral_timeout") {
+            preparedStatement("truncate bc_ephemeral_timeout") {
                 val deletedRows = executeUpdate()
                 logger.trace { "Deleted $deletedRows ephemeral timeout handlers" }
             }
 
-            preparedStatement("delete from bc_ephemeral_handler") {
+            preparedStatement("truncate bc_ephemeral_handler") {
                 val deletedRows = executeUpdate()
                 logger.trace { "Deleted $deletedRows ephemeral handlers" }
+            }
+
+            preparedStatement("delete from bc_component where lifetime_type = ?") {
+                val deletedRows = executeUpdate(LifetimeType.EPHEMERAL.key)
+                logger.trace { "Deleted $deletedRows ephemeral components" }
             }
         }
     }
