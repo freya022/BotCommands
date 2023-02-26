@@ -40,11 +40,13 @@ jobs:
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Compile and release
-        run: mvn -P check-docs,release -B --file pom.xml \
-                 -Dtag=v${{ inputs.release_version }} \
-                 -DreleaseVersion=${{ inputs.release_version }} \
-                 -DdevelopmentVersion=${{ inputs.next_development_version }}-SNAPSHOT \
-                 release:prepare release:perform
+        run: >
+          mvn -B --file pom.xml
+          -P check-docs,release 
+          -Dtag=v${{ inputs.release_version }}
+          -DreleaseVersion=${{ inputs.release_version }}
+          -DdevelopmentVersion=${{ inputs.next_development_version }}-SNAPSHOT
+          release:prepare release:perform
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
