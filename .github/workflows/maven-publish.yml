@@ -1,6 +1,7 @@
 # https://theoverengineered.blog/posts/publishing-my-first-artifact-to-maven-central-using-github-actions
 # https://maven.apache.org/maven-release/maven-release-plugin/examples/non-interactive-release.html
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
+# https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-Apache-Maven
 
 name: Publish to Maven Central
 on:
