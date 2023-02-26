@@ -15,7 +15,7 @@ on:
         required: true
         type: string
       next_development_version:
-        description: The snapshot used after this release
+        description: The dev version used after this release, without -SNAPSHOT
         required: true
         type: string
         
@@ -38,7 +38,7 @@ jobs:
         run: mvn -P check-docs,release -B --file pom.xml compile release:prepare release:perform \
                  -Dtag=v${{ inputs.release_version }} \
                  -DreleaseVersion=${{ inputs.release_version }} \
-                 -DdevelopmentVersion=${{ inputs.next_development_version }}
+                 -DdevelopmentVersion=${{ inputs.next_development_version }}-SNAPSHOT
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
