@@ -3,6 +3,11 @@
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
 # https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-Apache-Maven
 
+# TODO: In 3.0, use the `deploy` goal instead, and configure the build plugin to append `_DEV` on non-release builds
+#       This will allow deploying without inputs, when a release is created
+
+# TODO: Make this task dependent on the javadoc pass
+
 name: Publish to Maven Central
 on:
   workflow_dispatch:
