@@ -1,3 +1,5 @@
+# https://theoverengineered.blog/posts/publishing-my-first-artifact-to-maven-central-using-github-actions
+
 name: Publish to Maven Central
 on:
   workflow_dispatch:
@@ -11,6 +13,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
-      - name: Compile and prepare release
-        run: mvn -P check-docs,release -B compile release:prepare --file pom.xml
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Compile and release
+        run: mvn -P check-docs,release -B compile release:prepare release:perform --file pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
