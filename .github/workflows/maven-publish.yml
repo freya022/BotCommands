@@ -10,10 +10,6 @@ name: Publish to Maven Central
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: Git tag to use on the release
-        required: true
-        type: string
       release_version:
         description: The version that is about to be released
         required: true
@@ -40,7 +36,7 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Compile and release
         run: mvn -P check-docs,release -B --file pom.xml compile release:prepare release:perform \
-                 -Dtag=${{ inputs.tags }} \
+                 -Dtag=v${{ inputs.release_version }} \
                  -DreleaseVersion=${{ inputs.release_version }} \
                  -DdevelopmentVersion=${{ inputs.next_development_version }}
         env:
