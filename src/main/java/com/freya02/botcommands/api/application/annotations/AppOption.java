@@ -15,8 +15,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to specify a application command parameter is supplied from Discord, <i>i.e. it is <b>not</b> a custom parameter</i>
- * <br>This also can set name and description of {@linkplain JDASlashCommand slash commands} parameters
+ * Annotation used to specify an application command parameter is supplied from Discord, <i>i.e. it is <b>not</b> a custom parameter</i>
+ * <br>This also can set name and description of {@linkplain JDASlashCommand slash commands} parameters.
  * <p>
  * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
  *

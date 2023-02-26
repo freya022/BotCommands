@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * <p>Extend this class on classes that contains any command / subcommand</p>
+ * Extend this class on classes that contains any command / subcommand.
+ *
  * <p>You also need to use the {@linkplain JDATextCommand @JDATextCommand} annotation on methods in order to register a command with {@linkplain CommandsBuilder}</p>
  */
 public abstract class TextCommand {

@@ -5,8 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 
 /**
- * <p>Provides cooldown scopes for executed commands</p>
- * <p>The cooldown time is specified with {@link Cooldown}</p>
+ * Provides cooldown scopes for executed commands, as specified with {@link Cooldown}.
  */
 public enum CooldownScope {
     /** Enables cooldown for the user who called the command */
