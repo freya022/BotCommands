@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 /**
- * Static methods which returns a {@link Logger} for the current class (the class which calls these methods)
+ * Static methods which returns a {@link Logger} for the current class (the class which calls these methods).
  * <br>The logger is implemented by the implementation you provide, such as logback-classic, or fallback to the default JDA logger
  */
 public class Logging {

@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows setting minimum and maximum values on the specified {@link AppOption}
+ * Allows setting minimum and maximum values on the specified {@link AppOption}.
  * <br><b>This is only for integer types !</b>
  */
 @Retention(RetentionPolicy.RUNTIME)

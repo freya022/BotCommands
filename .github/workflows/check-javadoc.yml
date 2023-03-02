@@ -1,0 +1,28 @@
+name: Check compile & javadocs
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'pom.xml'
+      - 'src/main/**.java'
+  push:
+    branches: 
+      - master
+    paths: 
+      - 'pom.xml'
+      - 'src/main/**.java'
+jobs:
+  check-javadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Compile and Build Javadocs with Maven
+        run: mvn -P check-docs -B compile javadoc:javadoc --file pom.xml

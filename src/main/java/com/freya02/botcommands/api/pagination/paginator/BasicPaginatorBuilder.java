@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.components.Components;
+import com.freya02.botcommands.api.components.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;
@@ -52,8 +53,12 @@ public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, 
 	 * Specifies whether this paginator should have a delete button
 	 * <br>Note that this button <b><i>does</i></b> cleanup used components
 	 *
+	 * <p><b>Note: </b>This button has the same constraints as those set by {@link #setConstraints(InteractionConstraints)}
+	 *
 	 * @param hasDeleteButton <code>true</code> if the delete button has to appear
 	 * @return This builder for chaining convenience
+	 *
+	 * @see #setConstraints(InteractionConstraints)
 	 */
 	public T useDeleteButton(boolean hasDeleteButton) {
 		this.hasDeleteButton = hasDeleteButton;

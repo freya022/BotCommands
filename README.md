@@ -1,5 +1,5 @@
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.2-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.3+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
@@ -50,6 +50,7 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 [//]: # (* Enable preview features in your compiler with `--enable-preview`, [How I enable it]&#40;https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81&#41;, [IntelliJ w/ Maven tutorial]&#40;https://www.baeldung.com/java-preview-features#intellij-idea&#41;, [Gradle tutorial]&#40;https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle&#41;)
 
 ## Getting the library
+[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
 ### Maven
 ```xml
 <dependencies>

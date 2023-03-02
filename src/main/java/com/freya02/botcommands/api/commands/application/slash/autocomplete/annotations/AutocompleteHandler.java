@@ -37,8 +37,6 @@ import java.util.List;
  *
  * You can add more List element types with {@link BApplicationConfig#registerAutocompleteTransformer(KClass, AutocompleteTransformer)}
  *
- * <p>
- *
  * <h2>State aware autocomplete</h2>
  * You can also use "state aware autocomplete", this means you can retrieve parameters the user has already entered and use it to make your autocomplete better
  *

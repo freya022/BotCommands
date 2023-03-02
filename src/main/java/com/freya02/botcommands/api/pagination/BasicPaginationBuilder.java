@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.pagination;
 
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
+import com.freya02.botcommands.api.pagination.paginator.BasicPaginatorBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.callbacks.IDeferrableCallback;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -54,7 +55,7 @@ public abstract class BasicPaginationBuilder<T extends BasicPaginationBuilder<T,
 
 	/**
 	 * Sets the interaction constraints for this pagination object
-	 * <br>These constraints control who can use this pagination object
+	 * <br>These constraints control who can use this pagination object, including {@link BasicPaginatorBuilder#useDeleteButton(boolean) delete buttons}
 	 *
 	 * @param constraints The {@link InteractionConstraints} for this pagination object
 	 * @return This builder for chaining convenience

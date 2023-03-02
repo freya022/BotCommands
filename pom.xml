@@ -55,12 +55,6 @@
 
     <profiles>
         <profile>
-            <id>no-docs</id>
-            <properties>
-                <maven.javadoc.skip>true</maven.javadoc.skip>
-            </properties>
-        </profile>
-        <profile>
             <id>check-docs</id>
             <properties>
                 <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
@@ -75,7 +69,7 @@
                         <configuration>
                             <release>17</release>
                             <additionalJOptions>
-                                <additionalJOption>-Xdoclint:-missing</additionalJOption> <!-- No need to print "no comment" warnings -->
+                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption> <!-- No need to print "no comment" warnings -->
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -132,6 +126,9 @@
                                         <requireActiveProfile>
                                             <profiles>check-docs</profiles>
                                         </requireActiveProfile>
+                                        <requireJavaVersion>
+                                            <version>[17, 18)</version> <!-- Generating docs on the right version is important -->
+                                        </requireJavaVersion>
                                     </rules>
                                     <fail>true</fail>
                                 </configuration>
@@ -164,6 +161,12 @@
                                 <goals>
                                     <goal>sign</goal>
                                 </goals>
+                                <configuration>
+                                    <gpgArguments>
+                                        <arg>--pinentry-mode</arg>
+                                        <arg>loopback</arg>
+                                    </gpgArguments>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -368,7 +371,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.2</version>
+            <version>5.0.0-beta.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
