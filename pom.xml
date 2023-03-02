@@ -5,7 +5,7 @@
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>3.0.0-alpha.5-SNAPSHOT</version>
+    <version>3.0.0-alpha.5_DEV</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps to develop your bots faster</description>
@@ -206,11 +206,12 @@
             <plugin>
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>0a5ad111fc</version>
+                <version>673bb6493c</version>
                 <executions>
                     <execution>
                         <goals>
-                            <goal>BotCommandsBuild</goal>
+                            <goal>generate-version-info</goal>
+                            <goal>check-ci-version</goal>
                         </goals>
                     </execution>
                 </executions>
