@@ -210,6 +210,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>io.github.freya022</groupId>
+                <artifactId>BotCommandsBuild-maven-plugin</artifactId>
+                <version>d337d2b7bb</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-version-info</goal>
+                            <goal>check-ci-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
@@ -228,6 +241,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <!-- Needed for BC generated sources -->
+                                <sourceDir>${project.build.directory}/generated-sources</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -281,7 +296,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
+                <groupId>org.codehaus.mojo</groupId> <!-- Fixes including kotlin and generated sources -->
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
 
@@ -294,6 +309,8 @@
                         <configuration>
                             <sources>
                                 <source>src/main/kotlin</source>
+                                <!-- Somehow fixes maven taking already compiled classes (by IJ) into the final JAR -->
+                                <source>${project.build.directory}/generated-sources</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -315,12 +332,20 @@
         </plugins>
     </build>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <repositories>
         <repository>
             <id>jitpack</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
