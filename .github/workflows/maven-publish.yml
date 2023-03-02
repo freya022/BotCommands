@@ -39,6 +39,8 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Set release version
+        run: mvn -B --file pom.xml BotCommandsBuild:set-ci-version
       - name: Compile and release
         run: >
           mvn -B --file pom.xml
