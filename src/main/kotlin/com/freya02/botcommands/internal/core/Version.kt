@@ -1,0 +1,82 @@
+package com.freya02.botcommands.internal.core
+
+import com.freya02.botcommands.api.BCInfo
+import com.freya02.botcommands.api.Logging
+import net.dv8tion.jda.api.JDAInfo
+
+//TODO unit test
+// This really needs to not be critical
+internal class Version private constructor(
+    private val minor: Int,
+    private val major: Int,
+    private val revision: Int,
+    private val classifier: Classifier?
+) : Comparable<Version> {
+    private data class Classifier(val name: String, val version: Int) : Comparable<Classifier> {
+        override fun compareTo(other: Classifier): Int {
+            if (name != other.name) return classifierIndex().compareTo(other.classifierIndex())
+            return version.compareTo(other.version)
+        }
+
+        private fun classifierIndex(): Int = classifiers.indexOf(name)
+    }
+
+    override fun compareTo(other: Version): Int {
+        if (minor != other.minor) return minor.compareTo(other.minor)
+        if (major != other.major) return major.compareTo(other.major)
+        if (revision != other.revision) return revision.compareTo(other.revision)
+
+        if (classifier != other.classifier) {
+            return when {
+                classifier == null -> 1 //This is a release
+                other.classifier == null -> -1 //The other is a release
+                else -> classifier.compareTo(other.classifier)
+            }
+        }
+
+        return 0
+    }
+
+    companion object {
+        private val logger = Logging.getLogger(Version::class.java)
+        private val versionPattern = Regex("""(\d+)\.(\d+)\.(\d+)(?:-(\w+)\.(\d+))?(?:_\w*)?""")
+        private val classifiers = listOf("alpha", "beta")
+
+        @JvmStatic
+        fun checkVersions() {
+            logger.debug("Loading BotCommands ${BCInfo.VERSION} ; Compiled with JDA ${BCInfo.BUILD_JDA_VERSION} ; Running with JDA ${JDAInfo.VERSION}")
+
+            val requiredJdaVersionStr = BCInfo.BUILD_JDA_VERSION
+            val requiredJdaVersion = getOrNull(requiredJdaVersionStr) ?: let {
+                logger.warn("Unrecognized built-with JDA version: $requiredJdaVersionStr")
+                return
+            }
+
+            val currentJdaVersionStr = JDAInfo.VERSION
+            val currentJdaVersion = getOrNull(currentJdaVersionStr) ?: let {
+                logger.warn("Unrecognized JDA version: $currentJdaVersionStr")
+                return
+            }
+
+            if (currentJdaVersion < requiredJdaVersion) {
+                throw IllegalStateException("This bot is currently running JDA $currentJdaVersionStr but requires at least $requiredJdaVersionStr")
+            }
+        }
+
+        private fun getOrNull(versionString: String): Version? {
+            val groups = versionPattern.matchEntire(versionString)?.groups ?: return null
+
+            val major = groups[1]?.value ?: return null
+            val minor = groups[2]?.value ?: return null
+            val revision = groups[3]?.value ?: return null
+
+            val classifierName = groups[4]?.value
+            val classifier = classifierName?.let {
+                val classifierVersion = groups[5]?.value ?: return null
+                Classifier(it, classifierVersion.toInt())
+            }
+
+            return Version(minor.toInt(), major.toInt(), revision.toInt(), classifier)
+        }
+    }
+}

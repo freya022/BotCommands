@@ -20,6 +20,7 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
+import com.freya02.botcommands.internal.core.Version;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;
@@ -224,6 +225,8 @@ public final class CommandsBuilderImpl {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) throws Exception {
+		Version.checkVersions();
+
 		if (jda.getShardInfo().getShardId() != 0) {
 			LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...");
 
