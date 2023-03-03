@@ -21,8 +21,8 @@ internal class Version private constructor(
     }
 
     override fun compareTo(other: Version): Int {
-        if (minor != other.minor) return minor.compareTo(other.minor)
         if (major != other.major) return major.compareTo(other.major)
+        if (minor != other.minor) return minor.compareTo(other.minor)
         if (revision != other.revision) return revision.compareTo(other.revision)
 
         if (classifier != other.classifier) {
