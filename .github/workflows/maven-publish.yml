@@ -8,17 +8,9 @@
 
 name: Publish to Maven Central
 on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: The version that is about to be released
-        required: true
-        type: string
-      next_development_version:
-        description: The dev version used after this release, without -SNAPSHOT
-        required: true
-        type: string
-        
+  release:
+    types: [ released ]
+
 jobs:
   publish:
     runs-on: ubuntu-latest
