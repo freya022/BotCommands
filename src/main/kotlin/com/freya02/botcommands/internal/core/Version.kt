@@ -4,15 +4,14 @@ import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.Logging
 import net.dv8tion.jda.api.JDAInfo
 
-//TODO unit test
 // This really needs to not be critical
 internal class Version private constructor(
-    private val minor: Int,
-    private val major: Int,
-    private val revision: Int,
-    private val classifier: Classifier?
+    val minor: Int,
+    val major: Int,
+    val revision: Int,
+    val classifier: Classifier?
 ) : Comparable<Version> {
-    private data class Classifier(val name: String, val version: Int) : Comparable<Classifier> {
+    internal data class Classifier(val name: String, val version: Int) : Comparable<Classifier> {
         override fun compareTo(other: Classifier): Int {
             if (name != other.name) return classifierIndex().compareTo(other.classifierIndex())
             return version.compareTo(other.version)
@@ -63,20 +62,25 @@ internal class Version private constructor(
             }
         }
 
-        private fun getOrNull(versionString: String): Version? {
+        fun get(versionString: String) =
+            getOrNull(versionString) ?: throw IllegalArgumentException("Cannot parse version '$versionString'")
+
+        fun getOrNull(versionString: String): Version? {
             val groups = versionPattern.matchEntire(versionString)?.groups ?: return null
 
-            val major = groups[1]?.value ?: return null
-            val minor = groups[2]?.value ?: return null
-            val revision = groups[3]?.value ?: return null
+            val major = groups[1]?.value?.toIntOrNull() ?: return null
+            val minor = groups[2]?.value?.toIntOrNull() ?: return null
+            val revision = groups[3]?.value?.toIntOrNull() ?: return null
 
             val classifierName = groups[4]?.value
             val classifier = classifierName?.let {
-                val classifierVersion = groups[5]?.value ?: return null
-                Classifier(it, classifierVersion.toInt())
+                if (it !in classifiers) return null
+
+                val classifierVersion = groups[5]?.value?.toIntOrNull() ?: return null
+                Classifier(it, classifierVersion)
             }
 
-            return Version(minor.toInt(), major.toInt(), revision.toInt(), classifier)
+            return Version(minor, major, revision, classifier)
         }
     }
 }
