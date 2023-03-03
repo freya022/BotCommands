@@ -8,6 +8,8 @@ on:
       - 'pom.xml'
       - 'src/main/**.java'
       - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
   push:
     branches: 
       - master
@@ -15,6 +17,8 @@ on:
       - 'pom.xml'
       - 'src/main/**.java'
       - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
 jobs:
   check-tests:
     runs-on: ubuntu-latest
