@@ -20,7 +20,6 @@ import com.freya02.botcommands.internal.application.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.application.ApplicationUpdaterListener;
 import com.freya02.botcommands.internal.application.slash.autocomplete.AutocompletionHandlersBuilder;
 import com.freya02.botcommands.internal.components.ComponentsBuilder;
-import com.freya02.botcommands.internal.core.Version;
 import com.freya02.botcommands.internal.events.EventListenersBuilder;
 import com.freya02.botcommands.internal.modals.ModalHandlersBuilder;
 import com.freya02.botcommands.internal.prefixed.CommandListener;

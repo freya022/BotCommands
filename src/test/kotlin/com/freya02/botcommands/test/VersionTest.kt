@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test
 
-import com.freya02.botcommands.internal.core.Version
+import com.freya02.botcommands.internal.Version
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

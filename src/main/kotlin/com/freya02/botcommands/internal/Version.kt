@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.BCInfo
 import com.freya02.botcommands.api.Logging
