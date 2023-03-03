@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.pagination.paginator;
 
 import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.components.InteractionConstraints;
+import com.freya02.botcommands.api.components.data.InteractionConstraints;
 import com.freya02.botcommands.api.pagination.BasicPagination;
 import com.freya02.botcommands.api.pagination.BasicPaginationBuilder;
 import com.freya02.botcommands.api.pagination.PaginatorSupplier;

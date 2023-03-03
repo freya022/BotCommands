@@ -1,4 +1,4 @@
-package com.freya02.botcommands.test
+package com.freya02.botcommands.test_kt
 
 import com.freya02.botcommands.internal.Version
 import org.junit.jupiter.api.Assertions.*
