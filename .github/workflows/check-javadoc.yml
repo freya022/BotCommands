@@ -1,4 +1,4 @@
-name: Check compile & javadocs
+name: Check compile, tests & javadocs
 on:
   workflow_dispatch:
   pull_request:
@@ -7,13 +7,31 @@ on:
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
+      - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
   push:
     branches: 
       - master
     paths: 
       - 'pom.xml'
       - 'src/main/**.java'
+      - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
 jobs:
+  check-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Compile and run tests with Maven
+        run: mvn -B --file pom.xml test
   check-javadoc:
     runs-on: ubuntu-latest
     steps:
