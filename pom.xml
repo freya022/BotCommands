@@ -4,8 +4,11 @@
 
     <groupId>io.github.freya022</groupId>
     <artifactId>BotCommands</artifactId>
+    <!-- major.minor.revision-classifier(_DEV) -->
     <!-- Major for big breaking changes, minor for small breaking changes / possibly features, revision for bugfix/features -->
-    <version>2.8.7-SNAPSHOT</version>
+    <!-- Classifier is optional and can be either alpha or beta -->
+    <!-- _DEV is removed by the CI release -->
+    <version>2.8.7_DEV</version>
     <name>BotCommands</name>
 
     <description>A JDA command framework (&amp; much more) which helps to develop your bots faster</description>
@@ -21,7 +24,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.test.skip>true</maven.test.skip>
         <kotlin.version>1.7.20</kotlin.version>
         <kotlin.coroutine.version>1.6.4</kotlin.coroutine.version>
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
@@ -207,6 +209,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>io.github.freya022</groupId>
+                <artifactId>BotCommandsBuild-maven-plugin</artifactId>
+                <version>fdf1d2b251</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-version-info</goal>
+                            <goal>check-ci-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
@@ -225,6 +240,8 @@
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
+                                <!-- Needed for BC generated sources -->
+                                <sourceDir>${project.build.directory}/generated-sources</sourceDir>
                             </sourceDirs>
                         </configuration>
                     </execution>
@@ -278,7 +295,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId> <!-- Somehow fixes including kotlin sources -->
+                <groupId>org.codehaus.mojo</groupId> <!-- Fixes including kotlin and generated sources -->
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <version>3.0.0</version>
 
@@ -291,6 +308,8 @@
                         <configuration>
                             <sources>
                                 <source>src/main/kotlin</source>
+                                <!-- Somehow fixes maven taking already compiled classes (by IJ) into the final JAR -->
+                                <source>${project.build.directory}/generated-sources</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -309,8 +328,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <repositories>
         <repository>
@@ -318,6 +349,7 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>
@@ -415,6 +447,12 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

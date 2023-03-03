@@ -224,6 +224,8 @@ public final class CommandsBuilderImpl {
 	 * @param jda The JDA instance of your bot
 	 */
 	public void build(JDA jda) throws Exception {
+		Version.checkVersions();
+
 		if (jda.getShardInfo().getShardId() != 0) {
 			LOGGER.warn("A shard other than 0 was passed to CommandsBuilder#build, shard 0 is needed to handle DMing exceptions, manually retrieving shard 0...");
 
