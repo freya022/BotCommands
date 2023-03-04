@@ -63,6 +63,11 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 
 ### Gradle
 ```gradle
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     implementation 'io.github.freya022:BotCommands:VERSION'
 }
