@@ -1,0 +1,49 @@
+# https://github.com/MinnDevelopment/jda-ktx/blob/17eb77a138ba356a3b0439afeddf77d4520c7c60/.github/workflows/docs.yml
+# https://github.com/freya022/BotCommands/blob/792f01135c5266dc06256de0b920e5482adfd3a4/.github/workflows/check-javadoc.yml
+
+name: Deploy Javadocs to Pages
+
+on:
+  push:
+    branches: ["master"]
+    paths:       
+      - 'pom.xml'
+      - 'src/main/**.java'
+      - 'src/main/**.kt'
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      - name: Generate Javadocs
+        run: mvn -B --file pom.xml -P check-docs javadoc:javadoc
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: ./target/site/apidocs
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
