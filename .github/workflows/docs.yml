@@ -37,6 +37,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
+      - name: Set release version
+        run: mvn -B --file pom.xml BotCommandsBuild:set-ci-version
       - name: Generate Javadocs
         run: mvn -B --file pom.xml -P check-docs javadoc:javadoc
       - name: Upload artifact
