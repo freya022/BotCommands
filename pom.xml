@@ -80,6 +80,9 @@
                             <excludePackageNames>
                                 com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
                             </excludePackageNames>
+                            <sourceFileExcludes>
+                                <sourceFileExclude>com/freya02/botcommands/api/$BCInfo.java</sourceFileExclude>
+                            </sourceFileExcludes>
                         </configuration>
                         <executions>
                             <execution>
@@ -266,6 +269,9 @@
                     <compilerArgs>
                         <compilerArg>-parameters</compilerArg>
                     </compilerArgs>
+                    <excludes>
+                        <exclude>com/freya02/botcommands/api/$BCInfo.java</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <!-- Replacing default-compile as it is treated specially by maven -->
@@ -325,6 +331,9 @@
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
+                        <configuration>
+                            <excludes>com/freya02/botcommands/api/$BCInfo.java</excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
