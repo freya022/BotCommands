@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * A type of pagination which shows embeds and provides a {@link StringSelectMenu} to navigate between menus
- * <br>Each embed is bound to a selection menu
- * <br><i>This does not provide pagination for each embed</i> (no arrow buttons, only the selection menu)
+ * A type of pagination which shows embeds and provides a {@link StringSelectMenu} to navigate between menus.
+ * <br>Each embed is bound to a selection menu.
+ * <br><i>This does not provide pagination for each embed</i> (no arrow buttons, only the selection menu).
  */
 public final class InteractiveMenu extends BasicInteractiveMenu<InteractiveMenu> {
 	InteractiveMenu(InteractionConstraints constraints, TimeoutInfo<InteractiveMenu> timeout, boolean hasDeleteButton,

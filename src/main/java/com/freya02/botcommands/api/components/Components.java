@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * The only class you will have to use to create smart components such as {@link Button buttons} and {@link SelectMenu selection menus}<br>
- * This class lets you create every type of buttons as well as have builder patterns, while benefiting from the persistent / lambda IDs such as:
+ * Utility class to create smart components such as {@link Button buttons} and {@link SelectMenu selection menus}.
+ * <br>This class lets you create every type of buttons as well as have builder patterns, while benefiting from the persistent / lambda IDs such as:
  * <ul>
  *     <li>Unlimited argument storage (no more 100 chars limit !)</li>
  *     <li>One-use components</li>

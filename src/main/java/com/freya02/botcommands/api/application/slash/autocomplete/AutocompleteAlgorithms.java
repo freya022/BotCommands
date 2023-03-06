@@ -13,8 +13,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Class which contains the algorithms used by the autocompletion handlers
- * <br>You might use them if for example you want to provide your own list of choices directly, while still having some sort of relevance sorting
+ * Helper class used by the autocompletion handlers to filter lists using their string representation.
+ * <br>You might use them if for example you want to provide your own list of choices directly, while still having some sort of relevance sorting.
  */
 public class AutocompleteAlgorithms {
 	/**

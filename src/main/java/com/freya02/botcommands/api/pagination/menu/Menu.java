@@ -10,8 +10,7 @@ import com.freya02.botcommands.api.utils.ButtonContent;
 import java.util.List;
 
 /**
- * Provides a menu
- * <br>You provide the entries, it makes the pages for you
+ * Paginator where pages are made from a list of entries.
  *
  * @param <E> Type of the entries
  * @see Paginator

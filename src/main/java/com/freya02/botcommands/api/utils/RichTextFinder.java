@@ -10,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Utility class to search for rich text such as:
+ * Utility class to search for rich text.
+ * <br>Rich text include:
  * <ul>
  *     <li>Users</li>
  *     <li>Text channels</li>
@@ -21,9 +22,9 @@ import java.util.regex.Pattern;
  *     <li>URLs</li>
  * </ul>
  *
- * This class takes your input and tokenises it as it finds what you're asking it to find
- *
- * <br><br>You can then take the output using {@linkplain #getResults()} or consume it directly using {@linkplain #processResults(RichTextConsumer)}
+ * This class takes your input and tokenises it as it finds what you're asking it to find.
+ * <p>
+ * You can then take the output using {@linkplain #getResults()} or consume it directly using {@linkplain #processResults(RichTextConsumer)}.
  */
 public class RichTextFinder extends EmojiParser {
 	private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");

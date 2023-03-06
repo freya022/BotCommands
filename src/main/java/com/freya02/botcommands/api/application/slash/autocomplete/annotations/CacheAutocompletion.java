@@ -12,10 +12,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to cache autocompletion handlers results
- * <br>By default this will cache results by key
- * <br>By default, that key is solely the input of the focused option
- * <br>However you can use composite keys if your input depends on more than the focused option, you will have to use {@link CompositeKey} on the values to be included in the key
+ * Annotation to cache autocompletion handlers results.
+ * <br>By default this will cache results by key.
+ * <br>By default, that key is solely the input of the focused option.
+ * <br>However you can use composite keys if your input depends on more than the focused option, you will have to use {@link CompositeKey} on the values to be included in the key.
  *
  * @see AppOption
  * @see AutocompletionHandler

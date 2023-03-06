@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 /**
- * Annotates a method as a JDA event listener, this provides events the same way as {@link AnnotatedEventManager} do
+ * Annotates a method as a JDA event listener, this provides events the same way as {@link AnnotatedEventManager} do.
  * <ul>
  *     <li>The method name can be anything</li>
  *     <li>The first parameter has to be the targeted JDA event, if it is not a JDA event then this will fail on runtime, when building the framework</li>

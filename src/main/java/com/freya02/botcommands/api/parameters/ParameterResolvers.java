@@ -21,7 +21,8 @@ import java.util.stream.Collectors;
 
 /**
  * Has all the parameter resolvers registered here, 
- * they help in resolving method parameters for regex commands, application commands and component callbacks<br><br>
+ * they help in resolving method parameters for regex commands, application commands and component callbacks
+ * <p>
  *
  * Supported parameters:
  * <ul>

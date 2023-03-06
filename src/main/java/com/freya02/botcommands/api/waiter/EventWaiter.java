@@ -20,9 +20,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * An event waiter - if you need to wait for an event to occur while not blocking threads or having listeners everywhere<br>
- * You provide the type of the JDA event you want to get<br>
- * You can then set properties such as preconditions, timeouts and actions to run when the event gets received / has an exception, etc...
+ * An event waiter - if you need to wait for an event to occur while not blocking threads or having listeners everywhere.
+ * <br>You provide the type of the JDA event you want to get
+ * <br>You can then set properties such as preconditions, timeouts and actions to run when the event gets received / has an exception, etc...
  * <br>This event waiter cannot be constructed and does not need to be registered to the JDA instance, it is already done automatically
  *
  * <h2>Example</h2>

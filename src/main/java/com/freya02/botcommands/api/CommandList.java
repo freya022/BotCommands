@@ -8,8 +8,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Represents a list of enabled commands, the enabled commands are only qualified by their base name<br>
- * <b>Keep in mind you cannot disable global commands on a per-guild basis</b>
+ * Represents a list of enabled commands, the enabled commands are only qualified by their base name.
+ * <br><b>Keep in mind you cannot disable global commands on a per-guild basis.</b>
  */
 public class CommandList {
 	private final Predicate<CommandPath> filter;

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Builds a {@link ChoiceMenu}
+ * Builds a {@link ChoiceMenu}.
  * <br>The callback and the button content supplier must be set !
  *
  * @param <E> Type of the entries

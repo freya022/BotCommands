@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.prefixed;
 
-import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.prefixed.annotations.JDATextCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.Nullable;
@@ -8,9 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Extend this class on classes that contains any command / subcommand.
+ * Base class for text commands.
+ * <br>Every application command has to inherit this class.
+ * <p>
+ * <b>Note: </b>You are able to get a BContext by putting it in your constructor, this works with <a href="https://freya022.github.io/BotCommands-Wiki/writing-extensions/Constructor-injection/" target="_blank">constructor injection</a>.
  *
- * <p>You also need to use the {@linkplain JDATextCommand @JDATextCommand} annotation on methods in order to register a command with {@linkplain CommandsBuilder}</p>
+ * @see JDATextCommand
+ * @see <a href="https://freya022.github.io/BotCommands-Wiki/writing-extensions/Constructor-injection/" target="_blank">Wiki on Constructor injection</a>
  */
 public abstract class TextCommand {
 	/**

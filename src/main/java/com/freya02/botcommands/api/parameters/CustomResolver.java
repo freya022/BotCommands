@@ -8,9 +8,9 @@ import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a custom resolver for interaction parameters
- * <br>This does not need to be implemented unlike other resolvers such as {@link SlashParameterResolver}
- * <br><b>This resolver only gets used if an interaction parameter is not annotated with {@link AppOption} or {@link TextOption}</b>
+ * Represents a custom resolver for interaction parameters.
+ * <br>This does not need to be implemented unlike other resolvers such as {@link SlashParameterResolver}.
+ * <br><b>This resolver only gets used if an interaction parameter is not annotated with {@link AppOption}. or {@link TextOption}</b>
  *
  * @see CustomResolverFunction
  */

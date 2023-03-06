@@ -9,11 +9,11 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Interface for localization bundle providers to implement
- * <br>This supplies a {@link LocalizationMap} for the specified base name and locale, which may or may not inherit from parent bundles
+ * Interface for localization bundle providers to implement.
+ * <br>This supplies a {@link LocalizationMap} for the specified base name and locale, which may or may not inherit from parent bundles.
  *
  * <p>Localization map providers may need a mechanism so that a provider cannot read another file which is not in the correct format,
- * solutions could include having different extensions, if you use a different format such as YAML or XML, or having your localization files in different directories
+ * solutions could include having different extensions, if you use a different format such as YAML or XML, or having your localization files in different directories.
  */
 public interface LocalizationMapProvider {
 	ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);

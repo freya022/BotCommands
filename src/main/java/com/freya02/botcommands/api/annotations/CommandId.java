@@ -10,9 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows you to set a command ID to your application command methods
- *
- * See {@link GuildApplicationSettings#getGuildsForCommandId(BContext, String, CommandPath)} for more details
+ * Allows you to set a command ID on your application command methods.
  *
  * @see GuildApplicationSettings#getGuildsForCommandId(BContext, String, CommandPath)
  */

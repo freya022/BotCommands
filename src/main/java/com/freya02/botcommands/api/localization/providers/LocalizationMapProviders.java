@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Class which contains all the {@link LocalizationMapProvider}
- * <br>This is mainly used by the localization map providers themselves, or by {@link Localization} as to cycle through all providers until one returns a valid {@link LocalizationMap}
+ * Class which contains all the {@link LocalizationMapProvider}.
+ * <br>This is mainly used by the localization map providers themselves, or by {@link Localization} as to cycle through all providers until one returns a valid {@link LocalizationMap}.
  */
 public final class LocalizationMapProviders {
 	private static final Logger LOGGER = Logging.getLogger();

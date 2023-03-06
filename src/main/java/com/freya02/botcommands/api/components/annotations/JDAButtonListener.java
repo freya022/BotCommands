@@ -13,14 +13,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for defining a button listener, this has to be the same name as the one given to {@link Components#button(ButtonStyle, String, Object...)} <br><br>
+ * Annotation for defining a button listener, this has to be the same name as the one given to {@link Components#button(ButtonStyle, String, Object...)}.
+ * <p>
  * Requirements:
  * <ul>
  *     <li><b>Button listeners can only be put on methods that are inside a class that extends {@link TextCommand} or {@link ApplicationCommand}</b></li>
  *     <li><b>These handlers also need to have a {@link ButtonEvent} as their first argument</b></li>
  * </ul>
  *
- * <p>
  * <i>Supported parameters in {@link ParameterResolvers}</i>
  */
 @Target(ElementType.METHOD)
