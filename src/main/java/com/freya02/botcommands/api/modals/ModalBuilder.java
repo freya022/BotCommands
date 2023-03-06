@@ -4,7 +4,7 @@ import com.freya02.botcommands.internal.modals.InputData;
 import com.freya02.botcommands.internal.modals.ModalData;
 import com.freya02.botcommands.internal.modals.ModalMaps;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.modals.Modal;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.ApiStatus;
@@ -79,8 +79,8 @@ public class ModalBuilder extends Modal.Builder {
 	public Modal build() {
 		//Extract input data into this map
 		final Map<String, InputData> inputDataMap = new HashMap<>();
-		for (ActionRow row : getActionRows()) {
-			for (ActionComponent actionComponent : row.getActionComponents()) {
+		for (LayoutComponent layoutComponent : getComponents()) {
+			for (ActionComponent actionComponent : layoutComponent.getActionComponents()) {
 				final String id = actionComponent.getId();
 
 				final InputData data = modalMaps.removeInput(id);
