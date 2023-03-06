@@ -12,6 +12,7 @@ import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -152,13 +153,13 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	}
 
 	@Override
-	public void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
-		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).addAll(locales);
+	public void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull DiscordLocale> locales) {
+		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).addAll(toLocales(locales));
 	}
 
 	@Override
-	public void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales) {
-		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).removeAll(locales);
+	public void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull DiscordLocale> locales) {
+		baseNameToLocalesMap.computeIfAbsent(bundleName, x -> new ArrayList<>()).removeAll(toLocales(locales));
 	}
 
 	@Override
@@ -169,4 +170,8 @@ public class ApplicationCommandsContextImpl implements ApplicationCommandsContex
 	public Map<String, List<Locale>> getBaseNameToLocalesMap() {
 		return baseNameToLocalesMap;
 	}
+
+    private static List<Locale> toLocales(List<DiscordLocale> locales) {
+        return locales.stream().map(d -> Locale.forLanguageTag(d.getLocale())).toList();
+    }
 }

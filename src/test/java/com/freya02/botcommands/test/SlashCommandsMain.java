@@ -8,12 +8,12 @@ import com.freya02.botcommands.api.runner.KotlinMethodRunnerFactory;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 public class SlashCommandsMain {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -66,7 +66,7 @@ public class SlashCommandsMain {
 							})
 							.addTestGuilds(config.getTestGuildId())
 							.enableOnlineAppCommandCheck()
-							.addLocalizations("MyCommands", Locale.US, Locale.UK, Locale.FRENCH)
+							.addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
 					)
 					.debugBuilder(debugBuilder -> {
 						debugBuilder.setLogApplicationDiffs(true);

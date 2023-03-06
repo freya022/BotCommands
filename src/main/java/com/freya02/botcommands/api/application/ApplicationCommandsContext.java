@@ -5,12 +5,12 @@ import com.freya02.botcommands.internal.application.context.message.MessageComma
 import com.freya02.botcommands.internal.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.List;
-import java.util.Locale;
 
 public interface ApplicationCommandsContext {
 	/**
@@ -105,9 +105,9 @@ public interface ApplicationCommandsContext {
 	 */
 	boolean isForceGuildCommandsEnabled();
 
-	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
+	void addLocalizations(@NotNull String bundleName, @NotNull List<@NotNull DiscordLocale> locales);
 
-	void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull Locale> locales);
+	void removeLocalizations(@NotNull String bundleName, @NotNull List<@NotNull DiscordLocale> locales);
 
 	void removeLocalizations(@NotNull String bundleName);
 }
