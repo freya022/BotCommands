@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class AbstractAutocompletionCache {
-	@SuppressWarnings("SwitchStatementWithTooFewBranches") //In case more caches are to come
 	public static AbstractAutocompletionCache fromMode(AutocompletionHandlerInfo handlerInfo, CacheAutocompletion cacheAutocompletion) {
 		if (cacheAutocompletion == null) return new NoCacheAutocompletion();
 

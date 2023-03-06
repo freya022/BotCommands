@@ -20,7 +20,7 @@ public class ChoiceSupplierTransformer implements ChoiceSupplier {
 	}
 
 	@Override
-	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
+	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) {
 		return collection.stream()
 				.limit(handlerInfo.getMaxChoices())
 				.map(transformer::apply)

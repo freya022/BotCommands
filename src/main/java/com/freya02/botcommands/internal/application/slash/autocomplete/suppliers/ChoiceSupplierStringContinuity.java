@@ -18,7 +18,7 @@ public class ChoiceSupplierStringContinuity implements ChoiceSupplier {
 	}
 
 	@Override
-	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
+	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) {
 		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
 		return AutocompleteAlgorithms.fuzzyMatchingWithContinuity(collection, Object::toString, event)

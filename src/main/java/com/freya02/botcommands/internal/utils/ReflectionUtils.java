@@ -128,22 +128,23 @@ public class ReflectionUtils {
 		if (classes.isEmpty())
 			return;
 
-		final ScanResult result = new ClassGraph()
+		try (ScanResult result = new ClassGraph()
 				.acceptClasses(classes.stream().map(Class::getName).toArray(String[]::new))
 				.enableMethodInfo()
 				.enableAnnotationInfo()
-				.scan();
+				.scan()) {
 
-		for (ClassInfo classInfo : result.getAllClasses()) {
-			for (MethodInfo methodInfo : classInfo.getDeclaredMethodInfo()) {
-				final Parameter[] parameters = methodInfo.loadClassAndGetMethod().getParameters();
+			for (ClassInfo classInfo : result.getAllClasses()) {
+				for (MethodInfo methodInfo : classInfo.getDeclaredMethodInfo()) {
+					final Parameter[] parameters = methodInfo.loadClassAndGetMethod().getParameters();
 
-				int j = 0;
-				for (MethodParameterInfo parameterInfo : methodInfo.getParameterInfo()) {
-					final Parameter parameter = parameters[j++];
+					int j = 0;
+					for (MethodParameterInfo parameterInfo : methodInfo.getParameterInfo()) {
+						final Parameter parameter = parameters[j++];
 
-					for (AnnotationInfo annotationInfo : parameterInfo.getAnnotationInfo()) {
-						paramAnnotationsMap.computeIfAbsent(parameter, x -> new HashMap<>()).put(annotationInfo.getClassInfo().loadClass(), annotationInfo.loadClassAndInstantiate());
+						for (AnnotationInfo annotationInfo : parameterInfo.getAnnotationInfo()) {
+							paramAnnotationsMap.computeIfAbsent(parameter, x -> new HashMap<>()).put(annotationInfo.getClassInfo().loadClass(), annotationInfo.loadClassAndInstantiate());
+						}
 					}
 				}
 			}

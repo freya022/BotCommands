@@ -116,20 +116,18 @@ public class CommandPathImpl implements CommandPath {
 	@Override
 	@Nullable
 	public String getNameAt(int i) {
-		switch (i) {
-			case 0:
-				return name;
-			case 1:
+		return switch (i) {
+			case 0 -> name;
+			case 1 -> {
 				if (group != null) { // /name group subname
-					return group;
+					yield group;
 				} else { // /name subname
-					return subname;
+					yield subname;
 				}
-			case 2:
-				return subname;
-			default:
-				throw new IllegalArgumentException("Invalid name count: " + i);
-		}
+			}
+			case 2 -> subname;
+			default -> throw new IllegalArgumentException("Invalid name count: " + i);
+		};
 	}
 
 	@NotNull

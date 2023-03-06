@@ -7,5 +7,5 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ChoiceSupplier {
-	List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception;
+	List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection);
 }

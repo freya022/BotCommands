@@ -17,7 +17,7 @@ public class ChoiceSupplierChoices implements ChoiceSupplier {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
+	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) {
 		final Collection<Command.Choice> choices = (Collection<Command.Choice>) collection;
 
 		return choices.stream()

@@ -18,7 +18,7 @@ public class ChoiceSupplierStringFuzzy implements ChoiceSupplier {
 	}
 
 	@Override
-	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) throws Exception {
+	public List<Command.Choice> apply(CommandAutoCompleteInteractionEvent event, Collection<?> collection) {
 		final AutoCompleteQuery autoCompleteQuery = event.getFocusedOption();
 
 		return AutocompleteAlgorithms.fuzzyMatching(collection, Object::toString, event)
