@@ -137,7 +137,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         if (nextExceptionDispatch < System.currentTimeMillis()) {
             nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
 
-            val exceptionStr = if (t == null) "" else "\nException : \n%s".format(t.unreflect())
+            val exceptionStr = if (t == null) "" else "\nException : \n${t.unreflect().stackTraceToString()}"
 
             jda.retrieveApplicationInfo()
                 .map { obj: ApplicationInfo -> obj.owner }
