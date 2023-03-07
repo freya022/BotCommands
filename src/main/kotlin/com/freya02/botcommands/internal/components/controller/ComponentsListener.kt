@@ -43,6 +43,7 @@ internal class ComponentsListener(
     private val componentsHandlerContainer: ComponentsHandlerContainer
 ) {
     private val logger = KotlinLogging.logger { }
+    private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
@@ -170,21 +171,12 @@ internal class ComponentsListener(
     }
 
     private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
-        context.uncaughtExceptionHandler?.let { handler ->
-            handler.onException(context, event, e)
-            return
-        }
-
-        val baseEx = e.unreflect()
-
-        logger.error("Unhandled exception while executing a component handler with id ${event.componentId}", baseEx)
+        exceptionHandler.handleException(event, e, "component interaction, ID: '${event.componentId}'")
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
             event.isAcknowledged -> event.hook.send(generalErrorMsg, ephemeral = true).queue()
             else -> event.reply_(generalErrorMsg, ephemeral = true).queue()
         }
-
-        context.dispatchException("Exception in component handler with id ${event.componentId}", baseEx)
     }
 }

@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.unreflect
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -23,6 +23,7 @@ private data class CommandWithArgs(val command: TextCommandInfo, val args: Strin
 
 internal class TextCommandsListener(private val context: BContextImpl, private val cooldownService: CooldownService, private val helpCommandInfo: HelpCommandInfo?) {
     private val logger = KotlinLogging.logger {  }
+    private val exceptionHandler = ExceptionHandler(context, logger)
     private val spacePattern = Regex("\\s+")
 
     @BEventListener
@@ -84,19 +85,8 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
     }
 
     private fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
-        val handler = context.uncaughtExceptionHandler
-        if (handler != null) {
-            handler.onException(context, event, e)
-            return
-        }
-
-        val baseEx = e.unreflect()
-
-        logger.error("Unhandled exception while executing a text command '$msg'", baseEx)
-
+        exceptionHandler.handleException(event, e, "text command '$msg'")
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
-
-        context.dispatchException("Exception in text command '$msg'", baseEx)
     }
 
     private fun findCommandWithArgs(content: String): CommandWithArgs? {
@@ -206,9 +196,8 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             .flatMap { it.sendMessage(msg) }
             .queue(null, ErrorHandler()
                 .ignore(ErrorResponse.CANNOT_SEND_TO_USER)
-                .handle(Exception::class.java) { e: Exception ->
-                    logger.error("Could not send reply message from command listener", e)
-                    context.dispatchException("Could not send reply message from command listener", e)
+                .handle(Throwable::class.java) {
+                    exceptionHandler.handleException(event, it, "text command error reply")
                 })
     }
 

@@ -8,18 +8,19 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
+import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction
 import java.util.*
 
 @BService
 internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
     private val logger = KotlinLogging.logger {  }
+    private val exceptionHandler = ExceptionHandler(context, logger)
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -82,25 +83,13 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     }
 
     private fun handleException(e: Throwable, event: GenericCommandInteractionEvent) {
-        val handler = context.uncaughtExceptionHandler
-        if (handler != null) {
-            handler.onException(context, event, e)
-            return
-        }
-
-        val baseEx = e.unreflect()
-
-        logger.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
+        exceptionHandler.handleException(event, e, "application command '${reconstructCommand(event)}'")
 
         val generalErrorMsg = context.getDefaultMessages(event).generalErrorMsg
         when {
             event.isAcknowledged -> event.hook.sendMessage(generalErrorMsg).setEphemeral(true).queue()
             else -> event.reply(generalErrorMsg).setEphemeral(true).queue()
         }
-
-        context.dispatchException(
-            "Exception in application command '${reconstructCommand(event)}'", baseEx
-        )
     }
 
     private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
@@ -173,13 +162,9 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         return true
     }
 
-    private fun reply(event: CommandInteraction, msg: String) {
-        event.reply(msg)
-            .setEphemeral(true)
-            .queue(null) {
-                logger.error("Could not send reply message from application command listener", it)
-                context.dispatchException("Could not send reply message from application command listener", it)
-            }
+    private fun reply(event: GenericCommandInteractionEvent, msg: String) {
+        event.reply_(msg, ephemeral = true)
+            .queue(null) { exceptionHandler.handleException(event, it, "interaction reply") }
     }
 
     private fun reconstructCommand(event: GenericCommandInteractionEvent): String {
