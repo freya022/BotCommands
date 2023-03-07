@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
-import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.javaMethodInternal
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.unreflect
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
@@ -182,6 +182,6 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
     private fun printException(eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
         "An exception occurred while dispatching an event for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
-        e.getDeepestCause()
+        e.unreflect()
     )
 }

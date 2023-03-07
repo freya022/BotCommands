@@ -175,7 +175,7 @@ internal class ComponentsListener(
             return
         }
 
-        val baseEx = e.getDeepestCause()
+        val baseEx = e.unreflect()
 
         logger.error("Unhandled exception while executing a component handler with id ${event.componentId}", baseEx)
 

@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.getDeepestCause
+import com.freya02.botcommands.internal.unreflect
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -90,7 +90,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             return
         }
 
-        val baseEx = e.getDeepestCause()
+        val baseEx = e.unreflect()
 
         logger.error("Unhandled exception while executing a text command '$msg'", baseEx)
 

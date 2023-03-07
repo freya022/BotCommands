@@ -88,7 +88,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             return
         }
 
-        val baseEx = e.getDeepestCause()
+        val baseEx = e.unreflect()
 
         logger.error("Unhandled exception while executing an application command '${reconstructCommand(event)}'", baseEx)
 

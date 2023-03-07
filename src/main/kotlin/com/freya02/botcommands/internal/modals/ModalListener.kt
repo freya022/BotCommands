@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.modals
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.getDeepestCause
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.unreflect
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
@@ -46,7 +46,7 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                     return@launch
                 }
 
-                val baseEx = e.getDeepestCause()
+                val baseEx = e.unreflect()
 
                 logger.error("Unhandled exception while executing a modal handler", baseEx)
                 when {

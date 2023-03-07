@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import org.slf4j.LoggerFactory
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.*
@@ -172,10 +173,9 @@ fun String.nullIfEmpty(): String? = when {
     else -> this
 }
 
-tailrec fun Throwable.getDeepestCause(): Throwable {
-    if (cause == null) return this
-
-    return cause!!.getDeepestCause()
+fun Throwable.unreflect(): Throwable {
+    if (this is InvocationTargetException) return targetException
+    return this
 }
 
 inline fun <R> runInitialization(block: () -> R): R {
