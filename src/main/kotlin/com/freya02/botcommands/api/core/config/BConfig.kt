@@ -80,6 +80,8 @@ class BConfig internal constructor() {
 
     /**
      * Determines whether the SQL queries should be logged
+     *
+     * **SQL queries will be logged on TRACE**
      */
     var logQueries: Boolean = true
     /**
