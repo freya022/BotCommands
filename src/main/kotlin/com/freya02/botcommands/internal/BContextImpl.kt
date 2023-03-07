@@ -25,6 +25,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
@@ -137,7 +138,20 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         if (nextExceptionDispatch < System.currentTimeMillis()) {
             nextExceptionDispatch = System.currentTimeMillis() + 10.minutes.inWholeMilliseconds
 
-            val exceptionStr = if (t == null) "" else "\nException : \n${t.unreflect().stackTraceToString()}"
+            val exceptionStr = when (t) {
+                null -> ""
+                else -> "\nException:```\n${
+                    t.unreflect().stackTraceToString()
+                        .lineSequence()
+                        .map { it.replace("    ", "\t") }
+                        .fold("") { acc, s ->
+                            when {
+                                acc.length + s.length <= Message.MAX_CONTENT_LENGTH - 256 -> acc + s + "\n"
+                                else -> acc
+                            } 
+                        }.trimEnd()
+                }```"
+            }
 
             jda.retrieveApplicationInfo()
                 .map { obj: ApplicationInfo -> obj.owner }
