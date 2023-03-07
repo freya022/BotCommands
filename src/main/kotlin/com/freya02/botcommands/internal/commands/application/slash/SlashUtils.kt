@@ -21,7 +21,7 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-object SlashUtils {
+internal object SlashUtils {
     fun IExecutableInteractionInfo.checkDefaultValue(
         parameter: ApplicationGeneratedMethodParameter,
         defaultValue: Any?

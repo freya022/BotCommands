@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 
-open class GlobalSlashEventImpl(
+internal open class GlobalSlashEventImpl(
     private val context: BContextImpl,
     event: SlashCommandInteractionEvent
 ) : GlobalSlashEvent(event.jda, event.responseNumber, event.interaction) {

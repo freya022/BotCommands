@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
 
-class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
+internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
     private val baseNameToLocalesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {

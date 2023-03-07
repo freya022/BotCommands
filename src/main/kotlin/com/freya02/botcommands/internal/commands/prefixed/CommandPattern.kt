@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQ
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import java.util.regex.Pattern
 
-object CommandPattern {
+internal object CommandPattern {
     fun of(variation: TextCommandVariation): Pattern {
         val optionParameters: List<TextCommandParameter> = variation.optionParameters
         val hasMultipleQuotable = optionParameters.hasMultipleQuotable()

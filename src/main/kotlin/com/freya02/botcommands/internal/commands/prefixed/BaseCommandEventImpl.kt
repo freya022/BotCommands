@@ -16,7 +16,7 @@ import java.io.InputStream
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
 
-open class BaseCommandEventImpl(
+internal open class BaseCommandEventImpl(
     context: BContextImpl,
     event: MessageReceivedEvent,
     arguments: String

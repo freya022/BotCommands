@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 @BService
-class AutocompleteListener(private val context: BContextImpl) {
+internal class AutocompleteListener(private val context: BContextImpl) {
     @BEventListener
     internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
         val slashCommand = CommandPath.of(event.fullCommandName).let {

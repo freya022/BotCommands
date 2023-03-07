@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.internal.throwUser
 
-class TextCommandsContextImpl internal constructor() : TextCommandsContext {
+internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
 
     fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {

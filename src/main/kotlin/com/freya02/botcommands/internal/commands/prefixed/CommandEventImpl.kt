@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.internal.utils.Helpers
 
-class CommandEventImpl private constructor(
+internal class CommandEventImpl private constructor(
     context: BContextImpl,
     private val event: MessageReceivedEvent,
     argumentsStr: String?,
