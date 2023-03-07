@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -24,7 +25,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, clas
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(CommandAutoCompleteInteractionEvent::class))
             .requiredFilter(FunctionFilter.returnType(Collection::class))
-            .associate {
+            .map {
                 requireUser(it.function.returnType.jvmErasure.isSubclassOf(Collection::class), it.function) {
                     "Autocomplete handler needs to return a Collection"
                 }
@@ -33,7 +34,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, clas
                 val autocompleteFunction = it.function as KFunction<Collection<*>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
-                val info = AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name).apply {
+                AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name).apply {
                     function = autocompleteFunction
 
                     mode = autocompleteHandlerAnnotation.mode
@@ -49,9 +50,15 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, clas
                         }
                     }
                 }.build()
-
-                autocompleteHandlerAnnotation.name to info
             }
+            .also {
+                it.forEach { autocompleteInfo ->
+                    val otherInfo = it.find { otherInfo -> otherInfo.name == autocompleteInfo.name && otherInfo !== autocompleteInfo }
+                    if (otherInfo != null) //must be a duplicate
+                        throw IllegalArgumentException("Autocomplete handler ${autocompleteInfo.name} is already registered at ${autocompleteInfo.function.shortSignatureNoSrc} and at ${otherInfo.function.shortSignatureNoSrc}")
+                }
+            }
+            .associateBy { it.name }
     }
 
     operator fun get(handlerName: String): AutocompleteInfo? = infoMap[handlerName]
