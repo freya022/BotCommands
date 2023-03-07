@@ -9,49 +9,48 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 class KPreparedStatement @PublishedApi internal constructor(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
-    private fun setParameters(params: Array<out Any?>) {
-        for ((i, param) in params.withIndex()) {
-            setObject(i + 1, param)
-        }
-    }
-
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
-        val sqlStr: String? = addParametersAndGetQuery(params)
-        withLoggedQuery(sqlStr) { execute() }
+        withLoggedParametrizedQuery(params) { execute() }
     }
 
     suspend fun executeUpdate(vararg params: Any?): Int = withContext(Dispatchers.IO) {
-        val sqlStr: String? = addParametersAndGetQuery(params)
-        withLoggedQuery(sqlStr) { executeUpdate() }
+        withLoggedParametrizedQuery(params) { executeUpdate() }
     }
 
     suspend fun executeQuery(vararg params: Any?): DBResult = withContext(Dispatchers.IO) {
-        val sqlStr: String? = addParametersAndGetQuery(params)
-        DBResult(withLoggedQuery(sqlStr) { executeQuery() })
+        withLoggedParametrizedQuery(params) { DBResult(executeQuery()) }
     }
 
-    private fun addParametersAndGetQuery(params: Array<out Any?>): String? = when {
-        !database.config.logQueries -> setParameters(params).let { null }
+    @OptIn(ExperimentalTime::class)
+    private inline fun <R> withLoggedParametrizedQuery(params: Array<out Any?>, block: () -> R): R {
+        if (!database.config.logQueries || !logger.isTraceEnabled) {
+            setParameters(params)
+            return block()
+        } else {
+            val parametrizedQuery: String = configureAndGetParametrizedQuery(params)
+
+            val timedValue = measureTimedValue {
+                runCatching { block() }
+            }
+
+            val result = timedValue.value
+            val duration = timedValue.duration
+            val prefix = if (result.isSuccess) "Ran" else "Failed"
+            logger.trace("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery")
+
+            return result.getOrThrow()
+        }
+    }
+
+    private fun configureAndGetParametrizedQuery(params: Array<out Any?>): String = when {
         database.config.logQueryParameters -> setParameters(params).let { this@KPreparedStatement.toSQLString() }
         else -> toSQLString().also { setParameters(params) }
     }
 
-    @OptIn(ExperimentalTime::class)
-    private inline fun <R> withLoggedQuery(sqlStr: String?, block: () -> R): R {
-        if (sqlStr == null) return block()
-
-        val timedValue = measureTimedValue {
-            runCatching { block() }
+    private fun setParameters(params: Array<out Any?>) {
+        for ((i, param) in params.withIndex()) {
+            setObject(i + 1, param)
         }
-
-        val result = timedValue.value
-        if (logger.isTraceEnabled) {
-            val duration = timedValue.duration
-            val prefix = if (result.isSuccess) "Ran" else "Failed"
-            logger.trace("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $sqlStr")
-        }
-
-        return result.getOrThrow()
     }
 
     private fun toSQLString(): String {
