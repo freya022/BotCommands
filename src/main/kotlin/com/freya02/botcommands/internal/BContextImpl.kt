@@ -143,6 +143,9 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
                 else -> "\nException:```\n${
                     t.unreflect().stackTraceToString()
                         .lineSequence()
+                        .filterNot { "jdk.internal" in it }
+                        .filterNot { "kotlin.reflect.jvm.internal" in it }
+                        .filterNot { "kotlin.coroutines.jvm.internal" in it }
                         .map { it.replace("    ", "\t") }
                         .fold("") { acc, s ->
                             when {
