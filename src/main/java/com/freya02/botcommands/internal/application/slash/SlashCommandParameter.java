@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.slash.DefaultValueSupplier;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.Length;
@@ -25,8 +27,8 @@ public class SlashCommandParameter extends ApplicationCommandVarArgParameter<Sla
 	private final EnumSet<ChannelType> channelTypes = EnumSet.noneOf(ChannelType.class);
 	private final TLongObjectMap<DefaultValueSupplier> defaultOptionSupplierMap = TCollections.synchronizedMap(new TLongObjectHashMap<>());
 
-	public SlashCommandParameter(Parameter parameter, int index) {
-		super(SlashParameterResolver.class, parameter, index);
+	public SlashCommandParameter(BContext context, CommandPath path, Parameter parameter, int index) {
+		super(context, path, SlashParameterResolver.class, parameter, index);
 
 		if (parameter.isAnnotationPresent(TextOption.class))
 			throw new IllegalArgumentException(String.format("Slash command parameter #%d of %s#%s cannot be annotated with @TextOption", index, parameter.getDeclaringExecutable().getDeclaringClass().getName(), parameter.getDeclaringExecutable().getName()));

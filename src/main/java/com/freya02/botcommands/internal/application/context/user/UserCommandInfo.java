@@ -45,7 +45,7 @@ public class UserCommandInfo extends ApplicationCommandInfo {
 					throw new IllegalArgumentException("The user command " + Utils.formatMethodShort(commandMethod) + " cannot have a " + type.getSimpleName() + " parameter as it is not guild-only");
 			}
 
-			return new ContextCommandParameter<>(UserContextParameterResolver.class, parameter, i);
+			return new ContextCommandParameter<>(context, path, UserContextParameterResolver.class, parameter, i);
 		});
 	}
 

@@ -37,7 +37,7 @@ public class MessageCommandInfo extends ApplicationCommandInfo {
 			if (parameter.isAnnotationPresent(TextOption.class))
 				throw new IllegalArgumentException(String.format("Message command parameter #%d of %s#%s cannot be annotated with @TextOption", i, commandMethod.getDeclaringClass().getName(), commandMethod.getName()));
 
-			return new ContextCommandParameter<>(MessageContextParameterResolver.class, parameter, i);
+			return new ContextCommandParameter<>(context, path, MessageContextParameterResolver.class, parameter, i);
 		});
 	}
 

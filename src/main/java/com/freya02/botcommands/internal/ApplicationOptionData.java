@@ -1,6 +1,9 @@
 package com.freya02.botcommands.internal;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.internal.utils.LocalizationUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +13,7 @@ public class ApplicationOptionData {
 	private final String effectiveName, effectiveDescription;
 	private final String autocompletionHandlerName;
 
-	public ApplicationOptionData(Parameter parameter) {
+	public ApplicationOptionData(BContext context, CommandPath path, Parameter parameter) {
 		final AppOption option = parameter.getAnnotation(AppOption.class);
 
 		if (option.name().isBlank()) {
@@ -18,17 +21,30 @@ public class ApplicationOptionData {
 		} else {
 			effectiveName = option.name();
 		}
-		
-		if (option.description().isBlank()) {
-			effectiveDescription = "No description";
-		} else {
-			effectiveDescription = option.description();
-		}
+
+		effectiveDescription = getEffectiveDescription(context, path, option);
 
 		if (option.autocomplete().isBlank()) {
 			autocompletionHandlerName = null;
 		} else {
 			autocompletionHandlerName = option.autocomplete();
+		}
+	}
+
+	@NotNull
+	private String getEffectiveDescription(@NotNull BContext context, CommandPath path, @NotNull AppOption option) {
+		//Not in autocomplete
+		if (path != null) {
+			final String joinedPath = String.join(".", path.getFullPath().split(" "));
+			final String rootLocalization = LocalizationUtils.getCommandRootLocalization((BContextImpl) context, "%s.options.%s.description".formatted(joinedPath, effectiveName));
+			if (rootLocalization != null)
+				return rootLocalization;
+		}
+
+		if (option.description().isBlank()) {
+			return "No description";
+		} else {
+			return option.description();
 		}
 	}
 

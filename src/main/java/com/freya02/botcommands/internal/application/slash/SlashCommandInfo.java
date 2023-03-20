@@ -44,7 +44,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
-		this.commandParameters = MethodParameters.of(context, commandMethod, SlashCommandParameter::new);
+		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, index) -> new SlashCommandParameter(context, path, parameter, index));
 
 		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())
 			throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
