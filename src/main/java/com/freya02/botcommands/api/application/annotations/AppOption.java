@@ -51,12 +51,13 @@ public @interface AppOption {
 	 * Description of the option, must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
 	 *
 	 * <p>
-	 * If this description is omitted, a default localization is searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
-	 * using the root locale (i.e. no prefix after the bundle name).
+	 * If this description is omitted, a default localization is
+	 * searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * using the root locale, for example: <code>MyCommands.json</code>.
 	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
 	 *
 	 * <p>
-	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped.
+	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped, example: <code>ban.options.user.description</code>.
 	 * <br>This is optional if the parameter is not a slash command parameter.
 	 *
 	 * @return Description of the option

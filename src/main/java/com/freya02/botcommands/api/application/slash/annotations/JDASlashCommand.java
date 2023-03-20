@@ -122,8 +122,10 @@ public @interface JDASlashCommand {
 	boolean nsfw() default false;
 
 	/**
-	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
-	 * <br>This can be a localization property
+	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 *
 	 * @return Name of the command
 	 */
@@ -131,8 +133,10 @@ public @interface JDASlashCommand {
 	String name();
 
 	/**
-	 * Command group of this command, <b>must not contain any spaces and no upper cases</b>
-	 * <br>This can be a localization property
+	 * Command group of this command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 *
 	 * @return Command group of the command
 	 */
@@ -144,7 +148,6 @@ public @interface JDASlashCommand {
 	 *
 	 * <p>
 	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
-	 * <br>This can be a localization property
 	 *
 	 * @return The subcommand name of this command
 	 */
@@ -155,13 +158,12 @@ public @interface JDASlashCommand {
 	 * Short description of the command, it is displayed in Discord.
 	 *
 	 * <p>
-	 * If this description is omitted, a default localization is searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
-	 * using the root locale (i.e. no prefix after the bundle name).
-	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
+	 * If this description is omitted, a default localization is
+	 * searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * using the root locale, for example: <code>MyCommands.json</code>.
 	 *
 	 * <p>
-	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
-	 * <br>This can be a localization property
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped, example: <code>ban.description</code>.
 	 *
 	 * @return Short description of the command
 	 */
