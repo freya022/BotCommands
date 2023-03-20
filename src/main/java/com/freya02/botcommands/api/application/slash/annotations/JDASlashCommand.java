@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.annotations.Cooldown;
 import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -15,6 +16,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -137,7 +140,10 @@ public @interface JDASlashCommand {
 	String group() default "";
 
 	/**
-	 * Subcommand name of this command, <b>must not contain any spaces and no upper cases</b>
+	 * Subcommand name of this command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 * <br>This can be a localization property
 	 *
 	 * @return The subcommand name of this command
@@ -146,7 +152,15 @@ public @interface JDASlashCommand {
 	String subcommand() default "";
 
 	/**
-	 * Short description of the command, it is displayed in Discord
+	 * Short description of the command, it is displayed in Discord.
+	 *
+	 * <p>
+	 * If this description is omitted, a default localization is searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * using the root locale (i.e. no prefix after the bundle name).
+	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 * <br>This can be a localization property
 	 *
 	 * @return Short description of the command
