@@ -1,3 +1,8 @@
 {
-
+  "localization": {
+    "description": "Inferred command description",
+    "options": {
+      "localization_opt.description": "Inferred option description"
+    }
+  }
 }

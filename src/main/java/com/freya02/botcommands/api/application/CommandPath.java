@@ -110,6 +110,16 @@ public interface CommandPath extends Comparable<CommandPath> {
 	String getFullPath();
 
 	/**
+	 * Returns the full path with the specified separator.
+	 * <br>For a slash command such as "<code>/show me something</code>", with a <code>-</code> separator,
+	 * this would be "<code>show-me-something</code>"
+	 *
+	 * @return The full path with the specified separator
+	 */
+	@NotNull
+	String getFullPath(char separator);
+
+	/**
 	 * Returns the right-most name of this command path
 	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>something</code>"
 	 *

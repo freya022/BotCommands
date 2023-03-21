@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.annotations.Cooldown;
 import com.freya02.botcommands.api.annotations.UserPermissions;
 import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.annotations.AppOption;
+import com.freya02.botcommands.api.builder.ApplicationCommandsBuilder;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -15,6 +16,8 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.interactions.DiscordLocale;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -119,8 +122,10 @@ public @interface JDASlashCommand {
 	boolean nsfw() default false;
 
 	/**
-	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>
-	 * <br>This can be a localization property
+	 * Primary name of the command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 *
 	 * @return Name of the command
 	 */
@@ -128,8 +133,10 @@ public @interface JDASlashCommand {
 	String name();
 
 	/**
-	 * Command group of this command, <b>must not contain any spaces and no upper cases</b>
-	 * <br>This can be a localization property
+	 * Command group of this command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 *
 	 * @return Command group of the command
 	 */
@@ -137,8 +144,10 @@ public @interface JDASlashCommand {
 	String group() default "";
 
 	/**
-	 * Subcommand name of this command, <b>must not contain any spaces and no upper cases</b>
-	 * <br>This can be a localization property
+	 * Subcommand name of this command, <b>must not contain any spaces and no upper cases</b>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped.
 	 *
 	 * @return The subcommand name of this command
 	 */
@@ -146,8 +155,15 @@ public @interface JDASlashCommand {
 	String subcommand() default "";
 
 	/**
-	 * Short description of the command, it is displayed in Discord
-	 * <br>This can be a localization property
+	 * Short description of the command, it is displayed in Discord.
+	 *
+	 * <p>
+	 * If this description is omitted, a default localization is
+	 * searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * using the root locale, for example: <code>MyCommands.json</code>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how commands are mapped, example: <code>ban.description</code>.
 	 *
 	 * @return Short description of the command
 	 */

@@ -1,17 +1,19 @@
 package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.application.ApplicationCommand;
+import com.freya02.botcommands.api.application.annotations.AppOption;
 import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
+import org.jetbrains.annotations.Nullable;
 
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
 @LocalizationBundle("Test")
 public class SlashLocalization extends ApplicationCommand {
 	@JDASlashCommand(name = "localization")
-	public void run(GuildSlashEvent event) {
+	public void run(GuildSlashEvent event, @AppOption @Nullable String localizationOpt) {
 		event.reply("done")
 				.setEphemeral(true)
 				.queue();

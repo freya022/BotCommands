@@ -95,7 +95,7 @@ public class AutocompletionHandlerInfo implements ExecutableInteractionInfo {
 			this.choiceSupplier = new ChoiceSupplierTransformer(this, transformer);
 		}
 
-		this.autocompleteParameters = MethodParameters.of(context, method, AutocompleteCommandParameter::new);
+		this.autocompleteParameters = MethodParameters.of(context, method, (parameter, index) -> new AutocompleteCommandParameter(context, null, parameter, index));
 	}
 
 	public static Command.Choice getChoice(OptionType type, String string) {

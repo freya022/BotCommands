@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.ApplicationOptionData;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.MethodParameters;
 import com.freya02.botcommands.internal.application.ApplicationCommandInfo;
+import com.freya02.botcommands.internal.utils.LocalizationUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -44,12 +45,22 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 
 		final JDASlashCommand annotation = commandMethod.getAnnotation(JDASlashCommand.class);
 
-		this.commandParameters = MethodParameters.of(context, commandMethod, SlashCommandParameter::new);
+		this.commandParameters = MethodParameters.of(context, commandMethod, (parameter, index) -> new SlashCommandParameter(context, path, parameter, index));
 
 		if (!annotation.group().isBlank() && annotation.subcommand().isBlank())
 			throw new IllegalArgumentException("Command group for " + Utils.formatMethodShort(commandMethod) + " is present but has no subcommand");
 
-		this.description = annotation.description();
+		this.description = getDescription((BContextImpl) context, annotation);
+	}
+
+	private String getDescription(BContextImpl context, JDASlashCommand annotation) {
+		final String joinedPath = path.getFullPath('.');
+		final String rootLocalization = LocalizationUtils.getCommandRootLocalization(context, joinedPath + ".description");
+		if (rootLocalization != null)
+			return rootLocalization;
+		else {
+			return annotation.description();
+		}
 	}
 
 	/**

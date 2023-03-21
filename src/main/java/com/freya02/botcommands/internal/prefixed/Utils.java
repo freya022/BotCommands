@@ -63,7 +63,7 @@ public class Utils {
 		final EmbedBuilder builder = event.getDefaultEmbed();
 
 		final TextCommandInfo commandInfo = candidates.last();
-		final String name = commandInfo.getPath().getFullPath().replace('/', ' ');
+		final String name = commandInfo.getPath().getFullPath();
 
 		final String description = Utils.getDescription(commandInfo);
 		final String prefix = event.getContext().getPrefix();

@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.application.slash;
 
+import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.application.CommandPath;
 import com.freya02.botcommands.api.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.internal.application.ApplicationCommandParameter;
 import com.freya02.botcommands.internal.utils.ReflectionUtils;
@@ -12,8 +14,8 @@ import java.util.List;
 public abstract class ApplicationCommandVarArgParameter<RESOLVER> extends ApplicationCommandParameter<RESOLVER> {
 	private final int varArgs, numRequired;
 
-	public ApplicationCommandVarArgParameter(Class<RESOLVER> resolverType, Parameter parameter, int index) {
-		super(resolverType, parameter, ReflectionUtils.getCollectionTypeOrBoxedSelfType(parameter), index);
+	public ApplicationCommandVarArgParameter(BContext context, CommandPath path, Class<RESOLVER> resolverType, Parameter parameter, int index) {
+		super(context, path, resolverType, parameter, ReflectionUtils.getCollectionTypeOrBoxedSelfType(parameter), index);
 
 		final VarArgs varArgsAnnot = parameter.getAnnotation(VarArgs.class);
 		if (varArgsAnnot != null) {
