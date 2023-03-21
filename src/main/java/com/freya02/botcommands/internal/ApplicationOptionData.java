@@ -35,7 +35,7 @@ public class ApplicationOptionData {
 	private String getEffectiveDescription(@NotNull BContext context, CommandPath path, @NotNull AppOption option) {
 		//Not in autocomplete
 		if (path != null) {
-			final String joinedPath = String.join(".", path.getFullPath().split(" "));
+			final String joinedPath = path.getFullPath('.');
 			final String rootLocalization = LocalizationUtils.getCommandRootLocalization((BContextImpl) context, "%s.options.%s.description".formatted(joinedPath, effectiveName));
 			if (rootLocalization != null)
 				return rootLocalization;

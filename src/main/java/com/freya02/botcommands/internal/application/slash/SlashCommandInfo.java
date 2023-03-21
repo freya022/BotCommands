@@ -54,7 +54,7 @@ public class SlashCommandInfo extends ApplicationCommandInfo {
 	}
 
 	private String getDescription(BContextImpl context, JDASlashCommand annotation) {
-		final String joinedPath = String.join(".", path.getFullPath().split(" "));
+		final String joinedPath = path.getFullPath('.');
 		final String rootLocalization = LocalizationUtils.getCommandRootLocalization(context, joinedPath + ".description");
 		if (rootLocalization != null)
 			return rootLocalization;

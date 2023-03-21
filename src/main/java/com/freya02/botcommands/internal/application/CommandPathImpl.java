@@ -103,6 +103,12 @@ public class CommandPathImpl implements CommandPath {
 
 	@NotNull
 	@Override
+	public String getFullPath(char separator) {
+		return path.replace(' ', separator);
+	}
+
+	@NotNull
+	@Override
 	public String getLastName() {
 		if (group != null) { //If a group exist, a subname exists, otherwise it's a bug.
 			return subname;
