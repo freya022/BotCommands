@@ -16,7 +16,6 @@ import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,23 +41,17 @@ public final class CommandsBuilder {
 	private final ExtensionsBuilder extensionsBuilder = new ExtensionsBuilder(context);
 	private final DebugBuilder debugBuilder = new DebugBuilder();
 
-	private CommandsBuilder(long topOwnerId) {
-		context.addOwner(topOwnerId);
-	}
-
-	private CommandsBuilder() {
-		LOGGER.info("No owner ID specified, exceptions won't be sent to owners");
-	}
+	private CommandsBuilder() {}
 
 	/**
 	 * Constructs a new instance of {@linkplain CommandsBuilder} with ping-as-prefix enabled by default
 	 *
 	 * @param topOwnerId The most owner of the bot
+	 *                   
+	 * @see #addOwners(long...)
 	 */
 	public static CommandsBuilder newBuilder(long topOwnerId) {
-		Checks.positive(topOwnerId, "Owner ID");
-
-		return new CommandsBuilder(topOwnerId);
+		return new CommandsBuilder().addOwners(topOwnerId);
 	}
 
 	/**
@@ -69,9 +62,9 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds owners, they can access the commands annotated with {@linkplain RequireOwner}
+	 * Adds owners, they can access the commands annotated with {@linkplain RequireOwner} and receives exceptions in DMs
 	 *
-	 * @param ownerIds Owners Long IDs to add
+	 * @param ownerIds IDs of the owners
 	 * @return This builder
 	 */
 	public CommandsBuilder addOwners(long... ownerIds) {

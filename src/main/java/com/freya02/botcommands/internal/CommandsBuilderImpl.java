@@ -281,6 +281,10 @@ public final class CommandsBuilderImpl {
 	}
 
 	private void setupContext(JDA jda) {
+		if (context.getOwnerIds().isEmpty()) {
+			LOGGER.info("No owner ID specified, exceptions won't be sent to owners");
+		}
+
 		context.setJDA(jda);
 		if (usePing) {
 			context.addPrefix("<@" + jda.getSelfUser().getId() + "> ");
