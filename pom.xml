@@ -375,7 +375,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.5</version>
+            <version>5.0.0-beta.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -406,6 +406,17 @@
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>emoji-java</artifactId>
             <version>5622646ccb</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.json</groupId>
+                    <artifactId>json</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency> <!-- Upgrade dependency used by emoji-java as to avoid vulnerabilities -->
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230227</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -421,13 +432,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>24.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.156</version>
+            <version>4.8.157</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
