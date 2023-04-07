@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a path of a command, each path component is delimited with a space, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getFullCommandName()}
+ * Represents a path of a command, each path component is delimited with a space, it is the same representation as JDA commands paths given in {@link SlashCommandInteractionEvent#getFullCommandName()}.
  * <br>The different components are name, group and subcommand.
  * <br>This is mainly a utility class to avoid manipulating strings
  */
@@ -108,6 +108,16 @@ public interface CommandPath extends Comparable<CommandPath> {
 	 */
 	@NotNull
 	String getFullPath();
+
+	/**
+	 * Returns the full path with the specified separator.
+	 * <br>For a slash command such as "<code>/show me something</code>", with a <code>-</code> separator,
+	 * this would be "<code>show-me-something</code>"
+	 *
+	 * @return The full path with the specified separator
+	 */
+	@NotNull
+	String getFullPath(char separator);
 
 	/**
 	 * Returns the right-most name of this command path

@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Annotation to mark methods as being autocomplete functions for {@link AppOption slash command options}
+ * Annotation to mark methods as being autocomplete functions for {@link AppOption slash command options}.
  *
  * <br>Requirements:
  * <ul>

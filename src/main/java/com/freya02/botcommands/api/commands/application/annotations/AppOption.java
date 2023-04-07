@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
@@ -19,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to specify an application command parameter is supplied from Discord, <i>i.e. it is <b>not</b> a custom parameter</i>.
+ * Annotation used to specify an application command parameter is supplied from Discord.
  * <br>This also can set name and description of {@linkplain JDASlashCommand slash commands} parameters.
  * <p>
  * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
@@ -38,10 +39,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 public @interface AppOption { //TODO separate this into specialised options, why use AppOption for things that don't support descriptions / autocomplete ?
 	/**
-	 * Name of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
+	 * Name of the option, must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
+	 *
 	 * <p>
-	 * <br>This is optional if the parameter name is found (using -parameters on javac)
-	 * <br>This can be a localization property
+	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped.
+	 * <br>This is optional if the parameter name is found, see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
 	 *
 	 * @return Name of the option
 	 */
@@ -49,10 +51,17 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	String name() default "";
 
 	/**
-	 * Description of the option, must follow the Discord specifications, see {@linkplain OptionData#OptionData(OptionType, String, String)} for details
+	 * Description of the option, must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
+	 *
 	 * <p>
-	 * <br>This is optional if the parameter is not a slash command parameter, <b>otherwise it is defaulted to <code>"No Description"</code></b>
-	 * <br>This can be a localization property
+	 * If this description is omitted, a default localization is
+	 * searched in {@link ApplicationCommandsBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * using the root locale, for example: <code>MyCommands.json</code>.
+	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
+	 *
+	 * <p>
+	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped, example: <code>ban.options.user.description</code>.
+	 * <br>This is optional if the parameter is not a slash command parameter.
 	 *
 	 * @return Description of the option
 	 */

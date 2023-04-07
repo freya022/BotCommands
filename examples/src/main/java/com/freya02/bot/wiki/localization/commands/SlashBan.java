@@ -29,12 +29,18 @@ import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
  */
 @LocalizationBundle("LocalizationWikiCommands") //The file is in /resources/bc_localization/LocalizationWikiCommands.json
 public class SlashBan extends ApplicationCommand {
+    //Key to localize command name is ban.name
 	//Description is set in localization
-	@JDASlashCommand(name = "ban")
-	public void onSlashBan(GuildSlashEvent event,
-	                       @AppOption(name = "user") User targetUser, //Description is set in localization
-	                       @AppOption int delHours, //Description is set in localization
-	                       @AppOption @Nullable String reason) { //Description is set in localization
+    @JDASlashCommand(name = "ban")
+    public void onSlashBan(GuildSlashEvent event,
+                           //Key to localize option name is ban.options.user.name
+                           //Description is set in localization
+                           @AppOption(name = "user") User targetUser,
+                           //Key to localize option name is ban.options.del_hours.name
+                           //Description is set in localization
+                           @AppOption int delHours,
+                           //Key to localize option description is ban.options.reason.description
+                           @AppOption @Nullable String reason) {
 
 		event.deferReply(true).queue();
 

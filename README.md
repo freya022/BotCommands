@@ -1,6 +1,7 @@
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.3+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.6+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
+[![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
@@ -64,6 +65,11 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 
 ### Gradle
 ```gradle
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     implementation 'io.github.freya022:BotCommands:VERSION'
 }

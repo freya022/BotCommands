@@ -14,10 +14,11 @@ import org.slf4j.Logger;
 import java.util.*;
 
 /**
- * Provides a low level API for localization
- * <br>You can get an instance using {@link #getInstance(String, Locale)}, as well as invalidate cached localization data, as to reload them on next use
- * <br>You can customize localization providers, as well as the localization templates they give, each provider is tested until one returns a valid localization bundle, see {@link DefaultLocalizationMapProvider} for the default specification
- * <p>You can add more localization bundle providers using {@link LocalizationMapProviders#registerProvider(LocalizationMapProvider)}
+ * Provides a low level API for localization.
+ * <br>You can get an instance using {@link #getInstance(String, Locale)}, as well as invalidate cached localization data, as to reload them on next use.
+ * <br>You can customize localization providers, as well as the localization templates they give, each provider is tested until one returns a valid localization bundle, see {@link DefaultLocalizationMapProvider} for the default specification.
+ * <p>
+ * You can add more localization bundle providers using {@link LocalizationMapProviders#registerProvider(LocalizationMapProvider)}.
  */
 public class Localization {
 	private static final Logger LOGGER = Logging.getLogger();

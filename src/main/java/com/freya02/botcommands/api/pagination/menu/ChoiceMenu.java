@@ -16,8 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- * Provides a <b>choice</b> menu
- * <br>You provide the entries, it makes the pages for you, and also makes buttons, so you can choose an entry
+ * Paginator where pages are made from a list of entries, also adds buttons to choose an entry.
  *
  * @param <E> Type of the entries
  * @see Paginator

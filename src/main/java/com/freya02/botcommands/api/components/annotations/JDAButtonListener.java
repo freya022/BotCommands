@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for defining a button listener, this has to be the same name as the one given to {@link PersistentButtonBuilder#bindTo(String, Object...)}
+ * Annotation for defining a button listener, this has to be the same name as the one given to {@link PersistentButtonBuilder#bindTo(String, Object...)}.
  * <p>
  * Requirements:
  * <ul>
@@ -20,7 +20,6 @@ import java.lang.annotation.Target;
  *     <li><b>These handlers also need to have a {@link ButtonEvent} as their first argument</b></li>
  * </ul>
  *
- * <p>
  * <i>Supported parameters in {@link ParameterResolver}</i>
  */
 @Target(ElementType.METHOD)

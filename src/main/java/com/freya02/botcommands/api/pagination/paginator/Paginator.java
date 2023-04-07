@@ -10,12 +10,12 @@ import com.freya02.botcommands.api.utils.ButtonContent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Provides a paginator
+ * Classic paginator, pages are supplied from {@link PaginatorBuilder#setPaginatorSupplier(PaginatorSupplier) paginator suppliers}.
  * <br>You provide the pages, it displays them one by one.
  * <br>Initial page is page 0, there is navigation buttons and an optional delete button
  * <br><b>The delete button cannot be used if the message is ephemeral</b>
  *
- * <br><br>
+ * <p>
  * <b>The button IDs used by this paginator and those registered by the {@link PaginatorComponents} in the {@link PaginatorSupplier} are cleaned up once the embed is removed with the button</b>
  * <br>When the message is deleted, you would also have to call {@link #cleanup()}
  *

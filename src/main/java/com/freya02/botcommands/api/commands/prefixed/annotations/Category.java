@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to specify the global category of the current command class
- * <br>This is only used for the help command and only usable on top level commands
+ * Use this annotation to specify the global category of the current command class.
+ * <br>This is only used for the help command and only usable on top level commands.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})

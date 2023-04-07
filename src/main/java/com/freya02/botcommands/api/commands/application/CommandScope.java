@@ -7,8 +7,7 @@ import com.freya02.botcommands.api.core.config.BApplicationConfig;
 import net.dv8tion.jda.api.entities.Guild;
 
 /**
- * Defines command scopes for application commands
- * <br>See the constant docs
+ * Defines command scopes for application commands.
  */
 public enum CommandScope {
 	/**

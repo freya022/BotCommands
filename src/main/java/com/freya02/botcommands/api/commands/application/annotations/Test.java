@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to define an application command as being test-only
+ * Annotation to define an application command as being test-only.
  * <br>This means this application command will try to be pushed in guilds defined by {@link BContext#getTestGuildIds()} and {@link #mode()}
  *
  * <p><b>This only works for annotated commands</b>
