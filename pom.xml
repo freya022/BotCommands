@@ -400,7 +400,7 @@
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
-            <version>17eb77a138</version>
+            <version>9fc90f616b</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.findbugs</groupId>
