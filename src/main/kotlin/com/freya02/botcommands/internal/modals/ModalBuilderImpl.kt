@@ -40,7 +40,7 @@ internal class ModalBuilderImpl internal constructor(
 
     override fun build(): Modal {
         //Extract input data into this map
-        val inputDataMap: Map<String, InputData> = actionRows
+        val inputDataMap: Map<String, InputData> = components
             .flatMap { it.actionComponents }
             .filter { it.id != null }
             .associate { actionComponent ->
