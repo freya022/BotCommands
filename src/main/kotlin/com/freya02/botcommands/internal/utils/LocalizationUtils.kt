@@ -1,26 +1,21 @@
-package com.freya02.botcommands.internal.utils;
+package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
-import com.freya02.botcommands.internal.BContextImpl;
+import com.freya02.botcommands.api.localization.Localization
+import com.freya02.botcommands.internal.BContextImpl
+import java.util.*
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-public class LocalizationUtils {
-    public static String getCommandRootLocalization(BContextImpl context, String path) {
-        final Map<String, List<Locale>> localesMap = context.getApplicationCommandsContext().getBaseNameToLocalesMap();
-        for (var baseName : localesMap.keySet()) {
-            final Localization localization = Localization.getInstance(baseName, Locale.ROOT);
+internal object LocalizationUtils {
+    fun getCommandRootLocalization(context: BContextImpl, path: String?): String? {
+        val localesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
+        for (baseName in localesMap.keys) {
+            val localization = Localization.getInstance(baseName, Locale.ROOT)
             if (localization != null) {
-                final LocalizationTemplate template = localization.get(path);
+                val template = localization[path]
                 if (template != null) {
-                    return template.localize();
+                    return template.localize()
                 }
             }
         }
-
-        return null;
+        return null
     }
 }

@@ -40,6 +40,10 @@ internal class CommandPathImpl internal constructor(
         return path
     }
 
+    override fun getFullPath(separator: Char): String {
+        return path.replace(' ', separator)
+    }
+
     override fun getLastName(): String = when {
         group != null -> subname!! //If a group exist, a subname exists, otherwise it's a bug.
         subname != null -> subname

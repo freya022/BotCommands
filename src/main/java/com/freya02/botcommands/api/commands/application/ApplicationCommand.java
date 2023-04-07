@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.application;
 
-import com.freya02.botcommands.api.application.context.annotations.JDAMessageCommand;
-import com.freya02.botcommands.api.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 
 /**
  * Base class for application commands (slash / context commands).
