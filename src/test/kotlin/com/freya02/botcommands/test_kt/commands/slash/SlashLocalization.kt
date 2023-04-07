@@ -2,6 +2,7 @@ package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.localization.Localization.Entry.entry
@@ -14,7 +15,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 class SlashLocalization : ApplicationCommand() {
     @JDASlashCommand(name = "localization")
     fun onSlashLocalization(event: GuildSlashEvent,
-                            @LocalizationBundle("Test", prefix = "commands.localization") ctx: AppLocalizationContext) {
+                            @LocalizationBundle("Test", prefix = "commands.localization") ctx: AppLocalizationContext,
+                            @AppOption localizationOpt: String?) {
         val content = """
             User localized (${ctx.userLocale}): %s
             Guild localized (${ctx.guildLocale}): %s

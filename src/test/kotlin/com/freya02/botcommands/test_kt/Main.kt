@@ -8,6 +8,7 @@ import dev.minn.jda.ktx.events.getDefaultScope
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
 import kotlin.time.Duration.Companion.minutes
 
@@ -48,6 +49,7 @@ object Main {
 
             applicationCommands {
                 onlineAppCommandCheckEnabled = true
+                addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
             }
         }, manager)
     }

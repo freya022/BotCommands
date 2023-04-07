@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.lockableNotNull
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.properties.Delegates
@@ -88,7 +89,7 @@ class BApplicationConfig internal constructor(config: BConfig) {
      *
      * @see DefaultLocalizationMapProvider
      */
-    fun addLocalizations(bundleName: String, vararg locales: Locale) {
+    fun addLocalizations(bundleName: String, vararg locales: DiscordLocale) {
         addLocalizations(bundleName, locales.asList())
     }
 
@@ -104,7 +105,7 @@ class BApplicationConfig internal constructor(config: BConfig) {
      *
      * @see DefaultLocalizationMapProvider
      */
-    fun addLocalizations(bundleName: String, locales: List<Locale>) {
-        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() }.addAll(locales)
+    fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
+        baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales.map { Locale.forLanguageTag(it.locale) }
     }
 }

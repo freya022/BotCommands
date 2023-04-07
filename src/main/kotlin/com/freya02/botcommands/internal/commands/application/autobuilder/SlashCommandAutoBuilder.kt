@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.*
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
@@ -18,10 +19,12 @@ import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.LocalizationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.full.findAnnotation
+
 
 @BService
 internal class SlashCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
@@ -119,7 +122,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
 
         manager.slashCommand(path.name, annotation.scope) {
             defaultLocked = annotation.defaultLocked
-            description = annotation.description
+            description = getEffectiveDescription(annotation)
 
             val subcommandsMetadata = subcommands[name]
             subcommandsMetadata?.let { metadataList ->
@@ -194,7 +197,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                     kParameter.findDeclarationName(),
                     optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()
                 ) {
-                    description = optionAnnotation.description.nullIfEmpty() ?: "No description"
+                    description = getEffectiveDescription(optionAnnotation)
 
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
                     kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
@@ -221,6 +224,24 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         if (optionAnnotation.autocomplete.isNotEmpty()) {
             autocompleteReference(optionAnnotation.autocomplete)
         }
+    }
+
+    context(TopLevelSlashCommandBuilder)
+    private fun getEffectiveDescription(annotation: JDASlashCommand): String {
+        val joinedPath = path.getFullPath('.')
+        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.description")
+        if (rootLocalization != null) return rootLocalization
+
+        return annotation.description
+    }
+
+    context(SlashCommandBuilder, SlashCommandOptionBuilder)
+    private fun getEffectiveDescription(optionAnnotation: AppOption): String {
+        val joinedPath = path.getFullPath('.')
+        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.options.$optionName.description")
+        if (rootLocalization != null) return rootLocalization
+
+        return optionAnnotation.description.nullIfEmpty() ?: "No description"
     }
 
     private class SlashSubcommandGroupMetadata(val name: String, val description: String) {
