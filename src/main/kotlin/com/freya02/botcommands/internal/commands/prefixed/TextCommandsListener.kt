@@ -100,7 +100,11 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
         }
 
         return commandInfo?.let {
-            CommandWithArgs(it, words.drop(it.path.nameCount).joinToString(" "))
+            //Keep the part after the command paths
+            val args = (0..<commandInfo.path.nameCount).fold(content) { acc, i ->
+                acc.substringAfter(words[i])
+            }.trimStart()
+            CommandWithArgs(it, args)
         }
     }
 
