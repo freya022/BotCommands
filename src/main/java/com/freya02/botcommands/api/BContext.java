@@ -3,6 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
+import com.freya02.botcommands.api.core.ServiceContainer;
 import com.freya02.botcommands.api.core.annotations.InjectedService;
 import com.freya02.botcommands.api.core.config.BConfig;
 import com.freya02.botcommands.api.core.config.BTextConfig;
@@ -24,14 +25,24 @@ import java.util.function.Supplier;
 public interface BContext {
 	//TODO docs
 	@NotNull
-	<T> T getService(@NotNull KClass<T> clazz);
+	ServiceContainer getServiceContainer();
 
 	//TODO docs
 	@NotNull
-	<T> T getService(@NotNull Class<T> clazz);
+	default <T> T getService(@NotNull KClass<T> clazz) {
+		return getServiceContainer().getService(clazz);
+	}
 
 	//TODO docs
-	<T> void putService(@NotNull T service);
+	@NotNull
+	default <T> T getService(@NotNull Class<T> clazz) {
+		return getServiceContainer().getService(clazz);
+	}
+
+	//TODO docs
+	default <T> void putService(@NotNull T service) {
+		getServiceContainer().putService(service);
+	}
 
 	/**
 	 * Returns the JDA instance associated with this context

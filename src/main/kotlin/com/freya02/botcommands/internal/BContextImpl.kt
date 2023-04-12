@@ -34,14 +34,13 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.io.InputStream
 import java.util.function.Supplier
-import kotlin.reflect.KClass
 import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
     internal val classPathContainer: ClassPathContainer
-    val serviceContainer: ServiceContainer
+    private val serviceContainer: ServiceContainer
     val eventDispatcher: EventDispatcher
 
     private var status : Status = Status.PRE_LOAD
@@ -73,19 +72,9 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         }
     }
 
+    override fun getServiceContainer(): ServiceContainer = serviceContainer
+
     inline fun <reified T : Any> getService() = getService(T::class)
-
-    override fun <T : Any> getService(clazz: KClass<T>): T {
-        return serviceContainer.getService(clazz)
-    }
-
-    override fun <T : Any> getService(clazz: Class<T>): T {
-        return serviceContainer.getService(clazz)
-    }
-
-    override fun <T : Any> putService(service: T) {
-        serviceContainer.putService(service)
-    }
 
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
