@@ -128,6 +128,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return tryGetService(clazz).getOrThrow()
     }
 
+    @JvmSynthetic
+    inline fun <reified T : Any> getServiceOrNull(): T? {
+        return getServiceOrNull(T::class)
+    }
+
+    fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? {
+        return tryGetService(clazz).getOrNull()
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val service = serviceMap[clazz] as T?

@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
+import com.freya02.botcommands.api.core.DefaultMessagesSupplier
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.EventTreeService
 import com.freya02.botcommands.api.core.ServiceContainer
@@ -66,6 +67,12 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
+    private val defaultMessagesSupplier: DefaultMessagesSupplier by lazy {
+        (serviceContainer.getServiceOrNull<DefaultMessagesSupplier>() ?: DefaultDefaultMessagesSupplier).also {
+            logger.info { "Using ${it::class.java.simpleName} as a ${DefaultMessagesSupplier::class.java.simpleName} instance" }
+        }
+    }
+
     inline fun <reified T : Any> getService() = getService(T::class)
 
     override fun <T : Any> getService(clazz: KClass<T>): T {
@@ -100,7 +107,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     }
 
     override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
-        return config.defaultMessageProvider.apply(locale)
+        return defaultMessagesSupplier.get(locale)
     }
 
     override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {

@@ -5,14 +5,11 @@ import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.internal.DefaultMessagesFunction
 import com.freya02.botcommands.internal.LockableVar
 import com.freya02.botcommands.internal.lockableNotNull
 import com.freya02.botcommands.internal.toDelegate
 import com.freya02.botcommands.internal.utils.Utils
-import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
-import java.util.function.Function
 import kotlin.properties.Delegates
 
 @InjectedService
@@ -40,8 +37,6 @@ class BConfig internal constructor() {
      * This could be useful when testing methods that use autocomplete caching, while using hotswap.
      */
     var disableAutocompleteCache = false
-
-    var defaultMessageProvider: Function<DiscordLocale, DefaultMessages> = DefaultMessagesFunction()
 
     @JvmSynthetic
     internal val debugConfig = BDebugConfig()
