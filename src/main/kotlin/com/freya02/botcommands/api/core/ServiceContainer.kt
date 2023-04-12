@@ -203,6 +203,9 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             }
         }
 
+        //Is a singleton
+        if (clazz.objectInstance != null) return null
+
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
         val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.errorMessage }
@@ -314,6 +317,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                         ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
                 }
             }
+            clazz.objectInstance != null -> measureTimedValue { clazz.objectInstance }
             else -> {
                 val constructingFunction = findConstructingFunction(clazz).getOrThrow()
 
