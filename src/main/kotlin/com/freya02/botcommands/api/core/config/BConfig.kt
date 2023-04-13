@@ -1,6 +1,9 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.*
+import com.freya02.botcommands.api.ExceptionHandler
+import com.freya02.botcommands.api.ExceptionHandlerAdapter
+import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.ServiceContainer
@@ -55,12 +58,6 @@ class BConfig internal constructor() {
 
     @JvmSynthetic
     internal val coroutineScopesConfig = BCoroutineScopesConfig(this)
-
-    /**
-     * Used to take guild-specific settings such as prefixes
-     */
-    var settingsProvider: SettingsProvider by Delegates.lockableNotNull(this, "Settings provider needs to be set !")
-    fun hasSettingsProvider() = ::settingsProvider.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Used by the thread pools such of command handlers / components

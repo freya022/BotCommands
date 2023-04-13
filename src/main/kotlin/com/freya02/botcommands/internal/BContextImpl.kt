@@ -67,6 +67,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     }
 
     private val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
+    private val settingsProvider: SettingsProvider? by serviceContainer.interfacedService { null }
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 

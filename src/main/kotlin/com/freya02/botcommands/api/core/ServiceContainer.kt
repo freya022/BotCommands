@@ -133,6 +133,10 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return getServiceOrNull(T::class)
     }
 
+    fun <T : Any> getServiceOrNull(clazz: Class<T>): T? {
+        return getServiceOrNull(clazz.kotlin)
+    }
+
     fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? {
         return tryGetService(clazz).getOrNull()
     }

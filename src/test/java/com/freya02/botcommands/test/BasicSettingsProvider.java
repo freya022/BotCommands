@@ -1,12 +1,16 @@
 package com.freya02.botcommands.test;
 
 import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.ServiceType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@BService
+@ServiceType(type = SettingsProvider.class)
 public class BasicSettingsProvider implements SettingsProvider {
 	@Override
 	@NotNull
