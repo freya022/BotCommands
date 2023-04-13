@@ -66,7 +66,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
-    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
+    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
     private val _settingsProvider: SettingsProvider? by serviceContainer.nullableInterfacedService()
     private val _globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.nullableInterfacedService()
 
