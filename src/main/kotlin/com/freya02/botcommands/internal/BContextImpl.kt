@@ -66,11 +66,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
-    private val defaultMessagesSupplier: DefaultMessagesSupplier by lazy {
-        (serviceContainer.getServiceOrNull<DefaultMessagesSupplier>() ?: DefaultDefaultMessagesSupplier).also {
-            logger.info { "Using ${it::class.java.simpleName} as a ${DefaultMessagesSupplier::class.java.simpleName} instance" }
-        }
-    }
+    private val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 
@@ -165,9 +161,8 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         }
     }
 
-    override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
-        if (!config.hasSettingsProvider()) return null
-        return config.settingsProvider
+    override fun getSettingsProvider(): SettingsProvider? {
+        return settingsProvider
     }
 
     override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {

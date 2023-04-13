@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This class serves as a supplier for {@link DefaultMessages} instances, given a {@link DiscordLocale}.
+ * This interface serves as a supplier for {@link DefaultMessages} instances, given a {@link DiscordLocale}.
  * <p>
  * You will need to register your instance as a service, with {@link BService}, with a {@link ServiceType} of {@link DefaultMessagesSupplier}.
  */
