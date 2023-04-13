@@ -18,7 +18,6 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
@@ -27,8 +26,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
-import java.io.InputStream
-import java.util.function.Supplier
 import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
@@ -61,9 +58,11 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
-    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
-    private val _settingsProvider: SettingsProvider? by serviceContainer.nullableInterfacedService()
-    private val _globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.nullableInterfacedService()
+    private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
+    private val _settingsProvider by serviceContainer.nullableInterfacedService<SettingsProvider>()
+    private val _globalExceptionHandler by serviceContainer.nullableInterfacedService<GlobalExceptionHandler>()
+    private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _>() { DefaultEmbedSupplier.Default() }
+    private val _defaultEmbedFooterIconSupplier by serviceContainer.interfacedService<DefaultEmbedFooterIconSupplier, _> { DefaultEmbedFooterIconSupplier.Default() }
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 
@@ -98,14 +97,12 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
 
     //TODO default method to get configs
 
-    //TODO default method
-    override fun getDefaultEmbedSupplier(): Supplier<EmbedBuilder> {
-        return config.textConfig.defaultEmbedSupplier
+    override fun getDefaultEmbedSupplier(): DefaultEmbedSupplier {
+        return _defaultEmbedSupplier
     }
 
-    //TODO default method
-    override fun getDefaultFooterIconSupplier(): Supplier<InputStream?> {
-        return config.textConfig.defaultFooterIconSupplier
+    override fun getDefaultFooterIconSupplier(): DefaultEmbedFooterIconSupplier {
+        return _defaultEmbedFooterIconSupplier
     }
 
     private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {

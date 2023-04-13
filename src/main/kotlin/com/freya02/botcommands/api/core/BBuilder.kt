@@ -85,6 +85,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          * @see DefaultMessagesSupplier
          * @see SettingsProvider
          * @see GlobalExceptionHandler
+         * @see DefaultEmbedSupplier
+         * @see DefaultEmbedFooterIconSupplier
          */
         @JvmSynthetic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {
