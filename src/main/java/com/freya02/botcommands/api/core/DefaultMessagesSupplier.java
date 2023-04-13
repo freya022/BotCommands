@@ -8,8 +8,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * This interface serves as a supplier for {@link DefaultMessages} instances, given a {@link DiscordLocale}.
+ *
  * <p>
- * You will need to register your instance as a service, with {@link BService}, with a {@link ServiceType} of {@link DefaultMessagesSupplier}.
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link DefaultMessagesSupplier}.
  */
 public interface DefaultMessagesSupplier {
     @NotNull

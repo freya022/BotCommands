@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * where the exception happened after the interaction has been acknowledged), see {@link Interaction#isAcknowledged()}
  *
  * <p>
- * <b>Usage:</b> You will need to register your instance as a service, with {@link BService}, with a {@link ServiceType} of {@link GlobalExceptionHandler}.
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link GlobalExceptionHandler}.
  *
  * <p>
  * You are still free from extending {@link GlobalExceptionHandlerAdapter}.

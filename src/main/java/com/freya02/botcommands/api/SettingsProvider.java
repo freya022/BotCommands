@@ -17,8 +17,9 @@ import java.util.function.Predicate;
 
 /**
  * Interface for settings requested by the framework, such as prefixes, guild locale or guild commands whitelist.
+ *
  * <p>
- * You will need to register your instance as a service, with {@link BService}, with a {@link ServiceType} of {@link SettingsProvider}.
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link SettingsProvider}.
  */
 public interface SettingsProvider {
 	/**
