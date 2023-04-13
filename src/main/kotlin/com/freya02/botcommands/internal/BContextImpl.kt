@@ -66,8 +66,8 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
-    private val defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
-    private val settingsProvider: SettingsProvider? by serviceContainer.interfacedService { null }
+    private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
+    private val _settingsProvider: SettingsProvider? by serviceContainer.nullableInterfacedService()
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 
@@ -93,7 +93,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     }
 
     override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
-        return defaultMessagesSupplier.get(locale)
+        return _defaultMessagesSupplier.get(locale)
     }
 
     override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {
@@ -163,7 +163,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     }
 
     override fun getSettingsProvider(): SettingsProvider? {
-        return settingsProvider
+        return _settingsProvider
     }
 
     override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {
