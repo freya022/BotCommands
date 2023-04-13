@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.Event
 internal class ExceptionHandler(private val context: BContext, private val logger: KLogger) {
     fun handleException(event: Event, e: Throwable, locationDescription: String) {
         val unreflectedException = e.unreflect()
-        val handler = context.uncaughtExceptionHandler
+        val handler = context.globalExceptionHandler
         if (handler != null) {
             handler.onException(context, event, unreflectedException)
             return

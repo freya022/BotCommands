@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.core.ServiceContainer;
 import com.freya02.botcommands.api.core.annotations.InjectedService;
-import com.freya02.botcommands.api.core.config.BConfig;
 import com.freya02.botcommands.api.core.config.BTextConfig;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -196,13 +195,13 @@ public interface BContext {
 	HelpBuilderConsumer getHelpBuilderConsumer();
 
 	/**
-	 * Returns the uncaught exception handler
+	 * Returns the {@link GlobalExceptionHandler global exception handler}, used to handle errors caught by the framework.
 	 *
-	 * @return The uncaught exception handler
-	 * @see BConfig#setUncaughtExceptionHandler(ExceptionHandler)
+	 * @return The global exception handler
+	 * @see GlobalExceptionHandler
 	 */
 	@Nullable
-	ExceptionHandler getUncaughtExceptionHandler();
+	GlobalExceptionHandler getGlobalExceptionHandler();
 
 	/**
 	 * Invalides the autocomplete cache of the specified autocomplete handler

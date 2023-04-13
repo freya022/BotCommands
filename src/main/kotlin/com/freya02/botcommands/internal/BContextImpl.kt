@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.BContext.Status
 import com.freya02.botcommands.api.DefaultMessages
-import com.freya02.botcommands.api.ExceptionHandler
+import com.freya02.botcommands.api.GlobalExceptionHandler
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
@@ -68,6 +68,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
 
     private val _defaultMessagesSupplier: DefaultMessagesSupplier by serviceContainer.interfacedService { DefaultDefaultMessagesSupplier }
     private val _settingsProvider: SettingsProvider? by serviceContainer.nullableInterfacedService()
+    private val _globalExceptionHandler: GlobalExceptionHandler? by serviceContainer.nullableInterfacedService()
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 
@@ -170,8 +171,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         return config.textConfig.helpBuilderConsumer
     }
 
-    override fun getUncaughtExceptionHandler(): ExceptionHandler? = when {
-        config.hasUncaughtExceptionHandler() -> config.uncaughtExceptionHandler
-        else -> null
+    override fun getGlobalExceptionHandler(): GlobalExceptionHandler? {
+        return _globalExceptionHandler
     }
 }

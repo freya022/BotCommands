@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.GlobalExceptionHandler
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
@@ -85,6 +86,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          *
          * @see DefaultMessagesSupplier
          * @see SettingsProvider
+         * @see GlobalExceptionHandler
          */
         @JvmSynthetic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {

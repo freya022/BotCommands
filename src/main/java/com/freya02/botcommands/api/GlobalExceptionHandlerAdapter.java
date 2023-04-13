@@ -9,14 +9,15 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Similar to {@link ListenerAdapter}
+ * Adapter class for {@link GlobalExceptionHandler}.
+ *
+ * @see GlobalExceptionHandler
  */
-public abstract class ExceptionHandlerAdapter implements ExceptionHandler {
+public abstract class GlobalExceptionHandlerAdapter implements GlobalExceptionHandler {
 	public final void onException(@NotNull BContext context, @Nullable Event event, @NotNull Throwable throwable) {
 		if (event instanceof MessageReceivedEvent e) {
 			handle(context, e, throwable);
