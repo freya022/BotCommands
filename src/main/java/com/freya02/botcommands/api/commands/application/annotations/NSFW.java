@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.annotations;
 
-import com.freya02.botcommands.api.SettingsProvider;
+import com.freya02.botcommands.api.core.SettingsProvider;
 import net.dv8tion.jda.api.entities.User;
 
 import java.lang.annotation.ElementType;

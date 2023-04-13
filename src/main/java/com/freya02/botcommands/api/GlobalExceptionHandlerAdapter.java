@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api;
 
+import com.freya02.botcommands.api.core.GlobalExceptionHandler;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;

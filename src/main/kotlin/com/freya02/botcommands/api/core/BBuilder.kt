@@ -1,9 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.GlobalExceptionHandler
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.LoadEvent

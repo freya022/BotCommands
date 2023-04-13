@@ -1,5 +1,6 @@
-package com.freya02.botcommands.api;
+package com.freya02.botcommands.api.core;
 
+import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.core.annotations.BService;
