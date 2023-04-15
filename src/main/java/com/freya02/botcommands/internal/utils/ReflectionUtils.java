@@ -24,6 +24,13 @@ public class ReflectionUtils {
 
 	@NotNull
 	public static Set<Class<?>> scanPackagesAndClasses(Set<String> packageNames, Set<Class<?>> manualClasses) {
+		final boolean hasPackages = !packageNames.isEmpty();
+		final boolean hasClasses = !manualClasses.isEmpty();
+		if (!hasPackages && !hasClasses) {
+			LOGGER.warn("No packages or classes were registered");
+			return Collections.emptySet();
+		}
+
 		try (ScanResult scanResult = new ClassGraph()
 				.acceptPackages(packageNames.toArray(String[]::new))
 				.acceptClasses(manualClasses.stream().map(Class::getName).toArray(String[]::new))
@@ -32,11 +39,7 @@ public class ReflectionUtils {
 				.scan()) {
 			final ClassInfoList allStandardClasses = scanResult.getAllStandardClasses();
 			if (allStandardClasses.isEmpty()) {
-				final boolean hasPackages = !packageNames.isEmpty();
-				final boolean hasClasses = !manualClasses.isEmpty();
-				if (!hasPackages && !hasClasses) {
-					LOGGER.warn("No classes have been found as no packages were added and no classes have been manually registered either");
-				} else if (hasPackages && !hasClasses) {
+				if (hasPackages && !hasClasses) {
 					LOGGER.warn("No classes have been found as nothing was found in packages and no classes were manually registered");
 					LOGGER.warn("Packages: {}", String.join(", ", packageNames));
 				} else if (hasPackages/* && hasClasses*/) {
