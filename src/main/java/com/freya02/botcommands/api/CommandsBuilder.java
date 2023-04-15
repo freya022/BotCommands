@@ -149,7 +149,7 @@ public final class CommandsBuilder {
 	 */
 	public CommandsBuilder registerCommand(Class<?> clazz) {
 		if (!TextCommand.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
-			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
+			throw new IllegalArgumentException("You can't register a class that's not a TextCommand or an ApplicationCommand, provided: " + clazz.getName());
 		}
 
 		manualClasses.add(clazz);
