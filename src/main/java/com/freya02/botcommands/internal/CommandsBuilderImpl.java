@@ -63,18 +63,16 @@ public final class CommandsBuilderImpl {
 	
 	private final List<Class<?>> ignoredClasses = new ArrayList<>();
 
-	public CommandsBuilderImpl(BContextImpl context, Set<Class<?>> classes, List<Long> slashGuildIds) {
-		if (classes.isEmpty())
-			LOGGER.warn("No classes have been found, make sure you have at least one search path");
-
+	public CommandsBuilderImpl(BContextImpl context, Set<String> packageNames, Set<Class<?>> manualClasses, List<Long> slashGuildIds) {
 		this.context = context;
+		this.classes = ReflectionUtils.scanPackagesAndClasses(packageNames, manualClasses);
+
 		this.prefixedCommandsBuilder = new PrefixedCommandsBuilder(context);
 		this.componentsBuilder = new ComponentsBuilder(context);
 		
 		this.usePing = context.getPrefixes().isEmpty();
 		if (usePing) LOGGER.info("No prefix has been set, using bot ping as prefix");
 
-		this.classes = classes;
 		this.applicationCommandsBuilder = new ApplicationCommandsBuilder(context, slashGuildIds);
 
 		this.eventListenersBuilder = new EventListenersBuilder(context);
@@ -83,16 +81,6 @@ public final class CommandsBuilderImpl {
 	}
 
 	private void buildClasses() throws Exception {
-		classes.removeIf(c -> {
-			try {
-				return !ReflectionUtils.isInstantiable(c);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				LOGGER.error("An error occurred while trying to find if a class is instantiable", e);
-
-				throw new RuntimeException("An error occurred while trying to find if a class is instantiable", e);
-			}
-		});
-
 		for (Class<?> aClass : classes) {
 			processClass(aClass);
 		}
@@ -248,8 +236,6 @@ public final class CommandsBuilderImpl {
 		}
 
 		setupContext(jda);
-
-		ReflectionUtils.scanAnnotations(classes);
 
 		buildClasses();
 

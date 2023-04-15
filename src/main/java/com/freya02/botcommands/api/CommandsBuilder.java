@@ -11,7 +11,6 @@ import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
-import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -21,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,7 +32,8 @@ public final class CommandsBuilder {
 
 	private final BContextImpl context = new BContextImpl();
 
-	private final Set<Class<?>> classes = new HashSet<>();
+	private final Set<String> packageNames = new HashSet<>();
+	private final Set<Class<?>> manualClasses = new HashSet<>();
 
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
 	private final ApplicationCommandsBuilder applicationCommandBuilder = new ApplicationCommandsBuilder(context);
@@ -153,14 +152,14 @@ public final class CommandsBuilder {
 			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
 		}
 
-		classes.add(clazz);
+		manualClasses.add(clazz);
 
 		return this;
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand}, {@link ApplicationCommand} and other classes which contains annotated methods, will be registered<br>
-	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
+	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand}, {@link ApplicationCommand} and other classes which contains annotated methods, will be registered.
+	 * <br><b>Tip:</b> you can have your package structure such as:
 	 *
 	 * <pre><code>
 	 * |
@@ -172,7 +171,7 @@ public final class CommandsBuilder {
 	 * |        Fish.java
 	 * |        ...
 	 * |
-	 * |__regular
+	 * |__text
 	 *   |
 	 *   |__moderation
 	 *      |
@@ -181,13 +180,12 @@ public final class CommandsBuilder {
 	 *         ...
 	 * </code></pre>
 	 *
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.bot.commands
+	 * @param commandPackageName The package name where all the commands are, ex: {@code com.freya02.bot.commands}
 	 * @return This builder for chaining convenience
 	 */
-	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
+	public CommandsBuilder addSearchPath(String commandPackageName) {
 		Utils.requireNonBlank(commandPackageName, "Command package");
-
-		classes.addAll(ReflectionUtils.getPackageClasses(commandPackageName, 3));
+		packageNames.add(commandPackageName);
 
 		return this;
 	}
@@ -245,11 +243,10 @@ public final class CommandsBuilder {
 	 *
 	 * @param jda                The JDA instance of your bot
 	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
-	 * @throws IOException If an exception occurs when reading the jar path or getting classes
 	 * @see #addSearchPath(String)
 	 */
 	@Blocking
-	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
+	public void build(JDA jda, @NotNull String commandPackageName) {
 		addSearchPath(commandPackageName);
 
 		build(jda);
@@ -263,7 +260,7 @@ public final class CommandsBuilder {
 	@Blocking
 	public void build(JDA jda) {
 		try {
-			new CommandsBuilderImpl(context, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
+			new CommandsBuilderImpl(context, packageNames, manualClasses, applicationCommandBuilder.getSlashGuildIds()).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
