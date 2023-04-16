@@ -11,17 +11,10 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReflectionUtils {
 	private static final StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
@@ -30,71 +23,80 @@ public class ReflectionUtils {
 	private static final Map<Parameter, Map<Class<?>, Annotation>> paramAnnotationsMap = new HashMap<>();
 
 	@NotNull
-	public static Set<Class<?>> getPackageClasses(@NotNull String packageName, int maxDepth) throws IOException {
-		final Set<Class<?>> classes = new HashSet<>();
-		final String packagePath = packageName.replace('.', File.separatorChar);
-
-		final String classPath = System.getProperty("java.class.path");
-		for (String strPath : classPath.split(File.pathSeparator)) {
-			final Path jarPath = Path.of(strPath);
-
-			final Path walkRoot;
-			final boolean isJar = strPath.endsWith("jar");
-			if (isJar) {
-				final FileSystem zfs = FileSystems.newFileSystem(jarPath, (ClassLoader) null);
-				walkRoot = zfs.getPath(packagePath);
-			} else {
-				walkRoot = jarPath.resolve(packagePath);
-			}
-
-			if (Files.notExists(walkRoot)) {
-				continue;
-			}
-
-			try (Stream<Path> stream = Files.walk(walkRoot, maxDepth)) {
-				stream.filter(Files::isRegularFile)
-						.filter(p -> IOUtils.getFileExtension(p).equals("class"))
-						.forEach(p -> {
-							// Change from a/b/c/d to c/d
-							final String relativePath = walkRoot.relativize(p)
-									.toString()
-									.replace(walkRoot.getFileSystem().getSeparator(), ".");
-
-							//Remove .class suffix and add package prefix
-							final String result = packageName + "." + relativePath.substring(0, relativePath.length() - 6);
-							try {
-								classes.add(Class.forName(result, false, Utils.class.getClassLoader()));
-							} catch (ClassNotFoundException e) {
-								LOGGER.error("Unable to load class '{}' in class path '{}', isJAR = {}, filesystem: {}", result, strPath, isJar, walkRoot.getFileSystem(), e);
-							}
-						});
-			}
+	public static Set<Class<?>> scanPackagesAndClasses(Set<String> packageNames, Set<Class<?>> manualClasses) {
+		final boolean hasPackages = !packageNames.isEmpty();
+		final boolean hasClasses = !manualClasses.isEmpty();
+		if (!hasPackages && !hasClasses) {
+			LOGGER.warn("No packages or classes were registered");
+			return Collections.emptySet();
 		}
 
-		return classes;
+		try (ScanResult scanResult = new ClassGraph()
+				.acceptPackages(packageNames.toArray(String[]::new))
+				.acceptClasses(manualClasses.stream().map(Class::getName).toArray(String[]::new))
+				.enableMethodInfo()
+				.enableAnnotationInfo()
+				.scan()) {
+			final ClassInfoList allStandardClasses = scanResult.getAllStandardClasses();
+			if (allStandardClasses.isEmpty()) {
+				if (hasPackages && !hasClasses) {
+					LOGGER.warn("No classes have been found as nothing was found in packages and no classes were manually registered");
+					LOGGER.warn("Packages: {}", String.join(", ", packageNames));
+				} else if (hasPackages/* && hasClasses*/) {
+					LOGGER.error("No classes have been found despite packages and classes being added, please report this to the developers");
+					LOGGER.error("Packages: {}", String.join(", ", packageNames));
+					LOGGER.error("Classes: {}", manualClasses.stream().map(Class::getSimpleName).collect(Collectors.joining(", ")));
+				}
+			}
+
+			final var instantiableClasses = allStandardClasses.filter(ReflectionUtils::isInstantiable);
+
+			scanAnnotations(instantiableClasses);
+
+			return Set.copyOf(instantiableClasses.loadClasses());
+		}
 	}
 
-	public static boolean isInstantiable(Class<?> aClass) throws IllegalAccessException, InvocationTargetException {
-		boolean canInstantiate = true;
-		for (Method declaredMethod : aClass.getDeclaredMethods()) {
-			if (declaredMethod.isAnnotationPresent(ConditionalUse.class)) {
-				if (Modifier.isStatic(declaredMethod.getModifiers())) {
-					if (declaredMethod.getParameterCount() == 0 && declaredMethod.getReturnType() == boolean.class) {
-						if (!declaredMethod.canAccess(null))
-							throw new IllegalStateException("Method " + Utils.formatMethodShort(declaredMethod) + " is not public");
-						canInstantiate = (boolean) declaredMethod.invoke(null);
-					} else {
-						LOGGER.warn("Method {}#{} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)", aClass.getName(), declaredMethod.getName());
-					}
-				} else {
-					LOGGER.warn("Method {}#{} is annotated @ConditionalUse but is not static", aClass.getName(), declaredMethod.getName());
-				}
+	private static boolean isInstantiable(ClassInfo classInfo) {
+		try {
+			final MethodInfoList methodInfos = classInfo.getDeclaredMethodInfo().filter(m -> m.hasAnnotation(ConditionalUse.class));
+			if (methodInfos.isEmpty())
+				return true;
+			if (methodInfos.size() > 1)
+				throw new IllegalArgumentException("Class %s must have at most one method annotated with @%s".formatted(classInfo.getSimpleName(), ConditionalUse.class.getSimpleName()));
 
-				break;
+			final MethodInfo methodInfo = methodInfos.get(0);
+			if (!methodInfo.isStatic())
+				throw new IllegalArgumentException("@%s at %s#%s must be static".formatted(ConditionalUse.class.getSimpleName(), classInfo.getSimpleName(), methodInfo.getName()));
+			if (methodInfo.getParameterInfo().length != 0)
+				throw new IllegalArgumentException("@%s at %s#%s must have 0 parameters".formatted(ConditionalUse.class.getSimpleName(), classInfo.getSimpleName(), methodInfo.getName()));
+			if (!(methodInfo.getTypeSignatureOrTypeDescriptor().getResultType() instanceof BaseTypeSignature baseTypeSignature) || baseTypeSignature.getType() != Boolean.TYPE)
+				throw new IllegalArgumentException("@%s at %s#%s must return a boolean".formatted(ConditionalUse.class.getSimpleName(), classInfo.getSimpleName(), methodInfo.getName()));
+
+			final Method method = methodInfo.loadClassAndGetMethod();
+			if (!method.canAccess(null))
+				throw new IllegalArgumentException("@%s at %s#%s must be public".formatted(ConditionalUse.class.getSimpleName(), classInfo.getSimpleName(), methodInfo.getName()));
+			return (boolean) method.invoke(null);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static void scanAnnotations(ClassInfoList instantiableClasses) {
+		for (ClassInfo instantiableClass : instantiableClasses) {
+			for (MethodInfo methodInfo : instantiableClass.getDeclaredMethodInfo()) {
+				final Parameter[] parameters = methodInfo.loadClassAndGetMethod().getParameters();
+
+				int j = 0;
+				for (MethodParameterInfo parameterInfo : methodInfo.getParameterInfo()) {
+					final Parameter parameter = parameters[j++];
+
+					for (AnnotationInfo annotationInfo : parameterInfo.getAnnotationInfo()) {
+						paramAnnotationsMap.computeIfAbsent(parameter, x -> new HashMap<>()).put(annotationInfo.getClassInfo().loadClass(), annotationInfo.loadClassAndInstantiate());
+					}
+				}
 			}
 		}
-
-		return canInstantiate;
 	}
 
 	public static boolean hasFirstParameter(Method method, Class<?> type) {
@@ -122,33 +124,6 @@ public class ReflectionUtils {
 		if (map == null) return null;
 
 		return (DoubleRange) map.get(DoubleRange.class);
-	}
-
-	public static void scanAnnotations(Set<Class<?>> classes) {
-		if (classes.isEmpty())
-			return;
-
-		try (ScanResult result = new ClassGraph()
-				.acceptClasses(classes.stream().map(Class::getName).toArray(String[]::new))
-				.enableMethodInfo()
-				.enableAnnotationInfo()
-				.scan()) {
-
-			for (ClassInfo classInfo : result.getAllClasses()) {
-				for (MethodInfo methodInfo : classInfo.getDeclaredMethodInfo()) {
-					final Parameter[] parameters = methodInfo.loadClassAndGetMethod().getParameters();
-
-					int j = 0;
-					for (MethodParameterInfo parameterInfo : methodInfo.getParameterInfo()) {
-						final Parameter parameter = parameters[j++];
-
-						for (AnnotationInfo annotationInfo : parameterInfo.getAnnotationInfo()) {
-							paramAnnotationsMap.computeIfAbsent(parameter, x -> new HashMap<>()).put(annotationInfo.getClassInfo().loadClass(), annotationInfo.loadClassAndInstantiate());
-						}
-					}
-				}
-			}
-		}
 	}
 
 	@NotNull

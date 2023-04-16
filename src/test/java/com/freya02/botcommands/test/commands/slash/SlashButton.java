@@ -14,6 +14,16 @@ import java.util.concurrent.TimeUnit;
 public class SlashButton extends ApplicationCommand {
 	private static final String HANDLER_NAME = "leBouton";
 
+	@SuppressWarnings("InnerClassMayBeStatic") //Test if inner classes are supported
+	public class InnerHandler { //just to prove buttons don't need ApplicationCommand
+		@JDAButtonListener(name = HANDLER_NAME)
+		public void leBouton(ButtonEvent event, @AppOption long xd, JDA jda) {
+			event.reply("Le bouton c le bouton " + xd + " : " + jda)
+					.setEphemeral(true)
+					.queue();
+		}
+	}
+
 	@JDASlashCommand(name = "button")
 	public void button(GuildSlashEvent event) {
 		event.reply("Button")
@@ -31,13 +41,6 @@ public class SlashButton extends ApplicationCommand {
 								})
 								.build("Le bouton 2")
 				)
-				.setEphemeral(true)
-				.queue();
-	}
-
-	@JDAButtonListener(name = HANDLER_NAME)
-	public void leBouton(ButtonEvent event, @AppOption long xd, JDA jda) {
-		event.reply("Le bouton c le bouton " + xd + " : " + jda)
 				.setEphemeral(true)
 				.queue();
 	}

@@ -77,6 +77,11 @@ public class ClassInstancer {
 
 				if (BContext.class.isAssignableFrom(parameterType)) {
 					parameterObjs.add(context);
+				} else if (aClass.isMemberClass()) { //inner classes
+					final Object classInstance = context.getClassInstance(parameterType);
+					if (classInstance == null)
+						throw new IllegalStateException("Found no class instance of %s for inner class %s".formatted(parameterType.getSimpleName(), aClass.getSimpleName()));
+					parameterObjs.add(classInstance);
 				} else {
 					final ConstructorParameterSupplier<?> supplier = context.getParameterSupplier(parameterType);
 					if (supplier == null)

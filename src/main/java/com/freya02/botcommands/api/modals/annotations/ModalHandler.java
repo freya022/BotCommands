@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.modals.annotations;
 
+import com.freya02.botcommands.api.CommandsBuilder;
 import com.freya02.botcommands.api.modals.Modals;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
@@ -13,6 +14,7 @@ import java.lang.annotation.Target;
  *
  * <p>The method must:
  * <ul>
+ *     <li>Be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
  *     <li>Be non-static and public</li>
  *     <li>Have {@link ModalInteractionEvent} as its first parameter</li>
  *     <li>Optionally: Have all your consecutive {@link ModalData}, specified in {@link Modals#create(String, String, Object...)}</li>

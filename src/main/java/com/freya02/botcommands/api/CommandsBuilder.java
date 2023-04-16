@@ -11,17 +11,17 @@ import com.freya02.botcommands.api.components.DefaultComponentManager;
 import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
-import com.freya02.botcommands.internal.utils.ReflectionUtils;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,7 +34,8 @@ public final class CommandsBuilder {
 
 	private final BContextImpl context = new BContextImpl();
 
-	private final Set<Class<?>> classes = new HashSet<>();
+	private final Set<String> packageNames = new HashSet<>();
+	private final Set<Class<?>> manualClasses = new HashSet<>();
 
 	private final TextCommandsBuilder textCommandBuilder = new TextCommandsBuilder(context);
 	private final ApplicationCommandsBuilder applicationCommandBuilder = new ApplicationCommandsBuilder(context);
@@ -148,46 +149,72 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 * @throws IllegalArgumentException If the class is not a {@link TextCommand} nor a {@link ApplicationCommand}
 	 */
+	@Deprecated
+	@ReplaceWith("registerClass(clazz)")
 	public CommandsBuilder registerCommand(Class<?> clazz) {
 		if (!TextCommand.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
-			throw new IllegalArgumentException("You can't register a class that's not a Command or a SlashCommand, provided: " + clazz.getName());
+			throw new IllegalArgumentException("You can't register a class that's not a TextCommand or an ApplicationCommand, provided: " + clazz.getName());
 		}
 
-		classes.add(clazz);
+		manualClasses.add(clazz);
 
 		return this;
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand}, {@link ApplicationCommand} and other classes which contains annotated methods, will be registered<br>
-	 * <b>You can have up to 2 nested sub-folders in the specified package</b>, this means you can have your package structure like this:
+	 * Manually registers a class for the framework to inspect later on.
+	 *
+	 * @param clazz The class to register
+	 *
+	 * @return This builder for chaining convenience
+	 *
+	 * @see #addSearchPath(String)
+	 */
+	public CommandsBuilder registerClass(Class<?> clazz) {
+		manualClasses.add(clazz);
+		return this;
+	}
+
+	/**
+	 * Adds this package for class discovery, all the commands and other listeners will be read from these classes.
+	 * <br><b>Tip:</b> you can have your package structure such as:
 	 *
 	 * <pre><code>
-	 * |
-	 * |__slash
-	 * |  |
-	 * |  |__fun
-	 * |     |
-	 * |     |__Meme.java
-	 * |        Fish.java
-	 * |        ...
-	 * |
-	 * |__regular
-	 *   |
-	 *   |__moderation
-	 *      |
-	 *      |__Ban.java
-	 *         Mute.java
-	 *         ...
+	 * commands/
+	 * ├─ common/
+	 * │  ├─ fun/
+	 * │  │  ├─ CommonFish.java
+	 * │  │  ├─ CommonMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ CommonBan.java
+	 * ├─ slash/
+	 * │  ├─ fun/
+	 * │  │  ├─ SlashFish.java
+	 * │  │  ├─ SlashMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ SlashBan.java
+	 * ├─ text/
+	 * │  ├─ fun/
+	 * │  │  ├─ TextFish.java
+	 * │  │  ├─ TextMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ TextBan.java
 	 * </code></pre>
 	 *
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.bot.commands
+	 * The {@code common} package would have code that works for both the text and the slash commands,
+	 * such as methods that take the event's data (the command caller, guild, channel, parameters... instead of the event itself),
+	 * and then return a {@link MessageCreateData} that lets you generate the message output, without actually knowing how to send the reply.
+	 * <br>This is only beneficial if you plan on having the same logic for multiple input types
+	 *
+	 * @param commandPackageName The package name where all the commands are, such as {@code com.freya02.bot.commands}
+	 *
 	 * @return This builder for chaining convenience
+	 *
+	 * @see #registerClass(Class)
 	 */
-	public CommandsBuilder addSearchPath(String commandPackageName) throws IOException {
+	public CommandsBuilder addSearchPath(String commandPackageName) {
 		Utils.requireNonBlank(commandPackageName, "Command package");
-
-		classes.addAll(ReflectionUtils.getPackageClasses(commandPackageName, 3));
+		packageNames.add(commandPackageName);
 
 		return this;
 	}
@@ -244,12 +271,14 @@ public final class CommandsBuilder {
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda                The JDA instance of your bot
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
-	 * @throws IOException If an exception occurs when reading the jar path or getting classes
+	 * @param commandPackageName The package name where all the commands are, such as {@code com.freya02.bot.commands}
+	 *
+	 * @see #build(JDA)
 	 * @see #addSearchPath(String)
+	 * @see #registerClass(Class)
 	 */
 	@Blocking
-	public void build(JDA jda, @NotNull String commandPackageName) throws IOException {
+	public void build(JDA jda, @NotNull String commandPackageName) {
 		addSearchPath(commandPackageName);
 
 		build(jda);
@@ -259,11 +288,15 @@ public final class CommandsBuilder {
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda The JDA instance of your bot
+	 *
+	 * @see #build(JDA, String)
+	 * @see #addSearchPath(String)
+	 * @see #registerClass(Class)
 	 */
 	@Blocking
 	public void build(JDA jda) {
 		try {
-			new CommandsBuilderImpl(context, classes, applicationCommandBuilder.getSlashGuildIds()).build(jda);
+			new CommandsBuilderImpl(context, packageNames, manualClasses, applicationCommandBuilder.getSlashGuildIds()).build(jda);
 		} catch (RuntimeException e) {
 			LOGGER.error("An error occurred while creating the framework, aborted");
 
