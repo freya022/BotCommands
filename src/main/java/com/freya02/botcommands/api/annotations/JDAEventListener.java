@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 /**
  * Annotates a method as a JDA event listener, this provides events the same way as {@link AnnotatedEventManager} do.
  * <ul>
+ *     <li>Must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
  *     <li>The method name can be anything</li>
  *     <li>The first parameter has to be the targeted JDA event, if it is not a JDA event then this will fail on runtime, when building the framework</li>
  *     <li>You can optionally add more parameters, these are similar to commands "custom parameters" and are added with {@link ExtensionsBuilder#registerCustomResolver(Class, CustomResolverFunction)}} which is found in {@link CommandsBuilder#extensionsBuilder(Consumer)}</li>
