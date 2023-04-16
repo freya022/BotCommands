@@ -13,8 +13,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Required annotation for bot commands, see all possible options
- * <p>First parameter may be {@link CommandEvent} only for fallback commands</p>
+ * Required annotation for text commands, see all possible options.
+ *
+ * <p>
+ * <b>Requirements:</b>
+ * <ul>
+ *     <li>The method must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
+ *     <li>First parameter must be {@link BaseCommandEvent}, or, {@link CommandEvent} only for fallback commands</li>
+ * </ul>
  * <p>Supported parameters needs to be annotated with {@link TextOption @TextOption}</p>
  *
  * @see TextOption

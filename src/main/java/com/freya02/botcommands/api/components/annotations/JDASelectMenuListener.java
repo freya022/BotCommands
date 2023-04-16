@@ -13,20 +13,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+//TODO fix docs
 /**
  * Annotation for defining a selection menu listener,
- * this has to be the same name as the one given to {@link PersistentStringSelectBuilder#bindTo(String, Object...)} or {@link PersistentEntitySelectBuilder#bindTo(String, Object...)}
+ * this has to be the same name as the one given to {@link Components#stringSelectionMenu(String, Object...)}
+ * or {@link Components#entitySelectionMenu(EntitySelectMenu.SelectTarget, String, Object...)}.
  *
  * <p>
- *
- * Requirements:
+ * <b>Requirements:</b>
  * <ul>
- *     <li><b>Selection menu listeners can only be put on methods that are inside a class that extends {@link TextCommand} or {@link ApplicationCommand}</b></li>
- *     <li><b>These handlers also need to have a {@link StringSelectEvent} or {@link EntitySelectEvent} as their first argument</b></li>
+ *     <li>Selection menu listeners must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
+ *     <li>These handlers also need to have a {@link StringSelectEvent} or {@link EntitySelectEvent} as their first argument</li>
  * </ul>
  *
- * <p>
- * <i>Supported parameters in {@link ParameterResolver}</i>
+ * Supported parameters are in {@link ParameterResolver}.
+ *
+ * @see Components
+ * @see ParameterResolver
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
