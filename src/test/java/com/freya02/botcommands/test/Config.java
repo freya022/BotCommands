@@ -20,7 +20,7 @@ public class Config {
 	 * @throws IOException if the config JSON could not be read
 	 */
 	public static Config readConfig() throws IOException {
-		final InputStream stream = Config.class.getResourceAsStream("Configss.json");
+		final InputStream stream = Config.class.getResourceAsStream("Configsss.json");
 		if (stream == null) {
 			throw new IOException("Config.json was not found in the current package, did you forget to put it ?");
 		}
