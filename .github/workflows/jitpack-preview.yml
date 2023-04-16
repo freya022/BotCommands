@@ -1,12 +1,89 @@
 name: Jitpack preview comment
 on:
+  workflow_dispatch:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
       - 'src/test/**.java'
       - 'src/main/**.kt'
       - 'src/test/**.kt'
+
+permissions:
+  pull-requests: write
+
 jobs:
   update-comment:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
+    env:
+      REPO_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
+      REPO_NAME: ${{ github.event.pull_request.head.repo.name }}
+      COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+         message: |-
+           ## How to use a preview of this feature
+
+           You will need to replace your JDA dependency with the following declaration:
+
+           <details>
+           <summary>Maven</summary>
+
+           ```xml
+           <repositories>
+               <repository>
+                   <id>jitpack</id>
+                   <url>https://jitpack.io</url>
+               </repository>
+           </repositories>
+
+           <dependencies>
+               <dependency>
+                   <groupId>io.github.${{ env.REPO_OWNER }}</groupId>
+                   <artifactId>${{ env.REPO_NAME }}</artifactId>
+                   <version>${{ env.COMMIT_HASH }}</version>
+               </dependency>
+           </dependencies>
+           ```
+
+           </details>
+
+           <details>
+           <summary>Gradle</summary>
+
+           ```gradle
+           repositories {
+               mavenCentral()
+               maven { url 'https://jitpack.io' }
+           }
+
+           dependencies {
+               implementation 'io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ env.COMMIT_HASH }}'
+           }
+           ```
+
+           </details>
+
+           <details>
+           <summary>Kotlin Gradle</summary>
+
+           ```kt
+           repositories {
+               mavenCentral()
+               maven("https://jitpack.io")
+           }
+
+           dependencies {
+               implementation("io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ env.COMMIT_HASH }}")
+           }
+           ```
+
+           </details>
+
+           See also: https://jda.wiki/using-jda/using-new-features/
