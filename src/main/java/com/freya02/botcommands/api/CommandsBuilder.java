@@ -16,6 +16,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.Blocking;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -175,30 +176,41 @@ public final class CommandsBuilder {
 	}
 
 	/**
-	 * Adds the commands of this packages in this builder, all the classes which extends {@link TextCommand}, {@link ApplicationCommand} and other classes which contains annotated methods, will be registered.
+	 * Adds this package for class discovery, all the commands and other listeners will be read from these classes.
 	 * <br><b>Tip:</b> you can have your package structure such as:
 	 *
 	 * <pre><code>
-	 * |
-	 * |__slash
-	 * |  |
-	 * |  |__fun
-	 * |     |
-	 * |     |__Meme.java
-	 * |        Fish.java
-	 * |        ...
-	 * |
-	 * |__text
-	 *   |
-	 *   |__moderation
-	 *      |
-	 *      |__Ban.java
-	 *         Mute.java
-	 *         ...
+	 * commands/
+	 * ├─ common/
+	 * │  ├─ fun/
+	 * │  │  ├─ CommonFish.java
+	 * │  │  ├─ CommonMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ CommonBan.java
+	 * ├─ slash/
+	 * │  ├─ fun/
+	 * │  │  ├─ SlashFish.java
+	 * │  │  ├─ SlashMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ SlashBan.java
+	 * ├─ text/
+	 * │  ├─ fun/
+	 * │  │  ├─ TextFish.java
+	 * │  │  ├─ TextMeme.java
+	 * │  ├─ moderation/
+	 * │  │  ├─ TextBan.java
 	 * </code></pre>
 	 *
-	 * @param commandPackageName The package name where all the commands are, ex: {@code com.freya02.bot.commands}
+	 * The {@code common} package would have code that works for both the text and the slash commands,
+	 * such as methods that take the event's data (the command caller, guild, channel, parameters... instead of the event itself),
+	 * and then return a {@link MessageCreateData} that lets you generate the message output, without actually knowing how to send the reply.
+	 * <br>This is only beneficial if you plan on having the same logic for multiple input types
+	 *
+	 * @param commandPackageName The package name where all the commands are, such as {@code com.freya02.bot.commands}
+	 *
 	 * @return This builder for chaining convenience
+	 *
+	 * @see #registerClass(Class)
 	 */
 	public CommandsBuilder addSearchPath(String commandPackageName) {
 		Utils.requireNonBlank(commandPackageName, "Command package");
@@ -259,8 +271,11 @@ public final class CommandsBuilder {
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda                The JDA instance of your bot
-	 * @param commandPackageName The package name where all the commands are, ex: com.freya02.commands
+	 * @param commandPackageName The package name where all the commands are, such as {@code com.freya02.bot.commands}
+	 *
+	 * @see #build(JDA)
 	 * @see #addSearchPath(String)
+	 * @see #registerClass(Class)
 	 */
 	@Blocking
 	public void build(JDA jda, @NotNull String commandPackageName) {
@@ -273,6 +288,10 @@ public final class CommandsBuilder {
 	 * Builds the command listener and automatically registers all listener to the JDA instance
 	 *
 	 * @param jda The JDA instance of your bot
+	 *
+	 * @see #build(JDA, String)
+	 * @see #addSearchPath(String)
+	 * @see #registerClass(Class)
 	 */
 	@Blocking
 	public void build(JDA jda) {
