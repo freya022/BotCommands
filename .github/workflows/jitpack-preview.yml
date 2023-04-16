@@ -34,7 +34,7 @@ jobs:
          message: |-
            ## How to use a preview of this feature
 
-           You will need to replace your JDA dependency with the following declaration:
+           You will need to replace your BotCommands dependency with the following declaration:
 
            <details>
            <summary>Maven</summary>
