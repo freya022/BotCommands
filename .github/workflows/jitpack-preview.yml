@@ -1,6 +1,5 @@
 name: Jitpack preview comment
 on:
-  workflow_dispatch:
   pull_request:
     types:
       - opened
@@ -23,8 +22,13 @@ jobs:
     env:
       REPO_OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
       REPO_NAME: ${{ github.event.pull_request.head.repo.name }}
-      COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
     steps:
+      - uses: actions/github-script@v6.4.1
+        id: get-hash
+        with:
+          script: return "${{ github.event.pull_request.head.sha }}".substring(0, 10)
+          result-encoding: string
+        
       - uses: marocchino/sticky-pull-request-comment@v2
         with:
          message: |-
@@ -47,7 +51,7 @@ jobs:
                <dependency>
                    <groupId>io.github.${{ env.REPO_OWNER }}</groupId>
                    <artifactId>${{ env.REPO_NAME }}</artifactId>
-                   <version>${{ env.COMMIT_HASH }}</version>
+                   <version>${{ steps.get-hash.outputs.result }}</version>
                </dependency>
            </dependencies>
            ```
@@ -64,7 +68,7 @@ jobs:
            }
 
            dependencies {
-               implementation 'io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ env.COMMIT_HASH }}'
+               implementation 'io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ steps.get-hash.outputs.result }}'
            }
            ```
 
@@ -80,7 +84,7 @@ jobs:
            }
 
            dependencies {
-               implementation("io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ env.COMMIT_HASH }}")
+               implementation("io.github.${{ env.REPO_OWNER }}:${{ env.REPO_NAME }}:${{ steps.get-hash.outputs.result }}")
            }
            ```
 
