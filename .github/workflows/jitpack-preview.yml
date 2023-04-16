@@ -1,0 +1,12 @@
+name: Jitpack preview comment
+on:
+  pull_request:
+    paths:
+      - 'pom.xml'
+      - 'src/main/**.java'
+      - 'src/test/**.java'
+      - 'src/main/**.kt'
+      - 'src/test/**.kt'
+jobs:
+  update-comment:
+    runs-on: ubuntu-latest
