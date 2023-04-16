@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.github.freya022</groupId>
@@ -41,8 +42,8 @@
         <connection>scm:git:https://github.com/freya022/BotCommands.git</connection>
         <developerConnection>scm:git:https://github.com/freya022/BotCommands.git</developerConnection>
         <url>https://github.com/freya022/BotCommands</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <distributionManagement>
         <snapshotRepository>
@@ -71,7 +72,8 @@
                         <configuration>
                             <release>17</release>
                             <additionalJOptions>
-                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption> <!-- No need to print "no comment" warnings -->
+                                <!-- No need to print "no comment" warnings -->
+                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption>
                             </additionalJOptions>
                             <links>
                                 <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
@@ -132,7 +134,8 @@
                                             <profiles>check-docs</profiles>
                                         </requireActiveProfile>
                                         <requireJavaVersion>
-                                            <version>[17, 18)</version> <!-- Generating docs on the right version is important -->
+                                            <!-- Generating docs on the JDK 17 is important -->
+                                            <version>[17, 18)</version>
                                         </requireJavaVersion>
                                     </rules>
                                     <fail>true</fail>
@@ -250,7 +253,9 @@
                     </execution>
                     <execution>
                         <id>test-compile</id>
-                        <goals> <goal>test-compile</goal> </goals>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
@@ -389,19 +394,6 @@
             <artifactId>jsr305</artifactId>
             <version>3.0.2</version>
         </dependency>
-        <!-- Local testing -->
-<!--        <dependency>-->
-<!--            <groupId>net.dv8tion</groupId>-->
-<!--            <artifactId>JDA</artifactId>-->
-<!--            <version>5.0.0-alpha.11_DEV</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>club.minnced</groupId>-->
-<!--                    <artifactId>opus-java</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>com.github.minndevelopment</groupId>
             <artifactId>emoji-java</artifactId>
