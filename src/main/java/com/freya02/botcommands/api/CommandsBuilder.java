@@ -12,6 +12,7 @@ import com.freya02.botcommands.api.prefixed.TextCommand;
 import com.freya02.botcommands.internal.BContextImpl;
 import com.freya02.botcommands.internal.CommandsBuilderImpl;
 import com.freya02.botcommands.internal.utils.Utils;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -147,6 +148,8 @@ public final class CommandsBuilder {
 	 * @return This builder for chaining convenience
 	 * @throws IllegalArgumentException If the class is not a {@link TextCommand} nor a {@link ApplicationCommand}
 	 */
+	@Deprecated
+	@ReplaceWith("registerClass(clazz)")
 	public CommandsBuilder registerCommand(Class<?> clazz) {
 		if (!TextCommand.class.isAssignableFrom(clazz) && !ApplicationCommand.class.isAssignableFrom(clazz)) {
 			throw new IllegalArgumentException("You can't register a class that's not a TextCommand or an ApplicationCommand, provided: " + clazz.getName());
@@ -154,6 +157,20 @@ public final class CommandsBuilder {
 
 		manualClasses.add(clazz);
 
+		return this;
+	}
+
+	/**
+	 * Manually registers a class for the framework to inspect later on.
+	 *
+	 * @param clazz The class to register
+	 *
+	 * @return This builder for chaining convenience
+	 *
+	 * @see #addSearchPath(String)
+	 */
+	public CommandsBuilder registerClass(Class<?> clazz) {
+		manualClasses.add(clazz);
 		return this;
 	}
 
