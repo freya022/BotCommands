@@ -11,16 +11,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+//TODO fix docs
 /**
- * Annotation for defining a button listener, this has to be the same name as the one given to {@link PersistentButtonBuilder#bindTo(String, Object...)}.
+ * Annotation for defining a button listener,
+ * this has to be the same name as the one given to {@link PersistentButtonBuilder#bindTo(String, Object...)}.
+ *
  * <p>
- * Requirements:
+ * <b>Requirements:</b>
  * <ul>
- *     <li><b>Button listeners can only be put on methods that are inside a class that extends {@link TextCommand} or {@link ApplicationCommand}</b></li>
- *     <li><b>These handlers also need to have a {@link ButtonEvent} as their first argument</b></li>
+ *     <li>Button listeners must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
+ *     <li>These handlers also need to have a {@link ButtonEvent} as their first argument</li>
  * </ul>
  *
- * <i>Supported parameters in {@link ParameterResolver}</i>
+ * Supported parameters are in {@link ParameterResolver}.
+ *
+ * @see Components
+ * @see ParameterResolver
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
