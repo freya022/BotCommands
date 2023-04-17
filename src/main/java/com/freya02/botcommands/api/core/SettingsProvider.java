@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.annotations.ServiceType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
@@ -21,7 +22,10 @@ import java.util.function.Predicate;
  *
  * <p>
  * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link SettingsProvider}.
+ *
+ * @see InterfacedService
  */
+@InterfacedService
 public interface SettingsProvider {
 	/**
 	 * Returns the list of prefix this Guild should use <br>

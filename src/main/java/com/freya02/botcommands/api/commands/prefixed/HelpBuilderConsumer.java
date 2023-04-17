@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
 import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.annotations.ServiceType;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -15,7 +16,9 @@ import org.jetbrains.annotations.Nullable;
  * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link HelpBuilderConsumer}.
  *
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
+ * @see InterfacedService
  */
+@InterfacedService
 public interface HelpBuilderConsumer {
 	/**
 	 * The function called when building a help embed

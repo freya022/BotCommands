@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.GlobalExceptionHandlerAdapter;
 import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.annotations.ServiceType;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
@@ -24,7 +25,9 @@ import org.jetbrains.annotations.Nullable;
  * You are still free from extending {@link GlobalExceptionHandlerAdapter}.
  *
  * @see GlobalExceptionHandlerAdapter
+ * @see InterfacedService
  */
+@InterfacedService
 public interface GlobalExceptionHandler {
 	/**
 	 * <b>Note: You are sent a generic Event, you will need to check it against SlashCommandInteractionEvent, GuildMessageReceivedEvent, etc... in order to differentiate events</b>

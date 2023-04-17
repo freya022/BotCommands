@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.annotations.ServiceType;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,10 @@ import java.io.InputStream;
  *
  * <p>
  * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link DefaultEmbedFooterIconSupplier}.
+ *
+ * @see InterfacedService
  */
+@InterfacedService
 public interface DefaultEmbedFooterIconSupplier {
 	class Default implements DefaultEmbedFooterIconSupplier {
 		@Nullable
