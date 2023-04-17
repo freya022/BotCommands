@@ -3,30 +3,13 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import java.io.InputStream
-import java.util.function.Supplier
 
 @InjectedService
 class BTextConfig internal constructor() {
     var usePingAsPrefix: Boolean = false
 
     val prefixes: MutableList<String> = mutableListOf()
-
-    /**
-     * Sets the default embed supplier, this lets you have an embed builder as a template, reducing boilerplate.
-     *
-     * This embed is also used in the help commands.
-     */
-    var defaultEmbedSupplier: Supplier<EmbedBuilder> = Supplier { EmbedBuilder() }
-
-    /**
-     * Sets the default footer icon for the [default embed supplier][defaultEmbedSupplier].
-     *
-     * **The icon name when used will be "icon.jpg", your icon must be a JPG file and be the same name**.
-     */
-    var defaultFooterIconSupplier = Supplier<InputStream?> { null }
 
     /**
      * Whether the default help command is disabled. This also disables help content when an user misuses a command.
