@@ -75,7 +75,6 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          *
          * @see InterfacedService
          */
-        @JvmSynthetic
         @JvmOverloads
         fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfig>) {
             BBuilder(configConsumer).build(manager)
