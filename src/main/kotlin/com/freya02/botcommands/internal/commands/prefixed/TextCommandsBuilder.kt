@@ -22,13 +22,13 @@ import mu.KotlinLogging
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = KotlinLogging.logger {  }
-
 @BService
 internal class TextCommandsBuilder(
     private val serviceContainer: ServiceContainer,
     classPathContainer: ClassPathContainer
 ) {
+    private val logger = KotlinLogging.logger {  }
+
     private val declarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
 
     init {
@@ -42,9 +42,9 @@ internal class TextCommandsBuilder(
             declarationFunctions.add(classPathFunction)
         }
 
-        LOGGER.debug("Loaded ${declarationFunctions.size} text command declaration functions")
+        logger.debug("Loaded ${declarationFunctions.size} text command declaration functions")
         if (declarationFunctions.isNotEmpty()) {
-            LOGGER.trace { "Text command declaration functions:\n" + declarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Text command declaration functions:\n" + declarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
     }
 
@@ -62,7 +62,7 @@ internal class TextCommandsBuilder(
 
             context.eventDispatcher.addEventListener(TextCommandsListener(context, cooldownService, helpCommandInfo))
         } catch (e: Throwable) {
-            LOGGER.error("An error occurred while updating global commands", e)
+            logger.error("An error occurred while updating global commands", e)
         }
     }
 
@@ -71,7 +71,7 @@ internal class TextCommandsBuilder(
 
         return when {
             helpCommandInfo != null -> {
-                LOGGER.debug("Using a custom 'help' text command implementation")
+                logger.debug("Using a custom 'help' text command implementation")
 
                 val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
                     ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
@@ -81,7 +81,7 @@ internal class TextCommandsBuilder(
             }
             else -> when {
                 context.isHelpDisabled -> {
-                    LOGGER.debug("Using no 'help' text command implementation")
+                    logger.debug("Using no 'help' text command implementation")
                     null
                 }
                 else -> {

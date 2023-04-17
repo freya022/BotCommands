@@ -32,13 +32,13 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.nio.file.Files
 
-private val LOGGER = KotlinLogging.logger { }
-
 internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
     manager: IApplicationCommandManager
 ) {
+    private val logger = KotlinLogging.logger {  }
+
     private val commandsCache = context.getService<ApplicationCommandsCache>()
     private val onlineCheck = context.config.applicationConfig.onlineAppCommandCheckEnabled
 
@@ -73,7 +73,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
             else -> {
                 if (Files.notExists(commandsCachePath)) {
-                    LOGGER.trace("Updating commands because cache file does not exists")
+                    logger.trace("Updating commands because cache file does not exists")
                     return true
                 }
 
@@ -86,11 +86,11 @@ internal class ApplicationCommandsUpdater private constructor(
         val newBytes = allCommandData.toJsonBytes()
         return (!ApplicationCommandsCache.isJsonContentSame(context, oldBytes, newBytes)).also { needUpdate ->
             if (needUpdate) {
-                LOGGER.trace("Updating commands because content is not equal")
+                logger.trace("Updating commands because content is not equal")
 
                 if (context.config.debugConfig.enableApplicationDiffsLogs) {
-                    LOGGER.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
-                    LOGGER.trace { "New commands bytes: ${newBytes.decodeToString()}" }
+                    logger.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
+                    logger.trace { "New commands bytes: ${newBytes.decodeToString()}" }
                 }
             }
         }
@@ -200,9 +200,9 @@ internal class ApplicationCommandsUpdater private constructor(
     }
 
     private fun printPushedCommandData(commands: List<Command>, guild: Guild?) {
-        if (!LOGGER.isTraceEnabled) return
+        if (!logger.isTraceEnabled) return
 
-        LOGGER.trace {
+        logger.trace {
             val commandNumber = commands.size
             val sentCommandNumber = allCommandData.size
             val cacheViewNumber = context.applicationCommandsView.size
@@ -215,7 +215,7 @@ internal class ApplicationCommandsUpdater private constructor(
         try {
             commandsCachePath.overwriteBytes(allCommandData.toJsonBytes())
         } catch (e: Exception) {
-            LOGGER.error(e) {
+            logger.error(e) {
                 "An exception occurred while temporarily saving ${guild.asScopeString()} commands in '${commandsCachePath.toAbsolutePath()}'"
             }
         }

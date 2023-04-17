@@ -24,14 +24,14 @@ import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-private val LOGGER = KotlinLogging.logger {  }
-
 @BService
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
     private val serviceContainer: ServiceContainer,
     classPathContainer: ClassPathContainer
 ) {
+    private val logger = KotlinLogging.logger {  }
+
     private val applicationCommandsContext = context.applicationCommandsContext
 
     private val globalDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
@@ -70,13 +70,13 @@ internal class ApplicationCommandsBuilder(
             }
         }
 
-        LOGGER.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
+        logger.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
         if (globalDeclarationFunctions.isNotEmpty()) {
-            LOGGER.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
 
         if (guildDeclarationFunctions.isNotEmpty()) {
-            LOGGER.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
         }
     }
 
@@ -107,7 +107,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal fun handleGuildCommandUpdateException(guild: Guild, t: Throwable) {
-        LOGGER.error(
+        logger.error(
             "Encountered an exception while updating commands for guild '{}' ({})",
             guild.name,
             guild.id,
@@ -129,9 +129,9 @@ internal class ApplicationCommandsBuilder(
         val needsUpdate = force || globalUpdater.shouldUpdateCommands()
         if (needsUpdate) {
             globalUpdater.updateCommands()
-            LOGGER.debug("Global commands were{} updated ({})", getForceString(force), getCheckTypeString())
+            logger.debug("Global commands were{} updated ({})", getForceString(force), getCheckTypeString())
         } else {
-            LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString())
+            logger.debug("Global commands does not have to be updated ({})", getCheckTypeString())
         }
 
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
@@ -163,13 +163,13 @@ internal class ApplicationCommandsBuilder(
             val needsUpdate = force || guildUpdater.shouldUpdateCommands()
             if (needsUpdate) {
                 guildUpdater.updateCommands()
-                LOGGER.debug(
+                logger.debug(
                     "Guild '${guild.name}' (${guild.id}) commands were{} updated ({})",
                     getForceString(force),
                     getCheckTypeString()
                 )
             } else {
-                LOGGER.debug("Guild '${guild.name}' (${guild.id}) commands does not have to be updated ({})", getCheckTypeString())
+                logger.debug("Guild '${guild.name}' (${guild.id}) commands does not have to be updated ({})", getCheckTypeString())
             }
 
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())
@@ -186,12 +186,12 @@ internal class ApplicationCommandsBuilder(
     private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
     private suspend fun onFirstRun() {
-        LOGGER.debug("First ready")
+        logger.debug("First ready")
 
         try {
             updateCatching(null) { updateGlobalCommands() }
         } catch (e: Throwable) {
-            LOGGER.error("An error occurred while updating global commands", e)
+            logger.error("An error occurred while updating global commands", e)
         }
     }
 
@@ -199,12 +199,12 @@ internal class ApplicationCommandsBuilder(
         block().also { result ->
             if (result.updateExceptions.isNotEmpty()) {
                 when {
-                    guild != null -> LOGGER.error("Errors occurred while registering commands for guild '{}' ({})", guild.name, guild.id)
-                    else -> LOGGER.error("Errors occurred while registering commands:")
+                    guild != null -> logger.error("Errors occurred while registering commands for guild '{}' ({})", guild.name, guild.id)
+                    else -> logger.error("Errors occurred while registering commands:")
                 }
 
                 result.updateExceptions.forEach { updateException ->
-                    LOGGER.error("Function: {}", updateException.function.shortSignature, updateException.throwable)
+                    logger.error("Function: {}", updateException.function.shortSignature, updateException.throwable)
                 }
             }
         }
