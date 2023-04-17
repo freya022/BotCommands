@@ -105,6 +105,11 @@ class BConfig internal constructor() {
         classes.add(clazz)
     }
 
+    @JvmSynthetic
+    inline fun <reified T> addClass() {
+        addClass(T::class.java)
+    }
+
     fun services(block: ReceiverConsumer<BServiceConfig>) {
         serviceConfig.apply(block)
     }

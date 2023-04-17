@@ -37,9 +37,9 @@ object Main {
             addSearchPath("com.freya02.botcommands.test_kt")
 
             //Still kept in the java test package
-            addClass(Config::class.java)
-            addClass(TestDB::class.java)
-            addClass(BasicSettingsProvider::class.java)
+            addClass<Config>()
+            addClass<TestDB>()
+            addClass<BasicSettingsProvider>()
 
             components {
                 useComponents = true
