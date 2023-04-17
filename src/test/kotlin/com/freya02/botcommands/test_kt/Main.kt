@@ -1,6 +1,7 @@
 package com.freya02.botcommands.test_kt
 
 import com.freya02.botcommands.api.core.BBuilder
+import com.freya02.botcommands.test.BasicSettingsProvider
 import com.freya02.botcommands.test.Config
 import com.freya02.botcommands.test.TestDB
 import dev.minn.jda.ktx.events.CoroutineEventManager
@@ -38,6 +39,7 @@ object Main {
             //Still kept in the java test package
             addClass(Config::class.java)
             addClass(TestDB::class.java)
+            addClass(BasicSettingsProvider::class.java)
 
             components {
                 useComponents = true
