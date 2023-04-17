@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.BCInfo
-import com.freya02.botcommands.api.Logging
+import mu.KotlinLogging
 import net.dv8tion.jda.api.JDAInfo
 
 // This really needs to not be critical
@@ -37,7 +37,7 @@ internal class Version private constructor(
     }
 
     companion object {
-        private val logger = Logging.getLogger(Version::class.java)
+        private val logger = KotlinLogging.logger { }
         private val versionPattern = Regex("""(\d+)\.(\d+)\.(\d+)(?:-(\w+)\.(\d+))?(?:_\w*)?""")
         private val classifiers = listOf("alpha", "beta")
 
