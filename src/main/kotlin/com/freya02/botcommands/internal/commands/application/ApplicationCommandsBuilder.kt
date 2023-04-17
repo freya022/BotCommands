@@ -18,7 +18,6 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import kotlin.reflect.full.callSuspend
@@ -82,7 +81,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onGuildReady(event: GuildReadyEvent, context: BContextImpl) {
+    internal suspend fun onGuildReady(event: GuildReadyEvent) {
         guildReadyMutex.withLock {
             val isFirstRun = synchronized(this) {
                 if (init) return@synchronized false
@@ -92,7 +91,7 @@ internal class ApplicationCommandsBuilder(
             }
 
             if (isFirstRun) {
-                onFirstRun(context, event.jda)
+                onFirstRun()
             }
         }
 
@@ -186,10 +185,8 @@ internal class ApplicationCommandsBuilder(
 
     private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 
-    private suspend fun onFirstRun(context: BContextImpl, jda: JDA) {
+    private suspend fun onFirstRun() {
         LOGGER.debug("First ready")
-
-        context.serviceContainer.putService(ApplicationCommandsCache(jda))
 
         try {
             updateCatching(null) { updateGlobalCommands() }

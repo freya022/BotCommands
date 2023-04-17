@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
+import com.freya02.botcommands.api.core.ServiceStart
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
 import com.google.gson.Gson
@@ -10,6 +12,7 @@ import net.dv8tion.jda.api.utils.data.DataArray
 import java.nio.file.Files
 import java.nio.file.Path
 
+@BService(ServiceStart.LAZY)
 internal class ApplicationCommandsCache(jda: JDA) {
     private val cachePath = Path.of(System.getProperty("java.io.tmpdir"), "${jda.selfUser.id}slashcommands")
     val globalCommandsPath: Path = cachePath.resolve("globalCommands.json")
