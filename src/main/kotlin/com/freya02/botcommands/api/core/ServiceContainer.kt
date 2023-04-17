@@ -61,16 +61,16 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    internal val loadableServices: Map<KClass<*>, ServiceStart>
+    internal val loadableServices: Map<ServiceStart, List<KClass<*>>>
         @JvmSynthetic get() =
-            hashMapOf<KClass<*>, ServiceStart>().also { loadableServices ->
+            enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
                 context.classPathContainer.classes.forEach { clazz ->
                     clazz.findAnnotation<BService>()?.let {
-                        loadableServices[clazz] = it.start
+                        loadableServices.getOrPut(it.start) { mutableListOf() }.add(clazz)
                         return@forEach
                     }
                     clazz.findAnnotation<ConditionalService>()?.let {
-                        loadableServices[clazz] = it.start
+                        loadableServices.getOrPut(it.start) { mutableListOf() }.add(clazz)
                         return@forEach
                     }
                 }
@@ -105,11 +105,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     @JvmSynthetic
-    internal fun loadServices(loadableServices: Map<KClass<*>, ServiceStart>, requestedStart: ServiceStart) {
-        for ((clazz, start) in loadableServices) {
-            if (start != requestedStart) continue
+    internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
+        loadableServices[requestedStart]?.forEach { clazz ->
+            //Skip classes that have been already loaded/checked
+            if (clazz in serviceMap || clazz in unavailableServices) return@forEach
 
-            if (clazz in serviceMap || clazz in unavailableServices) continue //Skip classes that have been already loaded/checked
             tryGetService(clazz).errorMessage?.let { errorMessage ->
                 logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
             }
