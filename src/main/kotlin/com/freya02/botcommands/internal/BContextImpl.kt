@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommandsConte
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.api.core.*
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.time.Duration.Companion.minutes
 
+@InjectedService
 class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 

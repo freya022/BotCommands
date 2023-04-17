@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
@@ -31,6 +32,7 @@ import kotlin.time.toDurationUnit
 
 private typealias EventMap = MutableMap<KClass<*>, MutableList<EventHandlerFunction>>
 
+@InjectedService
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager

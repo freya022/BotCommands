@@ -1,12 +1,14 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.events.BEvent
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.events.Event
 import java.util.*
 import kotlin.reflect.KClass
 
+@InjectedService
 internal class EventTreeService(context: BContext) {
     private val map: Map<KClass<*>, List<KClass<*>>>
 

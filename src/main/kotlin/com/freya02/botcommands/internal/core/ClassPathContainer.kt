@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core
 
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
@@ -55,6 +56,7 @@ internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPath
     return InstanceClassPathFunction(instance, function)
 }
 
+@InjectedService
 internal class ClassPathContainer(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 

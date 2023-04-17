@@ -36,6 +36,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
+@InjectedService
 class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
