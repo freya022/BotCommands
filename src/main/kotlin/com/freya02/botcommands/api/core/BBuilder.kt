@@ -33,14 +33,6 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
      */
     companion object {
         /**
-         * See `newBuilder` methods
-         */
-        @JvmStatic
-        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>) {
-            return newBuilder(configConsumer, getDefaultManager())
-        }
-
-        /**
          * Creates a new instance of the framework.
          *
          * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
@@ -84,7 +76,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          * @see InterfacedService
          */
         @JvmSynthetic
-        fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {
+        @JvmOverloads
+        fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfig>) {
             BBuilder(configConsumer).build(manager)
         }
 

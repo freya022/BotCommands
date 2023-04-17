@@ -31,7 +31,7 @@ object Main {
             this.cancel() //"this" is a scope delegate
         }
 
-        BBuilder.newBuilder({
+        BBuilder.newBuilder(manager) {
             disableExceptionsInDMs = true
 
             addSearchPath("com.freya02.botcommands.test_kt")
@@ -53,6 +53,6 @@ object Main {
                 onlineAppCommandCheckEnabled = true
                 addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
             }
-        }, manager)
+        }
     }
 }
