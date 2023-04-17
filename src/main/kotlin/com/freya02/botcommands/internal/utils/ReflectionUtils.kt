@@ -144,4 +144,19 @@ internal object ReflectionUtils {
     internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
     internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
     internal fun KClass<*>.isLoadableService() = loadableServiceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
+
+    /**
+     * Returns `true` if there is 1 service annotation or less
+     */
+    internal fun KClass<*>.hasAtMostOneServiceAnnotation(): Boolean {
+        var found = false
+        annotations.forEach { annotation ->
+            if (annotation.annotationClass in loadableServiceAnnotations) {
+                if (found)
+                    return false
+                found = true
+            }
+        }
+        return true
+    }
 }
