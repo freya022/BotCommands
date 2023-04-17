@@ -17,6 +17,7 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
  * @see InstanceSupplier
  * @see DynamicSupplier
  */
+@MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 annotation class BService(
     /**

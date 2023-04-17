@@ -24,6 +24,7 @@ import kotlin.reflect.KClass
  * @see DynamicSupplier
  */
 @Inherited
+@MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 annotation class ConditionalService(
     /**

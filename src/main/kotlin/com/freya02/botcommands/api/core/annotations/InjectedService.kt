@@ -12,5 +12,6 @@ package com.freya02.botcommands.api.core.annotations
  * @see ConditionalService
  * @see ServiceType
  */
+@MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 annotation class InjectedService(val message: String = "This service does not exist yet, it may be created under certain conditions")

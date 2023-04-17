@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
  * @see InjectedService
  * @see ConditionalService
  */
+@MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 annotation class ServiceType(
     /**
