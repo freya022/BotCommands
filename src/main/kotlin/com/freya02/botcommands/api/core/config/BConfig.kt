@@ -1,16 +1,11 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.*
+import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.internal.LockableVar
-import com.freya02.botcommands.internal.lockableNotNull
-import com.freya02.botcommands.internal.toDelegate
-import com.freya02.botcommands.internal.utils.Utils
-import net.dv8tion.jda.api.interactions.Interaction
-import kotlin.properties.Delegates
 
 @InjectedService
 class BConfig internal constructor() {
@@ -55,23 +50,6 @@ class BConfig internal constructor() {
 
     @JvmSynthetic
     internal val coroutineScopesConfig = BCoroutineScopesConfig(this)
-
-    /**
-     * Used to take guild-specific settings such as prefixes
-     */
-    var settingsProvider: SettingsProvider by Delegates.lockableNotNull(this, "Settings provider needs to be set !")
-    fun hasSettingsProvider() = ::settingsProvider.toDelegate<LockableVar<*>>().hasValue()
-
-    /**
-     * Used by the thread pools such of command handlers / components
-     *
-     * Notes: You will need to handle things such as already acknowledged interactions (in the case of interaction events, where the exception happened after the interaction has been acknowledged), see [Interaction.isAcknowledged]
-     *
-     * @see Utils.getException
-     * @see ExceptionHandlerAdapter
-     */
-    var uncaughtExceptionHandler: ExceptionHandler by Delegates.lockableNotNull(this, "Uncaught exception handler needs to be set !")
-    fun hasUncaughtExceptionHandler() = ::uncaughtExceptionHandler.toDelegate<LockableVar<*>>().hasValue()
 
     /**
      * Determines whether the SQL queries should be logged

@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
+import com.freya02.botcommands.api.core.annotations.InterfacedService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
@@ -79,6 +80,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          *     }
          * }
          * ```
+         *
+         * @see InterfacedService
          */
         @JvmSynthetic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {

@@ -3,15 +3,10 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.BContext.Status
 import com.freya02.botcommands.api.DefaultMessages
-import com.freya02.botcommands.api.ExceptionHandler
-import com.freya02.botcommands.api.SettingsProvider
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
-import com.freya02.botcommands.api.core.DefaultMessagesSupplier
-import com.freya02.botcommands.api.core.EventDispatcher
-import com.freya02.botcommands.api.core.EventTreeService
-import com.freya02.botcommands.api.core.ServiceContainer
+import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
@@ -23,7 +18,6 @@ import com.freya02.botcommands.internal.core.ClassPathContainer
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.ApplicationInfo
 import net.dv8tion.jda.api.entities.Message
@@ -32,8 +26,6 @@ import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
-import java.io.InputStream
-import java.util.function.Supplier
 import kotlin.time.Duration.Companion.minutes
 
 class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
@@ -66,11 +58,12 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         serviceContainer.preloadServices()
     }
 
-    private val defaultMessagesSupplier: DefaultMessagesSupplier by lazy {
-        (serviceContainer.getServiceOrNull<DefaultMessagesSupplier>() ?: DefaultDefaultMessagesSupplier).also {
-            logger.info { "Using ${it::class.java.simpleName} as a ${DefaultMessagesSupplier::class.java.simpleName} instance" }
-        }
-    }
+    private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
+    private val _settingsProvider by serviceContainer.nullableInterfacedService<SettingsProvider>()
+    private val _globalExceptionHandler by serviceContainer.nullableInterfacedService<GlobalExceptionHandler>()
+    private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _>() { DefaultEmbedSupplier.Default() }
+    private val _defaultEmbedFooterIconSupplier by serviceContainer.interfacedService<DefaultEmbedFooterIconSupplier, _> { DefaultEmbedFooterIconSupplier.Default() }
+    private val _helpBuilderConsumer by serviceContainer.nullableInterfacedService<HelpBuilderConsumer>()
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 
@@ -96,7 +89,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     }
 
     override fun getDefaultMessages(locale: DiscordLocale): DefaultMessages {
-        return defaultMessagesSupplier.get(locale)
+        return _defaultMessagesSupplier.get(locale)
     }
 
     override fun getApplicationCommandsContext(): ApplicationCommandsContextImpl {
@@ -105,14 +98,12 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
 
     //TODO default method to get configs
 
-    //TODO default method
-    override fun getDefaultEmbedSupplier(): Supplier<EmbedBuilder> {
-        return config.textConfig.defaultEmbedSupplier
+    override fun getDefaultEmbedSupplier(): DefaultEmbedSupplier {
+        return _defaultEmbedSupplier
     }
 
-    //TODO default method
-    override fun getDefaultFooterIconSupplier(): Supplier<InputStream?> {
-        return config.textConfig.defaultFooterIconSupplier
+    override fun getDefaultFooterIconSupplier(): DefaultEmbedFooterIconSupplier {
+        return _defaultEmbedFooterIconSupplier
     }
 
     private fun getAutocompleteHandler(autocompleteHandlerName: String): AutocompleteHandler? {
@@ -165,17 +156,15 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
         }
     }
 
-    override fun getSettingsProvider(): SettingsProvider? { //TODO change to BConfig only, or default method in BContext ?
-        if (!config.hasSettingsProvider()) return null
-        return config.settingsProvider
+    override fun getSettingsProvider(): SettingsProvider? {
+        return _settingsProvider
     }
 
     override fun getHelpBuilderConsumer(): HelpBuilderConsumer? {
-        return config.textConfig.helpBuilderConsumer
+        return _helpBuilderConsumer
     }
 
-    override fun getUncaughtExceptionHandler(): ExceptionHandler? = when {
-        config.hasUncaughtExceptionHandler() -> config.uncaughtExceptionHandler
-        else -> null
+    override fun getGlobalExceptionHandler(): GlobalExceptionHandler? {
+        return _globalExceptionHandler
     }
 }

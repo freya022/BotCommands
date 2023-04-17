@@ -1,7 +1,8 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.core.config.BTextConfig;
+import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
+import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
 import com.freya02.botcommands.internal.BContextImpl;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -20,7 +21,6 @@ import javax.annotation.CheckReturnValue;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * Base text command event containing several utility methods.
@@ -97,7 +97,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	}
 
 	/**
-	 * Returns the default embed, equivalent to {@linkplain BTextConfig#getDefaultEmbedSupplier() BTextConfig.getDefaultEmbedSupplier().get()}
+	 * Returns the default embed, equivalent to {@link BContext#getDefaultEmbedSupplier() BContext.getDefaultEmbedSupplier().get()}
 	 *
 	 * @return Default embed of the bot
 	 */
@@ -105,7 +105,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract EmbedBuilder getDefaultEmbed();
 
 	/**
-	 * Returns the default embed footer icon, equivalent to {@linkplain BTextConfig#getDefaultFooterIconSupplier() BTextConfig.getDefaultFooterIconSupplier().get()}
+	 * Returns the default embed footer icon, equivalent to {@link BContext#getDefaultFooterIconSupplier() BContext.getDefaultFooterIconSupplier().get()}
 	 *
 	 * @return Default embed footer icon of the bot
 	 */
@@ -117,10 +117,11 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 *
 	 * @param embed       {@linkplain MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
-	 * @return The MessageAction to send
 	 *
-	 * @see BTextConfig#setDefaultEmbedSupplier(Supplier)
-	 * @see BTextConfig#setDefaultFooterIconSupplier(Supplier)
+	 * @return The RestAction of the Message to send
+	 *
+	 * @see DefaultEmbedSupplier
+	 * @see DefaultEmbedFooterIconSupplier
 	 */
 	@CheckReturnValue
 	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
@@ -131,10 +132,11 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 * @param channel     {@linkplain MessageChannel} to send the embed in
 	 * @param embed       {@linkplain MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
-	 * @return The MessageAction to send
 	 *
-	 * @see BTextConfig#setDefaultEmbedSupplier(Supplier)
-	 * @see BTextConfig#setDefaultFooterIconSupplier(Supplier)
+	 * @return The RestAction of the Message to send
+	 *
+	 * @see DefaultEmbedSupplier
+	 * @see DefaultEmbedFooterIconSupplier
 	 */
 	@CheckReturnValue
 	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
@@ -146,10 +148,11 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 * @param iconStream  InputStream of the footer icon, the input stream is closed once it is unreachable
 	 * @param embed       {@linkplain MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
-	 * @return The MessageAction to send
 	 *
-	 * @see BTextConfig#setDefaultEmbedSupplier(Supplier)
-	 * @see BTextConfig#setDefaultFooterIconSupplier(Supplier)
+	 * @return The RestAction of the Message to send
+	 *
+	 * @see DefaultEmbedSupplier
+	 * @see DefaultEmbedFooterIconSupplier
 	 */
 	@CheckReturnValue
 	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, InputStream iconStream, MessageEmbed embed, Consumer<? super Throwable> onException);

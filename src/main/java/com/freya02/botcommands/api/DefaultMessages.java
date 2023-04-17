@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api;
 
 import com.freya02.botcommands.api.commands.application.annotations.NSFW;
+import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import net.dv8tion.jda.api.entities.User;
