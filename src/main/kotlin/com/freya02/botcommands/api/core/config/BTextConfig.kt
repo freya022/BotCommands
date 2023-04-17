@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
@@ -17,13 +16,6 @@ class BTextConfig internal constructor() {
      * This still lets you define your own help command.
      */
     var isHelpDisabled: Boolean = false
-
-    /**
-     * A consumer that's called when an help embed is about to be sent.
-     *
-     * That embed can be for the command list as well as individual commands.
-     */
-    var helpBuilderConsumer: HelpBuilderConsumer? = null
 
     /**
      * Text command filters for the command listener to check on each **regular / regex** command

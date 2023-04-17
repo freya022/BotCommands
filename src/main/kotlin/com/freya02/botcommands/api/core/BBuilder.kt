@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.events.LoadEvent
@@ -87,6 +88,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          * @see GlobalExceptionHandler
          * @see DefaultEmbedSupplier
          * @see DefaultEmbedFooterIconSupplier
+         * @see HelpBuilderConsumer
          */
         @JvmSynthetic
         fun newBuilder(configConsumer: ReceiverConsumer<BConfig>, manager: CoroutineEventManager) {

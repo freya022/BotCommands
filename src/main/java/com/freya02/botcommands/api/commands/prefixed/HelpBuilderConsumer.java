@@ -1,16 +1,24 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
+import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.annotations.ServiceType;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * See {@link #accept(EmbedBuilder, boolean, TextCommandInfo)} for details
+ * A consumer that's called when a help embed is about to be sent.
+ * <br>That embed can be for the command list as well as individual commands.
+ *
+ * <p>
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link HelpBuilderConsumer}.
+ *
+ * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
  */
 public interface HelpBuilderConsumer {
 	/**
-	 * The function called when building an help embed
+	 * The function called when building a help embed
 	 *
 	 * @param builder     The {@link EmbedBuilder} to fill / override
 	 * @param isGlobal    <code>true</code> if the embed is showing all the commands, <code>false</code> if the embed is for a specific command
