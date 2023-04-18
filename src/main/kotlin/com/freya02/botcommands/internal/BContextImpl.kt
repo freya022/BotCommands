@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.time.Duration.Companion.minutes
 
 @InjectedService
-class BContextImpl internal constructor(internal val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
+class BContextImpl internal constructor(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
     internal val classPathContainer: ClassPathContainer
@@ -67,6 +67,8 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _> { DefaultEmbedSupplier.Default() }
     private val _defaultEmbedFooterIconSupplier by serviceContainer.interfacedService<DefaultEmbedFooterIconSupplier, _> { DefaultEmbedFooterIconSupplier.Default() }
     private val _helpBuilderConsumer by serviceContainer.nullableInterfacedService<HelpBuilderConsumer>()
+
+    override fun getConfig() = config
 
     override fun getServiceContainer(): ServiceContainer = serviceContainer
 

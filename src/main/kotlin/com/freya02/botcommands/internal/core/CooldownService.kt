@@ -35,7 +35,7 @@ internal class CooldownService(private val context: BContextImpl) {
 
     private fun applyCooldown(cooldownable: Cooldownable, cooldownKey: CooldownKey) {
         cooldowns.put(cooldownKey, System.currentTimeMillis() + cooldownable.cooldownStrategy.cooldownMillis)
-        context.config.coroutineScopesConfig.cooldownScope.launch {
+        context.coroutineScopesConfig.cooldownScope.launch {
             delay(cooldownable.cooldownStrategy.cooldownMillis)
             cooldowns.remove(cooldownKey)
         }

@@ -26,7 +26,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
         logger.trace { "Received slash command: ${reconstructCommand(event)}" }
 
-        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+        context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
                 val slashCommand = CommandPath.of(event.fullCommandName).let {
                     context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
@@ -46,7 +46,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onUserContextCommand(event: UserContextInteractionEvent) {
         logger.trace { "Received user context command: ${reconstructCommand(event)}" }
 
-        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+        context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
                 val userCommand = event.name.let {
                     context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
@@ -66,7 +66,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     suspend fun onMessageContextCommand(event: MessageContextInteractionEvent) {
         logger.trace { "Received message context command: ${reconstructCommand(event)}" }
 
-        context.config.coroutineScopesConfig.applicationCommandsScope.launch {
+        context.coroutineScopesConfig.applicationCommandsScope.launch {
             try {
                 val messageCommand = event.name.let {
                     context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
@@ -94,7 +94,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
 
     private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
         val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
-        for (applicationFilter in context.config.applicationConfig.applicationFilters) {
+        for (applicationFilter in context.applicationConfig.applicationFilters) {
             if (!applicationFilter.isAccepted(applicationFilteringData)) {
                 logger.trace("Cancelled application commands due to filter")
                 return false

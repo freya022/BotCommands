@@ -42,14 +42,14 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
 
         val msg: String = event.message.contentRaw
         val content = when {
-            context.config.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ')
+            context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ')
             else -> getMsgNoPrefix(msg, event.guild)
         }
         if (content.isNullOrBlank()) return
 
         logger.trace { "Received prefixed command: $msg" }
 
-        context.config.coroutineScopesConfig.textCommandsScope.launch {
+        context.coroutineScopesConfig.textCommandsScope.launch {
             try {
                 val isNotOwner = !context.config.isOwner(member.idLong)
 
@@ -120,7 +120,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             if (!prefixes.isNullOrEmpty()) return prefixes
         }
 
-        return context.config.textConfig.prefixes
+        return context.textConfig.prefixes
     }
 
     private suspend fun tryExecute(
@@ -133,7 +133,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
         val commandInfo = variation.info
 
         val filteringData = TextFilteringData(context, event, commandInfo, args)
-        for (filter in context.config.textConfig.textFilters) {
+        for (filter in context.textConfig.textFilters) {
             if (!filter.isAccepted(filteringData)) {
                 logger.trace("Cancelled prefixed commands due to filter")
                 return ExecutionResult.STOP

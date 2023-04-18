@@ -27,7 +27,7 @@ internal object AnnotationUtils {
     }
 
     fun getEffectiveTestGuildIds(context: BContextImpl, method: KFunction<*>): TLongSet {
-        val testIds: TLongSet = TLongHashSet(context.config.applicationConfig.testGuildIds)
+        val testIds: TLongSet = TLongHashSet(context.applicationConfig.testGuildIds)
         val effectiveAnnotations = getEffectiveAnnotations(method, Test::class)
         for (test in effectiveAnnotations) {
             val ids: LongArray = test.guildIds

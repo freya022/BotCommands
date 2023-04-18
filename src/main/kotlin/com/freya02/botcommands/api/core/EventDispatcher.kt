@@ -78,7 +78,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
         handlers.forEach { preboundFunction ->
             if (preboundFunction.isAsync) {
-                context.config.coroutineScopesConfig.eventDispatcherScope.launch {
+                context.coroutineScopesConfig.eventDispatcherScope.launch {
                     runEventHandler(preboundFunction, event)
                 }
             } else {
@@ -95,7 +95,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return emptyList()
 
-        val scope = context.config.coroutineScopesConfig.eventDispatcherScope
+        val scope = context.coroutineScopesConfig.eventDispatcherScope
         return handlers.map { preboundFunction ->
             scope.async { runEventHandler(preboundFunction, event) }
         }

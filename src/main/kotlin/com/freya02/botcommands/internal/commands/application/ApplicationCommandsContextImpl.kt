@@ -42,7 +42,7 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
 
     override fun updateGlobalApplicationCommands(force: Boolean): CompletableFuture<CommandUpdateResult> {
         return CompletableFuture<CommandUpdateResult>().also {
-            context.config.coroutineScopesConfig.commandUpdateScope.launch {
+            context.coroutineScopesConfig.commandUpdateScope.launch {
                 it.complete(context.getService<ApplicationCommandsBuilder>().updateGlobalCommands(force))
             }
         }
@@ -50,7 +50,7 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
 
     override fun updateGuildApplicationCommands(guild: Guild, force: Boolean): CompletableFuture<CommandUpdateResult> {
         return CompletableFuture<CommandUpdateResult>().also {
-            context.config.coroutineScopesConfig.commandUpdateScope.launch {
+            context.coroutineScopesConfig.commandUpdateScope.launch {
                 it.complete(context.getService<ApplicationCommandsBuilder>().updateGuildCommands(guild, force))
             }
         }

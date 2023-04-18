@@ -41,7 +41,7 @@ import kotlin.time.measureTimedValue
 class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
-    private val serviceConfig: BServiceConfig = context.config.serviceConfig
+    private val serviceConfig: BServiceConfig = context.serviceConfig
 
     @PublishedApi
     @JvmSynthetic

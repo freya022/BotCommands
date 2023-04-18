@@ -40,7 +40,7 @@ internal class ApplicationCommandsUpdater private constructor(
     private val logger = KotlinLogging.logger {  }
 
     private val commandsCache = context.getService<ApplicationCommandsCache>()
-    private val onlineCheck = context.config.applicationConfig.onlineAppCommandCheckEnabled
+    private val onlineCheck = context.applicationConfig.onlineAppCommandCheckEnabled
 
     private val commandsCachePath = when (guild) {
         null -> commandsCache.globalCommandsPath
@@ -88,7 +88,7 @@ internal class ApplicationCommandsUpdater private constructor(
             if (needUpdate) {
                 logger.trace("Updating commands because content is not equal")
 
-                if (context.config.debugConfig.enableApplicationDiffsLogs) {
+                if (context.debugConfig.enableApplicationDiffsLogs) {
                     logger.trace { "Old commands bytes: ${oldBytes.decodeToString()}" }
                     logger.trace { "New commands bytes: ${newBytes.decodeToString()}" }
                 }

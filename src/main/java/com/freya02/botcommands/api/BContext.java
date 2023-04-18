@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
 import com.freya02.botcommands.api.core.*;
 import com.freya02.botcommands.api.core.annotations.InjectedService;
+import com.freya02.botcommands.api.core.config.*;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -18,6 +19,39 @@ import java.util.List;
 
 @InjectedService
 public interface BContext {
+	@NotNull
+	BConfig getConfig();
+
+	@NotNull
+	default BApplicationConfig getApplicationConfig() {
+		return getConfig().getApplicationConfig();
+	}
+
+	@NotNull
+	default BComponentsConfig getComponentsConfig() {
+		return getConfig().getComponentsConfig();
+	}
+
+	@NotNull
+	default BCoroutineScopesConfig getCoroutineScopesConfig() {
+		return getConfig().getCoroutineScopesConfig();
+	}
+
+	@NotNull
+	default BDebugConfig getDebugConfig() {
+		return getConfig().getDebugConfig();
+	}
+
+	@NotNull
+	default BServiceConfig getServiceConfig() {
+		return getConfig().getServiceConfig();
+	}
+
+	@NotNull
+	default BTextConfig getTextConfig() {
+		return getConfig().getTextConfig();
+	}
+
 	//TODO docs
 	@NotNull
 	ServiceContainer getServiceContainer();
