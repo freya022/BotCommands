@@ -14,15 +14,15 @@ abstract class CommandParameter(
     override val methodParameterType = MethodParameterType.OPTION
 
     override val name = optionBuilder.declaredName
-    override val discordName = optionBuilder.optionName
+    val discordName = optionBuilder.optionName
 
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 
     init {
         val paramName = kParameter.findDeclarationName()
-        val optionName = optionBuilder.declaredName
-        if (paramName != optionName) {
-            throwUser("Parameter '$kParameter' does not have the same name as the command declaration: '$optionName'")
+        val declaredName = optionBuilder.declaredName
+        if (paramName != declaredName) {
+            throwUser("Parameter '$kParameter' does not have the same name as the command declaration: '$declaredName'")
         }
     }
 }

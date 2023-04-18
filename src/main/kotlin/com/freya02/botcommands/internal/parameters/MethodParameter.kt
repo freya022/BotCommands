@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
@@ -11,8 +10,6 @@ interface MethodParameter {
     val kParameter: KParameter
     val name: String
         get() = kParameter.findDeclarationName()
-    val discordName: String
-        get() = throwInternal("MethodParameter#discordName is not implemented")
 
     val type: KType
         get() = kParameter.type
