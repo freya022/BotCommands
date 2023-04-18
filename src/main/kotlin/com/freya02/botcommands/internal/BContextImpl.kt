@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
 import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
