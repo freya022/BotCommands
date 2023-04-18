@@ -63,7 +63,7 @@ class BContextImpl internal constructor(internal val config: BConfig, val eventM
     private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
     private val _settingsProvider by serviceContainer.nullableInterfacedService<SettingsProvider>()
     private val _globalExceptionHandler by serviceContainer.nullableInterfacedService<GlobalExceptionHandler>()
-    private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _>() { DefaultEmbedSupplier.Default() }
+    private val _defaultEmbedSupplier by serviceContainer.interfacedService<DefaultEmbedSupplier, _> { DefaultEmbedSupplier.Default() }
     private val _defaultEmbedFooterIconSupplier by serviceContainer.interfacedService<DefaultEmbedFooterIconSupplier, _> { DefaultEmbedFooterIconSupplier.Default() }
     private val _helpBuilderConsumer by serviceContainer.nullableInterfacedService<HelpBuilderConsumer>()
 
