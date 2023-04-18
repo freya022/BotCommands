@@ -75,6 +75,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          *
          * @see InterfacedService
          */
+        @JvmStatic
         @JvmOverloads
         fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfig>) {
             BBuilder(configConsumer).build(manager)
