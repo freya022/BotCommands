@@ -30,10 +30,10 @@ interface BCoroutineScopesConfig {
 }
 
 class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
-    var defaultScopeSupplier: (String, Int) -> CoroutineScope = { coroutineName, coreSize ->
+    var defaultScopeSupplier: (coroutineName: String, corePoolSize: Int) -> CoroutineScope = { coroutineName, corePoolSize ->
         val lock = ReentrantLock()
         var count = 0
-        val executor = Executors.newScheduledThreadPool(coreSize) {
+        val executor = Executors.newScheduledThreadPool(corePoolSize) {
             Thread(it).apply {
                 lock.withLock {
                     name = "$coroutineName ${++count}"
@@ -65,12 +65,12 @@ class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesCon
         override val componentTimeoutScope = this@BCoroutineScopesConfigBuilder.componentTimeoutScope
     }
 
-    private inner class ScopeDelegate(private val name: String, private val coreSize: Int) : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
+    private inner class ScopeDelegate(private val name: String, private val corePoolSize: Int) : ReadWriteProperty<BCoroutineScopesConfig, CoroutineScope> {
         private var scope: CoroutineScope? = null
 
         //To avoid allocating the scopes if the user wants to replace them
         override fun getValue(thisRef: BCoroutineScopesConfig, property: KProperty<*>): CoroutineScope {
-            if (scope == null) scope = defaultScopeSupplier(name, coreSize)
+            if (scope == null) scope = defaultScopeSupplier(name, corePoolSize)
             return scope!!
         }
 
