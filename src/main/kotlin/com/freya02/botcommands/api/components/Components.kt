@@ -16,7 +16,6 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.utils.ButtonContent
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
@@ -174,8 +173,7 @@ class Components internal constructor(private val componentController: Component
 
     internal companion object : ConditionalServiceChecker {
         override fun checkServiceAvailability(context: BContext): String? {
-            val config = (context as BContextImpl).getService<BComponentsConfig>()
-            if (config.useComponents) {
+            if (context.componentsConfig.useComponents) {
                 return null
             }
 

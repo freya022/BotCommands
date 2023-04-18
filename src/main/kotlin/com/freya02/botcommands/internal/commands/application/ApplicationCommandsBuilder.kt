@@ -140,7 +140,7 @@ internal class ApplicationCommandsBuilder(
     }
 
     internal suspend fun updateGuildCommands(guild: Guild, force: Boolean = false): CommandUpdateResult {
-        val slashGuildIds = context.config.applicationConfig.slashGuildIds
+        val slashGuildIds = context.applicationConfig.slashGuildIds
         if (slashGuildIds.isNotEmpty()) {
             if (guild.idLong in slashGuildIds) {
                 return CommandUpdateResult(guild, false, listOf())
@@ -181,7 +181,7 @@ internal class ApplicationCommandsBuilder(
     private fun getForceString(force: Boolean): String = if (force) " force" else ""
 
     private fun getCheckTypeString(): String =
-        if (context.config.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
+        if (context.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
 
     private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
 

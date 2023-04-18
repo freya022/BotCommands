@@ -22,7 +22,7 @@ open class TopLevelApplicationCommandInfoMixin(
 
         scope = builder.scope
         isDefaultLocked = builder.isDefaultLocked
-        isGuildOnly = context.config.applicationConfig.forceGuildCommands || scope.isGuildOnly
+        isGuildOnly = context.applicationConfig.forceGuildCommands || scope.isGuildOnly
         isTestOnly = builder.isDefaultLocked
 
         if (builder.cooldownStrategy.scope != CooldownScope.USER && !scope.isGuildOnly) {

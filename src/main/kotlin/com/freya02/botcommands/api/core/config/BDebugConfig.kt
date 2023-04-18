@@ -3,14 +3,29 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.core.annotations.InjectedService
 
 @InjectedService
-class BDebugConfig internal constructor() {
+interface BDebugConfig {
     /**
      * Whether the differences between old and new application commands data should be logged
+     *
+     * Default: `false`
      */
-    var enableApplicationDiffsLogs: Boolean = false
+    val enableApplicationDiffsLogs: Boolean
 
     /**
      * Whether the missing localization strings when creation the command objects should be logged
+     *
+     * Default: `false`
      */
-    var enabledMissingLocalizationLogs: Boolean = false
+    val enabledMissingLocalizationLogs: Boolean
+}
+
+class BDebugConfigBuilder internal constructor() : BDebugConfig {
+    override var enableApplicationDiffsLogs: Boolean = false
+    override var enabledMissingLocalizationLogs: Boolean = false
+
+    @JvmSynthetic
+    internal fun build() = object : BDebugConfig {
+        override val enableApplicationDiffsLogs = this@BDebugConfigBuilder.enableApplicationDiffsLogs
+        override val enabledMissingLocalizationLogs = this@BDebugConfigBuilder.enabledMissingLocalizationLogs
+    }
 }

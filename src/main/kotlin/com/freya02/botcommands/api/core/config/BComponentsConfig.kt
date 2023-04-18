@@ -3,17 +3,20 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
+import com.freya02.botcommands.internal.toImmutableList
 
 @InjectedService
-class BComponentsConfig internal constructor(config: BConfig) {
+interface BComponentsConfig {
     /**
      * Allows loading component services.
      *
      * This requires a [ConnectionSupplier] service to be present
      *
+     * Default: `false`
+     *
      * @see ConnectionSupplier
      */
-    var useComponents: Boolean = false
+    val useComponents: Boolean
 
     /**
      * Filters for the component interaction listener, they will check all components such as buttons and selection menus
@@ -22,5 +25,16 @@ class BComponentsConfig internal constructor(config: BConfig) {
      *
      * **You still have to acknowledge to the interaction !**
      */
-    val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
+    val componentFilters: List<ComponentInteractionFilter>
+}
+
+class BComponentsConfigBuilder internal constructor() : BComponentsConfig {
+    override var useComponents: Boolean = false
+    override val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()
+
+    @JvmSynthetic
+    internal fun build() = object : BComponentsConfig {
+        override val useComponents = this@BComponentsConfigBuilder.useComponents
+        override val componentFilters = this@BComponentsConfigBuilder.componentFilters.toImmutableList()
+    }
 }

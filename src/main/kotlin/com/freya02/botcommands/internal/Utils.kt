@@ -29,6 +29,18 @@ internal inline fun <reified T : Enum<T>> enumSetOf(): EnumSet<T> = EnumSet.none
 internal inline fun <reified T : Enum<T>> enumSetOf(vararg elems: T): EnumSet<T> = enumSetOf<T>().apply { addAll(elems) }
 internal inline fun <reified T : Enum<T>, V> enumMapOf(): EnumMap<T, V> = EnumMap<T, V>(T::class.java)
 
+internal fun <T> List<T>.toImmutableList(): List<T> {
+    return Collections.unmodifiableList(toMutableList())
+}
+
+internal fun <T> Set<T>.toImmutableSet(): Set<T> {
+    return Collections.unmodifiableSet(toMutableSet())
+}
+
+internal fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
+    return Collections.unmodifiableMap(LinkedHashMap(this))
+}
+
 internal fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 internal fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.any { this.isSubclassOf(it) }
 

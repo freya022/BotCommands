@@ -6,7 +6,7 @@ import java.util.*
 
 internal object LocalizationUtils {
     fun getCommandRootLocalization(context: BContextImpl, path: String?): String? {
-        val localesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
+        val localesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
         for (baseName in localesMap.keys) {
             val localization = Localization.getInstance(baseName, Locale.ROOT)
             if (localization != null) {

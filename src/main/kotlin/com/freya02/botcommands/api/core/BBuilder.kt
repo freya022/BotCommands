@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.annotations.InterfacedService
-import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
 import com.freya02.botcommands.internal.BContextImpl
@@ -22,9 +22,9 @@ import kotlin.time.Duration.Companion.minutes
  *
  * See `newBuilder` methods
  */
-class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
+class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuilder>) {
     private val logger = KotlinLogging.logger { }
-    private val config = configConsumer.applyTo(BConfig())
+    private val config = configConsumer.applyTo(BConfigBuilder()).build()
 
     /**
      * The only class you'll need to initialize the framework.
@@ -77,7 +77,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfig>) {
          */
         @JvmStatic
         @JvmOverloads
-        fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfig>) {
+        fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>) {
             BBuilder(configConsumer).build(manager)
         }
 

@@ -35,7 +35,7 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
     }
 
     override fun onInvalidCommand(event: BaseCommandEvent, commandInfo: TextCommandInfo) {
-        context.config.coroutineScopesConfig.textCommandsScope.launch {
+        context.coroutineScopesConfig.textCommandsScope.launch {
             sendCommandHelp(event, commandInfo)
         }
     }

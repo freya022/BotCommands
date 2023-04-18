@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 import java.util.*
 
 internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
-    private val baseNameToLocalesMap: Map<String, List<Locale>> = context.config.applicationConfig.baseNameToLocalesMap
+    private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {
         val map: MutableMap<DiscordLocale, String> = EnumMap(DiscordLocale::class.java)
@@ -32,7 +32,7 @@ internal class BCLocalizationFunction(private val context: BContextImpl) : Local
                     val template = instance[localizationKey]
                     if (template != null) {
                         map[locale.toDiscordLocale()] = template.localize()
-                    } else if (context.config.debugConfig.enabledMissingLocalizationLogs) {
+                    } else if (context.debugConfig.enabledMissingLocalizationLogs) {
                         SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), localizationKey) {
                             logger.warn(
                                 "Localization template '{}' could not be found in bundle '{}' with locale '{}' or below",
