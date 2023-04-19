@@ -9,7 +9,7 @@ import dev.minn.jda.ktx.messages.reply_
 
 @CommandMarker
 class SlashVarargs : ApplicationCommand() {
-    fun onSlashVarargs(event: GuildSlashEvent, list: List<Int>) {
+    fun onSlashVarargs(event: GuildSlashEvent, list: List<Int?>) {
         event.reply_("ok $list", ephemeral = true).queue()
     }
 
@@ -18,7 +18,7 @@ class SlashVarargs : ApplicationCommand() {
         globalApplicationCommandManager.slashCommand("varargs") {
             option("list") {
                 varArgs = 3
-                requiredVarArgs = 3
+                requiredVarArgs = 1
             }
 
             function = ::onSlashVarargs

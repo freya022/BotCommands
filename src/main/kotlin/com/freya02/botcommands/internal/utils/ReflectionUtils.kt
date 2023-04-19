@@ -12,10 +12,7 @@ import mu.KotlinLogging
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
-import kotlin.reflect.KProperty
+import kotlin.reflect.*
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -107,6 +104,9 @@ internal object ReflectionUtils {
             val collectionType = type.jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
             return collectionType.arguments.first().type?.jvmErasure
         }
+
+    internal val KParameter.collectionElementType: KType?
+        get() = type.arguments.first().type
 
     /** Everything but extensions, includes static methods */
     internal val KClass<*>.nonExtensionFunctions

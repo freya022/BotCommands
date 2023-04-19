@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.valueParameters
@@ -36,7 +37,7 @@ class MethodParameters internal constructor(
                     config.optionPredicate(kParameter) -> {
                         val parameter = when {
                             options[kParameter.findDeclarationName()] is SlashCommandOptionBuilder && kParameter.type.jvmErasure == List::class -> {
-                                val elementsType = kParameter.type.arguments.first().type?.jvmErasure
+                                val elementsType = kParameter.collectionElementType?.jvmErasure
                                     ?: throwUser(kParameter.function, "List parameters must have a concrete element type")
                                 kParameter.wrap().copy(type = elementsType)
                             }
