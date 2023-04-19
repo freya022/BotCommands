@@ -21,7 +21,7 @@ class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName:
     var varArgs: Int = -1
     var requiredVarArgs: Int = 0
         set(value) {
-            Checks.check(value >= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
+            Checks.check(value <= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
             field = value
         }
 
