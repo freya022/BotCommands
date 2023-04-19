@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.ICustomResolver
+import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.ResolverContainer
@@ -30,8 +31,17 @@ class MethodParameters internal constructor(
                 return@map when {
                     options[kParameter.findDeclarationName()] is GeneratedOptionBuilder -> (options[kParameter.findDeclarationName()] as GeneratedOptionBuilder).toGeneratedMethodParameter(kParameter)
                     config.optionPredicate(kParameter) -> {
+                        val parameter = when {
+                            options[kParameter.findDeclarationName()] is SlashCommandOptionBuilder && kParameter.type.jvmErasure == List::class -> {
+                                val elementsType = kParameter.type.arguments.first().type?.jvmErasure
+                                    ?: throwUser(kParameter.function, "List parameters must have a concrete element type")
+                                kParameter.wrap().copy(type = elementsType)
+                            }
+                            else -> kParameter.wrap()
+                        }
+
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
-                        when (val resolver = resolverContainer.getResolver(kParameter)) {
+                        when (val resolver = resolverContainer.getResolver(parameter)) {
                             is R -> config.optionTransformer(kParameter, kParameter.findDeclarationName(), resolver)
                             else -> throwUser(
                                 function,
@@ -42,7 +52,7 @@ class MethodParameters internal constructor(
                     config.resolvablePredicate(kParameter) -> config.resolvableTransformer(kParameter)
                     else -> {
                         //TODO move parameter resolvers resolution in dedicated classes w/ transparent loading
-                        when (val resolver = resolverContainer.getResolver(kParameter)) {
+                        when (val resolver = resolverContainer.getResolver(kParameter.wrap())) {
                             is R -> config.optionTransformer(kParameter, kParameter.findDeclarationName(), resolver)
                             is ICustomResolver<*, *> -> CustomMethodParameter(kParameter, resolver)
                             else -> throwUser(
