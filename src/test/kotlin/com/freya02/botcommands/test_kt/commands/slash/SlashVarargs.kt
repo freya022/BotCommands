@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import dev.minn.jda.ktx.messages.reply_
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 @CommandMarker
 class SlashVarargs : ApplicationCommand() {
@@ -17,12 +18,22 @@ class SlashVarargs : ApplicationCommand() {
         event.reply_("ok $list", ephemeral = true).queue()
     }
 
+    @CommandMarker
+    fun onVarargsAutocomplete(event: CommandAutoCompleteInteractionEvent, @AppOption list: List<Int?>): List<String> {
+        return list.filterNotNull().map { it + 1 }.map { it.toString() }
+    }
+
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
         globalApplicationCommandManager.slashCommand("varargs") {
             option("list") {
                 varArgs = 3
                 requiredVarArgs = 1
+
+                autocomplete("SlashVarargs: onVarargsAutocomplete") {
+                    showUserInput = false
+                    function = ::onVarargsAutocomplete
+                }
             }
 
             function = ::onSlashVarargs
