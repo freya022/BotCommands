@@ -406,7 +406,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.minndevelopment</groupId>
+            <groupId>io.github.minndevelopment</groupId>
             <artifactId>jda-ktx</artifactId>
             <version>9fc90f616b</version>
         </dependency>
@@ -416,7 +416,7 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
-            <groupId>com.github.minndevelopment</groupId>
+            <groupId>io.github.minndevelopment</groupId>
             <artifactId>emoji-java</artifactId>
             <version>5622646ccb</version>
             <exclusions>

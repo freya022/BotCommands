@@ -4,18 +4,15 @@ import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
+import com.freya02.botcommands.api.parameters.ParameterWrapper
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
-import com.freya02.botcommands.internal.isSubclassOfAny
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl
-import com.freya02.botcommands.internal.nullIfEmpty
 import com.freya02.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -25,7 +22,7 @@ internal class AppLocalizationContextResolverFactory : ParameterResolverFactory<
     AppLocalizationContextResolver::class,
     AppLocalizationContext::class
 ) {
-    override fun get(parameter: KParameter) =
+    override fun get(parameter: ParameterWrapper) =
         AppLocalizationContextResolver(getBaseLocalizationContext(
             parameter, Interaction::class
         ))
@@ -36,14 +33,15 @@ internal class TextLocalizationContextResolverFactory : ParameterResolverFactory
     TextLocalizationContextResolver::class.java,
     TextLocalizationContext::class.java
 ) {
-    override fun get(parameter: KParameter) =
+    override fun get(parameter: ParameterWrapper) =
         TextLocalizationContextResolver(getBaseLocalizationContext(
             parameter, Interaction::class, MessageReceivedEvent::class
         ))
 }
 
 internal object LocalizationContextResolverFactories {
-    fun getBaseLocalizationContext(parameter: KParameter, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
+    fun getBaseLocalizationContext(parameterWrapper: ParameterWrapper, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
+        val parameter = parameterWrapper.parameter ?: throwInternal("Tried to get localization context on a null parameter")
         val parameterFunction = parameter.function
         val annotation = parameter.findAnnotation<LocalizationBundle>()
             ?: throwUser(parameterFunction, "${parameter.type.jvmErasure.simpleName} parameters must be annotated with @${LocalizationBundle::class.simpleName}")

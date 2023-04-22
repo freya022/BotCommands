@@ -8,7 +8,6 @@ import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
@@ -81,17 +80,14 @@ internal class ResolverContainer(
     @JvmSynthetic
     internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
-    fun getResolver(parameter: KParameter): Any {
-        val requestedType = parameter.type.jvmErasure
+    fun getResolver(parameter: ParameterWrapper): Any {
+        val requestedType = parameter.erasure
 
         return factories.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
 
             serviceResult.errorMessage?.let { errorMessage ->
-                throwUser(
-                    parameter.function,
-                    "Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.bestName}' does not have any compatible resolver and service loading failed: $errorMessage"
-                )
+                parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed: $errorMessage")
             }
 
             ParameterResolverFactory.singleton(ServiceCustomResolver(serviceResult.getOrThrow()))

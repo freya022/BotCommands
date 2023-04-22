@@ -118,17 +118,20 @@ abstract class SlashCommandInfo internal constructor(
                 for (varArgNum in 0 until arguments) {
                     val varArgName = optionName.toVarArgName(varArgNum)
                     val optionMapping = event.getOption(varArgName)
-                        //TODO this is probably wrong for out of order varargs
-                        ?: if (parameter.isOptional || (parameter.isVarArg && !parameter.isRequiredVararg(varArgNum))) {
+                        ?: if (parameter.isVarArg) {
+                            //Replace with null as it's a list
+                            objectList += null
+                            continue //Continue looking at varargs
+                        } else if (parameter.isOptional) { //Default or nullable
+                            //Put null/default value if parameter is not a kotlin default value
                             if (!parameter.kParameter.isOptional) {
                                 objectList += when {
                                     parameter.isPrimitive -> 0
                                     else -> null
                                 }
-
                                 continue //Continue looking at varargs
                             } else {
-                                continue@parameterLoop //Parameter is optional, don't put anything
+                                continue@parameterLoop //Kotlin default value, don't add anything to the parameters map
                             }
                         } else {
                             if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop

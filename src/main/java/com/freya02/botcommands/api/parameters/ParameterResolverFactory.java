@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.internal.UtilsKt;
 import kotlin.reflect.KClass;
-import kotlin.reflect.KParameter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -45,14 +44,14 @@ public abstract class ParameterResolverFactory<T extends ParameterResolver<?, R>
 	}
 
 	@NotNull
-	public abstract T get(@NotNull KParameter parameter);
+	public abstract T get(@NotNull ParameterWrapper parameter);
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static <T extends ParameterResolver<?, R>, R> ParameterResolverFactory<T, R> singleton(T resolver) {
 		return new ParameterResolverFactory<>(resolver.getClass(), UtilsKt.toJava(resolver.getJvmErasure())) {
 			@NotNull
 			@Override
-			public T get(@NotNull KParameter parameter) {
+			public T get(@NotNull ParameterWrapper parameter) {
 				return resolver;
 			}
 		};

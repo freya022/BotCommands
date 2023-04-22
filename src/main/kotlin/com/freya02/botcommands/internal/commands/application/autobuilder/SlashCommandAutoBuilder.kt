@@ -199,6 +199,11 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 ) {
                     description = getEffectiveDescription(optionAnnotation)
 
+                    kParameter.findAnnotation<VarArgs>()?.let { varArgs ->
+                        this.varArgs = varArgs.value
+                        this.requiredVarArgs = varArgs.numRequired
+                    }
+
                     kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
                     kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
                     kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }

@@ -12,10 +12,18 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
+import net.dv8tion.jda.internal.utils.Checks
 import java.util.*
 
 class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
     var description: String = "No description"
+
+    var varArgs: Int = -1
+    var requiredVarArgs: Int = 0
+        set(value) {
+            Checks.check(value <= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
+            field = value
+        }
 
     /**
      * Required for [SlashParameterResolver.getPredefinedChoices] to be used.
