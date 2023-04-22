@@ -122,15 +122,17 @@ abstract class SlashCommandInfo internal constructor(
                             //Replace with null as it's a list
                             objectList += null
                             continue //Continue looking at varargs
-                        } else if (parameter.isOptional) {
+                        } else if (parameter.isOptional) { //Default or nullable
                             //Put null/default value if parameter is not a kotlin default value
                             if (!parameter.kParameter.isOptional) {
                                 objectList += when {
                                     parameter.isPrimitive -> 0
                                     else -> null
                                 }
+                                continue //Continue looking at varargs
+                            } else {
+                                continue@parameterLoop //Kotlin default value, don't add anything to the parameters map
                             }
-                            continue@parameterLoop
                         } else {
                             if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop
 
