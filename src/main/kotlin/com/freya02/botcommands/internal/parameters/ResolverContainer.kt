@@ -81,7 +81,7 @@ internal class ResolverContainer(
     internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
     fun getResolver(parameter: ParameterWrapper): Any {
-        val requestedType = parameter.type
+        val requestedType = parameter.erasure
 
         return factories.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
