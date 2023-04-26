@@ -91,22 +91,23 @@ internal object ReflectionUtils {
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
 
-    internal val KFunction<*>.collectionElementType: KClass<*>?
+    internal val KType.collectionElementType: KType?
         get() {
-            val type = this.returnType
-
             //Type is a trusted collection, such as the Java collections
-            if (type.jvmErasure in trustedCollections) {
-                return type.arguments.first().type?.jvmErasure
+            if (jvmErasure in trustedCollections) {
+                return arguments.first().type
             }
 
             //Maybe a subtype of Collection
-            val collectionType = type.jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
-            return collectionType.arguments.first().type?.jvmErasure
+            val collectionType = jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
+            return collectionType.arguments.first().type
         }
 
+    internal val KFunction<*>.collectionElementType: KClass<*>?
+        get() = returnType.collectionElementType?.jvmErasure
+
     internal val KParameter.collectionElementType: KType?
-        get() = type.arguments.first().type
+        get() = type.collectionElementType
 
     /** Everything but extensions, includes static methods */
     internal val KClass<*>.nonExtensionFunctions
