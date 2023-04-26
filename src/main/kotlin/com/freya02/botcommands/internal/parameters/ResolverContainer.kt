@@ -80,7 +80,7 @@ internal class ResolverContainer(
     @JvmSynthetic
     internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
-    fun getResolver(parameter: ParameterWrapper): Any {
+    fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
         val requestedType = parameter.erasure
 
         return factories.computeIfAbsent(requestedType) { type ->
