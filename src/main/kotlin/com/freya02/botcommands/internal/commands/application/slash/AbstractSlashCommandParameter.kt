@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.CommandOptions
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandParameter
@@ -16,7 +16,7 @@ abstract class AbstractSlashCommandParameter(
 ) : ApplicationCommandParameter(parameter, optionAggregateBuilder) {
     final override val commandOptions = CommandOptions.transform(
         slashCommandInfo.context,
-        optionAggregateBuilder.commandOptionBuilders,
+        optionAggregateBuilder.optionBuilders,
         object : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
             override fun transformOption(
                 optionBuilder: SlashCommandOptionBuilder,

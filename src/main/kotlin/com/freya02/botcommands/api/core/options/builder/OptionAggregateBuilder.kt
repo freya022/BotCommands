@@ -1,11 +1,10 @@
-package com.freya02.botcommands.api.commands.application.builder
+package com.freya02.botcommands.api.core.options.builder
 
-import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.internal.joinWithQuote
 import com.freya02.botcommands.internal.throwUser
 
 abstract class OptionAggregateBuilder(val declaredName: String) {
-    internal val commandOptionBuilders: MutableMap<String, CommandOptionBuilder> = mutableMapOf()
+    internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
 
     companion object {
         internal inline fun <reified T : OptionAggregateBuilder> Map<String, OptionAggregateBuilder>.findOption(name: String, builderDescription: String): T {

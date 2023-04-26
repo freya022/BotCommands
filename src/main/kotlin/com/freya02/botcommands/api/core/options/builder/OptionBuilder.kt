@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application.builder
+package com.freya02.botcommands.api.core.options.builder
 
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.joinWithQuote
@@ -6,7 +6,6 @@ import com.freya02.botcommands.internal.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-//TODO move to common package
 abstract class OptionBuilder(val owner: KFunction<*>, val declaredName: String) {
     internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
     @Deprecated("Use 'parameter' instead, beware of array types")

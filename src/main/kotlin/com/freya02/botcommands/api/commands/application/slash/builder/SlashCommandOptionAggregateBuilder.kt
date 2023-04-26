@@ -35,15 +35,15 @@ class SlashCommandOptionAggregateBuilder(
 
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        commandOptionBuilders[declaredName] = SlashCommandOptionBuilder(context, owner, declaredName, optionName).apply(block)
+        optionBuilders[declaredName] = SlashCommandOptionBuilder(context, owner, declaredName, optionName).apply(block)
     }
 
     override fun customOption(declaredName: String) {
-        commandOptionBuilders[declaredName] = CustomOptionBuilder(owner, declaredName)
+        optionBuilders[declaredName] = CustomOptionBuilder(owner, declaredName)
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        commandOptionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(owner, declaredName, generatedValueSupplier)
+        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(owner, declaredName, generatedValueSupplier)
     }
 
     @JvmSynthetic

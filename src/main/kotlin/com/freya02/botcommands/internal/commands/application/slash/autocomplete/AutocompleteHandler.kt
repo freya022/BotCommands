@@ -1,13 +1,13 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete
 
-import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
-import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder.Companion.findOption
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer

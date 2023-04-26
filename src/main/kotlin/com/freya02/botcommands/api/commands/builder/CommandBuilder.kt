@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.commands.builder
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
-import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.commands.CooldownStrategy
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath

@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
@@ -11,7 +12,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementT
 object CommandOptions {
     internal inline fun <reified T : CommandOptionBuilder, reified R : Any> transform(
         context: BContextImpl,
-        options: Map<String, CommandOptionBuilder>,
+        options: Map<String, OptionBuilder>,
         config: Configuration<T, R>
     ): List<AbstractOption> {
         val resolverContainer = context.getService<ResolverContainer>()
