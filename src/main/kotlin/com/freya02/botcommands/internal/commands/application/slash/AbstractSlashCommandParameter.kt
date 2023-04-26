@@ -33,7 +33,12 @@ abstract class AbstractSlashCommandParameter(
             constructOption(slashCommandInfo, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
         }
 
-    val options: CommandOptions = CommandOptions.transform(slashCommandInfo.context, slashCommandInfo.method, optionAggregateBuilder.optionBuilders, Conf())
+    val options = CommandOptions.transform(
+        slashCommandInfo.context,
+        slashCommandInfo.method,
+        optionAggregateBuilder.optionBuilders,
+        Conf(slashCommandInfo, slashCmdOptionAggregateBuilders)
+    )
 
     protected abstract fun constructOption(
         slashCommandInfo: SlashCommandInfo,
@@ -42,9 +47,11 @@ abstract class AbstractSlashCommandParameter(
         resolver: SlashParameterResolver<*, *>
     ): AbstractSlashCommandOption
 
-    private class Conf : CommandOptions.Configuration<SlashCommandOption> {
-        override fun isOption(parameter: KParameter): Boolean {
-            return super.isOption(parameter)
-        }
+    private class Conf(
+        private val slashCommandInfo: SlashCommandInfo,
+        private val slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>
+    ) : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
+        override fun transformOption(optionBuilder: SlashCommandOptionBuilder, resolver: SlashParameterResolver<*, *>) =
+            SlashCommandOption(slashCommandInfo, slashCmdOptionAggregateBuilders, optionBuilder, resolver)
     }
 }
