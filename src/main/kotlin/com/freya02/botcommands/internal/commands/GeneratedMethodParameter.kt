@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.AbstractOption
 
-interface GeneratedMethodParameter : MethodParameter
+//TODO rename this, implementations and factories
+interface GeneratedMethodParameter : AbstractOption

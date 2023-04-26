@@ -1,9 +1,10 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
+import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
@@ -57,8 +58,8 @@ abstract class SlashCommandInfo internal constructor(
         ) {
             optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
             optionTransformer = { kParameter, paramName, resolver ->
-                val optionBuilder = builder.optionBuilders.findOption<SlashCommandOptionBuilder>(paramName, "a slash command option")
-                SlashCommandParameter(this@SlashCommandInfo, builder.optionBuilders, kParameter, optionBuilder, resolver)
+                val optionAggregateBuilder = builder.optionAggregateBuilders.findOption<SlashCommandOptionAggregateBuilder>(paramName, "a slash command option")
+                SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, kParameter, optionAggregateBuilder)
             }
         }
 
@@ -67,16 +68,18 @@ abstract class SlashCommandInfo internal constructor(
             if (slashParam.methodParameterType == MethodParameterType.OPTION) {
                 slashParam as SlashCommandParameter
 
-                slashParam.autocompleteHandler?.let { handler ->
-                    handler.methodParameters.forEach { autocompleteParam ->
-                        val param = parameters.find { it.name == autocompleteParam.name }
-                            ?: throwUser(
-                                handler.autocompleteInfo.function,
-                                "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
-                            )
+                slashParam.commandOptions.forEach { slashCommandOption ->
+                    slashCommandOption.autocompleteHandler?.let { handler ->
+                        handler.methodParameters.forEach { autocompleteParam ->
+                            val param = parameters.find { it.name == autocompleteParam.name }
+                                ?: throwUser(
+                                    handler.autocompleteInfo.function,
+                                    "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
+                                )
 
-                        requireUser(param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter), handler.autocompleteInfo.function) {
-                            "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
+                            requireUser(param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter), handler.autocompleteInfo.function) {
+                                "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
+                            }
                         }
                     }
                 }
@@ -111,62 +114,65 @@ abstract class SlashCommandInfo internal constructor(
             if (parameter.methodParameterType == MethodParameterType.OPTION) {
                 parameter as AbstractSlashCommandParameter
 
-                val arguments = max(1, parameter.varArgs)
-                val objectList: MutableList<Any?> = arrayOfSize(arguments)
+                optionLoop@ for (option in parameter.commandOptions) {
+                    val arguments = max(1, option.varArgs)
+                    val objectList: MutableList<Any?> = arrayOfSize(arguments)
 
-                val optionName = parameter.discordName
-                for (varArgNum in 0 until arguments) {
-                    val varArgName = optionName.toVarArgName(varArgNum)
-                    val optionMapping = event.getOption(varArgName)
-                        ?: if (parameter.isVarArg) {
-                            //Replace with null as it's a list
-                            objectList += null
-                            continue //Continue looking at varargs
-                        } else if (parameter.isOptional) { //Default or nullable
-                            //Put null/default value if parameter is not a kotlin default value
-                            if (!parameter.kParameter.isOptional) {
-                                objectList += when {
-                                    parameter.isPrimitive -> 0
-                                    else -> null
-                                }
+                    val optionName = option.discordName
+                    for (varArgNum in 0 until arguments) {
+                        val varArgName = optionName.toVarArgName(varArgNum)
+                        val optionMapping = event.getOption(varArgName)
+                            ?: if (option.isVarArg) {
+                                //Replace with null as it's a list
+                                objectList += null
                                 continue //Continue looking at varargs
+                            } else if (parameter.isOptional) { //Default or nullable
+                                //Put null/default value if parameter is not a kotlin default value
+                                if (!parameter.kParameter.isOptional) {
+                                    objectList += when {
+                                        parameter.isPrimitive -> 0
+                                        else -> null
+                                    }
+                                    continue //Continue looking at varargs
+                                } else {
+                                    continue@optionLoop //Kotlin default value, don't add anything to the parameters map
+                                }
                             } else {
-                                continue@parameterLoop //Kotlin default value, don't add anything to the parameters map
+                                if (event is CommandAutoCompleteInteractionEvent) continue@optionLoop
+
+                                throwUser("Slash parameter couldn't be resolved at parameter " + parameter.name + " (" + varArgName + ")")
                             }
-                        } else {
-                            if (event is CommandAutoCompleteInteractionEvent) continue@parameterLoop
 
-                            throwUser("Slash parameter couldn't be resolved at parameter " + parameter.name + " (" + varArgName + ")")
-                        }
-
-                    val resolved = parameter.resolver.resolveSuspend(context, this, event, optionMapping)
-                    if (resolved == null) {
-                        if (event is SlashCommandInteractionEvent) {
-                            event.reply(
-                                context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                    parameter.name,
-                                    parameter.type.jvmErasure.simpleName
+                        val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
+                        if (resolved == null) {
+                            if (event is SlashCommandInteractionEvent) {
+                                event.reply(
+                                    context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
+                                        parameter.name,
+                                        parameter.type.jvmErasure.simpleName
+                                    )
                                 )
+                                    .setEphemeral(true)
+                                    .queue()
+                            }
+
+                            //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+                            logger.trace(
+                                "The parameter '{}' of value '{}' could not be resolved into a {}",
+                                parameter.name,
+                                optionMapping.asString,
+                                parameter.type.jvmErasure.simpleName
                             )
-                                .setEphemeral(true)
-                                .queue()
+
+                            return false
                         }
 
-                        //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                        logger.trace(
-                            "The parameter '{}' of value '{}' could not be resolved into a {}",
-                            parameter.name,
-                            optionMapping.asString,
-                            parameter.type.jvmErasure.simpleName
-                        )
-
-                        return false
+                        objectList.add(resolved)
                     }
 
-                    objectList.add(resolved)
+                    //TODO aggregate values
+                    objects[parameter.kParameter] = if (option.isVarArg) objectList else objectList[0]
                 }
-
-                objects[parameter.kParameter] = if (parameter.isVarArg) objectList else objectList[0]
             } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
                 parameter as CustomMethodParameter
 

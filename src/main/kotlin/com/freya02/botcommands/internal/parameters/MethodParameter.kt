@@ -6,6 +6,7 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
 interface MethodParameter {
+    @Deprecated("Moved to individual options")
     val methodParameterType: MethodParameterType
     val kParameter: KParameter
     val name: String

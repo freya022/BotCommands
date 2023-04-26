@@ -1,56 +1,25 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.commands.application.LengthRange
-import com.freya02.botcommands.api.commands.application.ValueRange
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
+import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.enumSetOf
-import net.dv8tion.jda.api.entities.channel.ChannelType
-import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.OptionType
-import java.util.*
 import kotlin.reflect.KParameter
 
 class SlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
-    slashCmdOptionBuilders: Map<String, OptionBuilder>,
+    slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
     parameter: KParameter,
-    optionBuilder: SlashCommandOptionBuilder,
-    resolver: SlashParameterResolver<*, *>
-) : AbstractSlashCommandParameter(
-    parameter, optionBuilder, resolver
-) {
-    val description: String = optionBuilder.description
+    optionAggregateBuilder: SlashCommandOptionAggregateBuilder
+) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, parameter, optionAggregateBuilder) {
+    @Suppress("UNCHECKED_CAST")
+    override val commandOptions: List<SlashCommandOption>
+        get() = super.commandOptions as List<SlashCommandOption>
 
-    internal val autocompleteHandler: AutocompleteHandler? = when {
-        optionBuilder.autocompleteInfo != null -> AutocompleteHandler(
-            slashCommandInfo,
-            slashCmdOptionBuilders,
-            optionBuilder.autocompleteInfo!!
-        )
-        else -> null
-    }
-
-    val usePredefinedChoices = optionBuilder.usePredefinedChoices
-    val choices: List<Command.Choice>? = optionBuilder.choices
-    val range: ValueRange? = optionBuilder.valueRange
-    val length: LengthRange? = optionBuilder.lengthRange
-
-    val channelTypes: EnumSet<ChannelType> = optionBuilder.channelTypes ?: enumSetOf()
-
-    init {
-        if (range != null) {
-            if (resolver.optionType != OptionType.NUMBER && resolver.optionType != OptionType.INTEGER) {
-                throw IllegalStateException("Cannot use ranges on an option that doesn't accept an integer/number")
-            }
-        } else if (length != null) {
-            if (resolver.optionType != OptionType.STRING) {
-                throw IllegalStateException("Cannot use lengths on an option that doesn't accept an string")
-            }
-        }
-    }
-
-    fun hasAutocomplete() = autocompleteHandler != null
+    override fun constructOption(
+        slashCommandInfo: SlashCommandInfo,
+        optionAggregateBuilders: Map<String, OptionAggregateBuilder>,
+        optionBuilder: SlashCommandOptionBuilder,
+        resolver: SlashParameterResolver<*, *>
+    ) = SlashCommandOption(slashCommandInfo, optionAggregateBuilders, optionBuilder, resolver)
 }

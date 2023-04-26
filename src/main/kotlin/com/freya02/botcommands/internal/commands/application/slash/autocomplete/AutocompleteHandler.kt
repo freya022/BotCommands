@@ -1,11 +1,12 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
+import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
+import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
@@ -23,7 +24,7 @@ import kotlin.reflect.full.*
 
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
-    slashCmdOptionBuilders: Map<String, OptionBuilder>,
+    slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
@@ -43,8 +44,8 @@ internal class AutocompleteHandler(
         ) {
             optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
             optionTransformer = { kParameter, paramName, resolver ->
-                val optionBuilder = slashCmdOptionBuilders.findOption<SlashCommandOptionBuilder>(paramName, "an autocomplete option")
-                AutocompleteCommandParameter(kParameter, optionBuilder, resolver)
+                val optionAggregateBuilder = slashCmdOptionAggregateBuilders.findOption<SlashCommandOptionAggregateBuilder>(paramName, "an autocomplete option")
+                AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, kParameter, optionAggregateBuilder)
             }
         }
 

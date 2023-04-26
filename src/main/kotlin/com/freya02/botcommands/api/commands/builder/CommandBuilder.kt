@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
 import com.freya02.botcommands.internal.commands.CooldownStrategy
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
@@ -23,6 +24,8 @@ abstract class CommandBuilder internal constructor(override val name: String) : 
 
     @get:JvmSynthetic
     internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
+
+    internal val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
 
     fun cooldown(block: CooldownStrategyBuilder.() -> Unit) {
         cooldownStrategy = CooldownStrategyBuilder().apply(block).build()
