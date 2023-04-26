@@ -31,7 +31,13 @@ internal object ReflectionUtils {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 
-    internal fun KFunction<*>.reflectReference(): KFunction<*> {
+    @Suppress("UNCHECKED_CAST")
+    internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
+        if (this.visibility != KVisibility.PUBLIC) {
+            //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
+            throwUser("$this : Function needs to be public")
+        }
+
         if (this.isStatic) {
             throwUser(this, "Function must not be static")
         }
@@ -48,9 +54,10 @@ internal object ReflectionUtils {
                             }
                         } ?: throwInternal("Unable to reflect function reference: $this")
                     }
+
                     else -> this
                 }
-            }
+            } as KFunction<R>
         }
     }
 
