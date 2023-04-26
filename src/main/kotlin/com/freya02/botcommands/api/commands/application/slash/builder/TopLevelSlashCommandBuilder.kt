@@ -28,9 +28,9 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
     override val allowSubcommands: Boolean
-        get() = optionBuilders.isEmpty()
+        get() = commandOptionBuilders.isEmpty()
     override val allowSubcommandGroups: Boolean
-        get() = optionBuilders.isEmpty()
+        get() = commandOptionBuilders.isEmpty()
 
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit) {
         if (isFunctionSet()) throwUser("Cannot add subcommands as this already contains a function")

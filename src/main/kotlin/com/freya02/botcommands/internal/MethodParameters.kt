@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
+import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.ICustomResolver
@@ -24,7 +24,7 @@ class MethodParameters internal constructor(
         internal inline fun <reified R : Any> transform(
             context: BContextImpl,
             function: KFunction<*>,
-            options: Map<String, OptionBuilder> = mapOf(),
+            options: Map<String, CommandOptionBuilder> = mapOf(),
             configurationBlock: Configuration<R>.() -> Unit
         ): MethodParameters {
             val resolverContainer = context.getService<ResolverContainer>()

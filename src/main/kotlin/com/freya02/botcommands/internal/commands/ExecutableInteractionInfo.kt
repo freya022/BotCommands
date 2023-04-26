@@ -25,11 +25,11 @@ class ExecutableInteractionInfo internal constructor(
         method = builder.function
 
         if (builder is CommandBuilder) {
-            requireUser(builder.optionBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
+            requireUser(builder.commandOptionBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
                 "Function must have the same number of options declared as on the method"
             }
         } else if (builder is TextCommandVariationBuilder) {
-            requireUser(builder.optionBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
+            requireUser(builder.commandOptionBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
                 "Function must have the same number of options declared as on the method"
             }
         }

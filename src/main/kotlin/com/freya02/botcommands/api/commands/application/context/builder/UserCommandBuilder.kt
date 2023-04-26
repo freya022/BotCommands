@@ -28,21 +28,21 @@ class UserCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     fun option(declaredName: String) {
-        optionBuilders[declaredName] = UserCommandOptionBuilder(function, declaredName)
+        commandOptionBuilders[declaredName] = UserCommandOptionBuilder(function, declaredName)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun customOption(declaredName: String) {
-        optionBuilders[declaredName] = CustomOptionBuilder(function, declaredName)
+        commandOptionBuilders[declaredName] = CustomOptionBuilder(function, declaredName)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(function, declaredName, generatedValueSupplier)
+        commandOptionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(function, declaredName, generatedValueSupplier)
     }
 
     internal fun build(): UserCommandInfo {

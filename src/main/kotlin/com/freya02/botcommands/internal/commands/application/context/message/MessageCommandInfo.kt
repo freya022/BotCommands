@@ -41,9 +41,9 @@ class MessageCommandInfo internal constructor(
         parameters = MethodParameters.transform<MessageContextParameterResolver<*, *>>(
             context,
             method,
-            builder.optionBuilders
+            builder.commandOptionBuilders
         ) {
-            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is MessageCommandOptionBuilder }
+            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is MessageCommandOptionBuilder }
             optionTransformer = { kParameter, _, resolver ->
                 MessageContextCommandParameter(kParameter, resolver)
             }

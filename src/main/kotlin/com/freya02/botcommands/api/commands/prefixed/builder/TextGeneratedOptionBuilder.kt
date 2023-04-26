@@ -8,11 +8,11 @@ import com.freya02.botcommands.internal.commands.prefixed.TextGeneratedMethodPar
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
-class TextGeneratedOptionBuilder(owner: KFunction<*>, declaredName: String, val generatedValueSupplier: TextGeneratedValueSupplier) : OptionBuilder(
-    owner,
-    declaredName,
-    declaredName
-), GeneratedOptionBuilder {
+class TextGeneratedOptionBuilder(
+    owner: KFunction<*>,
+    declaredName: String,
+    val generatedValueSupplier: TextGeneratedValueSupplier
+) : OptionBuilder(owner, declaredName), GeneratedOptionBuilder {
     override fun toGeneratedMethodParameter(parameter: KParameter): GeneratedMethodParameter =
         TextGeneratedMethodParameter(parameter, this)
 }

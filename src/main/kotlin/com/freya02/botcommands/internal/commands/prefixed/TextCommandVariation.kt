@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
+import com.freya02.botcommands.api.commands.CommandOptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import com.freya02.botcommands.api.commands.prefixed.builder.TextOptionBuilder
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
@@ -43,10 +43,10 @@ class TextCommandVariation internal constructor(
         parameters = MethodParameters.transform<RegexParameterResolver<*, *>>(
             context,
             method,
-            builder.optionBuilders
+            builder.commandOptionBuilders
         ) {
-            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is TextOptionBuilder }
-            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.optionBuilders.findOption(paramName, "a text command option"), resolver) }
+            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is TextCommandOptionBuilder }
+            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.commandOptionBuilders.findOption(paramName, "a text command option"), resolver) }
         }
 
         optionParameters = parameters.filterOptions()

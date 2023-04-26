@@ -41,9 +41,9 @@ class UserCommandInfo internal constructor(
         parameters = MethodParameters.transform<UserContextParameterResolver<*, *>>(
             context,
             method,
-            builder.optionBuilders
+            builder.commandOptionBuilders
         ) {
-            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is UserCommandOptionBuilder }
+            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is UserCommandOptionBuilder }
             optionTransformer = { kParameter, _, resolver ->
                 UserContextCommandParameter(kParameter, resolver)
             }

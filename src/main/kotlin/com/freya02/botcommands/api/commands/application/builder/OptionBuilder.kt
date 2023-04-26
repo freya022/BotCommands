@@ -6,7 +6,8 @@ import com.freya02.botcommands.internal.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-abstract class OptionBuilder(val owner: KFunction<*>, val declaredName: String, val optionName: String) {
+//TODO move to common package
+abstract class OptionBuilder(val owner: KFunction<*>, val declaredName: String) {
     internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
     @Deprecated("Use 'parameter' instead, beware of array types")
     internal val type = parameter.type

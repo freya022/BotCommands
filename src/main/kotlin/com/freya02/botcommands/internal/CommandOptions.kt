@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
+import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
@@ -13,10 +13,10 @@ class CommandOptions internal constructor(
     methodParameters: List<AbstractOption>
 ) : ArrayList<AbstractOption>(methodParameters) {
     companion object {
-        internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
+        internal inline fun <reified T : CommandOptionBuilder, reified R : Any> transform(
             context: BContextImpl,
             function: KFunction<*>,
-            options: Map<String, OptionBuilder>,
+            options: Map<String, CommandOptionBuilder>,
             config: Configuration<T, R>
         ): CommandOptions {
             val resolverContainer = context.getService<ResolverContainer>()
