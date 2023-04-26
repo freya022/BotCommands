@@ -12,9 +12,11 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashCommandP
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
+import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder(
     private val context: BContextImpl,
+    private val owner: KFunction<*>,
     declaredName: String
 ) : ApplicationCommandOptionAggregateBuilder(declaredName) {
     //TODO this is incorrect, aggregates can contain other things than option mappings
@@ -33,15 +35,15 @@ class SlashCommandOptionAggregateBuilder(
 
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        optionBuilders[declaredName] = SlashCommandOptionBuilder(context, declaredName, optionName).apply(block)
+        optionBuilders[declaredName] = SlashCommandOptionBuilder(context, owner, declaredName, optionName).apply(block)
     }
 
     override fun customOption(declaredName: String) {
-        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
+        optionBuilders[declaredName] = CustomOptionBuilder(owner, declaredName)
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
+        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(owner, declaredName, generatedValueSupplier)
     }
 
     @JvmSynthetic

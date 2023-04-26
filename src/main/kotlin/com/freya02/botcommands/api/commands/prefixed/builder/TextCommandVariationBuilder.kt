@@ -18,27 +18,26 @@ class TextCommandVariationBuilder internal constructor(private val context: BCon
      */
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextOptionBuilder.() -> Unit = {}) {
-        optionBuilders[declaredName] = TextOptionBuilder(declaredName, optionName).apply(block)
+        //TODO use aggregates, don't forget to set the owner function as to respect the contract set in
+        optionBuilders[declaredName] = TextOptionBuilder(function, declaredName, optionName).apply(block)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     fun customOption(declaredName: String) {
-        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
+        optionBuilders[declaredName] = CustomOptionBuilder(function, declaredName)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     fun generatedOption(declaredName: String, generatedValueSupplier: TextGeneratedValueSupplier) {
-        optionBuilders[declaredName] = TextGeneratedOptionBuilder(declaredName, generatedValueSupplier)
+        optionBuilders[declaredName] = TextGeneratedOptionBuilder(function, declaredName, generatedValueSupplier)
     }
 
     @JvmSynthetic
     internal fun build(info: TextCommandInfo): TextCommandVariation {
-        checkFunction()
-
         return TextCommandVariation(context, info, this)
     }
 }

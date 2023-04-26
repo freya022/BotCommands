@@ -4,9 +4,11 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
+import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
-class ApplicationGeneratedOptionBuilder(declaredName: String, val generatedValueSupplier: ApplicationGeneratedValueSupplier) : OptionBuilder(
+class ApplicationGeneratedOptionBuilder(owner: KFunction<*>, declaredName: String, val generatedValueSupplier: ApplicationGeneratedValueSupplier) : OptionBuilder(
+    owner,
     declaredName,
     declaredName
 ), GeneratedOptionBuilder {

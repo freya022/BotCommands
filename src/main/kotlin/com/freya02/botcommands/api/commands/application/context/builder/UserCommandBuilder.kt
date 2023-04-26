@@ -10,12 +10,17 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import kotlin.reflect.KFunction
 
 class UserCommandBuilder internal constructor(
     private val context: BContextImpl,
     name: String,
+    function: KFunction<Any>,
     scope: CommandScope
 ) : ApplicationCommandBuilder(name), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
+    override val function = function.reflectReference()
+
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 
@@ -23,25 +28,24 @@ class UserCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     fun option(declaredName: String) {
-        optionBuilders[declaredName] = UserCommandOptionBuilder(declaredName)
+        optionBuilders[declaredName] = UserCommandOptionBuilder(function, declaredName)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun customOption(declaredName: String) {
-        optionBuilders[declaredName] = CustomOptionBuilder(declaredName)
+        optionBuilders[declaredName] = CustomOptionBuilder(function, declaredName)
     }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(declaredName, generatedValueSupplier)
+        optionBuilders[declaredName] = ApplicationGeneratedOptionBuilder(function, declaredName, generatedValueSupplier)
     }
 
     internal fun build(): UserCommandInfo {
-        checkFunction()
         return UserCommandInfo(context, this)
     }
 }

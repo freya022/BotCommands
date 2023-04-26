@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.application.slash.builder
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -12,11 +13,15 @@ import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.internal.utils.Checks
+import kotlin.reflect.KFunction
 
 abstract class SlashCommandBuilder internal constructor(
     protected val context: BContextImpl,
-    name: String
+    name: String,
+    function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder(name) {
+    final override val function: KFunction<Any> = function ?: theFakeFunction
+
     var description: String = DEFAULT_DESCRIPTION
 
     protected abstract val allowOptions: Boolean
@@ -31,10 +36,10 @@ abstract class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     @JvmOverloads
-    fun aggregate(declaredName: String, block: SlashCommandOptionAggregateBuilder.() -> Unit = {}) {
+    fun aggregate(declaredName: String, function: KFunction<*>, block: SlashCommandOptionAggregateBuilder.() -> Unit = {}) {
         if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
 
-        optionAggregateBuilders[declaredName] = SlashCommandOptionAggregateBuilder(context, declaredName)
+        optionAggregateBuilders[declaredName] = SlashCommandOptionAggregateBuilder(context, function, declaredName)
             .apply(block)
             .checkFunction()
     }
@@ -44,7 +49,7 @@ abstract class SlashCommandBuilder internal constructor(
      */
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        aggregate(declaredName) {
+        aggregate(declaredName, function) {
             option(declaredName, optionName, block)
             aggregator = ::singleAggregator
         }
@@ -54,7 +59,7 @@ abstract class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun customOption(declaredName: String) {
-        aggregate(declaredName) { //TODO Make custom aggregate and remove fake aggregator
+        aggregate(declaredName, function) { //TODO Make custom aggregate and remove fake aggregator
             customOption(declaredName)
             aggregator = ::fakeAggregator //unused
         }
@@ -64,7 +69,7 @@ abstract class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        aggregate(declaredName) { //TODO Make custom aggregate and remove fake aggregator
+        aggregate(declaredName, function) { //TODO Make custom aggregate and remove fake aggregator
             generatedOption(declaredName, generatedValueSupplier)
             aggregator = ::fakeAggregator //unused
         }
@@ -72,6 +77,9 @@ abstract class SlashCommandBuilder internal constructor(
 
     companion object {
         const val DEFAULT_DESCRIPTION = "No description"
+        val theFakeFunction = ::fakeFunction
+
+        private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
 
         suspend fun singleAggregator(
             context: BContext,
@@ -79,7 +87,7 @@ abstract class SlashCommandBuilder internal constructor(
             event: CommandInteractionPayload,
             mappings: Map<String, OptionMapping>,
             commandParameter: SlashCommandParameter
-        ) = commandParameter.resolver.resolveSuspend(context, info, event, mappings.values.first())
+        ): Nothing = TODO("remove")
 
         @Suppress("RedundantSuspendModifier", "UNUSED_PARAMETER")
         suspend fun fakeAggregator(

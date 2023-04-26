@@ -1,3 +1,5 @@
 package com.freya02.botcommands.api.commands.application.builder
 
-abstract class ApplicationCommandOptionBuilder(declaredName: String, optionName: String) : OptionBuilder(declaredName, optionName)
+import kotlin.reflect.KFunction
+
+abstract class ApplicationCommandOptionBuilder(owner: KFunction<*>, declaredName: String, optionName: String) : OptionBuilder(owner, declaredName, optionName)

@@ -18,7 +18,6 @@ class AutocompleteInfoBuilder internal constructor(private val context: BContext
     }
 
     internal fun build(): AutocompleteInfo {
-        checkFunction()
         return AutocompleteInfo(context, this)
     }
 }

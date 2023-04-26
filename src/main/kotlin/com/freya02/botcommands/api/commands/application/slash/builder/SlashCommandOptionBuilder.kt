@@ -14,8 +14,14 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.*
+import kotlin.reflect.KFunction
 
-class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
+class SlashCommandOptionBuilder(
+    private val context: BContextImpl,
+    owner: KFunction<*>,
+    declaredName: String,
+    optionName: String
+): ApplicationCommandOptionBuilder(owner, declaredName, optionName) {
     var description: String = "No description"
 
     var varArgs: Int = -1
