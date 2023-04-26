@@ -35,7 +35,6 @@ abstract class AbstractSlashCommandParameter(
 
     val options = CommandOptions.transform(
         slashCommandInfo.context,
-        slashCommandInfo.method,
         optionAggregateBuilder.commandOptionBuilders,
         Conf(slashCommandInfo, slashCmdOptionAggregateBuilders)
     )
