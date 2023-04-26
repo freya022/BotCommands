@@ -1,51 +1,42 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandParameter
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
-import net.dv8tion.jda.api.interactions.commands.OptionMapping
 
+@CommandMarker
 class SlashVararg {
-    //TODO to be removed, see SlashCommandOptionAggregateBuilder#aggregator
-    suspend fun varArgSolver(
-        context: BContext,
-        info: SlashCommandInfo,
-        event: CommandInteractionPayload,
-        mappings: Map<String, OptionMapping>,
-        commandParameter: SlashCommandParameter
-    ): List<Any?> {
-        return mappings.map { (_, mapping) -> commandParameter.resolver.resolveSuspend(context, info, event, mapping) }
+    @CommandMarker
+    fun varArgAggregator(amount: Int, vararg args: Int): List<Int?> = args.toList().let {
+        when {
+            it.size < amount -> it + arrayOfNulls(amount - it.size)
+            else -> it
+        }
     }
 
-    fun onSlashVararg(event: GuildSlashEvent, args: List<Int>) {
-
+    @CommandMarker
+    fun onSlashVararg(event: GuildSlashEvent, ints: List<Int?>) {
+        event.reply("ints: $ints").queue()
     }
 
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD) {
-            aggregate("args") {
-                option("unused", "arg_1") {
+        guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD, ::onSlashVararg) {
+            aggregate("ints", ::varArgAggregator) {
+                generatedOption("amount") { 2 }
+
+                //TODO issue with the varargs use case, is that the declared name will appear multiple times
+                // one solution could be to instead have a Map<DeclaredName, List<OptionBuilder>>
+                option("args", "arg_1") {
                     description = "1st arg"
                 }
 
-                option("unused", "arg_2") {
+                option("args", "arg_2") {
                     description = "2nd arg"
                 }
-
-                aggregator = ::varArgSolver
             }
-
-            generatedOption("guildName") {
-                it.guild!!.name
-            }
-
-            function = ::onSlashVararg
         }
     }
 }

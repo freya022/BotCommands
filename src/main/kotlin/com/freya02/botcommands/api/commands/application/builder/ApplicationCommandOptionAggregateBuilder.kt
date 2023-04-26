@@ -6,8 +6,9 @@ import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandOptionAggregateBuilder(
     owner: KFunction<*>,
-    declaredName: String
-) : CommandOptionAggregateBuilder(owner, declaredName) {
+    declaredName: String,
+    aggregator: KFunction<*>
+) : CommandOptionAggregateBuilder(owner, declaredName, aggregator) {
     abstract fun customOption(declaredName: String)
 
     abstract fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier)

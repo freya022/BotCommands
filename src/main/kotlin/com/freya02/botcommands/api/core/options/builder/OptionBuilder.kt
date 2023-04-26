@@ -7,6 +7,9 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
 abstract class OptionBuilder(val owner: KFunction<*>, val declaredName: String) {
+    /**
+     * **Note:** Could be an array parameter !
+     */
     internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
     @Deprecated("Use 'parameter' instead, beware of array types")
     internal val type = parameter.type
