@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.api.parameters.ComponentParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.MethodParameters
@@ -17,7 +16,7 @@ class ComponentDescriptor(
 
     init {
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<ComponentParameterResolver<*, *>>(context, method) {
+        parameters = MethodParameters.transform {
             optionTransformer = { parameter, _, resolver -> ComponentHandlerParameter(parameter, resolver) }
         }
 

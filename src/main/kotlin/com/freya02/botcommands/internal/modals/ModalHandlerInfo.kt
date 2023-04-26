@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.modals
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.parameters.CustomMethodParameter
@@ -32,7 +31,7 @@ class ModalHandlerInfo(
         handlerName = annotation.name
 
         @Suppress("RemoveExplicitTypeArguments") //Kotlin: Could not load module <Error module> --> Type inference is broken
-        parameters = MethodParameters.transform<ModalParameterResolver<*, *>>(context, method) {
+        parameters = MethodParameters.transform {
             optionPredicate = { it.hasAnnotation<ModalInput>() }
             optionTransformer = { parameter, _, resolver -> ModalHandlerInputParameter(parameter, resolver) }
 

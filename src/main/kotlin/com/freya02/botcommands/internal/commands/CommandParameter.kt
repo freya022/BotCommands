@@ -10,9 +10,10 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 
 abstract class CommandParameter(
-    final override val kParameter: KParameter,
     optionAggregateBuilder: OptionAggregateBuilder
 ) : MethodParameter {
+    final override val kParameter: KParameter = optionAggregateBuilder.parameter
+
     final override val methodParameterType = MethodParameterType.OPTION
 
     final override val name = optionAggregateBuilder.declaredName

@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.CommandOptionBuilder.Companion.findO
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
@@ -40,13 +39,14 @@ class TextCommandVariation internal constructor(
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<RegexParameterResolver<*, *>>(
-            context,
-            method,
+        parameters = MethodParameters.transform(
             builder.commandOptionBuilders
         ) {
             optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is TextCommandOptionBuilder }
-            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.commandOptionBuilders.findOption(paramName, "a text command option"), resolver) }
+            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(
+                builder.commandOptionBuilders.findOption(paramName, "a text command option"),
+                resolver
+            ) }
         }
 
         optionParameters = parameters.filterOptions()

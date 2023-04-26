@@ -4,14 +4,12 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
-import kotlin.reflect.KParameter
 
 class SlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
-    parameter: KParameter,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
-) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, parameter, optionAggregateBuilder) {
+) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
     override fun constructOption(
         slashCommandInfo: SlashCommandInfo,
         optionAggregateBuilders: Map<String, OptionAggregateBuilder>,

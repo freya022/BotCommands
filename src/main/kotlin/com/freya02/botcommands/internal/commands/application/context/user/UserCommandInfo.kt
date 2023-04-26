@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.application.context.builder.UserComm
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
-import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
@@ -38,9 +37,7 @@ class UserCommandInfo internal constructor(
         builder.checkEventScope<GuildUserEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<UserContextParameterResolver<*, *>>(
-            context,
-            method,
+        parameters = MethodParameters.transform(
             builder.commandOptionBuilders
         ) {
             optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is UserCommandOptionBuilder }

@@ -4,9 +4,6 @@ import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder.Companion.findOption
-import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
@@ -50,17 +47,8 @@ abstract class SlashCommandInfo internal constructor(
 
         builder.checkEventScope<GuildSlashEvent>()
 
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<SlashParameterResolver<*, *>>(
-            context,
-            method,
-            builder.commandOptionBuilders
-        ) {
-            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
-            optionTransformer = { kParameter, paramName, resolver ->
-                val optionAggregateBuilder = builder.optionAggregateBuilders.findOption<SlashCommandOptionAggregateBuilder>(paramName, "a slash command option")
-                SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, kParameter, optionAggregateBuilder)
-            }
+        parameters = MethodParameters.transform<SlashCommandOptionAggregateBuilder>(builder.optionAggregateBuilders) {
+            SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
         }
 
         //On every autocomplete handler, check if their method parameters match up with the slash command

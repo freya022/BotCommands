@@ -16,9 +16,9 @@ import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder(
     private val context: BContextImpl,
-    private val owner: KFunction<*>,
+    owner: KFunction<*>,
     declaredName: String
-) : ApplicationCommandOptionAggregateBuilder(declaredName) {
+) : ApplicationCommandOptionAggregateBuilder(owner, declaredName) {
     //TODO this is incorrect, aggregates can contain other things than option mappings
     //  Could accept a KFunction here, with no distinction in parameters,
     //  the framework would just try to push the data it had declared in the DSL

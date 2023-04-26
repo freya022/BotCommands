@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.application.context.builder.MessageC
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
-import com.freya02.botcommands.api.parameters.MessageContextParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
@@ -38,9 +37,7 @@ class MessageCommandInfo internal constructor(
         builder.checkEventScope<GuildMessageEvent>()
 
         @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<MessageContextParameterResolver<*, *>>(
-            context,
-            method,
+        parameters = MethodParameters.transform(
             builder.commandOptionBuilders
         ) {
             optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is MessageCommandOptionBuilder }

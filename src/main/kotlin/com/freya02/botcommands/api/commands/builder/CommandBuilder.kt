@@ -22,6 +22,7 @@ abstract class CommandBuilder internal constructor(override val name: String) : 
     internal var cooldownStrategy: CooldownStrategy = CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)
         private set
 
+    @Deprecated("Replaced with optionAggregateBuilders")
     @get:JvmSynthetic
     internal val commandOptionBuilders: MutableMap<String, CommandOptionBuilder> = mutableMapOf()
 

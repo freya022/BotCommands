@@ -5,10 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.Autoc
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder.Companion.findOption
-import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -36,17 +33,8 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        methodParameters = MethodParameters.transform<SlashParameterResolver<*, *>>( //Same transform method as in SlashCommandInfo, but option transformer is different
-            slashCommandInfo.context,
-            autocompleteInfo.function,
-            slashCmdOptionBuilders
-        ) {
-            optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
-            optionTransformer = { kParameter, paramName, resolver ->
-                val optionAggregateBuilder = slashCmdOptionAggregateBuilders.findOption<SlashCommandOptionAggregateBuilder>(paramName, "an autocomplete option")
-                AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, kParameter, optionAggregateBuilder)
-            }
+        methodParameters = MethodParameters.transform<SlashCommandOptionAggregateBuilder>(slashCmdOptionAggregateBuilders) {
+            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it)
         }
 
         compositeParameters = methodParameters
