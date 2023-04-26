@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.commands.application.builder.OptionAggregateBuilder
-import com.freya02.botcommands.internal.commands.application.CommandOption
+import com.freya02.botcommands.internal.AbstractOption
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -16,7 +16,8 @@ abstract class CommandParameter(
     final override val methodParameterType = MethodParameterType.OPTION
 
     final override val name = optionAggregateBuilder.declaredName
-    abstract val commandOptions: List<CommandOption>
+    //TODO rename to "options", not all options are command inputs
+    abstract val commandOptions: List<AbstractOption>
 
     final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 

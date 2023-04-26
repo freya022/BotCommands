@@ -7,6 +7,4 @@ import kotlin.reflect.KParameter
 abstract class ApplicationCommandParameter(
     parameter: KParameter,
     optionAggregateBuilder: ApplicationCommandOptionAggregateBuilder
-) : CommandParameter(parameter, optionAggregateBuilder) {
-    abstract override val commandOptions: List<ApplicationCommandOption>
-}
+) : CommandParameter(parameter, optionAggregateBuilder)

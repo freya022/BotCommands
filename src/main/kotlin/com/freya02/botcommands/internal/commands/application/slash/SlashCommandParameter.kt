@@ -12,10 +12,6 @@ class SlashCommandParameter(
     parameter: KParameter,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
 ) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, parameter, optionAggregateBuilder) {
-    @Suppress("UNCHECKED_CAST")
-    override val commandOptions: List<SlashCommandOption>
-        get() = super.commandOptions as List<SlashCommandOption>
-
     override fun constructOption(
         slashCommandInfo: SlashCommandInfo,
         optionAggregateBuilders: Map<String, OptionAggregateBuilder>,

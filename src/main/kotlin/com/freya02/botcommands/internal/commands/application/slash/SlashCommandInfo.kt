@@ -68,8 +68,11 @@ abstract class SlashCommandInfo internal constructor(
             if (slashParam.methodParameterType == MethodParameterType.OPTION) {
                 slashParam as SlashCommandParameter
 
-                slashParam.commandOptions.forEach { slashCommandOption ->
-                    slashCommandOption.autocompleteHandler?.let { handler ->
+                slashParam.commandOptions.forEach commandOptionLoop@{ commandOption ->
+                    if (commandOption !is SlashCommandOption)
+                        return@commandOptionLoop
+
+                    commandOption.autocompleteHandler?.let { handler ->
                         handler.methodParameters.forEach { autocompleteParam ->
                             val param = parameters.find { it.name == autocompleteParam.name }
                                 ?: throwUser(
@@ -77,7 +80,10 @@ abstract class SlashCommandInfo internal constructor(
                                     "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
                                 )
 
-                            requireUser(param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter), handler.autocompleteInfo.function) {
+                            requireUser(
+                                param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter),
+                                handler.autocompleteInfo.function
+                            ) {
                                 "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
                             }
                         }
