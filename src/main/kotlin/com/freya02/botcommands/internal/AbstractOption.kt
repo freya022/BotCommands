@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import kotlin.reflect.KParameter
+import kotlin.reflect.KType
 
 interface AbstractOption {
     /**
@@ -26,4 +27,6 @@ interface AbstractOption {
         get() = kParameter.index
     val isPrimitive: Boolean
         get() = kParameter.isPrimitive
+    val type: KType
+        get() = kParameter.type
 }

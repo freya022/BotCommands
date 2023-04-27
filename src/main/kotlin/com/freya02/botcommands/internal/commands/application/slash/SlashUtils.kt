@@ -31,7 +31,7 @@ internal object SlashUtils {
 
         if (defaultValue == null) return
 
-        val expectedType: KClass<*> = parameter.kParameter.type.jvmErasure
+        val expectedType: KClass<*> = parameter.type.jvmErasure
 
         requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
             "Generated value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
