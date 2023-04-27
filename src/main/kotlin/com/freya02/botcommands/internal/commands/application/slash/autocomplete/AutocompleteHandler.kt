@@ -26,7 +26,7 @@ internal class AutocompleteHandler(
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
     internal val methodParameters: MethodParameters
-    internal val compositeParameters: List<AutocompleteCommandParameter>
+    internal val compositeParameters: List<AutocompleteCommandOption>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
@@ -38,8 +38,10 @@ internal class AutocompleteHandler(
         }
 
         compositeParameters = methodParameters
-            .filter { it.methodParameterType == MethodParameterType.OPTION }
             .map { it as AutocompleteCommandParameter }
+            .flatMap { it.commandOptions }
+            .filter { it.methodParameterType == MethodParameterType.OPTION }
+            .map { it as AutocompleteCommandOption }
             .filter { it.isCompositeKey }
 
         val collectionElementType = autocompleteInfo.function.collectionElementType
