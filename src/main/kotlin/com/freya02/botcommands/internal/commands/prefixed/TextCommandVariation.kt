@@ -1,8 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.commands.CommandOptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
-import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
@@ -28,7 +27,7 @@ class TextCommandVariation internal constructor(
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
-    override val parameters: MethodParameters
+    override val parameters: List<TextCommandParameter>
     override val optionParameters: List<TextCommandParameter>
 
     val completePattern: Pattern?
@@ -38,15 +37,8 @@ class TextCommandVariation internal constructor(
     init {
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform(
-            builder.commandOptionBuilders
-        ) {
-            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is TextCommandOptionBuilder }
-            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(
-                builder.commandOptionBuilders.findOption(paramName, "a text command option"),
-                resolver
-            ) }
+        parameters = builder.optionAggregateBuilders.transform<TextCommandOptionAggregateBuilder, _> {
+            TextCommandParameter(context, it)
         }
 
         optionParameters = parameters.filterOptions()

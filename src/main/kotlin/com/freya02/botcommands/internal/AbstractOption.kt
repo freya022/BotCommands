@@ -20,6 +20,8 @@ interface AbstractOption {
     val methodParameterType: MethodParameterType
 
     val isOptional: Boolean
+    val declaredName: String
+        get() = kParameter.findDeclarationName()
     val index: Int
         get() = kParameter.index
 }

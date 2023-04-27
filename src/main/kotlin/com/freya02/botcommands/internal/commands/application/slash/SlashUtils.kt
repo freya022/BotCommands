@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.math.max
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
@@ -32,7 +31,7 @@ internal object SlashUtils {
 
         if (defaultValue == null) return
 
-        val expectedType: KClass<*> = parameter.type.jvmErasure
+        val expectedType: KClass<*> = parameter.kParameter.type.jvmErasure
 
         requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
             "Generated value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
@@ -43,15 +42,10 @@ internal object SlashUtils {
     fun SlashCommandInfo.getMethodOptions(guild: Guild?): List<OptionData> {
         val list: MutableList<OptionData> = ArrayList()
 
-        var i = 0
-		for (parameter in parameters) {
-            if (!parameter.isOption) continue
-
+		for (parameter in parameters.flatMap { it.commandOptions }) {
             if (parameter.methodParameterType != MethodParameterType.OPTION) continue
 
-            parameter as SlashCommandParameter
-
-            i++
+            parameter as SlashCommandOption
 
             val name = parameter.discordName
             val description = parameter.description
@@ -59,81 +53,77 @@ internal object SlashUtils {
             val resolver = parameter.resolver
             val optionType = resolver.optionType
 
-            for (varArgNum in 0 until max(1, parameter.varArgs)) {
-                val varArgName = name.toVarArgName(varArgNum)
+            val data = OptionData(optionType, name, description)
 
-                val data = OptionData(optionType, varArgName, description)
-
-                when (optionType) {
-                    OptionType.CHANNEL -> {
-                        //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
-                        // Otherwise set the channel types of the parameter, if available
-                        if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
-                            data.setChannelTypes(resolver.channelTypes)
-                        } else if (parameter.channelTypes.isEmpty()) {
-                            data.setChannelTypes(parameter.channelTypes)
-                        }
-                    }
-                    OptionType.INTEGER -> {
-                        parameter.range?.let {
-                            data.setMinValue(it.min.toLong())
-                            data.setMaxValue(it.max.toLong())
-                        }
-                    }
-                    OptionType.NUMBER -> {
-                        parameter.range?.let {
-                            data.setMinValue(it.min.toDouble())
-                            data.setMaxValue(it.max.toDouble())
-                        }
-                    }
-                    OptionType.STRING -> {
-                        parameter.length?.let {
-                            data.setRequiredLength(it.min, it.max)
-                        }
-                    }
-                    else -> {}
-                }
-
-                if (parameter.hasAutocomplete()) {
-                    requireUser(optionType.canSupportChoices()) {
-                        "Slash command parameter #$i does not support autocomplete"
-                    }
-
-                    data.isAutoComplete = true
-                }
-
-                if (optionType.canSupportChoices()) {
-                    var choices: Collection<Command.Choice>? = null
-
-                    if (!parameter.choices.isNullOrEmpty()) {
-                        choices = parameter.choices
-                    } else if (parameter.usePredefinedChoices) { //Opt in
-                        val predefinedChoices = resolver.getPredefinedChoices(guild)
-                        if (predefinedChoices.isEmpty())
-                            throwUser(parameter.kParameter.function, "Predefined choices were used for parameter '${parameter.name}' but no choices were returned")
-                        choices = predefinedChoices
-                    }
-
-                    if (choices != null) {
-                        requireUser(!parameter.hasAutocomplete()) {
-                            "Slash command parameter #$i cannot have autocomplete and choices at the same time"
-                        }
-
-                        data.addChoices(choices)
+            when (optionType) {
+                OptionType.CHANNEL -> {
+                    //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
+                    // Otherwise set the channel types of the parameter, if available
+                    if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
+                        data.setChannelTypes(resolver.channelTypes)
+                    } else if (parameter.channelTypes.isEmpty()) {
+                        data.setChannelTypes(parameter.channelTypes)
                     }
                 }
-
-                //If vararg then next arguments are optional
-                data.isRequired = !parameter.isOptional && parameter.isRequiredVararg(varArgNum)
-
-                list.add(data)
+                OptionType.INTEGER -> {
+                    parameter.range?.let {
+                        data.setMinValue(it.min.toLong())
+                        data.setMaxValue(it.max.toLong())
+                    }
+                }
+                OptionType.NUMBER -> {
+                    parameter.range?.let {
+                        data.setMinValue(it.min.toDouble())
+                        data.setMaxValue(it.max.toDouble())
+                    }
+                }
+                OptionType.STRING -> {
+                    parameter.length?.let {
+                        data.setRequiredLength(it.min, it.max)
+                    }
+                }
+                else -> {}
             }
+
+            if (parameter.hasAutocomplete()) {
+                requireUser(optionType.canSupportChoices(), parameter.kParameter.function) {
+                    "Slash command parameter #${parameter.index} does not support autocomplete"
+                }
+
+                data.isAutoComplete = true
+            }
+
+            if (optionType.canSupportChoices()) {
+                var choices: Collection<Command.Choice>? = null
+
+                if (!parameter.choices.isNullOrEmpty()) {
+                    choices = parameter.choices
+                } else if (parameter.usePredefinedChoices) { //Opt in
+                    val predefinedChoices = resolver.getPredefinedChoices(guild)
+                    if (predefinedChoices.isEmpty())
+                        throwUser(parameter.kParameter.function, "Predefined choices were used for parameter '${parameter.declaredName}' but no choices were returned")
+                    choices = predefinedChoices
+                }
+
+                if (choices != null) {
+                    requireUser(!parameter.hasAutocomplete(), parameter.kParameter.function) {
+                        "Slash command parameter #${parameter.index} cannot have autocomplete and choices at the same time"
+                    }
+
+                    data.addChoices(choices)
+                }
+            }
+
+            //TODO this might not be true for varargs
+            data.isRequired = !parameter.isOptional
+
+            list.add(data)
         }
 
         return list
     }
 
-    internal inline fun <reified T> ApplicationCommandBuilder.checkEventScope() {
+    internal inline fun <reified T> ApplicationCommandBuilder<*>.checkEventScope() {
         val firstParamKlass = function.valueParameters.first().type.jvmErasure
         if (topLevelBuilder.scope.isGuildOnly) {
             if (!firstParamKlass.isSubclassOf(T::class)) {
@@ -142,10 +132,5 @@ internal object SlashUtils {
         } else if (firstParamKlass.isSubclassOf(T::class)) {
             throwUser("Cannot use ${T::class.simpleName} on a global application command")
         }
-    }
-
-    internal fun String.toVarArgName(varArgNum: Int) = when (varArgNum) {
-        0 -> this
-        else -> "${this}_$varArgNum"
     }
 }

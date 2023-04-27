@@ -4,10 +4,11 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.toVarArgName
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandOption
+import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import kotlin.math.max
 
 @BService
 internal class AutocompleteListener(private val context: BContextImpl) {
@@ -19,19 +20,15 @@ internal class AutocompleteListener(private val context: BContextImpl) {
                 ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
         }
 
-        for (optionParameter in slashCommand.optionParameters) {
-            val arguments = max(1, optionParameter.varArgs)
+        for (option in slashCommand.parameters.flatMap { it.commandOptions }) {
+            if (option.methodParameterType != MethodParameterType.OPTION) continue
+            option as SlashCommandOption
 
-            for (varArgNum in 0 until arguments) {
-                val varArgName = optionParameter.discordName.toVarArgName(varArgNum)
-                if (varArgName == event.focusedOption.name) {
-                    val autocompleteHandler =
-                        optionParameter.autocompleteHandler ?: throwUser("Autocomplete handler was not found")
+            if (option.discordName == event.focusedOption.name) {
+                val autocompleteHandler = option.autocompleteHandler
+                    ?: throwUser(option.kParameter.function, "Autocomplete handler was not found on parameter '${option.declaredName}'")
 
-                    event.replyChoices(autocompleteHandler.handle(event)).queue()
-
-                    return
-                }
+                return event.replyChoices(autocompleteHandler.handle(event)).queue()
             }
         }
     }
