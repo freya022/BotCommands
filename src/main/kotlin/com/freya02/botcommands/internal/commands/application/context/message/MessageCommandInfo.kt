@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.context.message
 
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.internal.*
@@ -29,21 +29,15 @@ class MessageCommandInfo internal constructor(
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
-    override val parameters: MethodParameters
+    override val parameters: List<MessageContextCommandParameter>
 
     init {
         requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
 
         builder.checkEventScope<GuildMessageEvent>()
 
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform(
-            builder.commandOptionBuilders
-        ) {
-            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is MessageCommandOptionBuilder }
-            optionTransformer = { kParameter, _, resolver ->
-                MessageContextCommandParameter(kParameter, resolver)
-            }
+        parameters = builder.optionAggregateBuilders.transform<MessageCommandOptionAggregateBuilder, _> {
+            MessageContextCommandParameter(context, it)
         }
     }
 

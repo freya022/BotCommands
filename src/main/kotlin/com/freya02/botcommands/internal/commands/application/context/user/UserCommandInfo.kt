@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.context.user
 
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
-import com.freya02.botcommands.api.commands.application.context.builder.UserCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.context.builder.UserCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.internal.*
@@ -29,21 +29,15 @@ class UserCommandInfo internal constructor(
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
-    override val parameters: MethodParameters
+    override val parameters: List<UserContextCommandParameter>
 
     init {
         requireFirstParam(method.valueParameters, GlobalUserEvent::class)
 
         builder.checkEventScope<GuildUserEvent>()
 
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform(
-            builder.commandOptionBuilders
-        ) {
-            optionPredicate = { builder.commandOptionBuilders[it.findDeclarationName()] is UserCommandOptionBuilder }
-            optionTransformer = { kParameter, _, resolver ->
-                UserContextCommandParameter(kParameter, resolver)
-            }
+        parameters = builder.optionAggregateBuilders.transform<UserCommandOptionAggregateBuilder, _> {
+            UserContextCommandParameter(it)
         }
     }
 
