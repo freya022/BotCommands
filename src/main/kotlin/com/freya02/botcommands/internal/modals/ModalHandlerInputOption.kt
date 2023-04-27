@@ -1,17 +1,13 @@
 package com.freya02.botcommands.internal.modals
 
+import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.parameters.ModalParameterResolver
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
-class ModalHandlerInputParameter(
-    kParameter: KParameter,
+class ModalHandlerInputOption(
+    optionBuilder: OptionBuilder,
     val resolver: ModalParameterResolver<*, *>
-) : ModalHandlerParameter(kParameter) {
-    val inputName: String
-
-    init {
-        inputName = kParameter.findAnnotation<ModalInput>()!!.name
-    }
+) : ModalHandlerOption(optionBuilder) {
+    val inputName: String = kParameter.findAnnotation<ModalInput>()!!.name
 }

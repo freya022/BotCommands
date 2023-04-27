@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-abstract class OptionAggregateBuilder internal constructor(
+open class OptionAggregateBuilder internal constructor(
     /**
      * Can either be the aggregator or the command function
      *
@@ -36,7 +36,7 @@ abstract class OptionAggregateBuilder internal constructor(
     }
 
     @JvmSynthetic
-    protected operator fun plusAssign(optionBuilder: OptionBuilder) {
+    internal operator fun plusAssign(optionBuilder: OptionBuilder) {
         _optionBuilders.computeIfAbsent(optionBuilder.declaredName) { arrayListOf() }.add(optionBuilder)
     }
 

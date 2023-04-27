@@ -11,15 +11,12 @@ import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.components.ComponentHandlerParameter
-import com.freya02.botcommands.internal.components.ComponentType
-import com.freya02.botcommands.internal.components.EphemeralHandler
+import com.freya02.botcommands.internal.components.*
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
@@ -133,27 +130,12 @@ internal class ComponentsListener(
         event: GenericComponentInteractionCreateEvent, // already a BC event
         userData: Array<out String>
     ) {
-        var userArgsIndex = 0
         val args = hashMapOf<KParameter, Any?>()
         args[descriptor.method.instanceParameter!!] = descriptor.instance
         args[descriptor.method.valueParameters.first()] = event
 
         for (parameter in descriptor.parameters) {
-            val value = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    parameter as ComponentHandlerParameter
-
-                    parameter.resolver.resolve(context, descriptor, event, userData[userArgsIndex]).also {
-                        userArgsIndex++
-                    }
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-
-                    parameter.resolver.resolveSuspend(context, descriptor, event)
-                }
-                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
-            }
+            val value = computeAggregate(context, event, parameter, descriptor, userData.iterator())
 
             if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
                 continue
@@ -178,5 +160,47 @@ internal class ComponentsListener(
             event.isAcknowledged -> event.hook.send(generalErrorMsg, ephemeral = true).queue()
             else -> event.reply_(generalErrorMsg, ephemeral = true).queue()
         }
+    }
+
+    private suspend fun computeAggregate(
+        context: BContextImpl,
+        event: GenericComponentInteractionCreateEvent,
+        parameter: ComponentHandlerParameter,
+        descriptor: ComponentDescriptor,
+        userDataIterator: Iterator<String>
+    ): Any? {
+        val aggregator = parameter.aggregator
+        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
+        arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+        arguments[aggregator.valueParameters.first()] = event
+
+        for (option in parameter.options) {
+            val value = when (option.methodParameterType) {
+                MethodParameterType.OPTION -> {
+                    option as ComponentHandlerOption
+
+                    option.resolver.resolve(context, descriptor, event, userDataIterator.next())
+                }
+                MethodParameterType.CUSTOM -> {
+                    option as CustomMethodOption
+
+                    option.resolver.resolveSuspend(context, descriptor, event)
+                }
+                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+            }
+
+            if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
+                continue
+            } else if (value == null && !option.isOptional) { // Not a kotlin optional and not nullable
+                throwUser(
+                    aggregator,
+                    "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null"
+                )
+            }
+
+            arguments[option.kParameter] = value
+        }
+
+        return aggregator.callSuspendBy(arguments)
     }
 }

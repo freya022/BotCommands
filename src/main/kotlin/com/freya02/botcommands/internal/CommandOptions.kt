@@ -1,17 +1,17 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
+import com.freya02.botcommands.api.core.options.builder.OptionBuilder
+import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 object CommandOptions {
-    internal inline fun <reified T : CommandOptionBuilder, reified R : Any> transform(
+    internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
         context: BContextImpl,
         aggregateBuilder: OptionAggregateBuilder,
         config: Configuration<T, R>
@@ -39,7 +39,18 @@ object CommandOptions {
                     }
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedMethodParameter()
-                is CustomOptionBuilder -> TODO()
+                is CustomOptionBuilder -> {
+                    val kParameter = optionBuilder.parameter
+                    val parameter = kParameter.wrap().toVarargElementType()
+
+                    when (val resolver = resolverContainer.getResolver(parameter)) {
+                        is ICustomResolver<*, *> -> CustomMethodOption(kParameter, resolver)
+                        else -> throwUser(
+                            optionBuilder.owner,
+                            "Expected a resolver of type ${ICustomResolver::class.simpleNestedName} but ${resolver.javaClass.simpleNestedName} does not support it"
+                        )
+                    }
+                }
                 else -> throwInternal("Unsupported option builder: $optionBuilder")
             }
         }
