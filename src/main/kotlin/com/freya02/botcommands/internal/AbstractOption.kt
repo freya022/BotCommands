@@ -24,4 +24,6 @@ interface AbstractOption {
         get() = kParameter.findDeclarationName()
     val index: Int
         get() = kParameter.index
+    val isPrimitive: Boolean
+        get() = kParameter.isPrimitive
 }

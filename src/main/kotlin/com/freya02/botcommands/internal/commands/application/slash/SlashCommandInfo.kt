@@ -136,7 +136,7 @@ abstract class SlashCommandInfo internal constructor(
                         } else {
                             //Nullable
                             aggregatorArguments[option.kParameter] = when {
-                                parameter.isPrimitive -> 0
+                                option.isPrimitive -> 0
                                 else -> null
                             }
                             continue
