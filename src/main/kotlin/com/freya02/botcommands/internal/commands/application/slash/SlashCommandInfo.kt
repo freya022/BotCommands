@@ -102,14 +102,14 @@ abstract class SlashCommandInfo internal constructor(
     ): Boolean where T : CommandInteractionPayload,
             T : Event {
         parameterLoop@ for (parameter in methodParameters) {
-            if (!computeAggregate(context, event, objects, parameter))
+            if (!insertAggregate(context, event, objects, parameter))
                 return false
         }
 
         return true
     }
 
-    private suspend fun <T> computeAggregate(
+    private suspend fun <T> insertAggregate(
         context: BContextImpl,
         event: T,
         objects: MutableMap<KParameter, Any?>,
