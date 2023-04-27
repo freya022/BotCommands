@@ -16,7 +16,7 @@ abstract class CommandParameter(
 ) : MethodParameter {
     final override val kParameter: KParameter = optionAggregateBuilder.parameter
     val aggregator = optionAggregateBuilder.aggregator
-    val aggregatorInstance = optionAggregateBuilder.aggregator
+    val aggregatorInstance = context.serviceContainer.getFunctionService(optionAggregateBuilder.aggregator)
 
     final override val methodParameterType = MethodParameterType.OPTION
 
