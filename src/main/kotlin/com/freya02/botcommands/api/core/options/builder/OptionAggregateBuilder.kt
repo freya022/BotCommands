@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-abstract class OptionAggregateBuilder(
+abstract class OptionAggregateBuilder internal constructor(
     /**
      * Can either be the aggregator or the command function
      *
@@ -19,8 +19,10 @@ abstract class OptionAggregateBuilder(
     // using MethodHandle#invoke, transforming *at most* one array parameter with MH#asCollector
     aggregator: KFunction<*>
 ) {
+    private val _optionBuilders: MutableMap<String, MutableList<OptionBuilder>> = mutableMapOf()
     @get:JvmSynthetic
-    internal val optionBuilders: MutableMap<String, OptionBuilder> = mutableMapOf()
+    internal val optionBuilders: Map<String, List<OptionBuilder>>
+        get() = _optionBuilders
     @get:JvmSynthetic
     internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
 
@@ -31,6 +33,11 @@ abstract class OptionAggregateBuilder(
         requireUser(aggregator.returnType != parameter.type, aggregator) {
             "Aggregator should have the same return type as the parameter (${parameter.type})"
         }
+    }
+
+    @JvmSynthetic
+    protected operator fun plusAssign(optionBuilder: OptionBuilder) {
+        _optionBuilders.computeIfAbsent(optionBuilder.declaredName) { arrayListOf() }.add(optionBuilder)
     }
 
     companion object {

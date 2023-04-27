@@ -6,9 +6,15 @@ import com.freya02.botcommands.internal.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.valueParameters
 
-abstract class OptionBuilder(val owner: KFunction<*>, val declaredName: String) {
+abstract class OptionBuilder(
+    val owner: KFunction<*>,
     /**
-     * **Note:** Could be an array parameter !
+     * Is not unique ! (varargs for example)
+     */
+    val declaredName: String
+) {
+    /**
+     * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options
      */
     internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
     @Deprecated("Use 'parameter' instead, beware of array types")

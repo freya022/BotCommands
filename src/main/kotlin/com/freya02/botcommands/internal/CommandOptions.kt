@@ -1,30 +1,31 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.parameters.ResolverContainer
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
-import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
+import kotlin.reflect.full.createType
+import kotlin.reflect.jvm.jvmErasure
 
 object CommandOptions {
     internal inline fun <reified T : CommandOptionBuilder, reified R : Any> transform(
         context: BContextImpl,
-        options: Map<String, OptionBuilder>,
+        options: Map<String, List<OptionBuilder>>,
         config: Configuration<T, R>
     ): List<AbstractOption> {
         val resolverContainer = context.getService<ResolverContainer>()
 
-        return options.values.map { optionBuilder ->
+        return options.values.flatten().map { optionBuilder ->
             val kParameter = optionBuilder.parameter
             return@map when (optionBuilder) {
                 is T -> {
                     val parameter = when {
-                        optionBuilder is SlashCommandOptionBuilder && optionBuilder.varArgs > 0 -> {
-                            val elementsType = kParameter.collectionElementType
-                                ?: throwUser(kParameter.function, "List parameters must have a concrete element type")
+                        kParameter.isVararg -> {
+                            val type = kParameter.type
+                            //kotlin moment
+                            val elementsType = type.jvmErasure.java.componentType.kotlin
+                                .createType(type.arguments, type.isMarkedNullable, type.annotations)
                             kParameter.wrap().copy(type = elementsType)
                         }
 

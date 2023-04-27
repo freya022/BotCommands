@@ -27,8 +27,6 @@ class SlashVararg {
             aggregate("ints", ::varArgAggregator) {
                 generatedOption("amount") { 2 }
 
-                //TODO issue with the varargs use case, is that the declared name will appear multiple times
-                // one solution could be to instead have a Map<DeclaredName, List<OptionBuilder>>
                 option("args", "arg_1") {
                     description = "1st arg"
                 }

@@ -24,7 +24,9 @@ class SlashCommandOptionBuilder(
 ): ApplicationCommandOptionBuilder(owner, declaredName, optionName) {
     var description: String = "No description"
 
+    @Deprecated("Replaced with aggregates")
     var varArgs: Int = -1
+    @Deprecated("Replaced with aggregates")
     var requiredVarArgs: Int = 0
         set(value) {
             Checks.check(value <= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
