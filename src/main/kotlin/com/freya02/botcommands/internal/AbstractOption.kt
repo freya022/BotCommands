@@ -20,4 +20,6 @@ interface AbstractOption {
     val methodParameterType: MethodParameterType
 
     val isOptional: Boolean
+    val index: Int
+        get() = kParameter.index
 }

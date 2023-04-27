@@ -44,6 +44,7 @@ abstract class SlashCommandBuilder internal constructor(
         const val DEFAULT_DESCRIPTION = "No description"
         val theFakeFunction = ::fakeFunction
 
+        //TODO move function to service, should fix KFunction#reflectReference
         @Suppress("UNUSED_PARAMETER")
         private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
     }

@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
+import kotlin.reflect.KFunction
 
 abstract class TextCommandBuilder internal constructor(protected val context: BContextImpl, name: String) : CommandBuilder(name) {
     @get:JvmSynthetic
@@ -45,8 +46,9 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
         subcommands += TextSubcommandBuilder(context, name, this).apply(block)
     }
 
-    fun variation(block: TextCommandVariationBuilder.() -> Unit) {
-        variations += TextCommandVariationBuilder(context).apply(block)
+    @JvmOverloads
+    fun variation(function: KFunction<Any>, block: TextCommandVariationBuilder.() -> Unit = {}) {
+        variations += TextCommandVariationBuilder(context, function).apply(block)
     }
 
     fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {

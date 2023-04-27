@@ -68,7 +68,7 @@ internal fun checkTestCommand(manager: IApplicationCommandManager, func: KFuncti
     return true
 }
 
-internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
+internal fun CommandBuilder<Any?>.fillCommandBuilder(func: KFunction<*>) {
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
         cooldown {
             scope = cooldownAnnotation.cooldownScope

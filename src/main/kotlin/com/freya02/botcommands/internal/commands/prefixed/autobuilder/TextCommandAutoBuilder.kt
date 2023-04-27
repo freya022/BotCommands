@@ -14,7 +14,10 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommand
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.autobuilder.*
+import com.freya02.botcommands.internal.commands.autobuilder.asCommandInstance
+import com.freya02.botcommands.internal.commands.autobuilder.castFunction
+import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
@@ -124,7 +127,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
             .variations
             .sortedWith(TextCommandComparator(context)) //Sort variations as to put most complex variations first, and fallback last
             .forEach {
-                variation {
+                variation(it.func.castFunction()) {
                     try {
                         processVariation(it)
                     } catch (e: Exception) {
@@ -135,8 +138,6 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
     }
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
-        addFunction(metadata.func)
-
         processOptions(metadata.func, metadata.instance, metadata.path)
     }
 
