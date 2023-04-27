@@ -14,9 +14,6 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
@@ -32,7 +29,7 @@ class TextCommandVariation internal constructor(
     override val parameters: List<TextCommandParameter>
     override val optionParameters: List<TextCommandParameter>
 
-    val completePattern: Pattern?
+    val completePattern: Regex?
 
     private val useTokenizedEvent: Boolean
 
@@ -55,7 +52,7 @@ class TextCommandVariation internal constructor(
         jdaEvent: MessageReceivedEvent,
         cooldownService: CooldownService,
         args: String,
-        matcher: Matcher?
+        matchResult: MatchResult?
     ): ExecutionResult {
         val event = when {
             useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
@@ -66,9 +63,9 @@ class TextCommandVariation internal constructor(
         objects[method.instanceParameter!!] = instance
         objects[method.nonInstanceParameters.first()] = event
 
-        val groupIndex = AtomicInteger(1)
+        val groupsIterator = matchResult?.groups?.iterator()
         for (parameter in parameters) {
-            val (value, result) = computeAggregate(context, event, parameter, matcher, groupIndex, args)
+            val (value, result) = computeAggregate(event, parameter, groupsIterator, args)
             if (result != null)
                 return result
 
@@ -83,11 +80,9 @@ class TextCommandVariation internal constructor(
     }
 
     private suspend fun computeAggregate(
-        context: BContextImpl,
         event: BaseCommandEvent,
         parameter: TextCommandParameter,
-        matcher: Matcher?,
-        groupIndex: AtomicInteger,
+        groupsIterator: Iterator<MatchGroup?>?,
         args: String
     ): Pair<Any?, ExecutionResult?> {
         val aggregator = parameter.aggregator
@@ -98,7 +93,7 @@ class TextCommandVariation internal constructor(
         for (option in parameter.commandOptions) {
             aggregatorArguments[option.kParameter] = when (option.methodParameterType) {
                 MethodParameterType.OPTION -> {
-                    matcher ?: throwInternal("No matcher passed for a regex command")
+                    groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 
                     option as TextCommandOption
 
@@ -106,12 +101,13 @@ class TextCommandVariation internal constructor(
                     val groupCount = option.groupCount
                     val groups = arrayOfNulls<String>(groupCount)
                     for (j in 0 until groupCount) {
-                        groups[j] = matcher.group(groupIndex.getAndIncrement())
-                        if (groups[j] != null) found++
+                        groups[j] = groupsIterator.next()?.value.also {
+                            if (it != null) found++
+                        }
                     }
 
                     if (found == groupCount) { //Found all the groups
-                        val resolved = option.resolver.resolveSuspend(context, this, event, groups)
+                        val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
                         //Regex matched but could not be resolved
                         // if optional then it's ok
                         if (resolved == null && !option.isOptional) {
@@ -142,7 +138,7 @@ class TextCommandVariation internal constructor(
                 MethodParameterType.CUSTOM -> {
                     option as CustomMethodOption
 
-                    option.resolver.resolveSuspend(context, this, event)
+                    option.resolver.resolveSuspend(event.context, this, event)
                 }
                 MethodParameterType.GENERATED -> {
                     option as TextGeneratedMethodParameter

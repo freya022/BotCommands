@@ -6,8 +6,10 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import java.util.regex.Pattern
 
 internal object CommandPattern {
-    fun of(variation: TextCommandVariation): Pattern {
-        val optionParameters: List<TextCommandParameter> = variation.optionParameters
+    fun of(variation: TextCommandVariation): Regex {
+        val optionParameters: List<TextCommandOption> = variation.parameters
+            .flatMap { it.commandOptions }
+            .filterIsInstance<TextCommandOption>()
         val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
 
         val patterns = optionParameters.map { ParameterPattern(it.resolver, it.isOptional, hasMultipleQuotable) }
@@ -16,7 +18,7 @@ internal object CommandPattern {
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
         val exampleStr = optionParameters.filter { !it.isOptional }.joinToString(" ") { it.resolver.testExample }
-        require(pattern.matcher(exampleStr).matches()) {
+        require(pattern.matches(exampleStr)) {
             """
             Failed building pattern for method ${variation.method.shortSignature} with pattern '$pattern' and example '$exampleStr'
             You can try to either rearrange the arguments as to make a parse-able command, especially moving parameters which are parsed from strings, or, use slash commands""".trimIndent()
@@ -57,7 +59,7 @@ internal object CommandPattern {
     }
 
     @JvmStatic
-    fun joinPatterns(patterns: List<ParameterPattern>): Pattern {
+    fun joinPatterns(patterns: List<ParameterPattern>): Regex {
         // The space must stick to the optional part when in between, while being the nearest from the middle point
         // So if arg0 is optional, but arg1 is not, the space goes on the right part of the regex of arg0
         // If arg0 is required, but arg1 is optional, the space goes on the left part of the regex of arg1
@@ -83,6 +85,6 @@ internal object CommandPattern {
                 val position = positions[i]
                 append(pattern.toString(position))
             }
-        }.let { Pattern.compile(it) }
+        }.let { it.toRegex() }
     }
 }
