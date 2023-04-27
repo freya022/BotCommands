@@ -35,8 +35,5 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
 
     companion object {
         const val DEFAULT_DEFAULT_LOCKED = false
-
-        //The types should not matter as the checks are made against the command function
-        fun singleAggregator(it: Any) = it
     }
 }

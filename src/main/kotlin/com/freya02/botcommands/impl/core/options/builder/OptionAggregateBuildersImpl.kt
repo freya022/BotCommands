@@ -1,9 +1,9 @@
 package com.freya02.botcommands.impl.core.options.builder
 
-import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import kotlin.reflect.KFunction
 
+//TODO fix package
 internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     private val owner: KFunction<*>,
     val aggregateConstructor: (declaredName: String, owner: KFunction<*>, aggregator: KFunction<*>) -> T
@@ -16,10 +16,16 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(declaredName, owner, ApplicationCommandBuilder.Companion::singleAggregator, block)
+        aggregate(declaredName, owner, ::singleAggregator, block)
     }
 
     private fun aggregate(declaredName: String, owner: KFunction<*>, aggregator: KFunction<*>, block: T.() -> Unit) {
         optionAggregateBuilders[declaredName] = aggregateConstructor(declaredName, owner, aggregator).apply(block)
+    }
+
+    companion object {
+        //TODO move function to service, should fix KFunction#reflectReference
+        //The types should not matter as the checks are made against the command function
+        fun singleAggregator(it: Any) = it
     }
 }
