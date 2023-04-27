@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
+import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
@@ -17,9 +18,9 @@ object CommandOptions {
         val resolverContainer = context.getService<ResolverContainer>()
 
         return options.values.flatten().map { optionBuilder ->
-            val kParameter = optionBuilder.parameter
-            return@map when (optionBuilder) {
+            when (optionBuilder) {
                 is T -> {
+                    val kParameter = optionBuilder.parameter
                     val parameter = when {
                         kParameter.isVararg -> {
                             val type = kParameter.type
@@ -40,7 +41,8 @@ object CommandOptions {
                         )
                     }
                 }
-                is GeneratedOptionBuilder -> optionBuilder.toGeneratedMethodParameter(kParameter)
+                is GeneratedOptionBuilder -> optionBuilder.toGeneratedMethodParameter()
+                is CustomOptionBuilder -> TODO()
                 else -> throwInternal("Unsupported option builder: $optionBuilder")
             }
         }
