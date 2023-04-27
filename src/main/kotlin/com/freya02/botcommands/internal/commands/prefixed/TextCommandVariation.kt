@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
@@ -7,12 +8,13 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import kotlin.reflect.KParameter
@@ -50,77 +52,27 @@ class TextCommandVariation internal constructor(
     }
 
     internal suspend fun execute(
-        _event: MessageReceivedEvent,
+        jdaEvent: MessageReceivedEvent,
         cooldownService: CooldownService,
         args: String,
         matcher: Matcher?
     ): ExecutionResult {
         val event = when {
-            useTokenizedEvent -> CommandEventImpl.create(context, _event, args)
-            else -> BaseCommandEventImpl(context, _event, args)
+            useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
+            else -> BaseCommandEventImpl(context, jdaEvent, args)
         }
 
         val objects: MutableMap<KParameter, Any?> = hashMapOf()
         objects[method.instanceParameter!!] = instance
         objects[method.nonInstanceParameters.first()] = event
 
-        var groupIndex = 1
-        parameterLoop@for (parameter in parameters) {
-            objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    matcher ?: throwInternal("No matcher passed for a regex command")
+        val groupIndex = AtomicInteger(1)
+        for (parameter in parameters) {
+            val (value, result) = computeAggregate(context, event, parameter, matcher, groupIndex, args)
+            if (result != null)
+                return result
 
-                    parameter as TextCommandParameter
-
-                    var found = 0
-                    val groupCount = parameter.groupCount
-                    val groups = arrayOfNulls<String>(groupCount)
-                    for (j in 0 until groupCount) {
-                        groups[j] = matcher.group(groupIndex++)
-                        if (groups[j] != null) found++
-                    }
-
-                    if (found == groupCount) { //Found all the groups
-                        val resolved = parameter.resolver.resolveSuspend(context, this, event, groups)
-                        //Regex matched but could not be resolved
-                        // if optional then it's ok
-                        if (resolved == null && !parameter.isOptional) {
-                            return ExecutionResult.CONTINUE
-                        }
-
-                        resolved
-                    } else if (!parameter.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                        logger.warn(
-                            "Could not find parameter #{} in {} for input args {}",
-                            parameter.index,
-                            method.shortSignatureNoSrc,
-                            args
-                        )
-
-                        return ExecutionResult.CONTINUE
-                    } else { //Parameter is optional
-                        if (parameter.kParameter.isOptional) {
-                            continue@parameterLoop
-                        }
-
-                        when {
-                            parameter.isPrimitive -> 0
-                            else -> null
-                        }
-                    }
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-
-                    parameter.resolver.resolveSuspend(context, this, event)
-                }
-                MethodParameterType.GENERATED -> {
-                    parameter as TextGeneratedMethodParameter
-
-                    parameter.generatedValueSupplier.getDefaultValue(event)
-                }
-                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
-            }
+            objects[parameter.kParameter] = value
         }
 
         cooldownService.applyCooldown(info, event)
@@ -128,6 +80,80 @@ class TextCommandVariation internal constructor(
         method.callSuspendBy(objects)
 
         return ExecutionResult.OK
+    }
+
+    private suspend fun computeAggregate(
+        context: BContextImpl,
+        event: BaseCommandEvent,
+        parameter: TextCommandParameter,
+        matcher: Matcher?,
+        groupIndex: AtomicInteger,
+        args: String
+    ): Pair<Any?, ExecutionResult?> {
+        val aggregator = parameter.aggregator
+        val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
+        aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+        aggregatorArguments[aggregator.valueParameters.first()] = event
+
+        for (option in parameter.commandOptions) {
+            aggregatorArguments[option.kParameter] = when (option.methodParameterType) {
+                MethodParameterType.OPTION -> {
+                    matcher ?: throwInternal("No matcher passed for a regex command")
+
+                    option as TextCommandOption
+
+                    var found = 0
+                    val groupCount = option.groupCount
+                    val groups = arrayOfNulls<String>(groupCount)
+                    for (j in 0 until groupCount) {
+                        groups[j] = matcher.group(groupIndex.getAndIncrement())
+                        if (groups[j] != null) found++
+                    }
+
+                    if (found == groupCount) { //Found all the groups
+                        val resolved = option.resolver.resolveSuspend(context, this, event, groups)
+                        //Regex matched but could not be resolved
+                        // if optional then it's ok
+                        if (resolved == null && !option.isOptional) {
+                            return Pair(null, ExecutionResult.CONTINUE)
+                        }
+
+                        resolved
+                    } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                        logger.warn(
+                            "Could not find parameter #{} in {} for input args {}",
+                            option.index,
+                            aggregator.shortSignatureNoSrc,
+                            args
+                        )
+
+                        return Pair(null, ExecutionResult.CONTINUE)
+                    } else { //Parameter is optional
+                        if (option.kParameter.isOptional) {
+                            continue
+                        }
+
+                        when {
+                            option.isPrimitive -> 0
+                            else -> null
+                        }
+                    }
+                }
+                MethodParameterType.CUSTOM -> {
+                    option as CustomMethodOption
+
+                    option.resolver.resolveSuspend(context, this, event)
+                }
+                MethodParameterType.GENERATED -> {
+                    option as TextGeneratedMethodParameter
+
+                    option.generatedValueSupplier.getDefaultValue(event)
+                }
+                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+            }
+        }
+
+        return Pair(aggregator.callSuspendBy(aggregatorArguments), null)
     }
 
     companion object {
