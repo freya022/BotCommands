@@ -45,12 +45,16 @@ class MessageCommandInfo internal constructor(
     internal suspend fun execute(
         context: BContextImpl,
         cooldownService: CooldownService,
-        event: MessageContextInteractionEvent
+        jdaEvent: MessageContextInteractionEvent
     ): Boolean {
+        val event = when {
+            isGuildOnly -> GuildMessageEvent(context, jdaEvent)
+            else -> GlobalMessageEvent(context, jdaEvent)
+        }
+
         val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
         arguments[method.instanceParameter!!] = instance
-        arguments[method.valueParameters.first()] =
-            if (isGuildOnly) GuildMessageEvent(context, event) else GlobalMessageEvent(context, event)
+        arguments[method.valueParameters.first()] = event
 
         for (parameter in parameters) {
             val value = computeAggregate(context, event, parameter)
@@ -71,12 +75,11 @@ class MessageCommandInfo internal constructor(
         return true
     }
 
-    private suspend fun computeAggregate(context: BContextImpl, event: MessageContextInteractionEvent, parameter: MessageContextCommandParameter): Any? {
+    private suspend fun computeAggregate(context: BContextImpl, event: GlobalMessageEvent, parameter: MessageContextCommandParameter): Any? {
         val aggregator = parameter.aggregator
         val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
         arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        arguments[aggregator.valueParameters.first()] =
-            if (isGuildOnly) GuildMessageEvent(context, event) else GlobalMessageEvent(context, event)
+        arguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
             val value = when (option.methodParameterType) {
