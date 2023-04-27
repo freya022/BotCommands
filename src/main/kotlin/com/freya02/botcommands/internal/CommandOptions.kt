@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
-import kotlin.reflect.full.valueParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 
 object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
@@ -20,8 +20,9 @@ object CommandOptions {
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
 
-        requireUser(options.size == aggregator.valueParameters.size, aggregator) {
-            "Aggregator should have the same number of parameters as there is options, found ${options.size} options and ${aggregator.valueParameters.size} parameters"
+        requireUser(options.size == aggregator.nonInstanceParameters.size - 1, aggregator) {
+            "Aggregator should have the same number of parameters as there is options, found ${options.size} options and ${aggregator.nonInstanceParameters.size - 1} parameters, " +
+                    "you may have forgotten to put the event as the first parameter"
         }
 
         return options.values.flatten().map { optionBuilder ->
