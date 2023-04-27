@@ -9,16 +9,14 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommandI
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.toVarArgName
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
-import kotlin.math.max
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -53,27 +51,23 @@ abstract class SlashCommandInfo internal constructor(
 
         //On every autocomplete handler, check if their method parameters match up with the slash command
         parameters.forEach { slashParam ->
-            if (slashParam.methodParameterType == MethodParameterType.OPTION) {
-                slashParam as SlashCommandParameter
+            for (commandOption in slashParam.commandOptions) {
+                if (commandOption !is SlashCommandOption)
+                    continue
 
-                slashParam.commandOptions.forEach commandOptionLoop@{ commandOption ->
-                    if (commandOption !is SlashCommandOption)
-                        return@commandOptionLoop
+                commandOption.autocompleteHandler?.let { handler ->
+                    handler.methodParameters.forEach { autocompleteParam ->
+                        val param = parameters.find { it.name == autocompleteParam.name }
+                            ?: throwUser(
+                                handler.autocompleteInfo.function,
+                                "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
+                            )
 
-                    commandOption.autocompleteHandler?.let { handler ->
-                        handler.methodParameters.forEach { autocompleteParam ->
-                            val param = parameters.find { it.name == autocompleteParam.name }
-                                ?: throwUser(
-                                    handler.autocompleteInfo.function,
-                                    "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
-                                )
-
-                            requireUser(
-                                param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter),
-                                handler.autocompleteInfo.function
-                            ) {
-                                "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
-                            }
+                        requireUser(
+                            param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter),
+                            handler.autocompleteInfo.function
+                        ) {
+                            "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
                         }
                     }
                 }
@@ -81,11 +75,14 @@ abstract class SlashCommandInfo internal constructor(
         }
     }
 
-    internal suspend fun execute(event: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
+    internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
+        val event = when {
+            topLevelInstance.isGuildOnly -> GuildSlashEvent(context, jdaEvent)
+            else -> GlobalSlashEventImpl(context, jdaEvent)
+        }
         val objects: MutableMap<KParameter, Any?> = mutableMapOf()
         objects[method.instanceParameter!!] = instance
-        objects[method.valueParameters.first()] =
-            if (topLevelInstance.isGuildOnly) GuildSlashEvent(context, event) else GlobalSlashEventImpl(context, event)
+        objects[method.valueParameters.first()] = event
 
         if (!putSlashOptions(event, objects, parameters)) {
             return false
@@ -101,87 +98,97 @@ abstract class SlashCommandInfo internal constructor(
     internal suspend fun <T> putSlashOptions(
         event: T,
         objects: MutableMap<KParameter, Any?>,
-        methodParameters: MethodParameters
+        methodParameters: List<AbstractSlashCommandParameter>
     ): Boolean where T : CommandInteractionPayload,
             T : Event {
         parameterLoop@ for (parameter in methodParameters) {
-            if (parameter.methodParameterType == MethodParameterType.OPTION) {
-                parameter as AbstractSlashCommandParameter
+            if (!computeAggregate(context, event, objects, parameter))
+                return false
+        }
 
-                optionLoop@ for (option in parameter.commandOptions) {
-                    val arguments = max(1, option.varArgs)
-                    val objectList: MutableList<Any?> = arrayOfSize(arguments)
+        return true
+    }
 
-                    val optionName = option.discordName
-                    for (varArgNum in 0 until arguments) {
-                        val varArgName = optionName.toVarArgName(varArgNum)
-                        val optionMapping = event.getOption(varArgName)
-                            ?: if (option.isVarArg) {
-                                //Replace with null as it's a list
-                                objectList += null
-                                continue //Continue looking at varargs
-                            } else if (parameter.isOptional) { //Default or nullable
-                                //Put null/default value if parameter is not a kotlin default value
-                                if (!parameter.kParameter.isOptional) {
-                                    objectList += when {
-                                        parameter.isPrimitive -> 0
-                                        else -> null
-                                    }
-                                    continue //Continue looking at varargs
-                                } else {
-                                    continue@optionLoop //Kotlin default value, don't add anything to the parameters map
-                                }
-                            } else {
-                                if (event is CommandAutoCompleteInteractionEvent) continue@optionLoop
+    private suspend fun <T> computeAggregate(
+        context: BContextImpl,
+        event: T,
+        objects: MutableMap<KParameter, Any?>,
+        parameter: AbstractSlashCommandParameter
+    ): Boolean where T : CommandInteractionPayload,
+                     T : Event {
+        val aggregator = parameter.aggregator
+        val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
+        aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+        aggregatorArguments[aggregator.valueParameters.first()] = event
 
-                                throwUser("Slash parameter couldn't be resolved at parameter " + parameter.name + " (" + varArgName + ")")
+        for (option in parameter.commandOptions) {
+            if (option.methodParameterType == MethodParameterType.OPTION) {
+                option as AbstractSlashCommandOption
+
+                val optionName = option.discordName
+                val optionMapping = event.getOption(optionName)
+                    ?: if (option.isVarArg) {
+                        continue //Continue looking at other options
+                    } else if (parameter.isOptional) { //Default or nullable
+                        //Put null/default value if parameter is not a kotlin default value
+                        if (parameter.kParameter.isOptional) {
+                            continue //Kotlin default value, don't add anything to the parameters map
+                        } else {
+                            //Nullable
+                            aggregatorArguments[option.kParameter] = when {
+                                parameter.isPrimitive -> 0
+                                else -> null
                             }
-
-                        val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
-                        if (resolved == null) {
-                            if (event is SlashCommandInteractionEvent) {
-                                event.reply(
-                                    context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                        parameter.name,
-                                        parameter.type.jvmErasure.simpleName
-                                    )
-                                )
-                                    .setEphemeral(true)
-                                    .queue()
-                            }
-
-                            //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                            logger.trace(
-                                "The parameter '{}' of value '{}' could not be resolved into a {}",
-                                parameter.name,
-                                optionMapping.asString,
-                                parameter.type.jvmErasure.simpleName
-                            )
-
-                            return false
+                            continue
                         }
+                    } else {
+                        //TODO might need testing
+                        if (event is CommandAutoCompleteInteractionEvent) continue
 
-                        objectList.add(resolved)
+                        throwUser("Slash parameter couldn't be resolved at parameter ${parameter.name} ($optionName)")
                     }
 
-                    //TODO aggregate values
-                    objects[parameter.kParameter] = if (option.isVarArg) objectList else objectList[0]
+                val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
+                if (resolved == null) {
+                    if (event is SlashCommandInteractionEvent) {
+                        event.reply(
+                            context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
+                                parameter.name,
+                                parameter.type.jvmErasure.simpleName
+                            )
+                        )
+                            .setEphemeral(true)
+                            .queue()
+                    }
+
+                    //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+                    logger.trace(
+                        "The parameter '{}' of value '{}' could not be resolved into a {}",
+                        parameter.name,
+                        optionMapping.asString,
+                        parameter.type.jvmErasure.simpleName
+                    )
+
+                    return false
                 }
-            } else if (parameter.methodParameterType == MethodParameterType.CUSTOM) {
-                parameter as CustomMethodParameter
 
-                objects[parameter.kParameter] = parameter.resolver.resolveSuspend(context, this, event)
-            } else if (parameter.methodParameterType == MethodParameterType.GENERATED) {
-                parameter as ApplicationGeneratedMethodParameter
+                aggregatorArguments[option.kParameter] = resolved
+            } else if (option.methodParameterType == MethodParameterType.CUSTOM) {
+                option as CustomMethodOption
 
-                val defaultVal = parameter.generatedValueSupplier.getDefaultValue(event)
-                checkDefaultValue(parameter, defaultVal)
+                aggregatorArguments[option.kParameter] = option.resolver.resolveSuspend(context, this, event)
+            } else if (option.methodParameterType == MethodParameterType.GENERATED) {
+                option as ApplicationGeneratedMethodParameter
 
-                objects[parameter.kParameter] = defaultVal
+                aggregatorArguments[option.kParameter] = option.generatedValueSupplier
+                    .getDefaultValue(event)
+                    .also { checkDefaultValue(option, it) }
             } else {
-                throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
+                throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
             }
         }
+
+        objects[parameter.kParameter] = aggregator.callSuspendBy(aggregatorArguments)
 
         return true
     }

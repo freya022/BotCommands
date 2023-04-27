@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.commands.CommandParameter
 class TextCommandParameter(
     optionBuilder: TextCommandOptionBuilder,
     val resolver: RegexParameterResolver<*, *>
-) : CommandParameter(optionBuilder) {
+) : CommandParameter(context, optionBuilder) {
     val groupCount = resolver.preferredPattern.matcher("").groupCount()
     val data = TextParameterData(optionBuilder)
     val isId = optionBuilder.isId
