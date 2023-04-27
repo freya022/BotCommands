@@ -36,10 +36,6 @@ abstract class SlashCommandInfo internal constructor(
     final override val method: KFunction<*> = super.method
     final override val parameters: List<SlashCommandParameter>
 
-    @Suppress("UNCHECKED_CAST")
-    override val optionParameters: List<SlashCommandParameter>
-        get() = super.optionParameters as List<SlashCommandParameter>
-
     init {
         requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
 

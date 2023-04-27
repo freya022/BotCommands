@@ -16,7 +16,6 @@ class ExecutableInteractionInfo internal constructor(
     override val method: KFunction<*>
     override val parameters: List<MethodParameter>
         get() = throwInternal("Must be implemented by delegate host")
-    override val optionParameters: List<MethodParameter> by lazy { parameters.filterOptions() }
 
     init {
         builder as? IBuilderFunctionHolder<*> ?: throwMixin<IBuilderFunctionHolder<*>>()
@@ -31,14 +30,6 @@ class ExecutableInteractionInfo internal constructor(
         } else if (builder is TextCommandVariationBuilder) {
             requireUser(builder.optionAggregateBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
                 "Function must have the same number of options declared as on the method"
-            }
-        }
-    }
-
-    companion object {
-        internal inline fun <reified T : MethodParameter> List<MethodParameter>.filterOptions(): List<T> {
-            return filter { it.isOption }.map {
-                it as? T ?: throwMixin<T>()
             }
         }
     }

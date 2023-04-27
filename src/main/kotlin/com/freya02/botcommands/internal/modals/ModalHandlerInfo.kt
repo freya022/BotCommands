@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -22,7 +21,6 @@ class ModalHandlerInfo(
     override val method: KFunction<*>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
-    override val optionParameters: List<ModalHandlerParameter>
 
     private val options: List<AbstractOption>
     private val expectedModalDatas: Int
@@ -44,8 +42,6 @@ class ModalHandlerInfo(
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }
         )
-
-        optionParameters = parameters.filterOptions()
 
         options = parameters.flatMap { it.options }
         expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()

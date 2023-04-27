@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionAg
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
@@ -27,7 +26,6 @@ class TextCommandVariation internal constructor(
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
     override val parameters: List<TextCommandParameter>
-    override val optionParameters: List<TextCommandParameter>
 
     val completePattern: Regex?
 
@@ -39,8 +37,6 @@ class TextCommandVariation internal constructor(
         parameters = builder.optionAggregateBuilders.transform<TextCommandOptionAggregateBuilder, _> {
             TextCommandParameter(context, it)
         }
-
-        optionParameters = parameters.filterOptions()
 
         completePattern = when {
             parameters.any { it.isOption } -> CommandPattern.of(this)

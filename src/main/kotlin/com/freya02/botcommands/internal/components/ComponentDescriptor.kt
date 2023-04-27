@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
 import com.freya02.botcommands.internal.transformParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KFunction
@@ -15,7 +14,6 @@ class ComponentDescriptor(
     override val method: KFunction<*>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ComponentHandlerParameter>
-    override val optionParameters: List<ComponentHandlerParameter>
 
     init {
         parameters = method.nonInstanceParameters.drop(1).transformParameters(
@@ -28,7 +26,5 @@ class ComponentDescriptor(
             },
             aggregateBlock = { ComponentHandlerParameter(context, it) }
         )
-
-        optionParameters = parameters.filterOptions()
     }
 }
