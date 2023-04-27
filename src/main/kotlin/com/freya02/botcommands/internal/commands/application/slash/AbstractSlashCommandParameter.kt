@@ -14,7 +14,7 @@ abstract class AbstractSlashCommandParameter(
 ) : ApplicationCommandParameter(optionAggregateBuilder) {
     final override val commandOptions = CommandOptions.transform(
         slashCommandInfo.context,
-        optionAggregateBuilder.optionBuilders,
+        optionAggregateBuilder,
         object : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
             override fun transformOption(
                 optionBuilder: SlashCommandOptionBuilder,
