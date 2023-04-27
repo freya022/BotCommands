@@ -27,6 +27,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     @BService
     companion object {
         //The types should not matter as the checks are made against the command function
-        fun singleAggregator(it: Any) = it
+        @Suppress("UNUSED_PARAMETER")
+        fun singleAggregator(event: Any, it: Any) = it
     }
 }
