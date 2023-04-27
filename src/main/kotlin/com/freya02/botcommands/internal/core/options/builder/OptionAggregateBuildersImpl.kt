@@ -1,5 +1,6 @@
-package com.freya02.botcommands.impl.core.options.builder
+package com.freya02.botcommands.internal.core.options.builder
 
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import kotlin.reflect.KFunction
 
@@ -16,7 +17,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(declaredName, owner, ::singleAggregator, block)
+        aggregate(declaredName, owner, Companion::singleAggregator, block)
     }
 
     private fun aggregate(declaredName: String, owner: KFunction<*>, aggregator: KFunction<*>, block: T.() -> Unit) {

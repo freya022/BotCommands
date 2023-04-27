@@ -3,11 +3,11 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.impl.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 

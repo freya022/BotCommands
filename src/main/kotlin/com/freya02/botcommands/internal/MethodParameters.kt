@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
-import com.freya02.botcommands.impl.core.options.builder.OptionAggregateBuildersImpl
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
