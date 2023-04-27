@@ -4,6 +4,7 @@ import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.jvmErasure
 
 data class ParameterWrapper(
@@ -15,6 +16,16 @@ data class ParameterWrapper(
     constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 
     val erasure = type.jvmErasure
+
+    fun toVarargElementType() = when {
+        parameter!!.isVararg -> copy(
+            //kotlin moment
+            type = type.jvmErasure.java.componentType.kotlin
+                .createType(type.arguments, type.isMarkedNullable, type.annotations)
+        )
+
+        else -> this
+    }
 
     fun throwUser(message: String) {
         if (parameter == null) {

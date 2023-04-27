@@ -28,17 +28,7 @@ object CommandOptions {
             when (optionBuilder) {
                 is T -> {
                     val kParameter = optionBuilder.parameter
-                    val parameter = when {
-                        kParameter.isVararg -> {
-                            val type = kParameter.type
-                            //kotlin moment
-                            val elementsType = type.jvmErasure.java.componentType.kotlin
-                                .createType(type.arguments, type.isMarkedNullable, type.annotations)
-                            kParameter.wrap().copy(type = elementsType)
-                        }
-
-                        else -> kParameter.wrap()
-                    }
+                    val parameter = kParameter.wrap().toVarargElementType()
 
                     when (val resolver = resolverContainer.getResolver(parameter)) {
                         is R -> config.transformOption(optionBuilder, resolver)
