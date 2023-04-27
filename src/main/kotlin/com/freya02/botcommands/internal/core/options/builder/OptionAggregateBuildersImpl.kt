@@ -24,8 +24,8 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         optionAggregateBuilders[declaredName] = aggregateConstructor(declaredName, owner, aggregator).apply(block)
     }
 
+    @BService
     companion object {
-        //TODO move function to service, should fix KFunction#reflectReference
         //The types should not matter as the checks are made against the command function
         fun singleAggregator(it: Any) = it
     }

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITo
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.throwUser
@@ -51,5 +52,5 @@ class TopLevelSlashCommandBuilder internal constructor(
         return TopLevelSlashCommandInfo(context, this)
     }
 
-    private fun isFunctionSet() = function !== theFakeFunction
+    private fun isFunctionSet() = function !== fakeSlashFunction
 }

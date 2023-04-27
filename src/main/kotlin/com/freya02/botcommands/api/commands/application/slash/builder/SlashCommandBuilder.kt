@@ -1,10 +1,9 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
@@ -13,7 +12,7 @@ abstract class SlashCommandBuilder internal constructor(
     protected val context: BContextImpl,
     name: String,
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
-) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: theFakeFunction) {
+) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: fakeSlashFunction) {
     var description: String = DEFAULT_DESCRIPTION
 
     protected abstract val allowOptions: Boolean
@@ -42,10 +41,5 @@ abstract class SlashCommandBuilder internal constructor(
 
     companion object {
         const val DEFAULT_DESCRIPTION = "No description"
-        val theFakeFunction = ::fakeFunction
-
-        //TODO move function to service, should fix KFunction#reflectReference
-        @Suppress("UNUSED_PARAMETER")
-        private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
     }
 }

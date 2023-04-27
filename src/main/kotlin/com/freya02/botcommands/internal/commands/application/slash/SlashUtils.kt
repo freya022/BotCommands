@@ -2,11 +2,13 @@ package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
+import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
@@ -21,6 +23,11 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 internal object SlashUtils {
+    val fakeSlashFunction = ::fakeFunction
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
+
     fun IExecutableInteractionInfo.checkDefaultValue(
         parameter: ApplicationGeneratedMethodParameter,
         defaultValue: Any?
