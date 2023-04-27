@@ -20,7 +20,7 @@ object CommandOptions {
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
 
-        requireUser(options.size != aggregator.valueParameters.size, aggregator) {
+        requireUser(options.size == aggregator.valueParameters.size, aggregator) {
             "Aggregator should have the same number of parameters as there is options, found ${options.size} options and ${aggregator.valueParameters.size} parameters"
         }
 
