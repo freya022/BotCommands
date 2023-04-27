@@ -24,7 +24,8 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, override va
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
     }
 
-    fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit) {
+    @JvmSynthetic
+    fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
         SlashSubcommandBuilder(context, name, function, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)
     }
 
