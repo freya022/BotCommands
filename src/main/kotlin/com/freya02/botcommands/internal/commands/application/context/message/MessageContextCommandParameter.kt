@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.commands.application.context.ContextComm
 class MessageContextCommandParameter(
     context: BContextImpl,
     optionAggregateBuilder: MessageCommandOptionAggregateBuilder
-) : ContextCommandParameter(optionAggregateBuilder.parameter) {
+) : ContextCommandParameter(context, optionAggregateBuilder) {
     val commandOptions = CommandOptions.transform(
         context,
         optionAggregateBuilder,

@@ -26,6 +26,7 @@ abstract class CommandBuilder internal constructor(override val name: String) : 
     @get:JvmSynthetic
     internal val commandOptionBuilders: MutableMap<String, CommandOptionBuilder> = mutableMapOf()
 
+    @get:JvmSynthetic
     internal val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
 
     fun cooldown(block: CooldownStrategyBuilder.() -> Unit) {

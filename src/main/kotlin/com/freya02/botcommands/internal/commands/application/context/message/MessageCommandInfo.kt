@@ -13,8 +13,9 @@ import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApp
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -52,29 +53,12 @@ class MessageCommandInfo internal constructor(
             if (isGuildOnly) GuildMessageEvent(context, event) else GlobalMessageEvent(context, event)
 
         for (parameter in parameters) {
-            val value = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    parameter as MessageContextCommandParameter
-
-                    parameter.resolver.resolveSuspend(context, this, event)
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-
-                    parameter.resolver.resolveSuspend(context, this, event)
-                }
-                MethodParameterType.GENERATED -> {
-                    parameter as ApplicationGeneratedMethodParameter
-
-                    parameter.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(parameter, it) }
-                }
-                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
-            }
+            val value = computeAggregate(context, event, parameter)
 
             if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
                 continue
             } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
-                throwUser("Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null")
+                throwUser(parameter.kParameter.function, "Parameter '${parameter.kParameter.bestName}' is not nullable but its aggregator returned null")
             }
 
             arguments[parameter.kParameter] = value
@@ -85,5 +69,44 @@ class MessageCommandInfo internal constructor(
         method.callSuspendBy(arguments)
 
         return true
+    }
+
+    private suspend fun computeAggregate(context: BContextImpl, event: MessageContextInteractionEvent, parameter: MessageContextCommandParameter): Any? {
+        val aggregator = parameter.aggregator
+        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
+        arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+        arguments[aggregator.valueParameters.first()] =
+            if (isGuildOnly) GuildMessageEvent(context, event) else GlobalMessageEvent(context, event)
+
+        for (option in parameter.commandOptions) {
+            val value = when (option.methodParameterType) {
+                MethodParameterType.OPTION -> {
+                    option as MessageContextCommandOption
+
+                    option.resolver.resolveSuspend(context, this, event)
+                }
+                MethodParameterType.CUSTOM -> {
+                    option as CustomMethodOption
+
+                    option.resolver.resolveSuspend(context, this, event)
+                }
+                MethodParameterType.GENERATED -> {
+                    option as ApplicationGeneratedMethodParameter
+
+                    option.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(option, it) }
+                }
+                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+            }
+
+            if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
+                continue
+            } else if (value == null && !option.isOptional) { // Not a kotlin optional and not nullable
+                throwUser(option.kParameter.function, "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null")
+            }
+
+            arguments[option.kParameter] = value
+        }
+
+        return aggregator.callSuspendBy(arguments)
     }
 }
