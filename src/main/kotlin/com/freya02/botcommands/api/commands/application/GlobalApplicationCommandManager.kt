@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 class GlobalApplicationCommandManager internal constructor(val context: BContextImpl): IApplicationCommandManager() {
     override fun isValidScope(scope: CommandScope) = scope.isGlobal
 
-    override fun slashCommand0(name: String, scope: CommandScope, function: KFunction<Any>, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+    override fun slashCommand0(name: String, scope: CommandScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         if (!isValidScope(scope)) throwUser("You can only use global scopes in a GlobalApplicationCommandManager")
 
         TopLevelSlashCommandBuilder(context, name, function, scope)

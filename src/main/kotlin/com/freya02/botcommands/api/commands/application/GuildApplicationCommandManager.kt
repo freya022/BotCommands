@@ -12,7 +12,7 @@ class GuildApplicationCommandManager internal constructor(val context: BContextI
     override fun isValidScope(scope: CommandScope): Boolean = !scope.isGlobal
 
     //TODO move common part to IApplicationCommandManager, make checkScope function to throw with the custom message
-    override fun slashCommand0(name: String, scope: CommandScope, function: KFunction<Any>, builder: TopLevelSlashCommandBuilder.() -> Unit) {
+    override fun slashCommand0(name: String, scope: CommandScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
         if (!isValidScope(scope)) throwUser("You can only use non-global scopes in a GuildApplicationCommandManager")
 
         TopLevelSlashCommandBuilder(context, name, function, scope)
