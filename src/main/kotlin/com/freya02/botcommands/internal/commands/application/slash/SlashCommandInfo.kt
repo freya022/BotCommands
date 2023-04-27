@@ -36,7 +36,7 @@ abstract class SlashCommandInfo internal constructor(
     val description: String = builder.description
 
     final override val method: KFunction<*> = super.method
-    final override val parameters: MethodParameters
+    final override val parameters: List<SlashCommandParameter>
 
     @Suppress("UNCHECKED_CAST")
     override val optionParameters: List<SlashCommandParameter>
@@ -47,7 +47,7 @@ abstract class SlashCommandInfo internal constructor(
 
         builder.checkEventScope<GuildSlashEvent>()
 
-        parameters = MethodParameters.transform<SlashCommandOptionAggregateBuilder>(builder.optionAggregateBuilders) {
+        parameters = builder.optionAggregateBuilders.transform<SlashCommandOptionAggregateBuilder, _> {
             SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
         }
 

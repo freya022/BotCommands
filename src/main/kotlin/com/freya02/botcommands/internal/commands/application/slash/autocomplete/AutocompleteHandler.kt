@@ -25,7 +25,7 @@ internal class AutocompleteHandler(
     internal val autocompleteInfo: AutocompleteInfo
 ) {
     private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
-    internal val methodParameters: MethodParameters
+    internal val methodParameters: List<AutocompleteCommandParameter>
     internal val compositeParameters: List<AutocompleteCommandOption>
 
     //accommodate for user input
@@ -33,12 +33,11 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        methodParameters = MethodParameters.transform<SlashCommandOptionAggregateBuilder>(slashCmdOptionAggregateBuilders) {
+        methodParameters = slashCmdOptionAggregateBuilders.transform<SlashCommandOptionAggregateBuilder, _> {
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it)
         }
 
         compositeParameters = methodParameters
-            .map { it as AutocompleteCommandParameter }
             .flatMap { it.commandOptions }
             .filter { it.methodParameterType == MethodParameterType.OPTION }
             .map { it as AutocompleteCommandOption }

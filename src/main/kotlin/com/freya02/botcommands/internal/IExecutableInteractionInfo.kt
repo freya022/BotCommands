@@ -6,6 +6,6 @@ import kotlin.reflect.KFunction
 interface IExecutableInteractionInfo {
     val instance: Any
     val method: KFunction<*>
-    val parameters: MethodParameters
+    val parameters: List<MethodParameter>
     val optionParameters: List<MethodParameter>
 }
