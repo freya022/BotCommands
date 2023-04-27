@@ -121,6 +121,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return getService(clazz.kotlin)
     }
 
+    fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
+        @Suppress("UNCHECKED_CAST")
+        return serviceMap[clazz] as T?
+    }
+
     @JvmSynthetic
     inline fun <reified T : Any> getService(): T {
         return getService(T::class)
