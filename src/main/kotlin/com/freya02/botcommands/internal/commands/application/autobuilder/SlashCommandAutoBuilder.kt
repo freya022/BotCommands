@@ -120,33 +120,33 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         val path = metadata.path
         val commandId = metadata.commandId
 
-        manager.slashCommand(path.name, annotation.scope) {
+        val name = path.name
+        val subcommandsMetadata = subcommands[name]
+        val subcommandGroupsMetadata = subcommandGroups[name]
+        val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
+        manager.slashCommand(name, annotation.scope, if (isTopLevel) metadata.func.castFunction() else null) {
             defaultLocked = annotation.defaultLocked
             description = getEffectiveDescription(annotation)
 
-            val subcommandsMetadata = subcommands[name]
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
-                    subcommand(subMetadata.path.subname!!) {
+                    subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
                         //TODO replace with #subcommandDescription in annotation
                         this@subcommand.description = subMetadata.annotation.description
                         this@subcommand.configureBuilder(subMetadata)
-                        this@subcommand.addFunction(subMetadata.func)
                         this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                     }
                 }
             }
 
-            val subcommandGroupsMetadata = subcommandGroups[name]
             subcommandGroupsMetadata?.let { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
                     this@subcommandGroup.description = groupMetadata.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
-                            subcommand(subname) {
+                            subcommand(subname, subMetadata.func.castFunction()) {
                                 this@subcommand.configureBuilder(subMetadata)
-                                this@subcommand.addFunction(subMetadata.func)
                                 this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                             }
                         }
@@ -156,9 +156,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
 
             configureBuilder(metadata)
 
-            val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
             if (isTopLevel) {
-                addFunction(metadata.func)
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
             }
         }

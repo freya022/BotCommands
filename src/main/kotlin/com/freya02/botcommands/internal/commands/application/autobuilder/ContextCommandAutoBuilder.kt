@@ -108,9 +108,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
 
         val annotation = metadata.annotation
-        manager.messageCommand(path.name, annotation.scope) {
+        manager.messageCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            addFunction(func)
             fillApplicationCommandBuilder(func, annotation)
 
             defaultLocked = annotation.defaultLocked
@@ -136,9 +135,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
 
         val annotation = metadata.annotation
-        manager.userCommand(path.name, annotation.scope) {
+        manager.userCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            addFunction(func)
             fillApplicationCommandBuilder(func, annotation)
 
             defaultLocked = annotation.defaultLocked
@@ -147,7 +145,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
     }
 
-    private fun ApplicationCommandBuilder.processOptions(
+    private fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
         instance: ApplicationCommand,

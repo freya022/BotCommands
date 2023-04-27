@@ -34,9 +34,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, clas
                 val autocompleteFunction = it.function as KFunction<Collection<*>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
-                AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name).apply {
-                    function = autocompleteFunction
-
+                AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name, autocompleteFunction).apply {
                     mode = autocompleteHandlerAnnotation.mode
                     showUserInput = autocompleteHandlerAnnotation.showUserInput
 

@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
-import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathFunction
@@ -82,12 +81,10 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     botPermissions = AnnotationUtils.getBotPermissions(func)
 }
 
-internal fun IBuilderFunctionHolder<in Any>.addFunction(func: KFunction<*>) {
-    @Suppress("UNCHECKED_CAST")
-    function = func as KFunction<Any>
-}
+@Suppress("UNCHECKED_CAST")
+fun KFunction<*>.castFunction() = this as KFunction<Any>
 
-internal fun ApplicationCommandBuilder.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
+internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
     if (func.hasAnnotation<NSFW>()) {
         throwUser(func, "@${NSFW::class.simpleName} can only be used on text commands, use the #nsfw method on your annotation instead")
     }
