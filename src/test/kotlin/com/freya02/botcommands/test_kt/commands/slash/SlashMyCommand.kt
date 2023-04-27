@@ -92,9 +92,9 @@ class SlashMyCommand : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("my_command") {
+        manager.slashCommand("my_command", function = null) {
             for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
-                subcommand(subname) {
+                subcommand(subname, localFunction) {
                     description = "mah desc"
 
                     option("stringOption", "string") {
@@ -128,9 +128,7 @@ class SlashMyCommand : ApplicationCommand() {
                     option("autocompleteStr") {
                         description = "Autocomplete !"
 
-                        autocomplete("MyCommand: autocompleteStr") {
-                            function = ::runAutocomplete
-
+                        autocomplete("MyCommand: autocompleteStr", ::runAutocomplete) {
                             cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
                         }
                     }
@@ -138,8 +136,6 @@ class SlashMyCommand : ApplicationCommand() {
                     generatedOption("guildName") {
                         it.guild!!.name
                     }
-
-                    function = localFunction
                 }
             }
         }

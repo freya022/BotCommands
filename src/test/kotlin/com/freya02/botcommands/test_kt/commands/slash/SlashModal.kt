@@ -79,10 +79,8 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
-        applicationCommandManager.slashCommand("modal") {
+        applicationCommandManager.slashCommand("modal", function = ::onSlashModal) {
             customOption("modals")
-
-            function = ::onSlashModal
         }
     }
 }

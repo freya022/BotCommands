@@ -25,18 +25,15 @@ class SlashVarargs : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("varargs") {
+        globalApplicationCommandManager.slashCommand("varargs", function = ::onSlashVarargs) {
             option("list") {
                 varArgs = 3
                 requiredVarArgs = 1
 
-                autocomplete("SlashVarargs: onVarargsAutocomplete") {
+                autocomplete("SlashVarargs: onVarargsAutocomplete", ::onVarargsAutocomplete) {
                     showUserInput = false
-                    function = ::onVarargsAutocomplete
                 }
             }
-
-            function = ::onSlashVarargs
         }
     }
 }

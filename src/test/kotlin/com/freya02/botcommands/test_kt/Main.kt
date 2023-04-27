@@ -34,7 +34,9 @@ object Main {
         BBuilder.newBuilder(manager) {
             disableExceptionsInDMs = true
 
-            addSearchPath("com.freya02.botcommands.test_kt")
+//            addSearchPath("com.freya02.botcommands.test_kt")
+            addSearchPath("com.freya02.botcommands.test_kt.resolvers")
+            addSearchPath("com.freya02.botcommands.test_kt.services")
 
             //Still kept in the java test package
             addClass<Config>()

@@ -21,14 +21,12 @@ class SlashCooldown : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("cooldown") {
+        globalApplicationCommandManager.slashCommand("cooldown", function = ::onSlashCooldown) {
             cooldown {
                 cooldown = 5
                 unit = TimeUnit.SECONDS
                 scope = CooldownScope.GUILD
             }
-
-            function = ::onSlashCooldown
         }
     }
 }

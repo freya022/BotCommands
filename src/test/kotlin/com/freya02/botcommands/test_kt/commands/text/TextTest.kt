@@ -69,7 +69,7 @@ class TextTest : TextCommand() {
     @TextDeclaration
     fun declare(textCommandManager: TextCommandManager) {
         textCommandManager.textCommand("test") {
-            variation {
+            variation(::onTextTest) {
                 option("text")
 
                 customOption("context")
@@ -77,25 +77,19 @@ class TextTest : TextCommand() {
                 generatedOption("userName") {
                     it.author.name
                 }
-
-                function = ::onTextTest
             }
 
-            variation {
+            variation(::onTextTestFallback) {
                 customOption("context")
 
                 generatedOption("userName") {
                     it.author.name
                 }
-
-                function = ::onTextTestFallback
             }
 
             subcommand("subcommand") {
-                variation {
+                variation(::onTextTestSubcommand) {
                     option("number")
-
-                    function = ::onTextTestSubcommand
                 }
             }
         }

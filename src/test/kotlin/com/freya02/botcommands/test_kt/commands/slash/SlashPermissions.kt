@@ -22,10 +22,8 @@ class SlashPermissions : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("permissions", scope = CommandScope.GLOBAL_NO_DM) {
+        manager.slashCommand("permissions", scope = CommandScope.GLOBAL_NO_DM, function = ::onSlashPermissions) {
             userPermissions = EnumSet.of(Permission.MANAGE_SERVER, Permission.ADMINISTRATOR)
-
-            function = ::onSlashPermissions
         }
     }
 }
