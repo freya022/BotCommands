@@ -30,7 +30,7 @@ open class OptionAggregateBuilder internal constructor(
     internal val aggregator: KFunction<*> = aggregator.reflectReference()
 
     init {
-        requireUser(aggregator.returnType != parameter.type, aggregator) {
+        requireUser(aggregator.returnType == parameter.type, aggregator) {
             "Aggregator should have the same return type as the parameter (${parameter.type})"
         }
     }
