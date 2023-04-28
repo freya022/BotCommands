@@ -198,7 +198,7 @@ internal class ComponentsListener(
                 )
             }
 
-            arguments[option.kParameter] = value
+            arguments[option.executableParameter] = value
         }
 
         return aggregator.callSuspendBy(arguments)

@@ -107,7 +107,7 @@ class MessageCommandInfo internal constructor(
                 throwUser(option.kParameter.function, "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null")
             }
 
-            arguments[option.kParameter] = value
+            arguments[option.executableParameter] = value
         }
 
         return aggregator.callSuspendBy(arguments)

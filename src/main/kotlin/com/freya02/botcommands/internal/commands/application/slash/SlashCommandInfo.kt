@@ -131,7 +131,7 @@ abstract class SlashCommandInfo internal constructor(
                             continue //Kotlin default value, don't add anything to the parameters map
                         } else {
                             //Nullable
-                            aggregatorArguments[option.kParameter] = when {
+                            aggregatorArguments[option.executableParameter] = when {
                                 option.isPrimitive -> 0
                                 else -> null
                             }
@@ -168,15 +168,15 @@ abstract class SlashCommandInfo internal constructor(
                     return false
                 }
 
-                aggregatorArguments[option.kParameter] = resolved
+                aggregatorArguments[option.executableParameter] = resolved
             } else if (option.methodParameterType == MethodParameterType.CUSTOM) {
                 option as CustomMethodOption
 
-                aggregatorArguments[option.kParameter] = option.resolver.resolveSuspend(context, this, event)
+                aggregatorArguments[option.executableParameter] = option.resolver.resolveSuspend(context, this, event)
             } else if (option.methodParameterType == MethodParameterType.GENERATED) {
                 option as ApplicationGeneratedMethodParameter
 
-                aggregatorArguments[option.kParameter] = option.generatedValueSupplier
+                aggregatorArguments[option.executableParameter] = option.generatedValueSupplier
                     .getDefaultValue(event)
                     .also { checkDefaultValue(option, it) }
             } else {

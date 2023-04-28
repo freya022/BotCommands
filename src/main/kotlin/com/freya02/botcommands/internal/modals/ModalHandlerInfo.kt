@@ -1,11 +1,13 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KFunction
@@ -34,12 +36,9 @@ class ModalHandlerInfo(
         parameters = method.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
-//                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(function, declaredName)
-//                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(function, declaredName)
-//                    else -> CustomOptionBuilder(function, declaredName)
-                    parameter.hasAnnotation<ModalInput>() -> TODO()
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> TODO()
-                    else -> TODO()
+                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(MultiParameter(function, declaredName))
+                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(MultiParameter(function, declaredName))
+                    else -> CustomOptionBuilder(MultiParameter(function, declaredName))
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }
@@ -183,7 +182,7 @@ class ModalHandlerInfo(
                 else -> throwInternal("Unexpected MethodParameterType: ${option.methodParameterType}")
             }
 
-            arguments[option.kParameter] = value
+            arguments[option.executableParameter] = value
         }
 
         return aggregator.callSuspendBy(arguments)
