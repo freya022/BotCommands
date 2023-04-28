@@ -18,7 +18,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(MultiParameter(owner, declaredName, theSingleAggregator, "it"), Companion::singleAggregator, block)
+        aggregate(MultiParameter(owner, declaredName, theSingleAggregator, "it"), theSingleAggregator, block)
     }
 
     private fun aggregate(multiParameter: MultiParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
@@ -32,7 +32,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
 
         //The types should not matter as the checks are made against the command function
-        @Suppress("UNUSED_PARAMETER")
+        @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
         fun singleAggregator(event: Any, it: Any) = it
     }
 }
