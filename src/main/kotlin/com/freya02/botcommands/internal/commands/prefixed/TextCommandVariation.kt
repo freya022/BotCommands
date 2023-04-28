@@ -87,7 +87,7 @@ class TextCommandVariation internal constructor(
         aggregatorArguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
-            aggregatorArguments[option.kParameter] = when (option.methodParameterType) {
+            aggregatorArguments[option.executableParameter] = when (option.methodParameterType) {
                 MethodParameterType.OPTION -> {
                     groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 

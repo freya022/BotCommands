@@ -45,7 +45,7 @@ object CommandOptions {
                     val parameter = kParameter.wrap().toVarargElementType()
 
                     when (val resolver = resolverContainer.getResolver(parameter)) {
-                        is ICustomResolver<*, *> -> CustomMethodOption(kParameter, resolver)
+                        is ICustomResolver<*, *> -> CustomMethodOption(optionBuilder.multiParameter, resolver)
                         else -> throwUser(
                             optionBuilder.owner,
                             "Expected a resolver of type ${ICustomResolver::class.simpleNestedName} but ${resolver.javaClass.simpleNestedName} does not support it"

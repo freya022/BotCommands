@@ -1,22 +1,21 @@
 package com.freya02.botcommands.api.core.options.builder
 
-import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.joinWithQuote
+import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.throwUser
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.valueParameters
 
 abstract class OptionBuilder(
-    val owner: KFunction<*>,
     /**
-     * Is not unique ! (varargs for example)
+     * Declared name is not unique ! (varargs for example)
      */
-    val declaredName: String
+    val multiParameter: MultiParameter
 ) {
+    val owner = multiParameter.typeCheckingFunction
+
     /**
      * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options
      */
-    internal val parameter = owner.valueParameters.first { it.findDeclarationName() == declaredName }
+    internal val parameter = multiParameter.typeCheckingParameter
     @Deprecated("Use 'parameter' instead, beware of array types")
     internal val type = parameter.type
 

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.context.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
-import kotlin.reflect.KFunction
+import com.freya02.botcommands.internal.parameters.MultiParameter
 
-class MessageCommandOptionBuilder(owner: KFunction<*>, declaredName: String) : ApplicationCommandOptionBuilder(owner, declaredName, declaredName)
+class MessageCommandOptionBuilder(multiParameter: MultiParameter) : ApplicationCommandOptionBuilder(multiParameter, "message dummy")

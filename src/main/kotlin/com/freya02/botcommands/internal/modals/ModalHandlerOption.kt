@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 abstract class ModalHandlerOption(
     optionBuilder: OptionBuilder
 ) : AbstractOption {
-    override val kParameter = optionBuilder.parameter
+    override val multiParameter = optionBuilder.multiParameter
     override val methodParameterType = MethodParameterType.OPTION
 
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }

@@ -9,7 +9,7 @@ class ApplicationGeneratedMethodParameter(
     applicationGeneratedOptionBuilder: ApplicationGeneratedOptionBuilder
 ) : GeneratedMethodParameter {
     override val methodParameterType = MethodParameterType.GENERATED
-    override val kParameter = applicationGeneratedOptionBuilder.parameter
+    override val multiParameter = applicationGeneratedOptionBuilder.multiParameter
 
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 

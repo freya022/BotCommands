@@ -4,22 +4,22 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.application.builder.ApplicationGeneratedOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
+import com.freya02.botcommands.internal.parameters.MultiParameter
 import kotlin.reflect.KFunction
 
 class UserCommandOptionAggregateBuilder(
-    owner: KFunction<*>,
-    declaredName: String,
+    multiParameter: MultiParameter,
     aggregator: KFunction<*>
-) : ApplicationCommandOptionAggregateBuilder(owner, declaredName, aggregator) {
+) : ApplicationCommandOptionAggregateBuilder(multiParameter, aggregator) {
     fun option(declaredName: String) {
-        this += UserCommandOptionBuilder(owner, declaredName)
+        this += UserCommandOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName))
     }
 
     override fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(owner, declaredName)
+        this += CustomOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName))
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        this += ApplicationGeneratedOptionBuilder(owner, declaredName, generatedValueSupplier)
+        this += ApplicationGeneratedOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName), generatedValueSupplier)
     }
 }

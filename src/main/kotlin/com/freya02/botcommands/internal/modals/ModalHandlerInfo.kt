@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
@@ -35,9 +34,12 @@ class ModalHandlerInfo(
         parameters = method.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
-                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(function, declaredName)
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(function, declaredName)
-                    else -> CustomOptionBuilder(function, declaredName)
+//                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(function, declaredName)
+//                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(function, declaredName)
+//                    else -> CustomOptionBuilder(function, declaredName)
+                    parameter.hasAnnotation<ModalInput>() -> TODO()
+                    parameter.hasAnnotation<ModalDataAnnotation>() -> TODO()
+                    else -> TODO()
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }

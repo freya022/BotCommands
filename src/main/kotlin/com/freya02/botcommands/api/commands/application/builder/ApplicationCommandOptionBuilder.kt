@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.builder
 
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
-import kotlin.reflect.KFunction
+import com.freya02.botcommands.internal.parameters.MultiParameter
 
-abstract class ApplicationCommandOptionBuilder(owner: KFunction<*>, declaredName: String, optionName: String) : CommandOptionBuilder(owner, declaredName, optionName)
+//TODO move optionName to SlashCommandOptionBuilder instead, remove this layer
+abstract class ApplicationCommandOptionBuilder(multiParameter: MultiParameter, optionName: String) : CommandOptionBuilder(multiParameter, optionName)

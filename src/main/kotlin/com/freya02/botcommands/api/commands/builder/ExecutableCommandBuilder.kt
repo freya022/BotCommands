@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.builder
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
+import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import java.util.*
 import kotlin.reflect.KFunction
@@ -35,5 +36,5 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder, R> internal 
         _optionAggregateBuilders.selfAggregate(declaredName, block)
     }
 
-    protected abstract fun constructAggregate(declaredName: String, owner: KFunction<*>, aggregator: KFunction<*>): T
+    protected abstract fun constructAggregate(multiParameter: MultiParameter, aggregator: KFunction<*>): T
 }
