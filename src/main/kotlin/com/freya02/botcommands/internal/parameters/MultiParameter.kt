@@ -28,11 +28,11 @@ class MultiParameter(
      */
     val executableFunction = executableFunction.reflectReference()
 
-    val typeCheckingParameter = typeCheckingFunction.nonInstanceParameters.first { it.findDeclarationName() == typeCheckingParameterName }
-    val executableParameter = executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }
+    val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.first { it.findDeclarationName() == typeCheckingParameterName }
+    val executableParameter = this.executableFunction.nonInstanceParameters.first { it.findDeclarationName() == executableParameterName }
 
     init {
-        if (typeCheckingFunction.isSingleAggregator()) {
+        if (this.typeCheckingFunction.isSingleAggregator()) {
             throwInternal("Type checking parameter should not belong to weakly types internal functions")
         }
     }
