@@ -5,9 +5,8 @@ import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.parameters.MultiParameter
 import kotlin.reflect.KFunction
 
-//TODO fix package
 internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
-    private val owner: KFunction<*>,
+    private val commandFunction: KFunction<*>,
     val aggregateConstructor: (multiParameter: MultiParameter, aggregator: KFunction<*>) -> T
 ) {
     val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
@@ -18,7 +17,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(MultiParameter.fromSelfAggregate(owner, declaredName), theSingleAggregator, block)
+        aggregate(MultiParameter.fromSelfAggregate(commandFunction, declaredName), theSingleAggregator, block)
     }
 
     private fun aggregate(multiParameter: MultiParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
