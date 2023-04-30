@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.AbstractOption
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.throwInternal
@@ -8,14 +9,12 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
-class MultiParameter(
+class MultiParameter private constructor(
     typeCheckingFunction: KFunction<*>,
     val typeCheckingParameterName: String,
     executableFunction: KFunction<*>,
     val executableParameterName: String
 ) {
-    constructor(function: KFunction<*>, parameterName: String) : this(function, parameterName, function, parameterName)
-
     /**
      * **Note:** Can either be the user-defined aggregator or the command function
      *
@@ -37,10 +36,11 @@ class MultiParameter(
         }
     }
 
-    fun withTypeCheckingParameterName(typeCheckingFunctionParameterName: String): MultiParameter {
-        return MultiParameter(
-            typeCheckingFunction, typeCheckingFunctionParameterName,
-            executableFunction, executableParameterName
-        )
+    internal companion object {
+        fun fromUserAggregate(aggregator: KFunction<*>, parameterName: String) =
+            MultiParameter(aggregator, parameterName, aggregator, parameterName)
+
+        fun fromSelfAggregate(commandFunction: KFunction<*>, parameterName: String) =
+            MultiParameter(commandFunction, parameterName, OptionAggregateBuildersImpl.theSingleAggregator, "it")
     }
 }

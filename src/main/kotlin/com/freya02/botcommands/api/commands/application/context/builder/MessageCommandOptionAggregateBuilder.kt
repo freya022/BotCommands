@@ -12,14 +12,14 @@ class MessageCommandOptionAggregateBuilder(
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder(multiParameter, aggregator) {
     fun option(declaredName: String) {
-        this += MessageCommandOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName))
+        this += MessageCommandOptionBuilder(multiParameter)
     }
 
     override fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName))
+        this += CustomOptionBuilder(multiParameter)
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        this += ApplicationGeneratedOptionBuilder(multiParameter.withTypeCheckingParameterName(declaredName), generatedValueSupplier)
+        this += ApplicationGeneratedOptionBuilder(multiParameter, generatedValueSupplier)
     }
 }

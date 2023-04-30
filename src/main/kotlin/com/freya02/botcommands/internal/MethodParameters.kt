@@ -33,7 +33,7 @@ internal fun <R> List<KParameter>.transformParameters(
         parameter.hasAnnotation<Aggregate>() -> {
             val constructor = parameter.type.jvmErasure.primaryConstructor
                 ?: throwUser(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
-            OptionAggregateBuilder(MultiParameter(constructor, declaredName), constructor).apply {
+            OptionAggregateBuilder(MultiParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
                 constructor.nonInstanceParameters.forEach { constructorParameter ->
                     this += builderBlock(constructor, constructorParameter, constructorParameter.findDeclarationName())
                 }
@@ -41,7 +41,7 @@ internal fun <R> List<KParameter>.transformParameters(
         }
 
         else -> OptionAggregateBuilder(
-            MultiParameter(parameter.function, declaredName),
+            MultiParameter.fromSelfAggregate(parameter.function, declaredName),
             OptionAggregateBuildersImpl.theSingleAggregator
         ).apply {
             this += builderBlock(parameter.function, parameter, declaredName)

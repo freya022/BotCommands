@@ -36,9 +36,9 @@ class ModalHandlerInfo(
         parameters = method.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
-                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(MultiParameter(function, declaredName))
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(MultiParameter(function, declaredName))
-                    else -> CustomOptionBuilder(MultiParameter(function, declaredName))
+                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
+                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
+                    else -> CustomOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }

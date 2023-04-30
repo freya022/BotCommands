@@ -21,8 +21,8 @@ class ComponentDescriptor(
             builderBlock = { function, parameter, declaredName ->
                 val service = context.serviceContainer.peekServiceOrNull(parameter.wrap().toVarargElementType().erasure)
                 when {
-                    service != null -> CustomOptionBuilder(MultiParameter(function, declaredName))
-                    else -> ComponentHandlerOptionBuilder(MultiParameter(function, declaredName))
+                    service != null -> CustomOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
+                    else -> ComponentHandlerOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
                 }
             },
             aggregateBlock = { ComponentHandlerParameter(context, it) }

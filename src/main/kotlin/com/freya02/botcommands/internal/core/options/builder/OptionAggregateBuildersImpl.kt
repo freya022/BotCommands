@@ -13,12 +13,12 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
 
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
-        aggregate(MultiParameter(aggregator, declaredName), aggregator, block)
+        aggregate(MultiParameter.fromUserAggregate(aggregator, declaredName), aggregator, block)
     }
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(MultiParameter(owner, declaredName, theSingleAggregator, "it"), theSingleAggregator, block)
+        aggregate(MultiParameter.fromSelfAggregate(owner, declaredName), theSingleAggregator, block)
     }
 
     private fun aggregate(multiParameter: MultiParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
