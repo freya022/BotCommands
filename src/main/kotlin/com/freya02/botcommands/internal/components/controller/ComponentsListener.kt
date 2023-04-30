@@ -91,7 +91,7 @@ internal class ComponentsListener(
                             else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                         }
 
-                        handlePersistentComponent(descriptor, evt, userData)
+                        handlePersistentComponent(descriptor, evt, userData.iterator())
                     }
                 }
                 is EphemeralComponentData -> {
@@ -128,14 +128,14 @@ internal class ComponentsListener(
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
-        userData: Array<out String>
+        userDataIterator: Iterator<String>
     ) {
         val args = hashMapOf<KParameter, Any?>()
         args[descriptor.method.instanceParameter!!] = descriptor.instance
         args[descriptor.method.valueParameters.first()] = event
 
         for (parameter in descriptor.parameters) {
-            val value = computeAggregate(context, event, parameter, descriptor, userData.iterator())
+            val value = computeAggregate(context, event, parameter, descriptor, userDataIterator)
 
             if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
                 continue
