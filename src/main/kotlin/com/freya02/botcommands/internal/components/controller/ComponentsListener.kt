@@ -179,7 +179,7 @@ internal class ComponentsListener(
                 MethodParameterType.OPTION -> {
                     option as ComponentHandlerOption
 
-                    option.resolver.resolve(context, descriptor, event, userDataIterator.next())
+                    option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
                 }
                 MethodParameterType.CUSTOM -> {
                     option as CustomMethodOption
