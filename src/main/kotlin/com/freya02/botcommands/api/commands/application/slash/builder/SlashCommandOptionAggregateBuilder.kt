@@ -6,24 +6,24 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder(
     private val context: BContextImpl,
-    multiParameter: MultiParameter,
+    aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
-) : ApplicationCommandOptionAggregateBuilder(multiParameter, aggregator) {
+) : ApplicationCommandOptionAggregateBuilder(aggregatorParameter, aggregator) {
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
-        this += SlashCommandOptionBuilder(context, multiParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
+        this += SlashCommandOptionBuilder(context, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 
     override fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName))
+        this += CustomOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        this += ApplicationGeneratedOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
+        this += ApplicationGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 }

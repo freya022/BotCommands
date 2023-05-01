@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.transformParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KFunction
@@ -21,8 +21,8 @@ class ComponentDescriptor(
             builderBlock = { function, parameter, declaredName ->
                 val service = context.serviceContainer.peekServiceOrNull(parameter.wrap().toVarargElementType().erasure)
                 when {
-                    service != null -> CustomOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
-                    else -> ComponentHandlerOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
+                    service != null -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    else -> ComponentHandlerOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
             },
             aggregateBlock = { ComponentHandlerParameter(context, it) }

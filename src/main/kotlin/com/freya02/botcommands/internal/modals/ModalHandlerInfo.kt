@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.set
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -37,9 +37,9 @@ class ModalHandlerInfo(
         parameters = method.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
-                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
-                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
-                    else -> CustomOptionBuilder(MultiParameter.fromSelfAggregate(function, declaredName))
+                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    else -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
             },
             aggregateBlock = { ModalHandlerParameter(context, it) }

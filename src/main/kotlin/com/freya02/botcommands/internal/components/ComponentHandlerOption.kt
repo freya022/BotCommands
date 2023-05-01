@@ -9,7 +9,7 @@ class ComponentHandlerOption(
     optionBuilder: ComponentHandlerOptionBuilder,
     val resolver: ComponentParameterResolver<*, *>
 ) : AbstractOption {
-    override val multiParameter = optionBuilder.multiParameter
+    override val optionParameter = optionBuilder.optionParameter
     override val methodParameterType = MethodParameterType.OPTION
 
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }

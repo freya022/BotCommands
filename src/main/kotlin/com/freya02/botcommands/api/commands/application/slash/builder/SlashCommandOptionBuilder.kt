@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.build
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
@@ -19,9 +19,9 @@ import kotlin.reflect.KFunction
 
 class SlashCommandOptionBuilder(
     private val context: BContextImpl,
-    multiParameter: MultiParameter,
+    optionParameter: OptionParameter,
     optionName: String
-): ApplicationCommandOptionBuilder(multiParameter, optionName) {
+): ApplicationCommandOptionBuilder(optionParameter, optionName) {
     var description: String = "No description"
 
     @Deprecated("Replaced with aggregates")

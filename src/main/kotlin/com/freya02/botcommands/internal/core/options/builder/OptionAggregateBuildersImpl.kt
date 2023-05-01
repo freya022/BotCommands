@@ -2,27 +2,27 @@ package com.freya02.botcommands.internal.core.options.builder
 
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
 internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     private val commandFunction: KFunction<*>,
-    val aggregateConstructor: (multiParameter: MultiParameter, aggregator: KFunction<*>) -> T
+    val aggregateConstructor: (aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) -> T
 ) {
     val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
 
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
-        aggregate(MultiParameter.fromUserAggregate(commandFunction, declaredName), aggregator, block)
+        aggregate(AggregatorParameter.fromUserAggregate(commandFunction, declaredName), aggregator, block)
     }
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
         //When the option needs to be searched on the command function instead of the aggregator
-        aggregate(MultiParameter.fromSelfAggregate(commandFunction, declaredName), theSingleAggregator, block)
+        aggregate(AggregatorParameter.fromSelfAggregate(commandFunction, declaredName), theSingleAggregator, block)
     }
 
-    private fun aggregate(multiParameter: MultiParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
-        optionAggregateBuilders[multiParameter.typeCheckingParameterName] = aggregateConstructor(multiParameter, aggregator).apply(block)
+    private fun aggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
+        optionAggregateBuilders[aggregatorParameter.typeCheckingParameterName] = aggregateConstructor(aggregatorParameter, aggregator).apply(block)
     }
 
     @IncludeClasspath

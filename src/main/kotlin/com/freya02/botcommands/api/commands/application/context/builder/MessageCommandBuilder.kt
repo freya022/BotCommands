@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.Top
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 class MessageCommandBuilder internal constructor(
@@ -28,8 +28,8 @@ class MessageCommandBuilder internal constructor(
         }
     }
 
-    override fun constructAggregate(multiParameter: MultiParameter, aggregator: KFunction<*>) =
-        MessageCommandOptionAggregateBuilder(multiParameter, aggregator)
+    override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
+        MessageCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
 
     internal fun build(): MessageCommandInfo {
         return MessageCommandInfo(context, this)

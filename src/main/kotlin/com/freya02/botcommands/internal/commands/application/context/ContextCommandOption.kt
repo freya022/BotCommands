@@ -9,7 +9,7 @@ abstract class ContextCommandOption(
     optionBuilder: ApplicationCommandOptionBuilder
 ) : AbstractOption {
     override val methodParameterType = MethodParameterType.OPTION
-    override val multiParameter = optionBuilder.multiParameter
+    override val optionParameter = optionBuilder.optionParameter
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 
     abstract val resolver: Any

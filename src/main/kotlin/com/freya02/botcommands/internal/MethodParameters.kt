@@ -4,8 +4,8 @@ import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KFunction
@@ -33,7 +33,7 @@ internal fun <R> List<KParameter>.transformParameters(
         parameter.hasAnnotation<Aggregate>() -> {
             val constructor = parameter.type.jvmErasure.primaryConstructor
                 ?: throwUser(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
-            OptionAggregateBuilder(MultiParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
+            OptionAggregateBuilder(AggregatorParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
                 constructor.nonInstanceParameters.forEach { constructorParameter ->
                     this += builderBlock(constructor, constructorParameter, constructorParameter.findDeclarationName())
                 }
@@ -41,7 +41,7 @@ internal fun <R> List<KParameter>.transformParameters(
         }
 
         else -> OptionAggregateBuilder(
-            MultiParameter.fromSelfAggregate(parameter.function, declaredName),
+            AggregatorParameter.fromSelfAggregate(parameter.function, declaredName),
             OptionAggregateBuildersImpl.theSingleAggregator
         ).apply {
             this += builderBlock(parameter.function, parameter, declaredName)

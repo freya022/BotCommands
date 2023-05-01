@@ -8,7 +8,7 @@ class ModalHandlerDataOption internal constructor(
     optionBuilder: ModalHandlerDataOptionBuilder
 ) : GeneratedMethodParameter {
     override val methodParameterType = MethodParameterType.GENERATED
-    override val multiParameter = optionBuilder.multiParameter
+    override val optionParameter = optionBuilder.optionParameter
 
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 }

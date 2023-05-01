@@ -2,12 +2,12 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 interface AbstractOption {
-    val multiParameter: MultiParameter
+    val optionParameter: OptionParameter
 
     /**
      * This might be a KParameter from the command function or from an aggregate function.
@@ -20,7 +20,7 @@ interface AbstractOption {
      * **Also note:** this is not unique, multiple options can be bound to the same KParameter. (varargs for example)
      */
     val kParameter: KParameter
-        get() = multiParameter.typeCheckingParameter
+        get() = optionParameter.typeCheckingParameter
 
     /**
      * Parameter used solely when inserting the option in the aggregator function.
@@ -28,7 +28,7 @@ interface AbstractOption {
      * May be from the command or aggregate function.
      */
     val executableParameter: KParameter
-        get() = multiParameter.executableParameter
+        get() = optionParameter.executableParameter
     val methodParameterType: MethodParameterType
 
     //TODO move all of those methods in some object, where the values are stored

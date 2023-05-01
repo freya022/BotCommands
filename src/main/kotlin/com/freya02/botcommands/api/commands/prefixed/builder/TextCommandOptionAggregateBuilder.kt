@@ -4,20 +4,20 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.asDiscordString
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
-class TextCommandOptionAggregateBuilder(multiParameter: MultiParameter, aggregator: KFunction<*>) : OptionAggregateBuilder(multiParameter, aggregator) {
+class TextCommandOptionAggregateBuilder(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) : OptionAggregateBuilder(aggregatorParameter, aggregator) {
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
-        this += TextCommandOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
+        this += TextCommandOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 
     fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName))
+        this += CustomOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
 
     fun generatedOption(declaredName: String, generatedValueSupplier: TextGeneratedValueSupplier) {
-        this += TextGeneratedOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
+        this += TextGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 }

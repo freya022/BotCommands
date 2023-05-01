@@ -5,12 +5,12 @@ import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
 import com.freya02.botcommands.internal.commands.prefixed.TextGeneratedMethodParameter
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 
 class TextGeneratedOptionBuilder(
-    multiParameter: MultiParameter,
+    optionParameter: OptionParameter,
     val generatedValueSupplier: TextGeneratedValueSupplier
-) : OptionBuilder(multiParameter), GeneratedOptionBuilder {
+) : OptionBuilder(optionParameter), GeneratedOptionBuilder {
     override fun toGeneratedMethodParameter(): GeneratedMethodParameter =
         TextGeneratedMethodParameter(this)
 }

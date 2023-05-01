@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 
-internal class ModalHandlerInputOptionBuilder(multiParameter: MultiParameter) : OptionBuilder(multiParameter)
+internal class ModalHandlerInputOptionBuilder(optionParameter: OptionParameter) : OptionBuilder(optionParameter)

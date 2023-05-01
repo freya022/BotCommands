@@ -1,21 +1,21 @@
 package com.freya02.botcommands.api.core.options.builder
 
 import com.freya02.botcommands.internal.joinWithQuote
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.throwUser
 
 abstract class OptionBuilder(
     /**
      * Declared name is not unique ! (varargs for example)
      */
-    val multiParameter: MultiParameter
+    val optionParameter: OptionParameter
 ) {
-    val owner = multiParameter.typeCheckingFunction
+    val owner = optionParameter.typeCheckingFunction
 
     /**
      * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options
      */
-    internal val parameter = multiParameter.typeCheckingParameter
+    internal val parameter = optionParameter.typeCheckingParameter
     @Deprecated("Use 'parameter' instead, beware of array types")
     internal val type = parameter.type
 

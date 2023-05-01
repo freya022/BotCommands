@@ -6,7 +6,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
@@ -49,10 +49,10 @@ abstract class SlashCommandBuilder internal constructor(
         }
     }
 
-    override fun constructAggregate(multiParameter: MultiParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilder {
+    override fun constructAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): SlashCommandOptionAggregateBuilder {
         if (!allowOptions) throwUser("Cannot add options as this already contains subcommands/subcommand groups")
 
-        return SlashCommandOptionAggregateBuilder(context, multiParameter, aggregator)
+        return SlashCommandOptionAggregateBuilder(context, aggregatorParameter, aggregator)
     }
 
     @IncludeClasspath

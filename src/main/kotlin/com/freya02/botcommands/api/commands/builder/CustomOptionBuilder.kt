@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 
-class CustomOptionBuilder(multiParameter: MultiParameter) : OptionBuilder(multiParameter)
+class CustomOptionBuilder(optionParameter: OptionParameter) : OptionBuilder(optionParameter)

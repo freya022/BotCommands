@@ -9,7 +9,7 @@ abstract class CommandOption internal constructor(
     commandOptionBuilder: CommandOptionBuilder
 ) : AbstractOption {
     final override val methodParameterType = MethodParameterType.OPTION
-    final override val multiParameter = commandOptionBuilder.multiParameter
+    final override val optionParameter = commandOptionBuilder.optionParameter
     final override val kParameter = super.kParameter
     final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 

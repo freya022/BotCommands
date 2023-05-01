@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.context.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
-import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.parameters.OptionParameter
 
-class MessageCommandOptionBuilder(multiParameter: MultiParameter) : ApplicationCommandOptionBuilder(multiParameter, "message dummy")
+class MessageCommandOptionBuilder(optionParameter: OptionParameter) : ApplicationCommandOptionBuilder(optionParameter, "message dummy")

@@ -17,8 +17,8 @@ class TextCommandVariationBuilder internal constructor(
 ) : IBuilderFunctionHolder<Any> {
     override val function: KFunction<Any> = function.reflectReference()
 
-    private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function) { multiParameter, aggregator ->
-        TextCommandOptionAggregateBuilder(multiParameter, aggregator)
+    private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function) { aggregatorParameter, aggregator ->
+        TextCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
     }
 
     @get:JvmSynthetic
