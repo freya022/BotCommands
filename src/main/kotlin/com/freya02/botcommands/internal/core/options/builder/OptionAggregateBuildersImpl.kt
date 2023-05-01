@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core.options.builder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.parameters.MultiParameter
+import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
 internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
@@ -12,7 +13,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
 
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
-        aggregate(MultiParameter.fromUserAggregate(aggregator, declaredName), aggregator, block)
+        aggregate(MultiParameter.fromUserAggregate(commandFunction, declaredName), aggregator, block)
     }
 
     fun selfAggregate(declaredName: String, block: T.() -> Unit) {
