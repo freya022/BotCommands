@@ -12,6 +12,8 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ch
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.expandVararg
+import com.freya02.botcommands.internal.utils.set
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -123,7 +125,7 @@ abstract class SlashCommandInfo internal constructor(
 
                 val optionName = option.discordName
                 val optionMapping = event.getOption(optionName)
-                    ?: if (option.isVarArg) {
+                    ?: if (option.isVararg) {
                         continue //Continue looking at other options
                     } else if (parameter.isOptional) { //Default or nullable
                         //Put null/default value if parameter is not a kotlin default value
@@ -131,7 +133,7 @@ abstract class SlashCommandInfo internal constructor(
                             continue //Kotlin default value, don't add anything to the parameters map
                         } else {
                             //Nullable
-                            aggregatorArguments[option.executableParameter] = when {
+                            aggregatorArguments[option] = when {
                                 option.isPrimitive -> 0
                                 else -> null
                             }
@@ -168,15 +170,15 @@ abstract class SlashCommandInfo internal constructor(
                     return false
                 }
 
-                aggregatorArguments[option.executableParameter] = resolved
+                aggregatorArguments[option] = resolved
             } else if (option.methodParameterType == MethodParameterType.CUSTOM) {
                 option as CustomMethodOption
 
-                aggregatorArguments[option.executableParameter] = option.resolver.resolveSuspend(context, this, event)
+                aggregatorArguments[option] = option.resolver.resolveSuspend(context, this, event)
             } else if (option.methodParameterType == MethodParameterType.GENERATED) {
                 option as ApplicationGeneratedMethodParameter
 
-                aggregatorArguments[option.executableParameter] = option.generatedValueSupplier
+                aggregatorArguments[option] = option.generatedValueSupplier
                     .getDefaultValue(event)
                     .also { checkDefaultValue(option, it) }
             } else {
@@ -184,7 +186,7 @@ abstract class SlashCommandInfo internal constructor(
             }
         }
 
-        objects[parameter.kParameter] = aggregator.callSuspendBy(aggregatorArguments)
+        objects[parameter] = aggregator.callSuspendBy(aggregatorArguments.expandVararg())
 
         return true
     }
