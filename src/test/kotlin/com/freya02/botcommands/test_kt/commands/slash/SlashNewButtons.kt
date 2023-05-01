@@ -18,6 +18,7 @@ import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.TimeoutCancellationException
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.minutes
@@ -91,8 +92,8 @@ class SlashNewButtons(serviceContainer: ServiceContainer) : ApplicationCommand()
     }
 
     @JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
-    fun onFirstButtonClicked(event: ButtonEvent) {
-        event.reply_("Persistent button clicked", ephemeral = true).queue()
+    fun onFirstButtonClicked(event: ButtonEvent, double: Double, member: Member) {
+        event.reply_("Persistent button clicked, double: $double, member: ${member.user.asTag}", ephemeral = true).queue()
     }
 
     @ComponentTimeoutHandler(name = PERSISTENT_BUTTON_TIMEOUT_LISTENER_NAME)

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.core.BBuilder
 import com.freya02.botcommands.test.BasicSettingsProvider
 import com.freya02.botcommands.test.Config
 import com.freya02.botcommands.test.TestDB
+import com.freya02.botcommands.test_kt.commands.slash.*
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
@@ -42,6 +43,12 @@ object Main {
             addClass<Config>()
             addClass<TestDB>()
             addClass<BasicSettingsProvider>()
+
+            addClass<SlashLength>()
+            addClass<SlashForumTest>()
+            addClass<SlashNewButtons>()
+            addClass<SlashModal>()
+            addClass<SlashVararg>()
 
             components {
                 useComponents = true

@@ -32,7 +32,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
         val modal = modals.create("Title") {
             shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
 
-//            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
+            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
 
 //            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
@@ -43,17 +43,17 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
 
         event.replyModal(modal).queue()
 
-        val modalEvent = modal.await()
-
-        onModalSubmitted(modalEvent, "User data", 420, modalEvent.values[0].asString, CustomObject())
+//        val modalEvent = modal.await()
+//
+//        onModalSubmitted(modalEvent, "User data", 420, modalEvent.values[0].asString, CustomObject())
     }
 
     @ModalHandler(name = SLASH_MODAL_MODAL_HANDLER)
     fun onModalSubmitted(
         event: ModalInteractionEvent,
         @ModalData dataStr: String,
-        @ModalData dataInt: Int,
         @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
+        @ModalData dataInt: Int,
         customObject: CustomObject
     ) {
         event.reply_(
