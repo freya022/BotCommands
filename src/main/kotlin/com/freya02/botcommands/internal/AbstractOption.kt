@@ -32,6 +32,9 @@ interface AbstractOption {
         get() = multiParameter.executableParameter
     val methodParameterType: MethodParameterType
 
+    //TODO move all of those methods in some object, where the values are stored
+    val isVararg: Boolean
+        get() = kParameter.isVararg
     val isOptional: Boolean
     val declaredName: String
         get() = kParameter.findDeclarationName()

@@ -10,7 +10,10 @@ abstract class CommandOption internal constructor(
 ) : AbstractOption {
     final override val methodParameterType = MethodParameterType.OPTION
     final override val multiParameter = commandOptionBuilder.multiParameter
+    final override val kParameter = super.kParameter
     final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
+
+    final override val isVararg = kParameter.isVararg
 
     abstract val resolver: Any
     val discordName = commandOptionBuilder.optionName

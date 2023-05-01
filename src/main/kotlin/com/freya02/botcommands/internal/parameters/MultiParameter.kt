@@ -36,6 +36,13 @@ class MultiParameter private constructor(
         }
     }
 
+    fun toOptionParameter(optionFunction: KFunction<*>, parameterName: String) = when {
+        //Keep the command's parameter for type checking if the internal aggregator is currently used
+        this.executableFunction.isSingleAggregator() -> this
+        //When the aggregator is user-defined
+        else -> MultiParameter(optionFunction, parameterName, optionFunction, parameterName)
+    }
+
     internal companion object {
         fun fromUserAggregate(aggregator: KFunction<*>, parameterName: String) =
             MultiParameter(aggregator, parameterName, aggregator, parameterName)
