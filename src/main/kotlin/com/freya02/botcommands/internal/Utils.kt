@@ -159,7 +159,11 @@ val KClass<*>.simpleNestedName: String
     get() = this.java.simpleNestedName
 
 val Class<*>.simpleNestedName: String
-    get() = this.canonicalName.substring(this.packageName.length + 1)
+    get() = when {
+        this.isPrimitive -> canonicalName
+        this.isArray -> componentType.simpleNestedName + "[]"
+        else -> this.canonicalName.substring(this.packageName.length + 1)
+    }
 
 fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
 fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
