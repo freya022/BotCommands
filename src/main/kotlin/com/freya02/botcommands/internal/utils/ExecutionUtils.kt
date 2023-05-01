@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.AbstractOption
+import com.freya02.botcommands.internal.core.options.AbstractOption
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.KParameter

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.internal.AbstractOption
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.options.AbstractOption
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.parameters.MethodParameterType

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.parameters
 
-import com.freya02.botcommands.internal.AbstractOption
+import com.freya02.botcommands.internal.core.options.AbstractOption
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 
