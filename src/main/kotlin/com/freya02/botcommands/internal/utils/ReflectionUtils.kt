@@ -33,7 +33,8 @@ internal object ReflectionUtils {
 
     @Suppress("UNCHECKED_CAST")
     internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
-        if (this.visibility != KVisibility.PUBLIC) {
+        //Still allow internal modifiers as they should be reflectively accessible
+        if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
             //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
             throwUser("$this : Function needs to be public")
         }
