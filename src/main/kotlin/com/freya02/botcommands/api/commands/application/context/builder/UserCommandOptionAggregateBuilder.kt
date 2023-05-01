@@ -12,14 +12,14 @@ class UserCommandOptionAggregateBuilder(
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder(multiParameter, aggregator) {
     fun option(declaredName: String) {
-        this += UserCommandOptionBuilder(multiParameter)
+        this += UserCommandOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName))
     }
 
     override fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(multiParameter)
+        this += CustomOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName))
     }
 
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
-        this += ApplicationGeneratedOptionBuilder(multiParameter, generatedValueSupplier)
+        this += ApplicationGeneratedOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 }

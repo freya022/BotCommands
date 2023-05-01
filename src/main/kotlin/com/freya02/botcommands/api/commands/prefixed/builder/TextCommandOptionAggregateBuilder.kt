@@ -10,14 +10,14 @@ import kotlin.reflect.KFunction
 class TextCommandOptionAggregateBuilder(multiParameter: MultiParameter, aggregator: KFunction<*>) : OptionAggregateBuilder(multiParameter, aggregator) {
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
-        this += TextCommandOptionBuilder(multiParameter, optionName).apply(block)
+        this += TextCommandOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 
     fun customOption(declaredName: String) {
-        this += CustomOptionBuilder(multiParameter)
+        this += CustomOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName))
     }
 
     fun generatedOption(declaredName: String, generatedValueSupplier: TextGeneratedValueSupplier) {
-        this += TextGeneratedOptionBuilder(multiParameter, generatedValueSupplier)
+        this += TextGeneratedOptionBuilder(multiParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 }
