@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.set
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -107,7 +108,7 @@ class UserCommandInfo internal constructor(
                 throwUser(option.kParameter.function, "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null")
             }
 
-            arguments[option.executableParameter] = value
+            arguments[option] = value
         }
 
         return aggregator.callSuspendBy(arguments)

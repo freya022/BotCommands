@@ -18,6 +18,7 @@ import com.freya02.botcommands.internal.components.repositories.ComponentReposit
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.utils.set
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
@@ -198,7 +199,7 @@ internal class ComponentsListener(
                 )
             }
 
-            arguments[option.executableParameter] = value
+            arguments[option] = value
         }
 
         return aggregator.callSuspendBy(arguments)

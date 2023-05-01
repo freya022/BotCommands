@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.set
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.KParameter
@@ -87,7 +88,7 @@ class TextCommandVariation internal constructor(
         aggregatorArguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
-            aggregatorArguments[option.executableParameter] = when (option.methodParameterType) {
+            aggregatorArguments[option] = when (option.methodParameterType) {
                 MethodParameterType.OPTION -> {
                     groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 

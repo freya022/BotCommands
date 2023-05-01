@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.set
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -182,7 +183,7 @@ class ModalHandlerInfo(
                 else -> throwInternal("Unexpected MethodParameterType: ${option.methodParameterType}")
             }
 
-            arguments[option.executableParameter] = value
+            arguments[option] = value
         }
 
         return aggregator.callSuspendBy(arguments)
