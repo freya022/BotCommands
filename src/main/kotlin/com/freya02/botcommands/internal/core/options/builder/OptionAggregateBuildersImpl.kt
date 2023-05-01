@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.core.options.builder
 
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.parameters.MultiParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
@@ -25,7 +25,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         optionAggregateBuilders[multiParameter.typeCheckingParameterName] = aggregateConstructor(multiParameter, aggregator).apply(block)
     }
 
-    @BService
+    @IncludeClasspath
     companion object {
         val theSingleAggregator = Companion::singleAggregator.reflectReference()
 

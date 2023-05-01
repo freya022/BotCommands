@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.application.slash.builder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.parameters.MultiParameter
@@ -54,6 +55,7 @@ abstract class SlashCommandBuilder internal constructor(
         return SlashCommandOptionAggregateBuilder(context, multiParameter, aggregator)
     }
 
+    @IncludeClasspath
     companion object {
         const val DEFAULT_DESCRIPTION = "No description"
 
