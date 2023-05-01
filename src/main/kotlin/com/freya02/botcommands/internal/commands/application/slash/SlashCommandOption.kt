@@ -17,7 +17,7 @@ class SlashCommandOption(
     optionAggregateBuilders: Map<String, OptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
-) : AbstractSlashCommandOption(slashCommandInfo, optionBuilder, resolver) {
+) : AbstractSlashCommandOption(optionBuilder, resolver) {
     val description: String = optionBuilder.description
 
     internal val autocompleteHandler: AutocompleteHandler? = when {

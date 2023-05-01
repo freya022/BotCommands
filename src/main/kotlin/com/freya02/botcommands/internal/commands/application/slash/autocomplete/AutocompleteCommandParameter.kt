@@ -17,5 +17,5 @@ class AutocompleteCommandParameter(
         optionAggregateBuilders: Map<String, OptionAggregateBuilder>,
         optionBuilder: SlashCommandOptionBuilder,
         resolver: SlashParameterResolver<*, *>
-    ) = AutocompleteCommandOption(slashCommandInfo, optionBuilder, resolver)
+    ) = AutocompleteCommandOption(optionBuilder, resolver)
 }
