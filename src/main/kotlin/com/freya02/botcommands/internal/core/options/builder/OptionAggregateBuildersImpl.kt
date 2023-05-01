@@ -27,7 +27,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
 
     @BService
     companion object {
-        val theSingleAggregator = Companion::singleAggregator
+        val theSingleAggregator = Companion::singleAggregator.reflectReference()
 
         fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
 
