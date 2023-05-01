@@ -3,11 +3,13 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.OptionParameter
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
 interface AbstractOption {
     val optionParameter: OptionParameter
+    val methodParameterType: MethodParameterType
 
     /**
      * This might be a KParameter from the command function or from an aggregate function.
@@ -20,7 +22,6 @@ interface AbstractOption {
      * **Also note:** this is not unique, multiple options can be bound to the same KParameter. (varargs for example)
      */
     val kParameter: KParameter
-        get() = optionParameter.typeCheckingParameter
 
     /**
      * Parameter used solely when inserting the option in the aggregator function.
@@ -28,19 +29,28 @@ interface AbstractOption {
      * May be from the command or aggregate function.
      */
     val executableParameter: KParameter
-        get() = optionParameter.executableParameter
-    val methodParameterType: MethodParameterType
 
-    //TODO move all of those methods in some object, where the values are stored
     val isVararg: Boolean
-        get() = kParameter.isVararg
     val isOptional: Boolean
     val declaredName: String
-        get() = kParameter.findDeclarationName()
     val index: Int
-        get() = kParameter.index
     val isPrimitive: Boolean
-        get() = kParameter.isPrimitive
     val type: KType
-        get() = kParameter.type
+}
+
+open class AbstractOptionImpl(
+    final override val optionParameter: OptionParameter,
+    final override val methodParameterType: MethodParameterType
+) : AbstractOption {
+    final override val kParameter: KParameter
+        get() = optionParameter.typeCheckingParameter
+    final override val executableParameter: KParameter
+        get() = optionParameter.executableParameter
+
+    final override val isOptional by lazy { kParameter.isNullable || kParameter.isOptional }
+    final override val isVararg = kParameter.isVararg
+    final override val declaredName = kParameter.findDeclarationName()
+    final override val index = kParameter.index
+    final override val isPrimitive = kParameter.isPrimitive
+    final override val type = kParameter.type
 }

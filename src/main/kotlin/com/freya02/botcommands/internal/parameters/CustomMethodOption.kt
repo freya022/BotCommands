@@ -1,11 +1,9 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.api.parameters.ICustomResolver
-import com.freya02.botcommands.internal.AbstractOption
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
+import com.freya02.botcommands.internal.AbstractOptionImpl
 
-class CustomMethodOption(override val optionParameter: OptionParameter, val resolver: ICustomResolver<*, *>) : AbstractOption {
-    override val methodParameterType = MethodParameterType.CUSTOM
-
-    override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
-}
+class CustomMethodOption(
+    optionParameter: OptionParameter,
+    val resolver: ICustomResolver<*, *>
+) : AbstractOptionImpl(optionParameter, MethodParameterType.CUSTOM)
