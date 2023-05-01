@@ -95,7 +95,10 @@ internal object ReflectionMetadata {
             try {
                 for (methodInfo in classInfo.declaredMethodInfo) {
                     //Don't inspect methods with generics
-                    if (methodInfo.parameterInfo.any { it.typeSignatureOrTypeDescriptor is TypeVariableSignature || it.typeSignatureOrTypeDescriptor is ArrayTypeSignature }) continue
+                    if (methodInfo.parameterInfo
+                            .map { it.typeSignatureOrTypeDescriptor }
+                            .any { it is TypeVariableSignature || (it is ArrayTypeSignature && it.elementTypeSignature is TypeVariableSignature) }
+                    ) continue
 
                     val method = methodInfo.loadClassAndGetMethod()
                     val nullabilities =
