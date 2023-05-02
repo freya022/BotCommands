@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.parameters
 
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.findDeclarationName
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType

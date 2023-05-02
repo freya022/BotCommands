@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal

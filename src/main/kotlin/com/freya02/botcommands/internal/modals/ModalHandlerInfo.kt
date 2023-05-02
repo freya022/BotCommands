@@ -6,8 +6,8 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.options.AbstractOption
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.set

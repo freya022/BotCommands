@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariatio
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.set

@@ -13,8 +13,8 @@ import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApp
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.set
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent

@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal.commands.application.context
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 
 abstract class ContextCommandParameter(context: BContextImpl, optionAggregateBuilder: ApplicationCommandOptionAggregateBuilder) : MethodParameter {

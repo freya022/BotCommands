@@ -3,11 +3,17 @@ package com.freya02.botcommands.internal.core.options
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.isPrimitive
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
+
+enum class MethodParameterType {
+    OPTION,
+    CUSTOM,
+    CONSTANT, //TODO
+    GENERATED
+}
 
 interface AbstractOption {
     val optionParameter: OptionParameter

@@ -10,8 +10,8 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.parameters.MethodParameterType
 import com.freya02.botcommands.internal.utils.expandVararg
 import com.freya02.botcommands.internal.utils.set
 import mu.KotlinLogging

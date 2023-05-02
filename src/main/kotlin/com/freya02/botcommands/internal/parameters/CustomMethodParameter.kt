@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.api.parameters.ICustomResolver
+import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 
