@@ -40,6 +40,11 @@ interface Option {
      */
     val executableParameter: KParameter
 
+    /**
+     * The parameter is a vararg if:
+     * * The aggregator is [OptionAggregateBuildersImpl.theVarargAggregator]
+     * * The erased type is [List]
+     */
     val isVararg: Boolean
     val isOptional: Boolean
     val declaredName: String
