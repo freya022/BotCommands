@@ -40,7 +40,7 @@ class TextCommandVariation internal constructor(
         }
 
         completePattern = when {
-            parameters.any { it.isOption } -> CommandPattern.of(this)
+            parameters.flatMap { it.commandOptions }.any { it.methodParameterType == MethodParameterType.OPTION } -> CommandPattern.of(this)
             else -> null
         }
     }
