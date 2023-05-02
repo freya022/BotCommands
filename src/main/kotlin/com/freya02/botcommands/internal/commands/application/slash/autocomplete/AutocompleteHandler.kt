@@ -14,10 +14,10 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
+import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
@@ -110,17 +110,17 @@ internal class AutocompleteHandler(
     }
 
     internal companion object {
-        internal fun String.asChoice(type: OptionType): Command.Choice? {
+        internal fun String.asChoice(type: JDAOptionType): Command.Choice? {
             return when (type) {
-                OptionType.STRING -> Command.Choice(this, this)
-                OptionType.INTEGER -> {
+                JDAOptionType.STRING -> Command.Choice(this, this)
+                JDAOptionType.INTEGER -> {
                     try {
                         Command.Choice(this, toLong())
                     } catch (e: NumberFormatException) {
                         null
                     }
                 }
-                OptionType.NUMBER -> {
+                JDAOptionType.NUMBER -> {
                     try {
                         Command.Choice(this, toDouble())
                     } catch (e: NumberFormatException) {

@@ -14,13 +14,13 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
+import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal object SlashUtils {
     val fakeSlashFunction = ::fakeFunction
@@ -63,7 +63,7 @@ internal object SlashUtils {
             val data = OptionData(optionType, name, description)
 
             when (optionType) {
-                OptionType.CHANNEL -> {
+                JDAOptionType.CHANNEL -> {
                     //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
                     // Otherwise set the channel types of the parameter, if available
                     if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
@@ -72,19 +72,19 @@ internal object SlashUtils {
                         data.setChannelTypes(parameter.channelTypes)
                     }
                 }
-                OptionType.INTEGER -> {
+                JDAOptionType.INTEGER -> {
                     parameter.range?.let {
                         data.setMinValue(it.min.toLong())
                         data.setMaxValue(it.max.toLong())
                     }
                 }
-                OptionType.NUMBER -> {
+                JDAOptionType.NUMBER -> {
                     parameter.range?.let {
                         data.setMinValue(it.min.toDouble())
                         data.setMaxValue(it.max.toDouble())
                     }
                 }
-                OptionType.STRING -> {
+                JDAOptionType.STRING -> {
                     parameter.length?.let {
                         data.setRequiredLength(it.min, it.max)
                     }
