@@ -4,8 +4,8 @@ import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
-import kotlin.reflect.full.createType
 import kotlin.reflect.jvm.jvmErasure
+import com.freya02.botcommands.internal.throwUser as utilsThrowUser
 
 data class ParameterWrapper(
     val type: KType,
@@ -24,12 +24,9 @@ data class ParameterWrapper(
         else -> this
     }
 
-    fun throwUser(message: String) {
-        if (parameter == null) {
-            com.freya02.botcommands.internal.throwUser(message)
-        } else {
-            com.freya02.botcommands.internal.throwUser(parameter.function, message)
-        }
+    fun throwUser(message: String): Nothing = when (parameter) {
+        null -> utilsThrowUser(message)
+        else -> utilsThrowUser(parameter.function, message)
     }
 
     companion object {
