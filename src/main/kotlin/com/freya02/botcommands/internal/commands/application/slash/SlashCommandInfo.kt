@@ -151,8 +151,8 @@ abstract class SlashCommandInfo internal constructor(
                     if (event is SlashCommandInteractionEvent) {
                         event.reply(
                             context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                parameter.name,
-                                parameter.type.jvmErasure.simpleName
+                                option.declaredName,
+                                option.type.jvmErasure.simpleNestedName
                             )
                         )
                             .setEphemeral(true)
@@ -162,9 +162,9 @@ abstract class SlashCommandInfo internal constructor(
                     //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
                     logger.trace(
                         "The parameter '{}' of value '{}' could not be resolved into a {}",
-                        parameter.name,
+                        option.declaredName,
                         optionMapping.asString,
-                        parameter.type.jvmErasure.simpleName
+                        option.type.jvmErasure.simpleName
                     )
 
                     return false
