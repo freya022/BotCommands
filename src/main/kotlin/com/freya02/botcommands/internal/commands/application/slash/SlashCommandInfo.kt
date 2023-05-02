@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.expandVararg
 import com.freya02.botcommands.internal.utils.set
@@ -121,7 +121,7 @@ abstract class SlashCommandInfo internal constructor(
         aggregatorArguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
-            if (option.methodParameterType == MethodParameterType.OPTION) {
+            if (option.optionType == OptionType.OPTION) {
                 option as AbstractSlashCommandOption
 
                 val optionName = option.discordName
@@ -172,18 +172,18 @@ abstract class SlashCommandInfo internal constructor(
                 }
 
                 aggregatorArguments[option] = resolved
-            } else if (option.methodParameterType == MethodParameterType.CUSTOM) {
+            } else if (option.optionType == OptionType.CUSTOM) {
                 option as CustomMethodOption
 
                 aggregatorArguments[option] = option.resolver.resolveSuspend(context, this, event)
-            } else if (option.methodParameterType == MethodParameterType.GENERATED) {
+            } else if (option.optionType == OptionType.GENERATED) {
                 option as ApplicationGeneratedMethodParameter
 
                 aggregatorArguments[option] = option.generatedValueSupplier
                     .getDefaultValue(event)
                     .also { checkDefaultValue(option, it) }
             } else {
-                throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+                throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
         }
 

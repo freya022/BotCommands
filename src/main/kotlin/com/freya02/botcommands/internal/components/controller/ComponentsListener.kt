@@ -16,7 +16,7 @@ import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.set
 import dev.minn.jda.ktx.messages.reply_
@@ -179,18 +179,18 @@ internal class ComponentsListener(
         arguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.options) {
-            val value = when (option.methodParameterType) {
-                MethodParameterType.OPTION -> {
+            val value = when (option.optionType) {
+                OptionType.OPTION -> {
                     option as ComponentHandlerOption
 
                     option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
                 }
-                MethodParameterType.CUSTOM -> {
+                OptionType.CUSTOM -> {
                     option as CustomMethodOption
 
                     option.resolver.resolveSuspend(context, descriptor, event)
                 }
-                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
 
             if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters

@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.options.AbstractOption
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -144,8 +144,8 @@ class ModalHandlerInfo(
         arguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.options) {
-            val value = when (option.methodParameterType) {
-                MethodParameterType.OPTION -> {
+            val value = when (option.optionType) {
+                OptionType.OPTION -> {
                     option as ModalHandlerInputOption
 
                     //We have the modal input's ID
@@ -161,7 +161,7 @@ class ModalHandlerInfo(
                         }
                     }
                 }
-                MethodParameterType.GENERATED -> {
+                OptionType.GENERATED -> {
                     option as ModalHandlerDataOption
 
                     if (!userDataIterator.hasNext())
@@ -177,11 +177,11 @@ class ModalHandlerInfo(
                         }
                     }
                 }
-                MethodParameterType.CUSTOM -> {
+                OptionType.CUSTOM -> {
                     option as CustomMethodOption
                     option.resolver.resolveSuspend(context, this, event)
                 }
-                else -> throwInternal("Unexpected MethodParameterType: ${option.methodParameterType}")
+                else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
             }
 
             arguments[option] = value

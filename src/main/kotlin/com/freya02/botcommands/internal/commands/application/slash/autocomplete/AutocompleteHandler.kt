@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -39,7 +39,7 @@ internal class AutocompleteHandler(
 
         compositeParameters = methodParameters
             .flatMap { it.commandOptions }
-            .filter { it.methodParameterType == MethodParameterType.OPTION }
+            .filter { it.optionType == OptionType.OPTION }
             .map { it as AutocompleteCommandOption }
             .filter { it.isCompositeKey }
 

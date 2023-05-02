@@ -13,7 +13,7 @@ import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApp
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.set
@@ -83,23 +83,23 @@ class MessageCommandInfo internal constructor(
         arguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
-            val value = when (option.methodParameterType) {
-                MethodParameterType.OPTION -> {
+            val value = when (option.optionType) {
+                OptionType.OPTION -> {
                     option as MessageContextCommandOption
 
                     option.resolver.resolveSuspend(context, this, event)
                 }
-                MethodParameterType.CUSTOM -> {
+                OptionType.CUSTOM -> {
                     option as CustomMethodOption
 
                     option.resolver.resolveSuspend(context, this, event)
                 }
-                MethodParameterType.GENERATED -> {
+                OptionType.GENERATED -> {
                     option as ApplicationGeneratedMethodParameter
 
                     option.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(option, it) }
                 }
-                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
 
             if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters

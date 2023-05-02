@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 
-enum class MethodParameterType {
+enum class OptionType {
     OPTION,
     CUSTOM,
     CONSTANT, //TODO
@@ -17,7 +17,7 @@ enum class MethodParameterType {
 
 interface AbstractOption {
     val optionParameter: OptionParameter
-    val methodParameterType: MethodParameterType
+    val optionType: OptionType
 
     /**
      * This might be a KParameter from the command function or from an aggregate function.
@@ -48,7 +48,7 @@ interface AbstractOption {
 
 open class AbstractOptionImpl(
     final override val optionParameter: OptionParameter,
-    final override val methodParameterType: MethodParameterType
+    final override val optionType: OptionType
 ) : AbstractOption {
     final override val kParameter: KParameter
         get() = optionParameter.typeCheckingParameter

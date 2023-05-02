@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariatio
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.core.options.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
@@ -40,7 +40,7 @@ class TextCommandVariation internal constructor(
         }
 
         completePattern = when {
-            parameters.flatMap { it.commandOptions }.any { it.methodParameterType == MethodParameterType.OPTION } -> CommandPattern.of(this)
+            parameters.flatMap { it.commandOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
         }
     }
@@ -88,8 +88,8 @@ class TextCommandVariation internal constructor(
         aggregatorArguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {
-            aggregatorArguments[option] = when (option.methodParameterType) {
-                MethodParameterType.OPTION -> {
+            aggregatorArguments[option] = when (option.optionType) {
+                OptionType.OPTION -> {
                     groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 
                     option as TextCommandOption
@@ -132,17 +132,17 @@ class TextCommandVariation internal constructor(
                         }
                     }
                 }
-                MethodParameterType.CUSTOM -> {
+                OptionType.CUSTOM -> {
                     option as CustomMethodOption
 
                     option.resolver.resolveSuspend(event.context, this, event)
                 }
-                MethodParameterType.GENERATED -> {
+                OptionType.GENERATED -> {
                     option as TextGeneratedMethodParameter
 
                     option.generatedValueSupplier.getDefaultValue(event)
                 }
-                else -> throwInternal("MethodParameterType#${option.methodParameterType} has not been implemented")
+                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
         }
 
