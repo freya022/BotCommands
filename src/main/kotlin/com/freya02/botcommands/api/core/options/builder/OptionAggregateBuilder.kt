@@ -14,8 +14,6 @@ open class OptionAggregateBuilder internal constructor(
     // using MethodHandle#invoke, transforming *at most* one array parameter with MH#asCollector
     aggregator: KFunction<*>
 ) {
-    val declaredName = aggregatorParameter.typeCheckingParameterName
-
     private val _optionBuilders: MutableMap<String, MutableList<OptionBuilder>> = mutableMapOf()
     @get:JvmSynthetic
     internal val optionBuilders: Map<String, List<OptionBuilder>>
