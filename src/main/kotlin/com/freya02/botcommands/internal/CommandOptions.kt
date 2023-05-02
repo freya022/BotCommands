@@ -5,8 +5,10 @@ import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ICustomResolver
+import com.freya02.botcommands.api.parameters.ParameterWrapper
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.core.options.Option
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -29,8 +31,7 @@ object CommandOptions {
         return options.values.flatten().map { optionBuilder ->
             when (optionBuilder) {
                 is T -> {
-                    val kParameter = optionBuilder.parameter
-                    val parameter = kParameter.wrap().toVarargElementType()
+                    val parameter = optionBuilder.innerWrappedParameter
 
                     when (val resolver = resolverContainer.getResolver(parameter)) {
                         is R -> config.transformOption(optionBuilder, resolver)
@@ -42,8 +43,7 @@ object CommandOptions {
                 }
                 is GeneratedOptionBuilder -> optionBuilder.toGeneratedMethodParameter()
                 is CustomOptionBuilder -> {
-                    val kParameter = optionBuilder.parameter
-                    val parameter = kParameter.wrap().toVarargElementType()
+                    val parameter = optionBuilder.innerWrappedParameter
 
                     when (val resolver = resolverContainer.getResolver(parameter)) {
                         is ICustomResolver<*, *> -> CustomMethodOption(optionBuilder.optionParameter, resolver)
@@ -62,4 +62,10 @@ object CommandOptions {
         fun transformOption(optionBuilder: T, resolver: R): Option =
             throwInternal("This should have not been called")
     }
+
+    private val OptionBuilder.innerWrappedParameter: ParameterWrapper
+        get() = when {
+            optionParameter.executableFunction.isVarargAggregator() -> parameter.wrap().toListElementType()
+            else -> parameter.wrap()
+        }
 }

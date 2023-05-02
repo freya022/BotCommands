@@ -21,6 +21,10 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         aggregate(AggregatorParameter.fromSelfAggregate(commandFunction, declaredName), theSingleAggregator, block)
     }
 
+    fun varargAggregate(declaredName: String, block: T.() -> Unit) {
+        aggregate(AggregatorParameter.fromVarargAggregate(commandFunction, declaredName), theVarargAggregator, block)
+    }
+
     private fun aggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>, block: T.() -> Unit) {
         optionAggregateBuilders[aggregatorParameter.typeCheckingParameterName] = aggregateConstructor(aggregatorParameter, aggregator).apply(block)
     }
@@ -28,11 +32,22 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
     @IncludeClasspath
     companion object {
         val theSingleAggregator = Companion::singleAggregator.reflectReference()
+        val theVarargAggregator = Companion::varargAggregator.reflectReference()
 
         fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
+        fun KFunction<*>.isVarargAggregator() = this === theVarargAggregator
+        fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
 
         //The types should not matter as the checks are made against the command function
         @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
         fun singleAggregator(event: Any, it: Any) = it
+
+        @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
+        fun varargAggregator(event: Any, amount: Int, args: List<Any>): List<Any?> = args.toList().let {
+            when {
+                it.size < amount -> it + arrayOfNulls(amount - it.size)
+                else -> it
+            }
+        }
     }
 }

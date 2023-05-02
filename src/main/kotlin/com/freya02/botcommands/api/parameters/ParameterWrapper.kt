@@ -17,13 +17,10 @@ data class ParameterWrapper(
 
     val erasure = type.jvmErasure
 
-    fun toVarargElementType() = when {
-        parameter!!.isVararg -> copy(
-            //kotlin moment
-            type = type.jvmErasure.java.componentType.kotlin
-                .createType(type.arguments, type.isMarkedNullable, type.annotations)
+    fun toListElementType() = when (type.jvmErasure) {
+        List::class -> copy(
+            type = type.arguments[0].type ?: throwUser("A concrete List element type is required")
         )
-
         else -> this
     }
 

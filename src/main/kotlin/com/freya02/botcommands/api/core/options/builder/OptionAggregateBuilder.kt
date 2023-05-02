@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.options.builder
 
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.joinWithQuote
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.requireUser
@@ -25,7 +25,8 @@ open class OptionAggregateBuilder internal constructor(
     internal val aggregator: KFunction<*> = aggregator.reflectReference()
 
     init {
-        requireUser(aggregator.isSingleAggregator() || aggregator.returnType == aggregatorParameter.typeCheckingParameter.type, aggregator) {
+        //Do not check return type of trusted aggregators
+        requireUser(aggregator.isSpecialAggregator() || aggregator.returnType == aggregatorParameter.typeCheckingParameter.type, aggregator) {
             "Aggregator should have the same return type as the parameter (required: ${aggregatorParameter.typeCheckingParameter.type}, found: ${aggregator.returnType})"
         }
     }

@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.asDiscordString
@@ -38,7 +37,7 @@ abstract class SlashCommandBuilder internal constructor(
 
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
-        aggregate(declaredName, Companion::varArgAggregator) {
+        varargAggregate(declaredName) {
             generatedOption("amount") { amount }
 
             for (i in 0..<amount) {
@@ -58,14 +57,5 @@ abstract class SlashCommandBuilder internal constructor(
     @IncludeClasspath
     companion object {
         const val DEFAULT_DESCRIPTION = "No description"
-
-        @JvmSynthetic
-        @Suppress("UNUSED_PARAMETER")
-        internal fun varArgAggregator(event: GuildSlashEvent, amount: Int, vararg args: Int): List<Int?> = args.toList().let {
-            when {
-                it.size < amount -> it + arrayOfNulls(amount - it.size)
-                else -> it
-            }
-        }
     }
 }
