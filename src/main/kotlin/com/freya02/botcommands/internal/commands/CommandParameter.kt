@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands
 
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.options.AbstractOption
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwUser
@@ -19,7 +19,7 @@ abstract class CommandParameter(
 
     final override val name = optionAggregateBuilder.declaredName
     //TODO rename to "options", not all options are command inputs
-    abstract val commandOptions: List<AbstractOption>
+    abstract val commandOptions: List<Option>
 
     final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.core.options.AbstractOption
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwInternal
 import kotlin.reflect.KParameter
@@ -38,7 +38,7 @@ fun Map<KParameter, Any?>.expandVararg() = mapValues { (param, it) ->
     }
 }
 
-operator fun MutableMap<KParameter, Any?>.set(parameter: AbstractOption, obj: Any?): Any? = obj.also {
+operator fun MutableMap<KParameter, Any?>.set(parameter: Option, obj: Any?): Any? = obj.also {
     if (parameter.isVararg) {
         (this.getOrPut(parameter.executableParameter) {
             VarargValue()

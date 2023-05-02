@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
-import com.freya02.botcommands.internal.core.options.AbstractOption
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -16,7 +16,7 @@ object CommandOptions {
         context: BContextImpl,
         aggregateBuilder: OptionAggregateBuilder,
         config: Configuration<T, R>
-    ): List<AbstractOption> {
+    ): List<Option> {
         val aggregator = aggregateBuilder.aggregator
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
@@ -59,7 +59,7 @@ object CommandOptions {
     }
 
     interface Configuration<T, R> {
-        fun transformOption(optionBuilder: T, resolver: R): AbstractOption =
+        fun transformOption(optionBuilder: T, resolver: R): Option =
             throwInternal("This should have not been called")
     }
 }

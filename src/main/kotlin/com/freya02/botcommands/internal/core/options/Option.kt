@@ -15,7 +15,7 @@ enum class OptionType {
     GENERATED
 }
 
-interface AbstractOption {
+interface Option {
     val optionParameter: OptionParameter
     val optionType: OptionType
 
@@ -46,10 +46,10 @@ interface AbstractOption {
     val type: KType
 }
 
-open class AbstractOptionImpl(
+open class OptionImpl(
     final override val optionParameter: OptionParameter,
     final override val optionType: OptionType
-) : AbstractOption {
+) : Option {
     final override val kParameter: KParameter
         get() = optionParameter.typeCheckingParameter
     final override val executableParameter: KParameter

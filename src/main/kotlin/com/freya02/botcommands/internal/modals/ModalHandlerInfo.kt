@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.options.AbstractOption
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
@@ -25,7 +25,7 @@ class ModalHandlerInfo(
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
-    private val options: List<AbstractOption>
+    private val options: List<Option>
     private val expectedModalDatas: Int
     private val expectedModalInputs: Int
 
