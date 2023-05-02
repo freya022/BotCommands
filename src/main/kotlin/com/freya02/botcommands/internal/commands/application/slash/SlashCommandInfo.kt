@@ -53,6 +53,7 @@ abstract class SlashCommandInfo internal constructor(
                 if (commandOption !is SlashCommandOption)
                     continue
 
+                //TODO might need reworking
                 commandOption.autocompleteHandler?.let { handler ->
                     handler.methodParameters.forEach { autocompleteParam ->
                         val param = parameters.find { it.name == autocompleteParam.name }

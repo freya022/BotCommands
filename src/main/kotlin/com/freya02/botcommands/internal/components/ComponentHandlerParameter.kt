@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.CommandOptions
-import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 
@@ -16,7 +15,6 @@ class ComponentHandlerParameter(
     val aggregator = aggregateBuilder.aggregator
     val aggregatorInstance = context.serviceContainer.getFunctionService(aggregator)
 
-    override val methodParameterType = MethodParameterType.OPTION
     override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
 
     val options = CommandOptions.transform(

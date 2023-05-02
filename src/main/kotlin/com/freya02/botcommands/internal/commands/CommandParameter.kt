@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.options.AbstractOption
-import com.freya02.botcommands.internal.core.options.MethodParameterType
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwUser
@@ -17,8 +16,6 @@ abstract class CommandParameter(
     final override val kParameter: KParameter = optionAggregateBuilder.parameter
     val aggregator = optionAggregateBuilder.aggregator
     val aggregatorInstance = context.serviceContainer.getFunctionService(optionAggregateBuilder.aggregator)
-
-    final override val methodParameterType = MethodParameterType.OPTION
 
     final override val name = optionAggregateBuilder.declaredName
     //TODO rename to "options", not all options are command inputs
