@@ -61,6 +61,7 @@ class TextCommandVariation internal constructor(
         objects[method.nonInstanceParameters.first()] = event
 
         val groupsIterator = matchResult?.groups?.iterator()
+        groupsIterator?.next() //Skip entire match
         for (parameter in parameters) {
             val (value, result) = computeAggregate(event, parameter, groupsIterator, args)
             if (result != null)
