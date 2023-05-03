@@ -61,15 +61,15 @@ internal object SlashUtils {
                 else -> options.indexOf(o1).compareTo(options.indexOf(o2))
             }
         }
-        for (parameter in orderedOptions) {
-            if (parameter.optionType != OptionType.OPTION) continue
+        for (option in orderedOptions) {
+            if (option.optionType != OptionType.OPTION) continue
 
-            parameter as SlashCommandOption
+            option as SlashCommandOption
 
-            val name = parameter.discordName
-            val description = parameter.description
+            val name = option.discordName
+            val description = option.description
 
-            val resolver = parameter.resolver
+            val resolver = option.resolver
             val optionType = resolver.optionType
 
             val data = OptionData(optionType, name, description)
@@ -77,36 +77,36 @@ internal object SlashUtils {
             when (optionType) {
                 JDAOptionType.CHANNEL -> {
                     //If there are no specified channel types, then try to get the channel type from AbstractChannelResolver
-                    // Otherwise set the channel types of the parameter, if available
-                    if (parameter.channelTypes.isEmpty() && resolver is ChannelResolver) {
+                    // Otherwise set the channel types of the option, if available
+                    if (option.channelTypes.isEmpty() && resolver is ChannelResolver) {
                         data.setChannelTypes(resolver.channelTypes)
-                    } else if (parameter.channelTypes.isEmpty()) {
-                        data.setChannelTypes(parameter.channelTypes)
+                    } else if (option.channelTypes.isEmpty()) {
+                        data.setChannelTypes(option.channelTypes)
                     }
                 }
                 JDAOptionType.INTEGER -> {
-                    parameter.range?.let {
+                    option.range?.let {
                         data.setMinValue(it.min.toLong())
                         data.setMaxValue(it.max.toLong())
                     }
                 }
                 JDAOptionType.NUMBER -> {
-                    parameter.range?.let {
+                    option.range?.let {
                         data.setMinValue(it.min.toDouble())
                         data.setMaxValue(it.max.toDouble())
                     }
                 }
                 JDAOptionType.STRING -> {
-                    parameter.length?.let {
+                    option.length?.let {
                         data.setRequiredLength(it.min, it.max)
                     }
                 }
                 else -> {}
             }
 
-            if (parameter.hasAutocomplete()) {
-                requireUser(optionType.canSupportChoices(), parameter.kParameter.function) {
-                    "Slash command parameter #${parameter.index} does not support autocomplete"
+            if (option.hasAutocomplete()) {
+                requireUser(optionType.canSupportChoices(), option.kParameter.function) {
+                    "Slash command option #${option.index} does not support autocomplete"
                 }
 
                 data.isAutoComplete = true
@@ -115,26 +115,25 @@ internal object SlashUtils {
             if (optionType.canSupportChoices()) {
                 var choices: Collection<Command.Choice>? = null
 
-                if (!parameter.choices.isNullOrEmpty()) {
-                    choices = parameter.choices
-                } else if (parameter.usePredefinedChoices) { //Opt in
+                if (!option.choices.isNullOrEmpty()) {
+                    choices = option.choices
+                } else if (option.usePredefinedChoices) { //Opt in
                     val predefinedChoices = resolver.getPredefinedChoices(guild)
                     if (predefinedChoices.isEmpty())
-                        throwUser(parameter.kParameter.function, "Predefined choices were used for parameter '${parameter.declaredName}' but no choices were returned")
+                        throwUser(option.kParameter.function, "Predefined choices were used for option '${option.declaredName}' but no choices were returned")
                     choices = predefinedChoices
                 }
 
                 if (choices != null) {
-                    requireUser(!parameter.hasAutocomplete(), parameter.kParameter.function) {
-                        "Slash command parameter #${parameter.index} cannot have autocomplete and choices at the same time"
+                    requireUser(!option.hasAutocomplete(), option.kParameter.function) {
+                        "Slash command option #${option.index} cannot have autocomplete and choices at the same time"
                     }
 
                     data.addChoices(choices)
                 }
             }
 
-            //TODO this might not be true for varargs
-            data.isRequired = !parameter.isOptional
+            data.isRequired = !option.isOptional
 
             list.add(data)
         }
