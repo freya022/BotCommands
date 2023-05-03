@@ -45,11 +45,6 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         fun singleAggregator(event: Any, it: Any) = it
 
         @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
-        fun varargAggregator(event: Any, amount: Int, args: List<Any>): List<Any?> = args.toList().let {
-            when {
-                it.size < amount -> it + arrayOfNulls(amount - it.size)
-                else -> it
-            }
-        }
+        fun varargAggregator(event: Any, args: List<Any>) = args
     }
 }

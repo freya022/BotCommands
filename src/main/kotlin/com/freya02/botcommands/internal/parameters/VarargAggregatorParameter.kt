@@ -25,8 +25,6 @@ internal class VarargAggregatorParameter(
     //Keep the command's parameter for type checking if the internal aggregator is currently used
     override fun toOptionParameter(optionFunction: KFunction<*>, parameterName: String) = when (parameterName) {
         //Using the parameter name is safe as both the aggregator and the declaration use the same names
-        //  Use internal aggregator type as it's always an integer
-        "amount" -> OptionParameter(OptionAggregateBuildersImpl.theVarargAggregator, parameterName, OptionAggregateBuildersImpl.theVarargAggregator, parameterName)
         //  Use command parameter type as it is unknown
         "args" -> OptionParameter(typeCheckingFunction, typeCheckingParameterName, OptionAggregateBuildersImpl.theVarargAggregator, parameterName)
         else -> throwInternal("Unknown internal vararg parameter: $parameterName")

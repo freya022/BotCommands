@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 @CommandMarker
 class SlashVararg {
     @CommandMarker
-    fun onSlashVararg(event: GuildSlashEvent, ints: List<Int?>, ints2: List<Int?>) {
+    fun onSlashVararg(event: GuildSlashEvent, ints: List<Int>, ints2: List<Int>) {
         event.reply("ints: $ints, ints2: $ints2").queue()
     }
 

@@ -43,8 +43,6 @@ class TextCommandVariationBuilder internal constructor(
 
         //Same as in SlashCommandBuilder#optionVararg
         _optionAggregateBuilders.varargAggregate(declaredName) {
-            generatedOption("amount") { amount }
-
             for (i in 0..<amount) {
                 option("args", optionNameSupplier(i)) {
                     block(i)

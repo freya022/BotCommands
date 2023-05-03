@@ -39,8 +39,6 @@ abstract class SlashCommandBuilder internal constructor(
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         //Same as in TextCommandVariationBuilder#optionVararg
         varargAggregate(declaredName) {
-            generatedOption("amount") { amount }
-
             for (i in 0..<amount) {
                 option("args", optionNameSupplier(i)) {
                     block(i)

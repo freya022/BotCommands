@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 @CommandMarker
 class TextVararg {
     @CommandMarker
-    fun onTextVararg(event: BaseCommandEvent, ints: List<Int?>) {
+    fun onTextVararg(event: BaseCommandEvent, ints: List<Int>) {
         event.respond("ints: $ints").queue()
     }
 
