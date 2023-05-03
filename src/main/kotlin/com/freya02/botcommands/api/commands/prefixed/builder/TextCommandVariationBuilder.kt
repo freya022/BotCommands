@@ -35,6 +35,19 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
+    @JvmOverloads
+    fun optionVararg(declaredName: String, amount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
+        _optionAggregateBuilders.varargAggregate(declaredName) {
+            generatedOption("amount") { amount }
+
+            for (i in 0..<amount) {
+                option("args", optionNameSupplier(i)) {
+                    block(i)
+                }
+            }
+        }
+    }
+
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */

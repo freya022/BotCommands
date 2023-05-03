@@ -6,6 +6,7 @@ import com.freya02.botcommands.test.Config
 import com.freya02.botcommands.test.TestDB
 import com.freya02.botcommands.test_kt.commands.message.MessageContextRaw
 import com.freya02.botcommands.test_kt.commands.slash.*
+import com.freya02.botcommands.test_kt.commands.text.TextVararg
 import com.freya02.botcommands.test_kt.commands.user.UserContextInfo
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
@@ -53,6 +54,7 @@ object Main {
             addClass<SlashVararg>()
             addClass<UserContextInfo>()
             addClass<MessageContextRaw>()
+            addClass<TextVararg>()
 
             components {
                 useComponents = true
