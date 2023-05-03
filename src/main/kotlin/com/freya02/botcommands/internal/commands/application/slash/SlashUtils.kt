@@ -49,7 +49,19 @@ internal object SlashUtils {
     fun SlashCommandInfo.getMethodOptions(guild: Guild?): List<OptionData> {
         val list: MutableList<OptionData> = ArrayList()
 
-		for (parameter in parameters.flatMap { it.commandOptions }) {
+        val options = parameters.flatMap { it.commandOptions }
+        //Move all optional options at the front
+        val orderedOptions = options.sortedWith { o1, o2 ->
+            when {
+                //Optional options are placed after required options
+                o1.isOptional && !o2.isOptional -> 1
+                //Required options are placed before optional options
+                !o1.isOptional && o2.isOptional -> -1
+                //If both are optional/required, keep order using index
+                else -> options.indexOf(o1).compareTo(options.indexOf(o2))
+            }
+        }
+        for (parameter in orderedOptions) {
             if (parameter.optionType != OptionType.OPTION) continue
 
             parameter as SlashCommandOption

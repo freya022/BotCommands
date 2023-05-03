@@ -37,16 +37,18 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     @JvmOverloads
-    fun optionVararg(declaredName: String, amount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
+    fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         if (_optionAggregateBuilders.hasVararg())
             throwUser("Cannot have more than 1 vararg in text commands")
 
+        //Same as in SlashCommandBuilder#optionVararg
         _optionAggregateBuilders.varargAggregate(declaredName) {
             generatedOption("amount") { amount }
 
             for (i in 0..<amount) {
                 option("args", optionNameSupplier(i)) {
                     block(i)
+                    isOptional = i >= requiredAmount
                 }
             }
         }

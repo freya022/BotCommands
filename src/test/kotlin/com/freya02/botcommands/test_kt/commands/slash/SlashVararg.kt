@@ -16,11 +16,11 @@ class SlashVararg {
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
         guildApplicationCommandManager.slashCommand("vararg", scope = CommandScope.GUILD, ::onSlashVararg) {
-            optionVararg("ints", 2, { i -> "arg_1_$i" }) { i ->
+            optionVararg("ints", 2, 1, { i -> "arg_1_$i" }) { i ->
                 description = "arg #$i arg of 1st group"
             }
 
-            optionVararg("ints2", 2, { i -> "arg_2_$i" }) { i ->
+            optionVararg("ints2", 2, 1, { i -> "arg_2_$i" }) { i ->
                 description = "arg #$i arg of 2nd group"
             }
         }

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core.options
 
+import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
 import com.freya02.botcommands.internal.findDeclarationName
@@ -53,17 +54,32 @@ interface Option {
     val type: KType
 }
 
-open class OptionImpl(
+open class OptionImpl private constructor(
     final override val optionParameter: OptionParameter,
-    final override val optionType: OptionType
+    final override val optionType: OptionType,
+    /** @see CommandOptionBuilder.isOptional */
+    optional: Boolean?
 ) : Option {
+    constructor(optionParameter: OptionParameter, optionType: OptionType) : this(optionParameter, optionType, null)
+
+    constructor(commandOptionBuilder: CommandOptionBuilder) : this(
+        commandOptionBuilder.optionParameter,
+        OptionType.OPTION,
+        commandOptionBuilder.isOptional
+    )
+
     final override val kParameter: KParameter
         get() = optionParameter.typeCheckingParameter
     final override val executableParameter: KParameter
         get() = optionParameter.executableParameter
 
     final override val type = kParameter.type
-    final override val isOptional by lazy { kParameter.isNullable || kParameter.isOptional }
+    final override val isOptional by lazy {
+        when {
+            optional != null -> optional
+            else -> kParameter.isNullable || kParameter.isOptional
+        }
+    }
     final override val isVararg = optionParameter.executableFunction.isVarargAggregator() && type.jvmErasure == List::class
     final override val declaredName = kParameter.findDeclarationName()
     final override val index = kParameter.index
