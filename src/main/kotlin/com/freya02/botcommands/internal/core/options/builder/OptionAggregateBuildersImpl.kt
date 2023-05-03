@@ -29,6 +29,8 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
         optionAggregateBuilders[aggregatorParameter.typeCheckingParameterName] = aggregateConstructor(aggregatorParameter, aggregator).apply(block)
     }
 
+    fun hasVararg() = optionAggregateBuilders.values.any { it.aggregator.isVarargAggregator() }
+
     @IncludeClasspath
     companion object {
         val theSingleAggregator = Companion::singleAggregator.reflectReference()

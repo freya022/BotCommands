@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
@@ -37,6 +38,9 @@ class TextCommandVariationBuilder internal constructor(
 
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
+        if (_optionAggregateBuilders.hasVararg())
+            throwUser("Cannot have more than 1 vararg in text commands")
+
         _optionAggregateBuilders.varargAggregate(declaredName) {
             generatedOption("amount") { amount }
 
