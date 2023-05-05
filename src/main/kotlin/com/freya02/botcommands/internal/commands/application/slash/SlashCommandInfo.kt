@@ -10,7 +10,9 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.expandVararg
 import com.freya02.botcommands.internal.utils.set
@@ -33,6 +35,12 @@ abstract class SlashCommandInfo internal constructor(
     context,
     builder
 ) {
+    private enum class InsertOptionResult {
+        OK,
+        SKIP,
+        ABORT
+    }
+
     val description: String = builder.description
 
     final override val method: KFunction<*> = super.method
@@ -116,80 +124,111 @@ abstract class SlashCommandInfo internal constructor(
     ): Boolean where T : CommandInteractionPayload,
                      T : Event {
         val aggregator = parameter.aggregator
-        val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        aggregatorArguments[aggregator.valueParameters.first()] = event
+        if (aggregator.isSingleAggregator()) {
+            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(1)
+            val option = parameter.commandOptions.singleOrNull()
+                ?: throwInternal("Tried to use a single aggregator with ${parameter.commandOptions.size} options")
 
-        for (option in parameter.commandOptions) {
-            if (option.optionType == OptionType.OPTION) {
+            tryInsertOption(context, event, aggregatorArguments, option)
+            objects[parameter] = aggregatorArguments.values.first()
+        } else {
+            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
+            aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+            aggregatorArguments[aggregator.valueParameters.first()] = event
+
+            for (option in parameter.commandOptions) {
+                if (tryInsertOption(context, event, aggregatorArguments, option) == InsertOptionResult.ABORT) {
+                    return false
+                }
+            }
+
+            objects[parameter] = aggregator.callSuspendBy(aggregatorArguments.expandVararg())
+        }
+
+        return true
+    }
+
+    private suspend fun <T> tryInsertOption(
+        context: BContextImpl,
+        event: T,
+        aggregatorArguments: MutableMap<KParameter, Any?>,
+        option: Option
+    ): InsertOptionResult where T : CommandInteractionPayload,
+                                T : Event {
+        when (option.optionType) {
+            OptionType.OPTION -> {
                 option as AbstractSlashCommandOption
 
                 val optionName = option.discordName
                 val optionMapping = event.getOption(optionName)
-                    ?: if (option.isVararg) {
-                        continue //Continue looking at other options
-                    } else if (parameter.isOptional) { //Default or nullable
-                        //Put null/default value if parameter is not a kotlin default value
-                        if (parameter.kParameter.isOptional) {
-                            continue //Kotlin default value, don't add anything to the parameters map
-                        } else {
-                            //Nullable
-                            aggregatorArguments[option] = when {
-                                option.isPrimitive -> 0
-                                else -> null
-                            }
-                            continue
-                        }
-                    } else {
-                        //TODO might need testing
-                        if (event is CommandAutoCompleteInteractionEvent) continue
 
-                        throwUser("Slash parameter couldn't be resolved at parameter ${parameter.name} ($optionName)")
-                    }
-
-                val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
-                if (resolved == null) {
-                    if (event is SlashCommandInteractionEvent) {
-                        event.reply(
-                            context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                option.declaredName,
-                                option.type.jvmErasure.simpleNestedName
+                if (optionMapping != null) {
+                    val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
+                    if (resolved == null) {
+                        if (event is SlashCommandInteractionEvent) {
+                            event.reply(
+                                context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
+                                    option.declaredName,
+                                    option.type.jvmErasure.simpleNestedName
+                                )
                             )
+                                .setEphemeral(true)
+                                .queue()
+                        }
+
+                        //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
+                        logger.trace(
+                            "The parameter '{}' of value '{}' could not be resolved into a {}",
+                            option.declaredName,
+                            optionMapping.asString,
+                            option.type.jvmErasure.simpleName
                         )
-                            .setEphemeral(true)
-                            .queue()
+
+                        return InsertOptionResult.ABORT
                     }
 
-                    //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                    logger.trace(
-                        "The parameter '{}' of value '{}' could not be resolved into a {}",
-                        option.declaredName,
-                        optionMapping.asString,
-                        option.type.jvmErasure.simpleName
-                    )
+                    aggregatorArguments[option] = resolved
+                } else if (option.isVararg) {
+                    //Continue looking at other options
+                    return InsertOptionResult.SKIP
+                } else if (option.isOptional) { //Default or nullable
+                    //Put null/default value if parameter is not a kotlin default value
+                    return if (option.kParameter.isOptional) {
+                        InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
+                    } else {
+                        //Nullable
+                        aggregatorArguments[option] = when {
+                            option.isPrimitive -> 0
+                            else -> null
+                        }
+                        InsertOptionResult.SKIP
+                    }
+                } else {
+                    //TODO might need testing
+                    if (event is CommandAutoCompleteInteractionEvent)
+                        return InsertOptionResult.SKIP
 
-                    return false
+                    throwUser("Slash parameter couldn't be resolved at option ${option.declaredName} ($optionName)")
                 }
-
-                aggregatorArguments[option] = resolved
-            } else if (option.optionType == OptionType.CUSTOM) {
+            }
+            OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
                 aggregatorArguments[option] = option.resolver.resolveSuspend(context, this, event)
-            } else if (option.optionType == OptionType.GENERATED) {
+            }
+            OptionType.GENERATED -> {
                 option as ApplicationGeneratedMethodParameter
 
                 aggregatorArguments[option] = option.generatedValueSupplier
                     .getDefaultValue(event)
                     .also { checkDefaultValue(option, it) }
-            } else {
+            }
+            else -> {
                 throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
         }
 
-        objects[parameter] = aggregator.callSuspendBy(aggregatorArguments.expandVararg())
-
-        return true
+        return InsertOptionResult.OK
     }
 
     companion object {
