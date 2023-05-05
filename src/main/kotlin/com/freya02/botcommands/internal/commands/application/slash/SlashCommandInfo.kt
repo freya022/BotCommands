@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuil
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.expandVararg
 import com.freya02.botcommands.internal.utils.set
+import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -165,24 +166,18 @@ abstract class SlashCommandInfo internal constructor(
                 if (optionMapping != null) {
                     val resolved = option.resolver.resolveSuspend(context, this, event, optionMapping)
                     if (resolved == null) {
-                        if (event is SlashCommandInteractionEvent) {
-                            event.reply(
-                                context.getDefaultMessages(event).getSlashCommandUnresolvableParameterMsg(
-                                    option.declaredName,
-                                    option.type.jvmErasure.simpleNestedName
-                                )
-                            )
-                                .setEphemeral(true)
-                                .queue()
+                        //Only use the generic message if the user didn't handle this situation
+                        if (!event.isAcknowledged && event is SlashCommandInteractionEvent) {
+                            event.reply_(
+                                context.getDefaultMessages(event).getSlashCommandUnresolvableOptionMsg(option.discordName),
+                                ephemeral = true
+                            ).queue()
                         }
 
                         //Not a warning, could be normal if the user did not supply a valid string for user-defined resolvers
-                        logger.trace(
-                            "The parameter '{}' of value '{}' could not be resolved into a {}",
-                            option.declaredName,
-                            optionMapping.asString,
-                            option.type.jvmErasure.simpleName
-                        )
+                        logger.trace {
+                            "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
+                        }
 
                         return InsertOptionResult.ABORT
                     }

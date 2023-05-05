@@ -13,7 +13,7 @@
 
     "closed.dm.error.message": "Unable to send you a DM, please open your DMs from this server",
 
-    "slash.command.unresolvable.parameter.message": "The parameter '{parameterName}' could not be resolved into a {parameterType}",
+    "slash.command.unresolvable.option.message": "The option '{optionName}' could not be resolved.",
 
     "nsfw.disabled.error.message": "This NSFW command is disabled in this kind of channel",
     "nsfw.only.error.message": "This command can only be used in NSFW channels",
