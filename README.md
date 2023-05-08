@@ -4,6 +4,8 @@
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
+<img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
+
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
 
