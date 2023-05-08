@@ -26,5 +26,7 @@ import java.sql.SQLException;
 @InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService(start = ServiceStart.PRE_LOAD) and @ServiceType(type = ConnectionSupplier.class) " +
 		"needs to be set in order to use the database")
 public interface ConnectionSupplier {
+	int getMaxConnections();
+
 	Connection getConnection() throws SQLException;
 }

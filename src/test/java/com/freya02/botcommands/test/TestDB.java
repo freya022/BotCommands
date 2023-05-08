@@ -9,7 +9,6 @@ import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.function.Supplier;
 
 @BService(start = ServiceStart.PRE_LOAD)
 @ServiceType(type = ConnectionSupplier.class)
@@ -37,17 +36,12 @@ public class TestDB implements ConnectionSupplier {
 		}
 	}
 
-	public Supplier<Connection> getConnectionSupplier() {
-		return () -> {
-			try {
-				return source.getConnection();
-			} catch (SQLException e) {
-				throw new RuntimeException("Unable to get PGSQL connection", e);
-			}
-		};
+	@Override
+	public int getMaxConnections() {
+		return source.getMaximumPoolSize();
 	}
 
-//	@Override
+	@Override
 	public Connection getConnection() throws SQLException {
 		return source.getConnection();
 	}

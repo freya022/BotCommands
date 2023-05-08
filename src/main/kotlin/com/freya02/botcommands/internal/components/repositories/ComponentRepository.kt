@@ -10,7 +10,10 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.api.core.db.KConnection
 import com.freya02.botcommands.api.core.db.Transaction
-import com.freya02.botcommands.internal.components.*
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.EphemeralHandler
+import com.freya02.botcommands.internal.components.LifetimeType
+import com.freya02.botcommands.internal.components.PersistentHandler
 import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
 import com.freya02.botcommands.internal.components.data.*
 import com.freya02.botcommands.internal.rethrowUser
@@ -37,8 +40,8 @@ internal class ComponentRepository(
         cleanupEphemeral()
     }
 
-    fun createComponent(builder: BaseComponentBuilder): Int = database.transactional {
-        runBlocking {
+    fun createComponent(builder: BaseComponentBuilder): Int = runBlocking {
+        database.transactional {
             // Create base component
             val componentId: Int =
                 preparedStatement("insert into bc_component (component_type, lifetime_type, one_use) VALUES (?, ?, ?) returning component_id") {
