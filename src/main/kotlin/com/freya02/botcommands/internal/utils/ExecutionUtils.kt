@@ -34,16 +34,16 @@ operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? =
 }
 
 context(IExecutableInteractionInfo)
-suspend fun Collection<IAggregatedParameter>.mapFinalParameters(event: Event, optionValues: Map<Option, Any?>): Map<KParameter, Any?> {
-    val aggregatedObjects: MutableMap<KParameter, Any?> = hashMapOf()
-    aggregatedObjects[method.instanceParameter!!] = instance
-    aggregatedObjects[method.nonInstanceParameters.first()] = event
+suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
+    event: Event,
+    optionValues: Map<Option, Any?>
+) = buildMap(method.parameters.size) {
+    this[method.instanceParameter!!] = instance
+    this[method.nonInstanceParameters.first()] = event
 
-    for (parameter in this) {
-        insertAggregate(event, aggregatedObjects, optionValues, parameter)
+    for (parameter in this@mapFinalParameters) {
+        insertAggregate(event, this, optionValues, parameter)
     }
-
-    return aggregatedObjects
 }
 
 suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
