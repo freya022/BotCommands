@@ -9,13 +9,13 @@ import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.set
+import com.freya02.botcommands.internal.utils.insertAggregate
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import kotlin.collections.set
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
@@ -64,12 +64,14 @@ class TextCommandVariation internal constructor(
 
         val groupsIterator = matchResult?.groups?.iterator()
         groupsIterator?.next() //Skip entire match
-        for (parameter in parameters) {
-            val (value, result) = computeAggregate(event, parameter, groupsIterator, args)
-            if (result != null)
-                return result
 
-            objects[parameter.kParameter] = value
+        val optionMap: MutableMap<Option, Any?> = hashMapOf()
+        for (option in parameters.flatMap { it.commandOptions }) {
+            tryInsertOption(event, optionMap, option, groupsIterator, args)?.let { return it }
+        }
+
+        for (parameter in parameters) {
+            insertAggregate(event, objects, optionMap, parameter)
         }
 
         cooldownService.applyCooldown(info, event)
@@ -79,51 +81,19 @@ class TextCommandVariation internal constructor(
         return ExecutionResult.OK
     }
 
-    private suspend fun computeAggregate(
-        event: BaseCommandEvent,
-        parameter: TextCommandParameter,
-        groupsIterator: Iterator<MatchGroup?>?,
-        args: String
-    ): Pair<Any?, ExecutionResult?> {
-        val aggregator = parameter.aggregator
-        if (aggregator.isSingleAggregator()) {
-            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(1)
-            val option = parameter.commandOptions.singleOrNull()
-                ?: throwInternal("Tried to use a single aggregator with ${parameter.commandOptions.size} options")
-
-            tryInsertOption(event, aggregatorArguments, option, groupsIterator, args)?.let {
-                return it
-            }
-
-            return Pair(aggregatorArguments.values.first(), null)
-        } else {
-            val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
-            aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-            aggregatorArguments[aggregator.valueParameters.first()] = event
-
-            for (option in parameter.commandOptions) {
-                tryInsertOption(event, aggregatorArguments, option, groupsIterator, args)?.let {
-                    return it
-                }
-            }
-
-            return Pair(aggregator.callSuspendBy(aggregatorArguments), null)
-        }
-    }
-
     /**
      * Will return a null value if it can go to the next option
      *
-     * A non-null value is returned immediately to #computeAggregate caller
+     * A non-null value is returned immediately to #insertAggregate caller
      */
     private suspend fun tryInsertOption(
         event: BaseCommandEvent,
-        aggregatorArguments: MutableMap<KParameter, Any?>,
+        optionMap: MutableMap<Option, Any?>,
         option: Option,
         groupsIterator: Iterator<MatchGroup?>?,
         args: String
-    ): Pair<Any?, ExecutionResult>? {
-        aggregatorArguments[option] = when (option.optionType) {
+    ): ExecutionResult? {
+        optionMap[option] = when (option.optionType) {
             OptionType.OPTION -> {
                 groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 
@@ -143,7 +113,7 @@ class TextCommandVariation internal constructor(
                     //Regex matched but could not be resolved
                     // if optional then it's ok
                     if (resolved == null && !option.isOptional) {
-                        return Pair(null, ExecutionResult.CONTINUE)
+                        return ExecutionResult.CONTINUE
                     }
 
                     resolved
@@ -155,7 +125,7 @@ class TextCommandVariation internal constructor(
                         args
                     )
 
-                    return Pair(null, ExecutionResult.CONTINUE)
+                    return ExecutionResult.CONTINUE
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {
                         return null
