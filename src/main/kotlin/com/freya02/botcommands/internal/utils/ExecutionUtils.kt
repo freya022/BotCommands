@@ -11,12 +11,12 @@ operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: A
 fun Map<KParameter, Any?>.expandVararg() = this
 
 @Suppress("UNCHECKED_CAST")
-operator fun MutableMap<KParameter, Any?>.set(parameter: Option, obj: Any?): Any? = obj.also {
-    if (parameter.isVararg) {
-        (this.getOrPut(parameter.executableParameter) {
+operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? = obj.also {
+    if (option.isVararg) {
+        (this.getOrPut(option.executableParameter) {
             arrayListOf<Any?>()
         } as MutableList<Any?>).add(obj)
     } else {
-        this[parameter.executableParameter] = obj
+        this[option.executableParameter] = obj
     }
 }
