@@ -50,24 +50,6 @@ class ModalHandlerInfo(
         options = parameters.flatMap { it.commandOptions }
         expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
-
-//        val hasModalData = options.any { it is ModalHandlerDataOption }
-//
-//        //Check if the first parameters are all modal data
-//        if (hasModalData) {
-//            var sawModalData = false
-//            for (option in options.filterIsInstance<ModalHandlerOption>()) {
-//                if (option.methodParameterType != MethodParameterType.OPTION) continue
-//
-//                requireUser(option is ModalHandlerDataOption || sawModalData, option.kParameter.function) {
-//                    """
-//                    Parameter #${option.index} must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
-//                    All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters""".trimIndent()
-//                }
-//
-//                if (option is ModalHandlerDataOption) sawModalData = true
-//            }
-//        }
     }
 
     @Throws(Exception::class)
@@ -91,29 +73,6 @@ class ModalHandlerInfo(
         }
 
         val userDataIterator = userDatas.iterator()
-
-        //Insert modal data in the order of appearance, after the event
-//        for (i in userDatas.indices) {
-//            val parameter = parameters[i]
-//            if (parameter.methodParameterType != MethodParameterType.OPTION) continue
-//
-//            requireUser(parameter is ModalHandlerDataParameter) {
-//                """
-//                Parameter #$i must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
-//                All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters""".trimIndent()
-//            }
-//
-//            val userData = userDatas[i]
-//            requireUser(parameter.type.jvmErasure.isSuperclassOf(userData::class)) {
-//                "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
-//                    parameter.name,
-//                    parameter.type.simpleName,
-//                    userData.javaClass.simpleName
-//                )
-//            }
-//
-//            objects[parameter.kParameter] = userData
-//        }
 
         val optionValues: MutableMap<Option, Any?> = hashMapOf()
         for (option in parameters.flatMap { it.commandOptions }) {
