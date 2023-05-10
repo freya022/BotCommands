@@ -108,51 +108,54 @@ abstract class SlashCommandInfo internal constructor(
         objects: MutableMap<KParameter, Any?>,
         methodParameters: List<AbstractSlashCommandParameter>
     ): Boolean where T : CommandInteractionPayload,
-            T : Event {
-        parameterLoop@ for (parameter in methodParameters) {
-            if (!insertAggregate(context, event, objects, parameter))
+                     T : Event {
+        val optionMap: MutableMap<Option, Any?> = hashMapOf()
+        for (option in methodParameters.flatMap { it.commandOptions }) {
+            if (tryInsertOption(context, event, optionMap, option) == InsertOptionResult.ABORT) {
                 return false
+            }
+        }
+
+        for (parameter in methodParameters) {
+            insertAggregate(event, objects, optionMap, parameter)
         }
 
         return true
     }
 
-    private suspend fun <T> insertAggregate(
-        context: BContextImpl,
-        event: T,
+    private suspend fun insertAggregate(
+        event: CommandInteractionPayload,
         objects: MutableMap<KParameter, Any?>,
+        optionMap: MutableMap<Option, Any?>,
         parameter: AbstractSlashCommandParameter
-    ): Boolean where T : CommandInteractionPayload,
-                     T : Event {
+    ) {
         val aggregator = parameter.aggregator
         if (aggregator.isSingleAggregator()) {
-            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(1)
-            val option = parameter.commandOptions.singleOrNull()
-                ?: throwInternal("Tried to use a single aggregator with ${parameter.commandOptions.size} options")
-
-            tryInsertOption(context, event, aggregatorArguments, option)
-            objects[parameter] = aggregatorArguments.values.first()
+            val option = parameter.commandOptions.first()
+            //This is necessary to distinguish between null mappings and default mappings
+            if (option in optionMap) {
+                objects[parameter] = optionMap[option]
+            }
         } else {
             val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
             aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
             aggregatorArguments[aggregator.valueParameters.first()] = event
 
             for (option in parameter.commandOptions) {
-                if (tryInsertOption(context, event, aggregatorArguments, option) == InsertOptionResult.ABORT) {
-                    return false
+                //This is necessary to distinguish between null mappings and default mappings
+                if (option in optionMap) {
+                    aggregatorArguments[option] = optionMap[option]
                 }
             }
 
             objects[parameter] = aggregator.callSuspendBy(aggregatorArguments.expandVararg())
         }
-
-        return true
     }
 
     private suspend fun <T> tryInsertOption(
         context: BContextImpl,
         event: T,
-        aggregatorArguments: MutableMap<KParameter, Any?>,
+        optionMap: MutableMap<Option, Any?>,
         option: Option
     ): InsertOptionResult where T : CommandInteractionPayload,
                                 T : Event {
@@ -182,7 +185,7 @@ abstract class SlashCommandInfo internal constructor(
                         return InsertOptionResult.ABORT
                     }
 
-                    aggregatorArguments[option] = resolved
+                    optionMap[option] = resolved
                 } else if (option.isVararg) {
                     //Continue looking at other options
                     return InsertOptionResult.SKIP
@@ -192,7 +195,7 @@ abstract class SlashCommandInfo internal constructor(
                         InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
                     } else {
                         //Nullable
-                        aggregatorArguments[option] = when {
+                        optionMap[option] = when {
                             option.isPrimitive -> 0
                             else -> null
                         }
@@ -209,12 +212,12 @@ abstract class SlashCommandInfo internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                aggregatorArguments[option] = option.resolver.resolveSuspend(context, this, event)
+                optionMap[option] = option.resolver.resolveSuspend(context, this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedMethodParameter
 
-                aggregatorArguments[option] = option.generatedValueSupplier
+                optionMap[option] = option.generatedValueSupplier
                     .getDefaultValue(event)
                     .also { checkDefaultValue(option, it) }
             }
