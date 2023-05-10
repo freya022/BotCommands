@@ -12,15 +12,23 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ch
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.set
+import com.freya02.botcommands.internal.utils.insertAggregate
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.find
+import kotlin.collections.first
+import kotlin.collections.flatMap
+import kotlin.collections.forEach
+import kotlin.collections.hashMapOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -120,35 +128,6 @@ abstract class SlashCommandInfo internal constructor(
         }
 
         return true
-    }
-
-    private suspend fun insertAggregate(
-        event: CommandInteractionPayload,
-        objects: MutableMap<KParameter, Any?>,
-        optionMap: MutableMap<Option, Any?>,
-        parameter: AbstractSlashCommandParameter
-    ) {
-        val aggregator = parameter.aggregator
-        if (aggregator.isSingleAggregator()) {
-            val option = parameter.commandOptions.first()
-            //This is necessary to distinguish between null mappings and default mappings
-            if (option in optionMap) {
-                objects[parameter] = optionMap[option]
-            }
-        } else {
-            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
-            aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-            aggregatorArguments[aggregator.valueParameters.first()] = event
-
-            for (option in parameter.commandOptions) {
-                //This is necessary to distinguish between null mappings and default mappings
-                if (option in optionMap) {
-                    aggregatorArguments[option] = optionMap[option]
-                }
-            }
-
-            objects[parameter] = aggregator.callSuspendBy(aggregatorArguments)
-        }
     }
 
     private suspend fun <T> tryInsertOption(
