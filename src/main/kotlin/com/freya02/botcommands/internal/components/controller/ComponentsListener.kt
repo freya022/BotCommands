@@ -178,7 +178,7 @@ internal class ComponentsListener(
         arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
         arguments[aggregator.valueParameters.first()] = event
 
-        for (option in parameter.options) {
+        for (option in parameter.commandOptions) {
             val value = when (option.optionType) {
                 OptionType.OPTION -> {
                     option as ComponentHandlerOption

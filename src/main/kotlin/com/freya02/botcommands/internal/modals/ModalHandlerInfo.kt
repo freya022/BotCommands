@@ -46,7 +46,7 @@ class ModalHandlerInfo(
             aggregateBlock = { ModalHandlerParameter(context, it) }
         )
 
-        options = parameters.flatMap { it.options }
+        options = parameters.flatMap { it.commandOptions }
         expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
 
@@ -143,7 +143,7 @@ class ModalHandlerInfo(
         arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
         arguments[aggregator.valueParameters.first()] = event
 
-        for (option in parameter.options) {
+        for (option in parameter.commandOptions) {
             val value = when (option.optionType) {
                 OptionType.OPTION -> {
                     option as ModalHandlerInputOption

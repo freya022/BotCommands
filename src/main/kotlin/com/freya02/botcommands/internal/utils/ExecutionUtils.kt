@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.commands.CommandParameter
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
@@ -25,7 +25,7 @@ operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? =
     }
 }
 
-suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: MutableMap<Option, Any?>, parameter: CommandParameter) {
+suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: MutableMap<Option, Any?>, parameter: IAggregatedParameter) {
     val aggregator = parameter.aggregator
     if (aggregator.isSingleAggregator()) {
         val option = parameter.commandOptions.first()

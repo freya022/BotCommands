@@ -11,7 +11,7 @@ class UserContextCommandParameter(
     context: BContextImpl,
     optionAggregateBuilder: UserCommandOptionAggregateBuilder
 ) : ContextCommandParameter(context, optionAggregateBuilder) {
-    val commandOptions = CommandOptions.transform(
+    override val commandOptions = CommandOptions.transform(
         context,
         optionAggregateBuilder,
         object : CommandOptions.Configuration<UserCommandOptionBuilder, UserContextParameterResolver<*, *>> {
