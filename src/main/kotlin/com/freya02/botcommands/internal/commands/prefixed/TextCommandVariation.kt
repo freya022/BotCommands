@@ -10,15 +10,13 @@ import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.insertAggregate
+import com.freya02.botcommands.internal.utils.mapFinalParameters
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.collections.set
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -58,25 +56,19 @@ class TextCommandVariation internal constructor(
             else -> BaseCommandEventImpl(context, jdaEvent, args)
         }
 
-        val objects: MutableMap<KParameter, Any?> = hashMapOf()
-        objects[method.instanceParameter!!] = instance
-        objects[method.nonInstanceParameters.first()] = event
-
         val groupsIterator = matchResult?.groups?.iterator()
         groupsIterator?.next() //Skip entire match
 
-        val optionMap: MutableMap<Option, Any?> = hashMapOf()
-        for (option in parameters.flatMap { it.commandOptions }) {
-            tryInsertOption(event, optionMap, option, groupsIterator, args)?.let { return it }
-        }
-
-        for (parameter in parameters) {
-            insertAggregate(event, objects, optionMap, parameter)
+        val allOptions = parameters.flatMap { it.commandOptions }
+        val optionMap: MutableMap<Option, Any?> = HashMap(allOptions.size)
+        for (option in allOptions) {
+            if (tryInsertOption(event, optionMap, option, groupsIterator, args) == InsertOptionResult.ABORT)
+                return ExecutionResult.CONTINUE //Go to next variation
         }
 
         cooldownService.applyCooldown(info, event)
 
-        method.callSuspendBy(objects)
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionMap))
 
         return ExecutionResult.OK
     }
@@ -92,7 +84,7 @@ class TextCommandVariation internal constructor(
         option: Option,
         groupsIterator: Iterator<MatchGroup?>?,
         args: String
-    ): ExecutionResult? {
+    ): InsertOptionResult {
         optionMap[option] = when (option.optionType) {
             OptionType.OPTION -> {
                 groupsIterator ?: throwInternal("No group iterator passed for a regex command")
@@ -113,11 +105,12 @@ class TextCommandVariation internal constructor(
                     //Regex matched but could not be resolved
                     // if optional then it's ok
                     if (resolved == null && !option.isOptional) {
-                        return ExecutionResult.CONTINUE
+                        return InsertOptionResult.SKIP
                     }
 
                     resolved
                 } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                    //TODO test branch
                     logger.warn(
                         "Could not find parameter #{} in {} for input args {}",
                         option.index,
@@ -125,10 +118,10 @@ class TextCommandVariation internal constructor(
                         args
                     )
 
-                    return ExecutionResult.CONTINUE
+                    return InsertOptionResult.ABORT
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {
-                        return null
+                        return InsertOptionResult.OK
                     }
 
                     when {
@@ -153,7 +146,7 @@ class TextCommandVariation internal constructor(
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return null
+        return InsertOptionResult.OK
     }
 
     companion object {
