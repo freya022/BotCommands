@@ -55,6 +55,7 @@ object Main {
             addClass<UserContextInfo>()
             addClass<MessageContextRaw>()
             addClass<TextVararg>()
+            addClass<SlashLocalization>()
 
             components {
                 useComponents = true
