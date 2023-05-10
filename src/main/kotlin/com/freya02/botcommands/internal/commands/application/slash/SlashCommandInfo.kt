@@ -14,7 +14,6 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.expandVararg
 import com.freya02.botcommands.internal.utils.set
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
@@ -148,7 +147,7 @@ abstract class SlashCommandInfo internal constructor(
                 }
             }
 
-            objects[parameter] = aggregator.callSuspendBy(aggregatorArguments.expandVararg())
+            objects[parameter] = aggregator.callSuspendBy(aggregatorArguments)
         }
     }
 

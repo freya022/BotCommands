@@ -8,8 +8,6 @@ operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: A
     this[parameter.kParameter] = obj
 }
 
-fun Map<KParameter, Any?>.expandVararg() = this
-
 @Suppress("UNCHECKED_CAST")
 operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? = obj.also {
     if (option.isVararg) {
