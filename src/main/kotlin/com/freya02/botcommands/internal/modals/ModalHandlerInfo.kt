@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
@@ -10,16 +9,18 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.set
+import com.freya02.botcommands.internal.utils.mapFinalParameters
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 class ModalHandlerInfo(
-    context: BContextImpl,
+    val context: BContextImpl,
     override val instance: Any,
     override val method: KFunction<*>
 ) : IExecutableInteractionInfo {
@@ -70,11 +71,7 @@ class ModalHandlerInfo(
     }
 
     @Throws(Exception::class)
-    suspend fun execute(
-        context: BContext,
-        modalData: ModalData,
-        event: ModalInteractionEvent
-    ): Boolean {
+    suspend fun execute(modalData: ModalData, event: ModalInteractionEvent): Boolean {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap
@@ -82,10 +79,6 @@ class ModalHandlerInfo(
         inputDataMap.forEach { (inputId: String, inputData: InputData) ->
             inputNameToInputIdMap[inputData.inputName] = inputId
         }
-
-        val objects: MutableMap<KParameter, Any?> = hashMapOf()
-        objects[method.instanceParameter!!] = instance
-        objects[method.valueParameters.first()] = event
 
         val userDatas = handlerData.userData
 
@@ -122,71 +115,64 @@ class ModalHandlerInfo(
 //            objects[parameter.kParameter] = userData
 //        }
 
-        for (parameter in parameters) {
-            objects[parameter.kParameter] = computeAggregate(context, event, parameter, inputNameToInputIdMap, userDataIterator)
+        val optionValues: MutableMap<Option, Any?> = hashMapOf()
+        for (option in parameters.flatMap { it.commandOptions }) {
+            insertOption(option, inputNameToInputIdMap, event, userDataIterator, optionValues)
         }
 
-        method.callSuspendBy(objects)
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
     }
 
-    private suspend fun computeAggregate(
-        context: BContext,
-        event: ModalInteractionEvent,
-        parameter: ModalHandlerParameter,
+    private suspend fun insertOption(
+        option: Option,
         inputNameToInputIdMap: Map<String, String>,
-        userDataIterator: Iterator<Any>
-    ): Any? {
-        val aggregator = parameter.aggregator
-        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        arguments[aggregator.valueParameters.first()] = event
+        event: ModalInteractionEvent,
+        userDataIterator: Iterator<Any>,
+        arguments: MutableMap<Option, Any?>
+    ) {
+        arguments[option] = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as ModalHandlerInputOption
 
-        for (option in parameter.commandOptions) {
-            val value = when (option.optionType) {
-                OptionType.OPTION -> {
-                    option as ModalHandlerInputOption
+                //We have the modal input's ID
+                // But we have a Map of input *name* -> InputData (contains input ID)
+                val inputId = inputNameToInputIdMap[option.inputName]
+                    ?: throwUser("Modal input named '${option.inputName}' was not found")
+                val modalMapping = event.getValue(inputId)
+                    ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
-                    //We have the modal input's ID
-                    // But we have a Map of input *name* -> InputData (contains input ID)
-                    val inputId = inputNameToInputIdMap[option.inputName]
-                        ?: throwUser("Modal input named '${option.inputName}' was not found")
-                    val modalMapping = event.getValue(inputId)
-                        ?: throwUser("Modal input ID '$inputId' was not found on the event")
-
-                    option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
-                        requireUser(obj != null || option.isOptional) {
-                            "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleName}"
-                        }
+                option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
+                    requireUser(obj != null || option.isOptional) {
+                        "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleName}"
                     }
                 }
-                OptionType.GENERATED -> {
-                    option as ModalHandlerDataOption
-
-                    if (!userDataIterator.hasNext())
-                        throwInternal("Mismatch in amount of user data provided by the user and the amount requested by the aggregates, this should have been checked")
-
-                    userDataIterator.next().also { userData ->
-                        requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
-                            "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
-                                option.declaredName,
-                                option.type.simpleName,
-                                userData.javaClass.simpleName
-                            )
-                        }
-                    }
-                }
-                OptionType.CUSTOM -> {
-                    option as CustomMethodOption
-                    option.resolver.resolveSuspend(context, this, event)
-                }
-                else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
             }
 
-            arguments[option] = value
-        }
+            OptionType.GENERATED -> {
+                option as ModalHandlerDataOption
 
-        return aggregator.callSuspendBy(arguments)
+                if (!userDataIterator.hasNext())
+                    throwInternal("Mismatch in amount of user data provided by the user and the amount requested by the aggregates, this should have been checked")
+
+                userDataIterator.next().also { userData ->
+                    requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
+                        "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
+                            option.declaredName,
+                            option.type.simpleName,
+                            userData.javaClass.simpleName
+                        )
+                    }
+                }
+            }
+
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+                option.resolver.resolveSuspend(context, this, event)
+            }
+
+            else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
+        }
     }
 }
