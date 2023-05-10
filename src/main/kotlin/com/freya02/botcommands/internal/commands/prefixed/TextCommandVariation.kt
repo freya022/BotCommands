@@ -7,7 +7,9 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariatio
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
@@ -84,70 +86,104 @@ class TextCommandVariation internal constructor(
         args: String
     ): Pair<Any?, ExecutionResult?> {
         val aggregator = parameter.aggregator
-        val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        aggregatorArguments[aggregator.valueParameters.first()] = event
+        if (aggregator.isSingleAggregator()) {
+            val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(1)
+            val option = parameter.commandOptions.singleOrNull()
+                ?: throwInternal("Tried to use a single aggregator with ${parameter.commandOptions.size} options")
 
-        for (option in parameter.commandOptions) {
-            aggregatorArguments[option] = when (option.optionType) {
-                OptionType.OPTION -> {
-                    groupsIterator ?: throwInternal("No group iterator passed for a regex command")
-
-                    option as TextCommandOption
-
-                    var found = 0
-                    val groupCount = option.groupCount
-                    val groups = arrayOfNulls<String>(groupCount)
-                    for (j in 0 until groupCount) {
-                        groups[j] = groupsIterator.next()?.value.also {
-                            if (it != null) found++
-                        }
-                    }
-
-                    if (found == groupCount) { //Found all the groups
-                        val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
-                        //Regex matched but could not be resolved
-                        // if optional then it's ok
-                        if (resolved == null && !option.isOptional) {
-                            return Pair(null, ExecutionResult.CONTINUE)
-                        }
-
-                        resolved
-                    } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                        logger.warn(
-                            "Could not find parameter #{} in {} for input args {}",
-                            option.index,
-                            aggregator.shortSignatureNoSrc,
-                            args
-                        )
-
-                        return Pair(null, ExecutionResult.CONTINUE)
-                    } else { //Parameter is optional
-                        if (option.kParameter.isOptional) {
-                            continue
-                        }
-
-                        when {
-                            option.isPrimitive -> 0
-                            else -> null
-                        }
-                    }
-                }
-                OptionType.CUSTOM -> {
-                    option as CustomMethodOption
-
-                    option.resolver.resolveSuspend(event.context, this, event)
-                }
-                OptionType.GENERATED -> {
-                    option as TextGeneratedMethodParameter
-
-                    option.generatedValueSupplier.getDefaultValue(event)
-                }
-                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+            tryInsertOption(event, aggregatorArguments, option, groupsIterator, args)?.let {
+                return it
             }
+
+            return Pair(aggregatorArguments.values.first(), null)
+        } else {
+            val aggregatorArguments: MutableMap<KParameter, Any?> = mutableMapOf()
+            aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+            aggregatorArguments[aggregator.valueParameters.first()] = event
+
+            for (option in parameter.commandOptions) {
+                tryInsertOption(event, aggregatorArguments, option, groupsIterator, args)?.let {
+                    return it
+                }
+            }
+
+            return Pair(aggregator.callSuspendBy(aggregatorArguments), null)
+        }
+    }
+
+    /**
+     * Will return a null value if it can go to the next option
+     *
+     * A non-null value is returned immediately to #computeAggregate caller
+     */
+    private suspend fun tryInsertOption(
+        event: BaseCommandEvent,
+        aggregatorArguments: MutableMap<KParameter, Any?>,
+        option: Option,
+        groupsIterator: Iterator<MatchGroup?>?,
+        args: String
+    ): Pair<Any?, ExecutionResult>? {
+        aggregatorArguments[option] = when (option.optionType) {
+            OptionType.OPTION -> {
+                groupsIterator ?: throwInternal("No group iterator passed for a regex command")
+
+                option as TextCommandOption
+
+                var found = 0
+                val groupCount = option.groupCount
+                val groups = arrayOfNulls<String>(groupCount)
+                for (j in 0 until groupCount) {
+                    groups[j] = groupsIterator.next()?.value.also {
+                        if (it != null) found++
+                    }
+                }
+
+                if (found == groupCount) { //Found all the groups
+                    val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
+                    //Regex matched but could not be resolved
+                    // if optional then it's ok
+                    if (resolved == null && !option.isOptional) {
+                        return Pair(null, ExecutionResult.CONTINUE)
+                    }
+
+                    resolved
+                } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                    logger.warn(
+                        "Could not find parameter #{} in {} for input args {}",
+                        option.index,
+                        option.optionParameter.typeCheckingFunction.shortSignatureNoSrc,
+                        args
+                    )
+
+                    return Pair(null, ExecutionResult.CONTINUE)
+                } else { //Parameter is optional
+                    if (option.kParameter.isOptional) {
+                        return null
+                    }
+
+                    when {
+                        option.isPrimitive -> 0
+                        else -> null
+                    }
+                }
+            }
+
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+
+                option.resolver.resolveSuspend(event.context, this, event)
+            }
+
+            OptionType.GENERATED -> {
+                option as TextGeneratedMethodParameter
+
+                option.generatedValueSupplier.getDefaultValue(event)
+            }
+
+            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return Pair(aggregator.callSuspendBy(aggregatorArguments), null)
+        return null
     }
 
     companion object {
