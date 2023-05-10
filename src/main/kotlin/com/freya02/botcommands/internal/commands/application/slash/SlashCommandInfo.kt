@@ -105,9 +105,8 @@ abstract class SlashCommandInfo internal constructor(
                      T : Event {
         val optionMap: MutableMap<Option, Any?> = hashMapOf()
         for (option in methodParameters.flatMap { it.commandOptions }) {
-            if (tryInsertOption(context, event, optionMap, option) == InsertOptionResult.ABORT) {
+            if (tryInsertOption(event, optionMap, option) == InsertOptionResult.ABORT)
                 return false
-            }
         }
 
         for (parameter in methodParameters) {
@@ -118,7 +117,6 @@ abstract class SlashCommandInfo internal constructor(
     }
 
     private suspend fun <T> tryInsertOption(
-        context: BContextImpl,
         event: T,
         optionMap: MutableMap<Option, Any?>,
         option: Option
