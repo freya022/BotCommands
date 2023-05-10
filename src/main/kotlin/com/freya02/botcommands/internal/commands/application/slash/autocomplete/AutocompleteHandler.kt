@@ -11,11 +11,11 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
@@ -23,8 +23,12 @@ internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
     slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
-) {
-    private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
+) : IExecutableInteractionInfo {
+    override val method = autocompleteInfo.function
+    override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
+    override val parameters: List<MethodParameter>
+        get() = methodParameters
+
     internal val methodParameters: List<AutocompleteCommandParameter>
     internal val compositeParameters: List<AutocompleteCommandOption>
 
@@ -72,15 +76,8 @@ internal class AutocompleteHandler(
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        val objects: MutableMap<KParameter, Any?> = mutableMapOf()
-        objects[autocompleteInfo.function.instanceParameter!!] = instance
-        objects[autocompleteInfo.function.valueParameters.first()] = event
-
-        slashCommandInfo.putSlashOptions(event, objects, methodParameters)
-
-        if (objects.size - 2 < methodParameters.size) {
-            return emptyList() //Autocomplete was triggered without all the required parameters being present
-        }
+        val objects = slashCommandInfo.getSlashOptions(event, methodParameters, ignoreUnresolvableParameters = true)
+            ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
         val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.function.callSuspendBy(objects))

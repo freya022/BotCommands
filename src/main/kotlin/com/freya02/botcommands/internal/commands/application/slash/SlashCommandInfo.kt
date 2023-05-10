@@ -14,7 +14,7 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
-import com.freya02.botcommands.internal.utils.insertAggregate
+import com.freya02.botcommands.internal.utils.mapFinalParameters
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
@@ -25,7 +25,6 @@ import kotlin.collections.set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
@@ -82,13 +81,8 @@ abstract class SlashCommandInfo internal constructor(
             topLevelInstance.isGuildOnly -> GuildSlashEvent(context, jdaEvent)
             else -> GlobalSlashEventImpl(context, jdaEvent)
         }
-        val objects: MutableMap<KParameter, Any?> = mutableMapOf()
-        objects[method.instanceParameter!!] = instance
-        objects[method.valueParameters.first()] = event
 
-        if (!putSlashOptions(event, objects, parameters)) {
-            return false
-        }
+        val objects = getSlashOptions(event, parameters, ignoreUnresolvableParameters = false) ?: return false
 
         cooldownService.applyCooldown(this, event)
 
@@ -97,23 +91,19 @@ abstract class SlashCommandInfo internal constructor(
         return true
     }
 
-    internal suspend fun <T> putSlashOptions(
+    context(IExecutableInteractionInfo)
+    internal suspend fun <T> getSlashOptions(
         event: T,
-        objects: MutableMap<KParameter, Any?>,
-        methodParameters: List<AbstractSlashCommandParameter>
-    ): Boolean where T : CommandInteractionPayload,
-                     T : Event {
+        methodParameters: List<AbstractSlashCommandParameter>,
+        ignoreUnresolvableParameters: Boolean
+    ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
         val optionMap: MutableMap<Option, Any?> = hashMapOf()
         for (option in methodParameters.flatMap { it.commandOptions }) {
-            if (tryInsertOption(event, optionMap, option) == InsertOptionResult.ABORT)
-                return false
+            if (tryInsertOption(event, optionMap, option) == InsertOptionResult.ABORT && !ignoreUnresolvableParameters)
+                return null
         }
 
-        for (parameter in methodParameters) {
-            insertAggregate(event, objects, optionMap, parameter)
-        }
-
-        return true
+        return methodParameters.mapFinalParameters(event, optionMap)
     }
 
     private suspend fun <T> tryInsertOption(
