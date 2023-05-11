@@ -33,6 +33,13 @@ operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? =
     }
 }
 
+inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
+    val options = this.flatMap { it.commandOptions }
+    return buildMap(options.size) {
+        options.forEach { block(it) }
+    }
+}
+
 context(IExecutableInteractionInfo)
 suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     event: Event,

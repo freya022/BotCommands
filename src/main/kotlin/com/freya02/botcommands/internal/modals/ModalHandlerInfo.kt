@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -73,10 +74,8 @@ class ModalHandlerInfo(
         }
 
         val userDataIterator = userDatas.iterator()
-
-        val optionValues: MutableMap<Option, Any?> = hashMapOf()
-        for (option in parameters.flatMap { it.commandOptions }) {
-            insertOption(option, inputNameToInputIdMap, event, userDataIterator, optionValues)
+        val optionValues = parameters.mapOptions { option ->
+            insertOption(event, option, inputNameToInputIdMap, userDataIterator, this)
         }
 
         method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
@@ -85,9 +84,9 @@ class ModalHandlerInfo(
     }
 
     private suspend fun insertOption(
+        event: ModalInteractionEvent,
         option: Option,
         inputNameToInputIdMap: Map<String, String>,
-        event: ModalInteractionEvent,
         userDataIterator: Iterator<Any>,
         arguments: MutableMap<Option, Any?>
     ) {

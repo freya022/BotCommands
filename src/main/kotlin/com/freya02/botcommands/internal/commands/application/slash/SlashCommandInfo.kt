@@ -15,6 +15,7 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
@@ -97,13 +98,12 @@ abstract class SlashCommandInfo internal constructor(
         methodParameters: List<AbstractSlashCommandParameter>,
         ignoreUnresolvableParameters: Boolean
     ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
-        val optionMap: MutableMap<Option, Any?> = hashMapOf()
-        for (option in methodParameters.flatMap { it.commandOptions }) {
-            if (tryInsertOption(event, optionMap, option) == InsertOptionResult.ABORT && !ignoreUnresolvableParameters)
+        val optionValues = methodParameters.mapOptions { option ->
+            if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT && !ignoreUnresolvableParameters)
                 return null
         }
 
-        return methodParameters.mapFinalParameters(event, optionMap)
+        return methodParameters.mapFinalParameters(event, optionValues)
     }
 
     private suspend fun <T> tryInsertOption(

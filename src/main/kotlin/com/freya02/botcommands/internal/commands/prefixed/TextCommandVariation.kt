@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.collections.set
@@ -59,16 +60,14 @@ class TextCommandVariation internal constructor(
         val groupsIterator = matchResult?.groups?.iterator()
         groupsIterator?.next() //Skip entire match
 
-        val allOptions = parameters.flatMap { it.commandOptions }
-        val optionMap: MutableMap<Option, Any?> = HashMap(allOptions.size)
-        for (option in allOptions) {
-            if (tryInsertOption(event, optionMap, option, groupsIterator, args) == InsertOptionResult.ABORT)
+        val optionValues = parameters.mapOptions { option ->
+            if (tryInsertOption(event, this, option, groupsIterator, args) == InsertOptionResult.ABORT)
                 return ExecutionResult.CONTINUE //Go to next variation
         }
 
         cooldownService.applyCooldown(info, event)
 
-        method.callSuspendBy(parameters.mapFinalParameters(event, optionMap))
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return ExecutionResult.OK
     }
