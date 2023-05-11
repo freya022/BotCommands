@@ -50,26 +50,26 @@ abstract class SlashCommandInfo internal constructor(
         }
 
         //On every autocomplete handler, check if their method parameters match up with the slash command
-        parameters.forEach { slashParam ->
-            for (commandOption in slashParam.commandOptions) {
-                if (commandOption !is SlashCommandOption)
-                    continue
+        val slashOptions = parameters.flatMap { it.commandOptions }
+        slashOptions.forEach { commandOption ->
+            if (commandOption !is SlashCommandOption)
+                return@forEach
 
-                //TODO might need reworking
-                commandOption.autocompleteHandler?.let { handler ->
-                    handler.methodParameters.forEach { autocompleteParam ->
-                        val param = parameters.find { it.name == autocompleteParam.name }
-                            ?: throwUser(
-                                handler.autocompleteInfo.function,
-                                "Could not find parameter ${autocompleteParam.name} in the slash command declaration"
-                            )
+            commandOption.autocompleteHandler?.let { handler ->
+                val autocompleteOptions = handler.methodParameters.flatMap { it.commandOptions }
 
-                        requireUser(
-                            param.kParameter.checkTypeEqualsIgnoreNull(autocompleteParam.kParameter),
-                            handler.autocompleteInfo.function
-                        ) {
-                            "Autocomplete parameter type should be the same as the slash command one, slash command type: '${param.type.simpleName}', autocomplete type: '${autocompleteParam.type.simpleName}'"
-                        }
+                autocompleteOptions.forEach { autocompleteOption ->
+                    val option = slashOptions.find { it.declaredName == autocompleteOption.declaredName }
+                        ?: throwUser(
+                            handler.autocompleteInfo.function,
+                            "Could not find option ${autocompleteOption.declaredName} in the slash command declaration"
+                        )
+
+                    requireUser(
+                        option.type == autocompleteOption.type,
+                        handler.autocompleteInfo.function
+                    ) {
+                        "Autocomplete parameter type should be the same as the slash command one, slash command type: '${option.type.simpleName}', autocomplete type: '${autocompleteOption.type.simpleName}'"
                     }
                 }
             }
