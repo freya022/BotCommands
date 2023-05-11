@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 
-class GuildApplicationCommandManager internal constructor(val context: BContextImpl, val guild: Guild): IApplicationCommandManager() {
+class GuildApplicationCommandManager internal constructor(val context: BContextImpl, val guild: Guild): AbstractApplicationCommandManager() {
     override fun isValidScope(scope: CommandScope): Boolean = !scope.isGlobal
 
     //TODO move common part to IApplicationCommandManager, make checkScope function to throw with the custom message

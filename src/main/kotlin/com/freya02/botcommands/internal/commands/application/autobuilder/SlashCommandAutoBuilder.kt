@@ -110,7 +110,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
     }
 
     private fun processCommand(
-        manager: IApplicationCommandManager,
+        manager: AbstractApplicationCommandManager,
         metadata: SlashFunctionMetadata,
         subcommands: Map<String, List<SlashFunctionMetadata>>,
         subcommandGroups: Map<String, SlashSubcommandGroupMetadata>

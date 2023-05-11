@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.throwUser
 import kotlin.reflect.KFunction
 
-class GlobalApplicationCommandManager internal constructor(val context: BContextImpl): IApplicationCommandManager() {
+class GlobalApplicationCommandManager internal constructor(val context: BContextImpl): AbstractApplicationCommandManager() {
     override fun isValidScope(scope: CommandScope) = scope.isGlobal
 
     override fun slashCommand0(name: String, scope: CommandScope, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {

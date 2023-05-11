@@ -7,8 +7,7 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommandI
 import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import kotlin.reflect.KFunction
 
-//TODO Rename to AbstractApplicationCommandManager
-sealed class IApplicationCommandManager {
+sealed class AbstractApplicationCommandManager {
     private val commandMap: SimpleCommandMap<ApplicationCommandInfo> = SimpleCommandMap.ofInfos()
     internal val applicationCommands: Map<String, ApplicationCommandInfo>
         @JvmSynthetic get() = commandMap.map

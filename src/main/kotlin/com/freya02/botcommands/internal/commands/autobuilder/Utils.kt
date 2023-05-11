@@ -2,10 +2,10 @@ package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -44,7 +44,7 @@ internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithD
 private inline fun <T : CommandFunctionMetadata<*, *>> Throwable.addFunction(metadata: T) =
     RuntimeException("An exception occurred while processing function ${metadata.func.shortSignature}", this)
 
-internal fun checkCommandId(manager: IApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
+internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance: ApplicationCommand, commandId: String, path: CommandPath): Boolean {
     if (manager is GuildApplicationCommandManager) {
         val guildIds = instance.getGuildsForCommandId(commandId, path) ?: return true
 
@@ -56,7 +56,7 @@ internal fun checkCommandId(manager: IApplicationCommandManager, instance: Appli
     return true
 }
 
-internal fun checkTestCommand(manager: IApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): Boolean {
+internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): Boolean {
     if (func.hasAnnotation<Test>()) {
         if (scope != CommandScope.GUILD) throwUser(func, "Test commands must have their scope set to GUILD")
         if (manager !is GuildApplicationCommandManager) throwInternal("GUILD scoped command was not registered with a guild command manager")
