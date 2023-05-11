@@ -21,21 +21,6 @@ enum class InsertOptionResult {
     ABORT
 }
 
-operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: Any?): Any? = obj.also {
-    this[parameter.kParameter] = obj
-}
-
-@Suppress("UNCHECKED_CAST")
-operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? = obj.also {
-    if (option.isVararg) {
-        (this.getOrPut(option.executableParameter) {
-            arrayListOf<Any?>()
-        } as MutableList<Any?>).add(obj)
-    } else {
-        this[option.executableParameter] = obj
-    }
-}
-
 inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
     val options = this.flatMap { it.commandOptions }
     return buildMap(options.size) {
@@ -97,5 +82,20 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
                 throwUser(parameter.kParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
             }
         }
+    }
+}
+
+private operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: Any?): Any? = obj.also {
+    this[parameter.kParameter] = obj
+}
+
+@Suppress("UNCHECKED_CAST")
+private operator fun MutableMap<KParameter, Any?>.set(option: Option, obj: Any?): Any? = obj.also {
+    if (option.isVararg) {
+        (this.getOrPut(option.executableParameter) {
+            arrayListOf<Any?>()
+        } as MutableList<Any?>).add(obj)
+    } else {
+        this[option.executableParameter] = obj
     }
 }
