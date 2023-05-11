@@ -29,6 +29,7 @@ import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
@@ -182,30 +183,6 @@ internal class ComponentsListener(
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        if (value != null) {
-            optionMap[option] = value
-
-            return InsertOptionResult.OK
-        } else {
-            //TODO possibly refactor with other handlers, as they all use InsertOptionResult
-            if (option.isVararg) {
-                //Continue looking at other options
-                return InsertOptionResult.SKIP
-            } else if (option.isOptional) { //Default or nullable
-                //Put null/default value if parameter is not a kotlin default value
-                return if (option.kParameter.isOptional) {
-                    InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
-                } else {
-                    //Nullable
-                    optionMap[option] = when {
-                        option.isPrimitive -> 0
-                        else -> null
-                    }
-                    InsertOptionResult.SKIP
-                }
-            } else {
-                throwUser("User command parameter couldn't be resolved at option ${option.declaredName}")
-            }
-        }
+        return tryInsertNullableOption(value, event, option, optionMap)
     }
 }

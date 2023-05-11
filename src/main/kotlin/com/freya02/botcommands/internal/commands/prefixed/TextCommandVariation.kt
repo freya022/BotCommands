@@ -15,9 +15,9 @@ import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import kotlin.collections.set
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
@@ -85,7 +85,7 @@ class TextCommandVariation internal constructor(
         groupsIterator: Iterator<MatchGroup?>?,
         args: String
     ): InsertOptionResult {
-        optionMap[option] = when (option.optionType) {
+        val value = when (option.optionType) {
             OptionType.OPTION -> {
                 groupsIterator ?: throwInternal("No group iterator passed for a regex command")
 
@@ -146,7 +146,7 @@ class TextCommandVariation internal constructor(
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return InsertOptionResult.OK
+        return tryInsertNullableOption(value, event, option, optionMap)
     }
 
     companion object {

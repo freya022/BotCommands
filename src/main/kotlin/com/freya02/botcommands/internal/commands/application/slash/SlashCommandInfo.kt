@@ -16,13 +16,12 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
-import kotlin.collections.set
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
@@ -112,7 +111,7 @@ abstract class SlashCommandInfo internal constructor(
         option: Option
     ): InsertOptionResult where T : CommandInteractionPayload,
                                 T : Event {
-        when (option.optionType) {
+        val value = when (option.optionType) {
             OptionType.OPTION -> {
                 option as AbstractSlashCommandOption
 
@@ -138,46 +137,27 @@ abstract class SlashCommandInfo internal constructor(
                         return InsertOptionResult.ABORT
                     }
 
-                    optionMap[option] = resolved
-                } else if (option.isVararg) {
-                    //Continue looking at other options
-                    return InsertOptionResult.SKIP
-                } else if (option.isOptional) { //Default or nullable
-                    //Put null/default value if parameter is not a kotlin default value
-                    return if (option.kParameter.isOptional) {
-                        InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
-                    } else {
-                        //Nullable
-                        optionMap[option] = when {
-                            option.isPrimitive -> 0
-                            else -> null
-                        }
-                        InsertOptionResult.SKIP
-                    }
+                    resolved
                 } else {
-                    //TODO might need testing
-                    if (event is CommandAutoCompleteInteractionEvent)
-                        return InsertOptionResult.SKIP
-
-                    throwUser("Slash parameter couldn't be resolved at option ${option.declaredName} ($optionName)")
+                    null
                 }
             }
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                optionMap[option] = option.resolver.resolveSuspend(context, this, event)
+                option.resolver.resolveSuspend(context, this, event)
             }
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedMethodParameter
 
-                optionMap[option] = option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
+                option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
             else -> {
                 throwInternal("MethodParameterType#${option.optionType} has not been implemented")
             }
         }
 
-        return InsertOptionResult.OK
+        return tryInsertNullableOption(value, event, option, optionMap)
     }
 
     companion object {

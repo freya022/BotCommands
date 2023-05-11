@@ -8,9 +8,12 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
+import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -75,7 +78,8 @@ class ModalHandlerInfo(
 
         val userDataIterator = userDatas.iterator()
         val optionValues = parameters.mapOptions { option ->
-            insertOption(event, option, inputNameToInputIdMap, userDataIterator, this)
+            if (tryInsertOption(event, option, inputNameToInputIdMap, userDataIterator, this) == InsertOptionResult.ABORT)
+                throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
         }
 
         method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
@@ -83,14 +87,14 @@ class ModalHandlerInfo(
         return true
     }
 
-    private suspend fun insertOption(
+    private suspend fun tryInsertOption(
         event: ModalInteractionEvent,
         option: Option,
         inputNameToInputIdMap: Map<String, String>,
         userDataIterator: Iterator<Any>,
-        arguments: MutableMap<Option, Any?>
-    ) {
-        arguments[option] = when (option.optionType) {
+        optionMap: MutableMap<Option, Any?>
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
             OptionType.OPTION -> {
                 option as ModalHandlerInputOption
 
@@ -132,5 +136,7 @@ class ModalHandlerInfo(
 
             else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
         }
+
+        return tryInsertNullableOption(value, event, option, optionMap)
     }
 }
