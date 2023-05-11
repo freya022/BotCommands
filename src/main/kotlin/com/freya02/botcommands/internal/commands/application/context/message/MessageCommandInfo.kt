@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.context.message.GlobalMe
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
+import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
@@ -79,7 +79,7 @@ class MessageCommandInfo internal constructor(
                 option.resolver.resolveSuspend(context, this, event)
             }
             OptionType.GENERATED -> {
-                option as ApplicationGeneratedMethodParameter
+                option as ApplicationGeneratedOption
 
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }

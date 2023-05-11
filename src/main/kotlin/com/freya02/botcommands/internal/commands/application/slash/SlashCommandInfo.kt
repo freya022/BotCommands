@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
+import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
@@ -148,7 +148,7 @@ abstract class SlashCommandInfo internal constructor(
                 option.resolver.resolveSuspend(context, this, event)
             }
             OptionType.GENERATED -> {
-                option as ApplicationGeneratedMethodParameter
+                option as ApplicationGeneratedOption
 
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }

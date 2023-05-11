@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.builder
 
-import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
+import com.freya02.botcommands.internal.commands.GeneratedOption
 
 interface GeneratedOptionBuilder {
-    fun toGeneratedMethodParameter(): GeneratedMethodParameter
+    fun toGeneratedOption(): GeneratedOption
 }

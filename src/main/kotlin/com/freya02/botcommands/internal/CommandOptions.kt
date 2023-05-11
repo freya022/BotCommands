@@ -41,7 +41,7 @@ object CommandOptions {
                         )
                     }
                 }
-                is GeneratedOptionBuilder -> optionBuilder.toGeneratedMethodParameter()
+                is GeneratedOptionBuilder -> optionBuilder.toGeneratedOption()
                 is CustomOptionBuilder -> {
                     val parameter = optionBuilder.innerWrappedParameter
 

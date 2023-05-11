@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
+import com.freya02.botcommands.internal.commands.GeneratedOption
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal
@@ -28,13 +28,13 @@ internal object SlashUtils {
     private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
 
     context(IExecutableInteractionInfo)
-    inline fun <T : GeneratedMethodParameter> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
+    inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
         return supplier(this).also { defaultValue ->
             checkDefaultValue(option, defaultValue)
         }
     }
 
-    private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedMethodParameter, defaultValue: Any?) {
+    private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
             requireUser(expectedType.isSuperclassOf(defaultValue::class)) {

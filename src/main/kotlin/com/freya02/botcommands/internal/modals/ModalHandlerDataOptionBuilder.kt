@@ -5,5 +5,5 @@ import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
 internal class ModalHandlerDataOptionBuilder(optionParameter: OptionParameter) : OptionBuilder(optionParameter), GeneratedOptionBuilder {
-    override fun toGeneratedMethodParameter() = ModalHandlerDataOption(this)
+    override fun toGeneratedOption() = ModalHandlerDataOption(this)
 }

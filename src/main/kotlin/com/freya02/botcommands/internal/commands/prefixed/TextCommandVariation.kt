@@ -138,7 +138,7 @@ class TextCommandVariation internal constructor(
             }
 
             OptionType.GENERATED -> {
-                option as TextGeneratedMethodParameter
+                option as TextGeneratedOption
 
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
