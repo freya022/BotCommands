@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
+import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal
@@ -27,20 +27,23 @@ internal object SlashUtils {
     @Suppress("UNUSED_PARAMETER")
     private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
 
-    fun IExecutableInteractionInfo.checkDefaultValue(
-        parameter: ApplicationGeneratedMethodParameter,
-        defaultValue: Any?
-    ) {
-        requireUser(defaultValue != null || parameter.isOptional) {
-            "Generated value supplier for parameter #${parameter.index} has returned a null value but parameter is not optional"
+    context(IExecutableInteractionInfo)
+    inline fun <T : GeneratedMethodParameter> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
+        return supplier(this).also { defaultValue ->
+            checkDefaultValue(option, defaultValue)
         }
+    }
 
-        if (defaultValue == null) return
-
-        val expectedType: KClass<*> = parameter.type.jvmErasure
-
-        requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
-            "Generated value supplier for parameter #${parameter.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
+    private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedMethodParameter, defaultValue: Any?) {
+        if (defaultValue != null) {
+            val expectedType: KClass<*> = option.type.jvmErasure
+            requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
+                "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
+            }
+        } else {
+            requireUser(option.isOptional) {
+                "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
+            }
         }
     }
 

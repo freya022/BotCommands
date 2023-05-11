@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedMethodParameter
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
@@ -170,9 +170,7 @@ abstract class SlashCommandInfo internal constructor(
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedMethodParameter
 
-                optionMap[option] = option.generatedValueSupplier
-                    .getDefaultValue(event)
-                    .also { checkDefaultValue(option, it) }
+                optionMap[option] = option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
             else -> {
                 throwInternal("MethodParameterType#${option.optionType} has not been implemented")

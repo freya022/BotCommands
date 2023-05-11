@@ -10,8 +10,8 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.TopLevelMessageCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
@@ -81,7 +81,7 @@ class MessageCommandInfo internal constructor(
             OptionType.GENERATED -> {
                 option as ApplicationGeneratedMethodParameter
 
-                option.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(option, it) }
+                option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }

@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionAg
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
@@ -139,7 +140,7 @@ class TextCommandVariation internal constructor(
             OptionType.GENERATED -> {
                 option as TextGeneratedMethodParameter
 
-                option.generatedValueSupplier.getDefaultValue(event)
+                option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
 
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
