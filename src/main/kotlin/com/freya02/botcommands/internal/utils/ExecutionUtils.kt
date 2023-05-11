@@ -5,6 +5,9 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
@@ -59,6 +62,7 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
         val option = parameter.commandOptions.first()
         //This is necessary to distinguish between null mappings and default mappings
         if (option in optionValues) {
+            //No need to check nullabilities, it's already handled when computing option values
             aggregatedObjects[parameter] = optionValues[option]
         }
     } else {
@@ -73,6 +77,25 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
             }
         }
 
-        aggregatedObjects[parameter] = aggregator.callSuspendBy(aggregatorArguments)
+        val aggregatedObject = aggregator.callSuspendBy(aggregatorArguments)
+        //Check nullability against parameter
+        if (aggregatedObject != null) {
+            aggregatedObjects[parameter] = aggregatedObject
+        } else {
+            if (parameter.isOptional) { //Default or nullable
+                //Put null/default value if parameter is not a kotlin default value
+                return if (parameter.kParameter.isOptional) {
+                    //Kotlin default value, don't add anything to the parameters map
+                } else {
+                    //Nullable
+                    aggregatedObjects[parameter] = when {
+                        parameter.isPrimitive -> throwInternal("Cannot have user-defined aggregators returning primitives")
+                        else -> null
+                    }
+                }
+            } else {
+                throwUser(parameter.kParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
+            }
+        }
     }
 }
