@@ -13,18 +13,19 @@ import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApp
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkDefaultValue
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
-import com.freya02.botcommands.internal.utils.set
+import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import kotlin.reflect.KParameter
+import kotlin.collections.set
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
 class UserCommandInfo internal constructor(
-    context: BContextImpl,
+    private val context: BContextImpl,
     builder: UserCommandBuilder
 ) : ApplicationCommandInfo(context, builder),
     ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
@@ -43,74 +44,72 @@ class UserCommandInfo internal constructor(
         }
     }
 
-    internal suspend fun execute(
-        context: BContextImpl,
-        cooldownService: CooldownService,
-        jdaEvent: UserContextInteractionEvent
-    ): Boolean {
+    internal suspend fun execute(jdaEvent: UserContextInteractionEvent, cooldownService: CooldownService): Boolean {
         val event = when {
             isGuildOnly -> GuildUserEvent(context, jdaEvent)
             else -> GlobalUserEvent(context, jdaEvent)
         }
 
-        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        arguments[method.instanceParameter!!] = instance
-        arguments[method.valueParameters.first()] = event
-
-        for (parameter in parameters) {
-            val value = computeAggregate(context, event, parameter)
-
-            if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
-                continue
-            } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
-                throwUser("Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null")
-            }
-
-            arguments[parameter.kParameter] = value
+        val optionValues = parameters.mapOptions { option ->
+            if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
+                return false
         }
 
         cooldownService.applyCooldown(this, event)
 
-        method.callSuspendBy(arguments)
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
     }
 
-    private suspend fun computeAggregate(context: BContextImpl, event: GlobalUserEvent, parameter: UserContextCommandParameter): Any? {
-        val aggregator = parameter.aggregator
-        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        arguments[aggregator.valueParameters.first()] = event
+    private suspend fun tryInsertOption(
+        event: GlobalUserEvent,
+        optionMap: MutableMap<Option, Any?>,
+        option: Option
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as UserContextCommandOption
 
-        for (option in parameter.commandOptions) {
-            val value = when (option.optionType) {
-                OptionType.OPTION -> {
-                    option as UserContextCommandOption
-
-                    option.resolver.resolveSuspend(context, this, event)
-                }
-                OptionType.CUSTOM -> {
-                    option as CustomMethodOption
-
-                    option.resolver.resolveSuspend(context, this, event)
-                }
-                OptionType.GENERATED -> {
-                    option as ApplicationGeneratedMethodParameter
-
-                    option.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(option, it) }
-                }
-                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+                option.resolver.resolveSuspend(context, this, event)
             }
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
 
-            if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
-                continue
-            } else if (value == null && !option.isOptional) { // Not a kotlin optional and not nullable
-                throwUser(option.kParameter.function, "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null")
+                option.resolver.resolveSuspend(context, this, event)
             }
+            OptionType.GENERATED -> {
+                option as ApplicationGeneratedMethodParameter
 
-            arguments[option] = value
+                option.generatedValueSupplier.getDefaultValue(event).also { checkDefaultValue(option, it) }
+            }
+            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return aggregator.callSuspendBy(arguments)
+        if (value != null) {
+            optionMap[option] = value
+
+            return InsertOptionResult.OK
+        } else {
+            //TODO possibly refactor with other handlers, as they all use InsertOptionResult
+            if (option.isVararg) {
+                //Continue looking at other options
+                return InsertOptionResult.SKIP
+            } else if (option.isOptional) { //Default or nullable
+                //Put null/default value if parameter is not a kotlin default value
+                return if (option.kParameter.isOptional) {
+                    InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
+                } else {
+                    //Nullable
+                    optionMap[option] = when {
+                        option.isPrimitive -> 0
+                        else -> null
+                    }
+                    InsertOptionResult.SKIP
+                }
+            } else {
+                throwUser("User command parameter couldn't be resolved at option ${option.declaredName}")
+            }
+        }
     }
 }

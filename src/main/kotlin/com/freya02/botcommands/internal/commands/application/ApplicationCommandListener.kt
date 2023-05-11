@@ -55,7 +55,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                 }
 
                 if (!canRun(event, userCommand)) return@launch
-                userCommand.execute(context, cooldownService, event)
+                userCommand.execute(event, cooldownService)
             } catch (e: Throwable) {
                 handleException(e, event)
             }
@@ -75,7 +75,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                 }
 
                 if (!canRun(event, messageCommand)) return@launch
-                messageCommand.execute(context, cooldownService, event)
+                messageCommand.execute(event, cooldownService)
             } catch (e: Throwable) {
                 handleException(e, event)
             }
