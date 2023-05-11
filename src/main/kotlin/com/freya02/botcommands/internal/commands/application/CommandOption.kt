@@ -7,5 +7,4 @@ abstract class CommandOption internal constructor(
     commandOptionBuilder: CommandOptionBuilder
 ) : OptionImpl(commandOptionBuilder) {
     abstract val resolver: Any
-    val discordName = commandOptionBuilder.optionName
 }

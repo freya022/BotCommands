@@ -7,4 +7,6 @@ import com.freya02.botcommands.internal.commands.application.ApplicationCommandO
 abstract class AbstractSlashCommandOption(
     optionBuilder: SlashCommandOptionBuilder,
     final override val resolver: SlashParameterResolver<*, *>
-) : ApplicationCommandOption(optionBuilder)
+) : ApplicationCommandOption(optionBuilder) {
+    val discordName = optionBuilder.optionName
+}

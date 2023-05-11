@@ -20,8 +20,8 @@ import kotlin.reflect.KFunction
 class SlashCommandOptionBuilder(
     private val context: BContextImpl,
     optionParameter: OptionParameter,
-    optionName: String
-): ApplicationCommandOptionBuilder(optionParameter, optionName) {
+    val optionName: String
+): ApplicationCommandOptionBuilder(optionParameter) {
     var description: String = "No description"
 
     @Deprecated("Replaced with aggregates")

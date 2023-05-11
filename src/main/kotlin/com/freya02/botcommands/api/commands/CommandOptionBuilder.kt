@@ -5,8 +5,7 @@ import com.freya02.botcommands.internal.core.options.OptionImpl
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
 abstract class CommandOptionBuilder(
-    optionParameter: OptionParameter,
-    val optionName: String
+    optionParameter: OptionParameter
 ) : OptionBuilder(optionParameter) {
     /**
      * Switch managed by the vararg aggregates

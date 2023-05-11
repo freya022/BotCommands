@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.application.CommandOption
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandOption
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
@@ -50,7 +50,7 @@ fun tryInsertNullableOption(value: Any?, event: Event, option: Option, optionMap
     } else {
         //TODO might need testing
         if (event is SlashCommandInteractionEvent)
-            throwUser("Slash parameter couldn't be resolved at option ${option.declaredName} (${(option as CommandOption).discordName})")
+            throwUser("Slash parameter couldn't be resolved at option ${option.declaredName} (${(option as SlashCommandOption).discordName})")
     }
 
     return InsertOptionResult.SKIP
