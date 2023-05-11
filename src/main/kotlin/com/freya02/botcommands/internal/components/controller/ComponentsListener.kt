@@ -10,15 +10,25 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.core.db.Database
-import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.components.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.ExceptionHandler
+import com.freya02.botcommands.internal.components.ComponentDescriptor
+import com.freya02.botcommands.internal.components.ComponentHandlerOption
+import com.freya02.botcommands.internal.components.ComponentType
+import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.set
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
@@ -29,10 +39,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.valueParameters
 
 @ConditionalService(dependencies = [Components::class, Database::class])
 internal class ComponentsListener(
@@ -134,26 +141,14 @@ internal class ComponentsListener(
         event: GenericComponentInteractionCreateEvent, // already a BC event
         userDataIterator: Iterator<String>
     ) {
-        val args = hashMapOf<KParameter, Any?>()
-        args[descriptor.method.instanceParameter!!] = descriptor.instance
-        args[descriptor.method.valueParameters.first()] = event
-
-        for (parameter in descriptor.parameters) {
-            val value = computeAggregate(context, event, parameter, descriptor, userDataIterator)
-
-            if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
-                continue
-            } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
-                throwUser(
-                    descriptor.method,
-                    "Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null"
-                )
+        with(descriptor) {
+            val optionValues = parameters.mapOptions { option ->
+                if (tryInsertOption(event, descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
+                    throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
             }
 
-            args[parameter.kParameter] = value
+            method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
         }
-
-        descriptor.method.callSuspendBy(args)
     }
 
     private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
@@ -166,45 +161,51 @@ internal class ComponentsListener(
         }
     }
 
-    private suspend fun computeAggregate(
-        context: BContextImpl,
+    private suspend fun tryInsertOption(
         event: GenericComponentInteractionCreateEvent,
-        parameter: ComponentHandlerParameter,
         descriptor: ComponentDescriptor,
+        option: Option,
+        optionMap: MutableMap<Option, Any?>,
         userDataIterator: Iterator<String>
-    ): Any? {
-        val aggregator = parameter.aggregator
-        val arguments: MutableMap<KParameter, Any?> = mutableMapOf()
-        arguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
-        arguments[aggregator.valueParameters.first()] = event
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as ComponentHandlerOption
 
-        for (option in parameter.commandOptions) {
-            val value = when (option.optionType) {
-                OptionType.OPTION -> {
-                    option as ComponentHandlerOption
-
-                    option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
-                }
-                OptionType.CUSTOM -> {
-                    option as CustomMethodOption
-
-                    option.resolver.resolveSuspend(context, descriptor, event)
-                }
-                else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+                option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
             }
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
 
-            if (value == null && option.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
-                continue
-            } else if (value == null && !option.isOptional) { // Not a kotlin optional and not nullable
-                throwUser(
-                    aggregator,
-                    "Parameter '${option.kParameter.bestName}' is not nullable but its resolver returned null"
-                )
+                option.resolver.resolveSuspend(context, descriptor, event)
             }
-
-            arguments[option] = value
+            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return aggregator.callSuspendBy(arguments)
+        if (value != null) {
+            optionMap[option] = value
+
+            return InsertOptionResult.OK
+        } else {
+            //TODO possibly refactor with other handlers, as they all use InsertOptionResult
+            if (option.isVararg) {
+                //Continue looking at other options
+                return InsertOptionResult.SKIP
+            } else if (option.isOptional) { //Default or nullable
+                //Put null/default value if parameter is not a kotlin default value
+                return if (option.kParameter.isOptional) {
+                    InsertOptionResult.SKIP //Kotlin default value, don't add anything to the parameters map
+                } else {
+                    //Nullable
+                    optionMap[option] = when {
+                        option.isPrimitive -> 0
+                        else -> null
+                    }
+                    InsertOptionResult.SKIP
+                }
+            } else {
+                throwUser("User command parameter couldn't be resolved at option ${option.declaredName}")
+            }
+        }
     }
 }
