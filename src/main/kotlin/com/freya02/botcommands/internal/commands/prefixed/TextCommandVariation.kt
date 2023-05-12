@@ -12,7 +12,6 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
@@ -110,15 +109,7 @@ class TextCommandVariation internal constructor(
 
                     resolved
                 } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                    //TODO test branch
-                    logger.warn(
-                        "Could not find parameter #{} in {} for input args {}",
-                        option.index,
-                        option.optionParameter.typeCheckingFunction.shortSignatureNoSrc,
-                        args
-                    )
-
-                    return InsertOptionResult.ABORT
+                    throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.data.helpName}) for input args '${args}', yet the pattern matched and the option is required")
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {
                         return InsertOptionResult.OK
