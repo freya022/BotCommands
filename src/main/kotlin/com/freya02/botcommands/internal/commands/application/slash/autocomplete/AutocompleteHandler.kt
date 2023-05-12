@@ -38,7 +38,7 @@ internal class AutocompleteHandler(
 
     init {
         methodParameters = slashCmdOptionAggregateBuilders.transform<SlashCommandOptionAggregateBuilder, _> {
-            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it)
+            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, method)
         }
 
         compositeParameters = methodParameters

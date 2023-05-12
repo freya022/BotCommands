@@ -6,15 +6,18 @@ import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.CommandOptions
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandParameter
+import kotlin.reflect.KFunction
 
 abstract class AbstractSlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
-    optionAggregateBuilder: SlashCommandOptionAggregateBuilder
+    optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
+    owningFunction: KFunction<*>
 ) : ApplicationCommandParameter(slashCommandInfo.context, optionAggregateBuilder) {
     final override val commandOptions = CommandOptions.transform(
         slashCommandInfo.context,
         optionAggregateBuilder,
+        owningFunction = owningFunction,
         object : CommandOptions.Configuration<SlashCommandOptionBuilder, SlashParameterResolver<*, *>> {
             override fun transformOption(
                 optionBuilder: SlashCommandOptionBuilder,

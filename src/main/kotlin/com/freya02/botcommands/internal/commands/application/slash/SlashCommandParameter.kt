@@ -9,7 +9,7 @@ class SlashCommandParameter(
     slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, OptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder
-) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
+) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder, slashCommandInfo.method) {
     override fun constructOption(
         slashCommandInfo: SlashCommandInfo,
         optionAggregateBuilders: Map<String, OptionAggregateBuilder>,
