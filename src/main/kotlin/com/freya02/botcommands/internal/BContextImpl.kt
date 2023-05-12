@@ -101,8 +101,6 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
         return applicationCommandsContext
     }
 
-    //TODO default method to get configs
-
     override fun getDefaultEmbedSupplier(): DefaultEmbedSupplier {
         return _defaultEmbedSupplier
     }
