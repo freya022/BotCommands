@@ -48,32 +48,6 @@ abstract class SlashCommandInfo internal constructor(
         parameters = builder.optionAggregateBuilders.transform<SlashCommandOptionAggregateBuilder, _> {
             SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
         }
-
-        //On every autocomplete handler, check if their method parameters match up with the slash command
-        val slashOptions = parameters.flatMap { it.commandOptions }
-        slashOptions.forEach { commandOption ->
-            if (commandOption !is SlashCommandOption)
-                return@forEach
-
-            commandOption.autocompleteHandler?.let { handler ->
-                val autocompleteOptions = handler.methodParameters.flatMap { it.commandOptions }
-
-                autocompleteOptions.forEach { autocompleteOption ->
-                    val option = slashOptions.find { it.declaredName == autocompleteOption.declaredName }
-                        ?: throwUser(
-                            handler.autocompleteInfo.function,
-                            "Could not find option ${autocompleteOption.declaredName} in the slash command declaration"
-                        )
-
-                    requireUser(
-                        option.type == autocompleteOption.type,
-                        handler.autocompleteInfo.function
-                    ) {
-                        "Autocomplete parameter type should be the same as the slash command one, slash command type: '${option.type.simpleName}', autocomplete type: '${autocompleteOption.type.simpleName}'"
-                    }
-                }
-            }
-        }
     }
 
     internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
