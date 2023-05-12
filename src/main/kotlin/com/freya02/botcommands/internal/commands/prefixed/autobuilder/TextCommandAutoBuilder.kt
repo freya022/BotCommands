@@ -4,11 +4,13 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
+import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
@@ -27,6 +29,7 @@ import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
@@ -172,26 +175,36 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
 
     private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
+            val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(kParameter.findDeclarationName())
+                    null -> customOption(declaredName)
                     else -> generatedOption(
-                        kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
+                        declaredName, instance.getGeneratedValueSupplier(
                             path,
                             kParameter.findOptionName().asDiscordString(),
                             ParameterType.ofType(kParameter.type)
                         )
                     )
                 }
-                else -> option(
-                    kParameter.findDeclarationName(),
-                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()
-                ) {
-                    helpExample = optionAnnotation.example.nullIfEmpty()
-                    isId = kParameter.hasAnnotation<ID>()
+                else -> {
+                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName
+                    when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                        null -> option(declaredName, optionName) {
+                            configureOption(kParameter, optionAnnotation)
+                        }
+                        else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                            configureOption(kParameter, optionAnnotation)
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
+        helpExample = optionAnnotation.example.nullIfEmpty()
+        isId = kParameter.hasAnnotation<ID>()
     }
 
     /**

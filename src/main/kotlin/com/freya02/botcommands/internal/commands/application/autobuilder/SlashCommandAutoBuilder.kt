@@ -23,6 +23,7 @@ import com.freya02.botcommands.internal.utils.LocalizationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 
 
@@ -176,13 +177,13 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         val func = metadata.func
         val path = metadata.path
 
-        var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
+            val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(kParameter.findDeclarationName())
+                    null -> customOption(declaredName)
                     else -> generatedOption(
-                        kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
+                        declaredName, instance.getGeneratedValueSupplier(
                             guild,
                             commandId,
                             path,
@@ -191,36 +192,39 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                         )
                     )
                 }
-                else -> option(
-                    kParameter.findDeclarationName(),
-                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()
-                ) {
-                    description = getEffectiveDescription(optionAnnotation)
-
-                    kParameter.findAnnotation<VarArgs>()?.let { varArgs ->
-                        this.varArgs = varArgs.value
-                        this.requiredVarArgs = varArgs.numRequired
-                    }
-
-                    kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
-                    kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
-                    kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
-
-                    kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
-                        channelTypes = enumSetOf<ChannelType>().also { types ->
-                            types += channelTypesAnnotation.value
+                else -> {
+                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.asDiscordString()
+                    when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                        null -> option(declaredName, optionName) {
+                            configureOption(guild, instance, kParameter, optionAnnotation)
+                        }
+                        else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                            configureOption(guild, instance, kParameter, optionAnnotation)
                         }
                     }
-
-                    processAutocomplete(optionAnnotation)
-
-                    usePredefinedChoices = optionAnnotation.usePredefinedChoices
-                    choices = instance.getOptionChoices(guild, path, optionName)
-
-                    optionIndex++
                 }
             }
         }
+    }
+
+    context(SlashCommandBuilder)
+    private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: AppOption) {
+        description = getEffectiveDescription(optionAnnotation)
+
+        kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
+        kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
+        kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
+
+        kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
+            channelTypes = enumSetOf<ChannelType>().also { types ->
+                types += channelTypesAnnotation.value
+            }
+        }
+
+        processAutocomplete(optionAnnotation)
+
+        usePredefinedChoices = optionAnnotation.usePredefinedChoices
+        choices = instance.getOptionChoices(guild, path, optionName)
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: AppOption) {
