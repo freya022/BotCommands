@@ -8,6 +8,12 @@ import kotlin.reflect.jvm.jvmErasure
 
 interface MethodParameter {
     val kParameter: KParameter
+    /**
+     * This is needed because autocomplete borrows the parameters and options of its slash command
+     * But autocomplete execution needs the parameters of the autocomplete handler
+     */
+    val executableParameter: KParameter
+        get() = kParameter
     val name: String
     val type: KType
     val index: Int

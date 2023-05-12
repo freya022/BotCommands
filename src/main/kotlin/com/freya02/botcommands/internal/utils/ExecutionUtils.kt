@@ -107,14 +107,14 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
                     }
                 }
             } else {
-                throwUser(parameter.kParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
+                throwUser(parameter.executableParameter.function, "Aggregated parameter couldn't be resolved at option ${parameter.name}")
             }
         }
     }
 }
 
 private operator fun MutableMap<KParameter, Any?>.set(parameter: MethodParameter, obj: Any?): Any? = obj.also {
-    this[parameter.kParameter] = obj
+    this[parameter.executableParameter] = obj
 }
 
 @Suppress("UNCHECKED_CAST")

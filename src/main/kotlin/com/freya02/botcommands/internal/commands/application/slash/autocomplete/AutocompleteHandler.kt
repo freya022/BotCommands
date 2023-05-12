@@ -37,7 +37,7 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        methodParameters = slashCmdOptionAggregateBuilders.transform<SlashCommandOptionAggregateBuilder, _> {
+        methodParameters = slashCmdOptionAggregateBuilders.filterKeys { method.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, method)
         }
 

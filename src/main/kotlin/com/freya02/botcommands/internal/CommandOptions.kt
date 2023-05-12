@@ -12,20 +12,11 @@ import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuil
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.findParameterByName
 
 object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
         context: BContextImpl,
         aggregateBuilder: OptionAggregateBuilder,
-        config: Configuration<T, R>
-    ): List<Option> = transform(context, aggregateBuilder, null, config)
-
-    internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
-        context: BContextImpl,
-        aggregateBuilder: OptionAggregateBuilder,
-        owningFunction: KFunction<*>?,
         config: Configuration<T, R>
     ): List<Option> {
         val aggregator = aggregateBuilder.aggregator
@@ -37,10 +28,7 @@ object CommandOptions {
                     "you may have forgotten to put the event as the first parameter"
         }
 
-        //Filter out options that aren't used by the owning function
-        // This is primarily used for autocomplete handlers where the slash options are passed,
-        // but only the ones used by the autocomplete handler need to be scanned
-        return options.filterKeys { owningFunction == null || owningFunction.findParameterByName(it) != null }.values.flatten().map { optionBuilder ->
+        return options.values.flatten().map { optionBuilder ->
             when (optionBuilder) {
                 is T -> {
                     val parameter = optionBuilder.innerWrappedParameter
