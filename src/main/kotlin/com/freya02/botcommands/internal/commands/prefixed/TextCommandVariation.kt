@@ -124,10 +124,7 @@ class TextCommandVariation internal constructor(
                         return InsertOptionResult.OK
                     }
 
-                    when {
-                        option.isPrimitive -> 0
-                        else -> null
-                    }
+                    option.nullValue
                 }
             }
 

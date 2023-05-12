@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuil
 import com.freya02.botcommands.internal.isPrimitive
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
+import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
@@ -49,7 +50,7 @@ interface Option {
     val isOptional: Boolean
     val declaredName: String
     val index: Int
-    val isPrimitive: Boolean
+    val nullValue: Number?
     val type: KType
 }
 
@@ -82,5 +83,20 @@ open class OptionImpl private constructor(
     final override val isVararg = optionParameter.executableFunction.isVarargAggregator() && type.jvmErasure == List::class
     final override val declaredName = optionParameter.typeCheckingParameterName
     final override val index = kParameter.index
-    final override val isPrimitive = kParameter.isPrimitive
+    final override val nullValue = when {
+        kParameter.isNullable -> null
+        kParameter.isPrimitive -> primitiveDefaultValue(type.jvmErasure)
+        else -> null
+    }
 }
+
+private val primitiveDefaultValues: Map<KClass<out Number>, Number> = mapOf(
+    Byte::class to 0.toByte(),
+    Short::class to 0.toShort(),
+    Int::class to 0,
+    Long::class to 0L,
+    Float::class to 0.0F,
+    Double::class to 0.0
+)
+
+internal fun primitiveDefaultValue(clazz: KClass<*>) = primitiveDefaultValues[clazz]!!

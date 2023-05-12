@@ -42,10 +42,7 @@ fun tryInsertNullableOption(value: Any?, event: Event, option: Option, optionMap
             //Kotlin default value, don't add anything to the parameters map
         } else {
             //Nullable
-            optionMap[option] = when {
-                option.isPrimitive -> 0
-                else -> null
-            }
+            optionMap[option] = option.nullValue
         }
     } else {
         //TODO might need testing
