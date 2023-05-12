@@ -137,6 +137,6 @@ class ModalHandlerInfo(
             else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
         }
 
-        return tryInsertNullableOption(value, event, option, optionMap)
+        return tryInsertNullableOption(value, option, optionMap)
     }
 }

@@ -183,6 +183,6 @@ internal class ComponentsListener(
             else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
         }
 
-        return tryInsertNullableOption(value, event, option, optionMap)
+        return tryInsertNullableOption(value, option, optionMap)
     }
 }

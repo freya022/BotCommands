@@ -133,7 +133,7 @@ abstract class SlashCommandInfo internal constructor(
             }
         }
 
-        return tryInsertNullableOption(value, event, option, optionMap)
+        return tryInsertNullableOption(value, option, optionMap)
     }
 
     companion object {

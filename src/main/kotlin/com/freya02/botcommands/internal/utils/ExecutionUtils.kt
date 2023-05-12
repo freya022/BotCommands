@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashCommandOption
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
@@ -11,7 +10,6 @@ import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
@@ -30,7 +28,7 @@ inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>
     }
 }
 
-fun tryInsertNullableOption(value: Any?, event: Event, option: Option, optionMap: MutableMap<Option, Any?>): InsertOptionResult {
+fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<Option, Any?>): InsertOptionResult {
     if (value != null) {
         optionMap[option] = value
         return InsertOptionResult.OK
@@ -45,9 +43,8 @@ fun tryInsertNullableOption(value: Any?, event: Event, option: Option, optionMap
             optionMap[option] = option.nullValue
         }
     } else {
-        //TODO might need testing
-        if (event is SlashCommandInteractionEvent)
-            throwUser("Slash parameter couldn't be resolved at option ${option.declaredName} (${(option as SlashCommandOption).discordName})")
+        //Value is null and is required
+        throwUser(option.optionParameter.typeCheckingFunction, "Option #${option.index} (${option.declaredName}) couldn't be resolved, this could be due to a faulty ICustomResolver")
     }
 
     return InsertOptionResult.SKIP
