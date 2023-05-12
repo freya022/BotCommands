@@ -76,7 +76,7 @@ internal class AutocompleteHandler(
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        val objects = slashCommandInfo.getSlashOptions(event, methodParameters, ignoreUnresolvableParameters = true)
+        val objects = slashCommandInfo.getSlashOptions(event, methodParameters)
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)

@@ -56,7 +56,7 @@ abstract class SlashCommandInfo internal constructor(
             else -> GlobalSlashEventImpl(context, jdaEvent)
         }
 
-        val objects = getSlashOptions(event, parameters, ignoreUnresolvableParameters = false) ?: return false
+        val objects = getSlashOptions(event, parameters) ?: return false
 
         cooldownService.applyCooldown(this, event)
 
@@ -68,11 +68,10 @@ abstract class SlashCommandInfo internal constructor(
     context(IExecutableInteractionInfo)
     internal suspend fun <T> getSlashOptions(
         event: T,
-        methodParameters: List<AbstractSlashCommandParameter>,
-        ignoreUnresolvableParameters: Boolean
+        methodParameters: List<AbstractSlashCommandParameter>
     ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
         val optionValues = methodParameters.mapOptions { option ->
-            if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT && !ignoreUnresolvableParameters)
+            if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
                 return null
         }
 
@@ -108,7 +107,10 @@ abstract class SlashCommandInfo internal constructor(
                             "The parameter '${option.declaredName}' of value '${optionMapping.asString}' could not be resolved into a ${option.type.jvmErasure.simpleNestedName}"
                         }
 
-                        return InsertOptionResult.ABORT
+                        return when {
+                            option.isOptional || option.isVararg -> InsertOptionResult.SKIP
+                            else -> InsertOptionResult.ABORT
+                        }
                     }
 
                     resolved
