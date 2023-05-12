@@ -146,6 +146,8 @@ internal object SlashUtils {
     }
 
     internal inline fun <reified T> ApplicationCommandBuilder<*>.checkEventScope() {
+        if (function.isFakeSlashFunction()) return
+
         val firstParamKlass = function.valueParameters.first().type.jvmErasure
         if (topLevelBuilder.scope.isGuildOnly) {
             if (!firstParamKlass.isSubclassOf(T::class)) {
