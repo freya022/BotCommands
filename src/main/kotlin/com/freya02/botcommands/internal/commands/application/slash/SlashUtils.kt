@@ -10,11 +10,13 @@ import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.valueParameters
@@ -22,10 +24,12 @@ import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal object SlashUtils {
-    val fakeSlashFunction = ::fakeFunction
+    val fakeSlashFunction = SlashUtils::fakeFunction.reflectReference()
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
+    @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
+    fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
+
+    fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
     context(IExecutableInteractionInfo)
     inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
