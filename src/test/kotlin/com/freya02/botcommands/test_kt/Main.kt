@@ -4,10 +4,6 @@ import com.freya02.botcommands.api.core.BBuilder
 import com.freya02.botcommands.test.BasicSettingsProvider
 import com.freya02.botcommands.test.Config
 import com.freya02.botcommands.test.TestDB
-import com.freya02.botcommands.test_kt.commands.message.MessageContextRaw
-import com.freya02.botcommands.test_kt.commands.slash.*
-import com.freya02.botcommands.test_kt.commands.text.TextVararg
-import com.freya02.botcommands.test_kt.commands.user.UserContextInfo
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
@@ -38,24 +34,12 @@ object Main {
         BBuilder.newBuilder(manager) {
             disableExceptionsInDMs = true
 
-//            addSearchPath("com.freya02.botcommands.test_kt")
-            addSearchPath("com.freya02.botcommands.test_kt.resolvers")
-            addSearchPath("com.freya02.botcommands.test_kt.services")
+            addSearchPath("com.freya02.botcommands.test_kt")
 
             //Still kept in the java test package
             addClass<Config>()
             addClass<TestDB>()
             addClass<BasicSettingsProvider>()
-
-            addClass<SlashLength>()
-            addClass<SlashForumTest>()
-            addClass<SlashNewButtons>()
-            addClass<SlashModal>()
-            addClass<SlashVararg>()
-            addClass<UserContextInfo>()
-            addClass<MessageContextRaw>()
-            addClass<TextVararg>()
-            addClass<SlashLocalization>()
 
             components {
                 useComponents = true
