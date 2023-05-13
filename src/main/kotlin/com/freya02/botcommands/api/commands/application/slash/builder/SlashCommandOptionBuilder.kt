@@ -13,7 +13,6 @@ import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
-import net.dv8tion.jda.internal.utils.Checks
 import java.util.*
 import kotlin.reflect.KFunction
 
@@ -23,15 +22,6 @@ class SlashCommandOptionBuilder(
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {
     var description: String = "No description"
-
-    @Deprecated("Replaced with aggregates")
-    var varArgs: Int = -1
-    @Deprecated("Replaced with aggregates")
-    var requiredVarArgs: Int = 0
-        set(value) {
-            Checks.check(value <= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
-            field = value
-        }
 
     /**
      * Required for [SlashParameterResolver.getPredefinedChoices] to be used.

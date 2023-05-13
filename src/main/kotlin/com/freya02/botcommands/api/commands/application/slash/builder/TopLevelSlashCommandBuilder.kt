@@ -29,9 +29,9 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val allowOptions: Boolean
         get() = subcommands.isEmpty() && subcommandGroups.isEmpty()
     override val allowSubcommands: Boolean
-        get() = commandOptionBuilders.isEmpty()
+        get() = optionAggregateBuilders.isEmpty()
     override val allowSubcommandGroups: Boolean
-        get() = commandOptionBuilders.isEmpty()
+        get() = optionAggregateBuilders.isEmpty()
 
     @JvmOverloads
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {

@@ -13,6 +13,6 @@ class TextSubcommandBuilder internal constructor(context: BContextImpl, name: St
             "Text command should have at least 1 variation"
         }
 
-        return TextSubcommandInfo(context, this, parentInstance)
+        return TextSubcommandInfo(this, parentInstance)
     }
 }

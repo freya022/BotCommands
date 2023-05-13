@@ -16,7 +16,7 @@ class AutocompleteCommandOption(
     val isCompositeKey = optionBuilder.parameter.hasAnnotation<CompositeKey>()
 
     init {
-        if (optionBuilder.type.jvmErasure.isSubclassOf(IMentionable::class)) {
+        if (optionBuilder.parameter.type.jvmErasure.isSubclassOf(IMentionable::class)) {
             throw IllegalArgumentException("Autocomplete parameters cannot have an entity (anything extending IMentionable) as a value")
         }
     }

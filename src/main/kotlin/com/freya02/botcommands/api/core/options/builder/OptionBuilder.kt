@@ -15,9 +15,8 @@ abstract class OptionBuilder(
     /**
      * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options
      */
+    @get:JvmSynthetic
     internal val parameter = optionParameter.typeCheckingParameter
-    @Deprecated("Use 'parameter' instead, beware of array types")
-    internal val type = parameter.type
 
     companion object {
         internal inline fun <reified T : OptionBuilder> Map<String, OptionBuilder>.findOption(name: String, builderDescription: String): T {

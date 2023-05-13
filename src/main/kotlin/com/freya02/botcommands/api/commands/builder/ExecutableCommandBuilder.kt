@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.builder
 
-import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
@@ -12,10 +11,6 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder, R> internal 
     function: KFunction<R>
 ) : CommandBuilder(name), IBuilderFunctionHolder<R> {
     final override val function: KFunction<R> = function.reflectReference()
-
-    @Deprecated("Replaced with optionAggregateBuilders")
-    @get:JvmSynthetic
-    internal val commandOptionBuilders: MutableMap<String, CommandOptionBuilder> = mutableMapOf()
 
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function, ::constructAggregate)
 
