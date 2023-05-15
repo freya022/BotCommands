@@ -14,15 +14,15 @@ open class OptionAggregateBuilder internal constructor(
     // using MethodHandle#invoke, transforming *at most* one array parameter with MH#asCollector
     aggregator: KFunction<*>
 ) {
+    @get:JvmSynthetic
+    internal val aggregator: KFunction<*> = aggregator.reflectReference()
+    @get:JvmSynthetic
+    internal val parameter = aggregatorParameter.typeCheckingParameter
+
     private val _optionBuilders: MutableMap<String, MutableList<OptionBuilder>> = mutableMapOf()
     @get:JvmSynthetic
     internal val optionBuilders: Map<String, List<OptionBuilder>>
         get() = _optionBuilders
-    @get:JvmSynthetic
-    internal val parameter = aggregatorParameter.typeCheckingParameter
-
-    @get:JvmSynthetic
-    internal val aggregator: KFunction<*> = aggregator.reflectReference()
 
     init {
         //Do not check return type of trusted aggregators
