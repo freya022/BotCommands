@@ -13,7 +13,7 @@ class ComponentHandlerParameter(
     aggregateBuilder: OptionAggregateBuilder
 ) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {
     override val aggregator: KFunction<*> = aggregateBuilder.aggregator
-    override val aggregatorInstance: Any = context.serviceContainer.getFunctionService(aggregator)
+    override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)
 
     override val commandOptions = CommandOptions.transform(
         context,

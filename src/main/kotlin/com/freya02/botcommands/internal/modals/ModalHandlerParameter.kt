@@ -12,7 +12,7 @@ class ModalHandlerParameter(
     aggregateBuilder: OptionAggregateBuilder
 ) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {
     override val aggregator = aggregateBuilder.aggregator
-    override val aggregatorInstance = context.serviceContainer.getFunctionService(aggregator)
+    override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)
 
     override val commandOptions = CommandOptions.transform(
         context,

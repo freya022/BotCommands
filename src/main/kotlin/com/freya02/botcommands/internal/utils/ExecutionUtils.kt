@@ -74,7 +74,10 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
         }
     } else {
         val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
-        aggregatorArguments[aggregator.instanceParameter!!] = parameter.aggregatorInstance
+        aggregator.instanceParameter?.let { instanceParameter ->
+            aggregatorArguments[instanceParameter] = parameter.aggregatorInstance
+                ?: throwInternal(aggregator, "Aggregator's instance parameter was not retrieved but was necessary")
+        }
         aggregatorArguments[aggregator.valueParameters.first()] = event
 
         for (option in parameter.commandOptions) {

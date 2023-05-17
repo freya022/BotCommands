@@ -5,7 +5,10 @@ import kotlin.reflect.KFunction
 
 interface IAggregatedParameter : MethodParameter {
     val aggregator: KFunction<*>
-    val aggregatorInstance: Any
+    /**
+     * Nullable to accommodate for constructor aggregators (they are not tied to classes)
+     */
+    val aggregatorInstance: Any?
 
     //TODO rename to "options", not all options are command inputs
     val commandOptions: List<Option>

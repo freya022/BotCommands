@@ -10,5 +10,5 @@ abstract class CommandParameter(
     optionAggregateBuilder: OptionAggregateBuilder
 ) : MethodParameterImpl(optionAggregateBuilder.parameter), IAggregatedParameter {
     final override val aggregator = optionAggregateBuilder.aggregator
-    final override val aggregatorInstance = context.serviceContainer.getFunctionService(aggregator)
+    final override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)
 }
