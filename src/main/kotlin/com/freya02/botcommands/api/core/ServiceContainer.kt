@@ -10,8 +10,9 @@ import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.ReflectionMetadataAccessor
 import com.freya02.botcommands.internal.utils.ReflectionUtils.hasAtMostOneServiceAnnotation
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -29,8 +30,9 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.*
-import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
@@ -240,11 +242,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 //        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
-    fun getFunctionService(function: KFunction<*>): Any {
-        return when {
-            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
-            else -> getService(function.javaMethod!!.declaringClass)
-        }
+    fun getFunctionService(function: KFunction<*>): Any = when {
+        function.isConstructor -> throwInternal("$function: Tried to get a function's instance but was a constructor, this should have been checked beforehand")
+        function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
+        else -> getService(ReflectionMetadataAccessor.getFunctionDeclaringClass(function))
+    }
+
+    fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
+        function.isConstructor || function.isStatic -> null
+        else -> getService(ReflectionMetadataAccessor.getFunctionDeclaringClass(function))
     }
 
     fun <T : Any> putService(t: T) {

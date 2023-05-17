@@ -14,7 +14,6 @@ import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -39,21 +38,17 @@ internal object ReflectionUtils {
             throwUser("$this : Function needs to be public")
         }
 
-        if (this.isStatic) {
-            throwUser(this, "Function must not be static")
+        requireUser(this.isConstructor || !this.isStatic, this) {
+            "Function must not be static"
         }
 
         synchronized(reflectedMap) {
             return reflectedMap.computeIfAbsent(this) {
                 return@computeIfAbsent when (this) { //Try to match the original function
                     is CallableReference -> {
-                        (owner as KClass<*>).declaredMemberFunctions.find {//Don't use bound receiver, might be null somehow
-                            it.name == name
-                                    && it.nonInstanceParameters.zip(nonInstanceParameters).all { param ->
-                                param.first.name == param.second.name
-                                        && param.first.type == param.second.type
-                            }
-                        } ?: throwInternal("Unable to reflect function reference: $this")
+                        (owner as KClass<*>).declaredMemberFunctions.findFunction(this)
+                            ?: (owner as KClass<*>).constructors.findFunction(this)
+                            ?: throwInternal("Unable to reflect function reference: $this")
                     }
 
                     else -> this
@@ -62,12 +57,22 @@ internal object ReflectionUtils {
         }
     }
 
-    internal val KFunction<*>.nonInstanceParameters
+    private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
+        this.find { kFunction ->
+            if (kFunction.name != callableReference.name) return@find false
+            if (kFunction.nonInstanceParameters.size != callableReference.nonInstanceParameters.size) return@find false
+
+            return@find kFunction.nonInstanceParameters.zip(callableReference.nonInstanceParameters).all { (first, second) ->
+                first.type == second.type
+            }
+        }
+
+    internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
 
     internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
-            val declaringClassName = this.javaMethod?.declaringClass?.simpleNestedName ?: "<no-java-method>"
+            val declaringClassName = this.javaMethodOrConstructorOrNull?.declaringClass?.simpleNestedName ?: "<no-java-method>"
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleNestedName }
             return "$declaringClassName#$methodName($parameters)"
@@ -76,7 +81,7 @@ internal object ReflectionUtils {
     internal val KFunction<*>.shortSignature: String
         get() {
             val returnType = this.returnType.simpleName
-            val source = this.javaMethod.let { method ->
+            val source = this.javaMethodOrConstructorOrNull.let { method ->
                 return@let when {
                     method != null && this.lineNumber != 0 -> {
                         val sourceFile = method.declaringClass.sourceFile

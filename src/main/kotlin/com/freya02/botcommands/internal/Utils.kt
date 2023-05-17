@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Executable
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -22,6 +23,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
@@ -179,7 +181,16 @@ val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
 val KFunction<*>.isStatic: Boolean
-    get() = Modifier.isStatic(this.javaMethod!!.modifiers)
+    get() = !isConstructor && Modifier.isStatic(this.javaMethodInternal.modifiers)
+
+val KFunction<*>.isConstructor: Boolean
+    get() = this.javaConstructor != null
+
+val KFunction<*>.javaMethodOrConstructor: Executable
+    get() = javaMethod ?: javaConstructor ?: throwInternal("Could not resolve Java method or constructor for $this")
+
+val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
+    get() = javaMethod ?: javaConstructor
 
 val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal("Could not resolve Java method for $this")
