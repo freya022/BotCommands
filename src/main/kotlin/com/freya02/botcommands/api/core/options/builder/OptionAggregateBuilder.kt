@@ -37,6 +37,10 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
         _nestedAggregates.aggregate(declaredName, aggregator, block)
     }
 
+    protected fun nestedVarargAggregate(declaredName: String, block: T.() -> Unit) {
+        _nestedAggregates.varargAggregate(declaredName, block)
+    }
+
     //TODO should add self/vararg ?
 
     protected abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
