@@ -27,14 +27,12 @@ internal sealed class BaseAutocompleteCache(cacheInfo: AutocompleteCacheInfo) : 
 
         optionValues.add(event.focusedOption.value)
 
-        autocompleteHandler.compositeParameters.forEach { parameter ->
-            val optionName = parameter.discordName
-            val option = event.getOption(optionName)
+        autocompleteHandler.compositeOptions.forEach { option ->
+            val optionName = option.discordName
+            if (event.focusedOption.name == optionName) return@forEach
 
-            when {
-                option == null -> optionValues.add("null")
-                event.focusedOption.name != optionName -> optionValues.add(option.asString)
-            }
+            val optionValue = event.getOption(optionName)?.asString ?: "null"
+            optionValues.add(optionValue)
         }
 
         return optionValues.toTypedArray()

@@ -29,7 +29,7 @@ internal class AutocompleteHandler(
         get() = methodParameters
 
     internal val methodParameters: List<AutocompleteCommandParameter>
-    internal val compositeParameters: List<AutocompleteCommandOption>
+    internal val compositeOptions: List<AutocompleteCommandOption>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
@@ -40,7 +40,7 @@ internal class AutocompleteHandler(
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, method)
         }
 
-        compositeParameters = methodParameters
+        compositeOptions = methodParameters
             .flatMap { it.allOptions }
             .filter { it.optionType == OptionType.OPTION }
             .map { it as AutocompleteCommandOption }
