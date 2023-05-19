@@ -11,8 +11,6 @@ import kotlin.reflect.KFunction
 
 abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal constructor(
     val aggregatorParameter: AggregatorParameter,
-    //The framework could just try to push the data it had declared in the DSL
-    // using MethodHandle#invoke, transforming *at most* one array parameter with MH#asCollector
     aggregator: KFunction<*>
 ) {
     @get:JvmSynthetic
