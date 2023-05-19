@@ -25,7 +25,7 @@ object CommandOptions {
 
         val expectedOptions = aggregator.nonInstanceParameters.size - aggregateBuilder.nestedAggregates.size - 1
         requireUser(options.size == expectedOptions, aggregator) {
-            "Aggregator should have the same number of options as there is options declared, $expectedOptions options were declared but ${options.size} were found in the aggregator, " +
+            "Aggregator should have the same number of options as there is options declared, $expectedOptions options were found in the aggregator but ${options.size} were declared, " +
                     "you may have forgotten to put the event as the first parameter"
         }
 
