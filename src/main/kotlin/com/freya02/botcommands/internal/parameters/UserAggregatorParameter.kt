@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.findDeclarationName
+import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
@@ -16,7 +17,7 @@ internal class UserAggregatorParameter(
 
     init {
         if (this.typeCheckingFunction.isSpecialAggregator()) {
-            throwInternal("Tried to use the internal single aggregator as a type checking function")
+            throwInternal("Tried to use a special aggregator in a ${javaClass.simpleNestedName}: ${this.typeCheckingFunction}")
         }
     }
 
