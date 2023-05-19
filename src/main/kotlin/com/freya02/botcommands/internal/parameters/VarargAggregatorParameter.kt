@@ -3,11 +3,13 @@ package com.freya02.botcommands.internal.parameters
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.findDeclarationName
+import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
+import kotlin.reflect.jvm.jvmErasure
 
 internal class VarargAggregatorParameter(
     commandFunction: KFunction<*>,
@@ -20,6 +22,10 @@ internal class VarargAggregatorParameter(
     init {
         if (this.typeCheckingFunction.isSpecialAggregator()) {
             throwInternal("Tried to use a special aggregator in a ${javaClass.simpleNestedName}: ${this.typeCheckingFunction}")
+        }
+
+        requireUser(typeCheckingParameter.type.jvmErasure == List::class, typeCheckingFunction) {
+            "Vararg parameter '$typeCheckingParameterName' must be a List"
         }
     }
 

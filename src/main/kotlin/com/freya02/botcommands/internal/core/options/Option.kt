@@ -82,7 +82,7 @@ open class OptionImpl private constructor(
             else -> kParameter.isNullable || kParameter.isOptional
         }
     }
-    final override val isVararg = optionParameter.executableFunction.isVarargAggregator() && type.jvmErasure == List::class
+    final override val isVararg = optionParameter.executableFunction.isVarargAggregator()
     final override val declaredName = optionParameter.typeCheckingParameterName
     final override val index = kParameter.index
     final override val nullValue = when {
