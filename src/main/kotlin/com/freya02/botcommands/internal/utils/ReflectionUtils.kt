@@ -38,7 +38,7 @@ internal object ReflectionUtils {
             throwUser("$this : Function needs to be public")
         }
 
-        requireUser(this.isConstructor || !this.isStatic, this) {
+        requireUser(this.isConstructor || !this.isStatic || this.javaMethodOrConstructor.declaringClass.kotlin.isValue, this) {
             "Function must not be static"
         }
 
