@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 class UserCommandOptionAggregateBuilder(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
-) : ApplicationCommandOptionAggregateBuilder(aggregatorParameter, aggregator) {
+) : ApplicationCommandOptionAggregateBuilder<UserCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     fun option(declaredName: String) {
         this += UserCommandOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName))
     }
@@ -22,4 +22,7 @@ class UserCommandOptionAggregateBuilder(
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
         this += ApplicationGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
+
+    override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
+        UserCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
 }

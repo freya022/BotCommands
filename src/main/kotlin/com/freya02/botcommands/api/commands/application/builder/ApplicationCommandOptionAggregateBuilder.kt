@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
-abstract class ApplicationCommandOptionAggregateBuilder(
+abstract class ApplicationCommandOptionAggregateBuilder<T : ApplicationCommandOptionAggregateBuilder<T>>(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
-) : CommandOptionAggregateBuilder(aggregatorParameter, aggregator) {
+) : CommandOptionAggregateBuilder<T>(aggregatorParameter, aggregator) {
     abstract fun customOption(declaredName: String)
 
     abstract fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier)

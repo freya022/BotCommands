@@ -6,7 +6,7 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
-abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder, R> internal constructor(
+abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> internal constructor(
     name: String,
     function: KFunction<R>
 ) : CommandBuilder(name), IBuilderFunctionHolder<R> {
@@ -15,7 +15,7 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder, R> internal 
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function, ::constructAggregate)
 
     @get:JvmSynthetic
-    internal val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder>
+    internal val optionAggregateBuilders: MutableMap<String, T>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
     /**

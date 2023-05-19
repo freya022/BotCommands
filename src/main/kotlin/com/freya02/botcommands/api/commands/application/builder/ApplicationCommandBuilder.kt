@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITo
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
 import kotlin.reflect.KFunction
 
-abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder> internal constructor(
+abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
     name: String,
     function: KFunction<Any>
 ) : ExecutableCommandBuilder<T, Any>(name, function) {

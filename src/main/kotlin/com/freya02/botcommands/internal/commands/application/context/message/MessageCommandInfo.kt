@@ -1,10 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.context.message
 
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
-import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.context.message.mixins.ITopLevelMessageCommandInfo
@@ -16,6 +15,9 @@ import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.requireFirstParam
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
@@ -39,7 +41,7 @@ class MessageCommandInfo internal constructor(
 
         builder.checkEventScope<GuildMessageEvent>()
 
-        parameters = builder.optionAggregateBuilders.transform<MessageCommandOptionAggregateBuilder, _> {
+        parameters = builder.optionAggregateBuilders.transform {
             MessageContextCommandParameter(context, it)
         }
     }

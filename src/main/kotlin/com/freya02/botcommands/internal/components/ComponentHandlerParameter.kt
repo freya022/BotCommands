@@ -10,7 +10,7 @@ import kotlin.reflect.KFunction
 
 class ComponentHandlerParameter(
     context: BContextImpl,
-    aggregateBuilder: OptionAggregateBuilder
+    aggregateBuilder: OptionAggregateBuilder<*>
 ) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {
     override val aggregator: KFunction<*> = aggregateBuilder.aggregator
     override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)

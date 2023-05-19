@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
-import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
@@ -23,7 +22,7 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     @get:JvmSynthetic
-    internal val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder>
+    internal val optionAggregateBuilders: MutableMap<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
     /**

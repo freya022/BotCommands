@@ -13,7 +13,7 @@ class SlashCommandOptionAggregateBuilder(
     private val context: BContextImpl,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
-) : ApplicationCommandOptionAggregateBuilder(aggregatorParameter, aggregator) {
+) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     @JvmOverloads
     fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         this += SlashCommandOptionBuilder(context, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
@@ -26,4 +26,7 @@ class SlashCommandOptionAggregateBuilder(
     override fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
         this += ApplicationGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
+
+    override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
+        SlashCommandOptionAggregateBuilder(context, aggregatorParameter, aggregator)
 }

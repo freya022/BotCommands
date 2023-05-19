@@ -6,5 +6,5 @@ import com.freya02.botcommands.internal.commands.CommandParameter
 
 abstract class ApplicationCommandParameter(
     context: BContextImpl,
-    optionAggregateBuilder: ApplicationCommandOptionAggregateBuilder
+    optionAggregateBuilder: ApplicationCommandOptionAggregateBuilder<*>
 ) : CommandParameter(context, optionAggregateBuilder)

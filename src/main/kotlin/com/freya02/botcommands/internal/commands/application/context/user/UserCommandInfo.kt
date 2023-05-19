@@ -1,10 +1,9 @@
 package com.freya02.botcommands.internal.commands.application.context.user
 
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
-import com.freya02.botcommands.api.commands.application.context.builder.UserCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
@@ -16,6 +15,9 @@ import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.requireFirstParam
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
@@ -39,7 +41,7 @@ class UserCommandInfo internal constructor(
 
         builder.checkEventScope<GuildUserEvent>()
 
-        parameters = builder.optionAggregateBuilders.transform<UserCommandOptionAggregateBuilder, _> {
+        parameters = builder.optionAggregateBuilders.transform {
             UserContextCommandParameter(context, it)
         }
     }

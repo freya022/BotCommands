@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.parameters.MethodParameterImpl
 
 abstract class CommandParameter(
     context: BContextImpl,
-    optionAggregateBuilder: OptionAggregateBuilder
+    optionAggregateBuilder: OptionAggregateBuilder<*>
 ) : MethodParameterImpl(optionAggregateBuilder.parameter), IAggregatedParameter {
     final override val aggregator = optionAggregateBuilder.aggregator
     final override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)

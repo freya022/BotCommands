@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.parameters.MethodParameterImpl
 
 class ModalHandlerParameter(
     context: BContextImpl,
-    aggregateBuilder: OptionAggregateBuilder
+    aggregateBuilder: OptionAggregateBuilder<*>
 ) : MethodParameterImpl(aggregateBuilder.parameter), IAggregatedParameter {
     override val aggregator = aggregateBuilder.aggregator
     override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)

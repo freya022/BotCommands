@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal.commands.application.slash
 
 import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.enumSetOf
@@ -14,7 +14,7 @@ import java.util.*
 
 class SlashCommandOption(
     slashCommandInfo: SlashCommandInfo,
-    optionAggregateBuilders: Map<String, OptionAggregateBuilder>,
+    optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionBuilder: SlashCommandOptionBuilder,
     resolver: SlashParameterResolver<*, *>
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {

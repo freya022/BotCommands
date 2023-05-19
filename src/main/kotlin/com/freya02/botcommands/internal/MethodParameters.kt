@@ -13,30 +13,38 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
-internal inline fun <reified T : OptionAggregateBuilder, R> Map<String, OptionAggregateBuilder>.transform(aggregateBlock: (T) -> R) =
-    values.map {
-        if (it !is T)
-            throwInternal("Aggregates should have consisted of ${T::class.simpleNestedName} instances")
-        aggregateBlock(it)
+class BasicOptionAggregateBuilder(
+    aggregatorParameter: AggregatorParameter,
+    aggregator: KFunction<*>
+) : OptionAggregateBuilder<BasicOptionAggregateBuilder>(aggregatorParameter, aggregator) {
+    override fun constructNestedAggregate(
+        aggregatorParameter: AggregatorParameter,
+        aggregator: KFunction<*>
+    ): BasicOptionAggregateBuilder {
+        TODO("Not yet implemented")
     }
+}
+
+internal inline fun <reified T : OptionAggregateBuilder<T>, R> Map<String, T>.transform(aggregateBlock: (T) -> R) =
+    values.map(aggregateBlock)
 
 internal fun <R> List<KParameter>.transformParameters(
     builderBlock: (function: KFunction<*>, parameter: KParameter, declaredName: String) -> OptionBuilder,
-    aggregateBlock: (OptionAggregateBuilder) -> R
+    aggregateBlock: (OptionAggregateBuilder<*>) -> R
 ) = associate { parameter ->
     val declaredName = parameter.findDeclarationName()
     declaredName to when {
         parameter.hasAnnotation<Aggregate>() -> {
             val constructor = parameter.type.jvmErasure.primaryConstructor
                 ?: throwUser(parameter.function, "Found no constructor for aggregate type ${parameter.type}")
-            OptionAggregateBuilder(AggregatorParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
+            BasicOptionAggregateBuilder(AggregatorParameter.fromUserAggregate(constructor, declaredName), constructor).apply {
                 constructor.nonInstanceParameters.forEach { constructorParameter ->
                     this += builderBlock(constructor, constructorParameter, constructorParameter.findDeclarationName())
                 }
             }
         }
 
-        else -> OptionAggregateBuilder(
+        else -> BasicOptionAggregateBuilder(
             AggregatorParameter.fromSelfAggregate(parameter.function, declaredName),
             OptionAggregateBuildersImpl.theSingleAggregator
         ).apply {

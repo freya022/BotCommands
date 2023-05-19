@@ -6,11 +6,11 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
-internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder>(
+internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder<T>>(
     private val commandFunction: KFunction<*>,
     val aggregateConstructor: (aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) -> T
 ) {
-    val optionAggregateBuilders: MutableMap<String, OptionAggregateBuilder> = hashMapOf()
+    val optionAggregateBuilders: MutableMap<String, T> = hashMapOf()
 
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
         aggregate(AggregatorParameter.fromUserAggregate(commandFunction, declaredName), aggregator, block)

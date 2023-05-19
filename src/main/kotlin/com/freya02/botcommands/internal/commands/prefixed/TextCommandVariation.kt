@@ -2,15 +2,17 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
-import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
@@ -36,7 +38,7 @@ class TextCommandVariation internal constructor(
     init {
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
-        parameters = builder.optionAggregateBuilders.transform<TextCommandOptionAggregateBuilder, _> {
+        parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)
         }
 

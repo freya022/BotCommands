@@ -16,7 +16,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParamet
 object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
         context: BContextImpl,
-        aggregateBuilder: OptionAggregateBuilder,
+        aggregateBuilder: OptionAggregateBuilder<*>,
         config: Configuration<T, R>
     ): List<Option> {
         val aggregator = aggregateBuilder.aggregator
