@@ -6,14 +6,13 @@ import com.freya02.botcommands.api.commands.application.annotations.AppDeclarati
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 
 @CommandMarker
 class SlashAggregate {
     //Upcast is required as these can be constructed with either a slash command, or autocomplete
-    data class MyAggregate(val event: CommandInteractionPayload, val string: String, val int: Int, val ints: List<Int>, val nestedAggregate: NestedAggregate)
+    data class MyAggregate(val string: String, val int: Int, val ints: List<Int>, val nestedAggregate: NestedAggregate)
 
-    data class NestedAggregate(val event: CommandInteractionPayload, val bool: Boolean, val nestedDouble: Double)
+    data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
 
     @CommandMarker
     fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, autoStr: String) {

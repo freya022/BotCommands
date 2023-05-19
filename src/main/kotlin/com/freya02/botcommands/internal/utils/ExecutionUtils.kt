@@ -78,7 +78,9 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
             aggregatorArguments[instanceParameter] = parameter.aggregatorInstance
                 ?: throwInternal(aggregator, "Aggregator's instance parameter was not retrieved but was necessary")
         }
-        aggregatorArguments[aggregator.valueParameters.first()] = event
+        if (parameter.aggregatorHasEvent) {
+            aggregatorArguments[aggregator.valueParameters.first()] = event
+        }
 
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings

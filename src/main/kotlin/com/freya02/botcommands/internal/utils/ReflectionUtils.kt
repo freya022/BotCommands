@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
 import mu.KotlinLogging
+import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
@@ -69,6 +70,9 @@ internal object ReflectionUtils {
 
     internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+
+    internal val KCallable<*>.nonEventParameters
+        get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf(Event::class) }
 
     internal val KFunction<*>.shortSignatureNoSrc: String
         get() {

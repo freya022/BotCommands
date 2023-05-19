@@ -8,10 +8,11 @@ import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.core.options.Option
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 
 object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
@@ -23,8 +24,8 @@ object CommandOptions {
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
 
-        val expectedOptions = aggregator.nonInstanceParameters.size - aggregateBuilder.nestedAggregates.size - 1
-        requireUser(options.size == expectedOptions, aggregator) {
+        val expectedOptions = aggregator.nonEventParameters.size - aggregateBuilder.nestedAggregates.size
+        requireUser(aggregator.isSpecialAggregator() || options.size == expectedOptions, aggregator) {
             "Aggregator should have the same number of options as there is options declared, $expectedOptions options were found in the aggregator but ${options.size} were declared, " +
                     "you may have forgotten to put the event as the first parameter"
         }

@@ -41,10 +41,10 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder<T>>(
         fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
 
         //The types should not matter as the checks are made against the command function
-        @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
-        fun singleAggregator(event: Any, it: Any) = it
+        @Suppress("MemberVisibilityCanBePrivate")
+        fun singleAggregator(it: Any) = it
 
-        @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
-        fun varargAggregator(event: Any, args: List<Any>) = args
+        @Suppress("MemberVisibilityCanBePrivate")
+        fun varargAggregator(args: List<Any>) = args
     }
 }
