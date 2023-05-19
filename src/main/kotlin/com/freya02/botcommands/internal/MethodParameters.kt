@@ -25,7 +25,7 @@ class BasicOptionAggregateBuilder(
     }
 }
 
-internal inline fun <reified T : OptionAggregateBuilder<T>, R> Map<String, T>.transform(aggregateBlock: (T) -> R) =
+internal inline fun <reified T : OptionAggregateBuilder<*>, R> Map<String, T>.transform(aggregateBlock: (T) -> R) =
     values.map(aggregateBlock)
 
 internal fun <R> List<KParameter>.transformParameters(

@@ -30,7 +30,6 @@ class ModalHandlerInfo(
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
-    private val options: List<Option>
     private val expectedModalDatas: Int
     private val expectedModalInputs: Int
 
@@ -51,7 +50,7 @@ class ModalHandlerInfo(
             aggregateBlock = { ModalHandlerParameter(context, it) }
         )
 
-        options = parameters.flatMap { it.commandOptions }
+        val options = parameters.flatMap { it.allOptions }
         expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
