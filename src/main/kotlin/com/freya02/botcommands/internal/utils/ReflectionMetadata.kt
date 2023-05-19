@@ -106,11 +106,7 @@ internal object ReflectionMetadata {
                         methodInfo.isConstructor -> methodInfo.loadClassAndGetConstructor()
                         else -> methodInfo.loadClassAndGetMethod()
                     }
-                    val nullabilities =
-                        methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
-                            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
-                                    || parameterInfo.hasAnnotation(Optional::class.java)
-                        }
+                    val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
                 }
@@ -122,6 +118,19 @@ internal object ReflectionMetadata {
         }
 
         scannedParams = true
+    }
+
+    private fun getMethodParameterNullabilities(methodInfo: MethodInfo, method: Executable): List<Boolean> {
+        val nullabilities = methodInfo.parameterInfo.dropLast(if (method.isSuspend) 1 else 0).map { parameterInfo ->
+            parameterInfo.annotationInfo.any { it.name.endsWith("Nullable") }
+                    || parameterInfo.hasAnnotation(Optional::class.java)
+        }
+
+        return when {
+            methodInfo.isStatic || methodInfo.isConstructor -> nullabilities
+            //Pad with a non-null parameter to simulate the instance parameter
+            else -> listOf(false) + nullabilities
+        }
     }
 
     internal val Class<*>.sourceFile: String
@@ -136,7 +145,7 @@ internal object ReflectionMetadata {
             val metadata = methodMetadataMap[function.javaMethodOrConstructor]
                 ?: throwUser("Tried to access a Method which hasn't been scanned: $this, the method must be accessible and in the search path")
             val isNullableAnnotated =
-                metadata.nullabilities[index - 1] // -1 because 0 is actually the instance parameter
+                metadata.nullabilities[index]
             val isNullableMarked = type.isMarkedNullable
 
             return isNullableAnnotated || isNullableMarked
