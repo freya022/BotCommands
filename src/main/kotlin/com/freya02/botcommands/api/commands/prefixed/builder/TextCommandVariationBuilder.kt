@@ -2,14 +2,13 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
-import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.asDiscordString
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.primaryConstructor
 
 class TextCommandVariationBuilder internal constructor(
     private val context: BContextImpl,
@@ -33,6 +32,21 @@ class TextCommandVariationBuilder internal constructor(
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
         }
+    }
+
+    fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: Class<*>, block: TextCommandOptionBuilder.() -> Unit) {
+        val aggregatorConstructor = clazz.kotlin.primaryConstructor
+            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+        aggregate(declaredName, aggregatorConstructor) {
+            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+            option(parameterName, optionName ?: parameterName.asDiscordString(), block)
+        }
+    }
+
+    @JvmSynthetic
+    inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: TextCommandOptionBuilder.() -> Unit) {
+        inlineClassOption(declaredName, optionName, T::class.java, block)
     }
 
     @JvmOverloads

@@ -1,14 +1,13 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
-import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
-import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.primaryConstructor
 
 abstract class SlashCommandBuilder internal constructor(
     protected val context: BContextImpl,
@@ -33,6 +32,21 @@ abstract class SlashCommandBuilder internal constructor(
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
         }
+    }
+
+    fun inlineClassOption(declaredName: String, optionName: String? = null, clazz: Class<*>, block: SlashCommandOptionBuilder.() -> Unit) {
+        val aggregatorConstructor = clazz.kotlin.primaryConstructor
+            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+        aggregate(declaredName, aggregatorConstructor) {
+            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+            option(parameterName, optionName ?: parameterName.asDiscordString(), block)
+        }
+    }
+
+    @JvmSynthetic
+    inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: SlashCommandOptionBuilder.() -> Unit) {
+        inlineClassOption(declaredName, optionName, T::class.java, block)
     }
 
     @JvmOverloads

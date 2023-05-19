@@ -9,18 +9,21 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 
 @CommandMarker
 class SlashAggregate {
+    @JvmInline
+    value class MyInlineString(val yes: String)
+
     //Upcast is required as these can be constructed with either a slash command, or autocomplete
     data class MyAggregate(val string: String, val int: Int, val ints: List<Int>, val nestedAggregate: NestedAggregate)
 
     data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
 
     @CommandMarker
-    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, autoStr: String) {
-        event.reply_(agg.toString(), ephemeral = true).queue()
+    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, inlineAutoStr: MyInlineString) {
+        event.reply_("$agg + $inlineAutoStr", ephemeral = true).queue()
     }
 
     @CommandMarker
-    fun onAutoStrAutocomplete(event: CommandAutoCompleteInteractionEvent, agg: MyAggregate) =
+    fun onInlineAutoStrAutocomplete(event: CommandAutoCompleteInteractionEvent, agg: MyAggregate) =
         listOf(agg.toString().substring(0..<100))
 
     @AppDeclaration
@@ -38,8 +41,8 @@ class SlashAggregate {
                 }
             }
 
-            option("autoStr") {
-                autocomplete("SlashAggregate: autoStr", ::onAutoStrAutocomplete) {
+            inlineClassOption<MyInlineString>("inlineAutoStr") {
+                autocomplete("SlashAggregate: inlineAutoStr", ::onInlineAutoStrAutocomplete) {
                     this.showUserInput = false
                 }
             }

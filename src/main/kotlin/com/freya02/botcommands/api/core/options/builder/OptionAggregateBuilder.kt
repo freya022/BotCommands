@@ -41,8 +41,6 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
         _nestedAggregates.varargAggregate(declaredName, block)
     }
 
-    //TODO should add self/vararg ?
-
     protected abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 
     @JvmSynthetic
