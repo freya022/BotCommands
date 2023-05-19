@@ -10,7 +10,7 @@ import dev.minn.jda.ktx.messages.reply_
 class SlashAggregate {
     data class MyAggregate(val event: GuildSlashEvent, val string: String, val int: Int, val nestedAggregate: NestedAggregate)
 
-    data class NestedAggregate(val event: GuildSlashEvent, val bool: Boolean)
+    data class NestedAggregate(val event: GuildSlashEvent, val bool: Boolean, val nestedDouble: Double)
 
     @CommandMarker
     fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate) {
@@ -25,6 +25,7 @@ class SlashAggregate {
                 option("int")
 
                 nestedAggregate("nestedAggregate", ::NestedAggregate) {
+                    option("nestedDouble")
                     generatedOption("bool") { true }
                 }
             }

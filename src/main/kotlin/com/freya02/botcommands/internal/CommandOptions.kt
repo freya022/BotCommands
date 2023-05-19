@@ -23,8 +23,9 @@ object CommandOptions {
         val options = aggregateBuilder.optionBuilders
         val resolverContainer = context.getService<ResolverContainer>()
 
-        requireUser(options.size == aggregator.nonInstanceParameters.size - 1, aggregator) {
-            "Aggregator should have the same number of parameters as there is options, found ${options.size} options and ${aggregator.nonInstanceParameters.size - 1} parameters, " +
+        val expectedOptions = aggregator.nonInstanceParameters.size - aggregateBuilder.nestedAggregates.size - 1
+        requireUser(options.size == expectedOptions, aggregator) {
+            "Aggregator should have the same number of options as there is options declared, $expectedOptions options were declared but ${options.size} were found in the aggregator, " +
                     "you may have forgotten to put the event as the first parameter"
         }
 

@@ -22,7 +22,7 @@ enum class InsertOptionResult {
 }
 
 inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
-    val options = this.flatMap { it.commandOptions }
+    val options = this.flatMap { it.allOptions }
     return buildMap(options.size) {
         options.forEach { block(it) }
     }
@@ -85,6 +85,10 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
             if (option in optionValues) {
                 aggregatorArguments[option] = optionValues[option]
             }
+        }
+
+        for (nestedAggregatedParameter in parameter.nestedAggregatedParameters) {
+            insertAggregate(event, aggregatorArguments, optionValues, nestedAggregatedParameter)
         }
 
         val aggregatedObject = aggregator.callSuspendBy(aggregatorArguments)

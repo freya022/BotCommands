@@ -32,7 +32,7 @@ object TextUtils {
 
         val prefix = event.context.prefix
         for ((i, variation) in commandInfo.variations.withIndex()) {
-            val commandOptions = variation.parameters.flatMap { it.commandOptions }.filterIsInstance<TextCommandOption>()
+            val commandOptions = variation.parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
 
             val syntax = StringBuilder("**Syntax**: $prefix$name ")
             val example = StringBuilder("**Example**: $prefix$name ")

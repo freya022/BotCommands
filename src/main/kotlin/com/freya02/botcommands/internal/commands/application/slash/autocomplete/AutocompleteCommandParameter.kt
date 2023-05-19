@@ -5,8 +5,10 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
@@ -26,6 +28,10 @@ class AutocompleteCommandParameter(
         autocompleteFunction,
         "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.method.shortSignatureNoSrc}"
     )
+
+    override val nestedAggregatedParameters: List<IAggregatedParameter> = optionAggregateBuilder.nestedAggregates.transform {
+        AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, autocompleteFunction)
+    }
 
     override fun constructOption(
         slashCommandInfo: SlashCommandInfo,

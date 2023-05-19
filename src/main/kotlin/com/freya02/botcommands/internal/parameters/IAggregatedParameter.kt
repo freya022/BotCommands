@@ -12,4 +12,9 @@ interface IAggregatedParameter : MethodParameter {
 
     //TODO rename to "options", not all options are command inputs
     val commandOptions: List<Option>
+
+    val nestedAggregatedParameters: List<IAggregatedParameter>
+
+    val allOptions: List<Option>
+        get() = commandOptions + nestedAggregatedParameters.flatMap { it.allOptions }
 }

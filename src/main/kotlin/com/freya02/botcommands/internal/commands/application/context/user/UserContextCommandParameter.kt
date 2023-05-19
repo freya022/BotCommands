@@ -6,11 +6,16 @@ import com.freya02.botcommands.api.parameters.UserContextParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.CommandOptions
 import com.freya02.botcommands.internal.commands.application.context.ContextCommandParameter
+import com.freya02.botcommands.internal.transform
 
 class UserContextCommandParameter(
     context: BContextImpl,
     optionAggregateBuilder: UserCommandOptionAggregateBuilder
 ) : ContextCommandParameter(context, optionAggregateBuilder) {
+    override val nestedAggregatedParameters = optionAggregateBuilder.nestedAggregates.transform {
+        UserContextCommandParameter(context, it)
+    }
+
     override val commandOptions = CommandOptions.transform(
         context,
         optionAggregateBuilder,

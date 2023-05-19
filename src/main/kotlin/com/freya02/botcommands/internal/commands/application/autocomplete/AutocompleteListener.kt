@@ -20,7 +20,7 @@ internal class AutocompleteListener(private val context: BContextImpl) {
                 ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
         }
 
-        for (option in slashCommand.parameters.flatMap { it.commandOptions }) {
+        for (option in slashCommand.parameters.flatMap { it.allOptions }) {
             if (option.optionType != OptionType.OPTION) continue
             option as SlashCommandOption
 

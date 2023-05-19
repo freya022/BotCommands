@@ -41,7 +41,7 @@ internal class AutocompleteHandler(
         }
 
         compositeParameters = methodParameters
-            .flatMap { it.commandOptions }
+            .flatMap { it.allOptions }
             .filter { it.optionType == OptionType.OPTION }
             .map { it as AutocompleteCommandOption }
             .filter { it.isCompositeKey }

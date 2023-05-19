@@ -8,7 +8,7 @@ import java.util.regex.Pattern
 internal object CommandPattern {
     fun of(variation: TextCommandVariation): Regex {
         val optionParameters: List<TextCommandOption> = variation.parameters
-            .flatMap { it.commandOptions }
+            .flatMap { it.allOptions }
             .filterIsInstance<TextCommandOption>()
         val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
 
