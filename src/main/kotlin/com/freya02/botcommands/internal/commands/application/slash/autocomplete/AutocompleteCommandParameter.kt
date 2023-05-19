@@ -30,7 +30,7 @@ class AutocompleteCommandParameter(
     )
 
     override val nestedAggregatedParameters: List<IAggregatedParameter> = optionAggregateBuilder.nestedAggregates.transform {
-        AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, autocompleteFunction)
+        AutocompleteCommandParameter(slashCommandInfo, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
     }
 
     override fun constructOption(
