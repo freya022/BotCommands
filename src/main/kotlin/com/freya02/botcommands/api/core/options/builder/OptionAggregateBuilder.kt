@@ -2,10 +2,8 @@ package com.freya02.botcommands.api.core.options.builder
 
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
-import com.freya02.botcommands.internal.joinWithQuote
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
 
@@ -46,15 +44,5 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
     @JvmSynthetic
     internal operator fun plusAssign(optionBuilder: OptionBuilder) {
         _optionBuilders.computeIfAbsent(optionBuilder.optionParameter.typeCheckingParameterName) { arrayListOf() }.add(optionBuilder)
-    }
-
-    companion object {
-        internal inline fun <reified T : OptionAggregateBuilder<T>> Map<String, OptionAggregateBuilder<T>>.findOption(name: String, builderDescription: String): T {
-            when (val builder = this[name]) {
-                is T -> return builder
-                null -> throwUser("Option '$name' was not found in the command declaration, declared options: ${this.keys.joinWithQuote()}")
-                else -> throwUser("Option '$name' was found in the command declaration, but $builderDescription was expected (you may have forgotten an annotation, if you are using them)")
-            }
-        }
     }
 }
