@@ -20,7 +20,7 @@ class ComponentHandlerParameter(
         ComponentHandlerParameter(context, it)
     }
 
-    override val commandOptions = CommandOptions.transform(
+    override val options = CommandOptions.transform(
         context,
         aggregateBuilder,
         object : CommandOptions.Configuration<ComponentHandlerOptionBuilder, ComponentParameterResolver<*, *>> {

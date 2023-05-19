@@ -19,7 +19,7 @@ class ModalHandlerParameter(
         ModalHandlerParameter(context, it)
     }
 
-    override val commandOptions = CommandOptions.transform(
+    override val options = CommandOptions.transform(
         context,
         aggregateBuilder,
         object : CommandOptions.Configuration<ModalHandlerInputOptionBuilder, ModalParameterResolver<*, *>> {

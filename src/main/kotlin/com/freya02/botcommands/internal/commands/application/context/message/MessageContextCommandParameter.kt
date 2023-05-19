@@ -16,7 +16,7 @@ class MessageContextCommandParameter(
         MessageContextCommandParameter(context, it)
     }
 
-    override val commandOptions = CommandOptions.transform(
+    override val options = CommandOptions.transform(
         context,
         optionAggregateBuilder,
         object : CommandOptions.Configuration<MessageCommandOptionBuilder, MessageContextParameterResolver<*, *>> {

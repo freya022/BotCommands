@@ -16,7 +16,7 @@ class UserContextCommandParameter(
         UserContextCommandParameter(context, it)
     }
 
-    override val commandOptions = CommandOptions.transform(
+    override val options = CommandOptions.transform(
         context,
         optionAggregateBuilder,
         object : CommandOptions.Configuration<UserCommandOptionBuilder, UserContextParameterResolver<*, *>> {
