@@ -5,6 +5,8 @@ import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuil
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
 import com.freya02.botcommands.internal.isPrimitive
 import com.freya02.botcommands.internal.parameters.OptionParameter
+import com.freya02.botcommands.internal.simpleNestedName
+import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -50,7 +52,7 @@ interface Option {
     val isOptional: Boolean
     val declaredName: String
     val index: Int
-    val nullValue: Number?
+    val nullValue: Any?
     val type: KType
 }
 
@@ -90,13 +92,15 @@ open class OptionImpl private constructor(
     }
 }
 
-private val primitiveDefaultValues: Map<KClass<out Number>, Number> = mapOf(
+private val primitiveDefaultValues: Map<KClass<*>, *> = mapOf(
     Byte::class to 0.toByte(),
     Short::class to 0.toShort(),
     Int::class to 0,
     Long::class to 0L,
     Float::class to 0.0F,
-    Double::class to 0.0
+    Double::class to 0.0,
+    Boolean::class to false
 )
 
-internal fun primitiveDefaultValue(clazz: KClass<*>) = primitiveDefaultValues[clazz]!!
+internal fun primitiveDefaultValue(clazz: KClass<*>) =
+    primitiveDefaultValues[clazz] ?: throwInternal("No primitive default value for ${clazz.simpleNestedName}")
