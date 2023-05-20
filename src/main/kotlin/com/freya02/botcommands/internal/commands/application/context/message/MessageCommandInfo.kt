@@ -37,7 +37,7 @@ class MessageCommandInfo internal constructor(
     override val parameters: List<MessageContextCommandParameter>
 
     init {
-        requireFirstParam(method.valueParameters, GlobalMessageEvent::class)
+        requireFirstParam(function.valueParameters, GlobalMessageEvent::class)
 
         builder.checkEventScope<GuildMessageEvent>()
 
@@ -59,7 +59,7 @@ class MessageCommandInfo internal constructor(
 
         cooldownService.applyCooldown(this, event)
 
-        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
     }

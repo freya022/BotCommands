@@ -22,13 +22,13 @@ import kotlin.reflect.full.findAnnotations
 internal object AnnotationUtils {
     //List order is from deepest to most effective
     //aka class --> method
-    private fun <A : Annotation> getEffectiveAnnotations(method: KFunction<*>, annotation: KClass<A>): List<A> {
-        return method.findAnnotations(annotation) + method.declaringClass.findAnnotations(annotation)
+    private fun <A : Annotation> getEffectiveAnnotations(function: KFunction<*>, annotation: KClass<A>): List<A> {
+        return function.findAnnotations(annotation) + function.declaringClass.findAnnotations(annotation)
     }
 
-    fun getEffectiveTestGuildIds(context: BContextImpl, method: KFunction<*>): TLongSet {
+    fun getEffectiveTestGuildIds(context: BContextImpl, function: KFunction<*>): TLongSet {
         val testIds: TLongSet = TLongHashSet(context.applicationConfig.testGuildIds)
-        val effectiveAnnotations = getEffectiveAnnotations(method, Test::class)
+        val effectiveAnnotations = getEffectiveAnnotations(function, Test::class)
         for (test in effectiveAnnotations) {
             val ids: LongArray = test.guildIds
             val mode: AppendMode = test.mode
@@ -47,12 +47,12 @@ internal object AnnotationUtils {
     }
 
     @JvmStatic
-    fun <A : Annotation> getEffectiveAnnotation(method: KFunction<*>, annotationType: KClass<A>): A? {
-        val methodAnnot = method.findAnnotations(annotationType)
+    fun <A : Annotation> getEffectiveAnnotation(function: KFunction<*>, annotationType: KClass<A>): A? {
+        val methodAnnot = function.findAnnotations(annotationType)
 
         return when {
             methodAnnot.isNotEmpty() -> methodAnnot.first()
-            else -> method.declaringClass.findAnnotations(annotationType).firstOrNull()
+            else -> function.declaringClass.findAnnotations(annotationType).firstOrNull()
         }
     }
 

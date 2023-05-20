@@ -22,11 +22,11 @@ class AutocompleteCommandParameter(
 ) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
     override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
         requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
-            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${slashCommandInfo.method.shortSignatureNoSrc}"
+            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
         }
     } ?: throwUser(
         autocompleteFunction,
-        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.method.shortSignatureNoSrc}"
+        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
     )
 
     override val nestedAggregatedParameters: List<IAggregatedParameter> = optionAggregateBuilder.nestedAggregates.transform {

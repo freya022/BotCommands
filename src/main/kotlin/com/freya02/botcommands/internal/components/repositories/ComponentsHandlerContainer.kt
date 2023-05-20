@@ -30,7 +30,7 @@ internal class ComponentsHandlerContainer(context: BContextImpl, classPathContai
 
                 val oldDescriptor = buttonMap.put(handlerName, ComponentDescriptor(context, it.instance, it.function))
                 if (oldDescriptor != null) {
-                    throwUser("Tried to override a button handler, old method: ${oldDescriptor.method.shortSignature}, new method: ${it.function.shortSignature}")
+                    throwUser("Tried to override a button handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
             }
 
@@ -42,7 +42,7 @@ internal class ComponentsHandlerContainer(context: BContextImpl, classPathContai
 
                 val oldDescriptor = selectMap.put(handlerName, ComponentDescriptor(context, it.instance, it.function))
                 if (oldDescriptor != null) {
-                    throwUser("Tried to override a select menu handler, old method: ${oldDescriptor.method.shortSignature}, new method: ${it.function.shortSignature}")
+                    throwUser("Tried to override a select menu handler, old method: ${oldDescriptor.function.shortSignature}, new method: ${it.function.shortSignature}")
                 }
             }
     }

@@ -20,7 +20,7 @@ internal object CommandPattern {
         val exampleStr = optionParameters.filter { !it.isOptional }.joinToString(" ") { it.resolver.testExample }
         require(pattern.matches(exampleStr)) {
             """
-            Failed building pattern for method ${variation.method.shortSignature} with pattern '$pattern' and example '$exampleStr'
+            Failed building pattern for method ${variation.function.shortSignature} with pattern '$pattern' and example '$exampleStr'
             You can try to either rearrange the arguments as to make a parse-able command, especially moving parameters which are parsed from strings, or, use slash commands""".trimIndent()
         }
 

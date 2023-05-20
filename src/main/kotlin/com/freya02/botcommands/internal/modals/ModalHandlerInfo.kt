@@ -26,7 +26,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnno
 class ModalHandlerInfo(
     val context: BContextImpl,
     override val instance: Any,
-    override val method: KFunction<*>
+    override val function: KFunction<*>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
@@ -36,10 +36,10 @@ class ModalHandlerInfo(
     val handlerName: String
 
     init {
-        val annotation = method.findAnnotation<ModalHandler>()!!
+        val annotation = function.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
-        parameters = method.nonInstanceParameters.drop(1).transformParameters(
+        parameters = function.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 when {
                     parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
@@ -68,7 +68,7 @@ class ModalHandlerInfo(
         val userDatas = handlerData.userData
 
         //Check if there's enough arguments to fit user data + modal inputs
-        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, method) {
+        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, function) {
             """
             Modal handler does not match the received modal data:
             Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)
@@ -81,7 +81,7 @@ class ModalHandlerInfo(
                 throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
         }
 
-        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
     }

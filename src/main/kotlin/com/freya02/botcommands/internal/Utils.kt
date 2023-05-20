@@ -64,7 +64,7 @@ internal inline fun throwInternal(function: KFunction<*>, message: String): Noth
 internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(method, message)
+internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(function, message)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
@@ -95,7 +95,7 @@ internal inline fun IExecutableInteractionInfo.requireUser(value: Boolean, lazyM
         returns() implies value
     }
 
-    requireUser(value, this.method, lazyMessage)
+    requireUser(value, this.function, lazyMessage)
 }
 
 @OptIn(ExperimentalContracts::class)

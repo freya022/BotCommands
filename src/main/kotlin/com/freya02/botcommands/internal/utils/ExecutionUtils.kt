@@ -54,9 +54,9 @@ context(IExecutableInteractionInfo)
 suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     event: Event,
     optionValues: Map<Option, Any?>
-) = buildMap(method.parameters.size) {
-    this[method.instanceParameter!!] = instance
-    this[method.nonInstanceParameters.first()] = event
+) = buildMap(function.parameters.size) {
+    this[function.instanceParameter!!] = instance
+    this[function.nonInstanceParameters.first()] = event
 
     for (parameter in this@mapFinalParameters) {
         insertAggregate(event, this, optionValues, parameter)

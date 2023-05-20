@@ -133,7 +133,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
                     map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
-                    rethrowUser(info.method, "An exception occurred while processing command '${info.name}'", e)
+                    rethrowUser(info.function, "An exception occurred while processing command '${info.name}'", e)
                 }
             }
     }
@@ -169,7 +169,7 @@ internal class ApplicationCommandsUpdater private constructor(
                     map[type, info.name] = Commands.context(type, info.name).configureTopLevel(info)
                 } catch (e: Exception) {
                     rethrowUser(
-                        info.method,
+                        info.function,
                         "An exception occurred while processing a ${type.name} command ${info.name}",
                         e
                     )

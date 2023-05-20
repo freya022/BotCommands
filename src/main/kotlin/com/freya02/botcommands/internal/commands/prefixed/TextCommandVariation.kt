@@ -36,7 +36,7 @@ class TextCommandVariation internal constructor(
     private val useTokenizedEvent: Boolean
 
     init {
-        useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
+        useTokenizedEvent = function.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)
@@ -69,7 +69,7 @@ class TextCommandVariation internal constructor(
 
         cooldownService.applyCooldown(info, event)
 
-        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return ExecutionResult.OK
     }

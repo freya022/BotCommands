@@ -148,7 +148,7 @@ internal class ComponentsListener(
                     throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
             }
 
-            method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+            function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
         }
     }
 

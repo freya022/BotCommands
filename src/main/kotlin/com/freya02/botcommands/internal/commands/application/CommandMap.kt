@@ -19,8 +19,8 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             if (key.fullPath == commandPath.name) {
                 throwUser(
                     "Tried to add a command with path '%s' (at %s) but a equal/longer path already exists: '%s' (at %s)".format(
-                        key, value.method.shortSignatureNoSrc,
-                        commandPath, mapInfo.method.shortSignatureNoSrc
+                        key, value.function.shortSignatureNoSrc,
+                        commandPath, mapInfo.function.shortSignatureNoSrc
                     )
                 )
             }
@@ -28,8 +28,8 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             if (commandPath.fullPath == key.name) {
                 throwUser(
                     "Tried to add a command with path '%s' (at %s) but a top level command already exists: '%s' (at %s)".format(
-                        key, value.method.shortSignatureNoSrc,
-                        commandPath, mapInfo.method.shortSignatureNoSrc
+                        key, value.function.shortSignatureNoSrc,
+                        commandPath, mapInfo.function.shortSignatureNoSrc
                     )
                 )
             }
@@ -40,9 +40,9 @@ class MutableCommandMap<T : ApplicationCommandInfo>(
             throwUser(
                 "Tried to add a command with path '%s' (at %s) but an equal path already exists: '%s' (at %s)".format(
                     key,
-                    value.method.shortSignatureNoSrc,
+                    value.function.shortSignatureNoSrc,
                     oldInfo.path,
-                    oldInfo.method.shortSignatureNoSrc
+                    oldInfo.function.shortSignatureNoSrc
                 )
             )
         }

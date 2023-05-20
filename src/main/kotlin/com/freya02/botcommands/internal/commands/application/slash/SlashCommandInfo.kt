@@ -36,11 +36,11 @@ abstract class SlashCommandInfo internal constructor(
 ) {
     val description: String = builder.description
 
-    final override val method: KFunction<*> = super.method
+    final override val function: KFunction<*> = super.function
     final override val parameters: List<SlashCommandParameter>
 
     init {
-        requireFirstParam(method.valueParameters, GlobalSlashEvent::class)
+        requireFirstParam(function.valueParameters, GlobalSlashEvent::class)
 
         builder.checkEventScope<GuildSlashEvent>()
 
@@ -59,7 +59,7 @@ abstract class SlashCommandInfo internal constructor(
 
         cooldownService.applyCooldown(this, event)
 
-        method.callSuspendBy(objects)
+        function.callSuspendBy(objects)
 
         return true
     }

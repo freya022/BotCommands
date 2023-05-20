@@ -13,7 +13,7 @@ class ExecutableInteractionInfo internal constructor(
     builder: IBuilderFunctionHolder<*>
 ) : IExecutableInteractionInfo {
     override val instance: Any
-    override val method: KFunction<*>
+    override val function: KFunction<*>
     override val parameters: List<MethodParameter>
         get() = throwInternal("Must be implemented by delegate host")
 
@@ -21,14 +21,14 @@ class ExecutableInteractionInfo internal constructor(
         builder as? IBuilderFunctionHolder<*> ?: throwMixin<IBuilderFunctionHolder<*>>()
 
         instance = context.serviceContainer.getFunctionService(builder.function)
-        method = builder.function
+        function = builder.function
 
         if (builder is ExecutableCommandBuilder<*, *>) {
-            requireUser(builder.optionAggregateBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
+            requireUser(builder.optionAggregateBuilders.size == function.valueParameters.size - 1, function) {  //-1 for the event
                 "Function must have the same number of options declared as on the method"
             }
         } else if (builder is TextCommandVariationBuilder) {
-            requireUser(builder.optionAggregateBuilders.size == method.valueParameters.size - 1, method) {  //-1 for the event
+            requireUser(builder.optionAggregateBuilders.size == function.valueParameters.size - 1, function) {  //-1 for the event
                 "Function must have the same number of options declared as on the method"
             }
         }

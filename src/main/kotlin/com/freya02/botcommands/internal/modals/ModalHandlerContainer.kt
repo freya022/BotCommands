@@ -25,8 +25,8 @@ internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: 
                 if (oldHandler != null) {
                     throwUser("Tried to register modal handler '%s' at %s but it was already registered at %s".format(
                         handlerInfo.handlerName,
-                        handlerInfo.method.shortSignature,
-                        oldHandler.method.shortSignature
+                        handlerInfo.function.shortSignature,
+                        oldHandler.function.shortSignature
                     ))
                 }
             }

@@ -37,7 +37,7 @@ class UserCommandInfo internal constructor(
     override val parameters: List<UserContextCommandParameter>
 
     init {
-        requireFirstParam(method.valueParameters, GlobalUserEvent::class)
+        requireFirstParam(function.valueParameters, GlobalUserEvent::class)
 
         builder.checkEventScope<GuildUserEvent>()
 
@@ -59,7 +59,7 @@ class UserCommandInfo internal constructor(
 
         cooldownService.applyCooldown(this, event)
 
-        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
     }

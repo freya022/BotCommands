@@ -23,7 +23,7 @@ internal class AutocompleteHandler(
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
-    override val method = autocompleteInfo.function
+    override val function = autocompleteInfo.function
     override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
     override val parameters: List<MethodParameter>
         get() = methodParameters
@@ -36,8 +36,8 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        methodParameters = slashCmdOptionAggregateBuilders.filterKeys { method.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
-            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, method)
+        methodParameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
+            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
 
         compositeOptions = methodParameters

@@ -12,12 +12,12 @@ import kotlin.reflect.jvm.jvmErasure
 class ComponentDescriptor(
     context: BContextImpl,
     override val instance: Any,
-    override val method: KFunction<*>
+    override val function: KFunction<*>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ComponentHandlerParameter>
 
     init {
-        parameters = method.nonInstanceParameters.drop(1).transformParameters(
+        parameters = function.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
                 val service = context.serviceContainer.peekServiceOrNull(parameter.type.jvmErasure)
                 when {
