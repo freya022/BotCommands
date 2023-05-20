@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 
 /**
- * Annotation used to mark an option as being the result of an aggregate.
+ * Annotation used to mark a parameter as being the result of an aggregate.
  *
- * The framework will take the constructor of that parameter, so, annotations must be on the constructor's parameters instead.
+ * The framework will take the constructor of that parameter as its options, so, annotations must be on the constructor's parameters instead.
  *
  * Can be used on parameters of [ModalHandler] or [JDAButtonListener] functions.
  */
