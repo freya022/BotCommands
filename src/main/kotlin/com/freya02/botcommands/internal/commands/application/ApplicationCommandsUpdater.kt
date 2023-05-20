@@ -13,7 +13,7 @@ import com.freya02.botcommands.internal.commands.application.localization.BCLoca
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandGroupInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashSubcommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getMethodOptions
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.overwriteBytes
@@ -121,8 +121,7 @@ internal class ApplicationCommandsUpdater private constructor(
                     val isTopLevel = info.isTopLevelCommandOnly()
                     val topLevelData = Commands.slash(info.name, info.description).also { commandData ->
                         if (isTopLevel) {
-                            val methodOptions = info.getMethodOptions(guild)
-                            commandData.addOptions(methodOptions)
+                            commandData.addOptions(info.getDiscordOptions(guild))
                         }
 
                         commandData.configureTopLevel(info)
@@ -147,10 +146,8 @@ internal class ApplicationCommandsUpdater private constructor(
 
     private fun Collection<SlashSubcommandInfo>.mapToSubcommandData() =
         this.map { subcommandInfo ->
-            SubcommandData(subcommandInfo.name, subcommandInfo.description).also {
-                val methodOptions = subcommandInfo.getMethodOptions(guild)
-                it.addOptions(methodOptions)
-            }
+            SubcommandData(subcommandInfo.name, subcommandInfo.description)
+                .addOptions(subcommandInfo.getDiscordOptions(guild))
         }
 
     private fun <T> computeContextCommands(

@@ -51,7 +51,7 @@ internal object SlashUtils {
         }
     }
 
-    fun SlashCommandInfo.getMethodOptions(guild: Guild?) = parameters
+    fun SlashCommandInfo.getDiscordOptions(guild: Guild?) = parameters
         .flatMap { it.allOptions }
         .filterIsInstance<SlashCommandOption>()
         //Move all optional options at the front
