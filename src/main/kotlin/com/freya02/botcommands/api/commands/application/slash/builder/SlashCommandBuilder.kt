@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import net.dv8tion.jda.internal.utils.Checks
@@ -78,7 +77,6 @@ abstract class SlashCommandBuilder internal constructor(
         return SlashCommandOptionAggregateBuilder(context, aggregatorParameter, aggregator)
     }
 
-    @IncludeClasspath
     companion object {
         const val DEFAULT_DESCRIPTION = "No description"
     }
