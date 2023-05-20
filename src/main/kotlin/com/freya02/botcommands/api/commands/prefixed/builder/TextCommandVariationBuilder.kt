@@ -21,7 +21,7 @@ class TextCommandVariationBuilder internal constructor(
     }
 
     @get:JvmSynthetic
-    internal val optionAggregateBuilders: MutableMap<String, TextCommandOptionAggregateBuilder>
+    internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
     /**

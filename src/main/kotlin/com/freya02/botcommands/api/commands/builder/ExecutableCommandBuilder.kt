@@ -15,7 +15,7 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
     private val _optionAggregateBuilders = OptionAggregateBuildersImpl(function, ::constructAggregate)
 
     @get:JvmSynthetic
-    internal val optionAggregateBuilders: MutableMap<String, T>
+    internal val optionAggregateBuilders: Map<String, T>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
     /**
