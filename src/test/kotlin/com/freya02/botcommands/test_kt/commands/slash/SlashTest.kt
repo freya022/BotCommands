@@ -54,14 +54,12 @@ class SlashTest : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD) {
+        guildApplicationCommandManager.slashCommand("test", scope = CommandScope.GUILD, ::onSlashTest) {
             option("guildNickname")
 
             generatedOption("guildName") {
                 it.guild!!.name
             }
-
-            function = ::onSlashTest
         }
     }
 }

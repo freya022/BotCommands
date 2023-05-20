@@ -1,25 +1,25 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import com.freya02.botcommands.api.commands.prefixed.builder.TextOptionBuilder
-import com.freya02.botcommands.api.parameters.RegexParameterResolver
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.core.options.Option
+import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.transform
+import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
@@ -29,113 +29,114 @@ class TextCommandVariation internal constructor(
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
 ) : IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
-    override val parameters: MethodParameters
-    override val optionParameters: List<TextCommandParameter>
+    override val parameters: List<TextCommandParameter>
 
-    val completePattern: Pattern?
+    val completePattern: Regex?
 
     private val useTokenizedEvent: Boolean
 
     init {
         useTokenizedEvent = method.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
 
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        parameters = MethodParameters.transform<RegexParameterResolver<*, *>>(
-            context,
-            method,
-            builder.optionBuilders
-        ) {
-            optionPredicate = { builder.optionBuilders[it.findDeclarationName()] is TextOptionBuilder }
-            optionTransformer = { parameter, paramName, resolver -> TextCommandParameter(parameter, builder.optionBuilders.findOption(paramName, "a text command option"), resolver) }
+        parameters = builder.optionAggregateBuilders.transform {
+            TextCommandParameter(context, it)
         }
 
-        optionParameters = parameters.filterOptions()
-
         completePattern = when {
-            parameters.any { it.isOption } -> CommandPattern.of(this)
+            parameters.flatMap { it.allOptions }.any { it.optionType == OptionType.OPTION } -> CommandPattern.of(this)
             else -> null
         }
     }
 
     internal suspend fun execute(
-        _event: MessageReceivedEvent,
+        jdaEvent: MessageReceivedEvent,
         cooldownService: CooldownService,
         args: String,
-        matcher: Matcher?
+        matchResult: MatchResult?
     ): ExecutionResult {
         val event = when {
-            useTokenizedEvent -> CommandEventImpl.create(context, _event, args)
-            else -> BaseCommandEventImpl(context, _event, args)
+            useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
+            else -> BaseCommandEventImpl(context, jdaEvent, args)
         }
 
-        val objects: MutableMap<KParameter, Any?> = hashMapOf()
-        objects[method.instanceParameter!!] = instance
-        objects[method.nonInstanceParameters.first()] = event
+        val groupsIterator = matchResult?.groups?.iterator()
+        groupsIterator?.next() //Skip entire match
 
-        var groupIndex = 1
-        parameterLoop@for (parameter in parameters) {
-            objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    matcher ?: throwInternal("No matcher passed for a regex command")
-
-                    parameter as TextCommandParameter
-
-                    var found = 0
-                    val groupCount = parameter.groupCount
-                    val groups = arrayOfNulls<String>(groupCount)
-                    for (j in 0 until groupCount) {
-                        groups[j] = matcher.group(groupIndex++)
-                        if (groups[j] != null) found++
-                    }
-
-                    if (found == groupCount) { //Found all the groups
-                        val resolved = parameter.resolver.resolveSuspend(context, this, event, groups)
-                        //Regex matched but could not be resolved
-                        // if optional then it's ok
-                        if (resolved == null && !parameter.isOptional) {
-                            return ExecutionResult.CONTINUE
-                        }
-
-                        resolved
-                    } else if (!parameter.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                        logger.warn(
-                            "Could not find parameter #{} in {} for input args {}",
-                            parameter.index,
-                            method.shortSignatureNoSrc,
-                            args
-                        )
-
-                        return ExecutionResult.CONTINUE
-                    } else { //Parameter is optional
-                        if (parameter.kParameter.isOptional) {
-                            continue@parameterLoop
-                        }
-
-                        when {
-                            parameter.isPrimitive -> 0
-                            else -> null
-                        }
-                    }
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-
-                    parameter.resolver.resolveSuspend(context, this, event)
-                }
-                MethodParameterType.GENERATED -> {
-                    parameter as TextGeneratedMethodParameter
-
-                    parameter.generatedValueSupplier.getDefaultValue(event)
-                }
-                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
-            }
+        val optionValues = parameters.mapOptions { option ->
+            if (tryInsertOption(event, this, option, groupsIterator, args) == InsertOptionResult.ABORT)
+                return ExecutionResult.CONTINUE //Go to next variation
         }
 
         cooldownService.applyCooldown(info, event)
 
-        method.callSuspendBy(objects)
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return ExecutionResult.OK
+    }
+
+    /**
+     * Will return a null value if it can go to the next option
+     *
+     * A non-null value is returned immediately to #insertAggregate caller
+     */
+    private suspend fun tryInsertOption(
+        event: BaseCommandEvent,
+        optionMap: MutableMap<Option, Any?>,
+        option: Option,
+        groupsIterator: Iterator<MatchGroup?>?,
+        args: String
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                groupsIterator ?: throwInternal("No group iterator passed for a regex command")
+
+                option as TextCommandOption
+
+                var found = 0
+                val groupCount = option.groupCount
+                val groups = arrayOfNulls<String>(groupCount)
+                for (j in 0 until groupCount) {
+                    groups[j] = groupsIterator.next()?.value.also {
+                        if (it != null) found++
+                    }
+                }
+
+                if (found == groupCount) { //Found all the groups
+                    val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
+                    //Regex matched but could not be resolved
+                    // if optional then it's ok
+                    if (resolved == null && !option.isOptional) {
+                        return InsertOptionResult.SKIP
+                    }
+
+                    resolved
+                } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                    throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.data.helpName}) for input args '${args}', yet the pattern matched and the option is required")
+                } else { //Parameter is optional
+                    if (option.kParameter.isOptional) {
+                        return InsertOptionResult.OK
+                    }
+
+                    option.nullValue
+                }
+            }
+
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+
+                option.resolver.resolveSuspend(event.context, this, event)
+            }
+
+            OptionType.GENERATED -> {
+                option as TextGeneratedOption
+
+                option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
+            }
+
+            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+        }
+
+        return tryInsertNullableOption(value, option, optionMap)
     }
 
     companion object {

@@ -1,10 +1,11 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.internal.bestName
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
+import com.freya02.botcommands.internal.throwUser as utilsThrowUser
 
 data class ParameterWrapper(
     val type: KType,
@@ -16,12 +17,16 @@ data class ParameterWrapper(
 
     val erasure = type.jvmErasure
 
-    fun throwUser(message: String) {
-        if (parameter == null) {
-            com.freya02.botcommands.internal.throwUser(message)
-        } else {
-            com.freya02.botcommands.internal.throwUser(parameter.function, message)
-        }
+    fun toListElementType() = when (type.jvmErasure) {
+        List::class -> copy(
+            type = type.arguments[0].type ?: throwUser("A concrete List element type is required")
+        )
+        else -> this
+    }
+
+    fun throwUser(message: String): Nothing = when (parameter) {
+        null -> utilsThrowUser(message)
+        else -> utilsThrowUser(parameter.function, message)
     }
 
     companion object {

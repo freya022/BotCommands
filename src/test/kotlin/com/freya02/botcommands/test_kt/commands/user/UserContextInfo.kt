@@ -48,7 +48,7 @@ class UserContextInfo : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD) {
+        guildApplicationCommandManager.userCommand("User info", CommandScope.GUILD, ::onUserContextInfo) {
             option("user")
 
             generatedOption("userTag") {
@@ -56,8 +56,6 @@ class UserContextInfo : ApplicationCommand() {
 
                 it.target.asTag
             }
-
-            function = ::onUserContextInfo
         }
     }
 }

@@ -36,7 +36,7 @@ public class CommandPatternTest {
                 .collect(Collectors.joining(" "));
         System.out.println("Syntax: " + syntax);
 
-        final Pattern pattern = CommandPattern.joinPatterns(patterns.stream().map(TestParameterPattern::toParameterPattern).toList());
+        final Pattern pattern = CommandPattern.joinPatterns(patterns.stream().map(TestParameterPattern::toParameterPattern).toList()).toPattern();
         System.out.println("Pattern: " + pattern);
 
         final String exampleStr = getExampleStr(patterns);

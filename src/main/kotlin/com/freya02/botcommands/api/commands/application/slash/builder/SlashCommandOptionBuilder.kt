@@ -9,21 +9,19 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.build
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer
+import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.throwUser
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
-import net.dv8tion.jda.internal.utils.Checks
 import java.util.*
+import kotlin.reflect.KFunction
 
-class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName: String, optionName: String): ApplicationCommandOptionBuilder(declaredName, optionName) {
+class SlashCommandOptionBuilder(
+    private val context: BContextImpl,
+    optionParameter: OptionParameter,
+    val optionName: String
+): ApplicationCommandOptionBuilder(optionParameter) {
     var description: String = "No description"
-
-    var varArgs: Int = -1
-    var requiredVarArgs: Int = 0
-        set(value) {
-            Checks.check(value <= varArgs, "Cannot have more required varargs than there are varargs, required $value out of $varArgs")
-            field = value
-        }
 
     /**
      * Required for [SlashParameterResolver.getPredefinedChoices] to be used.
@@ -47,8 +45,8 @@ class SlashCommandOptionBuilder(private val context: BContextImpl, declaredName:
      *
      * Example: `SlashTag: tagName`
      */
-    fun autocomplete(name: String, block: AutocompleteInfoBuilder.() -> Unit) {
-        autocompleteInfo = AutocompleteInfoBuilder(context, name).apply(block).build()
+    fun autocomplete(name: String, function: KFunction<Collection<*>>, block: AutocompleteInfoBuilder.() -> Unit) {
+        autocompleteInfo = AutocompleteInfoBuilder(context, name, function).apply(block).build()
     }
 
     fun autocompleteReference(name: String) {

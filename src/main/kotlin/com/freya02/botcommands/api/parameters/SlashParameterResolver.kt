@@ -38,7 +38,9 @@ interface SlashParameterResolver<T : ParameterResolver<T, R>, R> {
     }
 
     /**
-     * Returns a resolved object for this [OptionMapping]
+     * Returns a resolved object for this [OptionMapping].
+     *
+     * **Note:** If the value is not resolvable, the bot should reply with an error message.
      *
      * @param context       The [BContext] of this bot
      * @param info          The slash command info of the command being executed

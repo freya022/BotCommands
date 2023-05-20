@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.components.annotations;
 
-import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.prefixed.TextCommand;
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.builder.button.PersistentButtonBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 
 import java.lang.annotation.ElementType;
@@ -27,6 +27,7 @@ import java.lang.annotation.Target;
  *
  * @see Components
  * @see ParameterResolver
+ * @see Aggregate
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

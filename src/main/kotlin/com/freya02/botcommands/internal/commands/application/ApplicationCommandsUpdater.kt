@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.application
 
+import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asScopeString
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes
@@ -35,7 +35,7 @@ import java.nio.file.Files
 internal class ApplicationCommandsUpdater private constructor(
     private val context: BContextImpl,
     private val guild: Guild?,
-    manager: IApplicationCommandManager
+    manager: AbstractApplicationCommandManager
 ) {
     private val logger = KotlinLogging.logger {  }
 

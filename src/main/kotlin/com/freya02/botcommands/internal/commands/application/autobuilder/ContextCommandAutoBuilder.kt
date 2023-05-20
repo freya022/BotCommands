@@ -2,10 +2,10 @@ package com.freya02.botcommands.internal.commands.application.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
+import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
-import com.freya02.botcommands.api.commands.application.IApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
@@ -71,7 +71,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
 
     fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
 
-    private fun declareMessage(manager: IApplicationCommandManager) {
+    private fun declareMessage(manager: AbstractApplicationCommandManager) {
         messageFunctions.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
@@ -81,7 +81,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
     }
 
-    private fun declareUser(manager: IApplicationCommandManager) {
+    private fun declareUser(manager: AbstractApplicationCommandManager) {
         userFunctions.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
@@ -91,7 +91,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
     }
 
-    private fun processMessageCommand(manager: IApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
+    private fun processMessageCommand(manager: AbstractApplicationCommandManager, metadata: MessageContextFunctionMetadata) {
         val func = metadata.func
         val instance = metadata.instance
         val path = metadata.path
@@ -108,9 +108,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
 
         val annotation = metadata.annotation
-        manager.messageCommand(path.name, annotation.scope) {
+        manager.messageCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            addFunction(func)
             fillApplicationCommandBuilder(func, annotation)
 
             defaultLocked = annotation.defaultLocked
@@ -119,7 +118,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
     }
 
-    private fun processUserCommand(manager: IApplicationCommandManager, metadata: UserContextFunctionMetadata) {
+    private fun processUserCommand(manager: AbstractApplicationCommandManager, metadata: UserContextFunctionMetadata) {
         val func = metadata.func
         val instance = metadata.instance
         val path = metadata.path
@@ -136,9 +135,8 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
 
         val annotation = metadata.annotation
-        manager.userCommand(path.name, annotation.scope) {
+        manager.userCommand(path.name, annotation.scope, func.castFunction()) {
             fillCommandBuilder(func)
-            addFunction(func)
             fillApplicationCommandBuilder(func, annotation)
 
             defaultLocked = annotation.defaultLocked
@@ -147,7 +145,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
         }
     }
 
-    private fun ApplicationCommandBuilder.processOptions(
+    private fun ApplicationCommandBuilder<*>.processOptions(
         guild: Guild?,
         func: KFunction<*>,
         instance: ApplicationCommand,

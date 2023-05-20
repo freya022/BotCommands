@@ -2,13 +2,13 @@ package com.freya02.botcommands.api.commands.application.builder
 
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
-import com.freya02.botcommands.api.commands.builder.BuilderFunctionHolder
-import com.freya02.botcommands.api.commands.builder.CommandBuilder
-import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
+import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
+import kotlin.reflect.KFunction
 
-abstract class ApplicationCommandBuilder internal constructor(
-    name: String
-) : CommandBuilder(name), IBuilderFunctionHolder<Any> by BuilderFunctionHolder() {
+abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
+    name: String,
+    function: KFunction<Any>
+) : ExecutableCommandBuilder<T, Any>(name, function) {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     var defaultLocked: Boolean = DEFAULT_DEFAULT_LOCKED
@@ -18,12 +18,20 @@ abstract class ApplicationCommandBuilder internal constructor(
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
-    abstract fun customOption(declaredName: String)
+    fun customOption(declaredName: String) {
+        selfAggregate(declaredName) {
+            customOption(declaredName)
+        }
+    }
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
      */
-    abstract fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier)
+    fun generatedOption(declaredName: String, generatedValueSupplier: ApplicationGeneratedValueSupplier) {
+        selfAggregate(declaredName) {
+            generatedOption(declaredName, generatedValueSupplier)
+        }
+    }
 
     companion object {
         const val DEFAULT_DEFAULT_LOCKED = false

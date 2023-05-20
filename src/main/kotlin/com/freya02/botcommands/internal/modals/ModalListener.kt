@@ -38,7 +38,7 @@ internal class ModalListener(private val context: BContextImpl, private val moda
                         val modalHandler: ModalHandlerInfo = modalHandlerContainer[handlerData.handlerName]
                             ?: throwUser("Found no modal handler with handler name: '${handlerData.handlerName}'")
 
-                        modalHandler.execute(context, modalData, event)
+                        modalHandler.execute(modalData, event)
                     }
                 }
             } catch (e: Throwable) {

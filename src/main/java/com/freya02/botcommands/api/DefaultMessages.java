@@ -121,12 +121,11 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when an application command parameter is unresolvable
+	 * @return Message to display when a slash command option is unresolvable (only in slash command interactions)
 	 */
-	public String getSlashCommandUnresolvableParameterMsg(String parameterName, String parameterType) {
-		return getLocalizationTemplate("slash.command.unresolvable.parameter.message").localize(
-				entry("parameterName", parameterName),
-				entry("parameterType", parameterType)
+	public String getSlashCommandUnresolvableOptionMsg(String parameterName) {
+		return getLocalizationTemplate("slash.command.unresolvable.option.message").localize(
+				entry("optionName", parameterName)
 		);
 	}
 

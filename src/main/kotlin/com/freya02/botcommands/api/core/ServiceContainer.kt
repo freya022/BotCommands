@@ -10,8 +10,9 @@ import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.hasAtMostOneServiceAnnotation
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -29,8 +30,9 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
-import kotlin.reflect.full.*
-import kotlin.reflect.jvm.javaMethod
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
@@ -112,13 +114,18 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             if (clazz in serviceMap || clazz in unavailableServices) return@forEach
 
             tryGetService(clazz).errorMessage?.let { errorMessage ->
-                logger.trace { "Service ${clazz.simpleName} not loaded: $errorMessage" }
+                logger.trace { "Service ${clazz.simpleNestedName} not loaded: $errorMessage" }
             }
         }
     }
 
     fun <T : Any> getService(clazz: Class<T>): T {
         return getService(clazz.kotlin)
+    }
+
+    fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
+        @Suppress("UNCHECKED_CAST")
+        return serviceMap[clazz] as T?
     }
 
     @JvmSynthetic
@@ -149,7 +156,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         if (service != null) return ServiceResult(service, null)
 
         if (!clazz.hasAtMostOneServiceAnnotation())
-            throwUser("Class ${clazz.simpleNestedName} cannot be annotated with both ${BService::class.simpleName} and ${ConditionalService::class.simpleName} at the same time")
+            throwUser("Class ${clazz.simpleNestedName} cannot be annotated with both ${BService::class.simpleNestedName} and ${ConditionalService::class.simpleNestedName} at the same time")
 
         canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
 
@@ -170,11 +177,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
                     }
                 }
 
-                logger.trace { "Loaded service ${clazz.simpleName} in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
+                logger.trace { "Loaded service ${clazz.simpleNestedName} in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult(instance, null)
             }
         } catch (e: Exception) {
-            throw RuntimeException("Unable to create service ${clazz.simpleName}", e)
+            throw RuntimeException("Unable to create service ${clazz.simpleNestedName}", e)
         }
     }
 
@@ -188,7 +195,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
             clazz.findAnnotation<InjectedService>()?.let {
                 //Skips cache
-                return "Tried to load an unavailable InjectedService '${clazz.simpleName}', reason might include: ${it.message}"
+                return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
             }
         } else {
             return null
@@ -200,7 +207,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
             conditionalService.dependencies.forEach { dependency ->
                 canCreateService(dependency)?.let { errorMessage ->
-                    return@cachedCallback "Conditional service depends on ${dependency.simpleName} but it is not available: $errorMessage"
+                    return@cachedCallback "Conditional service depends on ${dependency.simpleNestedName} but it is not available: $errorMessage"
                 }
             }
 
@@ -209,7 +216,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
             val checker = findConditionalServiceChecker(clazz)
             requireUser(checker != null) {
-                "Conditional service ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}, check the docs for more details"
+                "Conditional service ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}, check the docs for more details"
             }
             checker.checkServiceAvailability(context)?.let { errorMessage -> return@cachedCallback errorMessage } //Final optional check
         }
@@ -235,11 +242,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 //        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
-    fun getFunctionService(function: KFunction<*>): Any {
-        return when {
-            function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
-            else -> getService(function.javaMethod!!.declaringClass)
-        }
+    fun getFunctionService(function: KFunction<*>): Any = when {
+        function.isConstructor -> throwInternal("$function: Tried to get a function's instance but was a constructor, this should have been checked beforehand")
+        function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
+        else -> getService(function.declaringClass)
+    }
+
+    fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
+        function.isConstructor || function.isStatic -> null
+        else -> getService(function.declaringClass)
     }
 
     fun <T : Any> putService(t: T) {
@@ -278,7 +289,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
         if (!this.add(clazz))
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.java.simpleName }}] ; attempted to create a new ${clazz.java.simpleName}")
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.java.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
         try {
             return block()
         } finally {
@@ -290,7 +301,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         //Kotlin implementations uses companion object
         clazz.companionObjectInstance?.let { companion ->
             requireUser(companion is ConditionalServiceChecker) {
-                "Companion object of ${clazz.simpleName} needs to implement ${ConditionalServiceChecker::class.simpleName}"
+                "Companion object of ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}"
             }
 
             return companion
@@ -299,11 +310,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         //Find any nested class which extend the interface, is static and
         clazz.nestedClasses.forEach { nestedClass ->
             if (nestedClass == ConditionalServiceChecker::class) {
-                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.java.simpleName} must be static" }
+                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.java.simpleNestedName} must be static" }
 
                 val instance = nestedClass.constructors
                     .find { it.parameters.isEmpty() && it.isPublic }
-                    ?.call() ?: throwUser("A ${ConditionalServiceChecker::class.simpleName} constructor needs to be no-arg and accessible")
+                    ?.call() ?: throwUser("A ${ConditionalServiceChecker::class.simpleNestedName} constructor needs to be no-arg and accessible")
 
                 return instance as ConditionalServiceChecker
             }

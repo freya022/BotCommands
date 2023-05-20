@@ -1,27 +1,42 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete
 
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CompositeKey
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
-import net.dv8tion.jda.api.entities.IMentionable
-import kotlin.reflect.KParameter
-import kotlin.reflect.full.hasAnnotation
-import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.jvm.jvmErasure
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter
+import com.freya02.botcommands.internal.requireUser
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.transform
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.findParameterByName
 
 class AutocompleteCommandParameter(
-    parameter: KParameter,
-    optionBuilder: SlashCommandOptionBuilder,
-    resolver: SlashParameterResolver<*, *>
-) : AbstractSlashCommandParameter(
-    parameter, optionBuilder, resolver
-) {
-    val isCompositeKey = parameter.hasAnnotation<CompositeKey>()
-
-    init {
-        if (type.jvmErasure.isSubclassOf(IMentionable::class)) {
-            throw IllegalArgumentException("Autocomplete parameters cannot have an entity (anything extending IMentionable) as a value")
+    slashCommandInfo: SlashCommandInfo,
+    slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
+    optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
+    autocompleteFunction: KFunction<*>
+) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
+    override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
+        requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
+            "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${slashCommandInfo.method.shortSignatureNoSrc}"
         }
+    } ?: throwUser(
+        autocompleteFunction,
+        "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.method.shortSignatureNoSrc}"
+    )
+
+    override val nestedAggregatedParameters: List<IAggregatedParameter> = optionAggregateBuilder.nestedAggregates.transform {
+        AutocompleteCommandParameter(slashCommandInfo, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
     }
+
+    override fun constructOption(
+        slashCommandInfo: SlashCommandInfo,
+        optionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
+        optionBuilder: SlashCommandOptionBuilder,
+        resolver: SlashParameterResolver<*, *>
+    ) = AutocompleteCommandOption(optionBuilder, resolver)
 }

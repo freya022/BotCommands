@@ -21,12 +21,10 @@ class SlashLength : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
-        applicationCommandManager.slashCommand("length") {
+        applicationCommandManager.slashCommand("length", function = ::onSlashLength) {
             option("string") {
                 lengthRange = LengthRange.of(1, 5)
             }
-
-            function = ::onSlashLength
         }
     }
 }

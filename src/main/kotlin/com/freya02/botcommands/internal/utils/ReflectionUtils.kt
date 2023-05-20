@@ -9,12 +9,12 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
 import mu.KotlinLogging
+import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.*
-import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -31,35 +31,65 @@ internal object ReflectionUtils {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 
-    internal fun KFunction<*>.reflectReference(): KFunction<*> {
-        if (this.isStatic) {
-            throwUser(this, "Function must not be static")
+    @Suppress("UNCHECKED_CAST")
+    internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
+        //Still allow internal modifiers as they should be reflectively accessible
+        if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
+            //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
+            throwUser("$this : Function needs to be public")
+        }
+
+        requireUser(this.isConstructor || !this.isStatic || this.declaringClass.isValue, this) {
+            "Function must not be static"
         }
 
         synchronized(reflectedMap) {
             return reflectedMap.computeIfAbsent(this) {
                 return@computeIfAbsent when (this) { //Try to match the original function
                     is CallableReference -> {
-                        (owner as KClass<*>).declaredMemberFunctions.find {//Don't use bound receiver, might be null somehow
-                            it.name == name
-                                    && it.nonInstanceParameters.zip(nonInstanceParameters).all { param ->
-                                param.first.name == param.second.name
-                                        && param.first.type == param.second.type
-                            }
-                        } ?: throwInternal("Unable to reflect function reference: $this")
+                        (owner as KClass<*>).declaredMemberFunctions.findFunction(this)
+                            ?: (owner as KClass<*>).constructors.findFunction(this)
+                            ?: throwInternal("Unable to reflect function reference: $this")
                     }
+
                     else -> this
                 }
-            }
+            } as KFunction<R>
         }
     }
 
-    internal val KFunction<*>.nonInstanceParameters
+    private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
+        this.find { kFunction ->
+            if (kFunction.name != callableReference.name) return@find false
+            if (kFunction.nonInstanceParameters.size != callableReference.nonInstanceParameters.size) return@find false
+
+            return@find kFunction.nonInstanceParameters.zip(callableReference.nonInstanceParameters).all { (first, second) ->
+                first.type == second.type
+            }
+        }
+
+    internal val KParameter.function: KFunction<*>
+        get() {
+            val callable = ReflectionMetadataAccessor.getParameterCallable(this)
+            return callable as? KFunction<*>
+                ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
+        }
+
+    internal val KFunction<*>.declaringClass: KClass<*>
+        get() = ReflectionMetadataAccessor.getFunctionDeclaringClass(this)
+
+    internal val KFunction<*>.isJava
+        get() = !declaringClass.hasAnnotation<Metadata>()
+
+    internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
+
+    internal val KCallable<*>.nonEventParameters
+        get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf(Event::class) }
 
     internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
-            val declaringClassName = this.javaMethod?.declaringClass?.simpleNestedName ?: "<no-java-method>"
+            val declaringClassName = this.declaringClass.simpleNestedName
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleNestedName }
             return "$declaringClassName#$methodName($parameters)"
@@ -68,7 +98,7 @@ internal object ReflectionUtils {
     internal val KFunction<*>.shortSignature: String
         get() {
             val returnType = this.returnType.simpleName
-            val source = this.javaMethod.let { method ->
+            val source = this.javaMethodOrConstructorOrNull.let { method ->
                 return@let when {
                     method != null && this.lineNumber != 0 -> {
                         val sourceFile = method.declaringClass.sourceFile
@@ -91,22 +121,23 @@ internal object ReflectionUtils {
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
 
-    internal val KFunction<*>.collectionElementType: KClass<*>?
+    internal val KType.collectionElementType: KType?
         get() {
-            val type = this.returnType
-
             //Type is a trusted collection, such as the Java collections
-            if (type.jvmErasure in trustedCollections) {
-                return type.arguments.first().type?.jvmErasure
+            if (jvmErasure in trustedCollections) {
+                return arguments.first().type
             }
 
             //Maybe a subtype of Collection
-            val collectionType = type.jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
-            return collectionType.arguments.first().type?.jvmErasure
+            val collectionType = jvmErasure.supertypes.find { it.jvmErasure == Collection::class } ?: return null
+            return collectionType.arguments.first().type
         }
 
+    internal val KFunction<*>.collectionElementType: KClass<*>?
+        get() = returnType.collectionElementType?.jvmErasure
+
     internal val KParameter.collectionElementType: KType?
-        get() = type.arguments.first().type
+        get() = type.collectionElementType
 
     /** Everything but extensions, includes static methods */
     internal val KClass<*>.nonExtensionFunctions

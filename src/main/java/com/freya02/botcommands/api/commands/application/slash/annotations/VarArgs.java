@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations;
 
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,9 +11,10 @@ import java.util.List;
 
 //TODO see if we can auto generate description based off a MessageFormat, could cause issues with localization
 /**
- * Allows generating N command options from the specified {@link AppOption}.
+ * Allows generating N command options from the specified {@link AppOption} or {@link TextOption}.
  * <br>The target parameter must be of type {@link List}.
  * <br>You can configure how many arguments are required with {@link #numRequired()}.
+ * <br><b>Note:</b> you are limited to 1 vararg parameter in text commands
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)

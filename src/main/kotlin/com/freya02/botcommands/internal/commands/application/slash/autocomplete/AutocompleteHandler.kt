@@ -1,56 +1,49 @@
 package com.freya02.botcommands.internal.commands.application.slash.autocomplete
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder.Companion.findOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
-import com.freya02.botcommands.api.parameters.SlashParameterResolver
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
-import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
-import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
+import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal class AutocompleteHandler(
     private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
-    slashCmdOptionBuilders: Map<String, OptionBuilder>,
+    slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
-) {
-    private val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
-    internal val methodParameters: MethodParameters
-    internal val compositeParameters: List<AutocompleteCommandParameter>
+) : IExecutableInteractionInfo {
+    override val method = autocompleteInfo.function
+    override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
+    override val parameters: List<MethodParameter>
+        get() = methodParameters
+
+    internal val methodParameters: List<AutocompleteCommandParameter>
+    internal val compositeOptions: List<AutocompleteCommandOption>
 
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        @Suppress("RemoveExplicitTypeArguments") //Compiler bug
-        methodParameters = MethodParameters.transform<SlashParameterResolver<*, *>>( //Same transform method as in SlashCommandInfo, but option transformer is different
-            slashCommandInfo.context,
-            autocompleteInfo.function,
-            slashCmdOptionBuilders
-        ) {
-            optionPredicate = { slashCmdOptionBuilders[it.findDeclarationName()] is SlashCommandOptionBuilder }
-            optionTransformer = { kParameter, paramName, resolver ->
-                val optionBuilder = slashCmdOptionBuilders.findOption<SlashCommandOptionBuilder>(paramName, "an autocomplete option")
-                AutocompleteCommandParameter(kParameter, optionBuilder, resolver)
-            }
+        methodParameters = slashCmdOptionAggregateBuilders.filterKeys { method.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
+            AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, method)
         }
 
-        compositeParameters = methodParameters
-            .filter { it.methodParameterType == MethodParameterType.OPTION }
-            .map { it as AutocompleteCommandParameter }
+        compositeOptions = methodParameters
+            .flatMap { it.allOptions }
+            .filter { it.optionType == OptionType.OPTION }
+            .map { it as AutocompleteCommandOption }
             .filter { it.isCompositeKey }
 
         val collectionElementType = autocompleteInfo.function.collectionElementType
@@ -82,15 +75,8 @@ internal class AutocompleteHandler(
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        val objects: MutableMap<KParameter, Any?> = mutableMapOf()
-        objects[autocompleteInfo.function.instanceParameter!!] = instance
-        objects[autocompleteInfo.function.valueParameters.first()] = event
-
-        slashCommandInfo.putSlashOptions(event, objects, methodParameters)
-
-        if (objects.size - 2 < methodParameters.size) {
-            return emptyList() //Autocomplete was triggered without all the required parameters being present
-        }
+        val objects = slashCommandInfo.getSlashOptions(event, methodParameters)
+            ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
         val suppliedChoices = choiceSupplier.apply(event, autocompleteInfo.function.callSuspendBy(objects))
@@ -120,17 +106,17 @@ internal class AutocompleteHandler(
     }
 
     internal companion object {
-        internal fun String.asChoice(type: OptionType): Command.Choice? {
+        internal fun String.asChoice(type: JDAOptionType): Command.Choice? {
             return when (type) {
-                OptionType.STRING -> Command.Choice(this, this)
-                OptionType.INTEGER -> {
+                JDAOptionType.STRING -> Command.Choice(this, this)
+                JDAOptionType.INTEGER -> {
                     try {
                         Command.Choice(this, toLong())
                     } catch (e: NumberFormatException) {
                         null
                     }
                 }
-                OptionType.NUMBER -> {
+                JDAOptionType.NUMBER -> {
                     try {
                         Command.Choice(this, toDouble())
                     } catch (e: NumberFormatException) {

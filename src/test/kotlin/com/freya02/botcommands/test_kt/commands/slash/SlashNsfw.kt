@@ -17,10 +17,8 @@ class SlashNsfw : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(globalApplicationCommandManager: GlobalApplicationCommandManager) {
-        globalApplicationCommandManager.slashCommand("nsfw") {
+        globalApplicationCommandManager.slashCommand("nsfw", function = ::onSlashNsfw) {
             nsfw = true
-
-            function = ::onSlashNsfw
         }
     }
 }

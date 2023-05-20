@@ -32,21 +32,21 @@ object TextUtils {
 
         val prefix = event.context.prefix
         for ((i, variation) in commandInfo.variations.withIndex()) {
-            val commandParameters = variation.optionParameters
+            val commandOptions = variation.parameters.flatMap { it.allOptions }.filterIsInstance<TextCommandOption>()
 
             val syntax = StringBuilder("**Syntax**: $prefix$name ")
             val example = StringBuilder("**Example**: $prefix$name ")
 
-            if (commandParameters.isNotEmpty()) {
-                val needsQuote = commandParameters.hasMultipleQuotable()
+            if (commandOptions.isNotEmpty()) {
+                val needsQuote = commandOptions.hasMultipleQuotable()
 
-                for (commandParameter in commandParameters) {
-                    val boxedType = commandParameter.type.jvmErasure
+                for (commandOption in commandOptions) {
+                    val boxedType = commandOption.type.jvmErasure
 
-                    val argName = getArgName(needsQuote, commandParameter, boxedType)
-                    val argExample = getArgExample(needsQuote, commandParameter, boxedType)
+                    val argName = getArgName(needsQuote, commandOption, boxedType)
+                    val argExample = getArgExample(needsQuote, commandOption, boxedType)
 
-                    val isOptional = commandParameter.isOptional
+                    val isOptional = commandOption.isOptional
                     syntax.append(if (isOptional) '[' else '`').append(argName).append(if (isOptional) ']' else '`').append(' ')
                     example.append(argExample).append(' ')
                 }
@@ -79,8 +79,8 @@ object TextUtils {
         return builder
     }
 
-    private fun getArgExample(needsQuote: Boolean, parameter: TextCommandParameter, clazz: KClass<*>): String {
-        val optionalExample = parameter.data.helpExample
+    private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, clazz: KClass<*>): String {
+        val optionalExample = commandOption.data.helpExample
 
         return when {
             optionalExample != null -> when (clazz) {
@@ -92,7 +92,7 @@ object TextUtils {
                 Emoji::class -> ":joy:"
                 Int::class -> ThreadLocalRandom.current().nextLong(50).toString()
                 Long::class -> when {
-                    parameter.isId -> ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L).toString()
+                    commandOption.isId -> ThreadLocalRandom.current().nextLong(100000000000000000L, 999999999999999999L).toString()
                     else -> ThreadLocalRandom.current().nextLong(50).toString()
                 }
                 Float::class, Double::class -> String.format(locale = null, "%.3f", ThreadLocalRandom.current().nextDouble(50.0))
@@ -106,8 +106,8 @@ object TextUtils {
         }
     }
 
-    private fun getArgName(needsQuote: Boolean, commandParameter: TextCommandParameter, clazz: KClass<*>): String {
-        val optionalName = commandParameter.data.helpName
+    private fun getArgName(needsQuote: Boolean, commandOption: TextCommandOption, clazz: KClass<*>): String {
+        val optionalName = commandOption.data.helpName
         return when (clazz) {
             String::class.java -> when {
                 needsQuote -> "\"" + optionalName + "\""
@@ -117,8 +117,8 @@ object TextUtils {
         }
     }
 
-    fun List<TextCommandParameter>.hasMultipleQuotable(): Boolean =
-        count { p: TextCommandParameter -> p.resolver is QuotableRegexParameterResolver } > 1
+    fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
+        count { p -> p.resolver is QuotableRegexParameterResolver } > 1
 
     @JvmStatic
     fun <T : IMentionable> findEntity(id: Long, collection: Collection<T>, valueSupplier: () -> T): T =

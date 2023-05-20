@@ -4,17 +4,22 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
+import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.*
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.autobuilder.*
+import com.freya02.botcommands.internal.commands.autobuilder.asCommandInstance
+import com.freya02.botcommands.internal.commands.autobuilder.castFunction
+import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
+import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
@@ -24,8 +29,10 @@ import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class TextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
@@ -124,7 +131,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
             .variations
             .sortedWith(TextCommandComparator(context)) //Sort variations as to put most complex variations first, and fallback last
             .forEach {
-                variation {
+                variation(it.func.castFunction()) {
                     try {
                         processVariation(it)
                     } catch (e: Exception) {
@@ -135,8 +142,6 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
     }
 
     private fun TextCommandVariationBuilder.processVariation(metadata: TextFunctionMetadata) {
-        addFunction(metadata.func)
-
         processOptions(metadata.func, metadata.instance, metadata.path)
     }
 
@@ -171,26 +176,49 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
 
     private fun TextCommandVariationBuilder.processOptions(func: KFunction<*>, instance: TextCommand, path: CommandPath) {
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
+            val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(kParameter.findDeclarationName())
+                    null -> customOption(declaredName)
                     else -> generatedOption(
-                        kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
+                        declaredName, instance.getGeneratedValueSupplier(
                             path,
                             kParameter.findOptionName().asDiscordString(),
                             ParameterType.ofType(kParameter.type)
                         )
                     )
                 }
-                else -> option(
-                    kParameter.findDeclarationName(),
-                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName()
-                ) {
-                    helpExample = optionAnnotation.example.nullIfEmpty()
-                    isId = kParameter.hasAnnotation<ID>()
+                else -> {
+                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName
+                    if (kParameter.type.jvmErasure.isValue) {
+                        val inlineClassType = kParameter.type.jvmErasure.java
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                        }
+                    } else {
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> option(declaredName, optionName) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                        }
+                    }
+
                 }
             }
         }
+    }
+
+    private fun TextCommandOptionBuilder.configureOption(kParameter: KParameter, optionAnnotation: TextOption) {
+        helpExample = optionAnnotation.example.nullIfEmpty()
+        isId = kParameter.hasAnnotation<ID>()
     }
 
     /**

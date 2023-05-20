@@ -1,8 +1,7 @@
 package com.freya02.botcommands.api.commands.builder
 
-import com.freya02.botcommands.internal.commands.GeneratedMethodParameter
-import kotlin.reflect.KParameter
+import com.freya02.botcommands.internal.commands.GeneratedOption
 
 interface GeneratedOptionBuilder {
-    fun toGeneratedMethodParameter(parameter: KParameter): GeneratedMethodParameter
+    fun toGeneratedOption(): GeneratedOption
 }

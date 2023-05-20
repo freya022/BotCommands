@@ -8,7 +8,6 @@ import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.reflect.full.hasAnnotation
 import kotlin.system.measureNanoTime
 
 private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
@@ -95,8 +94,6 @@ internal class ClassPathContainer(private val context: BContextImpl) {
     }
 
     companion object {
-        inline fun <reified T : Annotation> Iterable<KFunction<*>>.filterWithAnnotation() = filter { it.hasAnnotation<T>() }
-
         fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }
     }
 }

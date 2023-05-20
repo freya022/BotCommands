@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.modals.annotations;
 
 import com.freya02.botcommands.api.core.config.BConfig;
+import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.modals.Modals;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
@@ -24,6 +25,7 @@ import java.lang.annotation.Target;
  *
  * @see ModalData
  * @see ModalInput
+ * @see Aggregate
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

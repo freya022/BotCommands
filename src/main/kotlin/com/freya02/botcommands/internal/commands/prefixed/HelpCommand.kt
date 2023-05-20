@@ -110,17 +110,13 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
             category = "Utils"
             description = "Gives help for a command"
 
-            variation {
+            variation(HelpCommand::onTextHelpCommand) {
                 option("commandStr", "command path") {
                     helpExample = "tag"
                 }
-
-                function = HelpCommand::onTextHelpCommand
             }
 
-            variation { //fallback
-                function = HelpCommand::onTextHelpFallback
-            }
+            variation(HelpCommand::onTextHelpFallback) //fallback
 		}
     }
 

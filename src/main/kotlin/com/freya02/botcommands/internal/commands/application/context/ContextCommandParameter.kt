@@ -1,15 +1,16 @@
 package com.freya02.botcommands.internal.commands.application.context
 
-import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
-import kotlin.reflect.KParameter
+import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionAggregateBuilder
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter.Companion.hasEvent
+import com.freya02.botcommands.internal.parameters.MethodParameterImpl
 
-abstract class ContextCommandParameter<R>(
-    parameter: KParameter,
-    val resolver: R
-) : MethodParameter {
-    override val methodParameterType = MethodParameterType.OPTION
-    override val kParameter = parameter
-    override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
+abstract class ContextCommandParameter(
+    context: BContextImpl,
+    optionAggregateBuilder: ApplicationCommandOptionAggregateBuilder<*>
+) : MethodParameterImpl(optionAggregateBuilder.parameter), IAggregatedParameter {
+    final override val aggregator = optionAggregateBuilder.aggregator
+    final override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)
+    final override val aggregatorHasEvent = aggregator.hasEvent()
 }

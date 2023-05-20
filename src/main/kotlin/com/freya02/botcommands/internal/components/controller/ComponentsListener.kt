@@ -10,28 +10,37 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.core.db.Database
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.components.ComponentHandlerParameter
+import com.freya02.botcommands.internal.components.ComponentHandlerOption
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.core.options.Option
+import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.events.interaction.component.*
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.valueParameters
 
 @ConditionalService(dependencies = [Components::class, Database::class])
 internal class ComponentsListener(
@@ -94,7 +103,7 @@ internal class ComponentsListener(
                             else -> throwInternal("Invalid component type being handled: ${component.componentType}")
                         }
 
-                        handlePersistentComponent(descriptor, evt, userData)
+                        handlePersistentComponent(descriptor, evt, userData.iterator())
                     }
                 }
                 is EphemeralComponentData -> {
@@ -131,43 +140,16 @@ internal class ComponentsListener(
     private suspend fun handlePersistentComponent(
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent, // already a BC event
-        userData: Array<out String>
+        userDataIterator: Iterator<String>
     ) {
-        var userArgsIndex = 0
-        val args = hashMapOf<KParameter, Any?>()
-        args[descriptor.method.instanceParameter!!] = descriptor.instance
-        args[descriptor.method.valueParameters.first()] = event
-
-        for (parameter in descriptor.parameters) {
-            val value = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    parameter as ComponentHandlerParameter
-
-                    parameter.resolver.resolve(context, descriptor, event, userData[userArgsIndex]).also {
-                        userArgsIndex++
-                    }
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-
-                    parameter.resolver.resolveSuspend(context, descriptor, event)
-                }
-                else -> throwInternal("MethodParameterType#${parameter.methodParameterType} has not been implemented")
+        with(descriptor) {
+            val optionValues = parameters.mapOptions { option ->
+                if (tryInsertOption(event, descriptor, option, this, userDataIterator) == InsertOptionResult.ABORT)
+                    throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
             }
 
-            if (value == null && parameter.kParameter.isOptional) { //Kotlin optional, continue getting more parameters
-                continue
-            } else if (value == null && !parameter.isOptional) { // Not a kotlin optional and not nullable
-                throwUser(
-                    descriptor.method,
-                    "Parameter '${parameter.kParameter.bestName}' is not nullable but its resolver returned null"
-                )
-            }
-
-            args[parameter.kParameter] = value
+            method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
         }
-
-        descriptor.method.callSuspendBy(args)
     }
 
     private fun handleException(event: GenericComponentInteractionCreateEvent, e: Throwable) {
@@ -178,5 +160,29 @@ internal class ComponentsListener(
             event.isAcknowledged -> event.hook.send(generalErrorMsg, ephemeral = true).queue()
             else -> event.reply_(generalErrorMsg, ephemeral = true).queue()
         }
+    }
+
+    private suspend fun tryInsertOption(
+        event: GenericComponentInteractionCreateEvent,
+        descriptor: ComponentDescriptor,
+        option: Option,
+        optionMap: MutableMap<Option, Any?>,
+        userDataIterator: Iterator<String>
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as ComponentHandlerOption
+
+                option.resolver.resolveSuspend(context, descriptor, event, userDataIterator.next())
+            }
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+
+                option.resolver.resolveSuspend(context, descriptor, event)
+            }
+            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+        }
+
+        return tryInsertNullableOption(value, option, optionMap)
     }
 }

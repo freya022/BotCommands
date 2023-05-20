@@ -5,12 +5,14 @@ import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
-import com.freya02.botcommands.internal.javaMethodInternal
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.EventHandlerFunction
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.unreflect
 import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.withFilter
@@ -158,7 +160,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
                     context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
                 })
 
-            classPathFunc.function.javaMethodInternal.declaringClass.let { clazz: Class<*> ->
+            classPathFunc.function.declaringClass.java.let { clazz ->
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {

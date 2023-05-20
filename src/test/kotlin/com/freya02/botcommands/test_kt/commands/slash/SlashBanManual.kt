@@ -24,7 +24,7 @@ class SlashBanManual {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("ban", scope = CommandScope.GLOBAL_NO_DM) {
+        manager.slashCommand("ban", scope = CommandScope.GLOBAL_NO_DM, ::onSlashBan) {
             description = "Get banned"
 
             option("target") {
@@ -34,8 +34,6 @@ class SlashBanManual {
             option("reason") {
                 description = "The ban reason"
             }
-
-            function = ::onSlashBan
         }
     }
 }

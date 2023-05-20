@@ -14,8 +14,6 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.Guild
@@ -78,8 +76,8 @@ class SlashMyCommand : ApplicationCommand() {
         """.trimIndent()).queue()
     }
 
-    @AutocompleteHandler(name = autocompleteHandlerName)
-    @CacheAutocomplete(cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY)
+//    @AutocompleteHandler(name = autocompleteHandlerName)
+//    @CacheAutocomplete(cacheMode = AutocompleteCacheMode.CONSTANT_BY_KEY)
     fun runAutocomplete(
         event: CommandAutoCompleteInteractionEvent,
         stringOption: String,
@@ -92,9 +90,9 @@ class SlashMyCommand : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(manager: GlobalApplicationCommandManager) {
-        manager.slashCommand("my_command") {
+        manager.slashCommand("my_command", function = null) {
             for ((subname, localFunction) in mapOf("kt" to ::executeCommand, "java" to SlashMyJavaCommand::cmd)) {
-                subcommand(subname) {
+                subcommand(subname, localFunction) {
                     description = "mah desc"
 
                     option("stringOption", "string") {
@@ -128,9 +126,7 @@ class SlashMyCommand : ApplicationCommand() {
                     option("autocompleteStr") {
                         description = "Autocomplete !"
 
-                        autocomplete("MyCommand: autocompleteStr") {
-                            function = ::runAutocomplete
-
+                        autocomplete("MyCommand: autocompleteStr", SlashMyJavaCommand::runAutocompleteJava) {
                             cache(AutocompleteCacheMode.CONSTANT_BY_KEY)
                         }
                     }
@@ -138,8 +134,6 @@ class SlashMyCommand : ApplicationCommand() {
                     generatedOption("guildName") {
                         it.guild!!.name
                     }
-
-                    function = localFunction
                 }
             }
         }

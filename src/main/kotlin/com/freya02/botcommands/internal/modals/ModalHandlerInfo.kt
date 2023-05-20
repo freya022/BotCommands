@@ -1,29 +1,37 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
-import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo.Companion.filterOptions
-import com.freya02.botcommands.internal.parameters.CustomMethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
+import com.freya02.botcommands.internal.core.options.Option
+import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.parameters.CustomMethodOption
+import com.freya02.botcommands.internal.parameters.OptionParameter
+import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.mapFinalParameters
+import com.freya02.botcommands.internal.utils.mapOptions
+import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 import kotlin.reflect.KFunction
-import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 class ModalHandlerInfo(
-    context: BContextImpl,
+    val context: BContextImpl,
     override val instance: Any,
     override val method: KFunction<*>
 ) : IExecutableInteractionInfo {
+    override val parameters: List<ModalHandlerParameter>
 
-    override val parameters: MethodParameters
-    override val optionParameters: List<MethodParameter>
+    private val expectedModalDatas: Int
+    private val expectedModalInputs: Int
 
     val handlerName: String
 
@@ -31,44 +39,24 @@ class ModalHandlerInfo(
         val annotation = method.findAnnotation<ModalHandler>()!!
         handlerName = annotation.name
 
-        @Suppress("RemoveExplicitTypeArguments") //Kotlin: Could not load module <Error module> --> Type inference is broken
-        parameters = MethodParameters.transform<ModalParameterResolver<*, *>>(context, method) {
-            optionPredicate = { it.hasAnnotation<ModalInput>() }
-            optionTransformer = { parameter, _, resolver -> ModalHandlerInputParameter(parameter, resolver) }
-
-            resolvablePredicate = { it.hasAnnotation<ModalDataAnnotation>() }
-            resolvableTransformer = { parameter -> ModalHandlerDataParameter(parameter) }
-        }
-
-        optionParameters = parameters.filterOptions()
-
-        val hasModalData = parameters.filterIsInstance<ModalHandlerDataParameter>().isNotEmpty()
-
-        //Check if the first parameters are all modal data
-        if (hasModalData) {
-            var sawModalData = false
-            for (parameter in parameters) {
-                if (parameter.methodParameterType != MethodParameterType.OPTION) continue
-
-                parameter as ModalHandlerParameter
-
-                requireUser(parameter is ModalHandlerDataParameter || sawModalData) {
-                    """
-                    Parameter #${parameter.index} must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
-                    All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters""".trimIndent()
+        parameters = method.nonInstanceParameters.drop(1).transformParameters(
+            builderBlock = { function, parameter, declaredName ->
+                when {
+                    parameter.hasAnnotation<ModalInput>() -> ModalHandlerInputOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    parameter.hasAnnotation<ModalDataAnnotation>() -> ModalHandlerDataOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                    else -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
+            },
+            aggregateBlock = { ModalHandlerParameter(context, it) }
+        )
 
-                if (parameter is ModalHandlerDataParameter) sawModalData = true
-            }
-        }
+        val options = parameters.flatMap { it.allOptions }
+        expectedModalDatas = options.filterIsInstance<ModalHandlerDataOption>().count()
+        expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
 
     @Throws(Exception::class)
-    suspend fun execute(
-        context: BContext,
-        modalData: ModalData,
-        event: ModalInteractionEvent
-    ): Boolean {
+    suspend fun execute(modalData: ModalData, event: ModalInteractionEvent): Boolean {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap
@@ -77,73 +65,77 @@ class ModalHandlerInfo(
             inputNameToInputIdMap[inputData.inputName] = inputId
         }
 
-        val objects: MutableMap<KParameter, Any?> = hashMapOf()
-        objects[method.instanceParameter!!] = instance
-        objects[method.valueParameters.first()] = event
-
         val userDatas = handlerData.userData
-        val expectedModalDatas = parameters.filterIsInstance<ModalHandlerDataParameter>().count()
-        val expectedModalInputs = parameters.filterIsInstance<ModalHandlerInputParameter>().count()
 
         //Check if there's enough arguments to fit user data + modal inputs
-        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size) {
+        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, method) {
             """
             Modal handler does not match the received modal data:
             Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)
             Discord data: ${userDatas.size} userdata parameters and ${event.values.size} modal input(s)""".trimIndent()
         }
 
-        //Insert modal data in the order of appearance, after the event
-        for (i in userDatas.indices) {
-            val parameter = parameters[i]
-            if (parameter.methodParameterType != MethodParameterType.OPTION) continue
-
-            requireUser(parameter is ModalHandlerDataParameter) {
-                """
-                Parameter #$i must be annotated with @${ModalData::class.java.simpleName} or situated after all modal data parameters.
-                All modal data must be inserted after the event, with the same order as the constructed modal, before inserting modal inputs and custom parameters""".trimIndent()
-            }
-
-            val userData = userDatas[i]
-            requireUser(parameter.type.jvmErasure.isSuperclassOf(userData::class)) {
-                "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
-                    parameter.name,
-                    parameter.type.simpleName,
-                    userData.javaClass.simpleName
-                )
-            }
-
-            objects[parameter.kParameter] = userData
+        val userDataIterator = userDatas.iterator()
+        val optionValues = parameters.mapOptions { option ->
+            if (tryInsertOption(event, option, inputNameToInputIdMap, userDataIterator, this) == InsertOptionResult.ABORT)
+                throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
         }
 
-        for (parameter in parameters) {
-            objects[parameter.kParameter] = when (parameter.methodParameterType) {
-                MethodParameterType.OPTION -> {
-                    if (parameter !is ModalHandlerInputParameter) continue
-
-                    //We have the modal input's ID
-                    // But we have a Map of input *name* -> InputData (contains input ID)
-                    val inputId = inputNameToInputIdMap[parameter.inputName]
-                        ?: throwUser("Modal input named '${parameter.inputName}' was not found")
-                    val modalMapping = event.getValue(inputId)
-                        ?: throwUser("Modal input ID '$inputId' was not found on the event")
-
-                    parameter.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
-                        requireUser(obj != null || parameter.isOptional) {
-                            "The parameter '${parameter.name}' of value '${modalMapping.asString}' could not be resolved into a ${parameter.type.simpleName}"
-                        }
-                    }
-                }
-                MethodParameterType.CUSTOM -> {
-                    parameter as CustomMethodParameter
-                    parameter.resolver.resolveSuspend(context, this, event)
-                }
-                else -> throwInternal("Unexpected MethodParameterType: ${parameter.methodParameterType}")
-            }
-        }
-
-        method.callSuspendBy(objects)
+        method.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
 
         return true
+    }
+
+    private suspend fun tryInsertOption(
+        event: ModalInteractionEvent,
+        option: Option,
+        inputNameToInputIdMap: Map<String, String>,
+        userDataIterator: Iterator<Any>,
+        optionMap: MutableMap<Option, Any?>
+    ): InsertOptionResult {
+        val value = when (option.optionType) {
+            OptionType.OPTION -> {
+                option as ModalHandlerInputOption
+
+                //We have the modal input's ID
+                // But we have a Map of input *name* -> InputData (contains input ID)
+                val inputId = inputNameToInputIdMap[option.inputName]
+                    ?: throwUser("Modal input named '${option.inputName}' was not found")
+                val modalMapping = event.getValue(inputId)
+                    ?: throwUser("Modal input ID '$inputId' was not found on the event")
+
+                option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
+                    requireUser(obj != null || option.isOptional) {
+                        "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleName}"
+                    }
+                }
+            }
+
+            OptionType.GENERATED -> {
+                option as ModalHandlerDataOption
+
+                if (!userDataIterator.hasNext())
+                    throwInternal("Mismatch in amount of user data provided by the user and the amount requested by the aggregates, this should have been checked")
+
+                userDataIterator.next().also { userData ->
+                    requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
+                        "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
+                            option.declaredName,
+                            option.type.simpleName,
+                            userData.javaClass.simpleName
+                        )
+                    }
+                }
+            }
+
+            OptionType.CUSTOM -> {
+                option as CustomMethodOption
+                option.resolver.resolveSuspend(context, this, event)
+            }
+
+            else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
+        }
+
+        return tryInsertNullableOption(value, option, optionMap)
     }
 }

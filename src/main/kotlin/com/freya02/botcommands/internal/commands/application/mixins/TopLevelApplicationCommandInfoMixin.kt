@@ -18,7 +18,7 @@ open class TopLevelApplicationCommandInfoMixin(
     final override val isTestOnly: Boolean
 
     init {
-        builder as? ApplicationCommandBuilder ?: throwMixin<ApplicationCommandBuilder>()
+        builder as? ApplicationCommandBuilder<*> ?: throwMixin<ApplicationCommandBuilder<*>>()
 
         scope = builder.scope
         isDefaultLocked = builder.isDefaultLocked

@@ -210,7 +210,7 @@ internal class ApplicationCommandsBuilder(
         }
     }
 
-    private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: IApplicationCommandManager) {
+    private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: AbstractApplicationCommandManager) {
         val (instance, function) = classPathFunction
         val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
 

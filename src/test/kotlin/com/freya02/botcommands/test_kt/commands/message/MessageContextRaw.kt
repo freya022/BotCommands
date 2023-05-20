@@ -49,7 +49,7 @@ class MessageContextRaw : ApplicationCommand() {
 
     @AppDeclaration
     fun declare(guildApplicationCommandManager: GuildApplicationCommandManager) {
-        guildApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD) {
+        guildApplicationCommandManager.messageCommand("Raw content", CommandScope.GUILD, ::onMessageContextRaw) {
             option("message")
 
             generatedOption("rawContent") {
@@ -57,8 +57,6 @@ class MessageContextRaw : ApplicationCommand() {
 
                 MarkdownSanitizer.escape(it.target.contentRaw)
             }
-
-            function = ::onMessageContextRaw
         }
     }
 }

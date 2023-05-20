@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlash
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
 import net.dv8tion.jda.internal.utils.Checks
+import kotlin.reflect.KFunction
 
 class SlashSubcommandGroupBuilder(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
     override val parentInstance: INamedCommand = topLevelBuilder
@@ -23,8 +24,9 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, override va
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
     }
 
-    fun subcommand(name: String, block: SlashSubcommandBuilder.() -> Unit) {
-        SlashSubcommandBuilder(context, name, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)
+    @JvmSynthetic
+    fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
+        SlashSubcommandBuilder(context, name, function, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)
     }
 
     fun build(topLevelInstance: TopLevelSlashCommandInfo): SlashSubcommandGroupInfo {

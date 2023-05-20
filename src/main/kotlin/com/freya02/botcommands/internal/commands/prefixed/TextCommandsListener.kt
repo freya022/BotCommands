@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.requests.CompletedRestAction
-import java.util.regex.Matcher
 
 private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
@@ -64,9 +63,9 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
                             if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return@launch
                         }
                         else -> { //Regex text command
-                            val matcher = it.completePattern.matcher(args)
-                            if (matcher.matches()) {
-                                if (tryExecute(event, args, it, isNotOwner, matcher) != ExecutionResult.CONTINUE) return@launch
+                            val matchResult = it.completePattern.matchEntire(args)
+                            if (matchResult != null) {
+                                if (tryExecute(event, args, it, isNotOwner, matchResult) != ExecutionResult.CONTINUE) return@launch
                             }
                         }
                     }
@@ -128,7 +127,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
         args: String,
         variation: TextCommandVariation,
         isNotOwner: Boolean,
-        matcher: Matcher?
+        matchResult: MatchResult?
     ): ExecutionResult {
         val commandInfo = variation.info
 
@@ -187,7 +186,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
             }
         }
 
-        return variation.execute(event, cooldownService, args, matcher)
+        return variation.execute(event, cooldownService, args, matchResult)
     }
 
     private fun replyError(event: MessageReceivedEvent, msg: String) {

@@ -23,7 +23,9 @@ import com.freya02.botcommands.internal.utils.LocalizationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 
 @BService
@@ -110,7 +112,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
     }
 
     private fun processCommand(
-        manager: IApplicationCommandManager,
+        manager: AbstractApplicationCommandManager,
         metadata: SlashFunctionMetadata,
         subcommands: Map<String, List<SlashFunctionMetadata>>,
         subcommandGroups: Map<String, SlashSubcommandGroupMetadata>
@@ -120,33 +122,33 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         val path = metadata.path
         val commandId = metadata.commandId
 
-        manager.slashCommand(path.name, annotation.scope) {
+        val name = path.name
+        val subcommandsMetadata = subcommands[name]
+        val subcommandGroupsMetadata = subcommandGroups[name]
+        val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
+        manager.slashCommand(name, annotation.scope, if (isTopLevel) metadata.func.castFunction() else null) {
             defaultLocked = annotation.defaultLocked
             description = getEffectiveDescription(annotation)
 
-            val subcommandsMetadata = subcommands[name]
             subcommandsMetadata?.let { metadataList ->
                 metadataList.forEach { subMetadata ->
-                    subcommand(subMetadata.path.subname!!) {
+                    subcommand(subMetadata.path.subname!!, subMetadata.func.castFunction()) {
                         //TODO replace with #subcommandDescription in annotation
                         this@subcommand.description = subMetadata.annotation.description
                         this@subcommand.configureBuilder(subMetadata)
-                        this@subcommand.addFunction(subMetadata.func)
                         this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                     }
                 }
             }
 
-            val subcommandGroupsMetadata = subcommandGroups[name]
             subcommandGroupsMetadata?.let { groupMetadata ->
                 subcommandGroup(groupMetadata.name) {
                     this@subcommandGroup.description = groupMetadata.description
 
                     groupMetadata.subcommands.forEach { (subname, metadataList) ->
                         metadataList.forEach { subMetadata ->
-                            subcommand(subname) {
+                            subcommand(subname, subMetadata.func.castFunction()) {
                                 this@subcommand.configureBuilder(subMetadata)
-                                this@subcommand.addFunction(subMetadata.func)
                                 this@subcommand.processOptions((manager as? GuildApplicationCommandManager)?.guild, subMetadata, instance, commandId)
                             }
                         }
@@ -156,9 +158,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
 
             configureBuilder(metadata)
 
-            val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
             if (isTopLevel) {
-                addFunction(metadata.func)
                 processOptions((manager as? GuildApplicationCommandManager)?.guild, metadata, instance, commandId)
             }
         }
@@ -178,13 +178,13 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         val func = metadata.func
         val path = metadata.path
 
-        var optionIndex = 0
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
+            val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(kParameter.findDeclarationName())
+                    null -> customOption(declaredName)
                     else -> generatedOption(
-                        kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
+                        declaredName, instance.getGeneratedValueSupplier(
                             guild,
                             commandId,
                             path,
@@ -193,36 +193,51 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                         )
                     )
                 }
-                else -> option(
-                    kParameter.findDeclarationName(),
-                    optionAnnotation.name.nullIfEmpty() ?: kParameter.findDeclarationName().asDiscordString()
-                ) {
-                    description = getEffectiveDescription(optionAnnotation)
-
-                    kParameter.findAnnotation<VarArgs>()?.let { varArgs ->
-                        this.varArgs = varArgs.value
-                        this.requiredVarArgs = varArgs.numRequired
-                    }
-
-                    kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
-                    kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
-                    kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
-
-                    kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
-                        channelTypes = enumSetOf<ChannelType>().also { types ->
-                            types += channelTypesAnnotation.value
+                else -> {
+                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.asDiscordString()
+                    if (kParameter.type.jvmErasure.isValue) {
+                        val inlineClassType = kParameter.type.jvmErasure.java
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
+                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
+                        }
+                    } else {
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> option(declaredName, optionName) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
+                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
                         }
                     }
-
-                    processAutocomplete(optionAnnotation)
-
-                    usePredefinedChoices = optionAnnotation.usePredefinedChoices
-                    choices = instance.getOptionChoices(guild, path, optionName)
-
-                    optionIndex++
                 }
             }
         }
+    }
+
+    context(SlashCommandBuilder)
+    private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: AppOption) {
+        description = getEffectiveDescription(optionAnnotation)
+
+        kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
+        kParameter.findAnnotation<DoubleRange>()?.let { range -> valueRange = ValueRange.ofDouble(range.from, range.to) }
+        kParameter.findAnnotation<Length>()?.let { length -> lengthRange = LengthRange.of(length.min, length.max) }
+
+        kParameter.findAnnotation<ChannelTypes>()?.let { channelTypesAnnotation ->
+            channelTypes = enumSetOf<ChannelType>().also { types ->
+                types += channelTypesAnnotation.value
+            }
+        }
+
+        processAutocomplete(optionAnnotation)
+
+        usePredefinedChoices = optionAnnotation.usePredefinedChoices
+        choices = instance.getOptionChoices(guild, path, optionName)
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: AppOption) {

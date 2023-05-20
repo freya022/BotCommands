@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.api.core.config.BApplicationConfig;
+import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -87,6 +88,7 @@ import java.lang.annotation.Target;
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
+ * @see Aggregate
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

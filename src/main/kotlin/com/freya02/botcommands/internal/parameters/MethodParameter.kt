@@ -1,27 +1,31 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 
 interface MethodParameter {
-    val methodParameterType: MethodParameterType
     val kParameter: KParameter
+    /**
+     * This is needed because autocomplete borrows the parameters and options of its slash command
+     * But autocomplete execution needs the parameters of the autocomplete handler
+     */
+    val executableParameter: KParameter
+        get() = kParameter
     val name: String
-        get() = kParameter.findDeclarationName()
-    val discordName: String
-        get() = throwInternal("MethodParameter#discordName is not implemented")
-
     val type: KType
-        get() = kParameter.type
     val index: Int
-        get() = kParameter.index
-    val isOption: Boolean
-        get() = methodParameterType == MethodParameterType.OPTION
     val isOptional: Boolean
     /** This checks the java primitiveness, not kotlin, kotlin.Double is an object. */
     val isPrimitive: Boolean
-        get() = kParameter.type.jvmErasure.java.isPrimitive
+}
+
+open class MethodParameterImpl(final override val kParameter: KParameter) : MethodParameter {
+    final override val name = kParameter.findDeclarationName()
+    final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
+    final override val type = kParameter.type
+    final override val index = kParameter.index
+    final override val isPrimitive = kParameter.type.jvmErasure.java.isPrimitive
 }

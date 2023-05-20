@@ -1,28 +1,16 @@
 package com.freya02.botcommands.internal.commands
 
-import com.freya02.botcommands.api.commands.application.builder.OptionBuilder
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.parameters.MethodParameterType
-import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
-import kotlin.reflect.KParameter
+import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter
+import com.freya02.botcommands.internal.parameters.IAggregatedParameter.Companion.hasEvent
+import com.freya02.botcommands.internal.parameters.MethodParameterImpl
 
 abstract class CommandParameter(
-    final override val kParameter: KParameter, optionBuilder: OptionBuilder
-) : MethodParameter {
-    override val methodParameterType = MethodParameterType.OPTION
-
-    override val name = optionBuilder.declaredName
-    override val discordName = optionBuilder.optionName
-
-    override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
-
-    init {
-        val paramName = kParameter.findDeclarationName()
-        val optionName = optionBuilder.declaredName
-        if (paramName != optionName) {
-            throwUser("Parameter '$kParameter' does not have the same name as the command declaration: '$optionName'")
-        }
-    }
+    context: BContextImpl,
+    optionAggregateBuilder: OptionAggregateBuilder<*>
+) : MethodParameterImpl(optionAggregateBuilder.parameter), IAggregatedParameter {
+    final override val aggregator = optionAggregateBuilder.aggregator
+    final override val aggregatorInstance: Any? = context.serviceContainer.getFunctionServiceOrNull(aggregator)
+    final override val aggregatorHasEvent = aggregator.hasEvent()
 }

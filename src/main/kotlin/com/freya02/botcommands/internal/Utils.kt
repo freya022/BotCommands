@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Executable
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -22,6 +23,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
@@ -54,6 +56,10 @@ internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KPar
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwInternal(message: String): Nothing =
     throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
+
+@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
+internal inline fun throwInternal(function: KFunction<*>, message: String): Nothing =
+    throw IllegalArgumentException("${function.shortSignature} : $message, please report this to the devs. ${getDiagVersion()}")
 
 internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
@@ -159,7 +165,11 @@ val KClass<*>.simpleNestedName: String
     get() = this.java.simpleNestedName
 
 val Class<*>.simpleNestedName: String
-    get() = this.canonicalName.substring(this.packageName.length + 1)
+    get() = when {
+        this.isPrimitive -> canonicalName
+        this.isArray -> componentType.simpleNestedName + "[]"
+        else -> this.canonicalName.substring(this.packageName.length + 1)
+    }
 
 fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
 fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
@@ -171,7 +181,16 @@ val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
 val KFunction<*>.isStatic: Boolean
-    get() = Modifier.isStatic(this.javaMethod!!.modifiers)
+    get() = !isConstructor && Modifier.isStatic(this.javaMethodInternal.modifiers)
+
+val KFunction<*>.isConstructor: Boolean
+    get() = this.javaConstructor != null
+
+val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
+    get() = javaMethod ?: javaConstructor
+
+val KFunction<*>.javaMethodOrConstructor: Executable
+    get() = javaMethodOrConstructorOrNull ?: throwInternal("Could not resolve Java method or constructor for $this")
 
 val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal("Could not resolve Java method for $this")
