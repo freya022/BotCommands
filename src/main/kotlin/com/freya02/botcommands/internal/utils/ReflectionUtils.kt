@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
@@ -39,7 +40,7 @@ internal object ReflectionUtils {
             throwUser("$this : Function needs to be public")
         }
 
-        requireUser(this.isConstructor || !this.isStatic || this.javaMethodOrConstructor.declaringClass.kotlin.isValue, this) {
+        requireUser(this.isConstructor || !this.isStatic || this.declaringClass.isValue, this) {
             "Function must not be static"
         }
 
@@ -76,7 +77,7 @@ internal object ReflectionUtils {
 
     internal val KFunction<*>.shortSignatureNoSrc: String
         get() {
-            val declaringClassName = this.javaMethodOrConstructorOrNull?.declaringClass?.simpleNestedName ?: "<no-java-method>"
+            val declaringClassName = this.declaringClass.simpleNestedName
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleNestedName }
             return "$declaringClassName#$methodName($parameters)"

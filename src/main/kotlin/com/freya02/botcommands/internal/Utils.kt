@@ -186,11 +186,11 @@ val KFunction<*>.isStatic: Boolean
 val KFunction<*>.isConstructor: Boolean
     get() = this.javaConstructor != null
 
-val KFunction<*>.javaMethodOrConstructor: Executable
-    get() = javaMethod ?: javaConstructor ?: throwInternal("Could not resolve Java method or constructor for $this")
-
 val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
     get() = javaMethod ?: javaConstructor
+
+val KFunction<*>.javaMethodOrConstructor: Executable
+    get() = javaMethodOrConstructorOrNull ?: throwInternal("Could not resolve Java method or constructor for $this")
 
 val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal("Could not resolve Java method for $this")

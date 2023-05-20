@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.simpleName
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.Permission
@@ -17,13 +18,12 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.findAnnotations
-import kotlin.reflect.jvm.javaMethod
 
 internal object AnnotationUtils {
     //List order is from deepest to most effective
     //aka class --> method
     private fun <A : Annotation> getEffectiveAnnotations(method: KFunction<*>, annotation: KClass<A>): List<A> {
-        return method.findAnnotations(annotation) + method.javaMethod!!.declaringClass.getDeclaredAnnotationsByType(annotation.java)
+        return method.findAnnotations(annotation) + method.declaringClass.findAnnotations(annotation)
     }
 
     fun getEffectiveTestGuildIds(context: BContextImpl, method: KFunction<*>): TLongSet {
@@ -52,7 +52,7 @@ internal object AnnotationUtils {
 
         return when {
             methodAnnot.isNotEmpty() -> methodAnnot.first()
-            else -> method.javaMethod!!.declaringClass.kotlin.findAnnotations(annotationType).firstOrNull()
+            else -> method.declaringClass.findAnnotations(annotationType).firstOrNull()
         }
     }
 
@@ -66,7 +66,7 @@ internal object AnnotationUtils {
                 return set
             }
 
-            set += func.javaMethod!!.declaringClass.getAnnotation(UserPermissions::class.java).value
+            set += func.declaringClass.findAnnotation<UserPermissions>()?.value ?: emptyArray()
         }
     }
 
@@ -80,7 +80,7 @@ internal object AnnotationUtils {
                 return set
             }
 
-            set += func.javaMethod!!.declaringClass.getAnnotation(BotPermissions::class.java).value
+            set += func.declaringClass.findAnnotation<BotPermissions>()?.value ?: emptyArray()
         }
     }
 

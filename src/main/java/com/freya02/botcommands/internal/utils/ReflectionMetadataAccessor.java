@@ -9,16 +9,16 @@ import kotlin.reflect.jvm.internal.KFunctionImpl;
 import kotlin.reflect.jvm.internal.KParameterImpl;
 import org.jetbrains.annotations.NotNull;
 
-public class ReflectionMetadataAccessor {
+class ReflectionMetadataAccessor {
     @NotNull
     @SuppressWarnings("KotlinInternalInJava")
-    public static KCallable<?> getParameterCallable(@NotNull KParameter parameter) {
+    static KCallable<?> getParameterCallable(@NotNull KParameter parameter) {
         return ((KParameterImpl) parameter).getCallable();
     }
 
     @NotNull
     @SuppressWarnings("KotlinInternalInJava")
-    public static KClass<?> getFunctionDeclaringClass(@NotNull KFunction<?> function) {
+    static KClass<?> getFunctionDeclaringClass(@NotNull KFunction<?> function) {
         return (KClassImpl<?>) ((KFunctionImpl) function).getContainer();
     }
 }

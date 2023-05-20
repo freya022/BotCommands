@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.ReflectionMetadataAccessor
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.hasAtMostOneServiceAnnotation
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -245,12 +245,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     fun getFunctionService(function: KFunction<*>): Any = when {
         function.isConstructor -> throwInternal("$function: Tried to get a function's instance but was a constructor, this should have been checked beforehand")
         function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
-        else -> getService(ReflectionMetadataAccessor.getFunctionDeclaringClass(function))
+        else -> getService(function.declaringClass)
     }
 
     fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
         function.isConstructor || function.isStatic -> null
-        else -> getService(ReflectionMetadataAccessor.getFunctionDeclaringClass(function))
+        else -> getService(function.declaringClass)
     }
 
     fun <T : Any> putService(t: T) {
