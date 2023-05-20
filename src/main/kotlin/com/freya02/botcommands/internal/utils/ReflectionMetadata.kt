@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.isInstantiable
 import com.freya02.botcommands.internal.utils.ReflectionUtils.isService
 import io.github.classgraph.*
 import java.lang.reflect.Executable
@@ -72,17 +73,19 @@ internal object ReflectionMetadata {
 
         return scanned.flatMap { (scanResult, classes) ->
             classes
-                .asSequence()
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
-                        return@filter KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) == KotlinClassHeader.Kind.CLASS
+                        //Only keep classes, not others such as file facades
+                        if (KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) != KotlinClassHeader.Kind.CLASS) {
+                            return@filter false
+                        }
                     }
-                    return@filter true
+
+                    if (it.name.contains("\$special")) return@filter false
+                    if (it.isSynthetic || it.isEnum || it.isAbstract) return@filter false
+
+                    return@filter isInstantiable(it)
                 }
-                .filterNot { it.name.contains("\$special") }
-                .filterNot { it.isSynthetic || it.isEnum || it.isAbstract } //Don't keep these
-                .filter(ReflectionUtils::isInstantiable)
-                .toList()
                 .also { readAnnotations(it) }
                 .map { it.loadClass() }
                 .also {

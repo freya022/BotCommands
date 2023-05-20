@@ -18,11 +18,11 @@ internal sealed interface ClassPathFunction {
 
     val function: KFunction<*>
 
-    operator fun component1(): Any = instance
-    operator fun component2(): KFunction<*> = function
-
     fun hasInstance() = instanceOrNull != null
 }
+
+internal inline fun <R> ClassPathFunction.withInstanceOrNull(block: (instance: Any, function: KFunction<*>) -> R) =
+    instanceOrNull?.let { block(it, function) }
 
 internal class LazyClassPathFunction internal constructor(
     private val context: BContextImpl,

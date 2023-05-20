@@ -32,7 +32,7 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<KClass<*>, MutableList<EventHandlerFunction>>
+private typealias EventMap = MutableMap<KClass<*>, CopyOnWriteArrayList<EventHandlerFunction>>
 
 @InjectedService
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
@@ -105,7 +105,12 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val (instance, function) = eventHandlerFunction.classPathFunction
+            val instance = eventHandlerFunction.classPathFunction.instanceOrNull
+            if (instance == null) {
+                map[event::class]?.remove(eventHandlerFunction)
+                return
+            }
+            val function = eventHandlerFunction.classPathFunction.function
 
             /**
              * See [CoroutineEventManager.handle]
@@ -164,7 +169,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.getOrPut(it) { mutableListOf() }.add(eventHandlerFunction)
+                    instanceMap.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
                 }
             }
 

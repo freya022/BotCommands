@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCo
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.withInstanceOrNull
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -211,9 +212,9 @@ internal class ApplicationCommandsBuilder(
     }
 
     private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: AbstractApplicationCommandManager) {
-        val (instance, function) = classPathFunction
-        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
-
-        function.callSuspend(instance, manager, *args)
+        classPathFunction.withInstanceOrNull { instance, function ->
+            val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
+            function.callSuspend(instance, manager, *args)
+        }
     }
 }
