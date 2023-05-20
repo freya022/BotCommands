@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.builder
 
+import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
@@ -20,6 +21,8 @@ abstract class ExecutableCommandBuilder<T : OptionAggregateBuilder<T>, R> intern
 
     /**
      * @param declaredName Name of the declared parameter in the [function]
+     *
+     * @see Aggregate
      */
     @JvmOverloads
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit = {}) {

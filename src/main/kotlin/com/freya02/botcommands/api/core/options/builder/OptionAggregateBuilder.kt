@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.options.builder
 
+import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
@@ -33,6 +34,9 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
         }
     }
 
+    /**
+     * @see Aggregate
+     */
     fun nestedAggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
         _nestedAggregates.aggregate(declaredName, aggregator, block)
     }

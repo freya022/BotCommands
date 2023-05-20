@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
+import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 
 import java.lang.annotation.ElementType;
@@ -29,6 +30,7 @@ import java.lang.annotation.Target;
  * @see BotPermissions
  * @see UserPermissions
  * @see Cooldown
+ * @see Aggregate
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
