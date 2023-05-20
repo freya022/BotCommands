@@ -188,6 +188,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     /**
      * Returns a non-null string if the service is not instantiable
      */
+    @JvmSynthetic
     internal fun canCreateService(clazz: KClass<*>): String? = localBeingCheckedSet.get().withServiceCheckKey(clazz) cachedCallback@{
         //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
         if (clazz !in serviceMap) {
@@ -253,12 +254,17 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         else -> getService(function.declaringClass)
     }
 
-    fun <T : Any> putService(t: T) {
+    fun putService(t: Any) {
         serviceMap.put(t, t::class)
     }
 
+    @JvmSynthetic
     inline fun <reified T : Any> putServiceAs(t: T) {
         serviceMap.put(t, T::class)
+    }
+
+    fun putServiceAs(t: Any, clazz: Class<*>) {
+        serviceMap.put(t, clazz.kotlin)
     }
 
     fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
@@ -267,6 +273,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    @JvmSynthetic
     inline fun <T, reified R : Any> lazy(): ReadOnlyProperty<T, R> {
         val kClass = R::class
 
