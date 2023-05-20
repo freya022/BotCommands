@@ -30,6 +30,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
@@ -380,7 +381,12 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         if (constructors.isEmpty()) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have an accessible constructor") }
         if (constructors.size != 1) { return ServiceResult(null, "Class " + clazz.simpleNestedName + " must have exactly one constructor") }
 
-        return ServiceResult(constructors.single(), null)
+        val constructor = constructors.single()
+        if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
+            return ServiceResult(null, "Constructor of ${clazz.simpleNestedName} must be public")
+        }
+
+        return ServiceResult(constructor, null)
     }
 
     private fun findInstanceSupplier(classType: KClass<*>, functions: Collection<KFunction<*>>): KFunction<*>? {
