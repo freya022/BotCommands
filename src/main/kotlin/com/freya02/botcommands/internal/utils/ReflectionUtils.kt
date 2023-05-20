@@ -91,13 +91,13 @@ internal object ReflectionUtils {
         get() {
             val declaringClassName = this.declaringClass.simpleNestedName
             val methodName = this.name
-            val parameters = this.valueParameters.joinToString { it.type.jvmErasure.java.simpleNestedName }
+            val parameters = this.valueParameters.joinToString { it.type.simpleNestedName }
             return "$declaringClassName#$methodName($parameters)"
         }
 
     internal val KFunction<*>.shortSignature: String
         get() {
-            val returnType = this.returnType.simpleName
+            val returnType = this.returnType.simpleNestedName
             val source = this.javaMethodOrConstructorOrNull.let { method ->
                 return@let when {
                     method != null && this.lineNumber != 0 -> {

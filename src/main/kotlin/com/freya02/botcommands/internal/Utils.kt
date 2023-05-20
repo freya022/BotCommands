@@ -156,8 +156,18 @@ fun KParameter.findOptionName(): String {
     return name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
 }
 
-val KType.simpleName: String
-    get() = (this.jvmErasure.simpleName ?: throwInternal("Tried to get the name of a no-name class: $this")) + if (this.isMarkedNullable) "?" else ""
+val KType.simpleNestedName: String
+    get() = buildString {
+        append(jvmErasure.simpleNestedName)
+        if (arguments.isNotEmpty()) {
+            append("<")
+            append(arguments.joinToString {
+                it.type?.simpleNestedName ?: "*"
+            })
+            append(">")
+        }
+        if (isMarkedNullable) append("?")
+    }
 
 val KClass<*>.simpleNestedName: String
     get() = this.java.simpleNestedName

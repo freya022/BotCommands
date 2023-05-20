@@ -105,7 +105,7 @@ class ModalHandlerInfo(
 
                 option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
                     requireUser(obj != null || option.isOptional) {
-                        "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleName}"
+                        "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
                     }
                 }
             }
@@ -120,7 +120,7 @@ class ModalHandlerInfo(
                     requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
                         "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
                             option.declaredName,
-                            option.type.simpleName,
+                            option.type.simpleNestedName,
                             userData.javaClass.simpleName
                         )
                     }

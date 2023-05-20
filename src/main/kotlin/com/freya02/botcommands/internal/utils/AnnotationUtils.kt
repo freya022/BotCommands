@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
-import com.freya02.botcommands.internal.simpleName
+import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import gnu.trove.set.TLongSet
@@ -89,6 +89,6 @@ internal object AnnotationUtils {
         val kFunction = annotation.annotationClass.declaredMemberProperties.find { it.name == methodName }
             ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}'")
         return kFunction.call(annotation) as? T
-            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}' as the type is incorrect, annotation type: ${kFunction.returnType.simpleName}")
+            ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}' as the type is incorrect, annotation type: ${kFunction.returnType.simpleNestedName}")
     }
 }
