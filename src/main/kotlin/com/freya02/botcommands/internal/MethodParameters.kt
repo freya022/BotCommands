@@ -17,12 +17,8 @@ class BasicOptionAggregateBuilder(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : OptionAggregateBuilder<BasicOptionAggregateBuilder>(aggregatorParameter, aggregator) {
-    override fun constructNestedAggregate(
-        aggregatorParameter: AggregatorParameter,
-        aggregator: KFunction<*>
-    ): BasicOptionAggregateBuilder {
-        TODO("Not yet implemented")
-    }
+    override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
+        BasicOptionAggregateBuilder(aggregatorParameter, aggregator)
 }
 
 internal inline fun <reified T : OptionAggregateBuilder<*>, R> Map<String, T>.transform(aggregateBlock: (T) -> R) =
