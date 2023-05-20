@@ -24,6 +24,19 @@ class TextCommandOptionAggregateBuilder(
         this += TextGeneratedOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), generatedValueSupplier)
     }
 
+    @JvmOverloads
+    fun nestedOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
+        //Same as in TextCommandVariationBuilder#optionVararg
+        nestedVarargAggregate(declaredName) {
+            for (i in 0..<amount) {
+                option("args", optionNameSupplier(i)) {
+                    block(i)
+                    isOptional = i >= requiredAmount
+                }
+            }
+        }
+    }
+
     override fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) =
         TextCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
 }

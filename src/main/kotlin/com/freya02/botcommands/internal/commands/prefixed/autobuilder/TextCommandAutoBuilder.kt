@@ -32,6 +32,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class TextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
@@ -189,14 +190,27 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
                 }
                 else -> {
                     val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName
-                    when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                        null -> option(declaredName, optionName) {
-                            configureOption(kParameter, optionAnnotation)
+                    if (kParameter.type.jvmErasure.isValue) {
+                        val inlineClassType = kParameter.type.jvmErasure.java
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
                         }
-                        else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                            configureOption(kParameter, optionAnnotation)
+                    } else {
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> option(declaredName, optionName) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
+                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(kParameter, optionAnnotation)
+                            }
                         }
                     }
+
                 }
             }
         }
