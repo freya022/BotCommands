@@ -111,7 +111,7 @@ class TextCommandVariation internal constructor(
 
                     resolved
                 } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
-                    throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.data.helpName}) for input args '${args}', yet the pattern matched and the option is required")
+                    throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {
                         return InsertOptionResult.OK

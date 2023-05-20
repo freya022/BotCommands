@@ -80,7 +80,7 @@ object TextUtils {
     }
 
     private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, clazz: KClass<*>): String {
-        val optionalExample = commandOption.data.helpExample
+        val optionalExample = commandOption.helpExample
 
         return when {
             optionalExample != null -> when (clazz) {
@@ -107,9 +107,9 @@ object TextUtils {
     }
 
     private fun getArgName(needsQuote: Boolean, commandOption: TextCommandOption, clazz: KClass<*>): String {
-        val optionalName = commandOption.data.helpName
+        val optionalName = commandOption.helpName
         return when (clazz) {
-            String::class.java -> when {
+            String::class -> when {
                 needsQuote -> "\"" + optionalName + "\""
                 else -> optionalName
             }
