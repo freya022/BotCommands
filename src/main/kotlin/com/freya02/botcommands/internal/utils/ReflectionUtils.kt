@@ -76,7 +76,7 @@ internal object ReflectionUtils {
         }
 
     internal val KFunction<*>.declaringClass: KClass<*>
-        get() = ReflectionMetadataAccessor.getFunctionDeclaringClass(this)
+        get() = this.javaMethodOrConstructor.declaringClass.kotlin
 
     internal val KFunction<*>.isJava
         get() = !declaringClass.hasAnnotation<Metadata>()
