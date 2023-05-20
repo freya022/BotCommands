@@ -289,7 +289,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
         if (!this.add(clazz))
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.java.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
         try {
             return block()
         } finally {
@@ -310,7 +310,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         //Find any nested class which extend the interface, is static and
         clazz.nestedClasses.forEach { nestedClass ->
             if (nestedClass == ConditionalServiceChecker::class) {
-                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.java.simpleNestedName} must be static" }
+                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.simpleNestedName} must be static" }
 
                 val instance = nestedClass.constructors
                     .find { it.parameters.isEmpty() && it.isPublic }

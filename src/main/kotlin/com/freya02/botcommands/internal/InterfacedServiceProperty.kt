@@ -7,7 +7,7 @@ inline fun <reified T : Any, U : T> ServiceContainer.interfacedService(crossinli
     val logger = KotlinLogging.logger { }
     return lazy {
         (getServiceOrNull<T>() ?: defaultSupplier()).also { service ->
-            logger.debug { "Found an instance of interfaced service ${T::class.java.simpleName} (${service::class.simpleNestedName})" }
+            logger.debug { "Found an instance of interfaced service ${T::class.simpleName} (${service::class.simpleNestedName})" }
         }
     }
 }

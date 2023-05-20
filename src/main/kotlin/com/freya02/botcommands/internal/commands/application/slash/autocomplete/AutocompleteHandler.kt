@@ -54,7 +54,7 @@ internal class AutocompleteHandler(
                 @Suppress("UNCHECKED_CAST")
                 val transformer =
                     slashCommandInfo.context.applicationConfig.autocompleteTransformers[collectionElementType.starProjectedType] as? AutocompleteTransformer<Any>
-                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.java.simpleName}")
+                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.simpleName}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }

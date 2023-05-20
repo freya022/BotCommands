@@ -36,7 +36,7 @@ internal abstract class FunctionFilter {
             }
 
         private fun Array<out KClass<*>>.toTypesArrayString() =
-            joinToString(prefix = "[", postfix = "]") { type -> type.java.simpleNestedName }
+            joinToString(prefix = "[", postfix = "]") { type -> type.simpleNestedName }
 
         fun returnType(vararg types: KClass<*>) = object : FunctionFilter() {
             override val errorMessage: String
