@@ -6,7 +6,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent
 import java.util.*
 
 @BService
@@ -25,21 +24,6 @@ internal class ApplicationUpdaterListener(private val applicationCommandsBuilder
     suspend fun onGuildJoin(event: GuildJoinEvent) {
         logger.trace("Trying to force update commands due to a joined guild")
         tryUpdate(event.guild, force = true)
-    }
-
-    //TODO Scope is now granted with the "bot" scope
-    // We can't abuse member updates anymore to detect non up-to-date command sets
-    // This isn't grave if the bot uses global commands
-    // This will cause issues if the bot joins a guild while it is offline, tho
-    // One solution could be storing the guild IDs in a database, with the bot's join date.
-    // On mismatch, update commands.
-    //Use this as a mean to detect OAuth scope changes
-    @BEventListener
-    suspend fun onGuildMemberUpdate(event: GuildMemberUpdateEvent) {
-        if (event.member.idLong == event.jda.selfUser.idLong) {
-            logger.trace("Trying to update commands due to a self member update")
-            tryUpdate(event.guild, force = false)
-        }
     }
 
     private suspend fun tryUpdate(guild: Guild, force: Boolean) {
