@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelRes
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild

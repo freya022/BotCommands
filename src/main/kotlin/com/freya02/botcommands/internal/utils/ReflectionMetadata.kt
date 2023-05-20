@@ -5,6 +5,7 @@ import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.isService
 import io.github.classgraph.*
 import java.lang.reflect.Executable
@@ -13,7 +14,6 @@ import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 
 private typealias IsNullableAnnotated = Boolean
@@ -150,19 +150,6 @@ internal object ReflectionMetadata {
 
             return isNullableAnnotated || isNullableMarked
         }
-
-    internal val KParameter.function: KFunction<*>
-        get() {
-            val callable = ReflectionMetadataAccessor.getParameterCallable(this)
-            return callable as? KFunction<*>
-                ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
-        }
-
-    internal val KFunction<*>.declaringClass: KClass<*>
-        get() = ReflectionMetadataAccessor.getFunctionDeclaringClass(this)
-
-    internal val KFunction<*>.isJava
-        get() = !declaringClass.hasAnnotation<Metadata>()
 
     internal val KFunction<*>.lineNumber: Int
         get() = (methodMetadataMap[this.javaMethodOrConstructor]

@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import io.github.classgraph.ClassInfo
@@ -68,6 +67,19 @@ internal object ReflectionUtils {
                 first.type == second.type
             }
         }
+
+    internal val KParameter.function: KFunction<*>
+        get() {
+            val callable = ReflectionMetadataAccessor.getParameterCallable(this)
+            return callable as? KFunction<*>
+                ?: throwInternal("Unable to get the function of a KParameter, callable is: $callable")
+        }
+
+    internal val KFunction<*>.declaringClass: KClass<*>
+        get() = ReflectionMetadataAccessor.getFunctionDeclaringClass(this)
+
+    internal val KFunction<*>.isJava
+        get() = !declaringClass.hasAnnotation<Metadata>()
 
     internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }

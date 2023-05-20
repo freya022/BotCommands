@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.internal.bestName
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.function
+import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure

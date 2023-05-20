@@ -8,7 +8,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.enumSetOf
 import com.freya02.botcommands.internal.simpleName
 import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.Permission

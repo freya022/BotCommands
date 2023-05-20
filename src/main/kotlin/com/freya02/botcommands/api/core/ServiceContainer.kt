@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.hasAtMostOneServiceAnnotation
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters

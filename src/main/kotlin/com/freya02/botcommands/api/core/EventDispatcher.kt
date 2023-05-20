@@ -12,7 +12,7 @@ import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.unreflect
 import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.declaringClass
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.withFilter
