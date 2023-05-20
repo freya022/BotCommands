@@ -128,7 +128,7 @@ abstract class SlashCommandInfo internal constructor(
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
             else -> {
-                throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+                throwInternal("${option.optionType} has not been implemented")
             }
         }
 

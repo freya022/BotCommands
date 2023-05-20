@@ -17,7 +17,11 @@ enum class OptionType {
     OPTION,
     CUSTOM,
     CONSTANT, //TODO
-    GENERATED
+    GENERATED;
+
+    override fun toString(): String {
+        return "${javaClass.simpleNestedName}#$name"
+    }
 }
 
 interface Option {

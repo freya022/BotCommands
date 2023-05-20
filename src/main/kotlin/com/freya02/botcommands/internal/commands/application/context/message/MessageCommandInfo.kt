@@ -85,7 +85,7 @@ class MessageCommandInfo internal constructor(
 
                 option.getCheckedDefaultValue { it.generatedValueSupplier.getDefaultValue(event) }
             }
-            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+            else -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

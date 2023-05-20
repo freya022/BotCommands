@@ -180,7 +180,7 @@ internal class ComponentsListener(
 
                 option.resolver.resolveSuspend(context, descriptor, event)
             }
-            else -> throwInternal("MethodParameterType#${option.optionType} has not been implemented")
+            else -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)

@@ -132,7 +132,7 @@ class ModalHandlerInfo(
                 option.resolver.resolveSuspend(context, this, event)
             }
 
-            else -> throwInternal("Unexpected MethodParameterType: ${option.optionType}")
+            else -> throwInternal("${option.optionType} has not been implemented")
         }
 
         return tryInsertNullableOption(value, option, optionMap)
