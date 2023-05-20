@@ -243,8 +243,8 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 //        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
     fun getFunctionService(function: KFunction<*>): Any = when {
-        function.isConstructor -> throwInternal("$function: Tried to get a function's instance but was a constructor, this should have been checked beforehand")
-        function.isStatic -> throwInternal("$function: Tried to get a function's instance but was static, this should have been checked beforehand")
+        function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
+        function.isStatic -> throwInternal(function, "Tried to get a function's instance but was static, this should have been checked beforehand")
         else -> getService(function.declaringClass)
     }
 

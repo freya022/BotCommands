@@ -49,7 +49,7 @@ internal object ReflectionUtils {
                     is CallableReference -> {
                         (owner as KClass<*>).declaredMemberFunctions.findFunction(this)
                             ?: (owner as KClass<*>).constructors.findFunction(this)
-                            ?: throwInternal("Unable to reflect function reference: $this")
+                            ?: throwInternal(this, "Unable to reflect function reference")
                     }
 
                     else -> this

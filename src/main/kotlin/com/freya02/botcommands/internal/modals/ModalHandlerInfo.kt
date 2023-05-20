@@ -10,7 +10,6 @@ import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.InsertOptionResult
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
@@ -78,7 +77,7 @@ class ModalHandlerInfo(
         val userDataIterator = userDatas.iterator()
         val optionValues = parameters.mapOptions { option ->
             if (tryInsertOption(event, option, inputNameToInputIdMap, userDataIterator, this) == InsertOptionResult.ABORT)
-                throwInternal("${::tryInsertOption.shortSignatureNoSrc} shouldn't have been aborted")
+                throwInternal(::tryInsertOption, "Insertion function shouldn't have been aborted")
         }
 
         function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))

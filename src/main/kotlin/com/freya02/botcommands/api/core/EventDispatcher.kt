@@ -138,7 +138,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         .forEach { classPathFunc ->
             val function = classPathFunc.function
             val annotation = function.findAnnotation<BEventListener>()
-                ?: throwInternal("Function $function was asserted to have BEventListener but it was not found")
+                ?: throwInternal(function, "Function was asserted to have BEventListener but it was not found")
 
             val parameters = function.nonInstanceParameters
 

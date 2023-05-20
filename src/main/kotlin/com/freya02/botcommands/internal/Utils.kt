@@ -188,10 +188,10 @@ val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
     get() = javaMethod ?: javaConstructor
 
 val KFunction<*>.javaMethodOrConstructor: Executable
-    get() = javaMethodOrConstructorOrNull ?: throwInternal("Could not resolve Java method or constructor for $this")
+    get() = javaMethodOrConstructorOrNull ?: throwInternal(this, "Could not resolve Java method or constructor")
 
 val KFunction<*>.javaMethodInternal: Method
-    get() = javaMethod ?: throwInternal("Could not resolve Java method for $this")
+    get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
 
 inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
