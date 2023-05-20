@@ -53,12 +53,10 @@ internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KPar
     }
 }
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwInternal(message: String): Nothing =
+internal fun throwInternal(message: String): Nothing =
     throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
 
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun throwInternal(function: KFunction<*>, message: String): Nothing =
+internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${function.shortSignature} : $message, please report this to the devs. ${getDiagVersion()}")
 
 internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
