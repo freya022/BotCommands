@@ -67,14 +67,14 @@ abstract class SlashCommandInfo internal constructor(
     context(IExecutableInteractionInfo)
     internal suspend fun <T> getSlashOptions(
         event: T,
-        methodParameters: List<AbstractSlashCommandParameter>
+        parameters: List<AbstractSlashCommandParameter>
     ): Map<KParameter, Any?>? where T : CommandInteractionPayload, T : Event {
-        val optionValues = methodParameters.mapOptions { option ->
+        val optionValues = parameters.mapOptions { option ->
             if (tryInsertOption(event, this, option) == InsertOptionResult.ABORT)
                 return null
         }
 
-        return methodParameters.mapFinalParameters(event, optionValues)
+        return parameters.mapFinalParameters(event, optionValues)
     }
 
     private suspend fun <T> tryInsertOption(

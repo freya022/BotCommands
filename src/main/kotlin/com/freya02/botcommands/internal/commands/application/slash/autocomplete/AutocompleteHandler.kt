@@ -10,7 +10,6 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -25,10 +24,8 @@ internal class AutocompleteHandler(
 ) : IExecutableInteractionInfo {
     override val function = autocompleteInfo.function
     override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
-    override val parameters: List<MethodParameter>
-        get() = methodParameters
+    override val parameters: List<AutocompleteCommandParameter>
 
-    internal val methodParameters: List<AutocompleteCommandParameter>
     internal val compositeOptions: List<AutocompleteCommandOption>
 
     //accommodate for user input
@@ -36,11 +33,11 @@ internal class AutocompleteHandler(
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        methodParameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
+        this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
 
-        compositeOptions = methodParameters
+        compositeOptions = this.parameters
             .flatMap { it.allOptions }
             .filter { it.optionType == OptionType.OPTION }
             .map { it as AutocompleteCommandOption }
@@ -75,7 +72,7 @@ internal class AutocompleteHandler(
     }
 
     private suspend fun generateChoices(event: CommandAutoCompleteInteractionEvent): List<Command.Choice> {
-        val objects = slashCommandInfo.getSlashOptions(event, methodParameters)
+        val objects = slashCommandInfo.getSlashOptions(event, parameters)
             ?: return emptyList() //Autocomplete was triggered without all the required parameters being present
 
         val actualChoices: MutableList<Command.Choice> = arrayOfSize(25)
