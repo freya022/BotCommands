@@ -49,6 +49,16 @@ abstract class SlashCommandBuilder internal constructor(
         inlineClassOption(declaredName, optionName, T::class.java, block)
     }
 
+    fun inlineClassOptionVararg(declaredName: String, clazz: Class<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
+        val aggregatorConstructor = clazz.kotlin.primaryConstructor
+            ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
+        aggregate(declaredName, aggregatorConstructor) {
+            val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
+                ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
+            nestedOptionVararg(parameterName, amount, requiredAmount, optionNameSupplier, block)
+        }
+    }
+
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         //Same as in TextCommandVariationBuilder#optionVararg

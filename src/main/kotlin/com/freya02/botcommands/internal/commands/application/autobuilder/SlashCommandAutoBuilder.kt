@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 
 @BService
@@ -194,12 +195,24 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 }
                 else -> {
                     val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.asDiscordString()
-                    when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
-                        null -> option(declaredName, optionName) {
-                            configureOption(guild, instance, kParameter, optionAnnotation)
+                    if (kParameter.type.jvmErasure.isValue) {
+                        val inlineClassType = kParameter.type.jvmErasure.java
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> inlineClassOption(declaredName, optionName, inlineClassType) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
+                            else -> inlineClassOptionVararg(declaredName, inlineClassType, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
                         }
-                        else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
-                            configureOption(guild, instance, kParameter, optionAnnotation)
+                    } else {
+                        when (val varArgs = kParameter.findAnnotation<VarArgs>()) {
+                            null -> option(declaredName, optionName) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
+                            else -> optionVararg(declaredName, varArgs.value, varArgs.numRequired, { i -> "${optionName}_$i" }) {
+                                configureOption(guild, instance, kParameter, optionAnnotation)
+                            }
                         }
                     }
                 }
