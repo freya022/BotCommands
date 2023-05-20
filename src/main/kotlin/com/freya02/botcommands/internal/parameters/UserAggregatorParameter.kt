@@ -4,6 +4,7 @@ import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuil
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
@@ -13,7 +14,8 @@ internal class UserAggregatorParameter(
     override val typeCheckingParameterName: String
 ) : AggregatorParameter {
     override val typeCheckingFunction = typeCheckingFunction.reflectReference()
-    override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.first { it.findDeclarationName() == typeCheckingParameterName }
+    override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == typeCheckingParameterName }
+        ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$typeCheckingParameterName'")
 
     init {
         if (this.typeCheckingFunction.isSpecialAggregator()) {

@@ -1,11 +1,8 @@
 package com.freya02.botcommands.internal.parameters
 
+import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
@@ -17,7 +14,8 @@ internal class VarargAggregatorParameter(
 ) : AggregatorParameter {
     override val typeCheckingFunction = commandFunction.reflectReference()
     override val typeCheckingParameterName = parameterName
-    override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.first { it.findDeclarationName() == parameterName }
+    override val typeCheckingParameter = this.typeCheckingFunction.nonInstanceParameters.find { it.findDeclarationName() == parameterName }
+        ?: throwUser(this.typeCheckingFunction, "Could not find a parameter named '$parameterName'")
 
     init {
         if (this.typeCheckingFunction.isSpecialAggregator()) {
