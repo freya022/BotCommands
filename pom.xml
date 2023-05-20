@@ -26,8 +26,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <kotlin.version>1.8.20</kotlin.version>
-        <kotlin.coroutine.version>1.6.4</kotlin.coroutine.version>
+        <kotlin.version>1.8.21</kotlin.version>
+        <kotlin.coroutine.version>1.7.1</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -394,9 +394,9 @@
             <version>0.4.0</version>
         </dependency>
         <dependency>
-            <groupId>net.dv8tion</groupId>
+            <groupId>io.github.DV8FromTheWorld</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.8</version>
+            <version>ab32257e7e</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -445,7 +445,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.157</version>
+            <version>4.8.158</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -456,7 +456,7 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.1.5</version>
+            <version>3.1.6</version>
         </dependency>
         <dependency>
             <groupId>info.debatty</groupId>
@@ -482,13 +482,13 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.6</version>
+            <version>1.4.7</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.5.4</version>
+            <version>42.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
