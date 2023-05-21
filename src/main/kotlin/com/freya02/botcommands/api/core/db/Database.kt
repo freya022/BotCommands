@@ -5,12 +5,33 @@ import com.freya02.botcommands.api.core.config.BConfig
 import org.intellij.lang.annotations.Language
 import java.sql.SQLException
 
+/**
+ * Utility class to use connections given by the [ConnectionSupplier].
+ *
+ * **Note:** The framework uses its own `bc` schema internally,
+ * you will need to create the schema if this is the first time you use the library.
+ *
+ * **Note 2:** If you use Flyway to manage your database, you can manage the framework's tables with the following snippet:
+ * ```kt
+ * Flyway.configure()
+ *      .dataSource(source)
+ *      .schemas("bc")
+ *      .locations("bc_database_scripts")
+ *      .validateMigrationNaming(true)
+ *      .loggers("slf4j")
+ *      .load()
+ *      .migrate()
+ * ```
+ * In this case, you do not have to create the `bc` schema manually.
+ */
 @InjectedService("Requires a ConnectionSupplier service")
 interface Database {
     val config: BConfig
 
     @Throws(SQLException::class)
     suspend fun fetchConnection(readOnly: Boolean = false): KConnection
+
+    //TODO java methods
 }
 
 @Throws(SQLException::class)
