@@ -18,7 +18,7 @@ class Database internal constructor(private val connectionSupplier: ConnectionSu
         runBlocking {
             preparedStatement("select version from bc_version", readOnly = true) {
                 val rs = executeQuery(*emptyArray()).readOnce() ?:
-                    throw IllegalStateException("No version found, please create the BotCommands tables with the 'sql/CreateDatabase.sql' file")
+                    throw IllegalStateException("No version found, please create the BotCommands tables with the migration scripts in 'bc_database_scripts', in the resources folder")
 
                 val version = rs.getString("version")
 
@@ -67,6 +67,6 @@ class Database internal constructor(private val connectionSupplier: ConnectionSu
     }
 
     companion object {
-        private const val latestVersion = "3.0.0-alpha.1" // Change in CreateDatabase.sql too
+        private const val latestVersion = "3.0.0-alpha.7" // Change in base migration script too
     }
 }
