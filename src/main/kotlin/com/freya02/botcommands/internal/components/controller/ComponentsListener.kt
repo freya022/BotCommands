@@ -9,7 +9,6 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
-import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.components.ComponentDescriptor
@@ -20,6 +19,7 @@ import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentsHandlerContainer
+import com.freya02.botcommands.internal.core.db.InternalDatabase
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
@@ -42,7 +42,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 
-@ConditionalService(dependencies = [Components::class, Database::class])
+@ConditionalService(dependencies = [Components::class, InternalDatabase::class])
 internal class ComponentsListener(
     private val context: BContextImpl,
     private val componentsConfig: BComponentsConfig,

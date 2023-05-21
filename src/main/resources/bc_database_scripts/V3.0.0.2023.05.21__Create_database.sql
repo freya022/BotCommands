@@ -2,7 +2,12 @@
 ------------ This script is the first version of the database, you can apply this one manually as well as the ones after this version ------------
 ------------------------------------- The filename scheme should also be compatible with Flyway and Liquibase ------------------------------------
 
+-------------------------------------------------- If you choose to create the database manually -------------------------------------------------
+--------------------------------------------------- you will need to create a 'bc' schema first --------------------------------------------------
+
 ------------ Base framework
+
+set schema 'bc';
 
 drop table if exists bc_version cascade;
 

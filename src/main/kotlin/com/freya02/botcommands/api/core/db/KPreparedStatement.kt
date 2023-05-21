@@ -8,7 +8,7 @@ import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-class KPreparedStatement @PublishedApi internal constructor(val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
+class KPreparedStatement @PublishedApi internal constructor(private val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
         withLoggedParametrizedQuery(params) { execute() }
     }
