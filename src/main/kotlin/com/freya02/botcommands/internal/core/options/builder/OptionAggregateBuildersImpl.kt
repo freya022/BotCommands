@@ -10,7 +10,7 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder<T>>(
     private val commandFunction: KFunction<*>,
     val aggregateConstructor: (aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>) -> T
 ) {
-    val optionAggregateBuilders: MutableMap<String, T> = hashMapOf()
+    val optionAggregateBuilders: MutableMap<String, T> = mutableMapOf()
 
     fun aggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
         aggregate(AggregatorParameter.fromUserAggregate(commandFunction, declaredName), aggregator, block)
