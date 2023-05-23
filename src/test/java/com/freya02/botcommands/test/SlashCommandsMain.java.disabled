@@ -24,6 +24,7 @@ public class SlashCommandsMain {
 
 			final JDA jda = JDABuilder.createLight(config.getToken())
 					.enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.MESSAGE_CONTENT)
+					.disableIntents(GatewayIntent.DIRECT_MESSAGES)
 					.setActivity(Activity.playing("application commands"))
 					.build()
 					.awaitReady();
