@@ -7,15 +7,17 @@ import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilde
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.api.core.db.KConnection
 import com.freya02.botcommands.api.core.db.Transaction
+import com.freya02.botcommands.api.core.db.transactional
+import com.freya02.botcommands.api.core.db.withConnection
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.LifetimeType
 import com.freya02.botcommands.internal.components.PersistentHandler
 import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
 import com.freya02.botcommands.internal.components.data.*
+import com.freya02.botcommands.internal.core.db.InternalDatabase
 import com.freya02.botcommands.internal.rethrowUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -30,7 +32,7 @@ import java.sql.Timestamp
 
 @ConditionalService(dependencies = [Components::class])
 internal class ComponentRepository(
-    private val database: Database,
+    private val database: InternalDatabase,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,
     private val ephemeralTimeoutHandlers: EphemeralTimeoutHandlers
 ) {

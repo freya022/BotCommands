@@ -1,72 +1,65 @@
 package com.freya02.botcommands.api.core.db
 
-import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BConfig
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
 import org.intellij.lang.annotations.Language
 import java.sql.SQLException
 
-@ConditionalService(dependencies = [ConnectionSupplier::class])
-class Database internal constructor(private val connectionSupplier: ConnectionSupplier, internal val config: BConfig) {
-    //Prevents deadlock when a paused coroutine holds a Connection,
-    // but cannot be resumed and freed because of the coroutine scope being full (from another component event)
-    private val semaphore = Semaphore(connectionSupplier.maxConnections)
-
-    init {
-        runBlocking {
-            preparedStatement("select version from bc_version", readOnly = true) {
-                val rs = executeQuery(*emptyArray()).readOnce() ?:
-                    throw IllegalStateException("No version found, please create the BotCommands tables with the 'sql/CreateDatabase.sql' file")
-
-                val version = rs.getString("version")
-
-                if (version != latestVersion) {
-                    throw IllegalStateException("The current database version is '$version' and the version needed is '$latestVersion', please upgrade/downgrade the database with the help of the migration scripts, don't forget about backups if needed")
-                }
-            }
-        }
-    }
-
-    @Throws(SQLException::class)
-    suspend fun fetchConnection(readOnly: Boolean = false): KConnection = semaphore.withPermit {
-        KConnection(this, connectionSupplier.connection).also {
-            it.isReadOnly = readOnly
-        }
-    }
+/**
+ * Utility class to use connections given by the [ConnectionSupplier].
+ *
+ * **Note:** The framework uses its own `bc` schema internally,
+ * you will need to create the schema if this is the first time you use the library.
+ *
+ * **Note 2:** If you use Flyway to manage your database, you can manage the framework's tables with the following snippet:
+ * ```kt
+ * Flyway.configure()
+ *      .dataSource(source)
+ *      .schemas("bc")
+ *      .locations("bc_database_scripts")
+ *      .validateMigrationNaming(true)
+ *      .loggers("slf4j")
+ *      .load()
+ *      .migrate()
+ * ```
+ * In this case, you do not have to create the `bc` schema manually.
+ */
+@InjectedService("Requires a ConnectionSupplier service")
+interface Database {
+    val config: BConfig
 
     @Throws(SQLException::class)
-    suspend inline fun <R> transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
-        val connection = fetchConnection(readOnly)
+    suspend fun fetchConnection(readOnly: Boolean = false): KConnection
 
-        try {
-            connection.autoCommit = false
+    //TODO java methods
+}
 
-            return block(Transaction(this, connection)).also { connection.commit() }
-        } catch (e: Throwable) {
-            connection.rollback()
-            throw e
-        } finally {
-            connection.autoCommit = true
-            connection.close()
-        }
+@Throws(SQLException::class)
+suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
+    val connection = fetchConnection(readOnly)
+
+    try {
+        connection.autoCommit = false
+
+        return block(Transaction(this, connection)).also { connection.commit() }
+    } catch (e: Throwable) {
+        connection.rollback()
+        throw e
+    } finally {
+        connection.autoCommit = true
+        connection.close()
     }
+}
 
-    @Throws(SQLException::class)
-    suspend inline fun <R> withConnection(readOnly: Boolean = false, block: KConnection.() -> R): R {
-        return fetchConnection(readOnly).use(block)
-    }
+@Throws(SQLException::class)
+suspend inline fun <R> Database.withConnection(readOnly: Boolean = false, block: KConnection.() -> R): R {
+    return fetchConnection(readOnly).use(block)
+}
 
-    @Throws(SQLException::class)
-    @Suppress("MemberVisibilityCanBePrivate")
-    suspend inline fun <R> preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
-        return withConnection(readOnly) {
-            preparedStatement(sql, block)
-        }
-    }
-
-    companion object {
-        private const val latestVersion = "3.0.0-alpha.1" // Change in CreateDatabase.sql too
+@Throws(SQLException::class)
+@Suppress("MemberVisibilityCanBePrivate")
+suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
+    return withConnection(readOnly) {
+        preparedStatement(sql, block)
     }
 }
