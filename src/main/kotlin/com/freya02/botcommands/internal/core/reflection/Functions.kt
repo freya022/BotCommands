@@ -11,6 +11,8 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
+open class Function<R> internal constructor(val kFunction: KFunction<R>) : KFunction<R> by kFunction
+
 class AggregatorFunction private constructor(
     aggregator: KFunction<*>,
     /**
