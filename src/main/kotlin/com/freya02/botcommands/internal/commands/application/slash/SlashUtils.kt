@@ -45,7 +45,7 @@ internal object SlashUtils {
                 "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
             }
         } else {
-            requireUser(option.isOptional) {
+            requireUser(option.isOptionalOrNullable) {
                 "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
             }
         }
@@ -59,9 +59,9 @@ internal object SlashUtils {
             options.sortedWith { o1, o2 ->
                 when {
                     //Optional options are placed after required options
-                    o1.isOptional && !o2.isOptional -> 1
+                    o1.isOptionalOrNullable && !o2.isOptionalOrNullable -> 1
                     //Required options are placed before optional options
-                    !o1.isOptional && o2.isOptional -> -1
+                    !o1.isOptionalOrNullable && o2.isOptionalOrNullable -> -1
                     //If both are optional/required, keep order using index
                     else -> options.indexOf(o1).compareTo(options.indexOf(o2))
                 }
@@ -142,7 +142,7 @@ internal object SlashUtils {
             }
         }
 
-        data.isRequired = !option.isOptional
+        data.isRequired = !option.isOptionalOrNullable
     }
 
     internal inline fun <reified T> ApplicationCommandBuilder<*>.checkEventScope() {

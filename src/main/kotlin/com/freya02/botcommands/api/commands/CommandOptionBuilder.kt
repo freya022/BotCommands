@@ -10,7 +10,7 @@ abstract class CommandOptionBuilder(
     /**
      * Switch managed by the vararg aggregates
      *
-     * @see OptionImpl.isOptional
+     * @see OptionImpl.isOptionalOrNullable
      */
     @get:JvmSynthetic @set:JvmSynthetic
     internal var isOptional: Boolean? = null

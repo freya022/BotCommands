@@ -104,7 +104,7 @@ class ModalHandlerInfo(
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
                 option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
-                    requireUser(obj != null || option.isOptional) {
+                    requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
                     }
                 }

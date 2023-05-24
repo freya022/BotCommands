@@ -105,12 +105,12 @@ class TextCommandVariation internal constructor(
                     val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
-                    if (resolved == null && !option.isOptional) {
+                    if (resolved == null && !option.isOptionalOrNullable) {
                         return InsertOptionResult.SKIP
                     }
 
                     resolved
-                } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                } else if (!option.isOptionalOrNullable) { //Parameter is not found yet the pattern matched and is not optional
                     throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {

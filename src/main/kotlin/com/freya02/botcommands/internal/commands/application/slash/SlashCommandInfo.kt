@@ -107,7 +107,7 @@ abstract class SlashCommandInfo internal constructor(
                         }
 
                         return when {
-                            option.isOptional || option.isVararg -> InsertOptionResult.SKIP
+                            option.isOptionalOrNullable || option.isVararg -> InsertOptionResult.SKIP
                             else -> InsertOptionResult.ABORT
                         }
                     }

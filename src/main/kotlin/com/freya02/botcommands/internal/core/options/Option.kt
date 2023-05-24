@@ -53,7 +53,7 @@ interface Option {
      * * The erased type is [List]
      */
     val isVararg: Boolean
-    val isOptional: Boolean
+    val isOptionalOrNullable: Boolean
     val declaredName: String
     val index: Int
     val nullValue: Any?
@@ -80,7 +80,7 @@ open class OptionImpl private constructor(
         get() = optionParameter.executableParameter
 
     final override val type = kParameter.type
-    final override val isOptional by lazy {
+    final override val isOptionalOrNullable by lazy {
         when {
             optional != null -> optional
             else -> kParameter.isNullable || kParameter.isOptional

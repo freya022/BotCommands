@@ -32,7 +32,7 @@ fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<O
         return InsertOptionResult.OK
     } else if (option.isVararg) {
         //Continue looking at other options
-    } else if (option.isOptional) { //Default or nullable
+    } else if (option.isOptionalOrNullable) { //Default or nullable
         //Put null/default value if parameter is not a kotlin default value
         if (option.kParameter.isOptional) {
             //Kotlin default value, don't add anything to the parameters map
