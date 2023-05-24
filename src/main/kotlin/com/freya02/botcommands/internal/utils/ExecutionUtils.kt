@@ -89,7 +89,7 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
         if (aggregatedObject != null) {
             aggregatedObjects[parameter] = aggregatedObject
         } else {
-            if (parameter.isOptional) { //Default or nullable
+            if (parameter.isNullableOrOptional) { //Default or nullable
                 //Put null/default value if parameter is not a kotlin default value
                 return if (parameter.kParameter.isOptional) {
                     //Kotlin default value, don't add anything to the parameters map

@@ -17,14 +17,14 @@ interface MethodParameter {
     val name: String
     val type: KType
     val index: Int
-    val isOptional: Boolean
+    val isNullableOrOptional: Boolean
     /** This checks the java primitiveness, not kotlin, kotlin.Double is an object. */
     val isPrimitive: Boolean
 }
 
 open class MethodParameterImpl(final override val kParameter: KParameter) : MethodParameter {
     final override val name = kParameter.findDeclarationName()
-    final override val isOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
+    final override val isNullableOrOptional: Boolean by lazy { kParameter.isNullable || kParameter.isOptional }
     final override val type = kParameter.type
     final override val index = kParameter.index
     final override val isPrimitive = kParameter.type.jvmErasure.java.isPrimitive
