@@ -11,9 +11,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.valueParameters
 
 enum class InsertOptionResult {
     OK,
@@ -65,6 +63,7 @@ suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
 
 suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
     val aggregator = parameter.aggregator
+
     if (aggregator.isSingleAggregator()) {
         val option = parameter.options.first()
         //This is necessary to distinguish between null mappings and default mappings
@@ -74,14 +73,6 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
         }
     } else {
         val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
-        aggregator.instanceParameter?.let { instanceParameter ->
-            aggregatorArguments[instanceParameter] = parameter.aggregatorInstance
-                ?: throwInternal(aggregator, "Aggregator's instance parameter was not retrieved but was necessary")
-        }
-        if (parameter.aggregatorHasEvent) {
-            aggregatorArguments[aggregator.valueParameters.first()] = event
-        }
-
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings
             if (option in optionValues) {
@@ -93,7 +84,7 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
             insertAggregate(event, aggregatorArguments, optionValues, nestedAggregatedParameter)
         }
 
-        val aggregatedObject = aggregator.callSuspendBy(aggregatorArguments)
+        val aggregatedObject = aggregator.aggregate(event, aggregatorArguments)
         //Check nullability against parameter
         if (aggregatedObject != null) {
             aggregatedObjects[parameter] = aggregatedObject
