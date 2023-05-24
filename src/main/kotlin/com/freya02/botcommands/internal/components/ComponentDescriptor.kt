@@ -3,16 +3,16 @@ package com.freya02.botcommands.internal.components
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
+import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.transformParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import kotlin.reflect.KFunction
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.jvm.jvmErasure
 
 class ComponentDescriptor(
     context: BContextImpl,
-    override val instance: Any,
-    override val function: KFunction<*>
+    override val function: MemberEventFunction<GenericComponentInteractionCreateEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ComponentHandlerParameter>
 

@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.transform
@@ -28,7 +28,8 @@ class TextCommandVariation internal constructor(
     private val context: BContextImpl,
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
-) : IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
+) : IExecutableInteractionInfo {
+    override val function = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
     val completePattern: Regex?

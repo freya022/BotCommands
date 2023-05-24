@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -22,8 +23,7 @@ internal class AutocompleteHandler(
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
-    override val function = autocompleteInfo.function
-    override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
+    override val function = autocompleteInfo.function.toMemberEventFunction<CommandAutoCompleteInteractionEvent, _>(slashCommandInfo.context)
     override val parameters: List<AutocompleteCommandParameter>
 
     internal val compositeOptions: List<AutocompleteCommandOption>

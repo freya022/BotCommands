@@ -8,10 +8,8 @@ import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.instanceParameter
 
 enum class InsertOptionResult {
     OK,
@@ -53,8 +51,8 @@ suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     event: Event,
     optionValues: Map<Option, Any?>
 ) = buildMap(function.parameters.size) {
-    this[function.instanceParameter!!] = instance
-    this[function.nonInstanceParameters.first()] = event
+    this[function.instanceParameter] = instance
+    this[function.eventParameter] = event
 
     for (parameter in this@mapFinalParameters) {
         insertAggregate(event, this, optionValues, parameter)

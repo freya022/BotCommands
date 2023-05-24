@@ -14,8 +14,8 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ge
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.requireFirstParam
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.InsertOptionResult
@@ -24,22 +24,21 @@ import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.valueParameters
 
 class MessageCommandInfo internal constructor(
     private val context: BContextImpl,
     builder: MessageCommandBuilder
-) : ApplicationCommandInfo(context, builder),
+) : ApplicationCommandInfo(builder),
     ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
+
+    override val function = builder.toMemberEventFunction<GlobalMessageEvent, _>(context)
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
     override val parameters: List<MessageContextCommandParameter>
 
     init {
-        requireFirstParam(function.valueParameters, GlobalMessageEvent::class)
-
-        builder.checkEventScope<GuildMessageEvent>()
+        checkEventScope<GuildMessageEvent>(function, builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             MessageContextCommandParameter(context, it)

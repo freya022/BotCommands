@@ -21,7 +21,6 @@ import kotlin.contracts.contract
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
@@ -45,13 +44,6 @@ internal fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
 
 internal fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 internal fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.any { this.isSubclassOf(it) }
-
-internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
-    val firstParameter = kParameters.firstOrNull() ?: throwUser("First argument should be a ${klass.simpleName}")
-    requireUser(klass.isSuperclassOf(firstParameter.type.jvmErasure)) {
-        "First argument should be a ${klass.simpleName}"
-    }
-}
 
 internal fun throwInternal(message: String): Nothing =
     throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
