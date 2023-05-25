@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.utils;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.annotations.ConditionalUse;
 import com.freya02.botcommands.api.annotations.Optional;
+import com.freya02.botcommands.api.application.CommandScope;
 import com.freya02.botcommands.api.application.slash.annotations.DoubleRange;
 import com.freya02.botcommands.api.application.slash.annotations.LongRange;
 import io.github.classgraph.*;
@@ -101,6 +102,27 @@ public class ReflectionUtils {
 
 	public static boolean hasFirstParameter(Method method, Class<?> type) {
 		return method.getParameterCount() > 0 && type.isAssignableFrom(method.getParameterTypes()[0]);
+	}
+
+	public static void checkApplicationCommandParameter(Method method, CommandScope scope, Class<?> globalType, Class<?> guildType) {
+		if (method.getParameterCount() == 0) {
+			throw new IllegalArgumentException("Application command at " + Utils.formatMethodShort(method) + " must have a " + guildType.getSimpleName() + " or " + globalType.getSimpleName() + " as first parameter");
+		}
+
+		final Class<?> firstParamType = method.getParameterTypes()[0];
+		if (scope.isGuildOnly()) {
+			//Guild type or lower
+			if (!firstParamType.isAssignableFrom(guildType))
+				throw new IllegalArgumentException("Application command at " + Utils.formatMethodShort(method) + " must have a " + guildType.getSimpleName() + " or " + globalType.getSimpleName() + " as first parameter");
+			if (!guildType.isAssignableFrom(firstParamType)) {
+				//If type is correct but guild specialization isn't used
+				LOGGER.warn("Guild-only application command {} uses {}, consider using {} to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method), firstParamType.getSimpleName(), guildType.getSimpleName());
+			}
+		} else {
+			//Global scope, need a global type or lower
+			if (!firstParamType.isAssignableFrom(globalType))
+				throw new IllegalArgumentException("Application command at " + Utils.formatMethodShort(method) + " must have a " + globalType.getSimpleName() +" as first parameter");
+		}
 	}
 
 	public static boolean isOptional(Parameter parameter) {

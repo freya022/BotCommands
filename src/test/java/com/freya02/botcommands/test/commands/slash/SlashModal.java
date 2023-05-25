@@ -2,7 +2,8 @@ package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.application.ApplicationCommand;
-import com.freya02.botcommands.api.application.slash.GuildSlashEvent;
+import com.freya02.botcommands.api.application.CommandScope;
+import com.freya02.botcommands.api.application.slash.GlobalSlashEvent;
 import com.freya02.botcommands.api.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.modals.Modals;
 import com.freya02.botcommands.api.modals.annotations.ModalData;
@@ -19,10 +20,11 @@ public class SlashModal extends ApplicationCommand {
 	private static final String CODE_INPUT_NAME = "code";
 
 	@JDASlashCommand(
+			scope = CommandScope.GLOBAL,
 			name = "modal",
 			description = "Test modal"
 	)
-	public void onSlashModal(GuildSlashEvent event) {
+	public void onSlashModal(GlobalSlashEvent event) {
 		final Modal modal = Modals.create("Formatting !", MODAL_HANDLER_NAME, "foobar", 42L)
 				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
 				.addActionRow(

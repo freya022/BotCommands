@@ -67,18 +67,10 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processUserCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAUserCommand.class).scope().isGuildOnly()) {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class))
-				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GuildUserEvent or GlobalUserEvent as first parameter");
-
-			if (!ReflectionUtils.hasFirstParameter(method, GuildUserEvent.class)) {
-				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only user command {} uses GlobalUserEvent, consider using GuildUserEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
-			}
-		} else {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalUserEvent.class))
-				throw new IllegalArgumentException("User command at " + Utils.formatMethodShort(method) + " must have a GlobalUserEvent as first parameter");
-		}
+		ReflectionUtils.checkApplicationCommandParameter(method,
+				method.getAnnotation(JDAUserCommand.class).scope(),
+				GlobalUserEvent.class,
+				GuildUserEvent.class);
 
 		final UserCommandInfo info = new UserCommandInfo(context, applicationCommand, method);
 
@@ -87,18 +79,10 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processMessageCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDAMessageCommand.class).scope().isGuildOnly()) {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class))
-				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GuildMessageEvent or GlobalMessageEvent as first parameter");
-
-			if (!ReflectionUtils.hasFirstParameter(method, GuildMessageEvent.class)) {
-				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only message command {} uses GlobalMessageEvent, consider using GuildMessageEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
-			}
-		} else {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalMessageEvent.class))
-				throw new IllegalArgumentException("Message command at " + Utils.formatMethodShort(method) + " must have a GlobalMessageEvent as first parameter");
-		}
+		ReflectionUtils.checkApplicationCommandParameter(method,
+				method.getAnnotation(JDAMessageCommand.class).scope(),
+				GlobalMessageEvent.class,
+				GuildMessageEvent.class);
 
 		final MessageCommandInfo info = new MessageCommandInfo(context, applicationCommand, method);
 
@@ -107,18 +91,10 @@ public final class ApplicationCommandsBuilder {
 	}
 
 	private void processSlashCommand(ApplicationCommand applicationCommand, Method method) {
-		if (method.getAnnotation(JDASlashCommand.class).scope().isGuildOnly()) {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class) && !ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class))
-				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GuildSlashEvent or GlobalSlashEvent as first parameter");
-
-			if (!ReflectionUtils.hasFirstParameter(method, GuildSlashEvent.class)) {
-				//If type is correct but guild specialization isn't used
-				LOGGER.warn("Guild-only slash command {} uses GlobalSlashEvent, consider using GuildSlashEvent to remove warnings related to guild stuff's nullability", Utils.formatMethodShort(method));
-			}
-		} else {
-			if (!ReflectionUtils.hasFirstParameter(method, GlobalSlashEvent.class))
-				throw new IllegalArgumentException("Slash command at " + Utils.formatMethodShort(method) + " must have a GlobalSlashEvent as first parameter");
-		}
+		ReflectionUtils.checkApplicationCommandParameter(method,
+				method.getAnnotation(JDASlashCommand.class).scope(),
+				GlobalSlashEvent.class,
+				GuildSlashEvent.class);
 
 		final SlashCommandInfo info = new SlashCommandInfo(context, applicationCommand, method);
 
