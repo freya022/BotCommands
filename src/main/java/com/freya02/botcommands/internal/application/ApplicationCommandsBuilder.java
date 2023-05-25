@@ -151,7 +151,7 @@ public final class ApplicationCommandsBuilder {
 				}
 
 				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getScopeApplicationCommands()));
-			} catch (IOException e) {
+			} catch (Throwable e) {
 				LOGGER.error("An error occurred while updating global commands", e);
 			} finally {
 				globalLock.unlock();
