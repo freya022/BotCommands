@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.utils.Utils;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -30,6 +31,7 @@ import java.util.EnumSet;
 import java.util.StringJoiner;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class ApplicationCommandListener extends ListenerAdapter {
 	private static final Logger LOGGER = Logging.getLogger();
@@ -59,7 +61,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final UserCommandInfo userCommand = context.getApplicationCommandsContext().findLiveUserCommand(event.getGuild(), event.getName());
 
 			if (userCommand == null) {
-				throw new IllegalArgumentException("An user context command could not be found: " + event.getName());
+				throwableConsumer.accept(new IllegalArgumentException("An user context command could not be found: " + event.getName()));
+				printAvailableCommands(event);
+				return;
 			}
 
 			if (!canRun(event, userCommand)) return;
@@ -78,7 +82,9 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final MessageCommandInfo messageCommand = context.getApplicationCommandsContext().findLiveMessageCommand(event.getGuild(), event.getName());
 
 			if (messageCommand == null) {
-				throw new IllegalArgumentException("A message context command could not be found: " + event.getName());
+				throwableConsumer.accept(new IllegalArgumentException("A message context command could not be found: " + event.getName()));
+				printAvailableCommands(event);
+				return;
 			}
 
 			if (!canRun(event, messageCommand)) return;
@@ -97,13 +103,45 @@ public final class ApplicationCommandListener extends ListenerAdapter {
 			final SlashCommandInfo slashCommand = context.getApplicationCommandsContext().findLiveSlashCommand(event.getGuild(), CommandPath.of(event.getFullCommandName()));
 
 			if (slashCommand == null) {
-				throw new IllegalArgumentException("A slash command could not be found: '" + event.getFullCommandName() + "'");
+				throwableConsumer.accept(new IllegalArgumentException("A slash command could not be found: '" + event.getFullCommandName() + "'"));
+				printAvailableCommands(event);
+				return;
 			}
 
 			if (!canRun(event, slashCommand)) return;
 
 			slashCommand.execute(context, event, throwableConsumer);
 		}, throwableConsumer);
+	}
+
+	private void printAvailableCommands(@NotNull GenericCommandInteractionEvent event) {
+		final Guild guild = event.getGuild();
+		if (LOGGER.isTraceEnabled()) {
+			final var commandsMap = context.getApplicationCommandsContext().getLiveApplicationCommandsMap(guild);
+			final var scopeName = guild != null ? "'" + guild.getName() + "'" : "Global scope";
+			LOGGER.trace("Commands available in {}: {}", scopeName, commandsMap.getAllApplicationCommandsStream()
+					.map(commandInfo -> "/" + commandInfo.getPath().getFullPath())
+					.sorted()
+					.collect(Collectors.joining("\n"))
+			);
+		}
+		if (context.isOnlineAppCommandCheckEnabled()) {
+			LOGGER.warn("""
+					An application command could not be recognized even though online command check was performed. An update will be forced.
+					Please check if you have another bot instance running as it could have replaced the current command set.
+					Do not share your tokens with anyone else (even your friend), and use a separate token when testing.""");
+			if (guild != null) {
+				context.scheduleApplicationCommandsUpdate(guild, true, true).whenComplete((wasUpdated, e) -> {
+					if (e != null)
+						LOGGER.error("An exception occurred while trying to update commands of guild '{}' ({}) after a command was missing", guild.getName(), guild.getId(), e);
+				});
+			} else {
+				context.scheduleGlobalApplicationCommandsUpdate(true, true).whenComplete((wasUpdated, e) -> {
+					if (e != null)
+						LOGGER.error("An exception occurred while trying to update global commands after a command was missing", e);
+				});
+			}
+		}
 	}
 
 	@NotNull
