@@ -60,6 +60,6 @@ public class IntegerResolver extends ParameterResolver implements RegexParameter
 	@Override
 	@Nullable
 	public Object resolve(@NotNull BContext context, @NotNull ComponentDescriptor descriptor, @NotNull GenericComponentInteractionCreateEvent event, @NotNull String arg) {
-		return Long.valueOf(arg);
+		return Integer.valueOf(arg);
 	}
 }
