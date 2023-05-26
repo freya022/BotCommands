@@ -5,18 +5,60 @@ import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
+import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
+import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import net.dv8tion.jda.api.events.Event
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 
-open class Function<R> internal constructor(val kFunction: KFunction<R>) : KFunction<R> by kFunction
+open class Function<R> internal constructor(kFunction: KFunction<R>) {
+    val kFunction = kFunction.reflectReference()
+
+    override fun equals(other: Any?) = kFunction == other
+    override fun hashCode() = kFunction.hashCode()
+}
+
+internal inline fun <reified T : Annotation> Function<*>.findAnnotation() = kFunction.findAnnotation<T>()
+
+internal val Function<*>.parameters get() = kFunction.parameters
+internal val Function<*>.nonInstanceParameters get() = kFunction.nonInstanceParameters
+
+internal val Function<*>.collectionElementType get() = kFunction.collectionElementType
+internal val Function<*>.shortSignature get() = kFunction.shortSignature
+internal val Function<*>.shortSignatureNoSrc get() = kFunction.shortSignatureNoSrc
+
+internal fun Function<*>.findParameterByName(name: String) = kFunction.findParameterByName(name)
+
+internal suspend fun <R> Function<R>.callSuspendBy(args: Map<KParameter, Any?>) = kFunction.callSuspendBy(args)
+
+internal fun Function<*>.throwUser(message: String): Nothing = throwUser(kFunction, message)
+internal fun Function<*>.throwInternal(message: String): Nothing = throwInternal(kFunction, message)
+
+internal fun Function<*>.rethrowUser(message: String, e: Throwable): Nothing =
+    throw RuntimeException("$shortSignature : $message", e)
+
+@OptIn(ExperimentalContracts::class)
+internal inline fun Function<*>.requireUser(value: Boolean, lazyMessage: () -> String) {
+    contract {
+        returns() implies value
+    }
+
+    if (!value) {
+        throwUser(lazyMessage())
+    }
+}
 
 class AggregatorFunction private constructor(
     aggregator: KFunction<*>,
@@ -26,14 +68,14 @@ class AggregatorFunction private constructor(
     private val aggregatorInstance: Any?
 ) : Function<Any?>(aggregator) {
     private val instanceParameter = this.kFunction.instanceParameter
-    private val eventParameter = this.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(Event::class) }
+    private val eventParameter = this.kFunction.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(Event::class) }
 
     internal constructor(context: BContextImpl, aggregator: KFunction<*>) : this(aggregator, context.serviceContainer.getFunctionServiceOrNull(aggregator))
 
     internal suspend fun aggregate(event: Event, aggregatorArguments: MutableMap<KParameter, Any?>): Any? {
         if (instanceParameter != null) {
             aggregatorArguments[instanceParameter] = aggregatorInstance
-                ?: throwInternal(this, "Aggregator's instance parameter was not retrieved but was necessary")
+                ?: throwInternal("Aggregator's instance parameter was not retrieved but was necessary")
         }
 
         if (eventParameter != null) {
@@ -43,6 +85,10 @@ class AggregatorFunction private constructor(
         return callSuspendBy(aggregatorArguments)
     }
 }
+
+fun AggregatorFunction.isSingleAggregator() = this.kFunction.isSingleAggregator()
+fun AggregatorFunction.isVarargAggregator() = this.kFunction.isVarargAggregator()
+fun AggregatorFunction.isSpecialAggregator() = this.kFunction.isSpecialAggregator()
 
 internal fun KFunction<*>.toAggregatorFunction(context: BContextImpl) = AggregatorFunction(context, this)
 
@@ -58,7 +104,7 @@ class MemberEventFunction<T : Event, R> private constructor(
         function = function,
         instance = instance,
         eventParameter = function.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(eventClass) }
-            ?: throwUser("First argument should be a ${eventClass.simpleNestedName}")
+            ?: throwUser(function, "First argument should be a ${eventClass.simpleNestedName}")
     )
 
     internal constructor(context: BContextImpl, function: KFunction<R>, eventClass: KClass<T>) : this(

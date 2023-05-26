@@ -54,9 +54,6 @@ internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
 internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(function, message)
-
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${function.shortSignature} : $message")
 
@@ -77,15 +74,6 @@ internal inline fun throwUser(message: String): Nothing =
 internal inline fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
     null -> throw ServiceException(message)
     else -> throw ServiceException("${function.shortSignature} : $message")
-}
-
-@OptIn(ExperimentalContracts::class)
-internal inline fun IExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
-    contract {
-        returns() implies value
-    }
-
-    requireUser(value, this.function, lazyMessage)
 }
 
 @OptIn(ExperimentalContracts::class)

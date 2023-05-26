@@ -2,7 +2,8 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.options.Option
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
+import com.freya02.botcommands.internal.core.reflection.isSingleAggregator
+import com.freya02.botcommands.internal.core.reflection.parameters
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwInternal

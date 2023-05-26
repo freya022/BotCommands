@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.TextCommandsContext
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.core.reflection.throwUser
 
 internal class TextCommandsContextImpl internal constructor() : TextCommandsContext {
     private val textCommandMap: MutableMap<String, TopLevelTextCommandInfo> = hashMapOf()
@@ -9,7 +9,7 @@ internal class TextCommandsContextImpl internal constructor() : TextCommandsCont
     fun addTextCommand(commandInfo: TopLevelTextCommandInfo) {
         (commandInfo.aliases + commandInfo.name).forEach { name ->
             textCommandMap.put(name, commandInfo)?.let {
-                throwUser(commandInfo.variations.first().function, "Text command with path ${commandInfo.path} already exists")
+                commandInfo.variations.first().function.throwUser("Text command with path ${commandInfo.path} already exists")
             }
         }
     }

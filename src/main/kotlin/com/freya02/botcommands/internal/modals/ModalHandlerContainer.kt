@@ -4,11 +4,11 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.reflection.shortSignature
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService

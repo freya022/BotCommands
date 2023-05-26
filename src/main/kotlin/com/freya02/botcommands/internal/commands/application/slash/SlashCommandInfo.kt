@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ge
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.callSuspendBy
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
@@ -23,7 +24,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 abstract class SlashCommandInfo internal constructor(

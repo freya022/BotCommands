@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
+import com.freya02.botcommands.internal.core.reflection.nonInstanceParameters
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.transformParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import kotlin.reflect.jvm.jvmErasure
 

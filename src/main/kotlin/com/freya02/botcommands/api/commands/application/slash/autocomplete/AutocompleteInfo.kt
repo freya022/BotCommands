@@ -4,16 +4,12 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.build
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.AbstractAutocompleteCache
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.caches.NoCacheAutocomplete
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.jvmErasure
 
 class AutocompleteInfo internal constructor(context: BContextImpl, builder: AutocompleteInfoBuilder) {
     val name: String = builder.name
-    val function: KFunction<Collection<*>> = builder.function.reflectReference()
+    val function = builder.function.toMemberEventFunction<CommandAutoCompleteInteractionEvent, _>(context)
     val mode: AutocompleteMode = builder.mode
     val showUserInput: Boolean = builder.showUserInput
     val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
@@ -22,12 +18,6 @@ class AutocompleteInfo internal constructor(context: BContextImpl, builder: Auto
     internal val cache = when {
         context.config.disableAutocompleteCache -> NoCacheAutocomplete
         else -> AbstractAutocompleteCache.fromMode(this)
-    }
-
-    init {
-        requireUser(function.valueParameters.firstOrNull()?.type?.jvmErasure == CommandAutoCompleteInteractionEvent::class, function) {
-            "First parameter must be a CommandAutoCompleteInteractionEvent"
-        }
     }
 
     override fun equals(other: Any?): Boolean {

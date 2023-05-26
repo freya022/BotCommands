@@ -16,8 +16,8 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashSubcomma
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getDiscordOptions
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.core.reflection.rethrowUser
 import com.freya02.botcommands.internal.overwriteBytes
-import com.freya02.botcommands.internal.rethrowUser
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -132,7 +132,7 @@ internal class ApplicationCommandsUpdater private constructor(
 
                     map[Command.Type.SLASH, info.name] = topLevelData
                 } catch (e: Exception) { //TODO use some sort of exception context for command paths
-                    rethrowUser(info.function, "An exception occurred while processing command '${info.name}'", e)
+                    info.function.rethrowUser("An exception occurred while processing command '${info.name}'", e)
                 }
             }
     }
@@ -165,11 +165,7 @@ internal class ApplicationCommandsUpdater private constructor(
                     //Standard command
                     map[type, info.name] = Commands.context(type, info.name).configureTopLevel(info)
                 } catch (e: Exception) {
-                    rethrowUser(
-                        info.function,
-                        "An exception occurred while processing a ${type.name} command ${info.name}",
-                        e
-                    )
+                    info.function.rethrowUser("An exception occurred while processing a ${type.name} command ${info.name}", e)
                 }
             }
     }

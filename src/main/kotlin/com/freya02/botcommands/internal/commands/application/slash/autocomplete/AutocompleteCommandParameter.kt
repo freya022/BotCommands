@@ -5,32 +5,28 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.commands.application.slash.AbstractSlashCommandParameter
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.core.reflection.*
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import kotlin.reflect.KFunction
-import kotlin.reflect.full.findParameterByName
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 class AutocompleteCommandParameter(
     slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     optionAggregateBuilder: SlashCommandOptionAggregateBuilder,
-    autocompleteFunction: KFunction<*>
+    autocompleteFunction: MemberEventFunction<CommandAutoCompleteInteractionEvent, *>
 ) : AbstractSlashCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, optionAggregateBuilder) {
     override val executableParameter = (autocompleteFunction.findParameterByName(name))?.also {
-        requireUser(it.isNullable == kParameter.isNullable, autocompleteFunction) {
+        autocompleteFunction.requireUser(it.isNullable == kParameter.isNullable) {
             "Parameter from autocomplete function '${kParameter.name}' should have same nullability as on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
         }
-    } ?: throwUser(
-        autocompleteFunction,
+    } ?: autocompleteFunction.throwUser(
         "Parameter from autocomplete function '${kParameter.name}' should have been found on slash command ${slashCommandInfo.function.shortSignatureNoSrc}"
     )
 
     override val nestedAggregatedParameters: List<IAggregatedParameter> = optionAggregateBuilder.nestedAggregates.transform {
-        AutocompleteCommandParameter(slashCommandInfo, it.nestedAggregates, it, optionAggregateBuilder.aggregator)
+        AutocompleteCommandParameter(slashCommandInfo, it.nestedAggregates, it, optionAggregateBuilder.aggregator.toMemberEventFunction(slashCommandInfo.context))
     }
 
     override fun constructOption(

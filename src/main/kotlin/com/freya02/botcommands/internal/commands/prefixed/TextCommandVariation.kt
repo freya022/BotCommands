@@ -9,6 +9,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ge
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.callSuspendBy
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
@@ -19,9 +20,7 @@ import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 class TextCommandVariation internal constructor(
@@ -37,7 +36,7 @@ class TextCommandVariation internal constructor(
     private val useTokenizedEvent: Boolean
 
     init {
-        useTokenizedEvent = function.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
+        useTokenizedEvent = function.eventParameter.type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)
