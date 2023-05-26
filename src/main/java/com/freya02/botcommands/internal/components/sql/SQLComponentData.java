@@ -47,6 +47,8 @@ public abstract class SQLComponentData {
 				if (i > 1) {
 					LOGGER.warn("Deleted {} one-use component(s), this should have been only one, component IDs should be unique", i);
 				}
+
+				LOGGER.trace("Deleted component {}", getComponentId());
 			}
 		}
 	}

@@ -86,6 +86,7 @@ public class ComponentListener extends ListenerAdapter {
 			final FetchedComponent fetchedComponent = fetchResult.getFetchedComponent();
 
 			if (fetchedComponent == null) {
+				LOGGER.trace("Could not find components with id {}", event.getComponentId());
 				event.reply(context.getDefaultMessages(event).getComponentNotFoundErrorMsg())
 						.setEphemeral(true)
 						.queue();

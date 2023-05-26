@@ -243,6 +243,7 @@ public class DefaultComponentManager implements ComponentManager {
 				scheduleLambdaTimeout(buttonLambdaMap, builder.getTimeout(), result.handlerId(), result.componentId());
 			}
 
+			LOGGER.trace("Created a lambda button with id {}", result.componentId());
 			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
@@ -268,6 +269,7 @@ public class DefaultComponentManager implements ComponentManager {
 				scheduleLambdaTimeout(selectionMenuLambdaMap, timeout, result.handlerId(), result.componentId());
 			}
 
+			LOGGER.trace("Created a lambda select menu with id {}", result.componentId());
 			return result.componentId();
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a lambda component", e);
@@ -304,6 +306,11 @@ public class DefaultComponentManager implements ComponentManager {
 
 			schedulePersistentTimeout(builder.getTimeout(), componentId);
 
+			if (type == ComponentType.PERSISTENT_BUTTON) {
+				LOGGER.trace("Created a persistent component with id {}", componentId);
+			} else if (type == ComponentType.PERSISTENT_SELECTION_MENU) {
+				LOGGER.trace("Created a lambda button with id {}", componentId);
+			}
 			return componentId;
 		} catch (Exception e) {
 			LOGGER.error("An exception occurred while registering a persistent component", e);
