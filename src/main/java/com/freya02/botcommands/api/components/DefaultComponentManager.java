@@ -237,6 +237,11 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.getInteractionConstraints(),
 					builder.getTimeout());
 
+			if (!connection.getAutoCommit()) {
+				LOGGER.warn("Found a transactional connection being used");
+				connection.commit();
+			}
+
 			buttonLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (builder.getTimeout().timeout() > 0) {
@@ -262,6 +267,11 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.isOneUse(),
 					builder.getInteractionConstraints(),
 					timeout);
+
+			if (!connection.getAutoCommit()) {
+				LOGGER.warn("Found a transactional connection being used");
+				connection.commit();
+			}
 
 			selectionMenuLambdaMap.put(result.handlerId(), builder.getConsumer());
 
@@ -303,6 +313,11 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.getTimeout(),
 					builder.getHandlerName(),
 					builder.getArgs());
+
+			if (!connection.getAutoCommit()) {
+				LOGGER.warn("Found a transactional connection being used");
+				connection.commit();
+			}
 
 			schedulePersistentTimeout(builder.getTimeout(), componentId);
 
