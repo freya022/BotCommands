@@ -115,22 +115,9 @@ public final class ApplicationCommandsBuilder {
 
 		context.setApplicationCommandsCache(new ApplicationCommandsCache(context));
 
-		es.submit(() -> {
-			try {
-				globalLock.lock();
-				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, context.isOnlineAppCommandCheckEnabled());
-				if (globalUpdater.shouldUpdateCommands()) {
-					globalUpdater.updateCommands();
-					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
-				} else {
-					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
-				}
-
-				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getScopeApplicationCommands()));
-			} catch (Throwable e) {
+		scheduleGlobalApplicationCommandsUpdate(false, context.isOnlineAppCommandCheckEnabled()).whenComplete((wasUpdated, e) -> {
+			if (e != null) {
 				LOGGER.error("An error occurred while updating global commands", e);
-			} finally {
-				globalLock.unlock();
 			}
 		});
 
@@ -145,6 +132,30 @@ public final class ApplicationCommandsBuilder {
 		map.forEach((guild, future) -> {
 			future.whenComplete((result, throwable) -> handleApplicationUpdateException(guild, throwable));
 		});
+	}
+
+	public CompletableFuture<Boolean> scheduleGlobalApplicationCommandsUpdate(boolean force, boolean online) {
+		return CompletableFuture.supplyAsync(() -> {
+			globalLock.lock();
+			try {
+				final ApplicationCommandsUpdater globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, online);
+				final boolean shouldUpdateCommands = force || globalUpdater.shouldUpdateCommands();
+				if (shouldUpdateCommands) {
+					globalUpdater.updateCommands();
+					LOGGER.debug("Global commands were updated ({})", getCheckTypeString());
+				} else {
+					LOGGER.debug("Global commands does not have to be updated ({})", getCheckTypeString());
+				}
+
+				context.getApplicationCommandsContext().putLiveApplicationCommandsMap(null, ApplicationCommandInfoMap.fromCommandList(globalUpdater.getScopeApplicationCommands()));
+
+				return shouldUpdateCommands;
+			} catch (Throwable e) {
+				throw new RuntimeException("An exception occurred while updating global commands", e);
+			} finally {
+				globalLock.unlock();
+			}
+		}, es);
 	}
 
 	void handleApplicationUpdateException(Guild guild, Throwable throwable) {
