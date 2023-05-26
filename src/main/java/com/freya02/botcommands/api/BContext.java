@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public interface BContext {
@@ -305,32 +306,60 @@ public interface BContext {
 	HelpBuilderConsumer getHelpBuilderConsumer();
 
 	/**
-	 * Updates the application commands in the specified guilds <br><br>
+	 * Executes a global application command update.
+	 *
+	 * <p>
+	 * <b>Note:</b> It is your responsibility to handle exceptions thrown inside the {@link CompletableFuture},
+	 * see {@link CompletableFuture#whenComplete(BiConsumer)}
+	 *
+	 * @param force       Whether to always update commands
+	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
+	 *
+	 * @return A {@link CompletableFuture} which returns {@code true} if the commands were updated.
+	 */
+	@NotNull
+	CompletableFuture<Boolean> scheduleGlobalApplicationCommandsUpdate(boolean force, boolean onlineCheck);
+
+	/**
+	 * Updates the application commands in the specified guilds.
+	 *
+	 * <p>
+	 * <b>Note:</b> It is your responsibility to handle exceptions thrown inside the {@link CompletableFuture},
+	 * see {@link CompletableFuture#whenComplete(BiConsumer)}
+	 *
 	 * Why you could call this method:
 	 * <ul>
-	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
-	 * @param guilds Iterable collection of the guilds to update
-	 * @param force  Whether the commands should be updated no matter what
+	 * @param guilds      Iterable collection of the guilds to update
+	 * @param force       Whether to always update commands
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
+	 *
 	 * @return A {@link Map} of {@link Guild} to their {@link CommandUpdateResult} {@link CompletableFuture completable futures}
 	 */
 	@NotNull
 	Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck);
 
 	/**
-	 * Updates the application commands in the specified guild <br><br>
+	 * Updates the application commands in the specified guilds.
+	 *
+	 * <p>
+	 * <b>Note:</b> It is your responsibility to handle exceptions thrown inside the {@link CompletableFuture},
+	 * see {@link CompletableFuture#whenComplete(BiConsumer)}
+	 *
+	 * <p>
 	 * Why you could call this method:
 	 * <ul>
-	 *     <li>Your bot joins a server and you wish to add a guild command to it </li>
+	 *     <li>Your bot joins a server and you wish to add a guild command to it</li>
 	 *     <li>You decide to remove a command from a guild while the bot is running, <b>I do not mean code hotswap! It will not work that way</b></li>
 	 * </ul>
 	 *
-	 * @param guild The guild which needs to be updated
-	 * @param force Whether the commands should be updated no matter what
+	 * @param guild       The guild which needs to be updated
+	 * @param force       Whether to always update commands
 	 * @param onlineCheck Whether the commands should be updated by checking Discord, see {@link ApplicationCommandsBuilder#enableOnlineAppCommandCheck()}
+	 *
 	 * @return A {@link CommandUpdateResult} {@link CompletableFuture completable future}
 	 */
 	@NotNull

@@ -449,6 +449,12 @@ public class BContextImpl implements BContext {
 
 	@Override
 	@NotNull
+	public CompletableFuture<Boolean> scheduleGlobalApplicationCommandsUpdate(boolean force, boolean onlineCheck) {
+		return slashCommandsBuilder.scheduleGlobalApplicationCommandsUpdate(force, onlineCheck);
+	}
+
+	@Override
+	@NotNull
 	public Map<Guild, CompletableFuture<CommandUpdateResult>> scheduleApplicationCommandsUpdate(Iterable<Guild> guilds, boolean force, boolean onlineCheck) {
 		return slashCommandsBuilder.scheduleApplicationCommandsUpdate(guilds, false, onlineCheck);
 	}
