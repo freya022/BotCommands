@@ -237,11 +237,6 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.getInteractionConstraints(),
 					builder.getTimeout());
 
-			if (!connection.getAutoCommit()) {
-				LOGGER.warn("Found a transactional connection being used");
-				connection.commit();
-			}
-
 			buttonLambdaMap.put(result.handlerId(), builder.getConsumer());
 
 			if (builder.getTimeout().timeout() > 0) {
@@ -267,11 +262,6 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.isOneUse(),
 					builder.getInteractionConstraints(),
 					timeout);
-
-			if (!connection.getAutoCommit()) {
-				LOGGER.warn("Found a transactional connection being used");
-				connection.commit();
-			}
 
 			selectionMenuLambdaMap.put(result.handlerId(), builder.getConsumer());
 
@@ -313,11 +303,6 @@ public class DefaultComponentManager implements ComponentManager {
 					builder.getTimeout(),
 					builder.getHandlerName(),
 					builder.getArgs());
-
-			if (!connection.getAutoCommit()) {
-				LOGGER.warn("Found a transactional connection being used");
-				connection.commit();
-			}
 
 			schedulePersistentTimeout(builder.getTimeout(), componentId);
 
@@ -404,7 +389,17 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@NotNull
 	private Connection getConnection() {
-		return connectionSupplier.get();
+		try {
+			final Connection connection = connectionSupplier.get();
+			// This class does not use transactions unfortunately
+			// This will get reset everytime the connection is retrieved
+			// So there should be no risk of removing transactions of other users
+ 			connection.setAutoCommit(true);
+
+			return connection;
+		} catch (SQLException e) {
+			throw new RuntimeException("Could not get a database connection", e);
+		}
 	}
 
 	private void setupTables() throws SQLException {
