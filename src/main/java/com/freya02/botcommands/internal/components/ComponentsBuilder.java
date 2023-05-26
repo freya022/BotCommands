@@ -67,6 +67,8 @@ public class ComponentsBuilder {
 			context.getRegistrationListeners().forEach(l -> l.onComponentRegistered(newDescriptor));
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
 			throw new RuntimeException("An error occurred while instantiating the class of the " + componentType + "'s method " + Utils.formatMethodShort(method), e);
+		} catch (Throwable e) {
+			throw new RuntimeException("An exception occurred while processing components listener at " + Utils.formatMethodShort(method), e);
 		}
 	}
 
