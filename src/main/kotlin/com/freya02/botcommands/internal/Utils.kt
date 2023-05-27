@@ -18,10 +18,8 @@ import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -162,9 +160,6 @@ val Class<*>.simpleNestedName: String
 fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
 fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
 
-fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
-    this.type.jvmErasure == param.type.jvmErasure
-
 val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
@@ -182,8 +177,6 @@ val KFunction<*>.javaMethodOrConstructor: Executable
 
 val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
-
-inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
 
