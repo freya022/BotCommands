@@ -9,6 +9,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.system.measureNanoTime
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
 
@@ -56,12 +59,17 @@ internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPath
 }
 
 @InjectedService
+@OptIn(ExperimentalTime::class)
 internal class ClassPathContainer(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
     val classes: List<KClass<*>>
     val functions: List<ClassPathFunction> by lazy {
-        return@lazy retrieveClassFunctions()
+        val (functions, duration) = measureTimedValue {
+            retrieveClassFunctions()
+        }
+        logger.trace { "Functions reflection took ${duration.toDouble(DurationUnit.MILLISECONDS)} ms" }
+        return@lazy functions
     }
 
     init {
@@ -76,7 +84,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
             this.classes = ReflectionMetadata.runScan(packages, userClasses).map(Class<*>::kotlin)
         }
 
-        logger.trace { "Reflection took ${nano / 1000000.0} ms" }
+        logger.trace { "Classes reflection took ${nano / 1000000.0} ms" }
     }
 
     inline fun <reified A : Annotation> functionsWithAnnotation() = functions.withFilter(FunctionFilter.annotation<A>())
