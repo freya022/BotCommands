@@ -11,7 +11,6 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ge
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.reflection.callSuspendBy
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.InsertOptionResult
@@ -24,6 +23,7 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 abstract class SlashCommandInfo internal constructor(
@@ -34,11 +34,11 @@ abstract class SlashCommandInfo internal constructor(
 ) {
     val description: String = builder.description
 
-    final override val function = builder.toMemberEventFunction<GlobalSlashEvent, _>(context)
+    final override val eventFunction = builder.toMemberEventFunction<GlobalSlashEvent, _>(context)
     final override val parameters: List<SlashCommandParameter>
 
     init {
-        checkEventScope<GuildSlashEvent>(function, builder)
+        checkEventScope<GuildSlashEvent>(eventFunction, builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)

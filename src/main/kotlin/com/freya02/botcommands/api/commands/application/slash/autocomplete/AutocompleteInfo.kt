@@ -9,10 +9,12 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 
 class AutocompleteInfo internal constructor(context: BContextImpl, builder: AutocompleteInfoBuilder) {
     val name: String = builder.name
-    val function = builder.function.toMemberEventFunction<CommandAutoCompleteInteractionEvent, _>(context)
+    val eventFunction = builder.function.toMemberEventFunction<CommandAutoCompleteInteractionEvent, _>(context)
     val mode: AutocompleteMode = builder.mode
     val showUserInput: Boolean = builder.showUserInput
     val autocompleteCache: AutocompleteCacheInfo? = builder.autocompleteCache
+
+    val function get() = eventFunction.kFunction
 
     @get:JvmSynthetic
     internal val cache = when {

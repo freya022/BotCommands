@@ -35,7 +35,7 @@ internal class SimpleCommandMap<T : INamedCommand>(private val functionSupplier:
 
         fun <T> ofInfos(): SimpleCommandMap<T> where T : INamedCommand,
                                                      T : IExecutableInteractionInfo {
-            return SimpleCommandMap { it.function.kFunction }
+            return SimpleCommandMap(IExecutableInteractionInfo::function)
         }
     }
 }

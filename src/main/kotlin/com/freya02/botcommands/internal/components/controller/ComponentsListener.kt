@@ -22,7 +22,6 @@ import com.freya02.botcommands.internal.components.repositories.ComponentsHandle
 import com.freya02.botcommands.internal.core.db.InternalDatabase
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.reflection.callSuspendBy
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -41,6 +40,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
+import kotlin.reflect.full.callSuspendBy
 
 @ConditionalService(dependencies = [Components::class, InternalDatabase::class])
 internal class ComponentsListener(

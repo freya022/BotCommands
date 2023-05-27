@@ -14,7 +14,6 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.ge
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.reflection.callSuspendBy
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
@@ -24,6 +23,7 @@ import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
+import kotlin.reflect.full.callSuspendBy
 
 class UserCommandInfo internal constructor(
     private val context: BContextImpl,
@@ -31,14 +31,14 @@ class UserCommandInfo internal constructor(
 ) : ApplicationCommandInfo(builder),
     ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
 
-    override val function = builder.toMemberEventFunction<GlobalUserEvent, _>(context)
+    override val eventFunction = builder.toMemberEventFunction<GlobalUserEvent, _>(context)
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
     override val parameters: List<UserContextCommandParameter>
 
     init {
-        checkEventScope<GuildUserEvent>(function, builder)
+        checkEventScope<GuildUserEvent>(eventFunction, builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             UserContextCommandParameter(context, it)

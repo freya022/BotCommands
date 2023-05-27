@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.core.reflection.*
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.mapFinalParameters
 import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
@@ -23,7 +24,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnno
 
 class ModalHandlerInfo(
     val context: BContextImpl,
-    override val function: MemberEventFunction<ModalInteractionEvent, *>
+    override val eventFunction: MemberEventFunction<ModalInteractionEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
@@ -65,7 +66,7 @@ class ModalHandlerInfo(
         val userDatas = handlerData.userData
 
         //Check if there's enough arguments to fit user data + modal inputs
-        function.requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size) {
+        requireUser(expectedModalDatas == userDatas.size && expectedModalInputs == event.values.size, function) {
             """
             Modal handler does not match the received modal data:
             Method signature: $expectedModalDatas userdata parameters and $expectedModalInputs modal input(s)

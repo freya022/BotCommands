@@ -2,8 +2,6 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.options.Option
-import com.freya02.botcommands.internal.core.reflection.isSingleAggregator
-import com.freya02.botcommands.internal.core.reflection.parameters
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
 import com.freya02.botcommands.internal.throwInternal
@@ -51,9 +49,9 @@ context(IExecutableInteractionInfo)
 suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     event: Event,
     optionValues: Map<Option, Any?>
-) = buildMap(function.parameters.size) {
-    this[function.instanceParameter] = instance
-    this[function.eventParameter] = event
+) = buildMap(eventFunction.parametersSize) {
+    this[eventFunction.instanceParameter] = instance
+    this[eventFunction.eventParameter] = event
 
     for (parameter in this@mapFinalParameters) {
         insertAggregate(event, this, optionValues, parameter)
@@ -63,7 +61,7 @@ suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
 suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
     val aggregator = parameter.aggregator
 
-    if (aggregator.isSingleAggregator()) {
+    if (aggregator.isSingleAggregator) {
         val option = parameter.options.first()
         //This is necessary to distinguish between null mappings and default mappings
         if (option in optionValues) {
@@ -71,7 +69,7 @@ suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParamet
             aggregatedObjects[parameter] = optionValues[option]
         }
     } else {
-        val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parameters.size)
+        val aggregatorArguments: MutableMap<KParameter, Any?> = HashMap(aggregator.parametersSize)
         for (option in parameter.options) {
             //This is necessary to distinguish between null mappings and default mappings
             if (option in optionValues) {

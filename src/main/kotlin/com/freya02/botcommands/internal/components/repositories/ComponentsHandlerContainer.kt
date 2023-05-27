@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.reflection.shortSignature
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwUser
