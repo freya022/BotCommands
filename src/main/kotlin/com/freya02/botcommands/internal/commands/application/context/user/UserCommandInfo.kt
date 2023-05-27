@@ -9,11 +9,11 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.checkEventScope
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
@@ -38,7 +38,7 @@ class UserCommandInfo internal constructor(
     override val parameters: List<UserContextCommandParameter>
 
     init {
-        checkEventScope<GuildUserEvent>(eventFunction, builder)
+        eventFunction.checkEventScope<GuildUserEvent>(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             UserContextCommandParameter(context, it)

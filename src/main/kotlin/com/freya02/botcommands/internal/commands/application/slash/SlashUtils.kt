@@ -1,25 +1,19 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.GeneratedOption
-import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
@@ -144,23 +138,5 @@ internal object SlashUtils {
         }
 
         data.isRequired = !option.isOptionalOrNullable
-    }
-
-    // Using the builder to get the scope is required as the info object is still initializing
-    // and would NPE when getting the top level instance
-    internal inline fun <reified T> checkEventScope(
-        function: MemberEventFunction<out GenericCommandInteractionEvent, Any>,
-        builder: ApplicationCommandBuilder<*>
-    ) {
-        if (function.kFunction.isFakeSlashFunction()) return
-
-        val eventType = function.eventParameter.type.jvmErasure
-        if (builder.topLevelBuilder.scope.isGuildOnly) {
-            if (!eventType.isSubclassOf(T::class)) {
-                Logging.getLogger().warn("${function.kFunction.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
-            }
-        } else if (eventType.isSubclassOf(T::class)) {
-            throwUser("Cannot use ${T::class.simpleName} on a global application command")
-        }
     }
 }

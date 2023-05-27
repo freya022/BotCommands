@@ -1,15 +1,20 @@
 package com.freya02.botcommands.internal.core.reflection
 
+import com.freya02.botcommands.api.Logging
+import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -76,6 +81,23 @@ class MemberEventFunction<T : Event, R> private constructor(
         instance = context.serviceContainer.getFunctionService(function),
         eventClass = eventClass
     )
+}
+
+// Using the builder to get the scope is required as the info object is still initializing
+// and would NPE when getting the top level instance
+internal inline fun <reified T> MemberEventFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
+    builder: ApplicationCommandBuilder<*>
+) {
+    if (kFunction.isFakeSlashFunction()) return
+
+    val eventType = eventParameter.type.jvmErasure
+    if (builder.topLevelBuilder.scope.isGuildOnly) {
+        if (!eventType.isSubclassOf(T::class)) {
+            Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
+        }
+    } else if (eventType.isSubclassOf(T::class)) {
+        throwUser("Cannot use ${T::class.simpleName} on a global application command")
+    }
 }
 
 internal inline fun <reified T : Event> ClassPathFunction.toMemberEventFunction() =
