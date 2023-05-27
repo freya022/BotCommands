@@ -21,6 +21,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 sealed class Function<R>(kFunction: KFunction<R>) {
@@ -61,24 +62,43 @@ class AggregatorFunction private constructor(
 
 internal fun KFunction<*>.toAggregatorFunction(context: BContextImpl) = AggregatorFunction(context, this)
 
-class MemberEventFunction<T : Event, R> private constructor(
+open class MemberFunction<R> private constructor(
     function: KFunction<R>,
-    val instance: Any,
-    val eventParameter: KParameter
+    instanceSupplier: () -> Any,
+    val firstParameter: KParameter
 ) : Function<R>(function) {
-    val instanceParameter = this.kFunction.instanceParameter
-        ?: throwInternal(kFunction, "Commands shouldn't be static or constructors")
+    val instance by lazy(instanceSupplier)
 
-    internal constructor(function: KFunction<R>, instance: Any, eventClass: KClass<T>) : this(
+    val resolvableParameters = kFunction.valueParameters.drop(1) //Drop the first parameter
+    val instanceParameter = kFunction.instanceParameter
+        ?: throwInternal(kFunction, "Function shouldn't be static or constructors")
+
+    internal constructor(function: KFunction<R>, instanceSupplier: () -> Any) : this(
         function = function,
-        instance = instance,
-        eventParameter = function.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(eventClass) }
-            ?: throwUser(function, "First argument should be a ${eventClass.simpleNestedName}")
+        instanceSupplier = instanceSupplier,
+        firstParameter = function.nonInstanceParameters.firstOrNull()
+            ?: throwInternal(function, "The function should have been checked to have at least one parameter")
     )
+}
+
+internal fun ClassPathFunction.toMemberFunction() = MemberFunction(function, instanceSupplier = { this.instance })
+
+class MemberEventFunction<T : Event, R> internal constructor(
+    function: KFunction<R>,
+    instanceSupplier: () -> Any,
+    eventClass: KClass<T>
+) : MemberFunction<R>(function, instanceSupplier) {
+    val eventParameter get() = firstParameter
+
+    init {
+        requireUser(eventParameter.type.jvmErasure.isSubclassOf(eventClass), function) {
+            "First argument should be a ${eventClass.simpleNestedName}"
+        }
+    }
 
     internal constructor(context: BContextImpl, function: KFunction<R>, eventClass: KClass<T>) : this(
         function = function,
-        instance = context.serviceContainer.getFunctionService(function),
+        instanceSupplier = { context.serviceContainer.getFunctionService(function) },
         eventClass = eventClass
     )
 }
@@ -101,7 +121,7 @@ internal inline fun <reified T> MemberEventFunction<out GenericCommandInteractio
 }
 
 internal inline fun <reified T : Event> ClassPathFunction.toMemberEventFunction() =
-    MemberEventFunction(function, instance, T::class)
+    MemberEventFunction(function, instanceSupplier = { instance }, T::class)
 
 internal inline fun <reified T : Event, R> KFunction<R>.toMemberEventFunction(context: BContextImpl) =
     MemberEventFunction(context, this, T::class)
