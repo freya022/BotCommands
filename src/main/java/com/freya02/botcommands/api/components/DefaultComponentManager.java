@@ -389,7 +389,17 @@ public class DefaultComponentManager implements ComponentManager {
 
 	@NotNull
 	private Connection getConnection() {
-		return connectionSupplier.get();
+		try {
+			final Connection connection = connectionSupplier.get();
+			// This class does not use transactions unfortunately
+			// This will get reset everytime the connection is retrieved
+			// So there should be no risk of removing transactions of other users
+ 			connection.setAutoCommit(true);
+
+			return connection;
+		} catch (SQLException e) {
+			throw new RuntimeException("Could not get a database connection", e);
+		}
 	}
 
 	private void setupTables() throws SQLException {
