@@ -75,7 +75,7 @@ internal class ComponentRepository(
             // Add timeout
             insertTimeoutData(builder, componentId)
 
-            return@runBlocking componentId
+            return@transactional componentId
         }
     }
 
@@ -87,7 +87,7 @@ internal class ComponentRepository(
                      natural left join bc_component_constraints
             where component_id = ?""".trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: return null
+            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
 
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
@@ -163,7 +163,7 @@ internal class ComponentRepository(
             throwUser("Cannot put components inside groups if they have a timeout set")
         }
 
-        return groupId
+        return@transactional groupId
     }
 
     context(Transaction)

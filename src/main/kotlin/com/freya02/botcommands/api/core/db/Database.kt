@@ -41,11 +41,14 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
     try {
         connection.autoCommit = false
-        return block(Transaction(this, connection)).also { connection.commit() }
+        return block(Transaction(this, connection))
     } catch (e: Throwable) {
         connection.rollback()
         throw e
     } finally {
+        // Always commit, if the connection was rolled back, this is a no-op
+        // Using a "finally" block is mandatory, as code after the "block" function can be skipped if the user does a non-local return
+        connection.commit()
         // HikariCP already resets the properties of the Connection when releasing (closing) it.
         // If a connection pool isn't used then it'll simply recreate a new Connection anyway.
         connection.close()
