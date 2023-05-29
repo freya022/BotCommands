@@ -13,7 +13,6 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ServiceMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
-import com.freya02.botcommands.internal.utils.ReflectionUtils.hasAtMostOneServiceAnnotation
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
@@ -70,10 +69,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
                 context.classPathContainer.classes.forEach { clazz ->
                     clazz.findAnnotation<BService>()?.let {
-                        loadableServices.getOrPut(it.start) { mutableListOf() }.add(clazz)
-                        return@forEach
-                    }
-                    clazz.findAnnotation<ConditionalService>()?.let {
                         loadableServices.getOrPut(it.start) { mutableListOf() }.add(clazz)
                         return@forEach
                     }
@@ -155,9 +150,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
-
-        if (!clazz.hasAtMostOneServiceAnnotation())
-            throwUser("Class ${clazz.simpleNestedName} cannot be annotated with both ${BService::class.simpleNestedName} and ${ConditionalService::class.simpleNestedName} at the same time")
 
         canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
 

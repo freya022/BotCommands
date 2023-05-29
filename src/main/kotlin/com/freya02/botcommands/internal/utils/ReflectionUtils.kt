@@ -1,9 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.annotations.ConditionalUse
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
@@ -22,10 +19,6 @@ internal object ReflectionUtils {
     private val logger = KotlinLogging.logger { }
 
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
-
-    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
-    private val loadableServiceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class)
-    private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     @Suppress("UNCHECKED_CAST")
     internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
@@ -164,24 +157,5 @@ internal object ReflectionUtils {
 
     private fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
-    }
-
-    internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
-    internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
-    internal fun KClass<*>.isLoadableService() = loadableServiceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
-
-    /**
-     * Returns `true` if there is 1 service annotation or less
-     */
-    internal fun KClass<*>.hasAtMostOneServiceAnnotation(): Boolean {
-        var found = false
-        annotations.forEach { annotation ->
-            if (annotation.annotationClass in loadableServiceAnnotations) {
-                if (found)
-                    return false
-                found = true
-            }
-        }
-        return true
     }
 }

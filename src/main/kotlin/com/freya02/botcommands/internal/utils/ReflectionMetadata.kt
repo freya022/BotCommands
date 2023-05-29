@@ -1,13 +1,13 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
+import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.isInstantiable
-import com.freya02.botcommands.internal.utils.ReflectionUtils.isService
 import io.github.classgraph.*
 import java.lang.reflect.Executable
 import java.util.*
@@ -16,6 +16,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
+import kotlin.reflect.jvm.jvmName
 
 private typealias IsNullableAnnotated = Boolean
 
@@ -41,7 +42,13 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
+    internal fun runScan(config: BConfig): List<Class<*>> {
+        val packages = config.packages
+        //This is a requirement for ClassGraph to work correctly
+        if (packages.isEmpty()) {
+            throwUser("You must specify at least 1 package to scan classes from")
+        }
+
         val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
             ClassGraph()
                 .acceptPackages("com.freya02.botcommands.api", "com.freya02.botcommands.internal")
@@ -52,15 +59,15 @@ internal object ReflectionMetadata {
                 .scan()
                 .also { scanResult -> // Don't keep test classes
                     add(scanResult to scanResult.allStandardClasses.filter {
-                        return@filter it.isService()
-                                || it.outerClasses.any { outer -> outer.isService() }
+                        return@filter it.isService(config)
+                                || it.outerClasses.any { outer -> outer.isService(config) }
                                 || it.hasAnnotation(IncludeClasspath::class.java.name)
                     })
                 }
 
             ClassGraph()
-                .acceptPackages(*packages.toTypedArray())
-                .acceptClasses(*userClasses.map { it.name }.toTypedArray())
+                .acceptPackages(*config.packages.toTypedArray())
+                .acceptClasses(*config.classes.map { it.name }.toTypedArray())
                 .enableMethodInfo()
                 .enableAnnotationInfo()
                 .disableModuleScanning()
@@ -95,6 +102,8 @@ internal object ReflectionMetadata {
         }
     }
 
+    private fun ClassInfo.isService(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
     private fun readAnnotations(classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core.db
 
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BConfig
@@ -11,6 +12,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 
+@BService
 @ServiceType(Database::class)
 @ConditionalService(dependencies = [ConnectionSupplier::class])
 internal class DatabaseImpl internal constructor(

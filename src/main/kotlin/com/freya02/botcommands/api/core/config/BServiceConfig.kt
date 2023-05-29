@@ -1,16 +1,21 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.toImmutableMap
+import com.freya02.botcommands.internal.toImmutableSet
 import kotlin.reflect.KClass
 
 @InjectedService
 interface BServiceConfig {
+    val serviceAnnotations: Set<KClass<out Annotation>>
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
 }
 
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
+    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class)
+
     private val _instanceSupplierMap: MutableMap<KClass<*>, InstanceSupplier<*>> = hashMapOf()
     override val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
         get() = _instanceSupplierMap.toImmutableMap()
@@ -26,6 +31,7 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
 
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {
-        override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap
+        override val serviceAnnotations = this@BServiceConfigBuilder.serviceAnnotations.toImmutableSet()
+        override val instanceSupplierMap = this@BServiceConfigBuilder.instanceSupplierMap //Already immutable
     }
 }

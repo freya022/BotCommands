@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.components.builder.ITimeoutableComponent
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.db.Transaction
 import com.freya02.botcommands.api.core.db.transactional
@@ -28,6 +29,7 @@ import net.dv8tion.jda.api.Permission
 import java.sql.SQLException
 import java.sql.Timestamp
 
+@BService
 @ConditionalService(dependencies = [Components::class])
 internal class ComponentRepository(
     private val database: InternalDatabase,
