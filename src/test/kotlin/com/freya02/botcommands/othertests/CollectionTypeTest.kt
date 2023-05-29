@@ -10,6 +10,6 @@ fun test(): Collection<String> = throw UnsupportedOperationException()
 fun testCustom(): MyCollection<User, Member> = throw UnsupportedOperationException()
 
 fun main() {
-    println(::test.collectionElementType)
-    println(::testCustom.collectionElementType)
+    println(::test.returnType.collectionElementType)
+    println(::testCustom.returnType.collectionElementType)
 }

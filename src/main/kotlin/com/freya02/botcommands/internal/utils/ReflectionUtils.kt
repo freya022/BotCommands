@@ -27,10 +27,6 @@ internal object ReflectionUtils {
     private val loadableServiceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class)
     private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
-    internal fun Method.asKFunction(): KFunction<*> {
-        return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
-    }
-
     @Suppress("UNCHECKED_CAST")
     internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
         //Still allow internal modifiers as they should be reflectively accessible
@@ -133,12 +129,6 @@ internal object ReflectionUtils {
             return collectionType.arguments.first().type
         }
 
-    internal val KFunction<*>.collectionElementType: KClass<*>?
-        get() = returnType.collectionElementType?.jvmErasure
-
-    internal val KParameter.collectionElementType: KType?
-        get() = type.collectionElementType
-
     /** Everything but extensions, includes static methods */
     internal val KClass<*>.nonExtensionFunctions
         //Take everything except extension functions
@@ -170,6 +160,10 @@ internal object ReflectionUtils {
         }
 
         return canInstantiate
+    }
+
+    private fun Method.asKFunction(): KFunction<*> {
+        return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 
     internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }

@@ -70,10 +70,8 @@ internal class TextCommandsBuilder(
             helpCommandInfo != null -> {
                 logger.debug("Using a custom 'help' text command implementation")
 
-                val helpVariation = helpCommandInfo.variations.firstOrNull { it.instance is IHelpCommand }
+                val helpCommand = helpCommandInfo.variations.firstNotNullOfOrNull { it.instance as? IHelpCommand }
                     ?: throwUser("Help command must at least one variation of the 'help' command path, where the instance implements IHelpCommand")
-                val helpCommand = helpVariation.instance as? IHelpCommand
-                    ?: throwInternal("Help command was checked for IHelpCommand but isn't anymore")
                 HelpCommandInfo(helpCommand, helpCommandInfo)
             }
             else -> when {

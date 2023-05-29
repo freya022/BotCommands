@@ -71,6 +71,7 @@ internal object ReflectionMetadata {
                 }
         }
 
+        val lowercaseInnerClassRegex = Regex("\\$[a-z]")
         return scanned.flatMap { (scanResult, classes) ->
             classes
                 .filter {
@@ -81,7 +82,7 @@ internal object ReflectionMetadata {
                         }
                     }
 
-                    if (it.name.contains("\$special")) return@filter false
+                    if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
                     if (it.isSynthetic || it.isEnum || it.isAbstract) return@filter false
 
                     return@filter isInstantiable(it)

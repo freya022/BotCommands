@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.components.repositories
 
-import kotlin.reflect.KFunction
+import com.freya02.botcommands.internal.core.reflection.MemberFunction
 
 internal interface HandlerContainer {
-    operator fun get(handlerName: String): KFunction<*>?
+    operator fun get(handlerName: String): MemberFunction<*>?
 }

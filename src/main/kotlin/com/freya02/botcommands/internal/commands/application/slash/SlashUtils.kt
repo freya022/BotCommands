@@ -1,7 +1,5 @@
 package com.freya02.botcommands.internal.commands.application.slash
 
-import com.freya02.botcommands.api.Logging
-import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.GeneratedOption
@@ -11,15 +9,12 @@ import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
@@ -45,7 +40,7 @@ internal object SlashUtils {
                 "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
             }
         } else {
-            requireUser(option.isOptional) {
+            requireUser(option.isOptionalOrNullable) {
                 "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
             }
         }
@@ -59,9 +54,9 @@ internal object SlashUtils {
             options.sortedWith { o1, o2 ->
                 when {
                     //Optional options are placed after required options
-                    o1.isOptional && !o2.isOptional -> 1
+                    o1.isOptionalOrNullable && !o2.isOptionalOrNullable -> 1
                     //Required options are placed before optional options
-                    !o1.isOptional && o2.isOptional -> -1
+                    !o1.isOptionalOrNullable && o2.isOptionalOrNullable -> -1
                     //If both are optional/required, keep order using index
                     else -> options.indexOf(o1).compareTo(options.indexOf(o2))
                 }
@@ -142,19 +137,6 @@ internal object SlashUtils {
             }
         }
 
-        data.isRequired = !option.isOptional
-    }
-
-    internal inline fun <reified T> ApplicationCommandBuilder<*>.checkEventScope() {
-        if (function.isFakeSlashFunction()) return
-
-        val firstParamKlass = function.valueParameters.first().type.jvmErasure
-        if (topLevelBuilder.scope.isGuildOnly) {
-            if (!firstParamKlass.isSubclassOf(T::class)) {
-                Logging.getLogger().warn("${function.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
-            }
-        } else if (firstParamKlass.isSubclassOf(T::class)) {
-            throwUser("Cannot use ${T::class.simpleName} on a global application command")
-        }
+        data.isRequired = !option.isOptionalOrNullable
     }
 }

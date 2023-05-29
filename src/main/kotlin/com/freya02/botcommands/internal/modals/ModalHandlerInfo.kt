@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.*
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.InsertOptionResult
@@ -17,15 +18,13 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
 class ModalHandlerInfo(
     val context: BContextImpl,
-    override val instance: Any,
-    override val function: KFunction<*>
+    override val eventFunction: MemberEventFunction<ModalInteractionEvent, *>
 ) : IExecutableInteractionInfo {
     override val parameters: List<ModalHandlerParameter>
 
@@ -104,7 +103,7 @@ class ModalHandlerInfo(
                     ?: throwUser("Modal input ID '$inputId' was not found on the event")
 
                 option.resolver.resolveSuspend(context, this, event, modalMapping).also { obj ->
-                    requireUser(obj != null || option.isOptional) {
+                    requireUser(obj != null || option.isOptionalOrNullable) {
                         "The parameter '${option.declaredName}' of value '${modalMapping.asString}' could not be resolved into a ${option.type.simpleNestedName}"
                     }
                 }

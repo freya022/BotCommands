@@ -9,13 +9,13 @@ import com.freya02.botcommands.internal.commands.application.ApplicationGenerate
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.ITopLevelUserCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.mixins.TopLevelUserCommandInfoMixin
 import com.freya02.botcommands.internal.commands.application.mixins.ITopLevelApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.checkEventScope
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.checkEventScope
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.requireFirstParam
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.InsertOptionResult
@@ -24,22 +24,21 @@ import com.freya02.botcommands.internal.utils.mapOptions
 import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.valueParameters
 
 class UserCommandInfo internal constructor(
     private val context: BContextImpl,
     builder: UserCommandBuilder
-) : ApplicationCommandInfo(context, builder),
+) : ApplicationCommandInfo(builder),
     ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
+
+    override val eventFunction = builder.toMemberEventFunction<GlobalUserEvent, _>(context)
 
     override val topLevelInstance: ITopLevelApplicationCommandInfo = this
     override val parentInstance = null
     override val parameters: List<UserContextCommandParameter>
 
     init {
-        requireFirstParam(function.valueParameters, GlobalUserEvent::class)
-
-        builder.checkEventScope<GuildUserEvent>()
+        eventFunction.checkEventScope<GuildUserEvent>(builder)
 
         parameters = builder.optionAggregateBuilders.transform {
             UserContextCommandParameter(context, it)

@@ -18,11 +18,8 @@ import java.lang.reflect.Modifier
 import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.*
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -46,13 +43,6 @@ internal fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
 internal fun KClass<*>.isSubclassOfAny(vararg classes: KClass<*>): Boolean = classes.any { this.isSubclassOf(it) }
 internal fun KClass<*>.isSubclassOfAny(classes: Iterable<KClass<*>>): Boolean = classes.any { this.isSubclassOf(it) }
 
-internal fun IExecutableInteractionInfo.requireFirstParam(kParameters: List<KParameter>, klass: KClass<*>) {
-    val firstParameter = kParameters.firstOrNull() ?: throwUser("First argument should be a ${klass.simpleName}")
-    requireUser(klass.isSuperclassOf(firstParameter.type.jvmErasure)) {
-        "First argument should be a ${klass.simpleName}"
-    }
-}
-
 internal fun throwInternal(message: String): Nothing =
     throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
 
@@ -60,9 +50,6 @@ internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
     throw IllegalArgumentException("${function.shortSignature} : $message, please report this to the devs. ${getDiagVersion()}")
 
 internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
-
-@Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
-internal inline fun IExecutableInteractionInfo.throwUser(message: String): Nothing = throwUser(function, message)
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
@@ -85,15 +72,6 @@ internal inline fun throwUser(message: String): Nothing =
 internal inline fun throwService(message: String, function: KFunction<*>? = null): Nothing = when (function) {
     null -> throw ServiceException(message)
     else -> throw ServiceException("${function.shortSignature} : $message")
-}
-
-@OptIn(ExperimentalContracts::class)
-internal inline fun IExecutableInteractionInfo.requireUser(value: Boolean, lazyMessage: () -> String) {
-    contract {
-        returns() implies value
-    }
-
-    requireUser(value, this.function, lazyMessage)
 }
 
 @OptIn(ExperimentalContracts::class)
@@ -182,9 +160,6 @@ val Class<*>.simpleNestedName: String
 fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin
 fun <T : Any> KClass<T>.toJava(): Class<T> = this.java
 
-fun KParameter.checkTypeEqualsIgnoreNull(param: KParameter): Boolean =
-    this.type.jvmErasure == param.type.jvmErasure
-
 val KFunction<*>.isPublic: Boolean
     get() = this.visibility == KVisibility.PUBLIC || this.visibility == KVisibility.INTERNAL
 
@@ -202,8 +177,6 @@ val KFunction<*>.javaMethodOrConstructor: Executable
 
 val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
-
-inline fun <reified T : ReadWriteProperty<*, *>> KProperty0<*>.toDelegate(): T = this.also {it.isAccessible = true }.getDelegate() as T
 
 inline fun <reified T> arrayOfSize(size: Int) = ArrayList<T>(size)
 

@@ -6,7 +6,8 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.annot
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc

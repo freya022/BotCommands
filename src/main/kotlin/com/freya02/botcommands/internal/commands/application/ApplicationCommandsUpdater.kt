@@ -165,11 +165,7 @@ internal class ApplicationCommandsUpdater private constructor(
                     //Standard command
                     map[type, info.name] = Commands.context(type, info.name).configureTopLevel(info)
                 } catch (e: Exception) {
-                    rethrowUser(
-                        info.function,
-                        "An exception occurred while processing a ${type.name} command ${info.name}",
-                        e
-                    )
+                    rethrowUser(info.function, "An exception occurred while processing a ${type.name} command ${info.name}", e)
                 }
             }
     }

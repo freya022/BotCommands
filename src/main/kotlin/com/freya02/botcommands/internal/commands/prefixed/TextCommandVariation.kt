@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
-import com.freya02.botcommands.internal.commands.ExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
 import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
+import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.transform
@@ -21,14 +21,14 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 class TextCommandVariation internal constructor(
     private val context: BContextImpl,
     val info: TextCommandInfo,
     builder: TextCommandVariationBuilder
-) : IExecutableInteractionInfo by ExecutableInteractionInfo(context, builder) {
+) : IExecutableInteractionInfo {
+    override val eventFunction = builder.toMemberEventFunction<BaseCommandEvent, _>(context)
     override val parameters: List<TextCommandParameter>
 
     val completePattern: Regex?
@@ -36,7 +36,7 @@ class TextCommandVariation internal constructor(
     private val useTokenizedEvent: Boolean
 
     init {
-        useTokenizedEvent = function.valueParameters.first().type.jvmErasure.isSubclassOf(CommandEvent::class)
+        useTokenizedEvent = eventFunction.eventParameter.type.jvmErasure.isSubclassOf(CommandEvent::class)
 
         parameters = builder.optionAggregateBuilders.transform {
             TextCommandParameter(context, it)
@@ -105,12 +105,12 @@ class TextCommandVariation internal constructor(
                     val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
-                    if (resolved == null && !option.isOptional) {
+                    if (resolved == null && !option.isOptionalOrNullable) {
                         return InsertOptionResult.SKIP
                     }
 
                     resolved
-                } else if (!option.isOptional) { //Parameter is not found yet the pattern matched and is not optional
+                } else if (!option.isOptionalOrNullable) { //Parameter is not found yet the pattern matched and is not optional
                     throwInternal(option.optionParameter.typeCheckingFunction, "Could not find parameter #${option.index} (${option.helpName}) for input args '${args}', yet the pattern matched and the option is required")
                 } else { //Parameter is optional
                     if (option.kParameter.isOptional) {

@@ -46,7 +46,7 @@ object TextUtils {
                     val argName = getArgName(needsQuote, commandOption, boxedType)
                     val argExample = getArgExample(needsQuote, commandOption, boxedType)
 
-                    val isOptional = commandOption.isOptional
+                    val isOptional = commandOption.isOptionalOrNullable
                     syntax.append(if (isOptional) '[' else '`').append(argName).append(if (isOptional) ']' else '`').append(' ')
                     example.append(argExample).append(' ')
                 }

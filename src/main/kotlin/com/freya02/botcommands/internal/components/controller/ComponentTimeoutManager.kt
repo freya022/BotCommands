@@ -13,17 +13,15 @@ import com.freya02.botcommands.internal.components.data.PersistentTimeout
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import com.freya02.botcommands.internal.components.repositories.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.components.repositories.GroupTimeoutHandlers
+import com.freya02.botcommands.internal.core.reflection.MemberFunction
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 @ConditionalService(dependencies = [ComponentRepository::class])
@@ -99,15 +97,16 @@ internal class ComponentTimeoutManager(
         timeoutMap.remove(id)?.cancel()
     }
 
-    private suspend fun callTimeoutHandler(handler: KFunction<*>, firstParameter: Any): Any? {
-        val args = hashMapOf<KParameter, Any?>()
-        args[handler.instanceParameter!!] = serviceContainer.getFunctionService(handler)
-        args[handler.valueParameters.first()] = firstParameter
+    private suspend fun callTimeoutHandler(handler: MemberFunction<*>, firstArgument: Any): Any? {
+        val args = buildMap<KParameter, Any?>(handler.parametersSize) {
+            this[handler.instanceParameter] = handler.instance
+            this[handler.firstParameter] = firstArgument
 
-        handler.valueParameters.drop(1).forEach { kParameter ->
-            args[kParameter] = serviceContainer.getService(kParameter.type.jvmErasure)
+            handler.resolvableParameters.forEach { kParameter ->
+                this[kParameter] = serviceContainer.getService(kParameter.type.jvmErasure)
+            }
         }
 
-        return handler.callSuspendBy(args)
+        return handler.kFunction.callSuspendBy(args)
     }
 }

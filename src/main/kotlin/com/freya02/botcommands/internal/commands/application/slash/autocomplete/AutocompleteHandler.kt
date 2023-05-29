@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import kotlin.reflect.full.*
+import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal class AutocompleteHandler(
@@ -22,8 +23,7 @@ internal class AutocompleteHandler(
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
-    override val function = autocompleteInfo.function
-    override val instance = slashCommandInfo.context.serviceContainer.getFunctionService(autocompleteInfo.function)
+    override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameter>
 
     internal val compositeOptions: List<AutocompleteCommandOption>
@@ -43,7 +43,7 @@ internal class AutocompleteHandler(
             .map { it as AutocompleteCommandOption }
             .filter { it.isCompositeKey }
 
-        val collectionElementType = autocompleteInfo.function.collectionElementType
+        val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
             ?: throwUser("Unable to determine return type, it should inherit Collection")
 
         choiceSupplier = when {

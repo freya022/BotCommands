@@ -12,12 +12,12 @@ internal object CommandPattern {
             .filterIsInstance<TextCommandOption>()
         val hasMultipleQuotable = optionParameters.hasMultipleQuotable()
 
-        val patterns = optionParameters.map { ParameterPattern(it.resolver, it.isOptional, hasMultipleQuotable) }
+        val patterns = optionParameters.map { ParameterPattern(it.resolver, it.isOptionalOrNullable, hasMultipleQuotable) }
         val pattern = joinPatterns(patterns)
 
         //Try to match the built pattern to a built example string,
         // if this fails then the pattern (and the command) is deemed too complex to be used
-        val exampleStr = optionParameters.filter { !it.isOptional }.joinToString(" ") { it.resolver.testExample }
+        val exampleStr = optionParameters.filter { !it.isOptionalOrNullable }.joinToString(" ") { it.resolver.testExample }
         require(pattern.matches(exampleStr)) {
             """
             Failed building pattern for method ${variation.function.shortSignature} with pattern '$pattern' and example '$exampleStr'
