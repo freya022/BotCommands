@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core.db
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BConfig
 import org.intellij.lang.annotations.Language
+import java.sql.Connection
 import java.sql.SQLException
 
 /**
@@ -29,7 +30,7 @@ interface Database {
     val config: BConfig
 
     @Throws(SQLException::class)
-    suspend fun fetchConnection(readOnly: Boolean = false): KConnection
+    suspend fun fetchConnection(readOnly: Boolean = false): Connection
 
     //TODO java methods
 }
@@ -40,26 +41,24 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 
     try {
         connection.autoCommit = false
-
-        return block(Transaction(this, connection)).also { connection.commit() }
+        return block(Transaction(this, connection))
     } catch (e: Throwable) {
         connection.rollback()
         throw e
     } finally {
-        connection.autoCommit = true
+        // Always commit, if the connection was rolled back, this is a no-op
+        // Using a "finally" block is mandatory, as code after the "block" function can be skipped if the user does a non-local return
+        connection.commit()
+        // HikariCP already resets the properties of the Connection when releasing (closing) it.
+        // If a connection pool isn't used then it'll simply recreate a new Connection anyway.
         connection.close()
     }
 }
 
 @Throws(SQLException::class)
-suspend inline fun <R> Database.withConnection(readOnly: Boolean = false, block: KConnection.() -> R): R {
-    return fetchConnection(readOnly).use(block)
-}
-
-@Throws(SQLException::class)
 @Suppress("MemberVisibilityCanBePrivate")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
-    return withConnection(readOnly) {
+    return transactional(readOnly) {
         preparedStatement(sql, block)
     }
 }

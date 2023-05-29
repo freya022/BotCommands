@@ -20,15 +20,14 @@ import com.freya02.botcommands.internal.components.controller.ComponentControlle
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
+//TODO fix docs
 /**
  * This class lets you create smart components such as buttons, select menus and groups.
  *
@@ -164,11 +163,7 @@ class Components internal constructor(private val componentController: Component
         return components
             .map { it.id?.toIntOrNull() ?: throwUser("Cannot put external components in groups") }
             .let { componentIds -> factory(componentIds) }
-            .let {
-                withContext(Dispatchers.IO) {
-                    componentController.insertGroup(it)
-                }
-            }
+            .let { componentController.insertGroup(it) }
     }
 
     internal companion object : ConditionalServiceChecker {

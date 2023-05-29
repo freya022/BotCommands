@@ -7,10 +7,8 @@ import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilde
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints
 import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.db.KConnection
 import com.freya02.botcommands.api.core.db.Transaction
 import com.freya02.botcommands.api.core.db.transactional
-import com.freya02.botcommands.api.core.db.withConnection
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.LifetimeType
@@ -77,11 +75,11 @@ internal class ComponentRepository(
             // Add timeout
             insertTimeoutData(builder, componentId)
 
-            return@runBlocking componentId
+            return@transactional componentId
         }
     }
 
-    suspend fun getComponent(id: Int): ComponentData? = database.withConnection(readOnly = true) {
+    suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
             select lifetime_type, component_type, one_use, users, roles, permissions
@@ -89,7 +87,7 @@ internal class ComponentRepository(
                      natural left join bc_component_constraints
             where component_id = ?""".trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: return null
+            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
 
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
@@ -165,7 +163,7 @@ internal class ComponentRepository(
             throwUser("Cannot put components inside groups if they have a timeout set")
         }
 
-        return groupId
+        return@transactional groupId
     }
 
     context(Transaction)
@@ -224,7 +222,7 @@ internal class ComponentRepository(
         return@transactional deletedComponents
     }
 
-    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.withConnection(readOnly = true) {
+    suspend fun scheduleExistingTimeouts(timeoutManager: ComponentTimeoutManager) = database.transactional(readOnly = true) {
         preparedStatement("select component_id, expiration_timestamp, handler_name, user_data from bc_persistent_timeout") {
             executeQuery(*arrayOf()).forEach { dbResult ->
                 timeoutManager.scheduleTimeout(
@@ -238,7 +236,7 @@ internal class ComponentRepository(
         }
     }
 
-    context(KConnection)
+    context(Transaction)
     private suspend fun getPersistentComponent(
         id: Int,
         componentType: ComponentType,
@@ -279,7 +277,7 @@ internal class ComponentRepository(
         PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
-    context(KConnection)
+    context(Transaction)
     private suspend fun getEphemeralComponent(
         id: Int,
         componentType: ComponentType,
@@ -318,7 +316,7 @@ internal class ComponentRepository(
         EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
     }
 
-    context(KConnection)
+    context(Transaction)
     private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
         val timeout = getGroupTimeout(id)
 
@@ -335,7 +333,7 @@ internal class ComponentRepository(
         return ComponentGroupData(id, oneUse, timeout, componentIds)
     }
 
-    context(KConnection)
+    context(Transaction)
     private suspend fun getGroupTimeout(id: Int): ComponentTimeout? {
         preparedStatement(
             """

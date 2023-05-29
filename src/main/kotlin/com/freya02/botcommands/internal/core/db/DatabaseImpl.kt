@@ -5,12 +5,11 @@ import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.db.Database
-import com.freya02.botcommands.api.core.db.KConnection
 import com.freya02.botcommands.api.core.db.preparedStatement
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
-import java.sql.SQLException
+import java.sql.Connection
 
 @ServiceType(Database::class)
 @ConditionalService(dependencies = [ConnectionSupplier::class])
@@ -37,9 +36,8 @@ internal class DatabaseImpl internal constructor(
         }
     }
 
-    @Throws(SQLException::class)
-    override suspend fun fetchConnection(readOnly: Boolean): KConnection = semaphore.withPermit {
-        KConnection(this, connectionSupplier.connection).also {
+    override suspend fun fetchConnection(readOnly: Boolean): Connection = semaphore.withPermit {
+        connectionSupplier.connection.also {
             it.isReadOnly = readOnly
         }
     }
