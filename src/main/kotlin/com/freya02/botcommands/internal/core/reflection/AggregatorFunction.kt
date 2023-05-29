@@ -13,31 +13,33 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 class AggregatorFunction private constructor(
-    aggregator: KFunction<*>,
+    boundAggregator: KFunction<*>,
     /**
      * Nullable due to constructor aggregators
      */
     private val aggregatorInstance: Any?
-) : Function<Any?>(aggregator) {
-    private val instanceParameter = this.kFunction.instanceParameter
-    private val eventParameter = this.kFunction.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(
+) : Function<Any?>(boundAggregator) {
+    private val instanceParameter = aggregator.instanceParameter
+    private val eventParameter = aggregator.nonInstanceParameters.firstOrNull { it.type.jvmErasure.isSubclassOf(
         Event::class) }
 
-    val isSingleAggregator = this.kFunction.isSingleAggregator()
+    val aggregator get() = this.kFunction
+
+    val isSingleAggregator = aggregator.isSingleAggregator()
 
     internal constructor(context: BContextImpl, aggregator: KFunction<*>) : this(aggregator, context.serviceContainer.getFunctionServiceOrNull(aggregator))
 
     internal suspend fun aggregate(event: Event, aggregatorArguments: MutableMap<KParameter, Any?>): Any? {
         if (instanceParameter != null) {
             aggregatorArguments[instanceParameter] = aggregatorInstance
-                ?: throwInternal(kFunction, "Aggregator's instance parameter was not retrieved but was necessary")
+                ?: throwInternal(aggregator, "Aggregator's instance parameter was not retrieved but was necessary")
         }
 
         if (eventParameter != null) {
             aggregatorArguments[eventParameter] = event
         }
 
-        return kFunction.callSuspendBy(aggregatorArguments)
+        return aggregator.callSuspendBy(aggregatorArguments)
     }
 }
 

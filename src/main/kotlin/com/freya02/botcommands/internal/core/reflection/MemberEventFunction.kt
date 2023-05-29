@@ -21,39 +21,39 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 class MemberEventFunction<T : Event, R> internal constructor(
-    function: KFunction<R>,
+    boundFunction: KFunction<R>,
     instanceSupplier: () -> Any,
     eventClass: KClass<T>
-) : MemberFunction<R>(function, instanceSupplier) {
+) : MemberFunction<R>(boundFunction, instanceSupplier) {
     val eventParameter get() = firstParameter
 
     init {
-        requireUser(eventParameter.type.jvmErasure.isSubclassOf(eventClass), function) {
+        requireUser(eventParameter.type.jvmErasure.isSubclassOf(eventClass), kFunction) {
             "First argument should be a ${eventClass.simpleNestedName}"
         }
     }
 
-    internal constructor(context: BContextImpl, function: KFunction<R>, eventClass: KClass<T>) : this(
-        function = function,
-        instanceSupplier = { context.serviceContainer.getFunctionService(function) },
+    internal constructor(context: BContextImpl, boundFunction: KFunction<R>, eventClass: KClass<T>) : this(
+        boundFunction = boundFunction,
+        instanceSupplier = { context.serviceContainer.getFunctionService(boundFunction) },
         eventClass = eventClass
     )
 }
 
 // Using the builder to get the scope is required as the info object is still initializing
 // and would NPE when getting the top level instance
-internal inline fun <reified T> MemberEventFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
+internal inline fun <reified GUILD_T : GenericCommandInteractionEvent> MemberEventFunction<out GenericCommandInteractionEvent, *>.checkEventScope(
     builder: ApplicationCommandBuilder<*>
 ) {
     if (kFunction.isFakeSlashFunction()) return
 
     val eventType = eventParameter.type.jvmErasure
     if (builder.topLevelBuilder.scope.isGuildOnly) {
-        if (!eventType.isSubclassOf(T::class)) {
-            Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${T::class.simpleName} as to benefit from non-null getters")
+        if (!eventType.isSubclassOf(GUILD_T::class)) {
+            Logging.getLogger().warn("${kFunction.shortSignature} : First parameter could be a ${GUILD_T::class.simpleName} as to benefit from non-null getters")
         }
-    } else if (eventType.isSubclassOf(T::class)) {
-        throwUser("Cannot use ${T::class.simpleName} on a global application command")
+    } else if (eventType.isSubclassOf(GUILD_T::class)) {
+        throwUser("Cannot use ${GUILD_T::class.simpleName} on a global application command")
     }
 }
 

@@ -9,10 +9,10 @@ import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters
 
 open class MemberFunction<R> private constructor(
-    function: KFunction<R>,
+    boundFunction: KFunction<R>,
     instanceSupplier: () -> Any,
     val firstParameter: KParameter
-) : Function<R>(function) {
+) : Function<R>(boundFunction) {
     val instance by lazy(instanceSupplier)
 
     val resolvableParameters = kFunction.valueParameters.drop(1) //Drop the first parameter
@@ -20,7 +20,7 @@ open class MemberFunction<R> private constructor(
         ?: throwInternal(kFunction, "Function shouldn't be static or constructors")
 
     internal constructor(function: KFunction<R>, instanceSupplier: () -> Any) : this(
-        function = function,
+        boundFunction = function,
         instanceSupplier = instanceSupplier,
         firstParameter = function.nonInstanceParameters.firstOrNull()
             ?: throwInternal(function, "The function should have been checked to have at least one parameter")
