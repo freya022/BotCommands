@@ -173,15 +173,15 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     @JvmSynthetic
     internal fun canCreateService(clazz: KClass<*>): String? = localBeingCheckedSet.get().withServiceCheckKey(clazz) cachedCallback@{
         //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
-        if (clazz !in serviceMap) {
+        if (clazz in serviceMap) {
+            return null
+        } else {
             unavailableServices[clazz]?.let { return it }
 
             clazz.findAnnotation<InjectedService>()?.let {
                 //Skips cache
                 return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
             }
-        } else {
-            return null
         }
 
         // Services can be conditional
