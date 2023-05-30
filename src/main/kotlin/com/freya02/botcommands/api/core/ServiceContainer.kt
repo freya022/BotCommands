@@ -64,15 +64,16 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    //TODO move to extension
     internal val loadableServices: Map<ServiceStart, List<KClass<*>>>
         @JvmSynthetic get() =
             enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
-                context.classPathContainer.classes.forEach { clazz ->
-                    clazz.findAnnotation<BService>()?.let {
-                        loadableServices.getOrPut(it.start) { mutableListOf() }.add(clazz)
-                        return@forEach
+                context.serviceAnnotationsMap
+                    .getAllClasses()
+                    .forEach { clazz ->
+                        val start = clazz.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
+                        loadableServices.getOrPut(start) { mutableListOf() }.add(clazz)
                     }
-                }
             }
 
     init {

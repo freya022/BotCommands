@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.prefixed.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
 import java.util.*
 
-@IncludeClasspath
+@Command
 class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpCommand {
     @CommandMarker
     suspend fun onTextHelpFallback(event: CommandEvent) {

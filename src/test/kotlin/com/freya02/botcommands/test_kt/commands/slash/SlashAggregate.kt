@@ -1,13 +1,14 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
-@CommandMarker
+@Command
 class SlashAggregate {
     @JvmInline
     value class MyInlineString(val yes: String)

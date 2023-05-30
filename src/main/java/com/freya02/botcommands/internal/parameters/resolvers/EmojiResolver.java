@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.api.utils.EmojiUtils;
-import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@IncludeClasspath
+@Resolver
 public class EmojiResolver
 		extends ParameterResolver<EmojiResolver, Emoji>
 		implements RegexParameterResolver<EmojiResolver, Emoji>,

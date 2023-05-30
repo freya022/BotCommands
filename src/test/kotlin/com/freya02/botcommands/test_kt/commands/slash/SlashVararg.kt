@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 
-@CommandMarker
+@Command
 class SlashVararg : ApplicationCommand() {
     @JDASlashCommand(name = "vararg_annotated")
     fun onSlashVararg(

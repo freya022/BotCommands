@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.io.path.Path
 import kotlin.io.path.inputStream
 
-@CommandMarker
+@Command
 class SlashUploadStream : ApplicationCommand() {
     @JDASlashCommand(name = "upload_stream")
     suspend fun execute(event: GuildSlashEvent) {

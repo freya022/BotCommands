@@ -1,7 +1,9 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
-import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.annotations.Resolver
+import com.freya02.botcommands.api.annotations.ResolverFactory
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.core.ServiceAnnotationsMap
@@ -17,7 +19,7 @@ interface BServiceConfig {
 }
 
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
-    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class)
+    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class)
 
     private val _serviceAnnotationsMap = ServiceAnnotationsMap()
     override val serviceAnnotationsMap: Map<KClass<out Annotation>, Map<KClass<*>, Annotation>>
@@ -37,12 +39,16 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     }
 
     fun registerCommand(annotationReceiver: KClass<*>) {
-        //TODO rename to Command, limit to Class
-        _serviceAnnotationsMap.put(annotationReceiver, CommandMarker::class, CommandMarker())
+        _serviceAnnotationsMap.put(annotationReceiver, Command::class, Command())
     }
 
-    //TODO registerResolver
-    //TODO registerResolverFactory
+    fun registerResolver(annotationReceiver: KClass<*>) {
+        _serviceAnnotationsMap.put(annotationReceiver, Resolver::class, Resolver())
+    }
+
+    fun registerResolverFactory(annotationReceiver: KClass<*>) {
+        _serviceAnnotationsMap.put(annotationReceiver, ResolverFactory::class, ResolverFactory())
+    }
 
     @JvmSynthetic
     internal fun build() = object : BServiceConfig {

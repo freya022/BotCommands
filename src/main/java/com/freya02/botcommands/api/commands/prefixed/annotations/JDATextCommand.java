@@ -1,11 +1,14 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations;
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
+import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
 
 import java.lang.annotation.ElementType;
@@ -13,6 +16,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+//TODO fix docs
 /**
  * Required annotation for text commands, see all possible options.
  *
@@ -22,8 +26,11 @@ import java.lang.annotation.Target;
  *     <li>The method must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
  *     <li>First parameter must be {@link BaseCommandEvent}, or, {@link CommandEvent} only for fallback commands</li>
  * </ul>
- * <p>Supported parameters needs to be annotated with {@link TextOption @TextOption}</p>
+ * <p>Input options needs to be annotated with {@link TextOption @TextOption}, see supported types at {@link ParameterResolver}
  *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
+ *
+ * @see Command
  * @see TextOption
  * @see Hidden
  * @see ID

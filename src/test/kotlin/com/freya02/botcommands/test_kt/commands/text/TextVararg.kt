@@ -1,11 +1,12 @@
 package com.freya02.botcommands.test_kt.commands.text
 
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 
-@CommandMarker
+@Command
 class TextVararg {
     @CommandMarker
     fun onTextVararg(event: BaseCommandEvent, ints: List<Int>) {

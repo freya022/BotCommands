@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.parameters.resolvers.channels;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
-import com.freya02.botcommands.internal.annotations.IncludeClasspath;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 
-@IncludeClasspath
+@Resolver
 public class ThreadChannelResolver
 		extends ParameterResolver<ThreadChannelResolver, ThreadChannel>
 		implements SlashParameterResolver<ThreadChannelResolver, ThreadChannel>,

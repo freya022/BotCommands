@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations;
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
+import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.CommandScope;
@@ -9,16 +10,9 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.api.core.config.BApplicationConfig;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
+import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.*;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
@@ -57,33 +51,12 @@ import java.lang.annotation.Target;
  *     </li>
  * </ul>
  *
- * Supported parameters, needs to be annotated with {@link AppOption @AppOption} :
- * <ul>
- *     <li>{@linkplain String}</li>
+ * Input options needs to be annotated with {@link AppOption @AppOption}, see supported types at {@link ParameterResolver}
  *
- *     <li>boolean</li>
- *     <li>long</li>
- *     <li>double</li>
- *
- *     <li>{@linkplain Emoji}</li>
- *
- *     <li>{@linkplain IMentionable}</li>
- *     <li>{@linkplain Role}</li>
- *     <li>{@linkplain User}</li>
- *     <li>{@linkplain Member}</li>
- *
- *     <li>{@linkplain Category}</li>
- *     <li>{@linkplain GuildChannel}</li>
- *     <li>{@linkplain TextChannel}</li>
- *     <li>{@linkplain ThreadChannel}</li>
- *     <li>{@linkplain VoiceChannel}</li>
- *     <li>{@linkplain NewsChannel}</li>
- *     <li>{@linkplain StageChannel}</li>
- * </ul>
- *
- * <h2>To test your command, specify this command's scope as {@link CommandScope#GUILD} in order to instantly update the command in your guilds, see {@linkplain JDA#updateCommands()}</h2>
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups">Discord docs</a>
+ * @see Command
  * @see AppOption @AppOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions

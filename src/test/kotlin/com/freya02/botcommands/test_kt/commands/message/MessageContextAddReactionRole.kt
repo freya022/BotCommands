@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test_kt.commands.message
 
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
@@ -32,6 +33,7 @@ class ReactionRoleService {
     }
 }
 
+@Command
 class MessageContextAddReactionRole(private val componentsService: Components,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)

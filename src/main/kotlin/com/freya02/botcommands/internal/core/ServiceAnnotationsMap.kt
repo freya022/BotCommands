@@ -31,5 +31,7 @@ internal class ServiceAnnotationsMap private constructor(
     internal fun <T : Annotation> getClassesWithAnnotation(annotationClass: KClass<out T>): Set<KClass<*>> =
         get(annotationClass)?.keys ?: emptySet()
 
+    internal fun getAllClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap.keys }
+
     internal fun toImmutableMap() = map.mapValues { it.value.toImmutableMap() }.toImmutableMap()
 }
