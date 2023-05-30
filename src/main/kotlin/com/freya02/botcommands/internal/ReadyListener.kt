@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
+import com.freya02.botcommands.api.core.putServiceAs
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 
 @BService

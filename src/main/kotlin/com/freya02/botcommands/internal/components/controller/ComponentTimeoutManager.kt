@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
+import com.freya02.botcommands.api.core.lazy
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralTimeout
@@ -35,7 +36,7 @@ internal class ComponentTimeoutManager(
     private val componentTimeoutHandlers: ComponentTimeoutHandlers
 ) {
     private val logger = KotlinLogging.logger { }
-    private val componentController: ComponentController by lazy { serviceContainer.getService() }
+    private val componentController: ComponentController by serviceContainer.lazy()
     private val timeoutMap = hashMapOf<Int, Job>()
 
     fun scheduleTimeout(id: Int, timeout: ComponentTimeout) {

@@ -61,15 +61,67 @@ internal class ServiceCreationStack {
     }
 }
 
-@InjectedService
-class ServiceContainer internal constructor(private val context: BContextImpl) {
-    private val logger = KotlinLogging.logger { }
+data class ServiceResult<T : Any>(val service: T?, val errorMessage: String?) {
+    init {
+        if (service == null && errorMessage == null) {
+            throwInternal("ServiceResult should contain either the service or the error message")
+        }
+    }
 
+    fun getOrNull(): T? = when {
+        service != null -> service
+        errorMessage != null -> null
+        else -> throwInternal("ServiceResult should contain either the service or the error message")
+    }
+
+    fun getOrThrow(): T = when {
+        service != null -> service
+        errorMessage != null -> throwService(errorMessage)
+        else -> throwInternal("ServiceResult should contain either the service or the error message")
+    }
+}
+
+@InjectedService
+interface ServiceContainer {
+    fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T>
+    fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = tryGetService(clazz.kotlin)
+
+    fun <T : Any> getService(clazz: KClass<T>): T = tryGetService(clazz).getOrThrow()
+    fun <T : Any> getService(clazz: Class<T>): T = getService(clazz.kotlin)
+
+    fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? = tryGetService(clazz).getOrNull()
+    fun <T : Any> getServiceOrNull(clazz: Class<T>): T? = getServiceOrNull(clazz.kotlin)
+
+    fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
+
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>)
+    fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
+    fun putService(t: Any): Unit = putServiceAs(t, t::class)
+
+    fun getFunctionService(function: KFunction<*>): Any = when {
+        function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
+        function.isStatic -> throwInternal(function, "Tried to get a function's instance but was static, this should have been checked beforehand")
+        else -> getService(function.declaringClass)
+    }
+
+    fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
+        function.isConstructor || function.isStatic -> null
+        else -> getService(function.declaringClass)
+    }
+
+    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
+        return types.map {
+            map[it] ?: getService(it)
+        }
+    }
+}
+
+private val logger = KotlinLogging.logger { }
+
+class ServiceContainerImpl internal constructor(private val context: BContextImpl) : ServiceContainer {
     private val serviceConfig: BServiceConfig = context.serviceConfig
 
-    @PublishedApi
-    @JvmSynthetic
-    internal val serviceMap = ServiceMap()
+    private val serviceMap = ServiceMap()
 
     private val unavailableServices: MutableMap<KClass<*>, String> = hashMapOf() //Must not contain InjectedService(s) !
     private val lock = ReentrantLock()
@@ -87,7 +139,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     }
 
     init {
-        putService(this)
+        putServiceAs<ServiceContainer>(this)
         putService(context)
         putService(context.eventManager)
         putServiceAs<IEventManager>(context.eventManager) //Should be used if JDA is constructed as a service
@@ -96,7 +148,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         putServiceAs(context.config)
     }
 
-    @JvmSynthetic
     internal fun preloadServices() {
         runBlocking {
             dynamicSuppliers.let {
@@ -114,7 +165,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    @JvmSynthetic
     internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
         loadableServices[requestedStart]?.forEach { clazz ->
             //Skip classes that have been already loaded/checked
@@ -126,39 +176,13 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    fun <T : Any> getService(clazz: Class<T>): T {
-        return getService(clazz.kotlin)
-    }
-
-    fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
+    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
         @Suppress("UNCHECKED_CAST")
         return serviceMap[clazz] as T?
     }
 
-    @JvmSynthetic
-    inline fun <reified T : Any> getService(): T {
-        return getService(T::class)
-    }
-
-    fun <T : Any> getService(clazz: KClass<T>): T {
-        return tryGetService(clazz).getOrThrow()
-    }
-
-    @JvmSynthetic
-    inline fun <reified T : Any> getServiceOrNull(): T? {
-        return getServiceOrNull(T::class)
-    }
-
-    fun <T : Any> getServiceOrNull(clazz: Class<T>): T? {
-        return getServiceOrNull(clazz.kotlin)
-    }
-
-    fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? {
-        return tryGetService(clazz).getOrNull()
-    }
-
     @Suppress("UNCHECKED_CAST")
-    fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
+    override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
 
@@ -189,10 +213,11 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = serviceMap.put(t, clazz)
+
     /**
      * Returns a non-null string if the service is not instantiable
      */
-    @JvmSynthetic
     internal fun canCreateService(clazz: KClass<*>): String? = serviceCreationStack.withServiceCheckKey(clazz) cachedCallback@{
         //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
         if (clazz in serviceMap) {
@@ -245,47 +270,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         return null
     }
 //        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
-
-    fun getFunctionService(function: KFunction<*>): Any = when {
-        function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
-        function.isStatic -> throwInternal(function, "Tried to get a function's instance but was static, this should have been checked beforehand")
-        else -> getService(function.declaringClass)
-    }
-
-    fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
-        function.isConstructor || function.isStatic -> null
-        else -> getService(function.declaringClass)
-    }
-
-    fun putService(t: Any) {
-        serviceMap.put(t, t::class)
-    }
-
-    @JvmSynthetic
-    inline fun <reified T : Any> putServiceAs(t: T) {
-        serviceMap.put(t, T::class)
-    }
-
-    fun putServiceAs(t: Any, clazz: Class<*>) {
-        serviceMap.put(t, clazz.kotlin)
-    }
-
-    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
-        return types.map {
-            map[it] ?: getService(it)
-        }
-    }
-
-    @JvmSynthetic
-    inline fun <T, reified R : Any> lazy(): ReadOnlyProperty<T, R> {
-        val kClass = R::class
-
-        return object : ReadOnlyProperty<T, R> {
-            val value: R by lazy { getService(kClass) }
-
-            override fun getValue(thisRef: T, property: KProperty<*>) = value
-        }
-    }
 
     private fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
         //Kotlin implementations uses companion object
@@ -407,27 +391,19 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    data class ServiceResult<T : Any>(val service: T?, val errorMessage: String?) {
-        init {
-            if (service == null && errorMessage == null) {
-                throwInternal("ServiceResult should contain either the service or the error message")
-            }
-        }
-
-        fun getOrNull(): T? = when {
-            service != null -> service
-            errorMessage != null -> null
-            else -> throwInternal("ServiceResult should contain either the service or the error message")
-        }
-
-        fun getOrThrow(): T = when {
-            service != null -> service
-            errorMessage != null -> throwService(errorMessage)
-            else -> throwInternal("ServiceResult should contain either the service or the error message")
-        }
-    }
-
     private data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
+}
+
+inline fun <reified T : Any> ServiceContainer.getService(): T = getService(T::class)
+
+inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServiceOrNull(T::class)
+
+inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
+
+inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyProperty<T, R> {
+    val value: R by lazy { getService(R::class) }
+
+    override fun getValue(thisRef: T, property: KProperty<*>) = value
 }
 
 internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>

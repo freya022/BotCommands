@@ -13,6 +13,7 @@ import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.core.ServiceContainer
+import com.freya02.botcommands.api.core.lazy
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send

@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
+import com.freya02.botcommands.api.core.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
 import com.freya02.botcommands.internal.core.*

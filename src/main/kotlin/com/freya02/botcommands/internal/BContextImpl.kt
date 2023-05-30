@@ -36,7 +36,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     private val logger = KotlinLogging.logger<BContext>()
 
     internal val classPathContainer: ClassPathContainer
-    private val serviceContainer: ServiceContainer
+    private val serviceContainer: ServiceContainerImpl
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
     val eventDispatcher: EventDispatcher
 
@@ -53,7 +53,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
 
     init {
         classPathContainer = ClassPathContainer(this)
-        serviceContainer = ServiceContainer(this) //Puts itself, ctx, cem and cpc
+        serviceContainer = ServiceContainerImpl(this) //Puts itself, ctx, cem and cpc
         config.putConfigInServices(serviceContainer)
         serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
@@ -72,7 +72,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
 
     override fun getConfig() = config
 
-    override fun getServiceContainer(): ServiceContainer = serviceContainer
+    override fun getServiceContainer(): ServiceContainerImpl = serviceContainer
 
     inline fun <reified T : Any> getService() = getService(T::class)
 
