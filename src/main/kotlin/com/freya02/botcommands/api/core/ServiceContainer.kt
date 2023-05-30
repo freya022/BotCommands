@@ -64,18 +64,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         }
     }
 
-    //TODO move to extension
-    internal val loadableServices: Map<ServiceStart, List<KClass<*>>>
-        @JvmSynthetic get() =
-            enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
-                context.serviceAnnotationsMap
-                    .getAllClasses()
-                    .forEach { clazz ->
-                        val start = clazz.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
-                        loadableServices.getOrPut(start) { mutableListOf() }.add(clazz)
-                    }
-            }
-
     init {
         putService(this)
         putService(context)
@@ -440,3 +428,14 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
 
     private data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 }
+
+internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
+    @JvmSynthetic get() =
+        enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
+            serviceAnnotationsMap
+                .getAllClasses()
+                .forEach { clazz ->
+                    val start = clazz.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
+                    loadableServices.getOrPut(start) { mutableListOf() }.add(clazz)
+                }
+        }

@@ -104,7 +104,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             if (config.disableAutocompleteCache)
                 logger.info("Configuration disabled autocomplete cache, except forced caches")
 
-            val loadableServices = context.serviceContainer.loadableServices
+            val loadableServices = context.loadableServices
             context.status = BContext.Status.PRE_LOAD
             context.serviceContainer.loadServices(loadableServices, ServiceStart.PRE_LOAD)
 
