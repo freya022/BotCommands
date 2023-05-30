@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import mu.KotlinLogging
@@ -74,7 +74,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 
     init {
         val nano = measureNanoTime {
-            this.classes = ReflectionMetadata.runScan(context.config).map(Class<*>::kotlin)
+            this.classes = ReflectionMetadata.runScan(context)
         }
 
         logger.trace { "Classes reflection took ${nano / 1000000.0} ms" }

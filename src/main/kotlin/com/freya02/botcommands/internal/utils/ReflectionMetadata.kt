@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
@@ -42,7 +43,8 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(config: BConfig): List<Class<*>> {
+    internal fun runScan(context: BContextImpl): List<KClass<*>> {
+        val config = context.config
         val packages = config.packages
         //This is a requirement for ClassGraph to work correctly
         if (packages.isEmpty()) {
@@ -95,7 +97,23 @@ internal object ReflectionMetadata {
                     return@filter isInstantiable(it)
                 }
                 .also { readAnnotations(it) }
-                .map { it.loadClass() }
+                .map { classInfo ->
+                    val kClass = classInfo.loadClass().kotlin
+                    //Fill map with all the @Command, @Resolver, etc... declarations
+                    if (classInfo.isService(config)) {
+                        classInfo.annotationInfo.forEach { annotationInfo ->
+                            if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
+                                context.serviceAnnotationsMap.put(
+                                    annotationReceiver = kClass,
+                                    annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
+                                    annotation = annotationInfo.loadClassAndInstantiate()
+                                )
+                            }
+                        }
+                    }
+
+                    kClass
+                }
                 .also {
                     scanResult.close()
                 }
