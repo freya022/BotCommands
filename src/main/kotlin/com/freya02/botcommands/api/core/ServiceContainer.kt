@@ -36,6 +36,31 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
+internal class ServiceCreationStack {
+    private val localSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
+    private val set get() = localSet.get()
+
+    //If services have circular dependencies during checking, consider it to not be an issue
+    internal inline fun <T : Any, R> withServiceCheckKey(clazz: KClass<T>, block: () -> R): R? {
+        if (!set.add(clazz)) return null
+        try {
+            return block()
+        } finally {
+            set.remove(clazz)
+        }
+    }
+
+    internal inline fun <T : Any, R> withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
+        if (!set.add(clazz))
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ") { it.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
+        try {
+            return block()
+        } finally {
+            set.remove(clazz)
+        }
+    }
+}
+
 @InjectedService
 class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
@@ -49,7 +74,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
     private val unavailableServices: MutableMap<KClass<*>, String> = hashMapOf() //Must not contain InjectedService(s) !
     private val lock = ReentrantLock()
 
-    private val localBeingCheckedSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
+    private val serviceCreationStack = ServiceCreationStack()
 
     private val dynamicSuppliers: List<KFunction<*>> by lazy {
         context.classPathContainer.classes.flatMap { clazz ->
@@ -140,7 +165,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
         canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
 
         try {
-            return localBeingCheckedSet.get().withServiceCreateKey(clazz) {
+            return serviceCreationStack.withServiceCreateKey(clazz) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
                 val (anyResult, nanos) = constructInstance(clazz)
                 val result: ServiceResult<T> = anyResult as ServiceResult<T> //Doesn't really matter, the object is not used anyway
@@ -168,7 +193,7 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
      * Returns a non-null string if the service is not instantiable
      */
     @JvmSynthetic
-    internal fun canCreateService(clazz: KClass<*>): String? = localBeingCheckedSet.get().withServiceCheckKey(clazz) cachedCallback@{
+    internal fun canCreateService(clazz: KClass<*>): String? = serviceCreationStack.withServiceCheckKey(clazz) cachedCallback@{
         //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
         if (clazz in serviceMap) {
             return null
@@ -259,26 +284,6 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             val value: R by lazy { getService(kClass) }
 
             override fun getValue(thisRef: T, property: KProperty<*>) = value
-        }
-    }
-
-    //If services have circular dependencies during checking, consider it to not be an issue
-    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCheckKey(clazz: KClass<T>, block: () -> R): R? {
-        if (!this.add(clazz)) return null
-        try {
-            return block()
-        } finally {
-            this.remove(clazz)
-        }
-    }
-
-    private inline fun <T : Any, R> MutableSet<KClass<*>>.withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
-        if (!this.add(clazz))
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${this.joinToString { it.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
-        try {
-            return block()
-        } finally {
-            this.remove(clazz)
         }
     }
 
