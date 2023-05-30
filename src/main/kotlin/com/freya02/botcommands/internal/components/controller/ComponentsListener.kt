@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.internal.BContextImpl
@@ -44,7 +44,7 @@ import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 
 @BService
-@ConditionalService(dependencies = [Components::class, InternalDatabase::class])
+@Dependencies([Components::class, InternalDatabase::class])
 internal class ComponentsListener(
     private val context: BContextImpl,
     private val componentsConfig: BComponentsConfig,

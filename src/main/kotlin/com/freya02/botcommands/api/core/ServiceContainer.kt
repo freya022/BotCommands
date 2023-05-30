@@ -1,10 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.api.core.annotations.ServiceType
+import com.freya02.botcommands.api.core.annotations.*
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
@@ -184,19 +181,18 @@ class ServiceContainer internal constructor(private val context: BContextImpl) {
             }
         }
 
-        // Services can be conditional
-        // They can implement an interface to do checks
-        // They can also depend on other services, in which case the interface becomes optional
-        clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
-            conditionalService.dependencies.forEach { dependency ->
+        clazz.findAnnotation<Dependencies>()?.value?.let { dependencies ->
+            dependencies.forEach { dependency ->
                 canCreateService(dependency)?.let { errorMessage ->
                     return@cachedCallback "Conditional service depends on ${dependency.simpleNestedName} but it is not available: $errorMessage"
                 }
             }
+        }
 
-            //Skip checker if dependencies have been validated
-            if (conditionalService.dependencies.isNotEmpty()) return@let
-
+        // Services can be conditional
+        // They can implement an interface to do checks
+        // They can also depend on other services, in which case the interface becomes optional
+        clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
             val checker = findConditionalServiceChecker(clazz)
             requireUser(checker != null) {
                 "Conditional service ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}, check the docs for more details"

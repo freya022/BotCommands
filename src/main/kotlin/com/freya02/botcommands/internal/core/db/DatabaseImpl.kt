@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.core.db
 
 import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
@@ -14,7 +14,7 @@ import java.sql.Connection
 
 @BService
 @ServiceType(Database::class)
-@ConditionalService(dependencies = [ConnectionSupplier::class])
+@Dependencies([ConnectionSupplier::class])
 internal class DatabaseImpl internal constructor(
     private val connectionSupplier: ConnectionSupplier,
     override val config: BConfig

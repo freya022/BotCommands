@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import java.lang.annotation.Inherited
-import kotlin.reflect.KClass
 
 /**
  * Marks a service as being available under certain conditions.
@@ -25,10 +24,10 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)
 annotation class ConditionalService(
-    /**
-     * Makes this service depend on others, this also makes you able to skip the [ConditionalServiceChecker] implementation
-     *
-     * This may be useful in situations where the service shares some checks with another service
-     */
-    val dependencies: Array<KClass<*>> = []
+//    /**
+//     * Makes this service depend on others, this also makes you able to skip the [ConditionalServiceChecker] implementation
+//     *
+//     * This may be useful in situations where the service shares some checks with another service
+//     */
+//    val dependencies: Array<KClass<*>> = []
 )
