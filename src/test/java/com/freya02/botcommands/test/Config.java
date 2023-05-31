@@ -1,5 +1,6 @@
 package com.freya02.botcommands.test;
 
+import com.freya02.botcommands.api.core.annotations.BService;
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier;
 import com.google.gson.Gson;
 
@@ -51,6 +52,7 @@ public class Config {
 		return dbConfig;
 	}
 
+	@BService
 	@InstanceSupplier
 	public static Config getInstance() throws IOException {
 		return readConfig();

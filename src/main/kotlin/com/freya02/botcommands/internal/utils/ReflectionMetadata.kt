@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
+import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
@@ -122,6 +123,8 @@ internal object ReflectionMetadata {
 
     private fun ClassInfo.isService(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+                //Keep classes which have service factories
+                || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
 
     private fun readAnnotations(classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {

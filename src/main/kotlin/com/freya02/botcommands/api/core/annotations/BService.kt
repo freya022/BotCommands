@@ -18,7 +18,7 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
  * @see DynamicSupplier
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class BService(
     /**
      * When the service should be started
