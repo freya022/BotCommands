@@ -8,7 +8,10 @@ import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ClassServiceProvider
+import com.freya02.botcommands.internal.core.ProviderName
+import com.freya02.botcommands.internal.core.ServiceProvider
+import com.freya02.botcommands.internal.core.ServiceProviders
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
@@ -113,9 +116,6 @@ private val logger = KotlinLogging.logger { }
 class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
     private val serviceConfig: BServiceConfig = context.serviceConfig
 
-    private val serviceMap = ServiceMap()
-
-    private val unavailableServices: MutableMap<KClass<*>, String> = hashMapOf() //Must not contain InjectedService(s) !
     private val lock = ReentrantLock()
 
     private val serviceCreationStack = ServiceCreationStack()
@@ -160,9 +160,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
         loadableServices[requestedStart]?.forEach { clazz ->
-            //Skip classes that have been already loaded/checked
-            if (clazz in serviceMap || clazz in unavailableServices) return@forEach
-
             tryLoadService(clazz).errorMessage?.let { errorMessage ->
                 logger.trace { "Service ${clazz.simpleNestedName} not loaded: $errorMessage" }
             }
@@ -184,18 +181,18 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         return tryGetService(provider)
     }
 
-    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
+    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
         val provider = context.serviceProviders.findForType(clazz) ?: return null
         return clazz.cast(provider.instance)
     }
 
-    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? {
+    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
         val provider = context.serviceProviders.findForName(name) ?: return null
         return provider.instance?.let { requiredType.safeCast(it) }
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> {
+    override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForName(name)
             ?: return ServiceResult(null, "No service or factories found for service name '$name'")
 
@@ -228,7 +225,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> {
+    private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
@@ -239,10 +236,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                     return result
 
                 val instance = result.getOrThrow()
-                provider.types.forEach { serviceType ->
-                    serviceMap.put(instance, serviceType, serviceType.getServiceName())
-                }
-
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult(instance, null)
             }
@@ -253,7 +246,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
         context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
-        serviceMap.put(t, clazz, name ?: clazz.getServiceName())
     }
 
     internal fun getFunctionService(function: KFunction<*>): Any = when {

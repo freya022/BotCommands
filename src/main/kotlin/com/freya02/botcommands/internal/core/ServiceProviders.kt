@@ -1,10 +1,11 @@
 package com.freya02.botcommands.internal.core
 
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
 internal class ServiceProviders {
-    private val map: MutableMap<String, ServiceProvider> = hashMapOf()
+    private val map: MutableMap<String, ServiceProvider> = ConcurrentHashMap()
 
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in map)
