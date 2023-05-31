@@ -8,6 +8,7 @@ import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtils.asKFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.isInstantiable
 import io.github.classgraph.*
@@ -97,7 +98,7 @@ internal object ReflectionMetadata {
 
                     return@filter isInstantiable(it)
                 }
-                .also { readAnnotations(it) }
+                .also { readAnnotations(context, it) }
                 .map { classInfo ->
                     val kClass = classInfo.loadClass().kotlin
                     //Fill map with all the @Command, @Resolver, etc... declarations
@@ -126,7 +127,7 @@ internal object ReflectionMetadata {
                 //Keep classes which have service factories
                 || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
 
-    private fun readAnnotations(classInfoList: List<ClassInfo>) {
+    private fun readAnnotations(context: BContextImpl, classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {
             try {
                 for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
@@ -142,7 +143,15 @@ internal object ReflectionMetadata {
                     }
                     val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
+                    if (methodInfo.hasAnnotation(BService::class.java)) {
+                        context.serviceProviders.putServiceProvider(methodInfo.loadClassAndGetMethod().asKFunction())
+                    }
+
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
+                }
+
+                if (classInfo.isService(context.config)) {
+                    context.serviceProviders.putServiceProvider(classInfo.loadClass().kotlin)
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)

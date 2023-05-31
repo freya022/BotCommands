@@ -155,7 +155,7 @@ internal object ReflectionUtils {
         return canInstantiate
     }
 
-    private fun Method.asKFunction(): KFunction<*> {
+    internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 }

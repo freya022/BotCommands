@@ -18,6 +18,7 @@ import com.freya02.botcommands.internal.commands.application.slash.autocomplete.
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ServiceAnnotationsMap
+import com.freya02.botcommands.internal.core.ServiceProviders
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -38,6 +39,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     internal val classPathContainer: ClassPathContainer
     private val serviceContainer: ServiceContainerImpl
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
+    internal val serviceProviders = ServiceProviders()
     val eventDispatcher: EventDispatcher
 
     private var status : Status = Status.PRE_LOAD

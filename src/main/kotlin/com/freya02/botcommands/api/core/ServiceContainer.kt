@@ -1,13 +1,14 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.annotations.*
+import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.ServiceMap
+import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
@@ -23,10 +24,14 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty
+import kotlin.reflect.KVisibility
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
+import kotlin.reflect.full.safeCast
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
@@ -34,26 +39,26 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 internal class ServiceCreationStack {
-    private val localSet: ThreadLocal<MutableSet<KClass<*>>> = ThreadLocal.withInitial { linkedSetOf() }
+    private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
     private val set get() = localSet.get()
 
     //If services have circular dependencies during checking, consider it to not be an issue
-    internal inline fun <T : Any, R> withServiceCheckKey(clazz: KClass<T>, block: () -> R): R? {
-        if (!set.add(clazz)) return null
+    internal inline fun <R> withServiceCheckKey(provider: ServiceProvider, block: () -> R): R? {
+        if (!set.add(provider.providerKey)) return null
         try {
             return block()
         } finally {
-            set.remove(clazz)
+            set.remove(provider.providerKey)
         }
     }
 
-    internal inline fun <T : Any, R> withServiceCreateKey(clazz: KClass<T>, block: () -> R): R {
-        if (!set.add(clazz))
-            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ") { it.simpleNestedName }}] ; attempted to create a new ${clazz.java.simpleNestedName}")
+    internal inline fun <R> withServiceCreateKey(provider: ServiceProvider, block: () -> R): R {
+        if (!set.add(provider.providerKey))
+            throw IllegalStateException("Circular dependency detected, list of the services being created : [${set.joinToString(" -> ")}] ; attempted to create ${provider.providerKey}")
         try {
             return block()
         } finally {
-            set.remove(clazz)
+            set.remove(provider.providerKey)
         }
     }
 }
@@ -80,23 +85,23 @@ data class ServiceResult<T : Any>(val service: T?, val errorMessage: String?) {
 
 @InjectedService
 interface ServiceContainer {
-    fun <T : Any> tryGetService(name: String, clazz: KClass<T>): ServiceResult<T>
-    fun <T : Any> tryGetService(name: String, clazz: Class<T>): ServiceResult<T> = tryGetService(name, clazz.kotlin)
+    fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T>
+    fun <T : Any> tryGetService(name: String, requiredType: Class<T>): ServiceResult<T> = tryGetService(name, requiredType.kotlin)
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T>
     fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = tryGetService(clazz.kotlin)
 
-    fun <T : Any> getService(name: String, clazz: KClass<T>): T = tryGetService(name, clazz).getOrThrow()
-    fun <T : Any> getService(name: String, clazz: Class<T>): T = getService(name, clazz.kotlin)
+    fun <T : Any> getService(name: String, requiredType: KClass<T>): T = tryGetService(name, requiredType).getOrThrow()
+    fun <T : Any> getService(name: String, requiredType: Class<T>): T = getService(name, requiredType.kotlin)
     fun <T : Any> getService(clazz: KClass<T>): T = tryGetService(clazz).getOrThrow()
     fun <T : Any> getService(clazz: Class<T>): T = getService(clazz.kotlin)
 
-    fun <T : Any> getServiceOrNull(name: String, clazz: KClass<T>): T? = tryGetService(name, clazz).getOrNull()
-    fun <T : Any> getServiceOrNull(name: String, clazz: Class<T>): T? = getServiceOrNull(name, clazz.kotlin)
+    fun <T : Any> getServiceOrNull(name: String, requiredType: KClass<T>): T? = tryGetService(name, requiredType).getOrNull()
+    fun <T : Any> getServiceOrNull(name: String, requiredType: Class<T>): T? = getServiceOrNull(name, requiredType.kotlin)
     fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? = tryGetService(clazz).getOrNull()
     fun <T : Any> getServiceOrNull(clazz: Class<T>): T? = getServiceOrNull(clazz.kotlin)
 
-    fun <T : Any> peekServiceOrNull(name: String, clazz: KClass<T>): T?
-    fun <T : Any> peekServiceOrNull(name: String, clazz: Class<T>): T? = peekServiceOrNull(name, clazz.kotlin)
+    fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T?
+    fun <T : Any> peekServiceOrNull(name: String, requiredType: Class<T>): T? = peekServiceOrNull(name, requiredType.kotlin)
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
@@ -104,28 +109,11 @@ interface ServiceContainer {
     fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
     fun putService(t: Any, name: String?): Unit = putServiceAs(t, t::class, name)
     fun putService(t: Any): Unit = putServiceAs(t, t::class)
-
-    fun getFunctionService(function: KFunction<*>): Any = when {
-        function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
-        function.isStatic -> throwInternal(function, "Tried to get a function's instance but was static, this should have been checked beforehand")
-        else -> getService(function.declaringClass)
-    }
-
-    fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
-        function.isConstructor || function.isStatic -> null
-        else -> getService(function.declaringClass)
-    }
-
-    fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
-        return types.map {
-            map[it] ?: getService(it)
-        }
-    }
 }
 
 private val logger = KotlinLogging.logger { }
 
-class ServiceContainerImpl internal constructor(private val context: BContextImpl) : ServiceContainer {
+class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
     private val serviceConfig: BServiceConfig = context.serviceConfig
 
     private val serviceMap = ServiceMap()
@@ -135,7 +123,7 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
 
     private val serviceCreationStack = ServiceCreationStack()
 
-    private val dynamicSuppliers: List<KFunction<*>> by lazy {
+    internal val dynamicSuppliers: List<KFunction<*>> by lazy {
         context.classPathContainer.classes.flatMap { clazz ->
             clazz.nonExtensionFunctions //Companion objects are included in those classes, no need to get them
                 .withFilter(FunctionFilter.annotation<DynamicSupplier>())
@@ -146,6 +134,7 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
     }
 
     init {
+        putService(this)
         putServiceAs<ServiceContainer>(this)
         putService(context)
         putService(context.eventManager)
@@ -177,121 +166,128 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
             //Skip classes that have been already loaded/checked
             if (clazz in serviceMap || clazz in unavailableServices) return@forEach
 
-            tryGetService(clazz).errorMessage?.let { errorMessage ->
+            tryLoadService(clazz).errorMessage?.let { errorMessage ->
                 logger.trace { "Service ${clazz.simpleNestedName} not loaded: $errorMessage" }
             }
         }
     }
 
-    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
-        @Suppress("UNCHECKED_CAST")
-        return serviceMap[clazz] as T?
+    /**
+     * This is different from [tryGetService] as this makes a provider from this class,
+     * forcing this service to be created, no matter the types of services being pre-registered in [ServiceProviders]
+     */
+    private fun tryLoadService(clazz: KClass<*>): ServiceResult<Any> {
+        serviceMap[clazz]?.let { return ServiceResult(it, null) }
+        return tryGetService(ClassServiceProvider(clazz))
     }
 
-    override fun <T : Any> peekServiceOrNull(name: String, clazz: KClass<T>): T? = serviceMap[name]?.let { clazz.cast(it) }
+    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = clazz.safeCast(serviceMap[clazz])
+    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = serviceMap[name]?.let { requiredType.safeCast(it) }
 
-    override fun <T : Any> tryGetService(name: String, clazz: KClass<T>): ServiceResult<T> {
-        //TODO this should look at the service annotations map
-        // Find a service with the *requested name*
-        // The goal is to construct an object that corresponds to the name, and then check the type
-        TODO("Not yet implemented")
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> {
+        val service = serviceMap[name]
+        if (service != null) {
+            if (!requiredType.isInstance(service)) {
+                return ServiceResult(null, "A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${service::class.simpleNestedName}")
+            }
+            return ServiceResult(service as T, null)
+        }
+
+        val provider = context.serviceProviders.findForName(name)
+            ?: return ServiceResult(null, "No service or factories found for service name '$name'")
+
+        return tryGetService(provider)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        //TODO this should actually look at the service annotations map
-        // Find the *requested type*, take into account the type of the object + ServiceType
-        // The goal is to construct an object that corresponds to these requirements, rather than constructing the object from the clazz parameter
-
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
 
-        canCreateService(clazz)?.let { errorMessage -> return ServiceResult(null, errorMessage) }
+        val provider = context.serviceProviders.findForType(clazz)
+            ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
+
+        return tryGetService(provider)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> {
+        val errorMessage = canCreateService(provider)
+        if (errorMessage != null)
+            return ServiceResult(null, errorMessage)
 
         try {
-            return serviceCreationStack.withServiceCreateKey(clazz) {
+            return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, nanos) = constructInstance(clazz)
-                val result: ServiceResult<T> = anyResult as ServiceResult<T> //Doesn't really matter, the object is not used anyway
+                val (anyResult, nanos) = provider.getInstance(this)
+                //Doesn't really matter, the object is not used anyway
+                val result: ServiceResult<T> = anyResult as ServiceResult<T>
                 if (result.errorMessage != null)
                     return result
 
                 val instance = result.getOrThrow()
-                when (val serviceType = clazz.findAnnotation<ServiceType>()) {
-                    null -> serviceMap.put(instance, clazz, clazz.getServiceName())
-                    else -> {
-                        serviceMap.put(instance, serviceType.type, serviceType.type.getServiceName())
-                        if (serviceType.keepOriginalType) serviceMap.put(instance, clazz, clazz.getServiceName())
-                    }
+                provider.types.forEach { serviceType ->
+                    serviceMap.put(instance, serviceType, serviceType.getServiceName())
                 }
 
-                logger.trace { "Loaded service ${clazz.simpleNestedName} in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
+                logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult(instance, null)
             }
         } catch (e: Exception) {
-            throw RuntimeException("Unable to create service ${clazz.simpleNestedName}", e)
+            throw RuntimeException("Unable to create service ${provider.primaryType.simpleNestedName}", e)
         }
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) = serviceMap.put(t, clazz, clazz.getServiceName())
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) = serviceMap.put(t, clazz, name ?: clazz.getServiceName())
+
+    internal fun getFunctionService(function: KFunction<*>): Any = when {
+        function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
+        function.isStatic -> throwInternal(function, "Tried to get a function's instance but was static, this should have been checked beforehand")
+        else -> tryLoadService(function.declaringClass).getOrThrow()
+    }
+
+    internal fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
+        function.isConstructor || function.isStatic -> null
+        else -> tryLoadService(function.declaringClass).getOrNull()
+    }
+
+    internal fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {
+        return types.map {
+            map[it] ?: getService(it)
+        }
+    }
 
     /**
      * Returns a non-null string if the service is not instantiable
      */
-    internal fun canCreateService(clazz: KClass<*>): String? = serviceCreationStack.withServiceCheckKey(clazz) cachedCallback@{
-        //If the object doesn't exist then check if it's an injected service, if it is then it cannot be created automatically
-        if (clazz in serviceMap) {
-            return null
-        } else {
-            unavailableServices[clazz]?.let { return it }
+    internal fun canCreateService(clazz: KClass<*>): String? {
+        if (clazz in serviceMap) return null
+        unavailableServices[clazz]?.let { return it }
 
-            clazz.findAnnotation<InjectedService>()?.let {
-                //Skips cache
-                return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
-            }
+        clazz.findAnnotation<InjectedService>()?.let {
+            //Skips cache
+            return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
         }
 
-        clazz.findAnnotation<Dependencies>()?.value?.let { dependencies ->
-            dependencies.forEach { dependency ->
-                canCreateService(dependency)?.let { errorMessage ->
-                    return@cachedCallback "Conditional service depends on ${dependency.simpleNestedName} but it is not available: $errorMessage"
-                }
-            }
+        val provider = context.serviceProviders.findForType(clazz)
+            ?: return "No class or factories found for service ${clazz.simpleNestedName}"
+
+        return serviceCreationStack.withServiceCheckKey(provider) {
+            provider.canInstantiate(this)
         }
-
-        // Services can be conditional
-        // They can implement an interface to do checks
-        // They can also depend on other services, in which case the interface becomes optional
-        clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
-            val checker = findConditionalServiceChecker(clazz)
-            requireUser(checker != null) {
-                "Conditional service ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}, check the docs for more details"
-            }
-            checker.checkServiceAvailability(context)?.let { errorMessage -> return@cachedCallback errorMessage } //Final optional check
-        }
-
-        //Check parameters of dynamic resolvers
-        dynamicSuppliers.forEach { dynamicSupplierFunction ->
-            dynamicSupplierFunction.nonInstanceParameters.drop(1).forEach {
-                canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
-            }
-        }
-
-        //Is a singleton
-        if (clazz.objectInstance != null) return null
-
-        //Check constructor parameters
-        //It's fine if there's no constructor, it just means it's not instantiable
-        val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.errorMessage }
-        constructingFunction.nonInstanceParameters.forEach {
-            canCreateService(it.type.jvmErasure)?.let { errorMessage -> return@cachedCallback errorMessage }
-        }
-
-        return null
     }
-//        ?.also { errorMessage -> unavailableServices[clazz] = errorMessage }
 
-    private fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
+    /**
+     * Returns a non-null string if the service is not instantiable
+     */
+    private fun canCreateService(provider: ServiceProvider): String? {
+        return serviceCreationStack.withServiceCheckKey(provider) {
+            provider.canInstantiate(this)
+        }
+    }
+
+    internal fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
         //Kotlin implementations uses companion object
         clazz.companionObjectInstance?.let { companion ->
             requireUser(companion is ConditionalServiceChecker) {
@@ -318,7 +314,7 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun constructInstance(clazz: KClass<*>): TimedInstantiation {
+    internal fun constructInstance(clazz: KClass<*>): TimedInstantiation {
         dynamicSuppliers.forEach { dynamicSupplierFunction ->
             measureTimedValue {
                 runDynamicSupplier(clazz, dynamicSupplierFunction)
@@ -355,7 +351,7 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
         }
     }
 
-    private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
+    internal fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
         //Find in companion object or in static methods
         val instanceSupplier = findInstanceSupplier(clazz, clazz.staticAndCompanionDeclaredMemberFunctions)
 
@@ -396,22 +392,24 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
         return dynamicSupplierFunction.callStatic(requestedType.java, *params.toTypedArray())
     }
 
-    private fun <R> KFunction<R>.callStatic(vararg args: Any?): R {
-        return when (val instanceParameter = this.instanceParameter) {
-            null -> this.call(*args)
-            else -> {
-                val companionObjectClazz = instanceParameter.type.jvmErasure
-                if (!companionObjectClazz.isCompanion)
-                    throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
-                val companionObjectInstance = companionObjectClazz.objectInstance
-                    ?: throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
+    data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 
-                this.call(companionObjectInstance, *args)
+    companion object {
+        internal fun <R> KFunction<R>.callStatic(vararg args: Any?): R {
+            return when (val instanceParameter = this.instanceParameter) {
+                null -> this.call(*args)
+                else -> {
+                    val companionObjectClazz = instanceParameter.type.jvmErasure
+                    if (!companionObjectClazz.isCompanion)
+                        throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
+                    val companionObjectInstance = companionObjectClazz.objectInstance
+                        ?: throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
+
+                    this.call(companionObjectInstance, *args)
+                }
             }
         }
     }
-
-    private data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 }
 
 inline fun <reified T : Any> ServiceContainer.getService(): T = getService(T::class)
@@ -426,9 +424,13 @@ inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyPrope
     override fun getValue(thisRef: T, property: KProperty<*>) = value
 }
 
-//TODO name from service factories
 internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
     annotation == null || annotation.name.isEmpty() -> this.simpleNestedName.replaceFirstChar { it.lowercase() }
+    else -> annotation.name
+}
+
+internal fun KFunction<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
+    annotation == null || annotation.name.isEmpty() -> this.name
     else -> annotation.name
 }
 
