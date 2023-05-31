@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @BService
-@ServiceType(type = SettingsProvider.class)
+@ServiceType(types = SettingsProvider.class)
 public class BasicSettingsProvider implements SettingsProvider {
 	@Override
 	@NotNull

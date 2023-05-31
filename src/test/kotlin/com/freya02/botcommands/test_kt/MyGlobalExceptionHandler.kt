@@ -9,7 +9,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 
 @BService
-@ServiceType(GlobalExceptionHandler::class)
+@ServiceType([GlobalExceptionHandler::class])
 object MyGlobalExceptionHandler : GlobalExceptionHandlerAdapter() {
     private val logger = KotlinLogging.logger { }
 

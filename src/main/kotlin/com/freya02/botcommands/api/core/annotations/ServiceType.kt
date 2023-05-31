@@ -18,11 +18,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS)
 annotation class ServiceType(
     /**
-     * The type to register this service with
+     * The additional types to register this service as, must be supertypes of this service
      */
-    val type: KClass<*>,
-    /**
-     * Whether the created service's type should also be used along with the specified type
-     */
-    val keepOriginalType: Boolean = false
+    val types: Array<KClass<*>>
 )

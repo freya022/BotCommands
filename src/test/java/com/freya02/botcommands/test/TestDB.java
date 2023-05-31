@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 @BService(start = ServiceStart.PRE_LOAD)
-@ServiceType(type = ConnectionSupplier.class)
+@ServiceType(types = ConnectionSupplier.class)
 public class TestDB implements ConnectionSupplier {
 	private final HikariDataSource source = new HikariDataSource();
 
