@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.core.ServiceContainer
+import com.freya02.botcommands.api.core.ServiceContainerImpl
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.getService
@@ -29,7 +29,7 @@ import kotlin.reflect.jvm.jvmErasure
 @BService
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
-    private val serviceContainer: ServiceContainer,
+    private val serviceContainer: ServiceContainerImpl,
     classPathContainer: ClassPathContainer
 ) {
     private val logger = KotlinLogging.logger {  }
