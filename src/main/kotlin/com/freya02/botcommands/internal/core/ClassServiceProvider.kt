@@ -1,11 +1,9 @@
 package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.core.ConditionalServiceChecker
-import com.freya02.botcommands.api.core.ServiceContainerImpl
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.api.core.getServiceName
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters

@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Version
+import com.freya02.botcommands.internal.core.loadableServices
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel

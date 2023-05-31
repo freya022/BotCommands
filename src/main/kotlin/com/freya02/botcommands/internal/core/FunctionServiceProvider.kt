@@ -1,10 +1,8 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.core.ServiceContainerImpl
-import com.freya02.botcommands.api.core.ServiceContainerImpl.Companion.callStatic
 import com.freya02.botcommands.api.core.ServiceResult
 import com.freya02.botcommands.api.core.annotations.Dependencies
-import com.freya02.botcommands.api.core.getServiceName
+import com.freya02.botcommands.internal.core.ServiceContainerImpl.Companion.callStatic
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc

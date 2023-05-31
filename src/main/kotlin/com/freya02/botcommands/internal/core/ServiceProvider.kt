@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.core.ServiceContainerImpl
 import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.internal.simpleNestedName
 import kotlin.reflect.KAnnotatedElement

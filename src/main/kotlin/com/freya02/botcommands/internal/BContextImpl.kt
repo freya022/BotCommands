@@ -18,6 +18,7 @@ import com.freya02.botcommands.internal.commands.application.slash.autocomplete.
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ServiceAnnotationsMap
+import com.freya02.botcommands.internal.core.ServiceContainerImpl
 import com.freya02.botcommands.internal.core.ServiceProviders
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
