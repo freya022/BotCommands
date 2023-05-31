@@ -24,10 +24,7 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KProperty
-import kotlin.reflect.KVisibility
+import kotlin.reflect.*
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
@@ -177,29 +174,38 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      * forcing this service to be created, no matter the types of services being pre-registered in [ServiceProviders]
      */
     private fun tryLoadService(clazz: KClass<*>): ServiceResult<Any> {
-        serviceMap[clazz]?.let { return ServiceResult(it, null) }
-        val provider = ClassServiceProvider(clazz)
+        val provider = context.serviceProviders.findForType(clazz)
+            ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
+        provider.instance?.let { return ServiceResult(it, null) }
+
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
             return ServiceResult(null, errorMessage)
         return tryGetService(provider)
     }
 
-    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = clazz.safeCast(serviceMap[clazz])
-    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = serviceMap[name]?.let { requiredType.safeCast(it) }
+    override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? {
+        val provider = context.serviceProviders.findForType(clazz) ?: return null
+        return clazz.cast(provider.instance)
+    }
+
+    override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? {
+        val provider = context.serviceProviders.findForName(name) ?: return null
+        return provider.instance?.let { requiredType.safeCast(it) }
+    }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> {
-        val service = serviceMap[name]
+        val provider = context.serviceProviders.findForName(name)
+            ?: return ServiceResult(null, "No service or factories found for service name '$name'")
+
+        val service = provider.instance
         if (service != null) {
             if (!requiredType.isInstance(service)) {
                 return ServiceResult(null, "A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${service::class.simpleNestedName}")
             }
             return ServiceResult(service as T, null)
         }
-
-        val provider = context.serviceProviders.findForName(name)
-            ?: return ServiceResult(null, "No service or factories found for service name '$name'")
 
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
@@ -209,15 +215,14 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        val service = serviceMap[clazz] as T?
-        if (service != null) return ServiceResult(service, null)
-
-        val errorMessage = canCreateService(clazz)
-        if (errorMessage != null)
-            return ServiceResult(null, errorMessage)
-
         val provider = context.serviceProviders.findForType(clazz)
             ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
+        val instance = provider.instance as T?
+        if (instance != null) return ServiceResult(instance, null)
+
+        val errorMessage = canCreateService(provider)
+        if (errorMessage != null)
+            return ServiceResult(null, errorMessage)
 
         return tryGetService(provider)
     }
@@ -227,7 +232,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, nanos) = provider.getInstance(this)
+                val (anyResult, nanos) = provider.createInstance(this)
                 //Doesn't really matter, the object is not used anyway
                 val result: ServiceResult<T> = anyResult as ServiceResult<T>
                 if (result.errorMessage != null)
@@ -246,7 +251,10 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) = serviceMap.put(t, clazz, name ?: clazz.getServiceName())
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
+        context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
+        serviceMap.put(t, clazz, name ?: clazz.getServiceName())
+    }
 
     internal fun getFunctionService(function: KFunction<*>): Any = when {
         function.isConstructor -> throwInternal(function, "Tried to get a function's instance but was a constructor, this should have been checked beforehand")
@@ -269,9 +277,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      * Returns a non-null string if the service is not instantiable
      */
     internal fun canCreateService(clazz: KClass<*>): String? {
-        if (clazz in serviceMap) return null
-        unavailableServices[clazz]?.let { return it }
-
         val provider = context.serviceProviders.findForType(clazz)
             ?: return "No class or factories found for service ${clazz.simpleNestedName}"
 
@@ -282,7 +287,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      * Returns a non-null string if the service is not instantiable
      */
     private fun canCreateService(provider: ServiceProvider): String? {
-        if (provider.name in serviceMap) return null
+        if (provider.instance != null) return null
 
         return serviceCreationStack.withServiceCheckKey(provider) {
             provider.canInstantiate(this)

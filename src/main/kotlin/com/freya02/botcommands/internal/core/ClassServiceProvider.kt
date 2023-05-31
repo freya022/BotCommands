@@ -13,13 +13,15 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
-internal class ClassServiceProvider(private val clazz: KClass<*>) : ServiceProvider {
+internal class ClassServiceProvider(private val clazz: KClass<*>, override var instance: Any? = null) : ServiceProvider {
     override val name = clazz.getServiceName()
     override val providerKey = clazz.simpleNestedName
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(clazz)
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): String? {
+        if (instance != null) return null
+
         clazz.findAnnotation<InjectedService>()?.let {
             //Skips cache
             return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
@@ -64,8 +66,8 @@ internal class ClassServiceProvider(private val clazz: KClass<*>) : ServiceProvi
         return null
     }
 
-    override fun getInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
-        return serviceContainer.constructInstance(clazz)
+    override fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
+        return serviceContainer.constructInstance(clazz).also { instance = it.result.getOrNull() }
     }
 
     override fun toString() = providerKey

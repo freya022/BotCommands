@@ -6,17 +6,15 @@ import kotlin.reflect.KFunction
 internal class ServiceProviders {
     private val map: MutableMap<String, ServiceProvider> = hashMapOf()
 
-    internal fun putServiceProvider(kClass: KClass<*>) {
-        val provider = ClassServiceProvider(kClass)
-        map[provider.name] = provider
+    internal fun putServiceProvider(serviceProvider: ServiceProvider) {
+        if (serviceProvider.name in map)
+            throw IllegalArgumentException("Service provider for ${serviceProvider.providerKey} already exists")
+        map[serviceProvider.name] = serviceProvider
     }
 
-    internal fun putServiceProvider(kFunction: KFunction<*>) {
-        val provider = FunctionServiceProvider(kFunction)
-        map[provider.name] = provider
-    }
+    internal fun putServiceProvider(kClass: KClass<*>) = putServiceProvider(ClassServiceProvider(kClass))
+    internal fun putServiceProvider(kFunction: KFunction<*>) = putServiceProvider(FunctionServiceProvider(kFunction))
 
     internal fun findForType(type: KClass<*>): ServiceProvider? = map.values.find { type in it.types }
-
     internal fun findForName(name: String): ServiceProvider? = map[name]
 }

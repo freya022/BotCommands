@@ -19,9 +19,11 @@ internal interface ServiceProvider {
     val primaryType: KClass<*>
     val types: List<KClass<*>>
 
+    val instance: Any?
+
     fun canInstantiate(serviceContainer: ServiceContainerImpl): String?
 
-    fun getInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation
+    fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation
 }
 
 internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (val serviceType = findAnnotation<ServiceType>()) {

@@ -15,13 +15,15 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-internal class FunctionServiceProvider(private val function: KFunction<*>) : ServiceProvider {
+internal class FunctionServiceProvider(private val function: KFunction<*>, override var instance: Any? = null) : ServiceProvider {
     override val name = function.getServiceName()
     override val providerKey = function.shortSignatureNoSrc
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(function.returnType.jvmErasure)
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): String? {
+        if (instance != null) return null
+
         function.findAnnotation<Dependencies>()?.value?.let { dependencies ->
             dependencies.forEach { dependency ->
                 serviceContainer.canCreateService(dependency)?.let { errorMessage ->
@@ -34,7 +36,7 @@ internal class FunctionServiceProvider(private val function: KFunction<*>) : Ser
     }
 
     @OptIn(ExperimentalTime::class)
-    override fun getInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
+    override fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
         val params = function.nonInstanceParameters.map {
             val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
             dependencyResult.service ?: return ServiceContainerImpl.TimedInstantiation(
@@ -45,6 +47,7 @@ internal class FunctionServiceProvider(private val function: KFunction<*>) : Ser
             )
         }
         return measureTimedValue { function.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
+            .also { instance = it.value }
             .let { ServiceContainerImpl.TimedInstantiation(ServiceResult(it.value, null), it.duration) }
     }
 
