@@ -23,10 +23,7 @@ import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.properties.ReadOnlyProperty
-import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.KProperty
-import kotlin.reflect.KVisibility
+import kotlin.reflect.*
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
@@ -83,19 +80,29 @@ data class ServiceResult<T : Any>(val service: T?, val errorMessage: String?) {
 
 @InjectedService
 interface ServiceContainer {
+    fun <T : Any> tryGetService(name: String, clazz: KClass<T>): ServiceResult<T>
+    fun <T : Any> tryGetService(name: String, clazz: Class<T>): ServiceResult<T> = tryGetService(name, clazz.kotlin)
     fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T>
     fun <T : Any> tryGetService(clazz: Class<T>): ServiceResult<T> = tryGetService(clazz.kotlin)
 
+    fun <T : Any> getService(name: String, clazz: KClass<T>): T = tryGetService(name, clazz).getOrThrow()
+    fun <T : Any> getService(name: String, clazz: Class<T>): T = getService(name, clazz.kotlin)
     fun <T : Any> getService(clazz: KClass<T>): T = tryGetService(clazz).getOrThrow()
     fun <T : Any> getService(clazz: Class<T>): T = getService(clazz.kotlin)
 
+    fun <T : Any> getServiceOrNull(name: String, clazz: KClass<T>): T? = tryGetService(name, clazz).getOrNull()
+    fun <T : Any> getServiceOrNull(name: String, clazz: Class<T>): T? = getServiceOrNull(name, clazz.kotlin)
     fun <T : Any> getServiceOrNull(clazz: KClass<T>): T? = tryGetService(clazz).getOrNull()
     fun <T : Any> getServiceOrNull(clazz: Class<T>): T? = getServiceOrNull(clazz.kotlin)
 
+    fun <T : Any> peekServiceOrNull(name: String, clazz: KClass<T>): T?
+    fun <T : Any> peekServiceOrNull(name: String, clazz: Class<T>): T? = peekServiceOrNull(name, clazz.kotlin)
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
+    fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
-    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>)
+    fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String? = null)
     fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
+    fun putService(t: Any, name: String?): Unit = putServiceAs(t, t::class, name)
     fun putService(t: Any): Unit = putServiceAs(t, t::class)
 
     fun getFunctionService(function: KFunction<*>): Any = when {
@@ -181,8 +188,21 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
         return serviceMap[clazz] as T?
     }
 
+    override fun <T : Any> peekServiceOrNull(name: String, clazz: KClass<T>): T? = serviceMap[name]?.let { clazz.cast(it) }
+
+    override fun <T : Any> tryGetService(name: String, clazz: KClass<T>): ServiceResult<T> {
+        //TODO this should look at the service annotations map
+        // Find a service with the *requested name*
+        // The goal is to construct an object that corresponds to the name, and then check the type
+        TODO("Not yet implemented")
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
+        //TODO this should actually look at the service annotations map
+        // Find the *requested type*, take into account the type of the object + ServiceType
+        // The goal is to construct an object that corresponds to these requirements, rather than constructing the object from the clazz parameter
+
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
 
@@ -198,10 +218,10 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
 
                 val instance = result.getOrThrow()
                 when (val serviceType = clazz.findAnnotation<ServiceType>()) {
-                    null -> serviceMap.put(instance, clazz)
+                    null -> serviceMap.put(instance, clazz, clazz.getServiceName())
                     else -> {
-                        serviceMap.put(instance, serviceType.type)
-                        if (serviceType.keepOriginalType) serviceMap.put(instance, clazz)
+                        serviceMap.put(instance, serviceType.type, serviceType.type.getServiceName())
+                        if (serviceType.keepOriginalType) serviceMap.put(instance, clazz, clazz.getServiceName())
                     }
                 }
 
@@ -213,7 +233,7 @@ class ServiceContainerImpl internal constructor(private val context: BContextImp
         }
     }
 
-    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>) = serviceMap.put(t, clazz)
+    override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) = serviceMap.put(t, clazz, clazz.getServiceName())
 
     /**
      * Returns a non-null string if the service is not instantiable
@@ -404,6 +424,12 @@ inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyPrope
     val value: R by lazy { getService(R::class) }
 
     override fun getValue(thisRef: T, property: KProperty<*>) = value
+}
+
+//TODO name from service factories
+internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
+    annotation == null || annotation.name.isEmpty() -> this.simpleNestedName.replaceFirstChar { it.lowercase() }
+    else -> annotation.name
 }
 
 internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>

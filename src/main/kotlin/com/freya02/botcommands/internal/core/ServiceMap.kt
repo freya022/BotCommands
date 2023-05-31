@@ -8,13 +8,21 @@ import kotlin.reflect.full.hasAnnotation
 
 @PublishedApi
 internal class ServiceMap {
-    private val map: MutableMap<KClass<*>, Any> = hashMapOf()
+    private val typeMap: MutableMap<KClass<*>, MutableList<Any>> = hashMapOf()
+    private val nameMap: MutableMap<String, Any> = hashMapOf()
 
-    operator fun get(clazz: KClass<*>) = map[clazz]
+    operator fun get(clazz: KClass<*>) = typeMap[clazz]?.first()
+    operator fun get(name: String) = nameMap[name]
 
-    fun put(instance: Any, asType: KClass<*>) {
-        if (asType in map)
+    operator fun contains(clazz: KClass<*>) = clazz in typeMap
+    operator fun contains(name: String) = name in nameMap
+
+    fun put(instance: Any, asType: KClass<*>, name: String) {
+        if (asType in typeMap)
             throwUser("Cannot put service ${asType.simpleNestedName} as it already exists")
+        if (name in nameMap)
+            throwUser("Cannot put service ${asType.simpleNestedName} as its name '$name' already exists")
+
         if (!asType.isInstance(instance)) {
             if (instance::class.hasAnnotation<ServiceType>()) {
                 throwUser("Service ${instance::class.simpleNestedName} has its service type set to ${asType.simpleNestedName} but does not extend/implement it")
@@ -23,8 +31,7 @@ internal class ServiceMap {
             }
         }
 
-        map[asType] = instance
+        typeMap.getOrPut(asType) { arrayListOf() }.add(instance)
+        nameMap[name] = instance
     }
-
-    operator fun contains(clazz: KClass<*>) = clazz in map
 }
