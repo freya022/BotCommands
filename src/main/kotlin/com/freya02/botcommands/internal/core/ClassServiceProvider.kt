@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.ServiceContainerImpl
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.Dependencies
+import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.getServiceName
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.simpleNestedName
@@ -19,6 +20,11 @@ internal class ClassServiceProvider(private val clazz: KClass<*>) : ServiceProvi
     override val types = clazz.getServiceTypes(clazz)
 
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): String? {
+        clazz.findAnnotation<InjectedService>()?.let {
+            //Skips cache
+            return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
+        }
+
         clazz.findAnnotation<Dependencies>()?.value?.let { dependencies ->
             dependencies.forEach { dependency ->
                 serviceContainer.canCreateService(dependency)?.let { errorMessage ->

@@ -178,7 +178,11 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      */
     private fun tryLoadService(clazz: KClass<*>): ServiceResult<Any> {
         serviceMap[clazz]?.let { return ServiceResult(it, null) }
-        return tryGetService(ClassServiceProvider(clazz))
+        val provider = ClassServiceProvider(clazz)
+        val errorMessage = canCreateService(provider)
+        if (errorMessage != null)
+            return ServiceResult(null, errorMessage)
+        return tryGetService(provider)
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = clazz.safeCast(serviceMap[clazz])
@@ -197,6 +201,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         val provider = context.serviceProviders.findForName(name)
             ?: return ServiceResult(null, "No service or factories found for service name '$name'")
 
+        val errorMessage = canCreateService(provider)
+        if (errorMessage != null)
+            return ServiceResult(null, errorMessage)
         return tryGetService(provider)
     }
 
@@ -204,6 +211,10 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val service = serviceMap[clazz] as T?
         if (service != null) return ServiceResult(service, null)
+
+        val errorMessage = canCreateService(clazz)
+        if (errorMessage != null)
+            return ServiceResult(null, errorMessage)
 
         val provider = context.serviceProviders.findForType(clazz)
             ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
@@ -213,10 +224,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     @Suppress("UNCHECKED_CAST")
     private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> {
-        val errorMessage = canCreateService(provider)
-        if (errorMessage != null)
-            return ServiceResult(null, errorMessage)
-
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
@@ -265,23 +272,18 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         if (clazz in serviceMap) return null
         unavailableServices[clazz]?.let { return it }
 
-        clazz.findAnnotation<InjectedService>()?.let {
-            //Skips cache
-            return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
-        }
-
         val provider = context.serviceProviders.findForType(clazz)
             ?: return "No class or factories found for service ${clazz.simpleNestedName}"
 
-        return serviceCreationStack.withServiceCheckKey(provider) {
-            provider.canInstantiate(this)
-        }
+        return canCreateService(provider)
     }
 
     /**
      * Returns a non-null string if the service is not instantiable
      */
     private fun canCreateService(provider: ServiceProvider): String? {
+        if (provider.name in serviceMap) return null
+
         return serviceCreationStack.withServiceCheckKey(provider) {
             provider.canInstantiate(this)
         }
