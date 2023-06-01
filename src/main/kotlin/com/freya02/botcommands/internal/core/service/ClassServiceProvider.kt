@@ -1,10 +1,15 @@
 package com.freya02.botcommands.internal.core.service
 
+import com.freya02.botcommands.api.core.service.DynamicSupplier
+import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.simpleNestedName
+import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -13,6 +18,8 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
+
+private val logger = KotlinLogging.logger { }
 
 internal class ClassServiceProvider(
     private val clazz: KClass<*>,
@@ -33,10 +40,17 @@ internal class ClassServiceProvider(
 
         clazz.commonCanInstantiate(serviceContainer)?.let { errorMessage -> return errorMessage }
 
-        //Check parameters of dynamic resolvers
-        serviceContainer.dynamicSuppliers.forEach { dynamicSupplierFunction ->
-            dynamicSupplierFunction.nonInstanceParameters.drop(1).forEach {
-                serviceContainer.canCreateService(it.type.jvmErasure)?.let { errorMessage -> return errorMessage }
+        //Check dynamic suppliers
+        serviceContainer.forEachDynamicSuppliers { dynamicSupplier ->
+            val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
+            when (instantiability.type) {
+                //Return error message
+                InstantiabilityType.NOT_INSTANTIABLE -> return instantiability.message
+                    ?: throwInternal("Dynamic supplier returned ${instantiability.type} but does not have an error message")
+                //Continue looking at other suppliers
+                InstantiabilityType.UNSUPPORTED_TYPE -> {}
+                //Found a supplier, return no error message
+                InstantiabilityType.INSTANTIABLE -> return null
             }
         }
 
@@ -55,10 +69,19 @@ internal class ClassServiceProvider(
 
     @OptIn(ExperimentalTime::class)
     override fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
-        serviceContainer.dynamicSuppliers.forEach { dynamicSupplierFunction ->
-            measureTimedValue {
-                runDynamicSupplier(serviceContainer, clazz, dynamicSupplierFunction)
-            }.toTimedInstantiationOrNull()?.let { return it }
+        serviceContainer.forEachDynamicSuppliers { dynamicSupplier ->
+            val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
+            when (instantiability.type) {
+                //Return error message
+                InstantiabilityType.NOT_INSTANTIABLE -> ServiceResult.fail<Any>(instantiability.message!!)
+                    .toFailedTimedInstantiation()
+                //Continue looking at other suppliers
+                InstantiabilityType.UNSUPPORTED_TYPE -> {}
+                //Found a supplier, return instance
+                InstantiabilityType.INSTANTIABLE -> return measureTimedValue {
+                    dynamicSupplier.get(serviceContainer.context, clazz)
+                }.toTimedInstantiation()
+            }
         }
 
         //The command object has to be created either by the instance supplier
@@ -101,14 +124,27 @@ internal class ClassServiceProvider(
         return ServiceResult.pass(constructor)
     }
 
-    private fun runDynamicSupplier(serviceContainer: ServiceContainerImpl, requestedType: KClass<*>, dynamicSupplierFunction: KFunction<*>): Any? {
-        val params: List<Any> = dynamicSupplierFunction.nonInstanceParameters.drop(1).map {
-            //Try to get a dependency, if it doesn't work then skip this supplier
-            serviceContainer.tryGetService(it.type.jvmErasure).service ?: return null
-        }
-
-        return dynamicSupplierFunction.callStatic(requestedType.java, *params.toTypedArray())
+    private inline fun ServiceContainerImpl.forEachDynamicSuppliers(block: (dynamicSupplier: DynamicSupplier) -> Unit) {
+        context.serviceProviders
+            .findAllForType(DynamicSupplier::class)
+            // Avoid circular dependency, we can't supply ourselves
+            .filter { it.primaryType != this@ClassServiceProvider.primaryType }
+            .mapNotNull {
+                val serviceResult = tryGetService(it, DynamicSupplier::class)
+                serviceResult.errorMessage?.let { errorMessage ->
+                    val warnMessage = "Could not create dynamic supplier ${it.primaryType} (from ${it.providerKey}): $errorMessage"
+                    if (!errorSet.add(warnMessage)) {
+                        logger.warn(warnMessage)
+                    }
+                }
+                serviceResult.getOrNull()
+            }
+            .forEach(block)
     }
 
     override fun toString() = providerKey
+
+    companion object {
+        private val errorSet: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    }
 }

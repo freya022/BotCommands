@@ -7,15 +7,9 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.requiredFilter
-import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.hooks.IEventManager
@@ -57,18 +51,7 @@ private val logger = KotlinLogging.logger { }
 
 class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
     private val lock = ReentrantLock()
-
     private val serviceCreationStack = ServiceCreationStack()
-
-    internal val dynamicSuppliers: List<KFunction<*>> by lazy {
-        context.classPathContainer.classes.flatMap { clazz ->
-            clazz.nonExtensionFunctions //Companion objects are included in those classes, no need to get them
-                .withFilter(FunctionFilter.annotation<DynamicSupplier>())
-                .requiredFilter(FunctionFilter.staticOrCompanion())
-                .requiredFilter(FunctionFilter.firstArg(Class::class))
-                .requiredFilter(FunctionFilter.returnType(Any::class))
-        }
-    }
 
     init {
         putService(this)
@@ -83,40 +66,16 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     internal fun preloadServices() {
         runBlocking {
-            if (dynamicSuppliers.isNotEmpty()) {
-                logger.trace {
-                    val functionsListStr = dynamicSuppliers.joinToString("\n\t - ", "\t - ", "") { dynamicSupplierFunction ->
-                        dynamicSupplierFunction.shortSignatureNoSrc
-                    }
-                    "Loaded ${dynamicSuppliers.size} dynamic suppliers:\n$functionsListStr"
-                }
-            }
-
             getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
         }
     }
 
     internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
         loadableServices[requestedStart]?.forEach { clazz ->
-            tryLoadService(clazz).errorMessage?.let { errorMessage ->
+            tryGetService(clazz).errorMessage?.let { errorMessage ->
                 logger.trace { "Service ${clazz.simpleNestedName} not loaded: $errorMessage" }
             }
         }
-    }
-
-    /**
-     * This is different from [tryGetService] as this makes a provider from this class,
-     * forcing this service to be created, no matter the types of services being pre-registered in [ServiceProviders]
-     */
-    private fun tryLoadService(clazz: KClass<*>): ServiceResult<Any> {
-        val provider = context.serviceProviders.findForType(clazz)
-            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
-        provider.instance?.let { return ServiceResult.pass(it) }
-
-        val errorMessage = canCreateService(provider)
-        if (errorMessage != null)
-            return ServiceResult.fail(errorMessage)
-        return tryGetService(provider)
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
@@ -129,41 +88,37 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         return provider.instance?.let { requiredType.safeCast(it) }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForName(name)
             ?: return ServiceResult.fail("No service or factories found for service name '$name'")
+        return tryGetService(provider, requiredType)
+    }
 
-        val service = provider.instance
-        if (service != null) {
-            if (!requiredType.isInstance(service)) {
-                return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${service::class.simpleNestedName}")
+    override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
+        val provider = context.serviceProviders.findForType(clazz)
+            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
+        return tryGetService(provider, clazz)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    internal fun <T : Any> tryGetService(provider: ServiceProvider, requiredType: KClass<T>): ServiceResult<T> {
+        val instance = provider.instance as T?
+        if (instance != null) {
+            if (!requiredType.isInstance(instance)) {
+                return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}")
             }
-            return ServiceResult.pass(service as T)
+            return ServiceResult.pass(instance)
         }
 
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
             return ServiceResult.fail(errorMessage)
-        return tryGetService(provider)
+
+        return createService(provider)
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        val provider = context.serviceProviders.findForType(clazz)
-            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
-        val instance = provider.instance as T?
-        if (instance != null) return ServiceResult.pass(instance)
-
-        val errorMessage = canCreateService(provider)
-        if (errorMessage != null)
-            return ServiceResult.fail(errorMessage)
-
-        return tryGetService(provider)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> tryGetService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
+    private fun <T : Any> createService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
@@ -195,12 +150,12 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             function,
             "Tried to get a function's instance but was static, this should have been checked beforehand"
         )
-        else -> tryLoadService(function.declaringClass).getOrThrow()
+        else -> tryGetService(function.declaringClass).getOrThrow()
     }
 
     internal fun getFunctionServiceOrNull(function: KFunction<*>): Any? = when {
         function.isConstructor || function.isStatic -> null
-        else -> tryLoadService(function.declaringClass).getOrNull()
+        else -> tryGetService(function.declaringClass).getOrNull()
     }
 
     internal fun getParameters(types: List<KClass<*>>, map: Map<KClass<*>, Any> = mapOf()): List<Any> {

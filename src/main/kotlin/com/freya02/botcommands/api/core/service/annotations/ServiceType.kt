@@ -3,12 +3,10 @@ package com.freya02.botcommands.api.core.service.annotations
 import kotlin.reflect.KClass
 
 /**
- * Changes the type this service is registered with
+ * Adds additional types to register this service as.
  *
- * This does **not** allow lazy loaded services to be loaded via their interfaces,
- * if you have a lazy loaded implementation, getting the interface as a service will not work until the implementation is loaded
- *
- * This may be useful in situations where impl files are services, but only the interface needs to be exposed
+ * This may be useful in situations where implementation classes are services, but the interface needs to be constructible from it,
+ * as the framework will find back the implementation from the declared service types
  *
  * @see BService
  * @see InjectedService

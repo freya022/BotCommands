@@ -16,6 +16,7 @@ internal class ServiceProviders {
     internal fun putServiceProvider(kClass: KClass<*>) = putServiceProvider(ClassServiceProvider(kClass))
     internal fun putServiceProvider(kFunction: KFunction<*>) = putServiceProvider(FunctionServiceProvider(kFunction))
 
+    internal fun findAllForType(type: KClass<*>): List<ServiceProvider> = map.values.filter { type in it.types }
     internal fun findForType(type: KClass<*>): ServiceProvider? = map.values.find { type in it.types }
     internal fun findForName(name: String): ServiceProvider? = map[name]
 }

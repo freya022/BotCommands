@@ -72,10 +72,6 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
 }
 
 @OptIn(ExperimentalTime::class)
-internal fun <T> TimedValue<T>.toTimedInstantiationOrNull() =
-    this.value?.let { ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(it), this.duration) }
-
-@OptIn(ExperimentalTime::class)
 internal fun <T> TimedValue<T>.toTimedInstantiation() =
     ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
 
