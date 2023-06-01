@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.EventDispatcher
-import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.ServiceResult
@@ -57,8 +56,6 @@ internal class ServiceCreationStack {
 private val logger = KotlinLogging.logger { }
 
 class ServiceContainerImpl internal constructor(internal val context: BContextImpl) : ServiceContainer {
-    private val serviceConfig: BServiceConfig = context.serviceConfig
-
     private val lock = ReentrantLock()
 
     private val serviceCreationStack = ServiceCreationStack()
@@ -86,14 +83,12 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     internal fun preloadServices() {
         runBlocking {
-            dynamicSuppliers.let {
-                if (it.isEmpty()) return@let
-
+            if (dynamicSuppliers.isNotEmpty()) {
                 logger.trace {
-                    val functionsListStr = it.joinToString("\n\t - ", "\t - ", "") { dynamicSupplierFunction ->
+                    val functionsListStr = dynamicSuppliers.joinToString("\n\t - ", "\t - ", "") { dynamicSupplierFunction ->
                         dynamicSupplierFunction.shortSignatureNoSrc
                     }
-                    "Loaded ${it.size} dynamic suppliers:\n$functionsListStr"
+                    "Loaded ${dynamicSuppliers.size} dynamic suppliers:\n$functionsListStr"
                 }
             }
 
