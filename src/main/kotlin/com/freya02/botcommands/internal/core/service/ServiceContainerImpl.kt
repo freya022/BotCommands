@@ -104,9 +104,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     internal fun <T : Any> tryGetService(provider: ServiceProvider, requiredType: KClass<T>): ServiceResult<T> {
         val instance = provider.instance as T?
         if (instance != null) {
-            if (!requiredType.isInstance(instance)) {
-                return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}")
-            }
             return ServiceResult.pass(instance)
         }
 
@@ -114,11 +111,11 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         if (errorMessage != null)
             return ServiceResult.fail(errorMessage)
 
-        return createService(provider)
+        return createService(provider, requiredType)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : Any> createService(provider: ServiceProvider): ServiceResult<T> = lock.withLock {
+    private fun <T : Any> createService(provider: ServiceProvider, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
@@ -129,6 +126,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                     return result
 
                 val instance = result.getOrThrow()
+                if (!requiredType.isInstance(instance))
+                    return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}")
+
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult.pass(instance)
             }
