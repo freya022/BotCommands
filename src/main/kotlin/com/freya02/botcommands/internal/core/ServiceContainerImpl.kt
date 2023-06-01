@@ -30,6 +30,7 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
+import kotlin.time.TimedValue
 import kotlin.time.measureTimedValue
 
 internal class ServiceCreationStack {
@@ -243,12 +244,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         dynamicSuppliers.forEach { dynamicSupplierFunction ->
             measureTimedValue {
                 runDynamicSupplier(clazz, dynamicSupplierFunction)
-            }.let {
-                //TODO TimedValue extension
-                it.value?.let { service ->
-                    return TimedInstantiation(ServiceResult.pass(service), it.duration)
-                }
-            }
+            }.toTimedInstantiationOrNull()?.let { return it }
         }
 
         //The command object has to be created either by the instance supplier
@@ -267,18 +263,13 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                 val constructingFunction = findConstructingFunction(clazz).getOrThrow()
 
                 val params = constructingFunction.nonInstanceParameters.map {
-                    val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
-                    //TODO make ServiceResult.toFailedTimedInstantation extension
-                    dependencyResult.service ?: return TimedInstantiation(
-                        ServiceResult.fail<Any>(dependencyResult.errorMessage!!), Duration.INFINITE
-                    )
+                    val dependencyResult = tryGetService(it.type.jvmErasure)
+                    //Try to get a dependency, if it doesn't work then return the message
+                    dependencyResult.service ?: return dependencyResult.toFailedTimedInstantiation()
                 }
                 measureTimedValue { constructingFunction.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
-        }.let {
-            //TODO TimedValue extension
-            TimedInstantiation(ServiceResult.pass(it.value!!), it.duration)
-        }
+        }.toTimedInstantiation()
     }
 
     internal fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
@@ -322,6 +313,22 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+internal fun <T> TimedValue<T>.toTimedInstantiationOrNull() =
+    this.value?.let { ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(it), this.duration) }
+
+@OptIn(ExperimentalTime::class)
+internal fun <T> TimedValue<T>.toTimedInstantiation() =
+    ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
+
+internal fun ServiceResult<*>.toFailedTimedInstantiation(): ServiceContainerImpl.TimedInstantiation {
+    if (errorMessage != null) {
+        return ServiceContainerImpl.TimedInstantiation(ServiceResult.fail<Any>(errorMessage), Duration.INFINITE)
+    } else {
+        throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
     }
 }
 
