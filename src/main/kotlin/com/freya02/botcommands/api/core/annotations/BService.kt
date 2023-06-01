@@ -3,10 +3,9 @@ package com.freya02.botcommands.api.core.annotations
 import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
-import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 
 /**
- * Marks this class as a service.
+ * Marks this class as a service, or this function as a service factory.
  *
  * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
  *
@@ -14,7 +13,6 @@ import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
  * @see ConditionalService
  * @see ServiceType
  *
- * @see InstanceSupplier
  * @see DynamicSupplier
  */
 @MustBeDocumented

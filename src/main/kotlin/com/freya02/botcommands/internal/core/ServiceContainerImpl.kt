@@ -6,14 +6,12 @@ import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
-import com.freya02.botcommands.api.core.suppliers.annotations.InstanceSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
-import com.freya02.botcommands.internal.utils.ReflectionUtils.staticAndCompanionDeclaredMemberFunctions
 import com.freya02.botcommands.internal.utils.requiredFilter
 import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
@@ -287,24 +285,11 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     internal fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
-        //Find in companion object or in static methods
-        val instanceSupplier = findInstanceSupplier(clazz, clazz.staticAndCompanionDeclaredMemberFunctions)
-
-        if (instanceSupplier != null) {
-            return ServiceResult(instanceSupplier, null)
-        }
-
         val constructors = clazz.constructors
-        if (constructors.isEmpty()) { return ServiceResult(
-            null,
-            "Class " + clazz.simpleNestedName + " must have an accessible constructor"
-        )
-        }
-        if (constructors.size != 1) { return ServiceResult(
-            null,
-            "Class " + clazz.simpleNestedName + " must have exactly one constructor"
-        )
-        }
+        if (constructors.isEmpty())
+            return ServiceResult(null, "Class ${clazz.simpleNestedName} must have an accessible constructor")
+        if (constructors.size != 1)
+            return ServiceResult(null, "Class ${clazz.simpleNestedName} must have exactly one constructor")
 
         val constructor = constructors.single()
         if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
@@ -312,21 +297,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
 
         return ServiceResult(constructor, null)
-    }
-
-    private fun findInstanceSupplier(classType: KClass<*>, functions: Collection<KFunction<*>>): KFunction<*>? {
-        return functions.withFilter(FunctionFilter.annotation<InstanceSupplier>()).let { supplierFunctions ->
-            if (supplierFunctions.size > 1)
-                throwUser("Class ${classType.simpleNestedName} needs to have only one method annotated with @${InstanceSupplier::class.simpleNestedName}")
-
-            supplierFunctions.firstOrNull()?.also { function ->
-                if (function.returnType.jvmErasure != classType)
-                    throwUser(
-                        function,
-                        "Function needs to return a ${classType.simpleNestedName} as specified by @${InstanceSupplier::class.simpleNestedName}"
-                    )
-            }
-        }
     }
 
     private fun runDynamicSupplier(requestedType: KClass<*>, dynamicSupplierFunction: KFunction<*>): Any? {
