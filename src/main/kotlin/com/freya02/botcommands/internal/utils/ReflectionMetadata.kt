@@ -63,8 +63,8 @@ internal object ReflectionMetadata {
                 .scan()
                 .also { scanResult -> // Don't keep test classes
                     add(scanResult to scanResult.allStandardClasses.filter {
-                        return@filter it.isService(config)
-                                || it.outerClasses.any { outer -> outer.isService(config) }
+                        return@filter it.isServiceOrHasFactories(config)
+                                || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
                                 || it.hasAnnotation(IncludeClasspath::class.java.name)
                     })
                 }
@@ -123,6 +123,9 @@ internal object ReflectionMetadata {
     }
 
     private fun ClassInfo.isService(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+
+    private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
                 //Keep classes which have service factories
                 || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
