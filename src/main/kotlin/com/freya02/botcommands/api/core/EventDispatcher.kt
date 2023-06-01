@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
 import com.freya02.botcommands.internal.core.ClassPathFunction

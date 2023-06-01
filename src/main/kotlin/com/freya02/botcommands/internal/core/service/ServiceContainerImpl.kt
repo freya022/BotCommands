@@ -1,10 +1,14 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.*
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.ServiceResult
+import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.FunctionFilter

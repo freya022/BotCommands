@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.core
+package com.freya02.botcommands.api.core.service
 
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService

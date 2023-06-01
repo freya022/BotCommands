@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildAvailableEvent

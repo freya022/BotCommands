@@ -6,10 +6,10 @@ import com.freya02.botcommands.api.components.builder.ITimeoutableComponent
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.InteractionConstraints
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.db.Transaction
 import com.freya02.botcommands.api.core.db.transactional
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.LifetimeType

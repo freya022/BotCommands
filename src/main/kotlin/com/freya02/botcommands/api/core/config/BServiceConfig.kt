@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
-import com.freya02.botcommands.api.annotations.Resolver
-import com.freya02.botcommands.api.annotations.ResolverFactory
 import com.freya02.botcommands.api.commands.annotations.Command
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.internal.core.ServiceAnnotationsMap
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.Resolver
+import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.internal.core.service.ServiceAnnotationsMap
 import com.freya02.botcommands.internal.toImmutableMap
 import com.freya02.botcommands.internal.toImmutableSet
 import kotlin.reflect.KClass
@@ -43,11 +43,15 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     }
 
     fun registerResolver(annotationReceiver: KClass<*>) {
-        _serviceAnnotationsMap.put(annotationReceiver, Resolver::class, Resolver())
+        _serviceAnnotationsMap.put(annotationReceiver, Resolver::class,
+            Resolver()
+        )
     }
 
     fun registerResolverFactory(annotationReceiver: KClass<*>) {
-        _serviceAnnotationsMap.put(annotationReceiver, ResolverFactory::class, ResolverFactory())
+        _serviceAnnotationsMap.put(annotationReceiver, ResolverFactory::class,
+            ResolverFactory()
+        )
     }
 
     @JvmSynthetic

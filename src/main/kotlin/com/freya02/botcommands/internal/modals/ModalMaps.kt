@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.Utils
 import kotlinx.coroutines.CancellableContinuation

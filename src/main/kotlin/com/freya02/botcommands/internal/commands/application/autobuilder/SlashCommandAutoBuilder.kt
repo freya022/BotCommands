@@ -11,7 +11,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.LongRa
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata

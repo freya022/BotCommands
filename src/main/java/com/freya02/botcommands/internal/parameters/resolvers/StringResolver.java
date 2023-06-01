@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.annotations.Resolver;
+import com.freya02.botcommands.api.core.service.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;

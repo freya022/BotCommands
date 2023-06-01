@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.core.annotations
+package com.freya02.botcommands.api.core.service.annotations
 
 import kotlin.reflect.KClass
 

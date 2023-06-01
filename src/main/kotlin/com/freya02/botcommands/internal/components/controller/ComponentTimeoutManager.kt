@@ -3,11 +3,11 @@ package com.freya02.botcommands.internal.components.controller
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
-import com.freya02.botcommands.api.core.ServiceContainer
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
-import com.freya02.botcommands.api.core.lazy
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.lazy
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralTimeout

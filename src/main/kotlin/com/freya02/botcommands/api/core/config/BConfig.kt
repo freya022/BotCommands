@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
-import com.freya02.botcommands.api.core.ServiceContainer
-import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.api.core.putServiceAs
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.toImmutableSet
 
 @InjectedService

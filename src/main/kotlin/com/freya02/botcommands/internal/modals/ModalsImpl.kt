@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.modals
 
-import com.freya02.botcommands.api.core.ServiceStart
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ServiceType
+import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.modals.Modals
 import com.freya02.botcommands.api.modals.TextInputBuilder
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle

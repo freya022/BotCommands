@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 
 /**
  * One of the conditions required for a [ConditionalService] to be instantiated.

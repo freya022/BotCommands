@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
-import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.toImmutableList

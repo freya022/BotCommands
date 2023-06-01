@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor

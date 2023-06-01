@@ -1,6 +1,6 @@
-package com.freya02.botcommands.api.core
+package com.freya02.botcommands.api.core.service
 
-import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty

@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.core.db;
 
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InjectedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
 import com.freya02.botcommands.api.core.config.BComponentsConfig;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InjectedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 
 import java.sql.Connection;
 import java.sql.SQLException;

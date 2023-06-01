@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.suppliers.annotations;
 
-import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.BService;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass

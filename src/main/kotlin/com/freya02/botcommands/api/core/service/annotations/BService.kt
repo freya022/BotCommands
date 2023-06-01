@@ -1,7 +1,7 @@
-package com.freya02.botcommands.api.core.annotations
+package com.freya02.botcommands.api.core.service.annotations
 
-import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.config.BConfigBuilder
+import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 
 /**

@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.Autoc
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requiredFilter

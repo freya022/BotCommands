@@ -1,7 +1,7 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.core.ServiceResult
-import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.ServiceResult
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -14,7 +14,10 @@ import kotlin.reflect.jvm.jvmName
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-internal class ClassServiceProvider(private val clazz: KClass<*>, override var instance: Any? = null) : ServiceProvider {
+internal class ClassServiceProvider(
+    private val clazz: KClass<*>,
+    override var instance: Any? = null
+) : ServiceProvider {
     override val name = clazz.getServiceName()
     override val providerKey = clazz.simpleNestedName
     override val primaryType get() = clazz

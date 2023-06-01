@@ -1,10 +1,10 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.LoadEvent
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.ClassPathContainer

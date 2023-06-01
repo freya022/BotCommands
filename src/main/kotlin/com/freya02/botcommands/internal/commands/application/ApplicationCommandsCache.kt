@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
-import com.freya02.botcommands.api.core.ServiceStart
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
 import com.google.gson.Gson

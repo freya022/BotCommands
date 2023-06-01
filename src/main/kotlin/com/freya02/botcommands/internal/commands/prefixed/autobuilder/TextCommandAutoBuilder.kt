@@ -13,7 +13,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.autobuilder.asCommandInstance

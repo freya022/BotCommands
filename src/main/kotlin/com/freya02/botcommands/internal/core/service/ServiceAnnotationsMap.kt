@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.internal.simpleNestedName

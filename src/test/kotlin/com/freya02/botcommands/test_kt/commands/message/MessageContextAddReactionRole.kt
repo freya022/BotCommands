@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.await
 import dev.minn.jda.ktx.interactions.components.row

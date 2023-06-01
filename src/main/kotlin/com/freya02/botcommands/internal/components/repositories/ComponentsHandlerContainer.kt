@@ -6,8 +6,8 @@ import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.components.event.StringSelectEvent
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.ClassPathContainer

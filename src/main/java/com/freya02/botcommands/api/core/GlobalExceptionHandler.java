@@ -2,9 +2,9 @@ package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.GlobalExceptionHandlerAdapter;
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;

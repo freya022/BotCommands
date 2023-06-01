@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test;
 
-import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.google.gson.Gson;
 
 import java.io.IOException;

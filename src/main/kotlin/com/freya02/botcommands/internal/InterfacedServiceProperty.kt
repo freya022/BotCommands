@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal
 
-import com.freya02.botcommands.api.core.ServiceContainer
-import com.freya02.botcommands.api.core.getServiceOrNull
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.getServiceOrNull
 import mu.KotlinLogging
 
 inline fun <reified T : Any, U : T> ServiceContainer.interfacedService(crossinline defaultSupplier: () -> U): Lazy<T> {

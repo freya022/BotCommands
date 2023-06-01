@@ -15,7 +15,7 @@ import com.freya02.botcommands.api.commands.application.context.builder.MessageC
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata

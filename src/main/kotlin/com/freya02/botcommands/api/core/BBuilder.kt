@@ -3,13 +3,14 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
-import com.freya02.botcommands.api.core.annotations.InterfacedService
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
+import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Version
-import com.freya02.botcommands.internal.core.loadableServices
+import com.freya02.botcommands.internal.core.service.loadableServices
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.minn.jda.ktx.events.getDefaultScope
 import kotlinx.coroutines.cancel

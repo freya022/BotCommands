@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAU
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration;
-import com.freya02.botcommands.api.core.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.BService;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

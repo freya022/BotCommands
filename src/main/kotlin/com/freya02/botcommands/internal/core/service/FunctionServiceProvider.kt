@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
@@ -7,7 +7,8 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-internal class FunctionServiceProvider(private val function: KFunction<*>, override var instance: Any? = null) : ServiceProvider {
+internal class FunctionServiceProvider(private val function: KFunction<*>, override var instance: Any? = null) :
+    ServiceProvider {
     override val name = function.getServiceName()
     override val providerKey = function.shortSignatureNoSrc
     override val primaryType get() = function.returnType.jvmErasure

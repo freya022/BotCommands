@@ -1,9 +1,9 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.core.ServiceResult
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.Dependencies
-import com.freya02.botcommands.api.core.annotations.ServiceType
+import com.freya02.botcommands.api.core.service.ServiceResult
+import com.freya02.botcommands.api.core.service.annotations.ConditionalService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc

@@ -1,6 +1,5 @@
-package com.freya02.botcommands.api.annotations;
+package com.freya02.botcommands.api.core.service.annotations;
 
-import com.freya02.botcommands.api.core.annotations.BService;
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory;
 
 import java.lang.annotation.ElementType;

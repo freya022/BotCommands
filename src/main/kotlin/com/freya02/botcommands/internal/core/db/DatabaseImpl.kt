@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.core.db
 
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.Dependencies
-import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.api.core.db.preparedStatement
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit

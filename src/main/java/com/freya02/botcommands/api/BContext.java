@@ -3,9 +3,13 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.api.core.*;
-import com.freya02.botcommands.api.core.annotations.InjectedService;
+import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
+import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
+import com.freya02.botcommands.api.core.GlobalExceptionHandler;
+import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.core.config.*;
+import com.freya02.botcommands.api.core.service.ServiceContainer;
+import com.freya02.botcommands.api.core.service.annotations.InjectedService;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -54,7 +58,7 @@ public interface BContext {
 
 	//TODO docs
 	@NotNull
-	ServiceContainer getServiceContainer();
+    ServiceContainer getServiceContainer();
 
 	//TODO docs
 	@NotNull
