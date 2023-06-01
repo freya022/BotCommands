@@ -1,7 +1,10 @@
 package com.freya02.botcommands.internal.core.options.builder
 
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.theSingleAggregator
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.theVarargAggregator
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
@@ -30,21 +33,21 @@ internal class OptionAggregateBuildersImpl<T : OptionAggregateBuilder<T>>(
     }
 
     fun hasVararg() = optionAggregateBuilders.values.any { it.aggregator.isVarargAggregator() }
+}
 
-    @IncludeClasspath
-    companion object {
-        val theSingleAggregator = Companion::singleAggregator.reflectReference()
-        val theVarargAggregator = Companion::varargAggregator.reflectReference()
+@BService
+internal object InternalAggregators {
+    internal val theSingleAggregator = InternalAggregators::singleAggregator.reflectReference()
+    internal val theVarargAggregator = InternalAggregators::varargAggregator.reflectReference()
 
-        fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
-        fun KFunction<*>.isVarargAggregator() = this === theVarargAggregator
-        fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
+    internal fun KFunction<*>.isSingleAggregator() = this === theSingleAggregator
+    internal fun KFunction<*>.isVarargAggregator() = this === theVarargAggregator
+    internal fun KFunction<*>.isSpecialAggregator() = isSingleAggregator() || isVarargAggregator()
 
-        //The types should not matter as the checks are made against the command function
-        @Suppress("MemberVisibilityCanBePrivate")
-        fun singleAggregator(it: Any) = it
+    //The types should not matter as the checks are made against the command function
+    @Suppress("MemberVisibilityCanBePrivate")
+    internal fun singleAggregator(it: Any) = it
 
-        @Suppress("MemberVisibilityCanBePrivate")
-        fun varargAggregator(args: List<Any>) = args
-    }
+    @Suppress("MemberVisibilityCanBePrivate")
+    internal fun varargAggregator(args: List<Any>) = args
 }

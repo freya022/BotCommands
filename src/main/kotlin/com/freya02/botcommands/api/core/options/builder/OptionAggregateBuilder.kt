@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.options.builder
 
 import com.freya02.botcommands.api.core.options.annotations.Aggregate
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.parameters
 
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
@@ -27,5 +27,5 @@ internal class SingleAggregatorParameter(
 
     //Keep the command's parameter for type checking if the internal aggregator is currently used
     override fun toOptionParameter(optionFunction: KFunction<*>, parameterName: String) =
-        OptionParameter(typeCheckingFunction, typeCheckingParameterName, OptionAggregateBuildersImpl.theSingleAggregator, "it")
+        OptionParameter(typeCheckingFunction, typeCheckingParameterName, InternalAggregators.theSingleAggregator, "it")
 }

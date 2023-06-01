@@ -1,7 +1,8 @@
 package com.freya02.botcommands.internal.core.reflection
 
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSingleAggregator
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSingleAggregator
+import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.events.Event
@@ -32,7 +33,7 @@ class AggregatorFunction private constructor(
     internal suspend fun aggregate(event: Event, aggregatorArguments: MutableMap<KParameter, Any?>): Any? {
         if (instanceParameter != null) {
             aggregatorArguments[instanceParameter] = aggregatorInstance
-                ?: throwInternal(aggregator, "Aggregator's instance parameter was not retrieved but was necessary")
+                ?: throwInternal(aggregator, "Aggregator's instance parameter (${instanceParameter.type.jvmErasure.simpleNestedName}) was not retrieved but was necessary")
         }
 
         if (eventParameter != null) {
