@@ -37,16 +37,14 @@ internal class FunctionServiceProvider(private val function: KFunction<*>, overr
     override fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
         val params = function.nonInstanceParameters.map {
             val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
+            //TODO make ServiceResult.toFailedTimedInstantation extension
             dependencyResult.service ?: return ServiceContainerImpl.TimedInstantiation(
-                ServiceResult(
-                    null,
-                    dependencyResult.errorMessage!!
-                ), Duration.INFINITE
+                ServiceResult.fail<Any>(dependencyResult.errorMessage!!), Duration.INFINITE
             )
         }
         return measureTimedValue { function.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             .also { instance = it.value }
-            .let { ServiceContainerImpl.TimedInstantiation(ServiceResult(it.value, null), it.duration) }
+            .let { ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(it.value!!), it.duration) }
     }
 
     override fun toString() = providerKey

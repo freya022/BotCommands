@@ -118,12 +118,12 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      */
     private fun tryLoadService(clazz: KClass<*>): ServiceResult<Any> {
         val provider = context.serviceProviders.findForType(clazz)
-            ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
-        provider.instance?.let { return ServiceResult(it, null) }
+            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
+        provider.instance?.let { return ServiceResult.pass(it) }
 
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
-            return ServiceResult(null, errorMessage)
+            return ServiceResult.fail(errorMessage)
         return tryGetService(provider)
     }
 
@@ -140,35 +140,32 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForName(name)
-            ?: return ServiceResult(null, "No service or factories found for service name '$name'")
+            ?: return ServiceResult.fail("No service or factories found for service name '$name'")
 
         val service = provider.instance
         if (service != null) {
             if (!requiredType.isInstance(service)) {
-                return ServiceResult(
-                    null,
-                    "A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${service::class.simpleNestedName}"
-                )
+                return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${service::class.simpleNestedName}")
             }
-            return ServiceResult(service as T, null)
+            return ServiceResult.pass(service as T)
         }
 
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
-            return ServiceResult(null, errorMessage)
+            return ServiceResult.fail(errorMessage)
         return tryGetService(provider)
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForType(clazz)
-            ?: return ServiceResult(null, "No service or factories found for type ${clazz.simpleNestedName}")
+            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
         val instance = provider.instance as T?
-        if (instance != null) return ServiceResult(instance, null)
+        if (instance != null) return ServiceResult.pass(instance)
 
         val errorMessage = canCreateService(provider)
         if (errorMessage != null)
-            return ServiceResult(null, errorMessage)
+            return ServiceResult.fail(errorMessage)
 
         return tryGetService(provider)
     }
@@ -186,7 +183,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
                 val instance = result.getOrThrow()
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
-                ServiceResult(instance, null)
+                ServiceResult.pass(instance)
             }
         } catch (e: Exception) {
             throw RuntimeException("Unable to create service ${provider.primaryType.simpleNestedName}", e)
@@ -247,8 +244,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             measureTimedValue {
                 runDynamicSupplier(clazz, dynamicSupplierFunction)
             }.let {
+                //TODO TimedValue extension
                 it.value?.let { service ->
-                    return TimedInstantiation(ServiceResult(service, null), it.duration)
+                    return TimedInstantiation(ServiceResult.pass(service), it.duration)
                 }
             }
         }
@@ -270,33 +268,32 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
                 val params = constructingFunction.nonInstanceParameters.map {
                     val dependencyResult = tryGetService(it.type.jvmErasure) //Try to get a dependency, if it doesn't work then return the message
+                    //TODO make ServiceResult.toFailedTimedInstantation extension
                     dependencyResult.service ?: return TimedInstantiation(
-                        ServiceResult(
-                            null,
-                            dependencyResult.errorMessage!!
-                        ), Duration.INFINITE
+                        ServiceResult.fail<Any>(dependencyResult.errorMessage!!), Duration.INFINITE
                     )
                 }
                 measureTimedValue { constructingFunction.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
         }.let {
-            TimedInstantiation(ServiceResult(it.value, null), it.duration)
+            //TODO TimedValue extension
+            TimedInstantiation(ServiceResult.pass(it.value!!), it.duration)
         }
     }
 
     internal fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
         val constructors = clazz.constructors
         if (constructors.isEmpty())
-            return ServiceResult(null, "Class ${clazz.simpleNestedName} must have an accessible constructor")
+            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have an accessible constructor")
         if (constructors.size != 1)
-            return ServiceResult(null, "Class ${clazz.simpleNestedName} must have exactly one constructor")
+            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have exactly one constructor")
 
         val constructor = constructors.single()
         if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
-            return ServiceResult(null, "Constructor of ${clazz.simpleNestedName} must be public")
+            return ServiceResult.fail("Constructor of ${clazz.simpleNestedName} must be public")
         }
 
-        return ServiceResult(constructor, null)
+        return ServiceResult.pass(constructor)
     }
 
     private fun runDynamicSupplier(requestedType: KClass<*>, dynamicSupplierFunction: KFunction<*>): Any? {
