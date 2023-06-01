@@ -1,12 +1,9 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
@@ -24,25 +21,7 @@ internal class ClassServiceProvider(private val clazz: KClass<*>, override var i
             return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
         }
 
-        clazz.findAnnotation<Dependencies>()?.value?.let { dependencies ->
-            dependencies.forEach { dependency ->
-                serviceContainer.canCreateService(dependency)?.let { errorMessage ->
-                    return "Conditional service depends on ${dependency.simpleNestedName} but it is not available: $errorMessage"
-                }
-            }
-        }
-
-        // Services can be conditional
-        clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
-            conditionalService.checks.forEach {
-                val instance = it.objectInstance ?: it.createInstance()
-                instance.checkServiceAvailability(serviceContainer.context)
-                    ?.let { errorMessage -> return errorMessage }
-            }
-
-            //All checks passed, return no error message
-            return null
-        }
+        clazz.commonCanInstantiate(serviceContainer)?.let { errorMessage -> return errorMessage }
 
         //Check parameters of dynamic resolvers
         serviceContainer.dynamicSuppliers.forEach { dynamicSupplierFunction ->
