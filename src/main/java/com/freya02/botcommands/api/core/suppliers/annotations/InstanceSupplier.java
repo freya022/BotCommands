@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.core.suppliers.annotations;
 
 import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.ConditionalService;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,7 +20,6 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * @see BService
- * @see ConditionalService
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

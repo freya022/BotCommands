@@ -1,13 +1,12 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.annotations.Dependencies
 import com.freya02.botcommands.api.core.annotations.InjectedService
-import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
@@ -34,14 +33,15 @@ internal class ClassServiceProvider(private val clazz: KClass<*>, override var i
         }
 
         // Services can be conditional
-        // They can implement an interface to do checks
-        // They can also depend on other services, in which case the interface becomes optional
         clazz.findAnnotation<ConditionalService>()?.let { conditionalService ->
-            val checker = serviceContainer.findConditionalServiceChecker(clazz)
-            requireUser(checker != null) {
-                "Conditional service ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}, check the docs for more details"
+            conditionalService.checks.forEach {
+                val instance = it.objectInstance ?: it.createInstance()
+                instance.checkServiceAvailability(serviceContainer.context)
+                    ?.let { errorMessage -> return errorMessage }
             }
-            checker.checkServiceAvailability(serviceContainer.context)?.let { errorMessage -> return errorMessage } //Final optional check
+
+            //All checks passed, return no error message
+            return null
         }
 
         //Check parameters of dynamic resolvers

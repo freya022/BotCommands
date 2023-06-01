@@ -9,8 +9,6 @@ package com.freya02.botcommands.api.core.annotations
  * an example would be other services could depend on the interface marked as an InjectedService.
  *
  * @see BService
- * @see ConditionalService
- * @see ServiceType
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)

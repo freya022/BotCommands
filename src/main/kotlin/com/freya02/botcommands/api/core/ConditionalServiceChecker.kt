@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.annotations.ConditionalService
 
 /**
- * Kotlin: Implement this interface on the companion object
+ * One of the conditions required for a [ConditionalService] to be instantiated.
  *
- * Java: Implement this interface in a **static** inner class, with a no-arg constructor
+ * **Requirement:** A no-arg constructor must exist, or must be a Kotlin `object`.
  *
  * @see ConditionalService
  */

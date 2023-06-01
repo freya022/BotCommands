@@ -19,14 +19,12 @@ import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.hooks.IEventManager
-import java.lang.reflect.Modifier
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.cast
-import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.safeCast
@@ -243,32 +241,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         return serviceCreationStack.withServiceCheckKey(provider) {
             provider.canInstantiate(this)
         }
-    }
-
-    internal fun findConditionalServiceChecker(clazz: KClass<*>): ConditionalServiceChecker? {
-        //Kotlin implementations uses companion object
-        clazz.companionObjectInstance?.let { companion ->
-            requireUser(companion is ConditionalServiceChecker) {
-                "Companion object of ${clazz.simpleNestedName} needs to implement ${ConditionalServiceChecker::class.simpleNestedName}"
-            }
-
-            return companion
-        }
-
-        //Find any nested class which extend the interface, is static and
-        clazz.nestedClasses.forEach { nestedClass ->
-            if (nestedClass == ConditionalServiceChecker::class) {
-                requireUser(Modifier.isStatic(nestedClass.java.modifiers)) { "Nested class ${nestedClass.simpleNestedName} must be static" }
-
-                val instance = nestedClass.constructors
-                    .find { it.parameters.isEmpty() && it.isPublic }
-                    ?.call() ?: throwUser("A ${ConditionalServiceChecker::class.simpleNestedName} constructor needs to be no-arg and accessible")
-
-                return instance as ConditionalServiceChecker
-            }
-        }
-
-        return null
     }
 
     @OptIn(ExperimentalTime::class)
