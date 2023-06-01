@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.DynamicSupplier
 import com.freya02.botcommands.api.core.service.putServiceAs
-import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass

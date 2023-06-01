@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test_kt.services
 
 import com.freya02.botcommands.api.annotations.CommandMarker
-import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
+import com.freya02.botcommands.api.core.service.annotations.DynamicSupplier
 
 //TODO @DynamicSupplier with interface
 @CommandMarker //Not needed, just for IJ

@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.core.service.annotations
 
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.service.ServiceStart
-import com.freya02.botcommands.api.core.suppliers.annotations.DynamicSupplier
 
 /**
  * Marks this class as a service, or this function as a service factory.
