@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.service.annotations
 
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.service.DynamicSupplier
@@ -17,6 +18,7 @@ import com.freya02.botcommands.api.core.service.DynamicSupplier
  * @see DefaultEmbedSupplier
  * @see DefaultEmbedFooterIconSupplier
  * @see HelpBuilderConsumer
+ * @see AutocompleteTransformer
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)

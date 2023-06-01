@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
 import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.annotations.Resolver
@@ -36,6 +37,11 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
      */
     fun <T : Any> registerInstanceSupplier(clazz: Class<T>, instanceSupplier: InstanceSupplier<T>) {
         _instanceSupplierMap[clazz.kotlin] = instanceSupplier
+    }
+
+    @JvmOverloads
+    fun registerService(annotationReceiver: KClass<*>, start: ServiceStart = ServiceStart.DEFAULT, name: String = "") {
+        _serviceAnnotationsMap.put(annotationReceiver, BService::class, BService(start, name))
     }
 
     fun registerCommand(annotationReceiver: KClass<*>) {

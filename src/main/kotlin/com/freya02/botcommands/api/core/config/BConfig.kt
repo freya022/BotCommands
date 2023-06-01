@@ -71,7 +71,7 @@ class BConfigBuilder internal constructor() : BConfig {
     override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
     override val textConfig = BTextConfigBuilder()
-    override val applicationConfig = BApplicationConfigBuilder()
+    override val applicationConfig = BApplicationConfigBuilder(serviceConfig)
     override val componentsConfig = BComponentsConfigBuilder()
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 

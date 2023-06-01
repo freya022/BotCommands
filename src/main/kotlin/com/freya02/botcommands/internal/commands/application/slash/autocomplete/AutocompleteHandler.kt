@@ -51,10 +51,19 @@ internal class AutocompleteHandler(
                 generateSupplierFromStrings(autocompleteInfo.mode)
             Command.Choice::class.isSuperclassOf(collectionElementType) -> ChoiceSupplierChoices(maxChoices)
             else -> {
+                //TODO do function on ServiceContainerImpl that can retrieve these interfaced service(s), with a warning if one cannot be loaded
+                // Must be common with ClassServiceProvider#forEachDynamicSuppliers
                 @Suppress("UNCHECKED_CAST")
-                val transformer =
-                    slashCommandInfo.context.applicationConfig.autocompleteTransformers[collectionElementType.starProjectedType] as? AutocompleteTransformer<Any>
-                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.simpleName}")
+                val transformer = slashCommandInfo.context.serviceProviders
+                    .findAllForType(AutocompleteTransformer::class)
+                    .map {
+                        slashCommandInfo.context.serviceContainer
+                            .tryGetService(it, AutocompleteTransformer::class)
+                            .getOrThrow() as AutocompleteTransformer<Any>
+                    }
+                    .firstOrNull { it.elementType == collectionElementType.java }
+                    ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
+                            "you may also check the docs for ${AutocompleteHandler::class.simpleName} and ${AutocompleteTransformer::class.simpleName}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }

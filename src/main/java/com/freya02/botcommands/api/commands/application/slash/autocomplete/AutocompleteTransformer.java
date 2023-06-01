@@ -1,7 +1,31 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete;
 
+import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * Interface to transform autocomplete results into choices.
+ *
+ * <p>
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link AutocompleteTransformer}.
+ *
+ * @param <E> Type of the List's elements
+ *
+ * @see AppOption#autocomplete()
+ * @see AutocompleteHandler
+ * @see InterfacedService
+ */
+@InterfacedService(acceptMultiple = true)
 public interface AutocompleteTransformer<E> {
-	Command.Choice apply(E e);
+	@NotNull
+	Class<E> getElementType();
+
+	@NotNull
+	Command.Choice apply(@Nullable E e);
 }

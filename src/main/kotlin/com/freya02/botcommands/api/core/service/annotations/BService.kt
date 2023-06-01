@@ -17,7 +17,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class BService(
+annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * When the service should be started
      * @see ServiceStart
