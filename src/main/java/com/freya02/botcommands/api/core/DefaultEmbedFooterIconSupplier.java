@@ -16,7 +16,7 @@ import java.io.InputStream;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedFooterIconSupplier {
 	class Default implements DefaultEmbedFooterIconSupplier {
 		@Nullable

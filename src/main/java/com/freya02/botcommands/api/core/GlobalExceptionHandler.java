@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  * @see GlobalExceptionHandlerAdapter
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface GlobalExceptionHandler {
 	/**
 	 * <b>Note: You are sent a generic Event, you will need to check it against SlashCommandInteractionEvent, GuildMessageReceivedEvent, etc... in order to differentiate events</b>

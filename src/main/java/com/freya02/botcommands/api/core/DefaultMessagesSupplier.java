@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface DefaultMessagesSupplier {
     @NotNull
     DefaultMessages get(@NotNull DiscordLocale discordLocale);

@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = true)
 interface DynamicSupplier {
     class Instantiability private constructor(internal val type: InstantiabilityType, val message: String?) {
         internal enum class InstantiabilityType {

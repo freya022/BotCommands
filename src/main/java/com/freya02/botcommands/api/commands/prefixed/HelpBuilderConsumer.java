@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface HelpBuilderConsumer {
 	/**
 	 * The function called when building a help embed

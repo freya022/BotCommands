@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedSupplier {
 	class Default implements DefaultEmbedSupplier {
 		@NotNull

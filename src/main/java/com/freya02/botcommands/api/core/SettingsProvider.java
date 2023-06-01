@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface SettingsProvider {
 	/**
 	 * Returns the list of prefix this Guild should use <br>
