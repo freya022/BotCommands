@@ -10,7 +10,6 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonExtensionFunctions
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.requiredFilter
 import com.freya02.botcommands.internal.utils.withFilter
@@ -21,17 +20,10 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.KVisibility
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.safeCast
-import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.jvmName
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
-import kotlin.time.TimedValue
-import kotlin.time.measureTimedValue
 
 internal class ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
@@ -239,97 +231,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
     }
 
-    @OptIn(ExperimentalTime::class)
-    internal fun constructInstance(clazz: KClass<*>): TimedInstantiation {
-        dynamicSuppliers.forEach { dynamicSupplierFunction ->
-            measureTimedValue {
-                runDynamicSupplier(clazz, dynamicSupplierFunction)
-            }.toTimedInstantiationOrNull()?.let { return it }
-        }
-
-        //The command object has to be created either by the instance supplier
-        // or by the **only** constructor a class has
-        // It must resolve all parameters types with the registered parameter suppliers
-        val instanceSupplier = serviceConfig.instanceSupplierMap[clazz]
-        return when {
-            instanceSupplier != null -> {
-                measureTimedValue {
-                    instanceSupplier.supply(context)
-                        ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
-                }
-            }
-            clazz.objectInstance != null -> measureTimedValue { clazz.objectInstance }
-            else -> {
-                val constructingFunction = findConstructingFunction(clazz).getOrThrow()
-
-                val params = constructingFunction.nonInstanceParameters.map {
-                    val dependencyResult = tryGetService(it.type.jvmErasure)
-                    //Try to get a dependency, if it doesn't work then return the message
-                    dependencyResult.service ?: return dependencyResult.toFailedTimedInstantiation()
-                }
-                measureTimedValue { constructingFunction.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
-            }
-        }.toTimedInstantiation()
-    }
-
-    internal fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
-        val constructors = clazz.constructors
-        if (constructors.isEmpty())
-            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have an accessible constructor")
-        if (constructors.size != 1)
-            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have exactly one constructor")
-
-        val constructor = constructors.single()
-        if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
-            return ServiceResult.fail("Constructor of ${clazz.simpleNestedName} must be public")
-        }
-
-        return ServiceResult.pass(constructor)
-    }
-
-    private fun runDynamicSupplier(requestedType: KClass<*>, dynamicSupplierFunction: KFunction<*>): Any? {
-        val params: List<Any> = dynamicSupplierFunction.nonInstanceParameters.drop(1).map {
-            //Try to get a dependency, if it doesn't work then skip this supplier
-            tryGetService(it.type.jvmErasure).service ?: return null
-        }
-
-        return dynamicSupplierFunction.callStatic(requestedType.java, *params.toTypedArray())
-    }
-
     data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
-
-    companion object {
-        internal fun <R> KFunction<R>.callStatic(vararg args: Any?): R {
-            return when (val instanceParameter = this.instanceParameter) {
-                null -> this.call(*args)
-                else -> {
-                    val companionObjectClazz = instanceParameter.type.jvmErasure
-                    if (!companionObjectClazz.isCompanion)
-                        throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
-                    val companionObjectInstance = companionObjectClazz.objectInstance
-                        ?: throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
-
-                    this.call(companionObjectInstance, *args)
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalTime::class)
-internal fun <T> TimedValue<T>.toTimedInstantiationOrNull() =
-    this.value?.let { ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(it), this.duration) }
-
-@OptIn(ExperimentalTime::class)
-internal fun <T> TimedValue<T>.toTimedInstantiation() =
-    ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
-
-internal fun ServiceResult<*>.toFailedTimedInstantiation(): ServiceContainerImpl.TimedInstantiation {
-    if (errorMessage != null) {
-        return ServiceContainerImpl.TimedInstantiation(ServiceResult.fail<Any>(errorMessage), Duration.INFINITE)
-    } else {
-        throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
-    }
 }
 
 internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {

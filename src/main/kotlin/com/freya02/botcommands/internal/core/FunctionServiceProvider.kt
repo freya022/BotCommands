@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.internal.core.ServiceContainerImpl.Companion.callStatic
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
