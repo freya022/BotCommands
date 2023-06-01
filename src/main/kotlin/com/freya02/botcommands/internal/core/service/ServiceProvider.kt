@@ -24,6 +24,8 @@ import kotlin.time.TimedValue
  */
 internal typealias ProviderName = String
 
+data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
+
 internal interface ServiceProvider {
     val name: String
     val providerKey: ProviderName
@@ -34,7 +36,7 @@ internal interface ServiceProvider {
 
     fun canInstantiate(serviceContainer: ServiceContainerImpl): String?
 
-    fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation
+    fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
 }
 
 internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (val serviceType = findAnnotation<ServiceType>()) {
@@ -73,11 +75,11 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
 
 @OptIn(ExperimentalTime::class)
 internal fun <T> TimedValue<T>.toTimedInstantiation() =
-    ServiceContainerImpl.TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
+    TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
 
-internal fun ServiceResult<*>.toFailedTimedInstantiation(): ServiceContainerImpl.TimedInstantiation {
+internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
     if (errorMessage != null) {
-        return ServiceContainerImpl.TimedInstantiation(ServiceResult.fail<Any>(errorMessage), Duration.INFINITE)
+        return TimedInstantiation(ServiceResult.fail<Any>(errorMessage), Duration.INFINITE)
     } else {
         throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
     }

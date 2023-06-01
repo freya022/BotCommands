@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core.service
 import com.freya02.botcommands.api.core.service.DynamicSupplier
 import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
 import com.freya02.botcommands.api.core.service.ServiceResult
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
@@ -20,6 +21,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 private val logger = KotlinLogging.logger { }
+private val errorSet: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
 internal class ClassServiceProvider(
     private val clazz: KClass<*>,
@@ -68,7 +70,7 @@ internal class ClassServiceProvider(
     }
 
     @OptIn(ExperimentalTime::class)
-    override fun createInstance(serviceContainer: ServiceContainerImpl): ServiceContainerImpl.TimedInstantiation {
+    override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
         serviceContainer.forEachDynamicSuppliers { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
@@ -143,8 +145,9 @@ internal class ClassServiceProvider(
     }
 
     override fun toString() = providerKey
+}
 
-    companion object {
-        private val errorSet: MutableSet<String> = ConcurrentHashMap.newKeySet()
-    }
+internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
+    annotation == null || annotation.name.isEmpty() -> this.simpleNestedName.replaceFirstChar { it.lowercase() }
+    else -> annotation.name
 }

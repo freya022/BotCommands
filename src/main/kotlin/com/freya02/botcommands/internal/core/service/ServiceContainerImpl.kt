@@ -20,7 +20,6 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
-import kotlin.time.Duration
 
 internal class ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
@@ -184,18 +183,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             provider.canInstantiate(this)
         }
     }
-
-    data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
-}
-
-internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
-    annotation == null || annotation.name.isEmpty() -> this.simpleNestedName.replaceFirstChar { it.lowercase() }
-    else -> annotation.name
-}
-
-internal fun KFunction<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
-    annotation == null || annotation.name.isEmpty() -> this.name
-    else -> annotation.name
 }
 
 internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
