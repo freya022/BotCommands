@@ -12,8 +12,8 @@ import com.freya02.botcommands.api.components.builder.select.ephemeral.Ephemeral
 import com.freya02.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import com.freya02.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import com.freya02.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.config.BComponentsConfig
+import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.utils.ButtonContent

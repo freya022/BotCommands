@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.service.annotations
 
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
+import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import java.lang.annotation.Inherited
 import kotlin.reflect.KClass
 
