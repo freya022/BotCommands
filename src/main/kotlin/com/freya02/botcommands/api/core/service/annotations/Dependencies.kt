@@ -17,5 +17,5 @@ annotation class Dependencies(
     /**
      * An array of services required by this service.
      */
-    val value: Array<KClass<*>> = []
+    val value: Array<KClass<*>>
 )
