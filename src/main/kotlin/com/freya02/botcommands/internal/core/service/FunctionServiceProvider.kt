@@ -9,8 +9,10 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-internal class FunctionServiceProvider(private val function: KFunction<*>, override var instance: Any? = null) :
-    ServiceProvider {
+internal class FunctionServiceProvider(
+    private val function: KFunction<*>,
+    override var instance: Any? = null
+) : ServiceProvider {
     override val name = function.getServiceName()
     override val providerKey = function.shortSignatureNoSrc
     override val primaryType get() = function.returnType.jvmErasure

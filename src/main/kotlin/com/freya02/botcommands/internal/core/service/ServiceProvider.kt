@@ -24,7 +24,7 @@ import kotlin.time.TimedValue
  */
 internal typealias ProviderName = String
 
-data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
+internal data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 
 internal interface ServiceProvider {
     val name: String
