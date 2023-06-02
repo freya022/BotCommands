@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.core.service
 
+import com.freya02.botcommands.api.core.service.ServiceError
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
@@ -35,7 +37,7 @@ internal interface ServiceProvider {
 
     val instance: Any?
 
-    fun canInstantiate(serviceContainer: ServiceContainerImpl): String?
+    fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError?
 
     fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
 }
@@ -52,11 +54,11 @@ internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (va
     }
 }
 
-internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl): String? {
+internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
     findAnnotation<Dependencies>()?.value?.let { dependencies ->
         dependencies.forEach { dependency ->
-            serviceContainer.canCreateService(dependency)?.let { errorMessage ->
-                return "Conditional service depends on ${dependency.simpleNestedName} but it is not available: $errorMessage"
+            serviceContainer.canCreateService(dependency)?.let { serviceError ->
+                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service depends on ${dependency.simpleNestedName} but it is not available: $serviceError")
             }
         }
     }
@@ -66,7 +68,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
         conditionalService.checks.forEach {
             val instance = it.objectInstance ?: it.createInstance()
             instance.checkServiceAvailability(serviceContainer.context)
-                ?.let { errorMessage -> return errorMessage }
+                ?.let { errorMessage -> return ErrorType.FAILED_CONDITION.toError(errorMessage, "${it.simpleNestedName} failed") }
         }
     }
 
@@ -79,8 +81,8 @@ internal fun <T> TimedValue<T>.toTimedInstantiation() =
     TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
 
 internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
-    if (errorMessage != null) {
-        return TimedInstantiation(ServiceResult.fail<Any>(errorMessage), Duration.INFINITE)
+    if (serviceError != null) {
+        return TimedInstantiation(this, Duration.INFINITE)
     } else {
         throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
     }
@@ -92,7 +94,7 @@ internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl,
         else -> {
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
-                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { errorMessage ->
+                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { (_, errorMessage) ->
                     throwUser(this, "Could not run function as the declaring class isn't an object, and service creation failed: $errorMessage")
                 }
 

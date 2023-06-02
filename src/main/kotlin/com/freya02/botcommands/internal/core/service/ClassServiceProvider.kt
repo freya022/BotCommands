@@ -2,11 +2,12 @@ package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.DynamicSupplier
 import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability.InstantiabilityType
+import com.freya02.botcommands.api.core.service.ServiceError
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
@@ -32,23 +33,22 @@ internal class ClassServiceProvider(
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(clazz)
 
-    override fun canInstantiate(serviceContainer: ServiceContainerImpl): String? {
+    override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         if (instance != null) return null
 
         clazz.findAnnotation<InjectedService>()?.let {
             //Skips cache
-            return "Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}"
+            return ErrorType.UNAVAILABLE_INJECTED_SERVICE.toError("Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}")
         }
 
-        clazz.commonCanInstantiate(serviceContainer)?.let { errorMessage -> return errorMessage }
+        clazz.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
 
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message
-                InstantiabilityType.NOT_INSTANTIABLE -> return instantiability.message
-                    ?: throwInternal("Dynamic supplier returned ${instantiability.type} but does not have an error message")
+                InstantiabilityType.NOT_INSTANTIABLE -> return ErrorType.DYNAMIC_NOT_INSTANTIABLE.toError(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return no error message
@@ -61,9 +61,9 @@ internal class ClassServiceProvider(
 
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
-        val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.errorMessage }
+        val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
         constructingFunction.nonInstanceParameters.forEach {
-            serviceContainer.canCreateService(it.type.jvmErasure)?.let { errorMessage -> return errorMessage }
+            serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError -> return serviceError }
         }
 
         return null
@@ -75,7 +75,7 @@ internal class ClassServiceProvider(
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message
-                InstantiabilityType.NOT_INSTANTIABLE -> ServiceResult.fail<Any>(instantiability.message!!)
+                InstantiabilityType.NOT_INSTANTIABLE -> ErrorType.DYNAMIC_NOT_INSTANTIABLE.toResult<Any>(instantiability.message!!, "${dynamicSupplier::class.simpleNestedName} failed")
                     .toFailedTimedInstantiation()
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
@@ -114,13 +114,13 @@ internal class ClassServiceProvider(
     private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {
         val constructors = clazz.constructors
         if (constructors.isEmpty())
-            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have an accessible constructor")
+            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Class ${clazz.simpleNestedName} must have an accessible constructor")
         if (constructors.size != 1)
-            return ServiceResult.fail("Class ${clazz.simpleNestedName} must have exactly one constructor")
+            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Class ${clazz.simpleNestedName} must have exactly one constructor")
 
         val constructor = constructors.single()
         if (constructor.visibility != KVisibility.PUBLIC && constructor.visibility != KVisibility.INTERNAL) {
-            return ServiceResult.fail("Constructor of ${clazz.simpleNestedName} must be public")
+            return ErrorType.INVALID_CONSTRUCTING_FUNCTION.toResult("Constructor of ${clazz.simpleNestedName} must be public")
         }
 
         return ServiceResult.pass(constructor)

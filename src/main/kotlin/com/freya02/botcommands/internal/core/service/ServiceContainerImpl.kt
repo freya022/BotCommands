@@ -3,11 +3,9 @@ package com.freya02.botcommands.internal.core.service
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.events.PreloadServiceEvent
-import com.freya02.botcommands.api.core.service.ServiceContainer
-import com.freya02.botcommands.api.core.service.ServiceResult
-import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.*
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import kotlinx.coroutines.runBlocking
@@ -72,8 +70,11 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
         loadableServices[requestedStart]?.forEach { clazz ->
-            tryGetService(clazz).errorMessage?.let { errorMessage ->
-                logger.trace { "Service ${clazz.simpleNestedName} not loaded: $errorMessage" }
+            tryGetService(clazz).serviceError?.let { serviceError ->
+                when (serviceError.errorType) {
+                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE -> throwUser("Could not load service ${clazz.simpleNestedName}: $serviceError")
+                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> logger.trace { "Service ${clazz.simpleNestedName} not loaded: $serviceError" }
+                }
             }
         }
     }
@@ -90,13 +91,13 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
     override fun <T : Any> tryGetService(name: String, requiredType: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForName(name)
-            ?: return ServiceResult.fail("No service or factories found for service name '$name'")
+            ?: return NO_PROVIDER.toResult("No service or factories found for service name '$name'")
         return tryGetService(provider, requiredType)
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
         val provider = context.serviceProviders.findForType(clazz)
-            ?: return ServiceResult.fail("No service or factories found for type ${clazz.simpleNestedName}")
+            ?: return NO_PROVIDER.toResult("No service or factories found for type ${clazz.simpleNestedName}")
         return tryGetService(provider, clazz)
     }
 
@@ -107,9 +108,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             return ServiceResult.pass(instance)
         }
 
-        val errorMessage = canCreateService(provider)
-        if (errorMessage != null)
-            return ServiceResult.fail(errorMessage)
+        val serviceError = canCreateService(provider)
+        if (serviceError != null)
+            return ServiceResult.fail(serviceError)
 
         return createService(provider, requiredType)
     }
@@ -122,12 +123,16 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                 val (anyResult, nanos) = provider.createInstance(this)
                 //Doesn't really matter, the object is not used anyway
                 val result: ServiceResult<T> = anyResult as ServiceResult<T>
-                if (result.errorMessage != null)
+                if (result.serviceError != null)
                     return result
 
                 val instance = result.getOrThrow()
                 if (!requiredType.isInstance(instance))
-                    return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName} (from ${provider.providerKey})")
+                    return INVALID_TYPE.toResult(
+                        errorMessage = "A service was found but type is incorrect, " +
+                                "requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}",
+                        additionalError = "provider: ${provider.providerKey}"
+                    )
 
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult.pass(instance)
@@ -167,9 +172,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     /**
      * Returns a non-null string if the service is not instantiable
      */
-    internal fun canCreateService(clazz: KClass<*>): String? {
+    internal fun canCreateService(clazz: KClass<*>): ServiceError? {
         val provider = context.serviceProviders.findForType(clazz)
-            ?: return "No class or factories found for service ${clazz.simpleNestedName}"
+            ?: return NO_PROVIDER.toError("No service or factories found for service ${clazz.simpleNestedName}")
 
         return canCreateService(provider)
     }
@@ -177,7 +182,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     /**
      * Returns a non-null string if the service is not instantiable
      */
-    private fun canCreateService(provider: ServiceProvider): String? {
+    private fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null
 
         return serviceCreationStack.withServiceCheckKey(provider) {
@@ -205,8 +210,8 @@ internal inline fun <reified T : Any> ServiceContainerImpl.getInterfacedServices
         .filter { it.primaryType != currentType }
         .mapNotNull {
             val serviceResult = tryGetService(it, T::class)
-            serviceResult.errorMessage?.let { errorMessage ->
-                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): $errorMessage"
+            serviceResult.serviceError?.let { serviceError ->
+                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): $serviceError"
                 if (!interfacedServiceErrors.add(warnMessage)) {
                     logger.warn(warnMessage)
                 }

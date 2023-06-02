@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core.service
 
+import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
@@ -18,10 +19,10 @@ internal class FunctionServiceProvider(
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(function.returnType.jvmErasure)
 
-    override fun canInstantiate(serviceContainer: ServiceContainerImpl): String? {
+    override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
         if (instance != null) return null
 
-        function.commonCanInstantiate(serviceContainer)?.let { errorMessage -> return errorMessage }
+        function.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
 
         return null
     }
