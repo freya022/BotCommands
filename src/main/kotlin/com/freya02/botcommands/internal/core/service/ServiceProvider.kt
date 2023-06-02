@@ -30,7 +30,7 @@ internal interface ServiceProvider {
     val name: String
     val providerKey: ProviderName
     val primaryType: KClass<*>
-    val types: List<KClass<*>>
+    val types: Set<KClass<*>>
 
     val instance: Any?
 
@@ -40,8 +40,8 @@ internal interface ServiceProvider {
 }
 
 internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (val serviceType = findAnnotation<ServiceType>()) {
-    null -> listOf(returnType)
-    else -> buildList(serviceType.types.size + 1) {
+    null -> setOf(returnType)
+    else -> buildSet(serviceType.types.size + 1) {
         this += returnType
         this += serviceType.types.onEach {
             if (!it.isSuperclassOf(returnType)) {

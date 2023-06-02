@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
  */
 @Inherited
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 annotation class ConditionalService(
     /**
      * Classes which implement [ConditionalServiceChecker], all checks must pass for this service to be instantiated.

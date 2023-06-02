@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlin.reflect.KClass
 
 /**
- * Interface to supply services of on the requested type.
+ * Interface to supply services of the requested type.
  *
  * **Usage:** Register your instance as a service with [BService], and a [ServiceType] of [DynamicSupplier].
  *
