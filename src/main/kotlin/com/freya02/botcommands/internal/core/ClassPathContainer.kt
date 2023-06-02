@@ -64,7 +64,7 @@ internal class ClassPathContainer(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
     val classes: List<KClass<*>>
-    val functions: List<ClassPathFunction> by lazy {
+    private val functions: List<ClassPathFunction> by lazy {
         val (functions, duration) = measureTimedValue {
             retrieveClassFunctions()
         }
@@ -90,7 +90,9 @@ internal class ClassPathContainer(private val context: BContextImpl) {
 //                errorMessage == null
 //            } //Keep services which can be loaded
             .flatMap { clazz ->
-                clazz.declaredMemberFunctions.map { ClassPathFunction(context, clazz, it) }
+                clazz.declaredMemberFunctions
+                    .filter { it.annotations.isNotEmpty() } //Ignore methods without annotations, as this class only finds functions with annotations
+                    .map { ClassPathFunction(context, clazz, it) }
             }
     }
 
