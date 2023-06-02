@@ -12,8 +12,6 @@ import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import mu.KotlinLogging
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -21,10 +19,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 import kotlin.time.ExperimentalTime
-import kotlin.time.measureTimedValue
-
-private val logger = KotlinLogging.logger { }
-private val errorSet: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
 internal class ClassServiceProvider(
     private val clazz: KClass<*>,
@@ -87,9 +81,9 @@ internal class ClassServiceProvider(
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return instance
-                InstantiabilityType.INSTANTIABLE -> return measureTimedValue {
+                InstantiabilityType.INSTANTIABLE -> return measureTimedInstantiation {
                     dynamicSupplier.get(serviceContainer.context, clazz)
-                }.toTimedInstantiation()
+                }
             }
         }
 
@@ -99,26 +93,22 @@ internal class ClassServiceProvider(
         val instanceSupplier = serviceContainer.context.serviceConfig.instanceSupplierMap[clazz]
         return when {
             instanceSupplier != null -> {
-                measureTimedValue {
+                measureTimedInstantiation {
                     instanceSupplier.supply(serviceContainer.context)
                         ?: throwService("Supplier function in class '${instanceSupplier::class.jvmName}' returned null")
                 }
             }
-            clazz.objectInstance != null -> measureTimedValue { clazz.objectInstance }
+            clazz.objectInstance != null -> measureTimedInstantiation { clazz.objectInstance }
             else -> {
                 val constructingFunction = findConstructingFunction(clazz).getOrThrow()
 
-                val params = constructingFunction.nonInstanceParameters.map {
-                    val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
-                    //Try to get a dependency, if it doesn't work then return the message
-                    dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
-                        "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${constructingFunction.shortSignature}",
-                        nestedError = dependencyResult.serviceError
-                    ).toFailedTimedInstantiation()
-                }
-                measureTimedValue { constructingFunction.callStatic(serviceContainer, *params.toTypedArray()) } //Avoid measuring time it takes to load other services
+                val timedInstantiation = constructingFunction.callConstructingFunction(serviceContainer)
+                if (timedInstantiation.result.serviceError != null)
+                    return timedInstantiation
+
+                timedInstantiation
             }
-        }.toTimedInstantiation().also { instance = it.result.getOrNull() }
+        }.also { instance = it.result.getOrNull() }
     }
 
     private fun findConstructingFunction(clazz: KClass<*>): ServiceResult<KFunction<*>> {

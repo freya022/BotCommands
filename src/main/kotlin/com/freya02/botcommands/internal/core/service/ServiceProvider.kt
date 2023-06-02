@@ -6,9 +6,12 @@ import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
+import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -20,7 +23,7 @@ import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
-import kotlin.time.TimedValue
+import kotlin.time.measureTimedValue
 
 /**
  * Either a class nested simple name, or a function signature for factories
@@ -77,8 +80,10 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
 }
 
 @OptIn(ExperimentalTime::class)
-internal fun <T> TimedValue<T>.toTimedInstantiation() =
-    TimedInstantiation(ServiceResult.pass(this.value!!), this.duration)
+internal inline fun <T> measureTimedInstantiation(block: () -> T): TimedInstantiation {
+    val measureTimedValue = measureTimedValue(block)
+    return TimedInstantiation(ServiceResult.pass(measureTimedValue.value!!), measureTimedValue.duration)
+}
 
 internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
     if (serviceError != null) {
@@ -86,6 +91,18 @@ internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
     } else {
         throwInternal("Cannot use ${::toFailedTimedInstantiation.shortSignatureNoSrc} if service got created (${getOrThrow()::class.simpleNestedName}")
     }
+}
+
+internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    val params = this.nonInstanceParameters.map {
+        //Try to get a dependency, if it doesn't work then return the message
+        val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
+        dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
+            "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${this.shortSignature}",
+            nestedError = dependencyResult.serviceError
+        ).toFailedTimedInstantiation()
+    }
+    return measureTimedInstantiation { this.callStatic(serviceContainer, *params.toTypedArray()) }
 }
 
 internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, vararg args: Any?): R {

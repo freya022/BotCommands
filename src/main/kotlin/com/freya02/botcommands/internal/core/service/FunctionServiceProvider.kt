@@ -11,8 +11,6 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSr
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTimedValue
 
 internal class FunctionServiceProvider(
     private val function: KFunction<*>,
@@ -40,19 +38,12 @@ internal class FunctionServiceProvider(
         return null
     }
 
-    @OptIn(ExperimentalTime::class)
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
-        val params = function.nonInstanceParameters.map {
-            //Try to get a dependency, if it doesn't work then return the message
-            val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
-            dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
-                "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${function.shortSignature}",
-                nestedError = dependencyResult.serviceError
-            ).toFailedTimedInstantiation()
-        }
-        return measureTimedValue { function.callStatic(serviceContainer, *params.toTypedArray()) } //Avoid measuring time it takes to load other services
-            .also { instance = it.value }
-            .toTimedInstantiation()
+        val timedInstantiation = function.callConstructingFunction(serviceContainer)
+        if (timedInstantiation.result.serviceError != null)
+            return timedInstantiation
+
+        return timedInstantiation.also { instance = it.result.getOrThrow() }
     }
 
     override fun toString() = providerKey
