@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -85,17 +86,17 @@ internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
     }
 }
 
-internal fun <R> KFunction<R>.callStatic(vararg args: Any?): R {
+internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, vararg args: Any?): R {
     return when (val instanceParameter = this.instanceParameter) {
         null -> this.call(*args)
         else -> {
-            val companionObjectClazz = instanceParameter.type.jvmErasure
-            if (!companionObjectClazz.isCompanion)
-                throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
-            val companionObjectInstance = companionObjectClazz.objectInstance
-                ?: throwInternal("Tried to call a non-static function but the ${companionObjectClazz.simpleNestedName} instance parameter is not a companion object")
+            val instanceErasure = instanceParameter.type.jvmErasure
+            val instance = instanceErasure.objectInstance
+                ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { errorMessage ->
+                    throwUser(this, "Could not run function as the declaring class isn't an object, and service creation failed: $errorMessage")
+                }
 
-            this.call(companionObjectInstance, *args)
+            this.call(instance, *args)
         }
     }
 }

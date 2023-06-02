@@ -106,7 +106,7 @@ internal class ClassServiceProvider(
                     //Try to get a dependency, if it doesn't work then return the message
                     dependencyResult.service ?: return dependencyResult.toFailedTimedInstantiation()
                 }
-                measureTimedValue { constructingFunction.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
+                measureTimedValue { constructingFunction.callStatic(serviceContainer, *params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }
         }.toTimedInstantiation().also { instance = it.result.getOrNull() }
     }

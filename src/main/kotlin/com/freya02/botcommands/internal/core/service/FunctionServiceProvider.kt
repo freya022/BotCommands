@@ -33,7 +33,7 @@ internal class FunctionServiceProvider(
             val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
             dependencyResult.service ?: return dependencyResult.toFailedTimedInstantiation()
         }
-        return measureTimedValue { function.callStatic(*params.toTypedArray()) } //Avoid measuring time it takes to load other services
+        return measureTimedValue { function.callStatic(serviceContainer, *params.toTypedArray()) } //Avoid measuring time it takes to load other services
             .also { instance = it.value }
             .toTimedInstantiation()
     }

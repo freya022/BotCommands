@@ -16,6 +16,12 @@ class ServiceResult<T : Any> private constructor(val service: T?, val errorMessa
         else -> throwInternal("ServiceResult should contain either the service or the error message")
     }
 
+    fun getOrThrow(block: (errorMessage: String) -> Nothing): T = when {
+        service != null -> service
+        errorMessage != null -> block(errorMessage)
+        else -> throwInternal("ServiceResult should contain either the service or the error message")
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
