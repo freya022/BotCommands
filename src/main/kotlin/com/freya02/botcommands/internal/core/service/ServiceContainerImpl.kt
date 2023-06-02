@@ -127,7 +127,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 
                 val instance = result.getOrThrow()
                 if (!requiredType.isInstance(instance))
-                    return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}")
+                    return ServiceResult.fail("A service was found but type is incorrect, requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName} (from ${provider.providerKey})")
 
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
                 ServiceResult.pass(instance)
