@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -65,7 +64,6 @@ internal object ReflectionMetadata {
                     add(scanResult to scanResult.allStandardClasses.filter {
                         return@filter it.isServiceOrHasFactories(config)
                                 || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
-                                || it.hasAnnotation(IncludeClasspath::class.java.name)
                     })
                 }
 
