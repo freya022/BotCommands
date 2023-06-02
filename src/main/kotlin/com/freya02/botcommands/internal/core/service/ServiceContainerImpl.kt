@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.hooks.IEventManager
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
@@ -195,3 +196,21 @@ internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
                     loadableServices.getOrPut(start) { mutableListOf() }.add(clazz)
                 }
         }
+
+private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
+internal inline fun <reified T : Any> ServiceContainerImpl.getInterfacedServices(currentType: KClass<*>): List<T> {
+    return context.serviceProviders
+        .findAllForType(T::class)
+        // Avoid circular dependency, we can't supply ourselves
+        .filter { it.primaryType != currentType }
+        .mapNotNull {
+            val serviceResult = tryGetService(it, T::class)
+            serviceResult.errorMessage?.let { errorMessage ->
+                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): $errorMessage"
+                if (!interfacedServiceErrors.add(warnMessage)) {
+                    logger.warn(warnMessage)
+                }
+            }
+            serviceResult.getOrNull()
+        }
+}

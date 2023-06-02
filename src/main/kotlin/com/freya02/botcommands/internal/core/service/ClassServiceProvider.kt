@@ -43,7 +43,7 @@ internal class ClassServiceProvider(
         clazz.commonCanInstantiate(serviceContainer)?.let { errorMessage -> return errorMessage }
 
         //Check dynamic suppliers
-        serviceContainer.forEachDynamicSuppliers { dynamicSupplier ->
+        serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message
@@ -71,7 +71,7 @@ internal class ClassServiceProvider(
 
     @OptIn(ExperimentalTime::class)
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
-        serviceContainer.forEachDynamicSuppliers { dynamicSupplier ->
+        serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message
@@ -124,24 +124,6 @@ internal class ClassServiceProvider(
         }
 
         return ServiceResult.pass(constructor)
-    }
-
-    private inline fun ServiceContainerImpl.forEachDynamicSuppliers(block: (dynamicSupplier: DynamicSupplier) -> Unit) {
-        context.serviceProviders
-            .findAllForType(DynamicSupplier::class)
-            // Avoid circular dependency, we can't supply ourselves
-            .filter { it.primaryType != this@ClassServiceProvider.primaryType }
-            .mapNotNull {
-                val serviceResult = tryGetService(it, DynamicSupplier::class)
-                serviceResult.errorMessage?.let { errorMessage ->
-                    val warnMessage = "Could not create dynamic supplier ${it.primaryType} (from ${it.providerKey}): $errorMessage"
-                    if (!errorSet.add(warnMessage)) {
-                        logger.warn(warnMessage)
-                    }
-                }
-                serviceResult.getOrNull()
-            }
-            .forEach(block)
     }
 
     override fun toString() = providerKey
