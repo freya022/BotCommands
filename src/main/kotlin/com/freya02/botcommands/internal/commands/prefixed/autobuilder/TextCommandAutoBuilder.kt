@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
@@ -24,12 +25,15 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.requiredFilter
+import com.freya02.botcommands.internal.utils.withFilter
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -41,10 +45,14 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
     private val functions: List<TextFunctionMetadata>
 
     init {
-        functions = classPathContainer.functionsWithAnnotation<JDATextCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
-            .map {
+        functions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
+            .flatMap { clazz ->
+                clazz.declaredMemberFunctions
+                    .withFilter(FunctionFilter.annotation<JDATextCommand>())
+                    .requiredFilter(FunctionFilter.nonStatic())
+                    .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
+                    .map { ClassPathFunction(context, clazz, it) }
+            }.map {
                 val instanceSupplier: () -> TextCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")

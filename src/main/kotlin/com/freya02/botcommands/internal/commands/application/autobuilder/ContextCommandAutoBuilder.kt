@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
@@ -22,11 +23,14 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.metadat
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.requiredFilter
+import com.freya02.botcommands.internal.utils.withFilter
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 
 @BService
@@ -35,9 +39,14 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
     private val userFunctions: List<UserContextFunctionMetadata>
 
     init {
-        messageFunctions = classPathContainer.functionsWithAnnotation<JDAMessageCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
+        messageFunctions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
+            .flatMap { clazz ->
+                clazz.declaredMemberFunctions
+                    .withFilter(FunctionFilter.annotation<JDAMessageCommand>())
+                    .requiredFilter(FunctionFilter.nonStatic())
+                    .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
+                    .map { ClassPathFunction(context, clazz, it) }
+            }
             .map {
                 val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
@@ -48,9 +57,14 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
                 MessageContextFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
             }
 
-        userFunctions = classPathContainer.functionsWithAnnotation<JDAUserCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
+        userFunctions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
+            .flatMap { clazz ->
+                clazz.declaredMemberFunctions
+                    .withFilter(FunctionFilter.annotation<JDAUserCommand>())
+                    .requiredFilter(FunctionFilter.nonStatic())
+                    .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
+                    .map { ClassPathFunction(context, clazz, it) }
+            }
             .map {
                 val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function

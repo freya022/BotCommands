@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
@@ -17,13 +18,16 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.LocalizationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.requiredFilter
+import com.freya02.botcommands.internal.utils.withFilter
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
@@ -33,9 +37,14 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
     private val functions: List<SlashFunctionMetadata>
 
     init {
-        functions = classPathContainer.functionsWithAnnotation<JDASlashCommand>()
-            .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
+        functions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
+            .flatMap { clazz ->
+                clazz.declaredMemberFunctions
+                    .withFilter(FunctionFilter.annotation<JDASlashCommand>())
+                    .requiredFilter(FunctionFilter.nonStatic())
+                    .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
+                    .map { ClassPathFunction(context, clazz, it) }
+            }
             .map {
                 val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function

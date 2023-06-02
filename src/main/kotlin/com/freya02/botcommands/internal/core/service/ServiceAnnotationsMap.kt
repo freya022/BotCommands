@@ -25,11 +25,11 @@ internal class ServiceAnnotationsMap private constructor(
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <T : Annotation> get(annotationClass: KClass<out T>): Map<KClass<*>, T>? =
-        map[annotationClass] as Map<KClass<*>, T>?
+    internal inline fun <reified T : Annotation> get(): Map<KClass<*>, T>? =
+        map[T::class] as Map<KClass<*>, T>?
 
-    internal fun <T : Annotation> getClassesWithAnnotation(annotationClass: KClass<out T>): Set<KClass<*>> =
-        get(annotationClass)?.keys ?: emptySet()
+    internal inline fun <reified T : Annotation> getClassesWithAnnotation(): Set<KClass<*>> =
+        get<T>()?.keys ?: emptySet()
 
     internal fun getAllClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap.keys }
 

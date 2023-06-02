@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.prefixed.*
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
@@ -104,6 +105,10 @@ class HelpCommand(private val context: BContextImpl) : TextCommand(), IHelpComma
 
         return builder
     }
+
+    //TODO remove this once commands can be activated conditionally
+    @TextDeclaration
+    internal fun fakeDeclare(manager: TextCommandManager) {}
 
     internal fun declare(manager: TextCommandManager) {
 		manager.textCommand("help") {
