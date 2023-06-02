@@ -3,29 +3,33 @@ package com.freya02.botcommands.api.core.service
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService
 
-class ServiceError private constructor(val errorType: ErrorType, val errorMessage: String, val additionalError: String?) {
+class ServiceError private constructor(val errorType: ErrorType, val errorMessage: String, val extraMessage: String?, val nestedError: ServiceError?) {
     enum class ErrorType(val explanation: String) {
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
         INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
         NO_PROVIDER("No class annotated as a service or service factories were found"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
-        UNAVAILABLE_DEPENDENCY("One or more dependencies were missing"),
-        FAILED_CONDITION("One or more checks returned an error message");
+        UNAVAILABLE_DEPENDENCY("At least one dependency were missing"),
+        FAILED_CONDITION("At least one check returned an error message"),
+        UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing");
 
-        fun toError(errorMessage: String) = ServiceError(this, errorMessage, null)
-        fun toError(errorMessage: String, additionalError: String) = ServiceError(this, errorMessage, additionalError)
+        @JvmOverloads
+        fun toError(errorMessage: String, extraMessage: String? = null, nestedError: ServiceError? = null) =
+            ServiceError(this, errorMessage, extraMessage, nestedError)
 
-        fun <T : Any> toResult(errorMessage: String) = ServiceResult.fail<T>(toError(errorMessage))
-        fun <T : Any> toResult(errorMessage: String, additionalError: String) = ServiceResult.fail<T>(toError(errorMessage, additionalError))
+        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, nestedError: ServiceError? = null) =
+            ServiceResult.fail<T>(toError(errorMessage, extraMessage, nestedError))
     }
 
     operator fun component0() = errorType
     operator fun component1() = errorMessage
-    operator fun component2() = additionalError
+    operator fun component2() = extraMessage
+    operator fun component3() = nestedError
 
+    //TODO recursive with parent error, do indent correctly by indenting the whole child message
     override fun toString(): String = when {
-        additionalError != null -> "$errorMessage (${errorType.explanation}, $additionalError)"
+        extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
         else -> "$errorMessage (${errorType.explanation})"
     }
 }

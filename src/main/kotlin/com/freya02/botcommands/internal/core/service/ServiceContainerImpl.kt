@@ -72,7 +72,9 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         loadableServices[requestedStart]?.forEach { clazz ->
             tryGetService(clazz).serviceError?.let { serviceError ->
                 when (serviceError.errorType) {
-                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE -> throwUser("Could not load service ${clazz.simpleNestedName}: $serviceError")
+                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER ->
+                        throwUser("Could not load service ${clazz.simpleNestedName}: $serviceError")
+
                     UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> logger.trace { "Service ${clazz.simpleNestedName} not loaded: $serviceError" }
                 }
             }
@@ -131,7 +133,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                     return INVALID_TYPE.toResult(
                         errorMessage = "A service was found but type is incorrect, " +
                                 "requested: ${requiredType.simpleNestedName}, actual: ${instance::class.simpleNestedName}",
-                        additionalError = "provider: ${provider.providerKey}"
+                        extraMessage = "provider: ${provider.providerKey}"
                     )
 
                 logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }

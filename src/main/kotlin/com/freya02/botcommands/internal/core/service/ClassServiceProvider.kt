@@ -7,9 +7,11 @@ import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
@@ -63,7 +65,12 @@ internal class ClassServiceProvider(
         //It's fine if there's no constructor, it just means it's not instantiable
         val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
         constructingFunction.nonInstanceParameters.forEach {
-            serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError -> return serviceError }
+            serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
+                return ErrorType.UNAVAILABLE_PARAMETER.toError(
+                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${constructingFunction.shortSignature}",
+                    nestedError = serviceError
+                )
+            }
         }
 
         return null
@@ -104,7 +111,10 @@ internal class ClassServiceProvider(
                 val params = constructingFunction.nonInstanceParameters.map {
                     val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
                     //Try to get a dependency, if it doesn't work then return the message
-                    dependencyResult.service ?: return dependencyResult.toFailedTimedInstantiation()
+                    dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
+                        "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${constructingFunction.shortSignature}",
+                        nestedError = dependencyResult.serviceError
+                    ).toFailedTimedInstantiation()
                 }
                 measureTimedValue { constructingFunction.callStatic(serviceContainer, *params.toTypedArray()) } //Avoid measuring time it takes to load other services
             }

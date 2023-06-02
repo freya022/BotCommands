@@ -68,7 +68,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
         conditionalService.checks.forEach {
             val instance = it.objectInstance ?: it.createInstance()
             instance.checkServiceAvailability(serviceContainer.context)
-                ?.let { errorMessage -> return ErrorType.FAILED_CONDITION.toError(errorMessage, "${it.simpleNestedName} failed") }
+                ?.let { errorMessage -> return ErrorType.FAILED_CONDITION.toError(errorMessage, "${it.simpleNestedName} check failed") }
         }
     }
 
