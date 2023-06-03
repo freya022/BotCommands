@@ -81,7 +81,7 @@ internal object ReflectionUtils {
             val declaringClassName = this.declaringClass.simpleNestedName
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.simpleNestedName }
-            return "$declaringClassName#$methodName($parameters)"
+            return "$declaringClassName.$methodName($parameters)"
         }
 
     internal val KFunction<*>.shortSignature: String
