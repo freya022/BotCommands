@@ -12,7 +12,6 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
-import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.AnnotationUtils
@@ -91,6 +90,3 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
 
     nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw")
 }
-
-internal inline fun <reified R> ClassPathFunction.asCommandInstance(): R =
-    instance as? R ?: throwUser(function, "Declaring class must extend ${R::class.simpleName}")

@@ -32,14 +32,11 @@ internal class LazyClassPathFunction internal constructor(
     private val clazz: KClass<*>,
     override val function: KFunction<*>
 ) : ClassPathFunction {
-    override val instance
-        get() = context.serviceContainer.getService(clazz)
+    override val instance by lazy { context.serviceContainer.getService(clazz) }
     override val instanceOrNull: Any?
-        get() {
-            return when (context.serviceContainer.canCreateService(clazz)) {
-                null -> instance //No error message
-                else -> null
-            }
+        get() = when (context.serviceContainer.canCreateService(clazz)) {
+            null -> instance //No error message
+            else -> null
         }
 }
 

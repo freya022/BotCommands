@@ -22,7 +22,6 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -34,7 +33,7 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 
 @BService
-internal class ContextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
+internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
     private val messageFunctions: List<MessageContextFunctionMetadata>
     private val userFunctions: List<UserContextFunctionMetadata>
 
@@ -48,13 +47,12 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
                     .map { ClassPathFunction(context, clazz, it) }
             }
             .map {
-                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                MessageContextFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
+                MessageContextFunctionMetadata(it, annotation, path, commandId)
             }
 
         userFunctions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
@@ -66,13 +64,12 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
                     .map { ClassPathFunction(context, clazz, it) }
             }
             .map {
-                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAMessageCommand should be present")
                 val path = CommandPath.ofName(annotation.name)
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                UserContextFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
+                UserContextFunctionMetadata(it, annotation, path, commandId)
             }
     }
 
@@ -86,7 +83,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
     fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
-        messageFunctions.forEachWithDelayedExceptions {
+        messageFunctions.filter { it.hasInstance() }.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
             if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
@@ -96,7 +93,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl, clas
     }
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
-        userFunctions.forEachWithDelayedExceptions {
+        userFunctions.filter { it.hasInstance() }.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
             if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions

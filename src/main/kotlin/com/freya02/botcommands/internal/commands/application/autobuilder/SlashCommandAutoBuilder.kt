@@ -17,7 +17,6 @@ import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.LocalizationUtils
@@ -31,13 +30,10 @@ import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
-
 @BService
-internal class SlashCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
-    private val functions: List<SlashFunctionMetadata>
-
-    init {
-        functions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
+internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
+    private val functions: List<SlashFunctionMetadata> =
+        context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
             .flatMap { clazz ->
                 clazz.declaredMemberFunctions
                     .withFilter(FunctionFilter.annotation<JDASlashCommand>())
@@ -46,7 +42,6 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                     .map { ClassPathFunction(context, clazz, it) }
             }
             .map {
-                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -56,9 +51,8 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 }
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                SlashFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
+                SlashFunctionMetadata(it, annotation, path, commandId)
             }
-    }
 
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()
@@ -66,6 +60,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
         functions
+            .filter { it.hasInstance() }
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions {
                 val annotation = it.annotation
@@ -81,6 +76,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
         functions
+            .filter { it.hasInstance() }
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions { metadata ->
                 val annotation = metadata.annotation
@@ -108,7 +104,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
         subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>>,
         subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata>
     ) {
-        functions.forEachWithDelayedExceptions { metadata ->
+        functions.filter { it.hasInstance() }.forEachWithDelayedExceptions { metadata ->
             when (metadata.path.nameCount) {
                 2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
                 3 -> subcommandGroups
