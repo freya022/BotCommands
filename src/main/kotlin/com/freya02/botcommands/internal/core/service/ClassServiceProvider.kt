@@ -11,7 +11,6 @@ import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
@@ -61,7 +60,8 @@ internal class ClassServiceProvider(
         constructingFunction.nonInstanceParameters.forEach {
             serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_PARAMETER.toError(
-                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${constructingFunction.shortSignature}",
+                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
+                    failedFunction = constructingFunction,
                     nestedError = serviceError
                 )
             }

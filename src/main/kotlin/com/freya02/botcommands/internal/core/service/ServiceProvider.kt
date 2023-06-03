@@ -11,7 +11,6 @@ import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -98,7 +97,8 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceCont
         //Try to get a dependency, if it doesn't work then return the message
         val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
         dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
-            "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${this.shortSignature}",
+            "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
+            failedFunction = this,
             nestedError = dependencyResult.serviceError
         ).toFailedTimedInstantiation()
     }

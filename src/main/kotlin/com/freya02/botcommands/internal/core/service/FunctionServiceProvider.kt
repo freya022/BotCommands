@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -29,7 +28,8 @@ internal class FunctionServiceProvider(
         function.nonInstanceParameters.forEach {
             serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
                 return ErrorType.UNAVAILABLE_PARAMETER.toError(
-                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName}) in ${function.shortSignature}",
+                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
+                    failedFunction = function,
                     nestedError = serviceError
                 )
             }

@@ -73,9 +73,10 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             tryGetService(clazz).serviceError?.let { serviceError ->
                 when (serviceError.errorType) {
                     DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER ->
-                        throwUser("Could not load service ${clazz.simpleNestedName}: $serviceError")
+                        throwUser("Could not load service ${clazz.simpleNestedName}:\n$serviceError")
 
-                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> logger.trace { "Service ${clazz.simpleNestedName} not loaded: $serviceError" }
+                    //TODO config to display simplified errors
+                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n$serviceError" }
                 }
             }
         }

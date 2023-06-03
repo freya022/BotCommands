@@ -2,8 +2,19 @@ package com.freya02.botcommands.api.core.service
 
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwService
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import kotlin.reflect.KFunction
 
-class ServiceError private constructor(val errorType: ErrorType, val errorMessage: String, val extraMessage: String?, val nestedError: ServiceError?) {
+class ServiceError private constructor(
+    val errorType: ErrorType,
+    val errorMessage: String,
+    val extraMessage: String?,
+    /**
+     * This is to be handled by the code throwing the exception, as this is required to be on the first line
+     */
+    val failedFunction: KFunction<*>?,
+    val nestedError: ServiceError?
+) {
     enum class ErrorType(val explanation: String) {
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
         INVALID_CONSTRUCTING_FUNCTION("No valid constructor found"),
@@ -15,11 +26,11 @@ class ServiceError private constructor(val errorType: ErrorType, val errorMessag
         UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing");
 
         @JvmOverloads
-        fun toError(errorMessage: String, extraMessage: String? = null, nestedError: ServiceError? = null) =
-            ServiceError(this, errorMessage, extraMessage, nestedError)
+        fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null) =
+            ServiceError(this, errorMessage, extraMessage, failedFunction, nestedError)
 
-        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, nestedError: ServiceError? = null) =
-            ServiceResult.fail<T>(toError(errorMessage, extraMessage, nestedError))
+        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null) =
+            ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError))
     }
 
     operator fun component0() = errorType
@@ -27,11 +38,26 @@ class ServiceError private constructor(val errorType: ErrorType, val errorMessag
     operator fun component2() = extraMessage
     operator fun component3() = nestedError
 
-    //TODO recursive with parent error, do indent correctly by indenting the whole child message
-    override fun toString(): String = when {
-        extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
-        else -> "$errorMessage (${errorType.explanation})"
-    }
+    override fun toString(): String = buildString {
+        appendLine("Error message: $errorMessage")
+        if (failedFunction != null)
+            appendLine("Failed function: ${failedFunction.shortSignature}")
+        appendLine("Error type: ${errorType.explanation}")
+        if (extraMessage != null)
+            appendLine("Extra message: $extraMessage")
+
+        if (nestedError != null) {
+            val causedByHeader = " ".repeat(4) + "Caused by: "
+            append(causedByHeader)
+
+            val lines = nestedError.toString().trimIndent().lines()
+            appendLine(lines.first())
+            lines.drop(1).forEach {
+                append(" ".repeat(causedByHeader.length))
+                appendLine(it)
+            }
+        }
+    }.prependIndent()
 }
 
 class ServiceResult<T : Any> private constructor(val service: T?, val serviceError: ServiceError?) {
