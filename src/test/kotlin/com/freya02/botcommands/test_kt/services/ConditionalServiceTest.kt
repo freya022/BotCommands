@@ -25,9 +25,12 @@ class ConditionalServiceTest {
     }
 
     companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext): String? = when {
+        //Compute the "luck" only once, else it's going to mess up the service creation
+        private val serviceErrorMessage = when {
             Math.random() > 0.5 -> null
             else -> "Bad luck"
         }
+
+        override fun checkServiceAvailability(context: BContext): String? = serviceErrorMessage
     }
 }

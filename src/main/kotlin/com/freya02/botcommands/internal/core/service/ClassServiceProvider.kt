@@ -27,7 +27,10 @@ internal class ClassServiceProvider(
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(clazz)
 
+    private var isInstantiable = false
+
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+        if (isInstantiable) return null
         if (instance != null) return null
 
         clazz.findAnnotation<InjectedService>()?.let {
@@ -46,12 +49,18 @@ internal class ClassServiceProvider(
                 //Continue looking at other suppliers
                 InstantiabilityType.UNSUPPORTED_TYPE -> {}
                 //Found a supplier, return no error message
-                InstantiabilityType.INSTANTIABLE -> return null
+                InstantiabilityType.INSTANTIABLE -> {
+                    isInstantiable = true
+                    return null
+                }
             }
         }
 
         //Is a singleton
-        if (clazz.objectInstance != null) return null
+        if (clazz.objectInstance != null) {
+            isInstantiable = true
+            return null
+        }
 
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
@@ -66,6 +75,7 @@ internal class ClassServiceProvider(
             }
         }
 
+        isInstantiable = true
         return null
     }
 

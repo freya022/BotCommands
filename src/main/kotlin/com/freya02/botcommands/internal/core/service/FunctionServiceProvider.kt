@@ -20,7 +20,10 @@ internal class FunctionServiceProvider(
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(function.returnType.jvmErasure)
 
+    private var isInstantiable = false
+
     override fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+        if (isInstantiable) return null
         if (instance != null) return null
 
         function.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
@@ -35,6 +38,7 @@ internal class FunctionServiceProvider(
             }
         }
 
+        isInstantiable = true
         return null
     }
 
