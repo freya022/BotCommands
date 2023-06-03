@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.utils.EmojiUtils
 import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.logger
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -15,6 +16,8 @@ import net.dv8tion.jda.api.utils.FileUpload
 import java.io.InputStream
 import java.util.function.Consumer
 import javax.annotation.CheckReturnValue
+
+private val logger = KotlinLogging.logger<BaseCommandEvent>()
 
 internal open class BaseCommandEventImpl(
     context: BContextImpl,
@@ -113,8 +116,6 @@ internal open class BaseCommandEventImpl(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger { }
-
         @JvmField val SUCCESS = EmojiUtils.resolveJDAEmoji(":white_check_mark:")
         @JvmField val ERROR = EmojiUtils.resolveJDAEmoji(":x:")
     }

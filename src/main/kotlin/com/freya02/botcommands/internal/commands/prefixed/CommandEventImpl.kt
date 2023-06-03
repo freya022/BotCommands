@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.utils.RichTextFinder.RichText
 import com.freya02.botcommands.api.utils.RichTextType
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
+import com.freya02.botcommands.internal.logger
 import dev.minn.jda.ktx.coroutines.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.*
@@ -19,6 +20,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.internal.utils.Helpers
+
+private val logger = KotlinLogging.logger<CommandEvent>()
 
 internal class CommandEventImpl private constructor(
     context: BContextImpl,
@@ -107,7 +110,6 @@ internal class CommandEventImpl private constructor(
     }
 
     companion object {
-        private val logger = KotlinLogging.logger { }
         private val idRegex = Regex("(\\d+)")
 
         private operator fun RichText.component1(): String = substring
