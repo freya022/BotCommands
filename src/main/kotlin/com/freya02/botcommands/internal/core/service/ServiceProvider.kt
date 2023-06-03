@@ -60,7 +60,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     findAnnotation<Dependencies>()?.value?.let { dependencies ->
         dependencies.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
-                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service depends on ${dependency.simpleNestedName} but it is not available: $serviceError")
+                return ErrorType.UNAVAILABLE_DEPENDENCY.toError("Conditional service depends on ${dependency.simpleNestedName} but it is not available: ${serviceError.toSimpleString()}")
             }
         }
     }

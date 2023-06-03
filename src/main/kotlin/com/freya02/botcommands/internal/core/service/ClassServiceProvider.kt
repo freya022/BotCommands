@@ -17,7 +17,6 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
-import kotlin.time.ExperimentalTime
 
 internal class ClassServiceProvider(
     private val clazz: KClass<*>,
@@ -70,7 +69,6 @@ internal class ClassServiceProvider(
         return null
     }
 
-    @OptIn(ExperimentalTime::class)
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
         serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)

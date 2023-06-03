@@ -87,7 +87,7 @@ internal class ResolverContainer(
             val serviceResult = serviceContainer.tryGetService(type)
 
             serviceResult.serviceError?.let { serviceError ->
-                parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed: $serviceError")
+                parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed: ${serviceError.toSimpleString()}")
             }
 
             ParameterResolverFactory.singleton(ServiceCustomResolver(serviceResult.getOrThrow()))

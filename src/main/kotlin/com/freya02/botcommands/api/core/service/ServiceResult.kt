@@ -38,7 +38,12 @@ class ServiceError private constructor(
     operator fun component2() = extraMessage
     operator fun component3() = nestedError
 
-    override fun toString(): String = buildString {
+    fun toSimpleString(): String = when {
+        extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
+        else -> "$errorMessage (${errorType.explanation})"
+    }
+
+    fun toDetailedString(): String = buildString {
         appendLine("Error message: $errorMessage")
         if (failedFunction != null)
             appendLine("Failed function: ${failedFunction.shortSignature}")
@@ -50,7 +55,7 @@ class ServiceError private constructor(
             val causedByHeader = " ".repeat(4) + "Caused by: "
             append(causedByHeader)
 
-            val lines = nestedError.toString().trimIndent().lines()
+            val lines = nestedError.toDetailedString().trimIndent().lines()
             appendLine(lines.first())
             lines.drop(1).forEach {
                 append(" ".repeat(causedByHeader.length))
@@ -97,7 +102,7 @@ class ServiceResult<T : Any> private constructor(val service: T?, val serviceErr
 
     override fun toString() = when {
         service != null -> "ServiceResult[Pass](service=$service)"
-        else -> "ServiceResult[Fail](serviceError=$serviceError)"
+        else -> "ServiceResult[Fail](serviceError=${serviceError!!.toSimpleString()})"
     }
 
     companion object {

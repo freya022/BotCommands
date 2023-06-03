@@ -73,10 +73,15 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             tryGetService(clazz).serviceError?.let { serviceError ->
                 when (serviceError.errorType) {
                     DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER ->
-                        throwUser("Could not load service ${clazz.simpleNestedName}:\n$serviceError")
+                        throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 
-                    //TODO config to display simplified errors
-                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n$serviceError" }
+                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> {
+                        if (logger.isTraceEnabled) {
+                            logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
+                        } else if (logger.isDebugEnabled) {
+                            logger.debug { "Service ${clazz.simpleNestedName} not loaded: ${serviceError.toSimpleString()}" }
+                        }
+                    }
                 }
             }
         }
@@ -214,7 +219,7 @@ internal inline fun <reified T : Any> ServiceContainerImpl.getInterfacedServices
         .mapNotNull {
             val serviceResult = tryGetService(it, T::class)
             serviceResult.serviceError?.let { serviceError ->
-                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): $serviceError"
+                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
                 if (!interfacedServiceErrors.add(warnMessage)) {
                     logger.warn(warnMessage)
                 }
