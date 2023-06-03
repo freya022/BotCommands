@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.core.service
 
+import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
@@ -11,6 +12,7 @@ import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
@@ -70,7 +72,13 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
         conditionalService.checks.forEach {
             val instance = it.objectInstance ?: it.createInstance()
             instance.checkServiceAvailability(serviceContainer.context)
-                ?.let { errorMessage -> return ErrorType.FAILED_CONDITION.toError(errorMessage, "${it.simpleNestedName} check failed") }
+                ?.let { errorMessage ->
+                    return ErrorType.FAILED_CONDITION.toError(
+                        errorMessage,
+                        // instance::checkServiceAvailability does not bind to the actual instance
+                        failedFunction = ConditionalServiceChecker::checkServiceAvailability.resolveReference(instance::class)
+                    )
+                }
         }
     }
 

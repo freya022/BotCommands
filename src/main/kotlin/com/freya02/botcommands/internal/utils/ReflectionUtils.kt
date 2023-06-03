@@ -35,16 +35,19 @@ internal object ReflectionUtils {
         synchronized(reflectedMap) {
             return reflectedMap.computeIfAbsent(this) {
                 return@computeIfAbsent when (this) { //Try to match the original function
-                    is CallableReference -> {
-                        (owner as KClass<*>).declaredMemberFunctions.findFunction(this)
-                            ?: (owner as KClass<*>).constructors.findFunction(this)
-                            ?: throwInternal(this, "Unable to reflect function reference")
-                    }
-
+                    is CallableReference -> resolveReference(owner as KClass<*>) ?: throwInternal(this, "Unable to reflect function reference")
                     else -> this
                 }
             } as KFunction<R>
         }
+    }
+
+    internal fun KFunction<*>.resolveReference(targetClass: KClass<*>): KFunction<Any?>? {
+        if (this !is CallableReference)
+            throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
+
+        return targetClass.declaredMemberFunctions.findFunction(this)
+            ?: targetClass.constructors.findFunction(this)
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
