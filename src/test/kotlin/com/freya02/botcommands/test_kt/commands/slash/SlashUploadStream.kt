@@ -14,7 +14,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.inputStream
 
 @Command
-@ConditionalService([SlashUploadStream.Companion::class])
+@ConditionalService(SlashUploadStream.Companion::class)
 class SlashUploadStream : ApplicationCommand() {
     @JDASlashCommand(name = "upload_stream")
     suspend fun execute(event: GuildSlashEvent) {

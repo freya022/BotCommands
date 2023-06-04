@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import net.dv8tion.jda.api.interactions.commands.Command
 
 @BService
-@ServiceType([AutocompleteTransformer::class])
+@ServiceType(AutocompleteTransformer::class)
 class MyAutocompleteTransformer : AutocompleteTransformer<CustomObject> {
     override fun getElementType() = CustomObject::class.java
 

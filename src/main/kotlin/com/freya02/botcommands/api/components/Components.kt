@@ -87,7 +87,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * ```
  */
 @BService
-@ConditionalService([Components.Companion::class])
+@ConditionalService(Components.Companion::class)
 class Components internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 

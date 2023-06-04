@@ -6,14 +6,14 @@ import com.freya02.botcommands.api.core.service.annotations.Dependencies
 
 //Can test failure if FactoryServiceTest is not instantiable, by commenting @Dependencies
 @BService
-@Dependencies([FactoryServiceTest::class])
+@Dependencies(FactoryServiceTest::class)
 class FactoryServiceTestUser(service: FactoryServiceTest)
 
 class FactoryServiceTest private constructor() {
 //    @BService //Not necessary
     object FactoryServiceTestProvider {
         @BService
-        @ConditionalService([ConditionalServiceTest.Companion::class])
+        @ConditionalService(ConditionalServiceTest.Companion::class)
         fun getFactory() = FactoryServiceTest()
     }
 }

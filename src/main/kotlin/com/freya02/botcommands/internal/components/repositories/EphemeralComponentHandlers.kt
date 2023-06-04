@@ -6,5 +6,5 @@ import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.internal.components.EphemeralHandler
 
 @BService
-@Dependencies([Components::class])
+@Dependencies(Components::class)
 internal class EphemeralComponentHandlers : EphemeralHandlers<EphemeralHandler<*>>()

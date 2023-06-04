@@ -27,7 +27,7 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-@Dependencies([ComponentRepository::class])
+@Dependencies(ComponentRepository::class)
 internal class ComponentTimeoutManager(
     private val scopesConfig: BCoroutineScopesConfig,
     private val serviceContainer: ServiceContainer,

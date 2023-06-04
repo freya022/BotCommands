@@ -30,7 +30,7 @@ import java.sql.SQLException
 import java.sql.Timestamp
 
 @BService
-@Dependencies([Components::class])
+@Dependencies(Components::class)
 internal class ComponentRepository(
     private val database: InternalDatabase,
     private val ephemeralComponentHandlers: EphemeralComponentHandlers,

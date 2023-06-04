@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlin.reflect.KClass
 
 @BService
-@ServiceType([DynamicSupplier::class])
+@ServiceType(DynamicSupplier::class)
 object DynamicServiceProvider : DynamicSupplier {
     override fun getInstantiability(context: BContext, clazz: KClass<*>): Instantiability {
         if (clazz == Serv2::class) return Instantiability.instantiable()

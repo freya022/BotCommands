@@ -19,7 +19,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import kotlin.reflect.full.findAnnotation
 
 @BService
-@Dependencies([Components::class])
+@Dependencies(Components::class)
 internal class ComponentsHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     private val buttonMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()

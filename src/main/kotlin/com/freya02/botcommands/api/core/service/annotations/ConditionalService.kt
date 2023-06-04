@@ -21,5 +21,5 @@ annotation class ConditionalService(
     /**
      * Classes which implement [ConditionalServiceChecker], all checks must pass for this service to be instantiated.
      */
-    val checks: Array<KClass<out ConditionalServiceChecker>>
+    vararg val checks: KClass<out ConditionalServiceChecker>
 )

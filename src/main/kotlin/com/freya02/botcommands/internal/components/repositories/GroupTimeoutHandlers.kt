@@ -13,7 +13,7 @@ import com.freya02.botcommands.internal.utils.FunctionFilter
 import kotlin.reflect.full.findAnnotation
 
 @BService
-@Dependencies([Components::class])
+@Dependencies(Components::class)
 internal class GroupTimeoutHandlers(functionAnnotationsMap: FunctionAnnotationsMap) : HandlerContainer {
     private val map: Map<String, MemberFunction<*>> =
         functionAnnotationsMap.getFunctionsWithAnnotation<GroupTimeoutHandler>()

@@ -18,5 +18,5 @@ annotation class ServiceType(
     /**
      * The additional types to register this service as, must be supertypes of this service
      */
-    val types: Array<KClass<*>>
+    vararg val types: KClass<*>
 )

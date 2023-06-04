@@ -13,8 +13,8 @@ import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 
 @BService
-@ServiceType([Database::class])
-@Dependencies([ConnectionSupplier::class])
+@ServiceType(Database::class)
+@Dependencies(ConnectionSupplier::class)
 internal class DatabaseImpl internal constructor(
     private val connectionSupplier: ConnectionSupplier,
     override val config: BConfig

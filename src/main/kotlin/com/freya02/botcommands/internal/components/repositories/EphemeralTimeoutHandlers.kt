@@ -5,5 +5,5 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 
 @BService
-@Dependencies([Components::class])
+@Dependencies(Components::class)
 internal class EphemeralTimeoutHandlers : EphemeralHandlers<suspend () -> Unit>()

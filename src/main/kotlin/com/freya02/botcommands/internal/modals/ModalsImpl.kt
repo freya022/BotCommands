@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.modals.TextInputBuilder
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 
 @BService
-@ServiceType([Modals::class])
+@ServiceType(Modals::class)
 internal class ModalsImpl(private val modalMaps: ModalMaps) : Modals {
     override fun create(title: String): ModalBuilderImpl {
         return ModalBuilderImpl(modalMaps, title)

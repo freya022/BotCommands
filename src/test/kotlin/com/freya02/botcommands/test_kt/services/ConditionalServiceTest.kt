@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 
 @BService
-@Dependencies([Components::class])
-@ConditionalService([ConditionalServiceTest.Companion::class])
+@Dependencies(Components::class)
+@ConditionalService(ConditionalServiceTest.Companion::class)
 class ConditionalServiceTest {
     @BService
     class ConditionalServiceTester(serviceContainer: ServiceContainer) {

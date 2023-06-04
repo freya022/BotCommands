@@ -44,7 +44,7 @@ import kotlin.coroutines.resume
 import kotlin.reflect.full.callSuspendBy
 
 @BService
-@Dependencies([Components::class, InternalDatabase::class])
+@Dependencies(Components::class, InternalDatabase::class)
 internal class ComponentsListener(
     private val context: BContextImpl,
     private val componentsConfig: BComponentsConfig,

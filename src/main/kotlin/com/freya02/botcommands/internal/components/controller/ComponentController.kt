@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 @BService
-@Dependencies([ComponentRepository::class])
+@Dependencies(ComponentRepository::class)
 internal class ComponentController(
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
