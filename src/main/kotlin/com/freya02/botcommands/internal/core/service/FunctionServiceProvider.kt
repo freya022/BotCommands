@@ -1,11 +1,7 @@
 package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.ServiceError
-import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.internal.bestName
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -27,16 +23,7 @@ internal class FunctionServiceProvider(
         if (instance != null) return null
 
         function.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
-
-        function.nonInstanceParameters.forEach {
-            serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
-                return ErrorType.UNAVAILABLE_PARAMETER.toError(
-                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
-                    failedFunction = function,
-                    nestedError = serviceError
-                )
-            }
-        }
+        function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         isInstantiable = true
         return null

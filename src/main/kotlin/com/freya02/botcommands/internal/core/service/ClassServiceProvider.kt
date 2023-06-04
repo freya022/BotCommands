@@ -8,15 +8,12 @@ import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
-import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwService
-import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.jvmName
 
 internal class ClassServiceProvider(
@@ -66,15 +63,7 @@ internal class ClassServiceProvider(
         //Check constructor parameters
         //It's fine if there's no constructor, it just means it's not instantiable
         val constructingFunction = findConstructingFunction(clazz).let { it.getOrNull() ?: return it.serviceError }
-        constructingFunction.nonInstanceParameters.forEach {
-            serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
-                return ErrorType.UNAVAILABLE_PARAMETER.toError(
-                    "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
-                    failedFunction = constructingFunction,
-                    nestedError = serviceError
-                )
-            }
-        }
+        constructingFunction.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         isInstantiable = true
         return null

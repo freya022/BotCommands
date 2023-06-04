@@ -17,6 +17,7 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSr
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.instanceParameter
@@ -100,30 +101,55 @@ internal fun ServiceResult<*>.toFailedTimedInstantiation(): TimedInstantiation {
     }
 }
 
-internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceContainerImpl): TimedInstantiation {
-    val params = this.nonInstanceParameters.map {
-        //Try to get a dependency, if it doesn't work then return the message
-        val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
-        dependencyResult.service ?: return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
-            "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
-            failedFunction = this,
-            nestedError = dependencyResult.serviceError
-        ).toFailedTimedInstantiation()
+internal fun KFunction<*>.checkConstructingFunction(serviceContainer: ServiceContainerImpl): ServiceError? {
+    this.nonInstanceParameters.forEach {
+        serviceContainer.canCreateService(it.type.jvmErasure)?.let { serviceError ->
+            when {
+                it.type.isMarkedNullable -> return@forEach //Ignore
+                it.isOptional -> return@forEach //Ignore
+                else -> return ErrorType.UNAVAILABLE_PARAMETER.toError(
+                    errorMessage = "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
+                    failedFunction = this,
+                    nestedError = serviceError
+                )
+            }
+        }
     }
-    return measureTimedInstantiation { this.callStatic(serviceContainer, *params.toTypedArray()) }
+
+    return null
 }
 
-internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, vararg args: Any?): R {
+internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceContainerImpl): TimedInstantiation {
+    val params: MutableMap<KParameter, Any?> = hashMapOf()
+    this.nonInstanceParameters.forEach {
+        //Try to get a dependency, if it doesn't work and parameter isn't nullable / cannot be omitted, then return the message
+        val dependencyResult = serviceContainer.tryGetService(it.type.jvmErasure)
+        params[it] = dependencyResult.service ?: when {
+            it.type.isMarkedNullable -> null
+            it.isOptional -> return@forEach
+            else -> return ErrorType.UNAVAILABLE_PARAMETER.toResult<Any>(
+                "Cannot get service for parameter '${it.bestName}' (${it.type.jvmErasure.simpleNestedName})",
+                failedFunction = this,
+                nestedError = dependencyResult.serviceError
+            ).toFailedTimedInstantiation()
+        }
+    }
+
+    return measureTimedInstantiation { this.callStatic(serviceContainer, params) }
+}
+
+internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
     return when (val instanceParameter = this.instanceParameter) {
-        null -> this.call(*args)
+        null -> this.callBy(args)
         else -> {
             val instanceErasure = instanceParameter.type.jvmErasure
             val instance = instanceErasure.objectInstance
                 ?: serviceContainer.tryGetService(instanceErasure).getOrThrow { (_, errorMessage) ->
                     throwUser(this, "Could not run function as the declaring class isn't an object, and service creation failed: $errorMessage")
                 }
+            args[instanceParameter] = instance
 
-            this.call(instance, *args)
+            this.callBy(args)
         }
     }
 }
