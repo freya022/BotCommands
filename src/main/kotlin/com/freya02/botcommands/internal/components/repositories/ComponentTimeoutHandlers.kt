@@ -5,10 +5,10 @@ import com.freya02.botcommands.api.components.annotations.ComponentTimeoutHandle
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
-import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.reflection.MemberFunction
 import com.freya02.botcommands.internal.core.reflection.toMemberFunction
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import kotlin.reflect.full.findAnnotation
 

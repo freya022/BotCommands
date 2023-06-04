@@ -1,9 +1,8 @@
-package com.freya02.botcommands.internal.core.reflection
+package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.core.service.InstantiableServiceAnnotationsMap
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature

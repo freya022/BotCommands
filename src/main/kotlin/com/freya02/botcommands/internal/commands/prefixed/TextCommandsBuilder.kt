@@ -11,8 +11,8 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.CooldownService
-import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
