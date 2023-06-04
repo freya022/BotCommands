@@ -9,6 +9,8 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  *
  * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
  *
+ * **Note:** The service will always( be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
+ *
  * @see InjectedService
  * @see ConditionalService
  * @see ServiceType
