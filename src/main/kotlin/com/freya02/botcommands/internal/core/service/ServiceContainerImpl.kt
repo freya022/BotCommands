@@ -127,6 +127,11 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>> {
+        return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
+    }
+
     private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
     override fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T> {
         return context.serviceProviders
@@ -200,6 +205,3 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             return@filter requestedServiceStart == clazzServiceStart
         }
 }
-
-internal inline fun <reified T : Any> ServiceContainer.getInterfacedServices(currentType: KClass<*>) =
-    getInterfacedServices(T::class, currentType)

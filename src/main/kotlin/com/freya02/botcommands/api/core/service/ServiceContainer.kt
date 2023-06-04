@@ -27,8 +27,13 @@ interface ServiceContainer {
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
+    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>>
+    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>, currentType: Class<*>): List<Class<T>> =
+        getInterfacedServiceTypes(clazz.kotlin, currentType.kotlin).map { it.java }
+
     fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T>
-    fun <T : Any> getInterfacedServices(clazz: Class<T>, currentType: Class<*>): List<T> = getInterfacedServices(clazz.kotlin, currentType.kotlin)
+    fun <T : Any> getInterfacedServices(clazz: Class<T>, currentType: Class<*>): List<T> =
+        getInterfacedServices(clazz.kotlin, currentType.kotlin)
 
     fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String? = null)
     fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
@@ -41,6 +46,12 @@ inline fun <reified T : Any> ServiceContainer.getService(): T = getService(T::cl
 inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServiceOrNull(T::class)
 
 inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
+
+inline fun <reified T : Any> ServiceContainer.getInterfacedServiceTypes(currentType: KClass<*>) =
+    getInterfacedServiceTypes(T::class, currentType)
+
+inline fun <reified T : Any> ServiceContainer.getInterfacedServices(currentType: KClass<*>) =
+    getInterfacedServices(T::class, currentType)
 
 inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyProperty<T, R> {
     val value: R by lazy { getService(R::class) }
