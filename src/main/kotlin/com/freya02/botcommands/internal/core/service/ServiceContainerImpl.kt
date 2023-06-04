@@ -65,8 +65,15 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
-        val provider = context.serviceProviders.findForType(clazz) ?: return null
-        return clazz.cast(provider.instance)
+        val providers = context.serviceProviders.findAllForType(clazz)
+        if (providers.isEmpty())
+            return null
+
+        providers.forEach { provider ->
+            provider.instance?.let { instance -> return clazz.cast(instance) }
+        }
+
+        return null
     }
 
     override fun <T : Any> peekServiceOrNull(name: String, requiredType: KClass<T>): T? = lock.withLock {
@@ -81,9 +88,19 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     override fun <T : Any> tryGetService(clazz: KClass<T>): ServiceResult<T> = lock.withLock {
-        val provider = context.serviceProviders.findForType(clazz)
-            ?: return NO_PROVIDER.toResult("No service or factories found for type ${clazz.simpleNestedName}")
-        return tryGetService(provider, clazz)
+        val providers = context.serviceProviders.findAllForType(clazz)
+        if (providers.isEmpty())
+            return NO_PROVIDER.toResult("No service or factories found for type ${clazz.simpleNestedName}")
+
+        //TODO perhaps log on TRACE the previous failures, or add "sibling" service errors
+        lateinit var serviceResult: ServiceResult<T>
+        providers.forEach { provider ->
+            serviceResult = tryGetService(provider, clazz)
+            //Return if we have something
+            serviceResult.service?.let { return serviceResult }
+        }
+
+        return serviceResult
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -181,10 +198,20 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
      * Returns a non-null string if the service is not instantiable
      */
     internal fun canCreateService(clazz: KClass<*>): ServiceError? {
-        val provider = context.serviceProviders.findForType(clazz)
-            ?: return NO_PROVIDER.toError("No service or factories found for service ${clazz.simpleNestedName}")
+        val providers = context.serviceProviders.findAllForType(clazz)
+        if (providers.isEmpty())
+            return NO_PROVIDER.toError("No service or factories found for type ${clazz.simpleNestedName}")
 
-        return canCreateService(provider)
+        var serviceError: ServiceError? = null
+        providers.forEach { provider ->
+            //TODO perhaps log on TRACE the previous failures, or add "sibling" service errors
+            serviceError = canCreateService(provider)
+            //Return no error if we have something
+            if (serviceError == null)
+                return null
+        }
+
+        return serviceError
     }
 
     /**
