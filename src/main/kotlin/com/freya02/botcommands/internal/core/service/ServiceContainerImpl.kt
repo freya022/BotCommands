@@ -127,6 +127,24 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
     }
 
+    private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    override fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T> {
+        return context.serviceProviders
+            .findAllForType(clazz)
+            // Avoid circular dependency, we can't supply ourselves
+            .filter { it.primaryType != currentType }
+            .mapNotNull {
+                val serviceResult = tryGetService(it, clazz)
+                serviceResult.serviceError?.let { serviceError ->
+                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
+                    if (!interfacedServiceErrors.add(warnMessage)) {
+                        logger.warn(warnMessage)
+                    }
+                }
+                serviceResult.getOrNull()
+            }
+    }
+
     override fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String?) {
         context.serviceProviders.putServiceProvider(ClassServiceProvider(clazz, t))
     }
@@ -183,20 +201,5 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
 }
 
-private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
-internal inline fun <reified T : Any> ServiceContainerImpl.getInterfacedServices(currentType: KClass<*>): List<T> {
-    return context.serviceProviders
-        .findAllForType(T::class)
-        // Avoid circular dependency, we can't supply ourselves
-        .filter { it.primaryType != currentType }
-        .mapNotNull {
-            val serviceResult = tryGetService(it, T::class)
-            serviceResult.serviceError?.let { serviceError ->
-                val warnMessage = "Could not create interfaced service ${T::class.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
-                if (!interfacedServiceErrors.add(warnMessage)) {
-                    logger.warn(warnMessage)
-                }
-            }
-            serviceResult.getOrNull()
-        }
-}
+internal inline fun <reified T : Any> ServiceContainer.getInterfacedServices(currentType: KClass<*>) =
+    getInterfacedServices(T::class, currentType)

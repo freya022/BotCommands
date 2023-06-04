@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.getServiceOrNull
 import mu.KotlinLogging
 
-inline fun <reified T : Any, U : T> ServiceContainer.interfacedService(crossinline defaultSupplier: () -> U): Lazy<T> {
+internal inline fun <reified T : Any, U : T> ServiceContainer.interfacedService(crossinline defaultSupplier: () -> U): Lazy<T> {
     val logger = KotlinLogging.logger { }
     return lazy {
         (getServiceOrNull<T>() ?: defaultSupplier()).also { service ->
@@ -13,7 +13,7 @@ inline fun <reified T : Any, U : T> ServiceContainer.interfacedService(crossinli
     }
 }
 
-inline fun <reified T : Any> ServiceContainer.nullableInterfacedService(): Lazy<T?> {
+internal inline fun <reified T : Any> ServiceContainer.nullableInterfacedService(): Lazy<T?> {
     val logger = KotlinLogging.logger { }
     return lazy {
         getServiceOrNull<T>().also { service ->

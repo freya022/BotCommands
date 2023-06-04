@@ -27,6 +27,9 @@ interface ServiceContainer {
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
+    fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T>
+    fun <T : Any> getInterfacedServices(clazz: Class<T>, currentType: Class<*>): List<T> = getInterfacedServices(clazz.kotlin, currentType.kotlin)
+
     fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String? = null)
     fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
     fun putService(t: Any, name: String?): Unit = putServiceAs(t, t::class, name)
