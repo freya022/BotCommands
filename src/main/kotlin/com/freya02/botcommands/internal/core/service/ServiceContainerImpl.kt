@@ -1,7 +1,8 @@
 package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.*
-import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.INVALID_TYPE
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.NO_PROVIDER
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata
@@ -59,23 +60,8 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         putServiceAs<ServiceContainer>(this)
     }
 
-    internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
-        loadableServices[requestedStart]?.forEach { clazz ->
-            tryGetService(clazz).serviceError?.let { serviceError ->
-                when (serviceError.errorType) {
-                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER ->
-                        throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
-
-                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> {
-                        if (logger.isTraceEnabled) {
-                            logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
-                        } else if (logger.isDebugEnabled) {
-                            logger.debug { "Service ${clazz.simpleNestedName} not loaded: ${serviceError.toSimpleString()}" }
-                        }
-                    }
-                }
-            }
-        }
+    internal fun loadServices(requestedStart: ServiceStart) {
+        getLoadableService(requestedStart).forEach { clazz -> getService(clazz) }
     }
 
     override fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T? = lock.withLock {
@@ -188,19 +174,14 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
             provider.canInstantiate(this)
         }
     }
-}
 
-//TODO refactor to getter function, takes ServiceStart type
-internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
-    get() =
-        enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
-            instantiableServiceAnnotationsMap
-                .getAllClasses()
-                .forEach { clazz ->
-                    val start = clazz.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
-                    loadableServices.getOrPut(start) { mutableListOf() }.add(clazz)
-                }
+    private fun getLoadableService(requestedServiceStart: ServiceStart) = context.instantiableServiceAnnotationsMap
+        .getAllInstantiableClasses()
+        .filter { kClass ->
+            val clazzServiceStart = kClass.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT
+            return@filter requestedServiceStart == clazzServiceStart
         }
+}
 
 private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
 internal inline fun <reified T : Any> ServiceContainerImpl.getInterfacedServices(currentType: KClass<*>): List<T> {

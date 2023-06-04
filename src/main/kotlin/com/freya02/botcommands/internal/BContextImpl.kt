@@ -68,7 +68,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
         serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
 
-        serviceContainer.loadServices(this.loadableServices, ServiceStart.DEFAULT)
+        serviceContainer.loadServices(ServiceStart.DEFAULT)
     }
 
     private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }

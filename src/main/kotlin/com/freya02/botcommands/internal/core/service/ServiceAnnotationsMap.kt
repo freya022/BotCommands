@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.config.BServiceConfig
-import com.freya02.botcommands.api.core.service.ServiceError
+import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
@@ -23,10 +23,10 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                 val serviceError = context.serviceContainer.canCreateService(clazz) ?: return@filterKeys true
 
                 when (serviceError.errorType) {
-                    ServiceError.ErrorType.DYNAMIC_NOT_INSTANTIABLE, ServiceError.ErrorType.INVALID_CONSTRUCTING_FUNCTION, ServiceError.ErrorType.NO_PROVIDER, ServiceError.ErrorType.INVALID_TYPE, ServiceError.ErrorType.UNAVAILABLE_INJECTED_SERVICE, ServiceError.ErrorType.UNAVAILABLE_PARAMETER ->
+                    DYNAMIC_NOT_INSTANTIABLE, INVALID_CONSTRUCTING_FUNCTION, NO_PROVIDER, INVALID_TYPE, UNAVAILABLE_INJECTED_SERVICE, UNAVAILABLE_PARAMETER ->
                         throwUser("Could not load service ${clazz.simpleNestedName}:\n${serviceError.toDetailedString()}")
 
-                    ServiceError.ErrorType.UNAVAILABLE_DEPENDENCY, ServiceError.ErrorType.FAILED_CONDITION -> {
+                    UNAVAILABLE_DEPENDENCY, FAILED_CONDITION -> {
                         if (logger.isTraceEnabled) {
                             logger.trace { "Service ${clazz.simpleNestedName} not loaded:\n${serviceError.toDetailedString()}" }
                         } else if (logger.isDebugEnabled) {
@@ -63,7 +63,7 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
             }
         } as Set<KClass<T>>
 
-    internal fun getAllClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap.keys }
+    internal fun getAllInstantiableClasses() = map.flatMap { (_, annotationReceiversMap) -> annotationReceiversMap.keys }
 }
 
 private val logger = KotlinLogging.logger { }
