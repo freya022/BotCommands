@@ -1,36 +1,25 @@
 package com.freya02.botcommands.api.core
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.events.BEvent
-import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import io.github.classgraph.ClassGraph
 import net.dv8tion.jda.api.events.Event
 import java.util.*
 import kotlin.reflect.KClass
 
-@InjectedService
-internal class EventTreeService(context: BContext) {
-    private val map: Map<KClass<*>, List<KClass<*>>>
-
-    init {
-        context.putService(this)
-
-        val map = hashMapOf<KClass<*>, List<KClass<*>>>()
-
-        ClassGraph()
-            .acceptPackages(Event::class.java.packageName, BEvent::class.java.packageName)
-            .disableRuntimeInvisibleAnnotations()
-            .disableModuleScanning()
-            .disableNestedJarScanning()
-            .enableClassInfo()
-            .scan().use {
-                it.allStandardClasses.forEach { info ->
-                    map[info.loadClass().kotlin] = info.subclasses.map { subclassInfo -> subclassInfo.loadClass().kotlin }
-                }
+@BService
+internal class EventTreeService internal constructor() {
+    private val map: Map<KClass<*>, List<KClass<*>>> = ClassGraph()
+        .acceptPackages(Event::class.java.packageName, BEvent::class.java.packageName)
+        .disableRuntimeInvisibleAnnotations()
+        .disableModuleScanning()
+        .disableNestedJarScanning()
+        .enableClassInfo()
+        .scan().use { scanResult ->
+            scanResult.allStandardClasses.associate { info ->
+                info.loadClass().kotlin to Collections.unmodifiableList(info.subclasses.map { subclassInfo -> subclassInfo.loadClass().kotlin })
             }
+        }
 
-        this.map = Collections.unmodifiableMap(map)
-    }
-
-    fun getSubclasses(kClass: KClass<*>): List<KClass<*>> = map[kClass] ?: emptyList()
+    internal fun getSubclasses(kClass: KClass<*>): List<KClass<*>> = map[kClass] ?: emptyList()
 }

@@ -1,16 +1,12 @@
 package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.EventDispatcher
-import com.freya02.botcommands.api.core.events.PreloadServiceEvent
 import com.freya02.botcommands.api.core.service.*
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.utils.ReflectionMetadata
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.hooks.IEventManager
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -19,6 +15,7 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
+import kotlin.system.measureNanoTime
 
 internal class ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
@@ -51,21 +48,15 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     private val lock = ReentrantLock()
     private val serviceCreationStack = ServiceCreationStack()
 
+    internal val classes: List<KClass<*>>
+
     init {
+        measureNanoTime {
+            this.classes = ReflectionMetadata.runScan(context)
+        }.also { nano -> logger.trace { "Classes reflection took ${nano / 1000000.0} ms" } }
+
         putService(this)
         putServiceAs<ServiceContainer>(this)
-        putService(context)
-        putService(context.eventManager)
-        putServiceAs<IEventManager>(context.eventManager) //Should be used if JDA is constructed as a service
-        putService(context.classPathContainer)
-        putServiceAs<BContext>(context)
-        putServiceAs(context.config)
-    }
-
-    internal fun preloadServices() {
-        runBlocking {
-            getService(EventDispatcher::class).dispatchEvent(PreloadServiceEvent())
-        }
     }
 
     internal fun loadServices(loadableServices: Map<ServiceStart, List<KClass<*>>>, requestedStart: ServiceStart) {
@@ -199,6 +190,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 }
 
+//TODO refactor to getter function, takes ServiceStart type
 internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
     get() =
         enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->

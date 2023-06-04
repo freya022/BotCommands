@@ -14,7 +14,7 @@ import java.sql.SQLException;
  * <p><b>Requirements:</b>
  * <ul>
  *     <li>This interface is implemented on at most 1 class</li>
- *     <li>The class needs to be annotated with {@code @BService(start = ServiceStart.PRE_LOAD)}</li>
+ *     <li>The class needs to be annotated with {@code @BService}</li>
  *     <li>The class needs to be annotated with {@code @ServiceType(type = ConnectionSupplier.class)}</li>
  * </ul>
  *
@@ -23,7 +23,7 @@ import java.sql.SQLException;
  * @see InjectedService
  * @see BComponentsConfig#setUseComponents(boolean)
  */
-@InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService(start = ServiceStart.PRE_LOAD) and @ServiceType(type = ConnectionSupplier.class) " +
+@InjectedService(message = "A service implementing ConnectionSupplier and annotated with @BService and @ServiceType(type = ConnectionSupplier.class) " +
 		"needs to be set in order to use the database")
 public interface ConnectionSupplier {
 	int getMaxConnections();

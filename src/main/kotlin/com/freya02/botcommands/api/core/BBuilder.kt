@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
+import com.freya02.botcommands.api.core.events.PreLoadEvent
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.internal.BContextImpl
@@ -106,20 +107,17 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             if (config.disableAutocompleteCache)
                 logger.info("Configuration disabled autocomplete cache, except forced caches")
 
-            val loadableServices = context.loadableServices
             context.status = BContext.Status.PRE_LOAD
-            context.serviceContainer.loadServices(loadableServices, ServiceStart.PRE_LOAD)
+            context.eventDispatcher.dispatchEvent(PreLoadEvent())
 
             context.status = BContext.Status.LOAD
-            context.serviceContainer.loadServices(loadableServices, ServiceStart.DEFAULT)
             context.eventDispatcher.dispatchEvent(LoadEvent())
 
             context.status = BContext.Status.POST_LOAD
-            context.serviceContainer.loadServices(loadableServices, ServiceStart.POST_LOAD)
             context.eventDispatcher.dispatchEvent(PostLoadEvent())
 
             context.status = BContext.Status.READY
-            context.serviceContainer.loadServices(loadableServices, ServiceStart.READY)
+            context.serviceContainer.loadServices(context.loadableServices, ServiceStart.READY)
         }
     }
 }

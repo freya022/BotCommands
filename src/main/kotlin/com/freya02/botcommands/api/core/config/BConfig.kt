@@ -168,6 +168,7 @@ class BConfigBuilder internal constructor() : BConfig {
 
 @JvmSynthetic
 internal fun BConfig.putConfigInServices(serviceContainer: ServiceContainer) {
+    serviceContainer.putServiceAs(this)
     serviceContainer.putServiceAs(serviceConfig)
     serviceContainer.putServiceAs(applicationConfig)
     serviceContainer.putServiceAs(componentsConfig)

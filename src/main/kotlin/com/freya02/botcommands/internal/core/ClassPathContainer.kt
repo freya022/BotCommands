@@ -1,14 +1,13 @@
 package com.freya02.botcommands.internal.core
 
-import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.ReflectionMetadata
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
-import kotlin.system.measureNanoTime
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
@@ -55,46 +54,39 @@ internal fun ClassPathFunction(instance: Any, function: KFunction<*>): ClassPath
     return InstanceClassPathFunction(instance, function)
 }
 
-@InjectedService
+@BService
 @OptIn(ExperimentalTime::class)
-internal class ClassPathContainer(private val context: BContextImpl) {
+internal class ClassPathContainer internal constructor(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
-    val classes: List<KClass<*>>
-    private val functions: List<ClassPathFunction> by lazy {
+    //TODO filter out classes which aren't instantiable, remove the comment below and those related to it
+    // Also remove ConditionalUse
+    // To achieve this, this service should be created on post load (or add a pre ready status)
+    private val instantiableClasses: List<KClass<*>> = context.serviceContainer.classes.filter { context.serviceContainer.canCreateService(it) == null }
+    private val functions: List<ClassPathFunction>
+
+    init {
         val (functions, duration) = measureTimedValue {
             retrieveClassFunctions()
         }
+        this.functions = functions
         logger.trace { "Functions reflection took ${duration.toDouble(DurationUnit.MILLISECONDS)} ms" }
-        return@lazy functions
     }
 
-    init {
-        val nano = measureNanoTime {
-            this.classes = ReflectionMetadata.runScan(context)
-        }
-
-        logger.trace { "Classes reflection took ${nano / 1000000.0} ms" }
-    }
-
-    inline fun <reified A : Annotation> functionsWithAnnotation() = functions.withFilter(FunctionFilter.annotation<A>())
+    internal inline fun <reified A : Annotation> functionsWithAnnotation() = functions.withFilter(FunctionFilter.annotation<A>())
 
     private fun retrieveClassFunctions(): List<ClassPathFunction> {
-        return classes
-//            .filter { //Cannot predetermine availability of services when the framework is initializing as services may be injected and others might depend on those
-//                val errorMessage = context.serviceContainer.canCreateService(it)
-//                if (errorMessage != null) logger.trace { "Discarding ${it.simpleName} from ClassPathContainer, reason: $errorMessage" }
-//                errorMessage == null
-//            } //Keep services which can be loaded
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .filter { it.annotations.isNotEmpty() } //Ignore methods without annotations, as this class only finds functions with annotations
-                    .map { ClassPathFunction(context, clazz, it) }
-            }
+        return instantiableClasses.flatMap { clazz ->
+            clazz.declaredMemberFunctions
+                .filter { it.annotations.isNotEmpty() } //Ignore methods without annotations, as this class only finds functions with annotations
+                //TODO since all classes are guaranteed to be instantiable at this point, refactor CPF
+                .map { ClassPathFunction(context, clazz, it) }
+        }
     }
 
     companion object {
         fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }
+        fun Iterable<KFunction<*>>.toClassPathFunctions(context: BContextImpl) = map { ClassPathFunction(context, it.declaringClass, it) }
     }
 }
 

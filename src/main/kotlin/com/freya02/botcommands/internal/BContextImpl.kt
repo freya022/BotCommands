@@ -10,7 +10,9 @@ import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
+import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
@@ -18,9 +20,11 @@ import com.freya02.botcommands.internal.commands.application.autocomplete.Autoco
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.service.ServiceAnnotationsMap
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
 import com.freya02.botcommands.internal.core.service.ServiceProviders
+import com.freya02.botcommands.internal.core.service.loadableServices
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -30,6 +34,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.exceptions.ErrorHandler
+import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.requests.ErrorResponse
 import kotlin.time.Duration.Companion.minutes
@@ -38,11 +43,12 @@ import kotlin.time.Duration.Companion.minutes
 class BContextImpl internal constructor(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
-    internal val classPathContainer: ClassPathContainer
+    internal val classPathContainer: ClassPathContainer get() = serviceContainer.getService<ClassPathContainer>()
     private val serviceContainer: ServiceContainerImpl
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
     internal val serviceProviders = ServiceProviders()
-    val eventDispatcher: EventDispatcher
+    internal val functionAnnotationsMap = FunctionAnnotationsMap()
+    val eventDispatcher: EventDispatcher get() = getService<EventDispatcher>()
 
     private var status : Status = Status.PRE_LOAD
 
@@ -56,15 +62,20 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
     init {
-        classPathContainer = ClassPathContainer(this)
         serviceContainer = ServiceContainerImpl(this) //Puts itself, ctx, cem and cpc
+
+        serviceContainer.putService(this)
+        serviceContainer.putServiceAs<BContext>(this)
+
+        serviceContainer.putService(eventManager)
+        serviceContainer.putServiceAs<IEventManager>(eventManager) //Should be used if JDA is constructed as a service
+
         config.putConfigInServices(serviceContainer)
+
         serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
 
-        eventDispatcher = EventDispatcher(this, EventTreeService(this)) //Services put in ctor
-
-        serviceContainer.preloadServices()
+        serviceContainer.loadServices(this.loadableServices, ServiceStart.DEFAULT)
     }
 
     private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier }
@@ -87,8 +98,8 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     override fun getStatus(): Status = status
 
     fun setStatus(newStatus: Status) {
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(status, newStatus)) }
         this.status = newStatus
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(status, newStatus)) }
     }
 
     override fun getPrefixes(): List<String> = config.textConfig.prefixes

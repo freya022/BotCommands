@@ -3,13 +3,14 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
-import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.EventHandlerFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.unreflect
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -34,7 +35,7 @@ import kotlin.time.toDurationUnit
 
 private typealias EventMap = MutableMap<KClass<*>, CopyOnWriteArrayList<EventHandlerFunction>>
 
-@InjectedService
+@BService
 class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager
@@ -43,9 +44,10 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()
 
     init {
-        context.serviceContainer.putService(this)
-
-        addEventListeners(context.classPathContainer.functionsWithAnnotation<BEventListener>())
+        context.functionAnnotationsMap
+            .getFunctionsWithAnnotation<BEventListener>()
+            .toClassPathFunctions(context)
+            .also { addEventListeners(it) }
 
         //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
         // as jda-ktx takes this group of listeners as only being one.
@@ -149,14 +151,16 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
             val eventErasure = parameters.first().type.jvmErasure
             val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
-//                .onEach { //Cannot predetermine availability of services when the framework is initializing as services may be injected and others might depend on those
-//                    context.serviceContainer.canCreateService(it)?.let { errorMessage ->
-//                        throwUser(
-//                            classPathFunc.function,
-//                            "Unable to register event listener due to an unavailable service: $errorMessage"
-//                        )
-//                    }
-//                }
+                // The main risk was with injected services, as they may not be available at that point,
+                // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
+                .onEach {
+                    context.serviceContainer.canCreateService(it)?.let { errorMessage ->
+                        throwUser(
+                            classPathFunc.function,
+                            "Unable to register event listener due to an unavailable service: $errorMessage"
+                        )
+                    }
+                }
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
                 isAsync = annotation.async,
                 timeout = getTimeout(annotation),

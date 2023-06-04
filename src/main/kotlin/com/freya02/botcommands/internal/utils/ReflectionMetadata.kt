@@ -17,6 +17,7 @@ import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
 import kotlin.reflect.jvm.jvmName
 
@@ -107,6 +108,17 @@ internal object ReflectionMetadata {
                                     annotationReceiver = kClass,
                                     annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
                                     annotation = annotationInfo.loadClassAndInstantiate()
+                                )
+                            }
+                        }
+
+                        kClass.declaredMemberFunctions.forEach { function ->
+                            function.annotations.forEach { annotation ->
+                                @Suppress("UNCHECKED_CAST")
+                                context.functionAnnotationsMap.put(
+                                    annotationReceiver = function,
+                                    annotationType = annotation.annotationClass as KClass<Annotation>,
+                                    annotation = annotation
                                 )
                             }
                         }
