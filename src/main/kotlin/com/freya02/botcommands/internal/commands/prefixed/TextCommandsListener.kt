@@ -2,8 +2,10 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
@@ -20,7 +22,12 @@ import net.dv8tion.jda.internal.requests.CompletedRestAction
 
 private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
 
-internal class TextCommandsListener(private val context: BContextImpl, private val cooldownService: CooldownService, private val helpCommandInfo: HelpCommandInfo?) {
+@BService
+internal class TextCommandsListener internal constructor(
+    private val context: BContextImpl,
+    private val cooldownService: CooldownService,
+    private val helpCommand: IHelpCommand?
+) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
     private val spacePattern = Regex("\\s+")
@@ -71,12 +78,7 @@ internal class TextCommandsListener(private val context: BContextImpl, private v
                     }
                 }
 
-                helpCommandInfo?.let { (helpCommand, _) ->
-                    helpCommand.onInvalidCommand(
-                        BaseCommandEventImpl(context, event, ""),
-                        commandInfo
-                    )
-                }
+                helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, ""), commandInfo)
             } catch (e: Throwable) {
                 handleException(event, e, msg)
             }

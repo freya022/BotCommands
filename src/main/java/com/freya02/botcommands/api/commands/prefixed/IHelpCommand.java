@@ -1,5 +1,8 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,7 +11,11 @@ import org.jetbrains.annotations.NotNull;
  * <br>This lets the framework use the command to also display help about specific commands
  *
  * <p>You can implement a help command just like a normal command, but it has to implement this interface.
+ *
+ * <p>
+ * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link IHelpCommand}.
  */
+@InterfacedService(acceptMultiple = false)
 public interface IHelpCommand {
 	/**
 	 * Is fired when a command is recognized, but the arguments cannot be resolved on any of the command variants.
