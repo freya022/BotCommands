@@ -17,30 +17,23 @@ import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
-import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.LocalizationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.requiredFilter
-import com.freya02.botcommands.internal.utils.withFilter
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
     private val functions: List<SlashFunctionMetadata> =
-        context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .withFilter(FunctionFilter.annotation<JDASlashCommand>())
-                    .requiredFilter(FunctionFilter.nonStatic())
-                    .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
-                    .map { ClassPathFunction(context, clazz, it) }
-            }
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
@@ -60,7 +53,6 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
         functions
-            .filter { it.hasInstance() }
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions {
                 val annotation = it.annotation
@@ -76,7 +68,6 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         fillSubcommandsAndGroups(subcommands, subcommandGroups)
 
         functions
-            .filter { it.hasInstance() }
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions { metadata ->
                 val annotation = metadata.annotation
@@ -104,7 +95,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>>,
         subcommandGroups: MutableMap<String, SlashSubcommandGroupMetadata>
     ) {
-        functions.filter { it.hasInstance() }.forEachWithDelayedExceptions { metadata ->
+        functions.forEachWithDelayedExceptions { metadata ->
             when (metadata.path.nameCount) {
                 2 -> subcommands.computeIfAbsent(metadata.path.name) { arrayListOf() }.add(metadata)
                 3 -> subcommandGroups

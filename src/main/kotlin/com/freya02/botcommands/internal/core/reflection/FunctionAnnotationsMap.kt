@@ -1,32 +1,57 @@
 package com.freya02.botcommands.internal.core.reflection
 
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.service.InstantiableServiceAnnotationsMap
 import com.freya02.botcommands.internal.simpleNestedName
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 private val logger = KotlinLogging.logger { }
 
 /**
  * This class holds all functions with at least one annotation
  */
-internal class FunctionAnnotationsMap {
-    private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, Annotation>> = hashMapOf()
+@OptIn(ExperimentalTime::class)
+@BService
+internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServiceAnnotationsMap: InstantiableServiceAnnotationsMap) {
+    private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()
 
-    internal fun <A : Annotation> put(annotationReceiver: KFunction<*>, annotationType: KClass<A>, annotation: A) {
+    init {
+        val duration = measureTime {
+            instantiableServiceAnnotationsMap
+                .getAllClasses()
+                .forEach { kClass ->
+                    kClass.declaredMemberFunctions.forEach { function ->
+                        function.annotations.forEach { annotation ->
+                            put(context, function, annotation.annotationClass)
+                        }
+                    }
+                }
+        }
+
+        logger.trace { "Functions annotations reflection took ${duration.toDouble(DurationUnit.MILLISECONDS)} ms" }
+    }
+
+    private fun <A : Annotation> put(context: BContextImpl, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
         if (annotationReceiver in instanceAnnotationMap) {
             logger.warn("An annotation instance of type '${annotationType.simpleNestedName}' already exists on function '${annotationReceiver.shortSignature}'")
             return
         }
-        instanceAnnotationMap.putIfAbsent(annotationReceiver, annotation)
+        instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, annotationReceiver.declaringClass, annotationReceiver)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    internal inline fun <reified A : Annotation> get(): Map<KFunction<*>, A>? =
-        map[A::class] as Map<KFunction<*>, A>?
+    internal inline fun <reified A : Annotation> get(): Map<KFunction<*>, ClassPathFunction>? = map[A::class]
 
-    internal inline fun <reified A : Annotation> getFunctionsWithAnnotation(): Set<KFunction<*>> =
-        get<A>()?.keys ?: emptySet()
+    internal inline fun <reified A : Annotation> getFunctionsWithAnnotation(): Collection<ClassPathFunction> =
+        get<A>()?.values ?: emptySet()
 }

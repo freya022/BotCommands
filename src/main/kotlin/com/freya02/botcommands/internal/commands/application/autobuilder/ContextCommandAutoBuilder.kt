@@ -22,14 +22,11 @@ import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
-import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.requiredFilter
-import com.freya02.botcommands.internal.utils.withFilter
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 
 @BService
@@ -38,14 +35,10 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
     private val userFunctions: List<UserContextFunctionMetadata>
 
     init {
-        messageFunctions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .withFilter(FunctionFilter.annotation<JDAMessageCommand>())
-                    .requiredFilter(FunctionFilter.nonStatic())
-                    .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
-                    .map { ClassPathFunction(context, clazz, it) }
-            }
+        messageFunctions = context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDAMessageCommand>()
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalMessageEvent::class))
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDAMessageCommand>() ?: throwInternal("@JDAMessageCommand should be present")
@@ -55,14 +48,10 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
                 MessageContextFunctionMetadata(it, annotation, path, commandId)
             }
 
-        userFunctions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .withFilter(FunctionFilter.annotation<JDAUserCommand>())
-                    .requiredFilter(FunctionFilter.nonStatic())
-                    .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
-                    .map { ClassPathFunction(context, clazz, it) }
-            }
+        userFunctions = context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDAUserCommand>()
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalUserEvent::class))
             .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDAUserCommand>() ?: throwInternal("@JDAMessageCommand should be present")
@@ -83,7 +72,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
     fun declareGuildUser(manager: GuildApplicationCommandManager) = declareUser(manager)
 
     private fun declareMessage(manager: AbstractApplicationCommandManager) {
-        messageFunctions.filter { it.hasInstance() }.forEachWithDelayedExceptions {
+        messageFunctions.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
             if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
@@ -93,7 +82,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
     }
 
     private fun declareUser(manager: AbstractApplicationCommandManager) {
-        userFunctions.filter { it.hasInstance() }.forEachWithDelayedExceptions {
+        userFunctions.forEachWithDelayedExceptions {
             val annotation = it.annotation
 
             if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions

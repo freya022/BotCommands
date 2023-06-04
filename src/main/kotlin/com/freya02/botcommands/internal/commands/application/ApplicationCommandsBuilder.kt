@@ -10,21 +10,18 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
 import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
 import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
-import com.freya02.botcommands.internal.core.withInstanceOrNull
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import com.freya02.botcommands.internal.utils.requiredFilter
-import com.freya02.botcommands.internal.utils.withFilter
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import kotlin.reflect.full.callSuspend
-import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
@@ -56,14 +53,10 @@ internal class ApplicationCommandsBuilder(
         guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildMessage)
         guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildUser)
 
-        context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .withFilter(FunctionFilter.annotation<AppDeclaration>())
-                    .requiredFilter(FunctionFilter.nonStatic())
-                    .requiredFilter(FunctionFilter.firstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class))
-                    .map { ClassPathFunction(context, clazz, it) }
-            }
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, AppDeclaration>()
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class))
             .forEach { classPathFunction ->
                 when (classPathFunction.function.valueParameters.first().type.jvmErasure) {
                     GlobalApplicationCommandManager::class -> globalDeclarationFunctions.add(classPathFunction)
@@ -213,9 +206,8 @@ internal class ApplicationCommandsBuilder(
     }
 
     private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: AbstractApplicationCommandManager) {
-        classPathFunction.withInstanceOrNull { instance, function ->
-            val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
-            function.callSuspend(instance, manager, *args)
-        }
+        val (instance, function) = classPathFunction
+        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
+        function.callSuspend(instance, manager, *args)
     }
 }

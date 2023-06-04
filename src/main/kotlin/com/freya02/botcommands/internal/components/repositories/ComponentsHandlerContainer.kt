@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwUser
@@ -20,12 +20,12 @@ import kotlin.reflect.full.findAnnotation
 
 @BService
 @Dependencies([Components::class])
-internal class ComponentsHandlerContainer(context: BContextImpl, classPathContainer: ClassPathContainer) {
+internal class ComponentsHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     private val buttonMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
     private val selectMap: MutableMap<String, ComponentDescriptor> = hashMapOf()
 
     init {
-        classPathContainer.functionsWithAnnotation<JDAButtonListener>()
+        functionAnnotationsMap.getFunctionsWithAnnotation<JDAButtonListener>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ButtonEvent::class))
             .forEach {
@@ -37,7 +37,7 @@ internal class ComponentsHandlerContainer(context: BContextImpl, classPathContai
                 }
             }
 
-        classPathContainer.functionsWithAnnotation<JDASelectMenuListener>()
+        functionAnnotationsMap.getFunctionsWithAnnotation<JDASelectMenuListener>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(StringSelectEvent::class, EntitySelectEvent::class))
             .forEach {

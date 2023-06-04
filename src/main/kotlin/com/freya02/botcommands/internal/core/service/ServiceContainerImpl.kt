@@ -194,7 +194,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
 internal val BContextImpl.loadableServices: Map<ServiceStart, List<KClass<*>>>
     get() =
         enumMapOf<ServiceStart, MutableList<KClass<*>>>().also { loadableServices ->
-            serviceAnnotationsMap
+            instantiableServiceAnnotationsMap
                 .getAllClasses()
                 .forEach { clazz ->
                     val start = clazz.findAnnotation<BService>()?.start ?: ServiceStart.DEFAULT

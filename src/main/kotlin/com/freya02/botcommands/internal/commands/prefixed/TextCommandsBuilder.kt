@@ -9,7 +9,10 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
-import com.freya02.botcommands.internal.core.*
+import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
@@ -23,7 +26,7 @@ import kotlin.reflect.jvm.jvmErasure
 @BService
 internal class TextCommandsBuilder(
     private val serviceContainer: ServiceContainerImpl,
-    classPathContainer: ClassPathContainer
+    functionAnnotationsMap: FunctionAnnotationsMap
 ) {
     private val logger = KotlinLogging.logger {  }
 
@@ -32,8 +35,8 @@ internal class TextCommandsBuilder(
     init {
         declarationFunctions += ClassPathFunction(serviceContainer.getService<TextCommandAutoBuilder>(), TextCommandAutoBuilder::declare)
 
-        for (classPathFunction in classPathContainer
-            .functionsWithAnnotation<TextDeclaration>()
+        for (classPathFunction in functionAnnotationsMap
+            .getFunctionsWithAnnotation<TextDeclaration>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(TextCommandManager::class))
         ) {
@@ -93,9 +96,8 @@ internal class TextCommandsBuilder(
     }
 
     private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: TextCommandManager) {
-        classPathFunction.withInstanceOrNull { instance, function ->
-            val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
-            function.callSuspend(instance, manager, *args)
-        }
+        val (instance, function) = classPathFunction
+        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
+        function.callSuspend(instance, manager, *args)
     }
 }

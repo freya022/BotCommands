@@ -7,8 +7,6 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAU
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
-import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.simpleNestedName
@@ -26,11 +24,10 @@ private val commandAnnotations = listOf(
 )
 
 @BService
-class CommandsPresenceChecker {
-    @BEventListener
-    fun onFirstReady(event: FirstReadyEvent, context: BContextImpl) {
-        context.serviceAnnotationsMap
-            .getClassesWithAnnotation<Command>()
+class CommandsPresenceChecker(context: BContextImpl) {
+    init {
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableClassesWithAnnotation<Command>()
             .forEach { clazz ->
                 val hasDeclarations = clazz.declaredMemberFunctions.any { function ->
                     function.annotations.any { it.annotationClass in commandAnnotations }

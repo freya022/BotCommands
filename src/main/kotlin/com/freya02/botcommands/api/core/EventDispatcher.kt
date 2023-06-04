@@ -5,10 +5,11 @@ import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.EventHandlerFunction
+import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.toClassPathFunctions
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.unreflect
@@ -23,6 +24,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
@@ -36,18 +38,21 @@ import kotlin.time.toDurationUnit
 private typealias EventMap = MutableMap<KClass<*>, CopyOnWriteArrayList<EventHandlerFunction>>
 
 @BService
-class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
+class EventDispatcher internal constructor(
+    private val context: BContextImpl,
+    private val eventTreeService: EventTreeService,
+    functionAnnotationsMap: FunctionAnnotationsMap
+) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager
 
-    private val map: EventMap = hashMapOf()
-    private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()
+    private val map: EventMap = ConcurrentHashMap()
+    private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
 
     init {
-        context.functionAnnotationsMap
+        functionAnnotationsMap
             .getFunctionsWithAnnotation<BEventListener>()
-            .toClassPathFunctions(context)
-            .also { addEventListeners(it) }
+            .addAsEventListeners()
 
         //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
         // as jda-ktx takes this group of listeners as only being one.
@@ -57,12 +62,11 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     }
 
     fun addEventListener(listener: Any) {
-        addEventListeners(
-            listener::class
-                .functions
-                .withFilter(FunctionFilter.annotation<BEventListener>())
-                .toClassPathFunctions(listener)
-        )
+        listener::class
+            .functions
+            .withFilter(FunctionFilter.annotation<BEventListener>())
+            .toClassPathFunctions(listener)
+            .addAsEventListeners()
     }
 
     fun removeEventListener(listener: Any) {
@@ -107,12 +111,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val instance = eventHandlerFunction.classPathFunction.instanceOrNull
-            if (instance == null) {
-                map[event::class]?.remove(eventHandlerFunction)
-                return
-            }
-            val function = eventHandlerFunction.classPathFunction.function
+            val (instance, function) = eventHandlerFunction.classPathFunction
 
             /**
              * See [CoroutineEventManager.handle]
@@ -139,7 +138,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
-    private fun addEventListeners(functions: List<ClassPathFunction>) = functions
+    private fun Collection<ClassPathFunction>.addAsEventListeners() = this
         .requiredFilter(FunctionFilter.nonStatic())
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->

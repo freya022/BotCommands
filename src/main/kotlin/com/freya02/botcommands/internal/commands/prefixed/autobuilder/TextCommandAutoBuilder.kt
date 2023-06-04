@@ -23,15 +23,12 @@ import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedE
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
-import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.requiredFilter
-import com.freya02.botcommands.internal.utils.withFilter
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
@@ -43,14 +40,11 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl) {
     private val functions: List<TextFunctionMetadata>
 
     init {
-        functions = context.serviceAnnotationsMap.getClassesWithAnnotation<Command>()
-            .flatMap { clazz ->
-                clazz.declaredMemberFunctions
-                    .withFilter(FunctionFilter.annotation<JDATextCommand>())
-                    .requiredFilter(FunctionFilter.nonStatic())
-                    .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
-                    .map { ClassPathFunction(context, clazz, it) }
-            }.map {
+        functions = context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommand>()
+            .requiredFilter(FunctionFilter.nonStatic())
+            .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
+            .map {
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -66,7 +60,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl) {
     fun declare(manager: TextCommandManager) {
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
-        functions.filter { it.hasInstance() }.forEachWithDelayedExceptions { metadata ->
+        functions.forEachWithDelayedExceptions { metadata ->
             val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(metadata.path.name, metadata) }
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer

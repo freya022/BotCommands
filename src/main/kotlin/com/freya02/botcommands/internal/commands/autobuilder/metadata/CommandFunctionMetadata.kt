@@ -14,7 +14,6 @@ internal abstract class CommandFunctionMetadata<T : Any, A : Annotation>(
 ) {
     val func get() = classPathFunction.function
 
-    fun hasInstance() = classPathFunction.hasInstance()
     val instance: T
         get() = instanceType.safeCast(classPathFunction.instance)
             ?: throwUser(func, "Declaring class must extend ${instanceType.simpleName}")

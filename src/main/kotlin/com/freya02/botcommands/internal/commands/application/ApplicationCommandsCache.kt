@@ -1,7 +1,9 @@
 package com.freya02.botcommands.internal.commands.application
 
+import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
 import com.google.gson.Gson
@@ -13,8 +15,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 @BService(ServiceStart.LAZY)
-internal class ApplicationCommandsCache(jda: JDA) {
-    private val cachePath = Path.of(System.getProperty("java.io.tmpdir"), "${jda.selfUser.id}slashcommands")
+internal class ApplicationCommandsCache(serviceContainer: ServiceContainer) {
+    //Cannot put JDA in the constructor as it is injected later
+    private val cachePath = Path.of(System.getProperty("java.io.tmpdir"), "${serviceContainer.getService<JDA>().selfUser.id}slashcommands")
     val globalCommandsPath: Path = cachePath.resolve("globalCommands.json")
 
     init {

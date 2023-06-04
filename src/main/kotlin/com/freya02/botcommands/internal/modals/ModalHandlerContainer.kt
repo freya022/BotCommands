@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.modals
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.ClassPathContainer
+import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.throwUser
@@ -12,11 +12,11 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 @BService
-internal class ModalHandlerContainer(context: BContextImpl, classPathContainer: ClassPathContainer) {
+internal class ModalHandlerContainer(context: BContextImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     val handlers : MutableMap<String, ModalHandlerInfo> = hashMapOf()
 
     init {
-        classPathContainer.functionsWithAnnotation<ModalHandler>()
+        functionAnnotationsMap.getFunctionsWithAnnotation<ModalHandler>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(ModalInteractionEvent::class))
             .forEach {

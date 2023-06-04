@@ -12,19 +12,13 @@ import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
-import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
-import com.freya02.botcommands.internal.core.ClassPathContainer
-import com.freya02.botcommands.internal.core.reflection.FunctionAnnotationsMap
-import com.freya02.botcommands.internal.core.service.ServiceAnnotationsMap
-import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
-import com.freya02.botcommands.internal.core.service.ServiceProviders
-import com.freya02.botcommands.internal.core.service.loadableServices
+import com.freya02.botcommands.internal.core.service.*
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -43,11 +37,10 @@ import kotlin.time.Duration.Companion.minutes
 class BContextImpl internal constructor(private val config: BConfig, val eventManager: CoroutineEventManager) : BContext {
     private val logger = KotlinLogging.logger<BContext>()
 
-    internal val classPathContainer: ClassPathContainer get() = serviceContainer.getService<ClassPathContainer>()
     private val serviceContainer: ServiceContainerImpl
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
+    internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
-    internal val functionAnnotationsMap = FunctionAnnotationsMap()
     val eventDispatcher: EventDispatcher get() = getService<EventDispatcher>()
 
     private var status : Status = Status.PRE_LOAD
@@ -62,7 +55,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
 
     init {
-        serviceContainer = ServiceContainerImpl(this) //Puts itself, ctx, cem and cpc
+        serviceContainer = ServiceContainerImpl(this) //Puts itself
 
         serviceContainer.putService(this)
         serviceContainer.putServiceAs<BContext>(this)

@@ -27,12 +27,12 @@ internal class ResolverContainer(
     private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.serviceAnnotationsMap
-            .getClassesWithAnnotationAndType<Resolver, ParameterResolver<*, *>>()
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableClassesWithAnnotationAndType<Resolver, ParameterResolver<*, *>>()
             .forEach { clazz -> addResolver(serviceContainer.getService(clazz)) }
 
-        context.serviceAnnotationsMap
-            .getClassesWithAnnotationAndType<ResolverFactory, ParameterResolverFactory<*, *>>()
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableClassesWithAnnotationAndType<ResolverFactory, ParameterResolverFactory<*, *>>()
             .forEach { clazz -> addResolverFactory(serviceContainer.getService(clazz)) }
     }
 
