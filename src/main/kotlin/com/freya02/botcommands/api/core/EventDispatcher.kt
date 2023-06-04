@@ -24,8 +24,10 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.findAnnotation
@@ -35,7 +37,39 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<KClass<*>, CopyOnWriteArrayList<EventHandlerFunction>>
+// https://discord.com/channels/125227483518861312/125227483518861312/1114953133722980453
+internal class ConcurrentTreeSet<T> {
+    // Only protect modification operations, traversal is fine
+    private val lock = ReentrantLock()
+    private var set: MutableSet<T> = TreeSet()
+
+    fun add(t: T): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.add(t).also {
+            this.set = newSet
+        }
+    }
+
+    fun remove(t: T): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.remove(t).also {
+            this.set = newSet
+        }
+    }
+
+    inline fun <R> map(block: (T) -> R): List<R> = set.map(block)
+
+    fun removeAll(removedSet: ConcurrentTreeSet<T>): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.removeAll(removedSet.set).also {
+            this.set = newSet
+        }
+    }
+
+    inline fun forEach(block: (T) -> Unit) = set.forEach(block)
+}
+
+private typealias EventMap = MutableMap<KClass<*>, ConcurrentTreeSet<EventHandlerFunction>>
 
 @BService
 class EventDispatcher internal constructor(
@@ -163,6 +197,7 @@ class EventDispatcher internal constructor(
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
                 isAsync = annotation.async,
                 timeout = getTimeout(annotation),
+                priority = annotation.priority,
                 parametersBlock = {
                     //Getting services is delayed until execution, as to ensure late services can be used in listeners
                     context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
@@ -172,12 +207,12 @@ class EventDispatcher internal constructor(
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
+                    instanceMap.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
                 }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
+                map.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
             }
         }
 

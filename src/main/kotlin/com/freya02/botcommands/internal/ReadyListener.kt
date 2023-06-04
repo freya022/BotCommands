@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 internal class ReadyListener {
     private var ready = false
 
-    @BEventListener
+    @BEventListener(priority = Int.MAX_VALUE)
     internal suspend fun onGuildReadyEvent(
         event: GuildReadyEvent,
         eventDispatcher: EventDispatcher,
