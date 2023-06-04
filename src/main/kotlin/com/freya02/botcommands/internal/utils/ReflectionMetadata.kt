@@ -9,7 +9,6 @@ import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.asKFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
-import com.freya02.botcommands.internal.utils.ReflectionUtils.isInstantiable
 import io.github.classgraph.*
 import java.lang.reflect.Executable
 import java.util.*
@@ -92,9 +91,7 @@ internal object ReflectionMetadata {
                     }
 
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    if (it.isSynthetic || it.isEnum || it.isAbstract) return@filter false
-
-                    return@filter isInstantiable(it)
+                    return@filter !it.isSynthetic && !it.isEnum && !it.isAbstract
                 }
                 .also { readAnnotations(context, it) }
                 .map { classInfo ->

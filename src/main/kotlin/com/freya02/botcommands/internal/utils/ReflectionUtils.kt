@@ -1,23 +1,19 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.annotations.ConditionalUse
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
-import io.github.classgraph.ClassInfo
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
-import kotlin.reflect.full.*
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionUtils {
-    private val logger = KotlinLogging.logger { }
-
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
     @Suppress("UNCHECKED_CAST")
@@ -70,8 +66,8 @@ internal object ReflectionUtils {
     internal val KFunction<*>.declaringClass: KClass<*>
         get() = this.javaMethodOrConstructor.declaringClass.kotlin
 
-    internal val KFunction<*>.isJava
-        get() = !declaringClass.hasAnnotation<Metadata>()
+//    internal val KFunction<*>.isJava
+//        get() = !declaringClass.hasAnnotation<Metadata>()
 
     internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
@@ -125,38 +121,14 @@ internal object ReflectionUtils {
             return collectionType.arguments.first().type
         }
 
-    /** Everything but extensions, includes static methods */
-    internal val KClass<*>.nonExtensionFunctions
-        //Take everything except extension functions
-        get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
-
-    /** Static methods and declared member functions of the companion object */
-    internal val KClass<*>.staticAndCompanionDeclaredMemberFunctions
-        get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
-
-    @Throws(IllegalAccessException::class, InvocationTargetException::class)
-    internal fun isInstantiable(info: ClassInfo): Boolean {
-        var canInstantiate = true
-        for (methodInfo in info.methodInfo) {
-            if (methodInfo.hasAnnotation(ConditionalUse::class.java)) {
-                if (methodInfo.isStatic) {
-                    val function = methodInfo.loadClassAndGetMethod().asKFunction()
-                    if (function.parameters.isEmpty() && function.returnType.jvmErasure == Boolean::class) {
-                        requireUser(function.isPublic, function) { "Method must be public" }
-                        canInstantiate = function.call() as Boolean
-                    } else {
-                        logger.warn("Method ${info.simpleName}#${function.name} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)")
-                    }
-                } else {
-                    logger.warn("Method ${info.simpleName}#${methodInfo.name} is annotated @ConditionalUse but is not static")
-                }
-
-                break
-            }
-        }
-
-        return canInstantiate
-    }
+//    /** Everything but extensions, includes static methods */
+//    internal val KClass<*>.nonExtensionFunctions
+//        //Take everything except extension functions
+//        get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
+//
+//    /** Static methods and declared member functions of the companion object */
+//    internal val KClass<*>.staticAndCompanionDeclaredMemberFunctions
+//        get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
 
     internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
