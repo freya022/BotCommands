@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core.service
 import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.simpleNestedName
@@ -10,6 +11,7 @@ import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.toImmutableMap
 import mu.KotlinLogging
 import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 
 @BService
@@ -38,6 +40,19 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
                 false
             }
         }
+
+    init {
+        getAllInstantiableClasses().forEach { kClass ->
+            //For each instantiable interfaced service that does not accept multiple implementations
+            // If there is more than 1 implementation then throw
+            if (kClass.findAnnotation<InterfacedService>()?.acceptMultiple == false) {
+                val serviceProviders = context.serviceProviders.findAllForType(kClass)
+                if (serviceProviders.size > 1) {
+                    throw IllegalArgumentException("Interfaced service ${kClass.simpleNestedName} cannot have multiple implementations. Current implementations: ${serviceProviders.joinToString { it.primaryType.simpleNestedName }}")
+                }
+            }
+        }
+    }
 
     private val functionAnnotationsMap get() = context.getService<FunctionAnnotationsMap>()
 
