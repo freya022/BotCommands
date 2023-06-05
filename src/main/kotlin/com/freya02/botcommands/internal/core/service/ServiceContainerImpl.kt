@@ -22,6 +22,8 @@ internal class ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
     private val set get() = localSet.get()
 
+    internal operator fun contains(provider: ServiceProvider) = set.contains(provider.providerKey)
+
     //If services have circular dependencies during checking, consider it to not be an issue
     internal inline fun <R> withServiceCheckKey(provider: ServiceProvider, block: () -> R): R? {
         if (!set.add(provider.providerKey)) return null
@@ -154,13 +156,13 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         return context.serviceProviders
             .findAllForType(clazz)
             // Avoid circular dependency, we can't supply ourselves
-            .filter { it.primaryType != currentType }
+            .filterNot { it in serviceCreationStack }
             .mapNotNull {
                 val serviceResult = tryGetService(it, clazz)
                 serviceResult.serviceError?.let { serviceError ->
-                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
-                    if (!interfacedServiceErrors.add(warnMessage)) {
-                        logger.warn(warnMessage)
+                    val warnMessage = "Could not create interfaced service ${clazz.simpleNestedName} with implementation ${it.primaryType.simpleNestedName} (from ${it.providerKey}): ${serviceError.toSimpleString()}"
+                    if (interfacedServiceErrors.add(warnMessage)) {
+                        logger.debug(warnMessage)
                     }
                 }
                 serviceResult.getOrNull()
