@@ -27,9 +27,9 @@ interface ServiceContainer {
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
-    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>>
-    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>, currentType: Class<*>): List<Class<T>> =
-        getInterfacedServiceTypes(clazz.kotlin, currentType.kotlin).map { it.java }
+    fun <T : Any> getServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>>
+    fun <T : Any> getServiceTypes(clazz: Class<T>, currentType: Class<*>): List<Class<T>> =
+        getServiceTypes(clazz.kotlin, currentType.kotlin).map { it.java }
 
     fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T>
     fun <T : Any> getInterfacedServices(clazz: Class<T>, currentType: Class<*>): List<T> =
@@ -47,8 +47,8 @@ inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServic
 
 inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
 
-inline fun <reified T : Any> ServiceContainer.getInterfacedServiceTypes(currentType: KClass<*>) =
-    getInterfacedServiceTypes(T::class, currentType)
+inline fun <reified T : Any> ServiceContainer.getServiceTypes(currentType: KClass<*>) =
+    getServiceTypes(T::class, currentType)
 
 inline fun <reified T : Any> ServiceContainer.getInterfacedServices(currentType: KClass<*>) =
     getInterfacedServices(T::class, currentType)

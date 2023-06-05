@@ -145,7 +145,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>> {
+    override fun <T : Any> getServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>> {
         return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
     }
 
