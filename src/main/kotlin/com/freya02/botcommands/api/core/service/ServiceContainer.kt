@@ -27,13 +27,23 @@ interface ServiceContainer {
     fun <T : Any> peekServiceOrNull(clazz: KClass<T>): T?
     fun <T : Any> peekServiceOrNull(clazz: Class<T>): T? = peekServiceOrNull(clazz.kotlin)
 
-    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>>
-    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>, currentType: Class<*>): List<Class<T>> =
-        getInterfacedServiceTypes(clazz.kotlin, currentType.kotlin).map { it.java }
+    fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>>
+    fun <T : Any> getInterfacedServiceTypes(clazz: Class<T>): List<Class<T>> =
+        getInterfacedServiceTypes(clazz.kotlin).map { it.java }
 
-    fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T>
-    fun <T : Any> getInterfacedServices(clazz: Class<T>, currentType: Class<*>): List<T> =
-        getInterfacedServices(clazz.kotlin, currentType.kotlin)
+    /**
+     * Filters out interfaced services of that type if they are already being inspected.
+     *
+     * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+     */
+    fun <T : Any> getInterfacedServices(clazz: KClass<T>): List<T>
+    /**
+     * Filters out interfaced services of that type if they are already being inspected.
+     *
+     * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+     */
+    fun <T : Any> getInterfacedServices(clazz: Class<T>): List<T> =
+        getInterfacedServices(clazz.kotlin)
 
     fun <T : Any> putServiceAs(t: T, clazz: KClass<out T>, name: String? = null)
     fun <T : Any> putServiceAs(t: T, clazz: Class<out T>) = putServiceAs(t, clazz.kotlin)
@@ -47,11 +57,19 @@ inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServic
 
 inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
 
-inline fun <reified T : Any> ServiceContainer.getInterfacedServiceTypes(currentType: KClass<*>) =
-    getInterfacedServiceTypes(T::class, currentType)
+/**
+ * Filters out interfaced services of that type if they are already being inspected.
+ *
+ * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+ */
+inline fun <reified T : Any> ServiceContainer.getInterfacedServiceTypes() = getInterfacedServiceTypes(T::class)
 
-inline fun <reified T : Any> ServiceContainer.getInterfacedServices(currentType: KClass<*>) =
-    getInterfacedServices(T::class, currentType)
+/**
+ * Filters out interfaced services of that type if they are already being inspected.
+ *
+ * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+ */
+inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInterfacedServices(T::class)
 
 inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyProperty<T, R> {
     val value: R by lazy { getService(R::class) }

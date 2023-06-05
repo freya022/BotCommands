@@ -39,7 +39,7 @@ internal class ClassServiceProvider(
         clazz.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
 
         //Check dynamic suppliers
-        serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
+        serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message
@@ -70,7 +70,7 @@ internal class ClassServiceProvider(
     }
 
     override fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation {
-        serviceContainer.getInterfacedServices<DynamicSupplier>(primaryType).forEach { dynamicSupplier ->
+        serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->
             val instantiability = dynamicSupplier.getInstantiability(serviceContainer.context, clazz)
             when (instantiability.type) {
                 //Return error message

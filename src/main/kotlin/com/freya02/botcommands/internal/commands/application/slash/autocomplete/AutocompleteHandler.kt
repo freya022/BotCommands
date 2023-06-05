@@ -53,7 +53,7 @@ internal class AutocompleteHandler(
             Command.Choice::class.isSuperclassOf(collectionElementType) -> ChoiceSupplierChoices(maxChoices)
             else -> {
                 val transformer = slashCommandInfo.context.serviceContainer
-                    .getInterfacedServices<AutocompleteTransformer<Any>>(this::class)
+                    .getInterfacedServices<AutocompleteTransformer<Any>>()
                     .firstOrNull { it.elementType == collectionElementType.java }
                     ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
                             "you may also check the docs for ${AutocompleteHandler::class.simpleName} and ${AutocompleteTransformer::class.simpleName}")

@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.core.config.BTextConfig
 import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
-import com.freya02.botcommands.api.core.service.getInterfacedServiceTypes
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
@@ -39,12 +39,13 @@ class HelpCommand internal constructor(private val context: BContextImpl) : IHel
         override fun checkServiceAvailability(context: BContext): String? {
             // Try to get IHelpCommand interfaced services, except ours
             // If empty then the user didn't provide one, in which case we can allow
-            val helpInterfacedServices = context.serviceContainer.getInterfacedServiceTypes<IHelpCommand>(HelpCommand::class) - HelpCommand::class
+            //Won't take HelpCommand into account
+            val helpCommands = context.serviceContainer.getInterfacedServices<IHelpCommand>()
             return when {
                 // A user-defined help command was found
-                helpInterfacedServices.isNotEmpty() -> {
+                helpCommands.isNotEmpty() -> {
                     logger.debug("Using a custom 'help' text command implementation")
-                    "An user supplied IHelpCommand interfaced service is already active (${helpInterfacedServices.first().simpleNestedName})"
+                    "An user supplied IHelpCommand interfaced service is already active (${helpCommands.first()::class.simpleNestedName})"
                 }
                 // No user-defined help command, try to use ours
                 else -> when {

@@ -147,12 +147,12 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>, currentType: KClass<*>): List<KClass<T>> {
+    override fun <T : Any> getInterfacedServiceTypes(clazz: KClass<T>): List<KClass<T>> {
         return context.serviceProviders.findAllForType(clazz).map { it.primaryType as KClass<T> }
     }
 
     private val interfacedServiceErrors: MutableSet<String> = ConcurrentHashMap.newKeySet()
-    override fun <T : Any> getInterfacedServices(clazz: KClass<T>, currentType: KClass<*>): List<T> {
+    override fun <T : Any> getInterfacedServices(clazz: KClass<T>): List<T> {
         return context.serviceProviders
             .findAllForType(clazz)
             // Avoid circular dependency, we can't supply ourselves
