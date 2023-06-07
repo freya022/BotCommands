@@ -195,10 +195,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         }
     }
 
-    /**
-     * Returns a non-null string if the service is not instantiable
-     */
-    internal fun canCreateService(clazz: KClass<*>): ServiceError? {
+    override fun canCreateService(clazz: KClass<*>): ServiceError? {
         val providers = context.serviceProviders.findAllForType(clazz)
         if (providers.isEmpty())
             return NO_PROVIDER.toError("No service or factories found for type ${clazz.simpleNestedName}")
@@ -214,9 +211,6 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         return ServiceError.fromErrors(errors)
     }
 
-    /**
-     * Returns a non-null string if the service is not instantiable
-     */
     private fun canCreateService(provider: ServiceProvider): ServiceError? {
         if (provider.instance != null) return null
 
