@@ -13,7 +13,8 @@ class ServiceError private constructor(
      * This is to be handled by the code throwing the exception, as this is required to be on the first line
      */
     val failedFunction: KFunction<*>?,
-    val nestedError: ServiceError?
+    val nestedError: ServiceError?,
+    val siblingErrors: List<ServiceError>
 ) {
     enum class ErrorType(val explanation: String) {
         DYNAMIC_NOT_INSTANTIABLE("Dynamic supplier could not create the service"),
@@ -26,11 +27,11 @@ class ServiceError private constructor(
         UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing");
 
         @JvmOverloads
-        fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null) =
-            ServiceError(this, errorMessage, extraMessage, failedFunction, nestedError)
+        fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList()) =
+            ServiceError(this, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors)
 
-        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null) =
-            ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError))
+        fun <T : Any> toResult(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList()) =
+            ServiceResult.fail<T>(toError(errorMessage, extraMessage, failedFunction, nestedError, siblingErrors))
     }
 
     operator fun component0() = errorType
@@ -38,12 +39,19 @@ class ServiceError private constructor(
     operator fun component2() = extraMessage
     operator fun component3() = nestedError
 
-    fun toSimpleString(): String = when {
+    fun withSibling(serviceError: ServiceError): ServiceError =
+        ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
+
+    fun toSimpleString(): String = (listOf(this) + siblingErrors).joinToString(prefix = " - ", separator = "\n - ") { it.toSingleSimpleString() }
+
+    private fun toSingleSimpleString(): String = when {
         extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"
         else -> "$errorMessage (${errorType.explanation})"
     }
 
-    fun toDetailedString(): String = buildString {
+    fun toDetailedString(): String = (listOf(this) + siblingErrors).joinToString("\n") { it.toSingleDetailedString() }
+
+    private fun toSingleDetailedString(): String = buildString {
         appendLine("Error message: $errorMessage")
         if (failedFunction != null)
             appendLine("Failed function: ${failedFunction.shortSignature}")
@@ -63,6 +71,12 @@ class ServiceError private constructor(
             }
         }
     }.prependIndent()
+
+    companion object {
+        fun fromErrors(errors: List<ServiceError>): ServiceError {
+            return errors.drop(1).fold(errors.first()) { acc, serviceError -> acc.withSibling(serviceError) }
+        }
+    }
 }
 
 class ServiceResult<T : Any> private constructor(val service: T?, val serviceError: ServiceError?) {
@@ -83,6 +97,9 @@ class ServiceResult<T : Any> private constructor(val service: T?, val serviceErr
         serviceError != null -> block(serviceError)
         else -> throwInternal("ServiceResult should contain either the service or the error message")
     }
+
+    inline fun onService(block: ServiceResult<T>.(service: T) -> Unit) = this.also { service?.also { block.invoke(this, it) } }
+    inline fun onError(block: ServiceResult<T>.(serviceError: ServiceError) -> Unit) = this.also { serviceError?.also { block.invoke(this, it) } }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -108,5 +125,6 @@ class ServiceResult<T : Any> private constructor(val service: T?, val serviceErr
     companion object {
         fun <T : Any> pass(service: T) = ServiceResult(service, null)
         fun <T : Any> fail(error: ServiceError) = ServiceResult<T>(null, error)
+        fun <T : Any> fail(errors: List<ServiceError>) = fail<T>(ServiceError.fromErrors(errors))
     }
 }
