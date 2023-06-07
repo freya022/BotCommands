@@ -12,6 +12,7 @@ import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
@@ -82,15 +83,13 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
 
     override fun getServiceContainer(): ServiceContainerImpl = serviceContainer
 
-    inline fun <reified T : Any> getService() = getService(T::class)
-
     override fun getJDA(): JDA {
         return serviceContainer.getService(JDA::class)
     }
 
     override fun getStatus(): Status = status
 
-    fun setStatus(newStatus: Status) {
+    internal fun setStatus(newStatus: Status) {
         this.status = newStatus
         runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(status, newStatus)) }
     }

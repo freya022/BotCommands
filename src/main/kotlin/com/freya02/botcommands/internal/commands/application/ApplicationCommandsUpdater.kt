@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.AbstractApplicationComma
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.asScopeString
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsCache.Companion.toJsonBytes

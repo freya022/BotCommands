@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.core.GlobalExceptionHandler;
 import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.core.config.*;
 import com.freya02.botcommands.api.core.service.ServiceContainer;
+import com.freya02.botcommands.api.core.service.ServiceResult;
 import com.freya02.botcommands.api.core.service.annotations.InjectedService;
-import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -60,10 +60,8 @@ public interface BContext {
 	@NotNull
     ServiceContainer getServiceContainer();
 
-	//TODO docs
-	@NotNull
-	default <T> T getService(@NotNull KClass<T> clazz) {
-		return getServiceContainer().getService(clazz);
+	default <T> ServiceResult<T> tryGetService(@NotNull Class<T> clazz) {
+		return getServiceContainer().tryGetService(clazz);
 	}
 
 	//TODO docs

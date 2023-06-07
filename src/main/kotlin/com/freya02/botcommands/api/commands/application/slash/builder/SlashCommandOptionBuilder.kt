@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.ValueRange
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteInfoContainer

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.core.config.BServiceConfig
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.simpleNestedName

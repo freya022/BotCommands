@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.service
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
@@ -54,14 +55,24 @@ interface ServiceContainer {
     fun putService(t: Any): Unit = putServiceAs(t, t::class)
 }
 
+fun <T : Any> BContext.tryGetService(kClass: KClass<T>): ServiceResult<T> = serviceContainer.tryGetService(kClass)
+inline fun <reified T : Any> BContext.tryGetService(): ServiceResult<T> = serviceContainer.tryGetService<T>()
 inline fun <reified T : Any> ServiceContainer.tryGetService(): ServiceResult<T> = tryGetService(T::class)
 
+fun <T : Any> BContext.canCreateService(kClass: KClass<T>): ServiceError? = serviceContainer.canCreateService(kClass)
+inline fun <reified T : Any> BContext.canCreateService(): ServiceError? = serviceContainer.canCreateService(T::class)
 inline fun <reified T : Any> ServiceContainer.canCreateService(): ServiceError? = canCreateService(T::class)
 
+fun <T : Any> BContext.getService(kClass: KClass<T>): T = serviceContainer.getService(kClass)
+inline fun <reified T : Any> BContext.getService(): T = serviceContainer.getService<T>()
 inline fun <reified T : Any> ServiceContainer.getService(): T = getService(T::class)
 
+fun <T : Any> BContext.getServiceOrNull(kClass: KClass<T>): T? = serviceContainer.getServiceOrNull(kClass)
+inline fun <reified T : Any> BContext.getServiceOrNull(): T? = serviceContainer.getServiceOrNull<T>()
 inline fun <reified T : Any> ServiceContainer.getServiceOrNull(): T? = getServiceOrNull(T::class)
 
+fun <T : Any> BContext.putServiceAs(t: T, kClass: KClass<T>) = serviceContainer.putServiceAs(t, kClass)
+inline fun <reified T : Any> BContext.putServiceAs(t: T) = serviceContainer.putServiceAs<T>(t)
 inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(t, T::class)
 
 /**
@@ -69,8 +80,20 @@ inline fun <reified T : Any> ServiceContainer.putServiceAs(t: T) = putServiceAs(
  *
  * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
  */
+inline fun <reified T : Any> BContext.getInterfacedServiceTypes() = serviceContainer.getInterfacedServiceTypes<T>()
+/**
+ * Filters out interfaced services of that type if they are already being inspected.
+ *
+ * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+ */
 inline fun <reified T : Any> ServiceContainer.getInterfacedServiceTypes() = getInterfacedServiceTypes(T::class)
 
+/**
+ * Filters out interfaced services of that type if they are already being inspected.
+ *
+ * This allows you to check other implementations of your own interfaced service, without having a circular dependency.
+ */
+inline fun <reified T : Any> BContext.getInterfacedServices() = serviceContainer.getInterfacedServices<T>()
 /**
  * Filters out interfaced services of that type if they are already being inspected.
  *
