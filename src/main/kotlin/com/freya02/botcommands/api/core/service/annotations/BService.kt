@@ -21,7 +21,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  * @see DynamicSupplier
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * When the service should be started

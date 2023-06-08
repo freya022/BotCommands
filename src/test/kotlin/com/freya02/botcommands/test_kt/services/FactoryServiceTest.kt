@@ -17,3 +17,12 @@ class FactoryServiceTest private constructor() {
         fun getFactory() = FactoryServiceTest()
     }
 }
+
+@BService
+class PropertyFactoryServiceTest private constructor() {
+    //    @BService //Not necessary
+    object PropertyFactoryServiceTestProvider {
+        @get:BService
+        val factory = PropertyFactoryServiceTest()
+    }
+}

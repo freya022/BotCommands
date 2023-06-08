@@ -2,22 +2,24 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
-import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.utils.ReflectionUtils.asKFunction
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import io.github.classgraph.*
 import java.lang.reflect.Executable
+import java.lang.reflect.Method
 import java.util.*
 import kotlin.coroutines.Continuation
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
+import kotlin.reflect.jvm.javaGetter
 import kotlin.reflect.jvm.jvmName
+import kotlin.reflect.jvm.kotlinFunction
 
 private typealias IsNullableAnnotated = Boolean
 
@@ -120,6 +122,9 @@ internal object ReflectionMetadata {
     private fun ClassInfo.isService(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
+    private fun MethodInfo.isService(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
                 //Keep classes which have service factories
@@ -128,6 +133,8 @@ internal object ReflectionMetadata {
     private fun readAnnotations(context: BContextImpl, classInfoList: List<ClassInfo>) {
         for (classInfo in classInfoList) {
             try {
+                val kClass = classInfo.loadClass().kotlin
+
                 for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
                     //Don't inspect methods with generics
                     if (methodInfo.parameterInfo
@@ -141,15 +148,23 @@ internal object ReflectionMetadata {
                     }
                     val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
-                    if (methodInfo.hasAnnotation(BService::class.java)) {
-                        context.serviceProviders.putServiceProvider(methodInfo.loadClassAndGetMethod().asKFunction())
+                    if (methodInfo.isService(context.config)) {
+                        if (methodInfo.isConstructor)
+                            throwUser("Constructor of ${classInfo.simpleName} cannot be annotated with a service annotation")
+                        method as Method
+
+                        val function =
+                            method.kotlinFunction
+                                ?: kClass.memberProperties.find { it.javaGetter == method }?.getter
+                                ?: throwInternal("Cannot get KFunction/KProperty.Getter from $method")
+                        context.serviceProviders.putServiceProvider(function)
                     }
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
                 }
 
                 if (classInfo.isService(context.config)) {
-                    context.serviceProviders.putServiceProvider(classInfo.loadClass().kotlin)
+                    context.serviceProviders.putServiceProvider(kClass)
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
