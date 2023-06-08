@@ -47,9 +47,11 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
             //For each instantiable interfaced service that does not accept multiple implementations
             // If there is more than 1 implementation then throw
             if (kClass.findAnnotation<InterfacedService>()?.acceptMultiple != true) { //False or null
-                val serviceProviders = context.serviceProviders.findAllForType(kClass)
+                val serviceProviders = context.serviceProviders
+                    .findAllForType(kClass)
+                    .filter { it.canInstantiate(context.serviceContainer) == null }
                 if (serviceProviders.size > 1) {
-                    throw IllegalArgumentException("Interfaced service ${kClass.simpleNestedName} cannot have multiple implementations. Current implementations: ${serviceProviders.joinToString { it.primaryType.simpleNestedName }}")
+                    throw IllegalArgumentException("Service ${kClass.simpleNestedName} cannot have multiple providers. Current providers: ${serviceProviders.joinToString { it.providerKey }}")
                 }
             }
         }
