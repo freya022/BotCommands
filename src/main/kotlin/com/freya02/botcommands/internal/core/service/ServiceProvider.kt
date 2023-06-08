@@ -4,9 +4,7 @@ import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
-import com.freya02.botcommands.api.core.service.annotations.ConditionalService
-import com.freya02.botcommands.api.core.service.annotations.Dependencies
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
+import com.freya02.botcommands.api.core.service.annotations.*
 import com.freya02.botcommands.internal.bestName
 import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.throwInternal
@@ -45,6 +43,22 @@ internal interface ServiceProvider {
     fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError?
 
     fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
+}
+
+internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
+    findAnnotation<ServiceName>()?.let {
+        if (it.value.isNotBlank()) {
+            return it.value
+        }
+    }
+
+    findAnnotation<BService>()?.let {
+        if (it.name.isNotBlank()) {
+            return it.name
+        }
+    }
+
+    return null
 }
 
 internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (val serviceType = findAnnotation<ServiceType>()) {

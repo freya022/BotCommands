@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability.
 import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
-import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.internal.simpleNestedName
@@ -127,7 +126,4 @@ internal class ClassServiceProvider(
     override fun toString() = providerKey
 }
 
-internal fun KClass<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
-    annotation == null || annotation.name.isEmpty() -> this.simpleNestedName.replaceFirstChar { it.lowercase() }
-    else -> annotation.name
-}
+internal fun KClass<*>.getServiceName() = getAnnotatedServiceName() ?: this.simpleNestedName.replaceFirstChar { it.lowercase() }

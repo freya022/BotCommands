@@ -1,10 +1,8 @@
 package com.freya02.botcommands.internal.core.service
 
 import com.freya02.botcommands.api.core.service.ServiceError
-import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 internal class FunctionServiceProvider(
@@ -40,7 +38,4 @@ internal class FunctionServiceProvider(
     override fun toString() = providerKey
 }
 
-internal fun KFunction<*>.getServiceName(annotation: BService? = this.findAnnotation()): String = when {
-    annotation == null || annotation.name.isEmpty() -> this.name
-    else -> annotation.name
-}
+internal fun KFunction<*>.getServiceName(): String = getAnnotatedServiceName() ?: this.name

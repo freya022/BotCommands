@@ -16,6 +16,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  * @see InjectedService
  * @see ConditionalService
  * @see ServiceType
+ * @see ServiceName
  *
  * @see DynamicSupplier
  */
