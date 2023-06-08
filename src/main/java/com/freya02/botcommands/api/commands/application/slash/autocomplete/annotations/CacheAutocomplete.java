@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.commands.application.slash.autocomplete.anno
 
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode;
-import com.freya02.botcommands.api.core.config.BConfig;
+import com.freya02.botcommands.api.core.config.BConfigBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -35,12 +35,12 @@ public @interface CacheAutocomplete {
 	AutocompleteCacheMode cacheMode() default AutocompleteCacheMode.CONSTANT_BY_KEY;
 
 	/**
-	 * Whether the cache should be used even if {@link BConfig#setDisableAutocompleteCache(boolean) autocomplete cache is disabled}.
+	 * Whether the cache should be used even if {@link BConfigBuilder#setDisableAutocompleteCache(boolean) autocomplete cache is disabled}.
 	 * <br>This could be useful if your autocomplete is heavy even in a development environment.
 	 *
 	 * @return {@code} true if the autocomplete results should be cached anyway
 	 *
-	 * @see BConfig#setDisableAutocompleteCache(boolean)
+	 * @see BConfigBuilder#setDisableAutocompleteCache(boolean)
 	 */
 	boolean forceCache() default false;
 
