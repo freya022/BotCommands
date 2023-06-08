@@ -1,6 +1,5 @@
 package com.freya02.botcommands.othertests
 
-import com.freya02.botcommands.oldtests.TestUtils
 import java.util.concurrent.ThreadLocalRandom
 
 object KotlinMapTest {
