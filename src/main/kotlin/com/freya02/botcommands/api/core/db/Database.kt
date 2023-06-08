@@ -38,7 +38,6 @@ interface Database {
 @Throws(SQLException::class)
 suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: Transaction.() -> R): R {
     val connection = fetchConnection(readOnly)
-    val baseSchema = connection.schema
 
     try {
         connection.autoCommit = false
@@ -47,9 +46,6 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
         connection.rollback()
         throw e
     } finally {
-        // Reset schema as it isn't done by HikariCP
-        // in situations where a schema isn't set on the connection pool
-        connection.schema = baseSchema
         // Always commit, if the connection was rolled back, this is a no-op
         // Using a "finally" block is mandatory, as code after the "block" function can be skipped if the user does a non-local return
         connection.commit()
@@ -62,7 +58,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 @Throws(SQLException::class)
 @Suppress("MemberVisibilityCanBePrivate")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
-    return transactional(readOnly) {
-        preparedStatement(sql, block)
+    return fetchConnection(readOnly).use {
+        KPreparedStatement(this, it.prepareStatement(sql)).use(block)
     }
 }

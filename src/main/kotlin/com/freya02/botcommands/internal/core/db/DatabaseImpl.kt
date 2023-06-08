@@ -23,6 +23,8 @@ internal class DatabaseImpl internal constructor(
     // but cannot be resumed and freed because of the coroutine scope being full (from another component event)
     private val semaphore = Semaphore(connectionSupplier.maxConnections)
 
+    private lateinit var baseSchema: String
+
     init {
         runBlocking {
             preparedStatement("select version from bc.bc_version", readOnly = true) {
@@ -40,6 +42,13 @@ internal class DatabaseImpl internal constructor(
 
     override suspend fun fetchConnection(readOnly: Boolean): Connection = semaphore.withPermit {
         connectionSupplier.connection.also {
+            if (!::baseSchema.isInitialized) {
+                baseSchema = it.schema
+            } else {
+                // Reset schema as it isn't done by HikariCP
+                // in situations where a schema isn't set on the connection pool
+                it.schema = baseSchema
+            }
             it.isReadOnly = readOnly
         }
     }
