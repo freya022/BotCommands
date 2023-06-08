@@ -2,9 +2,7 @@ package com.freya02.botcommands.api.core.service
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
-import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 
 @InjectedService
 interface ServiceContainer {
@@ -101,8 +99,6 @@ inline fun <reified T : Any> BContext.getInterfacedServices() = serviceContainer
  */
 inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInterfacedServices(T::class)
 
-inline fun <T, reified R : Any> ServiceContainer.lazy() = object : ReadOnlyProperty<T, R> {
-    val value: R by lazy { getService(R::class) }
+inline fun <reified R : Any> ServiceContainer.lazy() = lazy { this.getService(R::class) }
 
-    override fun getValue(thisRef: T, property: KProperty<*>) = value
-}
+inline fun <reified R : Any> ServiceContainer.lazy(name: String) = lazy { this.getService(name, R::class) }
