@@ -1,30 +1,41 @@
 package com.freya02.botcommands.internal.parameters.resolvers
 
-import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.toShortSignature
+import io.github.classgraph.ClassInfo
+import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
-@BService
-class ResolverSupertypeChecker(context: BContextImpl) {
-    init {
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotation<Resolver>()
-            .forEach { clazz ->
-                if (!clazz.isSubclassOf(ParameterResolver::class))
-                    throwUser("Resolver ${clazz.simpleNestedName} needs to extend ${ParameterResolver::class.simpleNestedName}")
-            }
+class ResolverSupertypeChecker : ClassGraphProcessor {
+    private val errorMessages: MutableList<String> = arrayListOf()
 
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotation<ResolverFactory>()
-            .forEach { clazz ->
-                if (!clazz.isSubclassOf(ParameterResolverFactory::class))
-                    throwUser("Resolver factory ${clazz.simpleNestedName} needs to extend ${ParameterResolverFactory::class.simpleNestedName}")
-            }
+    override fun processClass(context: BContext, classInfo: ClassInfo, kClass: KClass<*>) {
+        val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
+        val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
+        if (isResolverAnnotated && !isResolverSubclass) {
+            errorMessages += "Resolver ${classInfo.toShortSignature(kClass)} needs to extend ${ParameterResolver::class.simpleNestedName}"
+        } else if (!isResolverAnnotated && isResolverSubclass) {
+            errorMessages +=  "Resolver ${classInfo.toShortSignature(kClass)} needs to be annotated with @${Resolver::class.simpleNestedName}"
+        }
+
+        val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
+        val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
+        if (isResolverFactoryAnnotated && !isResolverFactorySubclass) {
+            errorMessages += "Resolver factory ${classInfo.toShortSignature(kClass)} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
+        } else if (!isResolverFactoryAnnotated && isResolverFactorySubclass) {
+            errorMessages += "Resolver factory ${classInfo.toShortSignature(kClass)} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
+        }
+    }
+
+    override fun postProcess(context: BContext) {
+        if (errorMessages.isNotEmpty()) {
+            throw IllegalStateException(errorMessages.joinToString(prefix = "\n - ", separator = "\n - "))
+        }
     }
 }

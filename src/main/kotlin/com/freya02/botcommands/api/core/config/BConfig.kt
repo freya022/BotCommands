@@ -4,9 +4,11 @@ import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
+import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.putServiceAs
+import com.freya02.botcommands.internal.toImmutableList
 import com.freya02.botcommands.internal.toImmutableSet
 
 @InjectedService
@@ -46,6 +48,8 @@ interface BConfig {
      */
     val logQueryParameters: Boolean
 
+    val classGraphProcessors: List<ClassGraphProcessor>
+
     val debugConfig: BDebugConfig
     val serviceConfig: BServiceConfig
     val textConfig: BTextConfig
@@ -67,6 +71,8 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override var logQueries: Boolean = true
     override var logQueryParameters: Boolean = true
+
+    override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
     override val debugConfig = BDebugConfigBuilder()
     override val serviceConfig = BServiceConfigBuilder()
@@ -157,6 +163,7 @@ class BConfigBuilder internal constructor() : BConfig {
         override val disableAutocompleteCache = this@BConfigBuilder.disableAutocompleteCache
         override val logQueries = this@BConfigBuilder.logQueries
         override val logQueryParameters = this@BConfigBuilder.logQueryParameters
+        override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
         override val debugConfig = this@BConfigBuilder.debugConfig.build()
         override val serviceConfig = this@BConfigBuilder.serviceConfig.build()
         override val textConfig = this@BConfigBuilder.textConfig.build()

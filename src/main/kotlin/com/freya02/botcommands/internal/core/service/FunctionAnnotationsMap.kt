@@ -49,8 +49,11 @@ internal class FunctionAnnotationsMap(context: BContextImpl, instantiableService
         instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, annotationReceiver.declaringClass, annotationReceiver)
     }
 
-    internal inline fun <reified A : Annotation> get(): Map<KFunction<*>, ClassPathFunction>? = map[A::class]
+    internal fun <A : Annotation> get(annotationClass: KClass<A>): Map<KFunction<*>, ClassPathFunction>? = map[annotationClass]
+    internal inline fun <reified A : Annotation> get(): Map<KFunction<*>, ClassPathFunction>? = get(A::class)
 
+    internal fun <A : Annotation> getFunctionsWithAnnotation(annotationClass: KClass<A>): Collection<ClassPathFunction> =
+        get(annotationClass)?.values ?: emptySet()
     internal inline fun <reified A : Annotation> getFunctionsWithAnnotation(): Collection<ClassPathFunction> =
-        get<A>()?.values ?: emptySet()
+        getFunctionsWithAnnotation(A::class)
 }
