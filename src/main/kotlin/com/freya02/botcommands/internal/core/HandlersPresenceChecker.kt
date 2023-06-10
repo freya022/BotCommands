@@ -56,7 +56,7 @@ class HandlersPresenceChecker : ClassGraphProcessor {
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some handler declarations does not have their declaring class annotated with @${Handler::class.simpleNestedName}:\n${
+            throw IllegalStateException("Some handler declarations do not have their declaring class annotated with @${Handler::class.simpleNestedName}:\n${
                 noAnnotationMethods.joinToString(prefix = " - ", separator = "\n - ") { it.shortSignature }
             }")
         }

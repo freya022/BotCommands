@@ -57,7 +57,7 @@ class CommandsPresenceChecker : ClassGraphProcessor {
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
-            throw IllegalStateException("Some command declarations does not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${
+            throw IllegalStateException("Some command declarations do not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${
                 noAnnotationMethods.joinToString(prefix = " - ", separator = "\n - ") { it.shortSignature }
             }")
         }
