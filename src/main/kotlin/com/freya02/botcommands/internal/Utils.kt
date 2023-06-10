@@ -148,7 +148,7 @@ val KType.simpleNestedName: String
     }
 
 val KClass<*>.simpleNestedName: String
-    get() = this.java.simpleNestedName
+    inline get() = this.java.simpleNestedName
 
 val Class<*>.simpleNestedName: String
     get() = when {
