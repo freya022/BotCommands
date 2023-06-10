@@ -28,6 +28,7 @@ private val commandAnnotations = listOf(
     TextDeclaration::class.jvmName
 )
 
+//This checker works on all classes from the user packages, but only on "services" of internal classes
 class CommandsPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()

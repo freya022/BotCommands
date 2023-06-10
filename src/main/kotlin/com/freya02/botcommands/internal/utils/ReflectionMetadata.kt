@@ -74,7 +74,7 @@ internal object ReflectionMetadata {
                 .disableModuleScanning()
                 .disableNestedJarScanning()
                 .scan()
-                .also { scanResult ->
+                .also { scanResult -> //No filtering is done as to allow checkers to log warnings/throw in case a service annotation is missing
                     add(scanResult to scanResult.allStandardClasses)
                 }
         }
