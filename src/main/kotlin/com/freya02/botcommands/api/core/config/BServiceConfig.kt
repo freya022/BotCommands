@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.InstanceSupplier
 import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
@@ -20,7 +21,7 @@ interface BServiceConfig {
 }
 
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
-    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class)
+    override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 
     private val _serviceAnnotationsMap = ServiceAnnotationsMap()
     override val serviceAnnotationsMap: Map<KClass<out Annotation>, Map<KClass<*>, Annotation>>

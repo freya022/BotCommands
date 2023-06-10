@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer;
+import com.freya02.botcommands.api.core.annotations.Handler;
 import com.freya02.botcommands.api.core.config.BApplicationConfig;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -53,6 +54,8 @@ import java.util.List;
  *     <li>You are free to put as many or less parameters as the original slash commands</li>
  *     <li>You can also use custom parameters, like getting a JDA instance, these do not have to be on the original slash commands</li>
  * </ul>
+ *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
  *
  * @see AppOption
  * @see JDASlashCommand

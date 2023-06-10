@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandsPresenceChecker
+import com.freya02.botcommands.internal.core.HandlersPresenceChecker
 import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import com.freya02.botcommands.internal.throwInternal
@@ -129,7 +130,8 @@ internal object ReflectionMetadata {
                 || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
 
     private fun List<ClassInfo>.processClasses(context: BContextImpl): List<ClassInfo> {
-        val classGraphProcessors = context.config.classGraphProcessors + listOf(context.serviceProviders, CommandsPresenceChecker(), ResolverSupertypeChecker())
+        val classGraphProcessors = context.config.classGraphProcessors +
+                listOf(context.serviceProviders, CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
 
         return onEach { classInfo ->
             try {

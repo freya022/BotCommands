@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
  *
  * <p><b>Requirement:</b> this must extend {@link ParameterResolver}.
  *
+ * @see BService
+ *
  * @see ParameterResolver
  */
 @Target(ElementType.TYPE)

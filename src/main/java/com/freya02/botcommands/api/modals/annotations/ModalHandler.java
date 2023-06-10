@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.modals.annotations;
 
+import com.freya02.botcommands.api.core.annotations.Handler;
 import com.freya02.botcommands.api.core.config.BConfig;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.modals.Modals;
@@ -22,6 +23,8 @@ import java.lang.annotation.Target;
  *     <li>Optionally: Have all your consecutive {@link ModalData}, specified in {@link Modals#create(String, String, Object...)}</li>
  *     <li>And finally: Have all your {@link ModalInput} and custom parameters, in the order you want</li>
  * </ul>
+ *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
  *
  * @see ModalData
  * @see ModalInput
