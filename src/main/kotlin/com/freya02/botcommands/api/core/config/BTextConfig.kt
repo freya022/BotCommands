@@ -42,6 +42,7 @@ interface BTextConfig {
     val textFilters: List<TextCommandFilter>
 }
 
+@ConfigDSL
 class BTextConfigBuilder internal constructor() : BTextConfig {
     override var usePingAsPrefix: Boolean = false
     override var prefixes: MutableList<String> = mutableListOf()

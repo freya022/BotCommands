@@ -60,6 +60,7 @@ interface BConfig {
     fun isOwner(id: Long): Boolean = id in ownerIds
 }
 
+@ConfigDSL
 class BConfigBuilder internal constructor() : BConfig {
     override val packages: MutableSet<String> = HashSet()
     override val classes: MutableSet<Class<*>> = HashSet()

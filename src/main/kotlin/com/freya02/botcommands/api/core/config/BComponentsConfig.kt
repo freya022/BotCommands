@@ -28,6 +28,7 @@ interface BComponentsConfig {
     val componentFilters: List<ComponentInteractionFilter>
 }
 
+@ConfigDSL
 class BComponentsConfigBuilder internal constructor() : BComponentsConfig {
     override var useComponents: Boolean = false
     override val componentFilters: MutableList<ComponentInteractionFilter> = arrayListOf()

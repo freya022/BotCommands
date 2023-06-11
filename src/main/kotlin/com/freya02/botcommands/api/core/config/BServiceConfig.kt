@@ -20,6 +20,7 @@ interface BServiceConfig {
     val instanceSupplierMap: Map<KClass<*>, InstanceSupplier<*>>
 }
 
+@ConfigDSL
 class BServiceConfigBuilder internal constructor() : BServiceConfig {
     override val serviceAnnotations: MutableSet<KClass<out Annotation>> = hashSetOf(BService::class, Command::class, Resolver::class, ResolverFactory::class, Handler::class)
 

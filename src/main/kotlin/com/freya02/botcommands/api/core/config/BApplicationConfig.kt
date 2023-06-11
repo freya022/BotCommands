@@ -61,6 +61,7 @@ interface BApplicationConfig {
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
 
+@ConfigDSL
 class BApplicationConfigBuilder internal constructor(private val serviceConfig: BServiceConfigBuilder) : BApplicationConfig {
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()

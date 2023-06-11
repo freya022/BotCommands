@@ -29,6 +29,7 @@ interface BCoroutineScopesConfig {
     val componentTimeoutScope: CoroutineScope       //Spends time waiting
 }
 
+@ConfigDSL
 class BCoroutineScopesConfigBuilder internal constructor() : BCoroutineScopesConfig {
     var defaultScopeSupplier: (coroutineName: String, corePoolSize: Int) -> CoroutineScope = { coroutineName, corePoolSize ->
         val lock = ReentrantLock()

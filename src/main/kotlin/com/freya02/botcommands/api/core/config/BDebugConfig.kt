@@ -19,6 +19,7 @@ interface BDebugConfig {
     val enabledMissingLocalizationLogs: Boolean
 }
 
+@ConfigDSL
 class BDebugConfigBuilder internal constructor() : BDebugConfig {
     override var enableApplicationDiffsLogs: Boolean = false
     override var enabledMissingLocalizationLogs: Boolean = false
