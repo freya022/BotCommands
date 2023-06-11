@@ -127,9 +127,7 @@ object TextUtils {
     suspend fun <T : IMentionable> findEntitySuspend(id: Long, collection: Collection<T>, valueSupplier: suspend () -> T): T =
         collection.find { user -> user.idLong == id } ?: valueSupplier()
 
-    fun CommandPath.getSpacedPath(): String {
-        return fullPath.replace('/', ' ')
-    }
+    fun CommandPath.getSpacedPath(): String = getFullPath(' ')
 
     val CommandPath.components: List<String>
         get() = fullPath.split('/')
