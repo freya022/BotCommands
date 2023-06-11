@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.internal.core.config.ConfigDSL
 import com.freya02.botcommands.internal.core.service.ServiceAnnotationsMap
 import com.freya02.botcommands.internal.toImmutableMap
 import com.freya02.botcommands.internal.toImmutableSet

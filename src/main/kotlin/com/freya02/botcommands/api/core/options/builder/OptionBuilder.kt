@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.options.builder
 
-import com.freya02.botcommands.api.commands.CommandDSL
+import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
 @CommandDSL

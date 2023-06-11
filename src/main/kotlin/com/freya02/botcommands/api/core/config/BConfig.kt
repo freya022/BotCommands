@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.putServiceAs
+import com.freya02.botcommands.internal.core.config.ConfigDSL
 import com.freya02.botcommands.internal.toImmutableList
 import com.freya02.botcommands.internal.toImmutableSet
 

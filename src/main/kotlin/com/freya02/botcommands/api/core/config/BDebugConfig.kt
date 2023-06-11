@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.internal.core.config.ConfigDSL
 
 @InjectedService
 interface BDebugConfig {
