@@ -10,5 +10,5 @@ import net.dv8tion.jda.api.interactions.commands.Command
 class MyAutocompleteTransformer : AutocompleteTransformer<CustomObject> {
     override fun getElementType() = CustomObject::class.java
 
-    override fun apply(e: CustomObject?) = Command.Choice(e.toString(), e.toString())
+    override fun apply(e: CustomObject) = Command.Choice(e.toString(), e.toString())
 }

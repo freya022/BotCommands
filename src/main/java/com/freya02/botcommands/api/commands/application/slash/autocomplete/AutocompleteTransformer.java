@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Interface to transform autocomplete results into choices.
@@ -27,5 +26,5 @@ public interface AutocompleteTransformer<E> {
 	Class<E> getElementType();
 
 	@NotNull
-	Command.Choice apply(@Nullable E e);
+	Command.Choice apply(@NotNull E e);
 }

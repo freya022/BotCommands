@@ -32,7 +32,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
                 }
 
                 @Suppress("UNCHECKED_CAST")
-                val autocompleteFunction = it.function as KFunction<Collection<*>>
+                val autocompleteFunction = it.function as KFunction<Collection<Any>>
                 val autocompleteHandlerAnnotation = autocompleteFunction.findAnnotation<AutocompleteHandler>()!!
 
                 AutocompleteInfoBuilder(context, autocompleteHandlerAnnotation.name, autocompleteFunction).apply {

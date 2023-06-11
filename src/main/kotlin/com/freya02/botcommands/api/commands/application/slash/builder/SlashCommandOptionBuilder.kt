@@ -46,7 +46,7 @@ class SlashCommandOptionBuilder(
      *
      * Example: `SlashTag: tagName`
      */
-    fun autocomplete(name: String, function: KFunction<Collection<*>>, block: AutocompleteInfoBuilder.() -> Unit) {
+    fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
         autocompleteInfo = AutocompleteInfoBuilder(context, name, function).apply(block).build()
     }
 

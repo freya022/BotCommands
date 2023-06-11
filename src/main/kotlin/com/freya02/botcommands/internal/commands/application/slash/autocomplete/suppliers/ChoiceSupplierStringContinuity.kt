@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 
 internal class ChoiceSupplierStringContinuity(private val numChoices: Int) : ChoiceSupplier {
     @Throws(Exception::class)
-    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice> {
+    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<Any>): List<Command.Choice> {
         val autoCompleteQuery = event.focusedOption
         return AutocompleteAlgorithms.fuzzyMatchingWithContinuity(
             collection,

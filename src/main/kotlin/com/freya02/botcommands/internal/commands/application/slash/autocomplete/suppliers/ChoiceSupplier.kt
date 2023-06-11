@@ -4,5 +4,5 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command
 
 internal sealed interface ChoiceSupplier {
-    fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice>
+    fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<Any>): List<Command.Choice>
 }

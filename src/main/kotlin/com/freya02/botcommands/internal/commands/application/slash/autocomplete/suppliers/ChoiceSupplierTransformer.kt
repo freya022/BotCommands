@@ -9,7 +9,7 @@ internal class ChoiceSupplierTransformer(
     private val numChoices: Int
 ) : ChoiceSupplier {
     @Throws(Exception::class)
-    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice> {
+    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<Any>): List<Command.Choice> {
         return collection
             .take(numChoices)
             .map { transformer.apply(it) }

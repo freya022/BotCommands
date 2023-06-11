@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.Command
 
 internal class ChoiceSupplierStringFuzzy(private val numChoices: Int) : ChoiceSupplier {
     @Throws(Exception::class)
-    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<*>): List<Command.Choice> {
+    override fun apply(event: CommandAutoCompleteInteractionEvent, collection: Collection<Any>): List<Command.Choice> {
         val autoCompleteQuery = event.focusedOption
         return AutocompleteAlgorithms.fuzzyMatching(collection, { it.toString() }, event.focusedOption.value)
             .take(numChoices)

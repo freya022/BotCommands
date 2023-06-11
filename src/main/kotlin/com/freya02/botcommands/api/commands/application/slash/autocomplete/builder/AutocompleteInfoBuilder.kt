@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.internal.BContextImpl
 import kotlin.reflect.KFunction
 
-class AutocompleteInfoBuilder internal constructor(private val context: BContextImpl, val name: String, override val function: KFunction<Collection<*>>) : IBuilderFunctionHolder<Collection<*>> {
+class AutocompleteInfoBuilder internal constructor(private val context: BContextImpl, val name: String, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
     var mode: AutocompleteMode = AutocompleteMode.FUZZY
     var showUserInput: Boolean = true
     var autocompleteCache: AutocompleteCacheInfo? = null
