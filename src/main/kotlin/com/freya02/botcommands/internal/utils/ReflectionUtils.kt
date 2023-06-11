@@ -5,6 +5,8 @@ import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberFunctions
@@ -14,10 +16,13 @@ import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionUtils {
+    private val lock = ReentrantLock()
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
 
     @Suppress("UNCHECKED_CAST")
     internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
+        reflectedMap[this]?.let { return it as KFunction<R> }
+
         //Still allow internal modifiers as they should be reflectively accessible
         if (this.visibility != KVisibility.PUBLIC && this.visibility != KVisibility.INTERNAL) {
             //Cannot use KFunction#shortSignature as ReflectionMetadata doesn't read non-public methods
@@ -28,9 +33,9 @@ internal object ReflectionUtils {
             "Function must not be static"
         }
 
-        synchronized(reflectedMap) {
-            return reflectedMap.computeIfAbsent(this) {
-                return@computeIfAbsent when (this) { //Try to match the original function
+        return lock.withLock {
+            reflectedMap.computeIfAbsent(this) {
+                when (this) { //Try to match the original function
                     is CallableReference -> resolveReference(owner as KClass<*>) ?: throwInternal(this, "Unable to reflect function reference")
                     else -> this
                 }
