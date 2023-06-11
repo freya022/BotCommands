@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application;
 
-import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 
 import java.util.function.Predicate;
 
@@ -8,7 +8,7 @@ import java.util.function.Predicate;
  * Filters application command execution
  *
  * @see Predicate
- * @see BContext#addApplicationFilter(ApplicationCommandFilter)
+ * @see BApplicationConfigBuilder#getApplicationFilters()
  * @see #isAccepted(ApplicationFilteringData)
  */
 public interface ApplicationCommandFilter {

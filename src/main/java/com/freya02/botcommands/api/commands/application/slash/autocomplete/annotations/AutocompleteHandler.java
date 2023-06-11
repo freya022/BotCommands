@@ -3,9 +3,8 @@ package com.freya02.botcommands.api.commands.application.slash.autocomplete.anno
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer;
 import com.freya02.botcommands.api.core.annotations.Handler;
-import com.freya02.botcommands.api.core.config.BApplicationConfig;
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
@@ -36,7 +35,7 @@ import java.util.List;
  *
  * <p>
  *
- * You can add more List element types with {@link BApplicationConfig#registerAutocompleteTransformer(KClass, AutocompleteTransformer)}
+ * You can add more List element types with {@link BApplicationConfigBuilder#registerAutocompleteTransformer(KClass)}
  *
  * <h2>State aware autocomplete</h2>
  * You can also use "state aware autocomplete", this means you can retrieve parameters the user has already entered and use it to make your autocomplete better

@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components;
 
-import com.freya02.botcommands.api.core.config.BComponentsConfig;
+import com.freya02.botcommands.api.core.config.BComponentsConfigBuilder;
 
 import java.util.function.Predicate;
 
@@ -8,7 +8,7 @@ import java.util.function.Predicate;
  * Filters component interaction execution
  *
  * @see Predicate
- * @see BComponentsConfig#addComponentFilter(ComponentInteractionFilter)
+ * @see BComponentsConfigBuilder#getComponentFilters()
  * @see #isAccepted(ComponentFilteringData)
  */
 public interface ComponentInteractionFilter {

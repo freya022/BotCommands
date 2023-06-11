@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
-//TODO fix docs
 /**
  * This class lets you create smart components such as buttons, select menus and groups.
  *

@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
+import com.freya02.botcommands.api.core.config.BConfigBuilder;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
@@ -16,14 +17,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-//TODO fix docs
 /**
  * Required annotation for text commands, see all possible options.
  *
  * <p>
  * <b>Requirements:</b>
  * <ul>
- *     <li>The method must be in the {@link CommandsBuilder#addSearchPath(String) search path}</li>
+ *     <li>The method must be in the {@link BConfigBuilder#addSearchPath(String) search path}</li>
  *     <li>First parameter must be {@link BaseCommandEvent}, or, {@link CommandEvent} only for fallback commands</li>
  * </ul>
  * <p>Input options needs to be annotated with {@link TextOption @TextOption}, see supported types at {@link ParameterResolver}

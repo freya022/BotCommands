@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.commands.application.GuildApplicationSettings
 import com.freya02.botcommands.api.commands.application.slash.annotations.*;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CompositeKey;
-import com.freya02.botcommands.api.core.config.BApplicationConfig;
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
 import net.dv8tion.jda.api.entities.Guild;
@@ -57,7 +57,7 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 *
 	 * <p>
 	 * If this description is omitted, a default localization is
-	 * searched in {@link BApplicationConfig#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * searched in {@link BApplicationConfigBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
 	 * using the root locale, for example: <code>MyCommands.json</code>.
 	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
 	 *

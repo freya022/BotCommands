@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application.annotations;
 
-import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.annotations.AppendMode;
+import com.freya02.botcommands.api.core.config.BApplicationConfig;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.lang.annotation.ElementType;
@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation to define an application command as being test-only.
- * <br>This means this application command will try to be pushed in guilds defined by {@link BContext#getTestGuildIds()} and {@link #mode()}
+ * <br>This means this application command will try to be pushed in guilds defined by {@link BApplicationConfig#getTestGuildIds()} and {@link #mode()}
  *
  * <p><b>This only works for annotated commands</b>
  */

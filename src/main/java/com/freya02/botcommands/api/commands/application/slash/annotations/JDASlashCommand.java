@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
-import com.freya02.botcommands.api.core.config.BApplicationConfig;
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
@@ -136,7 +136,7 @@ public @interface JDASlashCommand {
 	 *
 	 * <p>
 	 * If this description is omitted, a default localization is
-	 * searched in {@link BApplicationConfig#addLocalizations(String, DiscordLocale...) the command localization bundles}
+	 * searched in {@link BApplicationConfigBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
 	 * using the root locale, for example: <code>MyCommands.json</code>.
 	 *
 	 * <p>
