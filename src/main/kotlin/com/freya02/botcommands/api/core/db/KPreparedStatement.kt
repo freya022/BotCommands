@@ -8,6 +8,9 @@ import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
+private val logger = KotlinLogging.logger { }
+private val commentRegex = Regex("""--(?!.* ')""")
+
 class KPreparedStatement @PublishedApi internal constructor(private val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
         withLoggedParametrizedQuery(params) { execute() }
@@ -71,11 +74,5 @@ class KPreparedStatement @PublishedApi internal constructor(private val database
 
     override fun toString(): String {
         return preparedStatement.toString()
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger { }
-
-        private val commentRegex = Regex("""--(?!.* ')""")
     }
 }

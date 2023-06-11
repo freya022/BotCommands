@@ -26,6 +26,8 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 abstract class SlashCommandInfo internal constructor(
     val context: BContextImpl,
     builder: SlashCommandBuilder
@@ -129,9 +131,5 @@ abstract class SlashCommandInfo internal constructor(
         }
 
         return tryInsertNullableOption(value, option, optionMap)
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger { }
     }
 }

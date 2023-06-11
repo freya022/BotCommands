@@ -23,6 +23,8 @@ import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
+private val logger = KotlinLogging.logger { }
+
 class TextCommandVariation internal constructor(
     private val context: BContextImpl,
     val info: TextCommandInfo,
@@ -137,9 +139,5 @@ class TextCommandVariation internal constructor(
         }
 
         return tryInsertNullableOption(value, option, optionMap)
-    }
-
-    companion object {
-        private val logger = KotlinLogging.logger { }
     }
 }

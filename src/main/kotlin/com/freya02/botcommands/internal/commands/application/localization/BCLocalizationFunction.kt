@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
 
+private val logger = KotlinLogging.logger { }
+
 internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
     private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
 
@@ -53,9 +55,5 @@ internal class BCLocalizationFunction(private val context: BContextImpl) : Local
         return map
     }
 
-    companion object {
-        private val logger = KotlinLogging.logger { }
-
-        private fun Locale.toDiscordLocale() = DiscordLocale.from(this)
-    }
+    private fun Locale.toDiscordLocale() = DiscordLocale.from(this)
 }
