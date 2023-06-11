@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
+import com.freya02.botcommands.api.commands.CommandDSL
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import com.freya02.botcommands.internal.BContextImpl
@@ -11,6 +12,7 @@ import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
+@CommandDSL
 class SlashSubcommandGroupBuilder(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
