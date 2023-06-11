@@ -7,20 +7,33 @@ import kotlin.reflect.KFunction
 
 private typealias ClassPathFunctionIterable = Iterable<ClassPathFunction>
 
-internal sealed interface ClassPathFunction {
-    val instance: Any
+internal sealed class ClassPathFunction {
+    abstract val instance: Any
 
-    val function: KFunction<*>
+    abstract val function: KFunction<*>
 
     operator fun component1() = instance
     operator fun component2() = function
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ClassPathFunction
+
+        return function == other.function
+    }
+
+    override fun hashCode(): Int {
+        return function.hashCode()
+    }
 }
 
 internal class LazyClassPathFunction internal constructor(
     private val context: BContextImpl,
     private val clazz: KClass<*>,
     override val function: KFunction<*>
-) : ClassPathFunction {
+) : ClassPathFunction() {
     override val instance by lazy { context.serviceContainer.getService(clazz) }
 }
 
@@ -31,7 +44,7 @@ internal fun ClassPathFunction(context: BContextImpl, clazz: KClass<*>, function
 internal class InstanceClassPathFunction internal constructor(
     override val instance: Any,
     override val function: KFunction<*>
-) : ClassPathFunction
+) : ClassPathFunction()
 
 internal fun Iterable<KFunction<*>>.toClassPathFunctions(instance: Any) = map { ClassPathFunction(instance, it) }
 

@@ -14,5 +14,9 @@ internal class EventHandlerFunction(
     }
 
     //Higher priority is above
-    override fun compareTo(other: EventHandlerFunction) = -priority.compareTo(other.priority)
+    override fun compareTo(other: EventHandlerFunction): Int {
+        if (priority != other.priority) return -priority.compareTo(other.priority)
+
+        return if (classPathFunction == other.classPathFunction) 0 else 1
+    }
 }
