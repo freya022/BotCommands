@@ -233,7 +233,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         processAutocomplete(optionAnnotation)
 
         usePredefinedChoices = optionAnnotation.usePredefinedChoices
-        choices = instance.getOptionChoices(guild, path, optionName)
+        choices = instance.getOptionChoices(guild, this@SlashCommandBuilder.path, optionName)
     }
 
     private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: AppOption) {
@@ -254,7 +254,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
     context(SlashCommandBuilder, SlashCommandOptionBuilder)
     private fun getEffectiveDescription(optionAnnotation: AppOption): String {
         val joinedPath = path.getFullPath('.')
-        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.options.$optionName.description")
+        val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.options.${this@SlashCommandOptionBuilder.optionName}.description")
         if (rootLocalization != null) return rootLocalization
 
         return optionAnnotation.description.nullIfEmpty() ?: "No description"
