@@ -34,9 +34,11 @@ class KPreparedStatement @PublishedApi internal constructor(private val database
             }
 
             val result = timedValue.value
-            val duration = timedValue.duration
-            val prefix = if (result.isSuccess) "Ran" else "Failed"
-            logger.trace("$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery")
+            logger.trace {
+                val duration = timedValue.duration
+                val prefix = if (result.isSuccess) "Ran" else "Failed"
+                "$prefix query in ${duration.toString(DurationUnit.MILLISECONDS, 2)}: $parametrizedQuery"
+            }
 
             return result.getOrThrow()
         }

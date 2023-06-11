@@ -13,6 +13,7 @@ internal interface DiffLogger {
         internal val logger = KotlinLogging.logger {  }
 
         fun getLogger(context: BContextImpl): DiffLogger = when {
+            !logger.isTraceEnabled -> DiffLoggerNoop()
             context.debugConfig.enableApplicationDiffsLogs -> DiffLoggerImpl()
             else -> DiffLoggerNoop()
         }
