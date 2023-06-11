@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.entities.User
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
@@ -25,7 +24,6 @@ import kotlin.time.toDurationUnit
  *
  * **Components inside groups cannot have timeouts**.
  */
-@OptIn(ExperimentalTime::class)
 interface ITimeoutableComponent {
     val timeout: ComponentTimeout? //No need to use specific types in sub-interfaces as they're internal
 
@@ -71,7 +69,6 @@ interface ITimeoutableComponent {
  *
  * @see ITimeoutableComponent
  */
-@OptIn(ExperimentalTime::class)
 interface IPersistentTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given timeout handler name with its arguments to this component.
@@ -126,7 +123,6 @@ interface IPersistentTimeoutableComponent : ITimeoutableComponent {
  *
  * @see ITimeoutableComponent
  */
-@OptIn(ExperimentalTime::class)
 interface IEphemeralTimeoutableComponent : ITimeoutableComponent {
     /**
      * Binds the given handler to this component.
