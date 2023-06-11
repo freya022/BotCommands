@@ -1,6 +1,6 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.LengthRange
@@ -11,7 +11,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.annotations.Length
 import dev.minn.jda.ktx.messages.reply_
 
-@CommandMarker
+@Command
 class SlashLength : ApplicationCommand() {
     @JDASlashCommand(name = "length_annotated")
     fun onSlashLength(

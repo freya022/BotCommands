@@ -5,6 +5,8 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.Autoc
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
+import com.freya02.botcommands.api.core.service.getInterfacedServices
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
@@ -51,10 +53,11 @@ internal class AutocompleteHandler(
                 generateSupplierFromStrings(autocompleteInfo.mode)
             Command.Choice::class.isSuperclassOf(collectionElementType) -> ChoiceSupplierChoices(maxChoices)
             else -> {
-                @Suppress("UNCHECKED_CAST")
-                val transformer =
-                    slashCommandInfo.context.applicationConfig.autocompleteTransformers[collectionElementType.starProjectedType] as? AutocompleteTransformer<Any>
-                        ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', you may also check the docs for ${AutocompleteHandler::class.simpleName}")
+                val transformer = slashCommandInfo.context.serviceContainer
+                    .getInterfacedServices<AutocompleteTransformer<Any>>()
+                    .firstOrNull { it.elementType == collectionElementType.java }
+                    ?: throwUser("No autocomplete transformer has been register for objects of type '${collectionElementType.simpleName}', " +
+                            "you may also check the docs for ${AutocompleteHandler::class.simpleName} and ${AutocompleteTransformer::class.simpleName}")
                 ChoiceSupplierTransformer(transformer, maxChoices)
             }
         }

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.prefixed.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.annotations.NSFW
@@ -13,17 +14,15 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.commands.autobuilder.asCommandInstance
 import com.freya02.botcommands.internal.commands.autobuilder.castFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -35,17 +34,17 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class TextCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
+internal class TextCommandAutoBuilder(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger { }
 
     private val functions: List<TextFunctionMetadata>
 
     init {
-        functions = classPathContainer.functionsWithAnnotation<JDATextCommand>()
+        functions = context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDATextCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(BaseCommandEvent::class))
             .map {
-                val instanceSupplier: () -> TextCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDATextCommand>() ?: throwInternal("@JDATextCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -54,7 +53,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl, classPa
                     }
                 }
 
-                TextFunctionMetadata(instanceSupplier, func, annotation, path)
+                TextFunctionMetadata(it, annotation, path)
             }
     }
 

@@ -2,10 +2,10 @@ package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.EventDispatcher
-import com.freya02.botcommands.api.core.ServiceStart
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
+import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.BService
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.StatusChangeEvent

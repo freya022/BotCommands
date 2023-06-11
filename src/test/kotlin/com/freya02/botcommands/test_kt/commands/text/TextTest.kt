@@ -1,8 +1,8 @@
 package com.freya02.botcommands.test_kt.commands.text
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommand
@@ -13,7 +13,7 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
 import com.freya02.botcommands.api.parameters.ParameterType
 
-@CommandMarker
+@Command
 class TextTest : TextCommand() {
     override fun getGeneratedValueSupplier(
         commandPath: CommandPath,

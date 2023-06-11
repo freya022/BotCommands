@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.core.db
 
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import org.intellij.lang.annotations.Language
 import java.sql.Connection
 import java.sql.SQLException
@@ -58,7 +58,7 @@ suspend inline fun <R> Database.transactional(readOnly: Boolean = false, block: 
 @Throws(SQLException::class)
 @Suppress("MemberVisibilityCanBePrivate")
 suspend inline fun <R> Database.preparedStatement(@Language("PostgreSQL") sql: String, readOnly: Boolean = false, block: KPreparedStatement.() -> R): R {
-    return transactional(readOnly) {
-        preparedStatement(sql, block)
+    return fetchConnection(readOnly).use {
+        KPreparedStatement(this, it.prepareStatement(sql)).use(block)
     }
 }

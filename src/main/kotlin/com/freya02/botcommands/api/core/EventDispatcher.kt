@@ -1,15 +1,17 @@
 package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.exceptions.InitializationException
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.core.ClassPathContainer.Companion.toClassPathFunctions
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.EventHandlerFunction
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
+import com.freya02.botcommands.internal.core.toClassPathFunctions
 import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.unreflect
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -22,7 +24,10 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.findAnnotation
@@ -32,20 +37,56 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-private typealias EventMap = MutableMap<KClass<*>, CopyOnWriteArrayList<EventHandlerFunction>>
+// https://discord.com/channels/125227483518861312/125227483518861312/1114953133722980453
+internal class ConcurrentTreeSet<T> {
+    // Only protect modification operations, traversal is fine
+    private val lock = ReentrantLock()
+    private var set: MutableSet<T> = TreeSet()
 
-@InjectedService
-class EventDispatcher internal constructor(private val context: BContextImpl, private val eventTreeService: EventTreeService) {
+    fun add(t: T): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.add(t).also {
+            this.set = newSet
+        }
+    }
+
+    fun remove(t: T): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.remove(t).also {
+            this.set = newSet
+        }
+    }
+
+    inline fun <R> map(block: (T) -> R): List<R> = set.map(block)
+
+    fun removeAll(removedSet: ConcurrentTreeSet<T>): Boolean = lock.withLock {
+        val newSet = TreeSet(set)
+        return newSet.removeAll(removedSet.set).also {
+            this.set = newSet
+        }
+    }
+
+    inline fun forEach(block: (T) -> Unit) = set.forEach(block)
+}
+
+private typealias EventMap = MutableMap<KClass<*>, ConcurrentTreeSet<EventHandlerFunction>>
+
+@BService
+class EventDispatcher internal constructor(
+    private val context: BContextImpl,
+    private val eventTreeService: EventTreeService,
+    functionAnnotationsMap: FunctionAnnotationsMap
+) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager
 
-    private val map: EventMap = hashMapOf()
-    private val listeners: MutableMap<Class<*>, EventMap> = hashMapOf()
+    private val map: EventMap = ConcurrentHashMap()
+    private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
 
     init {
-        context.serviceContainer.putService(this)
-
-        addEventListeners(context.classPathContainer.functionsWithAnnotation<BEventListener>())
+        functionAnnotationsMap
+            .getFunctionsWithAnnotation<BEventListener>()
+            .addAsEventListeners()
 
         //This could dispatch to multiple listeners, timeout must be handled on a per-listener basis manually
         // as jda-ktx takes this group of listeners as only being one.
@@ -55,12 +96,11 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
     }
 
     fun addEventListener(listener: Any) {
-        addEventListeners(
-            listener::class
-                .functions
-                .withFilter(FunctionFilter.annotation<BEventListener>())
-                .toClassPathFunctions(listener)
-        )
+        listener::class
+            .functions
+            .withFilter(FunctionFilter.annotation<BEventListener>())
+            .toClassPathFunctions(listener)
+            .addAsEventListeners()
     }
 
     fun removeEventListener(listener: Any) {
@@ -105,12 +145,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
     private suspend fun runEventHandler(eventHandlerFunction: EventHandlerFunction, event: Any) {
         try {
-            val instance = eventHandlerFunction.classPathFunction.instanceOrNull
-            if (instance == null) {
-                map[event::class]?.remove(eventHandlerFunction)
-                return
-            }
-            val function = eventHandlerFunction.classPathFunction.function
+            val (instance, function) = eventHandlerFunction.classPathFunction
 
             /**
              * See [CoroutineEventManager.handle]
@@ -137,7 +172,7 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
         }
     }
 
-    private fun addEventListeners(functions: List<ClassPathFunction>) = functions
+    private fun Collection<ClassPathFunction>.addAsEventListeners() = this
         .requiredFilter(FunctionFilter.nonStatic())
         .requiredFilter(FunctionFilter.firstArg(GenericEvent::class, BEvent::class))
         .forEach { classPathFunc ->
@@ -149,17 +184,20 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
 
             val eventErasure = parameters.first().type.jvmErasure
             val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
-//                .onEach { //Cannot predetermine availability of services when the framework is initializing as services may be injected and others might depend on those
-//                    context.serviceContainer.canCreateService(it)?.let { errorMessage ->
-//                        throwUser(
-//                            classPathFunc.function,
-//                            "Unable to register event listener due to an unavailable service: $errorMessage"
-//                        )
-//                    }
-//                }
+                // The main risk was with injected services, as they may not be available at that point,
+                // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
+                .onEach {
+                    context.serviceContainer.canCreateService(it)?.let { errorMessage ->
+                        throwUser(
+                            classPathFunc.function,
+                            "Unable to register event listener due to an unavailable service: $errorMessage"
+                        )
+                    }
+                }
             val eventHandlerFunction = EventHandlerFunction(classPathFunction = classPathFunc,
                 isAsync = annotation.async,
                 timeout = getTimeout(annotation),
+                priority = annotation.priority,
                 parametersBlock = {
                     //Getting services is delayed until execution, as to ensure late services can be used in listeners
                     context.serviceContainer.getParameters(eventParametersErasures).toTypedArray()
@@ -169,12 +207,12 @@ class EventDispatcher internal constructor(private val context: BContextImpl, pr
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
+                    instanceMap.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
                 }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.getOrPut(it) { CopyOnWriteArrayList() }.add(eventHandlerFunction)
+                map.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
             }
         }
 

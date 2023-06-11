@@ -1,13 +1,13 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
-import kotlin.reflect.KFunction
+import com.freya02.botcommands.internal.core.ClassPathFunction
 
-internal abstract class ApplicationFunctionMetadata<T, A : Annotation>(
-    instanceSupplier: () -> T,
-    func: KFunction<*>,
+internal abstract class ApplicationFunctionMetadata<A : Annotation>(
+    classPathFunction: ClassPathFunction,
     annotation: A,
     path: CommandPath,
     val commandId: String?
-) : CommandFunctionMetadata<T, A>(instanceSupplier, func, annotation, path)
+) : CommandFunctionMetadata<ApplicationCommand, A>(classPathFunction, ApplicationCommand::class, annotation, path)

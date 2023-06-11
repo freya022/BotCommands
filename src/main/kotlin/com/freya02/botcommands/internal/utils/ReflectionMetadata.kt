@@ -1,13 +1,15 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
+import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.commands.CommandsPresenceChecker
+import com.freya02.botcommands.internal.core.HandlersPresenceChecker
 import com.freya02.botcommands.internal.javaMethodOrConstructor
+import com.freya02.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
-import com.freya02.botcommands.internal.utils.ReflectionUtils.isInstantiable
-import com.freya02.botcommands.internal.utils.ReflectionUtils.isService
 import io.github.classgraph.*
 import java.lang.reflect.Executable
 import java.util.*
@@ -16,6 +18,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.jvm.internal.impl.load.kotlin.header.KotlinClassHeader
+import kotlin.reflect.jvm.jvmName
 
 private typealias IsNullableAnnotated = Boolean
 
@@ -41,7 +44,14 @@ internal object ReflectionMetadata {
         Collections.unmodifiableMap(methodMetadataMap_)
     }
 
-    internal fun runScan(packages: Collection<String>, userClasses: Collection<Class<*>>): List<Class<*>> {
+    internal fun runScan(context: BContextImpl): List<KClass<*>> {
+        val config = context.config
+        val packages = config.packages
+        //This is a requirement for ClassGraph to work correctly
+        if (packages.isEmpty()) {
+            throwUser("You must specify at least 1 package to scan classes from")
+        }
+
         val scanned: List<Pair<ScanResult, ClassInfoList>> = buildList {
             ClassGraph()
                 .acceptPackages("com.freya02.botcommands.api", "com.freya02.botcommands.internal")
@@ -52,21 +62,20 @@ internal object ReflectionMetadata {
                 .scan()
                 .also { scanResult -> // Don't keep test classes
                     add(scanResult to scanResult.allStandardClasses.filter {
-                        return@filter it.isService()
-                                || it.outerClasses.any { outer -> outer.isService() }
-                                || it.hasAnnotation(IncludeClasspath::class.java.name)
+                        return@filter it.isServiceOrHasFactories(config)
+                                || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
                     })
                 }
 
             ClassGraph()
-                .acceptPackages(*packages.toTypedArray())
-                .acceptClasses(*userClasses.map { it.name }.toTypedArray())
+                .acceptPackages(*config.packages.toTypedArray())
+                .acceptClasses(*config.classes.map { it.name }.toTypedArray())
                 .enableMethodInfo()
                 .enableAnnotationInfo()
                 .disableModuleScanning()
                 .disableNestedJarScanning()
                 .scan()
-                .also { scanResult ->
+                .also { scanResult -> //No filtering is done as to allow checkers to log warnings/throw in case a service annotation is missing
                     add(scanResult to scanResult.allStandardClasses)
                 }
         }
@@ -83,22 +92,51 @@ internal object ReflectionMetadata {
                     }
 
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    if (it.isSynthetic || it.isEnum || it.isAbstract) return@filter false
-
-                    return@filter isInstantiable(it)
+                    return@filter !it.isSynthetic && !it.isEnum && !it.isAbstract
                 }
-                .also { readAnnotations(it) }
-                .map { it.loadClass() }
+                .processClasses(context)
+                .map { classInfo ->
+                    val kClass = classInfo.loadClass().kotlin
+                    //Fill map with all the @Command, @Resolver, etc... declarations
+                    if (classInfo.isService(config)) {
+                        classInfo.annotationInfo.forEach { annotationInfo ->
+                            if (config.serviceConfig.serviceAnnotations.any { it.jvmName == annotationInfo.name }) {
+                                context.serviceAnnotationsMap.put(
+                                    annotationReceiver = kClass,
+                                    annotationType = annotationInfo.classInfo.loadClass(Annotation::class.java).kotlin,
+                                    annotation = annotationInfo.loadClassAndInstantiate()
+                                )
+                            }
+                        }
+                    }
+
+                    kClass
+                }
                 .also {
                     scanResult.close()
                 }
         }
     }
 
+    internal fun ClassInfo.isService(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
-    private fun readAnnotations(classInfoList: List<ClassInfo>) {
-        for (classInfo in classInfoList) {
+    internal fun MethodInfo.isService(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+
+    private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
+        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
+                //Keep classes which have service factories
+                || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
+
+    private fun List<ClassInfo>.processClasses(context: BContextImpl): List<ClassInfo> {
+        val classGraphProcessors = context.config.classGraphProcessors +
+                listOf(context.serviceProviders, CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
+
+        return onEach { classInfo ->
             try {
+                val kClass = classInfo.loadClass().kotlin
+
                 for (methodInfo in classInfo.declaredMethodAndConstructorInfo) {
                     //Don't inspect methods with generics
                     if (methodInfo.parameterInfo
@@ -113,15 +151,21 @@ internal object ReflectionMetadata {
                     val nullabilities = getMethodParameterNullabilities(methodInfo, method)
 
                     methodMetadataMap_[method] = MethodMetadata(methodInfo.minLineNum, nullabilities)
+
+                    classGraphProcessors.forEach { it.processMethod(context, methodInfo, method, classInfo, kClass) }
                 }
 
                 classMetadataMap_[classInfo.loadClass()] = ClassMetadata(classInfo.sourceFile)
+
+                classGraphProcessors.forEach { it.processClass(context, classInfo, kClass) }
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
-        }
+        }.also {
+            classGraphProcessors.forEach { it.postProcess(context) }
 
-        scannedParams = true
+            scannedParams = true
+        }
     }
 
     private fun getMethodParameterNullabilities(methodInfo: MethodInfo, method: Executable): List<Boolean> {

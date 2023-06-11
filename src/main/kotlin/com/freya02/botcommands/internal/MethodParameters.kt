@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal
 import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -42,7 +42,7 @@ internal fun <R> List<KParameter>.transformParameters(
 
         else -> BasicOptionAggregateBuilder(
             AggregatorParameter.fromSelfAggregate(parameter.function, declaredName),
-            OptionAggregateBuildersImpl.theSingleAggregator
+            InternalAggregators.theSingleAggregator
         ).apply {
             this += builderBlock(parameter.function, parameter, declaredName)
         }

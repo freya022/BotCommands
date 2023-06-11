@@ -1,17 +1,16 @@
 package com.freya02.botcommands.test;
 
-import com.freya02.botcommands.api.core.ServiceStart;
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
 import com.freya02.botcommands.api.core.db.ConnectionSupplier;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.zaxxer.hikari.HikariDataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@BService(start = ServiceStart.PRE_LOAD)
-@ServiceType(type = ConnectionSupplier.class)
+@BService
+@ServiceType(types = ConnectionSupplier.class)
 public class TestDB implements ConnectionSupplier {
 	private final HikariDataSource source = new HikariDataSource();
 

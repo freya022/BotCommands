@@ -1,13 +1,14 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.api.BContext
-import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
 import com.freya02.botcommands.api.core.events.LoadEvent
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Resolver
+import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import java.util.*
@@ -18,7 +19,7 @@ import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class ResolverContainer(
-    classPathContainer: ClassPathContainer,
+    context: BContextImpl,
     private val serviceContainer: ServiceContainer
 ) {
     private val logger = KotlinLogging.logger { }
@@ -26,15 +27,13 @@ internal class ResolverContainer(
     private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        classPathContainer
-            .classes
-            .forEach { clazz ->
-                if (clazz.isSubclassOf(ParameterResolver::class)) {
-                    addResolver(serviceContainer.getService(clazz) as ParameterResolver<*, *>)
-                } else if (clazz.isSubclassOf(ParameterResolverFactory::class)) {
-                    addResolverFactory(serviceContainer.getService(clazz) as ParameterResolverFactory<*, *>)
-                }
-            }
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableClassesWithAnnotationAndType<Resolver, ParameterResolver<*, *>>()
+            .forEach { clazz -> addResolver(serviceContainer.getService(clazz)) }
+
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableClassesWithAnnotationAndType<ResolverFactory, ParameterResolverFactory<*, *>>()
+            .forEach { clazz -> addResolverFactory(serviceContainer.getService(clazz)) }
     }
 
     fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
@@ -86,8 +85,8 @@ internal class ResolverContainer(
         return factories.computeIfAbsent(requestedType) { type ->
             val serviceResult = serviceContainer.tryGetService(type)
 
-            serviceResult.errorMessage?.let { errorMessage ->
-                parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed: $errorMessage")
+            serviceResult.serviceError?.let { serviceError ->
+                parameter.throwUser("Parameter #${parameter.index} of type '${type.simpleName}' and name '${parameter.name}' does not have any compatible resolver and service loading failed: ${serviceError.toSimpleString()}")
             }
 
             ParameterResolverFactory.singleton(ServiceCustomResolver(serviceResult.getOrThrow()))

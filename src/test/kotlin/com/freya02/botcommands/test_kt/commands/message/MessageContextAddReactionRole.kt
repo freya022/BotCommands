@@ -1,11 +1,12 @@
 package com.freya02.botcommands.test_kt.commands.message
 
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.await
 import dev.minn.jda.ktx.interactions.components.row
@@ -32,6 +33,7 @@ class ReactionRoleService {
     }
 }
 
+@Command
 class MessageContextAddReactionRole(private val componentsService: Components,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)

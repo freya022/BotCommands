@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.parameters
 
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isSpecialAggregator
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
 import kotlin.reflect.KFunction
@@ -31,7 +31,7 @@ internal class VarargAggregatorParameter(
     override fun toOptionParameter(optionFunction: KFunction<*>, parameterName: String) = when (parameterName) {
         //Using the parameter name is safe as both the aggregator and the declaration use the same names
         //  Use command parameter type as it is unknown
-        "args" -> OptionParameter(typeCheckingFunction, typeCheckingParameterName, OptionAggregateBuildersImpl.theVarargAggregator, parameterName)
+        "args" -> OptionParameter(typeCheckingFunction, typeCheckingParameterName, InternalAggregators.theVarargAggregator, parameterName)
         else -> throwInternal("Unknown internal vararg parameter: $parameterName")
     }
 }

@@ -1,18 +1,20 @@
 package com.freya02.botcommands.internal.core.db
 
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.ServiceType
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.db.Database
 import com.freya02.botcommands.api.core.db.preparedStatement
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 
+@BService
 @ServiceType(Database::class)
-@ConditionalService(dependencies = [ConnectionSupplier::class])
+@Dependencies(ConnectionSupplier::class)
 internal class DatabaseImpl internal constructor(
     private val connectionSupplier: ConnectionSupplier,
     override val config: BConfig
@@ -20,6 +22,8 @@ internal class DatabaseImpl internal constructor(
     //Prevents deadlock when a paused coroutine holds a Connection,
     // but cannot be resumed and freed because of the coroutine scope being full (from another component event)
     private val semaphore = Semaphore(connectionSupplier.maxConnections)
+
+    private lateinit var baseSchema: String
 
     init {
         runBlocking {
@@ -38,6 +42,13 @@ internal class DatabaseImpl internal constructor(
 
     override suspend fun fetchConnection(readOnly: Boolean): Connection = semaphore.withPermit {
         connectionSupplier.connection.also {
+            if (!::baseSchema.isInitialized) {
+                baseSchema = it.schema
+            } else {
+                // Reset schema as it isn't done by HikariCP
+                // in situations where a schema isn't set on the connection pool
+                it.schema = baseSchema
+            }
             it.isReadOnly = readOnly
         }
     }

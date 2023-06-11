@@ -1,17 +1,17 @@
 package com.freya02.botcommands.internal.commands.application
 
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.core.ServiceContainer
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
 import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requiredFilter
-import com.freya02.botcommands.internal.core.withInstanceOrNull
+import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
 import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
@@ -28,8 +28,7 @@ import kotlin.reflect.jvm.jvmErasure
 @BService
 internal class ApplicationCommandsBuilder(
     private val context: BContextImpl,
-    private val serviceContainer: ServiceContainer,
-    classPathContainer: ClassPathContainer
+    private val serviceContainer: ServiceContainerImpl
 ) {
     private val logger = KotlinLogging.logger {  }
 
@@ -54,22 +53,17 @@ internal class ApplicationCommandsBuilder(
         guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildMessage)
         guildDeclarationFunctions += ClassPathFunction(contextCommandAutoBuilder, ContextCommandAutoBuilder::declareGuildUser)
 
-        for (classPathFunction in classPathContainer
-            .functionsWithAnnotation<AppDeclaration>()
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, AppDeclaration>()
             .requiredFilter(FunctionFilter.nonStatic())
-            .requiredFilter(
-                FunctionFilter.firstArg(
-                    GlobalApplicationCommandManager::class,
-                    GuildApplicationCommandManager::class
-                )
-            )
-        ) {
-            when (classPathFunction.function.valueParameters.first().type.jvmErasure) {
-                GlobalApplicationCommandManager::class -> globalDeclarationFunctions.add(classPathFunction)
-                GuildApplicationCommandManager::class -> guildDeclarationFunctions.add(classPathFunction)
-                else -> throwInternal("Function first param should have been checked")
+            .requiredFilter(FunctionFilter.firstArg(GlobalApplicationCommandManager::class, GuildApplicationCommandManager::class))
+            .forEach { classPathFunction ->
+                when (classPathFunction.function.valueParameters.first().type.jvmErasure) {
+                    GlobalApplicationCommandManager::class -> globalDeclarationFunctions.add(classPathFunction)
+                    GuildApplicationCommandManager::class -> guildDeclarationFunctions.add(classPathFunction)
+                    else -> throwInternal("Function first param should have been checked")
+                }
             }
-        }
 
         logger.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
         if (globalDeclarationFunctions.isNotEmpty()) {
@@ -212,9 +206,8 @@ internal class ApplicationCommandsBuilder(
     }
 
     private suspend fun runDeclarationFunction(classPathFunction: ClassPathFunction, manager: AbstractApplicationCommandManager) {
-        classPathFunction.withInstanceOrNull { instance, function ->
-            val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
-            function.callSuspend(instance, manager, *args)
-        }
+        val (instance, function) = classPathFunction
+        val args = serviceContainer.getParameters(function.nonInstanceParameters.drop(1).map { it.type.jvmErasure }).toTypedArray()
+        function.callSuspend(instance, manager, *args)
     }
 }

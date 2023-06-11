@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.context.annotations;
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
+import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.CommandScope;
@@ -21,9 +22,12 @@ import java.lang.annotation.Target;
  * <p>
  * <b>The targeted method must have a {@link GlobalUserEvent} or a {@link GuildUserEvent} and the only other arguments possible are a {@link Member} or a {@link User}, which will be the <i>targeted</i> entity</b>
  *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
+ *
  * @see GlobalUserEvent#getTarget()
  * @see GlobalUserEvent#getTargetMember()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
+ * @see Command
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown

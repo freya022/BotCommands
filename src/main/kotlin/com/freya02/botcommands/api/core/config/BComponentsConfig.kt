@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.internal.toImmutableList
 
 @InjectedService

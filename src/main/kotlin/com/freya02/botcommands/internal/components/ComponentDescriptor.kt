@@ -19,9 +19,9 @@ class ComponentDescriptor(
     init {
         parameters = function.nonInstanceParameters.drop(1).transformParameters(
             builderBlock = { function, parameter, declaredName ->
-                val service = context.serviceContainer.peekServiceOrNull(parameter.type.jvmErasure)
-                when {
-                    service != null -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
+                when (context.serviceContainer.canCreateService(parameter.type.jvmErasure)) {
+                    //No error => is a service
+                    null -> CustomOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                     else -> ComponentHandlerOptionBuilder(OptionParameter.fromSelfAggregate(function, declaredName))
                 }
             },

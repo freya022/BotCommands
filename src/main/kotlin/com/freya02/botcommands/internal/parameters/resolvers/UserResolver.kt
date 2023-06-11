@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.parameters.*
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
 
-@IncludeClasspath
+@Resolver
 class UserResolver : ParameterResolver<UserResolver, User>(User::class),
     RegexParameterResolver<UserResolver, User>,
     SlashParameterResolver<UserResolver, User>,

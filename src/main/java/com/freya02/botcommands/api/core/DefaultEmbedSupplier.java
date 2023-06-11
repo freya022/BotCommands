@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedSupplier {
 	class Default implements DefaultEmbedSupplier {
 		@NotNull

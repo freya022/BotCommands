@@ -1,7 +1,7 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
-import com.freya02.botcommands.api.annotations.CommandMarker
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 
 private const val guildNicknameAutocompleteName = "NewSlashTest: guildNickname"
 
-@CommandMarker
+@Command
 class SlashTest : ApplicationCommand() {
     override fun getGeneratedValueSupplier(
         guild: Guild?, commandId: String?,

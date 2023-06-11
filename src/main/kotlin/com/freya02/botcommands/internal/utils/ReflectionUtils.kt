@@ -1,31 +1,20 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.annotations.ConditionalUse
-import com.freya02.botcommands.api.core.annotations.BService
-import com.freya02.botcommands.api.core.annotations.ConditionalService
-import com.freya02.botcommands.api.core.annotations.InjectedService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
-import io.github.classgraph.ClassInfo
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
-import kotlin.reflect.full.*
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
 internal object ReflectionUtils {
-    private val logger = KotlinLogging.logger { }
-
     private val reflectedMap: MutableMap<KFunction<*>, KFunction<*>> = hashMapOf()
-
-    private val serviceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class, InjectedService::class)
-    private val loadableServiceAnnotations: List<KClass<out Annotation>> = listOf(BService::class, ConditionalService::class)
-    private val serviceAnnotationNames: List<String> = serviceAnnotations.map { it.java.name }
 
     @Suppress("UNCHECKED_CAST")
     internal fun <R> KFunction<R>.reflectReference(): KFunction<R> {
@@ -42,16 +31,19 @@ internal object ReflectionUtils {
         synchronized(reflectedMap) {
             return reflectedMap.computeIfAbsent(this) {
                 return@computeIfAbsent when (this) { //Try to match the original function
-                    is CallableReference -> {
-                        (owner as KClass<*>).declaredMemberFunctions.findFunction(this)
-                            ?: (owner as KClass<*>).constructors.findFunction(this)
-                            ?: throwInternal(this, "Unable to reflect function reference")
-                    }
-
+                    is CallableReference -> resolveReference(owner as KClass<*>) ?: throwInternal(this, "Unable to reflect function reference")
                     else -> this
                 }
             } as KFunction<R>
         }
+    }
+
+    internal fun KFunction<*>.resolveReference(targetClass: KClass<*>): KFunction<Any?>? {
+        if (this !is CallableReference)
+            throwInternal("Cannot use ReflectionUtils#resolveReference on a ${this::class.simpleNestedName}")
+
+        return targetClass.declaredMemberFunctions.findFunction(this)
+            ?: targetClass.constructors.findFunction(this)
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
@@ -74,8 +66,8 @@ internal object ReflectionUtils {
     internal val KFunction<*>.declaringClass: KClass<*>
         get() = this.javaMethodOrConstructor.declaringClass.kotlin
 
-    internal val KFunction<*>.isJava
-        get() = !declaringClass.hasAnnotation<Metadata>()
+//    internal val KFunction<*>.isJava
+//        get() = !declaringClass.hasAnnotation<Metadata>()
 
     internal val KCallable<*>.nonInstanceParameters
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE }
@@ -88,7 +80,7 @@ internal object ReflectionUtils {
             val declaringClassName = this.declaringClass.simpleNestedName
             val methodName = this.name
             val parameters = this.valueParameters.joinToString { it.type.simpleNestedName }
-            return "$declaringClassName#$methodName($parameters)"
+            return "$declaringClassName.$methodName($parameters)"
         }
 
     internal val KFunction<*>.shortSignature: String
@@ -112,7 +104,7 @@ internal object ReflectionUtils {
         get() {
             val callableReference = (this as? CallableReference)
                 ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
-            return (callableReference.owner as KClass<*>).simpleName + "#" + this.name
+            return (callableReference.owner as KClass<*>).simpleName + "." + this.name
         }
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)
@@ -129,59 +121,16 @@ internal object ReflectionUtils {
             return collectionType.arguments.first().type
         }
 
-    /** Everything but extensions, includes static methods */
-    internal val KClass<*>.nonExtensionFunctions
-        //Take everything except extension functions
-        get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
+//    /** Everything but extensions, includes static methods */
+//    internal val KClass<*>.nonExtensionFunctions
+//        //Take everything except extension functions
+//        get() = declaredFunctions.filter { it.extensionReceiverParameter == null }
+//
+//    /** Static methods and declared member functions of the companion object */
+//    internal val KClass<*>.staticAndCompanionDeclaredMemberFunctions
+//        get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
 
-    /** Static methods and declared member functions of the companion object */
-    internal val KClass<*>.staticAndCompanionDeclaredMemberFunctions
-        get() = this.staticFunctions + (companionObject?.declaredMemberFunctions ?: emptyList())
-
-    @Throws(IllegalAccessException::class, InvocationTargetException::class)
-    internal fun isInstantiable(info: ClassInfo): Boolean {
-        var canInstantiate = true
-        for (methodInfo in info.methodInfo) {
-            if (methodInfo.hasAnnotation(ConditionalUse::class.java)) {
-                if (methodInfo.isStatic) {
-                    val function = methodInfo.loadClassAndGetMethod().asKFunction()
-                    if (function.parameters.isEmpty() && function.returnType.jvmErasure == Boolean::class) {
-                        requireUser(function.isPublic, function) { "Method must be public" }
-                        canInstantiate = function.call() as Boolean
-                    } else {
-                        logger.warn("Method ${info.simpleName}#${function.name} is annotated @ConditionalUse but does not have the correct signature (return boolean, no parameters)")
-                    }
-                } else {
-                    logger.warn("Method ${info.simpleName}#${methodInfo.name} is annotated @ConditionalUse but is not static")
-                }
-
-                break
-            }
-        }
-
-        return canInstantiate
-    }
-
-    private fun Method.asKFunction(): KFunction<*> {
+    internal fun Method.asKFunction(): KFunction<*> {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
-    }
-
-    internal fun ClassInfo.isService() = serviceAnnotationNames.any { this.hasAnnotation(it) }
-    internal fun KClass<*>.isService() = serviceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
-    internal fun KClass<*>.isLoadableService() = loadableServiceAnnotations.any { this.findAnnotations(it).isNotEmpty() }
-
-    /**
-     * Returns `true` if there is 1 service annotation or less
-     */
-    internal fun KClass<*>.hasAtMostOneServiceAnnotation(): Boolean {
-        var found = false
-        annotations.forEach { annotation ->
-            if (annotation.annotationClass in loadableServiceAnnotations) {
-                if (found)
-                    return false
-                found = true
-            }
-        }
-        return true
     }
 }

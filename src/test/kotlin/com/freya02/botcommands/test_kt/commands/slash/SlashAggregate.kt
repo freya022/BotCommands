@@ -1,13 +1,15 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.test_kt.CustomObject
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
-@CommandMarker
+@Command
 class SlashAggregate {
     @JvmInline
     value class MyInlineString(val yes: String)
@@ -18,13 +20,16 @@ class SlashAggregate {
     data class NestedAggregate(val bool: Boolean, val nestedDouble: Double)
 
     @CommandMarker
-    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, inlineAutoStr: MyInlineString) {
+    fun onSlashAggregate(event: GuildSlashEvent, agg: MyAggregate, inlineAutoStr: MyInlineString, customObject: CustomObject) {
         event.reply_("$agg + $inlineAutoStr", ephemeral = true).queue()
     }
 
     @CommandMarker
-    fun onInlineAutoStrAutocomplete(event: CommandAutoCompleteInteractionEvent, agg: MyAggregate) =
-        listOf(agg.toString().substring(0..<100))
+    fun onInlineAutoStrAutocomplete(
+        event: CommandAutoCompleteInteractionEvent,
+        agg: MyAggregate,
+        customObject: CustomObject
+    ) = listOf(customObject) //return custom object, to test autocomplete transformers
 
     @AppDeclaration
     fun declare(applicationCommandManager: GlobalApplicationCommandManager) {
@@ -46,6 +51,8 @@ class SlashAggregate {
                     this.showUserInput = false
                 }
             }
+
+            customOption("customObject")
         }
     }
 }

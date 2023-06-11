@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.modals;
 
-import com.freya02.botcommands.api.core.annotations.InjectedService;
+import com.freya02.botcommands.api.core.service.annotations.InjectedService;
 import com.freya02.botcommands.api.modals.annotations.ModalInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import org.jetbrains.annotations.NotNull;

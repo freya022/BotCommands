@@ -1,16 +1,16 @@
-package com.freya02.botcommands.api.core.annotations
+package com.freya02.botcommands.api.core.service.annotations
 
 /**
- * Annotates a class as an injected service.
+ * No-op annotation marking a class as an injected service.
  *
  * The service needs to be instantiated and registered manually.
  *
  * This may be good for situations where services are defined by strategies (see Strategy design pattern),
  * an example would be other services could depend on the interface marked as an InjectedService.
  *
+ * If a class has a [ServiceType] of the injected service's interface then this interface can be requested.
+ *
  * @see BService
- * @see ConditionalService
- * @see ServiceType
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)

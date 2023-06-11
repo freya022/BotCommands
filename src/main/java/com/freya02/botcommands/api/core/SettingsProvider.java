@@ -3,9 +3,9 @@ package com.freya02.botcommands.api.core;
 import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface SettingsProvider {
 	/**
 	 * Returns the list of prefix this Guild should use <br>

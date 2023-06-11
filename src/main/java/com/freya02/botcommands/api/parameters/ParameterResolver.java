@@ -28,7 +28,7 @@ import org.slf4j.Logger;
  *     <li>{@linkplain Role}</li>
  *     <li>{@linkplain User}</li>
  *     <li>{@linkplain Member}</li>
- *     <li>{@linkplain GuildChannel all guild channels (in theory)}</li>
+ *     <li>{@linkplain GuildChannel all guild channels subtypes (in theory)}</li>
  *     <li>{@linkplain Message} (only message context commands)</li>
  * </ul>
  *

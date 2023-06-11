@@ -1,6 +1,7 @@
 package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.annotations.CommandMarker
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
@@ -9,7 +10,7 @@ import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.entities.User
 
-@CommandMarker //Not unused
+@Command
 class SlashBanManual {
     @CommandMarker //Since IJ won't shut up about unused functions even though i am referencing below
     suspend fun onSlashBan(event: GuildSlashEvent, target: User, reason: String = "Banned by ${event.user.asTag}") {

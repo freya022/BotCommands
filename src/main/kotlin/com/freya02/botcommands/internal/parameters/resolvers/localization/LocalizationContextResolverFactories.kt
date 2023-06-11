@@ -1,12 +1,12 @@
 package com.freya02.botcommands.internal.parameters.resolvers.localization
 
+import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
 import com.freya02.botcommands.api.parameters.ParameterWrapper
 import com.freya02.botcommands.internal.*
-import com.freya02.botcommands.internal.annotations.IncludeClasspath
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl
 import com.freya02.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
@@ -17,7 +17,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
-@IncludeClasspath
+@ResolverFactory
 internal class AppLocalizationContextResolverFactory : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
     AppLocalizationContextResolver::class,
     AppLocalizationContext::class
@@ -28,7 +28,7 @@ internal class AppLocalizationContextResolverFactory : ParameterResolverFactory<
         ))
 }
 
-@IncludeClasspath
+@ResolverFactory
 internal class TextLocalizationContextResolverFactory : ParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(
     TextLocalizationContextResolver::class.java,
     TextLocalizationContext::class.java

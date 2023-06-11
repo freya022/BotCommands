@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface HelpBuilderConsumer {
 	/**
 	 * The function called when building a help embed

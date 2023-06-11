@@ -1,11 +1,9 @@
 package com.freya02.botcommands.api.components.annotations;
 
-import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.prefixed.TextCommand;
-import com.freya02.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder;
-import com.freya02.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder;
+import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.event.EntitySelectEvent;
 import com.freya02.botcommands.api.components.event.StringSelectEvent;
+import com.freya02.botcommands.api.core.annotations.Handler;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 
 import java.lang.annotation.ElementType;
@@ -27,6 +25,8 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * Supported parameters are in {@link ParameterResolver}.
+ *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
  *
  * @see Components
  * @see ParameterResolver

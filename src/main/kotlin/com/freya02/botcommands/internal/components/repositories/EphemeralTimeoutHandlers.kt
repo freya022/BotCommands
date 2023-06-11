@@ -1,7 +1,9 @@
 package com.freya02.botcommands.internal.components.repositories
 
 import com.freya02.botcommands.api.components.Components
-import com.freya02.botcommands.api.core.annotations.ConditionalService
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 
-@ConditionalService(dependencies = [Components::class])
+@BService
+@Dependencies(Components::class)
 internal class EphemeralTimeoutHandlers : EphemeralHandlers<suspend () -> Unit>()

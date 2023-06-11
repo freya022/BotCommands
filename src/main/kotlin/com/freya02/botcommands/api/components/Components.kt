@@ -12,9 +12,10 @@ import com.freya02.botcommands.api.components.builder.select.ephemeral.Ephemeral
 import com.freya02.botcommands.api.components.builder.select.ephemeral.EphemeralStringSelectBuilder
 import com.freya02.botcommands.api.components.builder.select.persistent.PersistentEntitySelectBuilder
 import com.freya02.botcommands.api.components.builder.select.persistent.PersistentStringSelectBuilder
-import com.freya02.botcommands.api.core.ConditionalServiceChecker
-import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BComponentsConfig
+import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.utils.ButtonContent
 import com.freya02.botcommands.internal.components.controller.ComponentController
 import com.freya02.botcommands.internal.requireUser
@@ -85,7 +86,8 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * }
  * ```
  */
-@ConditionalService
+@BService
+@ConditionalService(Components.Companion::class)
 class Components internal constructor(private val componentController: ComponentController) {
     private val logger = KotlinLogging.logger { }
 

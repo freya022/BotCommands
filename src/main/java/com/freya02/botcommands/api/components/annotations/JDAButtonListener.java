@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.components.annotations;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.builder.button.PersistentButtonBuilder;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.core.annotations.Handler;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 
@@ -24,6 +25,8 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * Supported parameters are in {@link ParameterResolver}.
+ *
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
  *
  * @see Components
  * @see ParameterResolver

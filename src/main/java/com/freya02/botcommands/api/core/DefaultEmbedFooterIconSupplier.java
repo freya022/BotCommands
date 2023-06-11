@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.core.annotations.BService;
-import com.freya02.botcommands.api.core.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.annotations.ServiceType;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
@@ -16,7 +16,7 @@ import java.io.InputStream;
  *
  * @see InterfacedService
  */
-@InterfacedService
+@InterfacedService(acceptMultiple = false)
 public interface DefaultEmbedFooterIconSupplier {
 	class Default implements DefaultEmbedFooterIconSupplier {
 		@Nullable

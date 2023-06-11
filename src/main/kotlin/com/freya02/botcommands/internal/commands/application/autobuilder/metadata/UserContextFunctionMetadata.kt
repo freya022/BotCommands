@@ -1,14 +1,12 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
-import kotlin.reflect.KFunction
+import com.freya02.botcommands.internal.core.ClassPathFunction
 
 internal class UserContextFunctionMetadata(
-    instanceSupplier: () -> ApplicationCommand,
-    func: KFunction<*>,
+    classPathFunction: ClassPathFunction,
     annotation: JDAUserCommand,
     path: CommandPath,
     commandId: String?
-) : ApplicationFunctionMetadata<ApplicationCommand, JDAUserCommand>(instanceSupplier, func, annotation, path, commandId)
+) : ApplicationFunctionMetadata<JDAUserCommand>(classPathFunction, annotation, path, commandId)

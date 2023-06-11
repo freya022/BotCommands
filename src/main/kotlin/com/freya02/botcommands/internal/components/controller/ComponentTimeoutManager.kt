@@ -3,9 +3,11 @@ package com.freya02.botcommands.internal.components.controller
 import com.freya02.botcommands.api.components.data.ComponentTimeout
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
-import com.freya02.botcommands.api.core.ServiceContainer
-import com.freya02.botcommands.api.core.annotations.ConditionalService
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
+import com.freya02.botcommands.api.core.service.ServiceContainer
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.lazy
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralTimeout
@@ -24,7 +26,8 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.callSuspendBy
 import kotlin.reflect.jvm.jvmErasure
 
-@ConditionalService(dependencies = [ComponentRepository::class])
+@BService
+@Dependencies(ComponentRepository::class)
 internal class ComponentTimeoutManager(
     private val scopesConfig: BCoroutineScopesConfig,
     private val serviceContainer: ServiceContainer,
@@ -33,7 +36,7 @@ internal class ComponentTimeoutManager(
     private val componentTimeoutHandlers: ComponentTimeoutHandlers
 ) {
     private val logger = KotlinLogging.logger { }
-    private val componentController: ComponentController by lazy { serviceContainer.getService() }
+    private val componentController: ComponentController by serviceContainer.lazy()
     private val timeoutMap = hashMapOf<Int, Job>()
 
     fun scheduleTimeout(id: Int, timeout: ComponentTimeout) {

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppOption
@@ -11,12 +12,11 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.LongRa
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
-import com.freya02.botcommands.internal.core.ClassPathContainer
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.LocalizationUtils
@@ -27,17 +27,14 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
-
 @BService
-internal class SlashCommandAutoBuilder(private val context: BContextImpl, classPathContainer: ClassPathContainer) {
-    private val functions: List<SlashFunctionMetadata>
-
-    init {
-        functions = classPathContainer.functionsWithAnnotation<JDASlashCommand>()
+internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
+    private val functions: List<SlashFunctionMetadata> =
+        context.instantiableServiceAnnotationsMap
+            .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
             .requiredFilter(FunctionFilter.nonStatic())
             .requiredFilter(FunctionFilter.firstArg(GlobalSlashEvent::class))
             .map {
-                val instanceSupplier: () -> ApplicationCommand = { it.asCommandInstance() }
                 val func = it.function
                 val annotation = func.findAnnotation<JDASlashCommand>() ?: throwInternal("@JDASlashCommand should be present")
                 val path = CommandPath.of(annotation.name, annotation.group.nullIfEmpty(), annotation.subcommand.nullIfEmpty()).also { path ->
@@ -47,9 +44,8 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl, classP
                 }
                 val commandId = func.findAnnotation<CommandId>()?.value
 
-                SlashFunctionMetadata(instanceSupplier, func, annotation, path, commandId)
+                SlashFunctionMetadata(it, annotation, path, commandId)
             }
-    }
 
     fun declareGlobal(manager: GlobalApplicationCommandManager) {
         val subcommands: MutableMap<String, MutableList<SlashFunctionMetadata>> = hashMapOf()

@@ -2,6 +2,7 @@ package com.freya02.botcommands.test_kt.commands.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.commands.CommandPath;
+import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
 import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
@@ -27,6 +28,7 @@ import java.util.List;
 import static com.freya02.botcommands.test_kt.commands.slash.SlashMyCommand.autocompleteHandlerName;
 import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
+@Command
 public class SlashMyJavaCommand extends ApplicationCommand {
 	@Override
 	@NotNull

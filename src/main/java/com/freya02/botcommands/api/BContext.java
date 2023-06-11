@@ -3,10 +3,14 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer;
-import com.freya02.botcommands.api.core.*;
-import com.freya02.botcommands.api.core.annotations.InjectedService;
+import com.freya02.botcommands.api.core.DefaultEmbedFooterIconSupplier;
+import com.freya02.botcommands.api.core.DefaultEmbedSupplier;
+import com.freya02.botcommands.api.core.GlobalExceptionHandler;
+import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.core.config.*;
-import kotlin.reflect.KClass;
+import com.freya02.botcommands.api.core.service.ServiceContainer;
+import com.freya02.botcommands.api.core.service.ServiceResult;
+import com.freya02.botcommands.api.core.service.annotations.InjectedService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -54,12 +58,10 @@ public interface BContext {
 
 	//TODO docs
 	@NotNull
-	ServiceContainer getServiceContainer();
+    ServiceContainer getServiceContainer();
 
-	//TODO docs
-	@NotNull
-	default <T> T getService(@NotNull KClass<T> clazz) {
-		return getServiceContainer().getService(clazz);
+	default <T> ServiceResult<T> tryGetService(@NotNull Class<T> clazz) {
+		return getServiceContainer().tryGetService(clazz);
 	}
 
 	//TODO docs

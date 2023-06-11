@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.core.options
 
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl.Companion.isVarargAggregator
 import com.freya02.botcommands.internal.isPrimitive
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.simpleNestedName

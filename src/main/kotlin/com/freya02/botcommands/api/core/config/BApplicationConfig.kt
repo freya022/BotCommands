@@ -3,16 +3,14 @@ package com.freya02.botcommands.api.core.config
 import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
-import com.freya02.botcommands.api.core.annotations.InjectedService
+import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
-import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.internal.toImmutableList
 import com.freya02.botcommands.internal.toImmutableMap
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 @InjectedService
 interface BApplicationConfig {
@@ -60,39 +58,31 @@ interface BApplicationConfig {
      */
     val applicationFilters: List<ApplicationCommandFilter>
 
-    val autocompleteTransformers: Map<KType, AutocompleteTransformer<*>>
-
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
 
-class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
+class BApplicationConfigBuilder internal constructor(private val serviceConfig: BServiceConfigBuilder) : BApplicationConfig {
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     override var onlineAppCommandCheckEnabled: Boolean = false
     override var forceGuildCommands: Boolean = false
     override val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
-    private val _autocompleteTransformers: MutableMap<KType, AutocompleteTransformer<*>> = hashMapOf()
-    override val autocompleteTransformers: Map<KType, AutocompleteTransformer<*>>
-        get() = _autocompleteTransformers.toImmutableMap()
-
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
     override val baseNameToLocalesMap: Map<String, List<Locale>>
         get() = _baseNameToLocalesMap.toImmutableMap()
 
     /**
-     * Registers an autocomplete transformer
+     * Registers an autocomplete transformer.
      *
      * If your autocomplete handler return a `List<YourObject>`, you will have to register an `AutocompleteTransformer<YourObject>`
      *
-     * @param type                    Type of the List generic element type
-     * @param autocompleteTransformer The transformer which transforms a [List] element into a [Choice]
-     * @param T                       Type of the List generic element type
+     * @param transformerType The type of the transformer service, which will transform an element of a [List], into a [Choice].
      *
      * @return This builder for chaining convenience
      */
-    fun <T : Any> registerAutocompleteTransformer(type: KClass<T>, autocompleteTransformer: AutocompleteTransformer<T>) {
-        _autocompleteTransformers[ParameterType.ofKClass(type).type] = autocompleteTransformer
+    fun registerAutocompleteTransformer(transformerType: KClass<AutocompleteTransformer<*>>) {
+        serviceConfig.registerService(transformerType)
     }
 
     /**
@@ -134,7 +124,6 @@ class BApplicationConfigBuilder internal constructor() : BApplicationConfig {
         override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
         override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
         override val applicationFilters = this@BApplicationConfigBuilder.applicationFilters.toImmutableList()
-        override val autocompleteTransformers = this@BApplicationConfigBuilder.autocompleteTransformers
         override val baseNameToLocalesMap =
             this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
                 .toImmutableMap()

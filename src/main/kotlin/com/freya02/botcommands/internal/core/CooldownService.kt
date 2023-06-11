@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
-import com.freya02.botcommands.api.core.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.Cooldownable
 import com.freya02.botcommands.internal.throwInternal
