@@ -20,6 +20,7 @@ import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import kotlin.reflect.KParameter
@@ -111,6 +112,8 @@ abstract class SlashCommandInfo internal constructor(
                     }
 
                     resolved
+                } else if (!option.isOptionalOrNullable && event is CommandAutoCompleteInteractionEvent) {
+                    return InsertOptionResult.ABORT
                 } else {
                     null
                 }
