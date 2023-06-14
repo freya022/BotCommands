@@ -79,6 +79,13 @@
                         <configuration>
                             <jdkVersion>17</jdkVersion>
                             <failOnWarning>true</failOnWarning>
+                            <sourceLinks>
+                                <link>
+                                    <path>src</path>
+                                    <url>${project.scm.url}/tree/${project.scm.tag}/src</url>
+                                    <lineSuffix>#L</lineSuffix>
+                                </link>
+                            </sourceLinks>
                             <suppressedFiles>${project.basedir}/src/main/java/com/freya02/botcommands/api/$BCInfo.java</suppressedFiles>
                             <sourceDirectories>
                                 <dir>${project.basedir}/src/main/java</dir>
@@ -222,7 +229,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <plugin> <!-- TODO Update plugin so it inserts permalink in scm > tag -->
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
                 <version>fdf1d2b251</version>
