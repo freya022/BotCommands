@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - master
-      - 3.0.0-dev
+      - 3.0.0-dev # This will be moved to master once released, master taking a "legacy/v2"
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
@@ -59,4 +59,4 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Build KDocs with Maven
-        run: mvn -P check-docs -B dokka:dokka --file pom.xml
+        run: mvn -P docs -B dokka:dokka --file pom.xml
