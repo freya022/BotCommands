@@ -48,9 +48,6 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
 
     private var nextExceptionDispatch: Long = 0
 
-    internal val isHelpDisabled: Boolean
-        get() = config.textConfig.isHelpDisabled
-
     internal val textCommandsContext = TextCommandsContextImpl()
 
     private val applicationCommandsContext = ApplicationCommandsContextImpl(this)
