@@ -18,7 +18,7 @@ internal class CommandPathImpl internal constructor(
 
         val components = listOfNotNull(name, group, subname)
 
-        this.path = components.joinToString("/")
+        this.path = components.joinToString(" ")
         this.count = components.size
     }
 
