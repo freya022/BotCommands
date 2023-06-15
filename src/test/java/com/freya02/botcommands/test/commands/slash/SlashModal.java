@@ -2,6 +2,7 @@ package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
+import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.modals.Modals;
