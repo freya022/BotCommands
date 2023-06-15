@@ -16,8 +16,6 @@ import net.dv8tion.jda.api.entities.Guild
 import java.util.concurrent.CompletableFuture
 
 class ApplicationCommandsContextImpl internal constructor(private val context: BContextImpl) : ApplicationCommandsContext {
-    val mutableApplicationCommandMap = MutableApplicationCommandMap()
-
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
 
     override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
@@ -31,10 +29,6 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
     override fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo? =
         getLiveApplicationCommandsMap(guild).findMessageCommand(name)
             ?: getLiveApplicationCommandsMap(null).findMessageCommand(name)
-
-    override fun getApplicationCommandMap(): ApplicationCommandMap {
-        return mutableApplicationCommandMap
-    }
 
     override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap {
         return liveApplicationCommandInfoMap[getGuildKey(guild)]

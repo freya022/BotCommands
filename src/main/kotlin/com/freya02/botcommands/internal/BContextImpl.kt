@@ -14,7 +14,6 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
-import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
@@ -122,11 +121,6 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     override fun invalidateAutocompleteCache(autocompleteHandlerName: String) {
         getAutocompleteHandler(autocompleteHandlerName)?.invalidate()
     }
-
-    val applicationCommandsView: Collection<ApplicationCommandInfo>
-        get() = getApplicationCommandsContext()
-            .mutableApplicationCommandMap
-            .allApplicationCommands
 
     override fun dispatchException(message: String, t: Throwable?) {
         if (config.disableExceptionsInDMs) return //Don't send DM exceptions in dev mode

@@ -2,16 +2,13 @@ package com.freya02.botcommands.api.commands.application;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.core.service.annotations.InjectedService;
-import com.freya02.botcommands.internal.commands.application.CommandMap;
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo;
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @InjectedService
@@ -48,66 +45,6 @@ public interface ApplicationCommandsContext {
 	 */
 	@Nullable
 	MessageCommandInfo findLiveMessageCommand(@Nullable Guild guild, @NotNull String name);
-
-	/**
-	 * Returns a view for all the registered application commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the application commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	ApplicationCommandMap getApplicationCommandMap();
-
-	/**
-	 * Returns a view for all the registered slash commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the slash commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	default CommandMap<SlashCommandInfo> getSlashCommandsMap() {
-		return getApplicationCommandMap().getSlashCommands();
-	}
-
-	/**
-	 * Returns a view for all the registered user context commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the user context commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	default CommandMap<UserCommandInfo> getUserCommandsMap() {
-		return getApplicationCommandMap().getUserCommands();
-	}
-
-	/**
-	 * Returns a view for all the registered message context commands
-	 * <br>This doesn't filter commands on a per-guild basis
-	 *
-	 * @return A view of all the message context commands
-	 */
-	@NotNull
-	@UnmodifiableView
-	default CommandMap<MessageCommandInfo> getMessageCommandsMap() {
-		return getApplicationCommandMap().getMessageCommands();
-	}
-
-	/**
-	 * Returns a list of the application commands paths, names such as <code>ban/user/perm</code>
-	 *
-	 * @return A list of the application commands paths
-	 */
-	default List<CommandPath> getSlashCommandsPaths() {
-		return getApplicationCommandMap()
-				.getSlashCommands()
-				.values()
-				.stream()
-				.map(SlashCommandInfo::getPath)
-				.toList();
-	}
 
 	/**
 	 * Returns the live application commands for the specific guild

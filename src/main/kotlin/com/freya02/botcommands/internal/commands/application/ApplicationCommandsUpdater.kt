@@ -199,9 +199,8 @@ internal class ApplicationCommandsUpdater private constructor(
         logger.trace {
             val commandNumber = commands.size
             val sentCommandNumber = allCommandData.size
-            val cacheViewNumber = context.applicationCommandsView.size
             val scope = guild.asScopeString()
-            "Updated $commandNumber / $sentCommandNumber ($cacheViewNumber) commands for $scope"
+            "Updated $commandNumber / $sentCommandNumber commands for $scope"
         }
     }
 
