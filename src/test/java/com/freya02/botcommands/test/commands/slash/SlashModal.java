@@ -19,6 +19,7 @@ public class SlashModal extends ApplicationCommand {
 	private static final String CODE_INPUT_NAME = "code";
 
 	@JDASlashCommand(
+			scope = CommandScope.GLOBAL,
 			name = "modal",
 			description = "Test modal"
 	)
