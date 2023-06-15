@@ -13,16 +13,12 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Map;
 
 public abstract class ApplicationCommandMap {
-	private final Map<Command.Type, CommandMap<ApplicationCommandInfo>> typeMap = Collections.synchronizedMap(new EnumMap<>(Command.Type.class));
-
 	@UnmodifiableView
 	public Collection<? extends ApplicationCommandInfo> getAllApplicationCommands() {
-		return typeMap.values()
+		return getRawTypeMap().values()
 				.stream()
 				.flatMap(map -> map.values().stream())
 				.toList();
@@ -64,6 +60,11 @@ public abstract class ApplicationCommandMap {
 
 	@SuppressWarnings("unchecked")
 	public <T extends ApplicationCommandInfo> CommandMap<T> getTypeMap(Command.Type type) {
-		return (CommandMap<T>) typeMap.computeIfAbsent(type, x -> new MutableCommandMap<>());
+		return (CommandMap<T>) getRawTypeMap().computeIfAbsent(type, x -> new MutableCommandMap<>());
 	}
+
+	protected abstract Map<Command.Type, CommandMap<ApplicationCommandInfo>> getRawTypeMap();
+
+	@NotNull
+	public abstract ApplicationCommandMap plus(@NotNull ApplicationCommandMap liveApplicationCommandsMap);
 }

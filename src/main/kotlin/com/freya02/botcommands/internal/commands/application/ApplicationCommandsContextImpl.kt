@@ -21,13 +21,16 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
     private val liveApplicationCommandInfoMap = TCollections.synchronizedMap(TLongObjectHashMap<ApplicationCommandMap>())
 
     override fun findLiveSlashCommand(guild: Guild?, path: CommandPath): SlashCommandInfo? =
-        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findSlashCommand(path)
+        getLiveApplicationCommandsMap(guild).findSlashCommand(path)
+            ?: getLiveApplicationCommandsMap(null).findSlashCommand(path)
 
     override fun findLiveUserCommand(guild: Guild?, name: String): UserCommandInfo? =
-        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findUserCommand(name)
+        getLiveApplicationCommandsMap(guild).findUserCommand(name)
+            ?: getLiveApplicationCommandsMap(null).findUserCommand(name)
 
     override fun findLiveMessageCommand(guild: Guild?, name: String): MessageCommandInfo? =
-        liveApplicationCommandInfoMap[getGuildKey(guild)]?.findMessageCommand(name)
+        getLiveApplicationCommandsMap(guild).findMessageCommand(name)
+            ?: getLiveApplicationCommandsMap(null).findMessageCommand(name)
 
     override fun getApplicationCommandMap(): ApplicationCommandMap {
         return mutableApplicationCommandMap
@@ -35,6 +38,11 @@ class ApplicationCommandsContextImpl internal constructor(private val context: B
 
     override fun getLiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap {
         return liveApplicationCommandInfoMap[getGuildKey(guild)]
+    }
+
+    override fun getEffectiveApplicationCommandsMap(guild: Guild?): ApplicationCommandMap = when (guild) {
+        null -> getLiveApplicationCommandsMap(null)
+        else -> getLiveApplicationCommandsMap(null) + getLiveApplicationCommandsMap(guild)
     }
 
     fun putLiveApplicationCommandsMap(guild: Guild?, map: ApplicationCommandMap) {

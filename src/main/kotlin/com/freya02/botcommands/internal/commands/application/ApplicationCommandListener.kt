@@ -5,9 +5,13 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
+import com.freya02.botcommands.internal.ExceptionHandler
+import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.throwInternal
 import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -15,7 +19,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
-import java.util.*
 
 @BService
 internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
@@ -30,8 +33,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             try {
                 val slashCommand = CommandPath.of(event.fullCommandName).let {
                     context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                        ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
-                        ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
+                        ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
                 }
 
                 if (!canRun(event, slashCommand)) return@launch
@@ -50,8 +52,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             try {
                 val userCommand = event.name.let {
                     context.applicationCommandsContext.findLiveUserCommand(event.guild, it)
-                        ?: context.applicationCommandsContext.findLiveUserCommand(null, it)
-                        ?: throwUser("A user context command could not be found: ${event.name}")
+                        ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
                 }
 
                 if (!canRun(event, userCommand)) return@launch
@@ -70,14 +71,58 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             try {
                 val messageCommand = event.name.let {
                     context.applicationCommandsContext.findLiveMessageCommand(event.guild, it)
-                        ?: context.applicationCommandsContext.findLiveMessageCommand(null, it)
-                        ?: throwUser("A message context command could not be found: ${event.name}")
+                        ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
                 }
 
                 if (!canRun(event, messageCommand)) return@launch
                 messageCommand.execute(event, cooldownService)
             } catch (e: Throwable) {
                 handleException(e, event)
+            }
+        }
+    }
+
+    private fun onCommandNotFound(event: GenericCommandInteractionEvent, message: String) {
+        //This is done so warnings are printed after the exception
+        handleException(IllegalArgumentException(message), event)
+        printAvailableCommands(event)
+    }
+
+    private fun printAvailableCommands(event: GenericCommandInteractionEvent) {
+        val guild = event.guild
+        logger.debug {
+            val commandsMap = context.applicationCommandsContext.getEffectiveApplicationCommandsMap(guild)
+            val scopeName = if (guild != null) "'" + guild.name + "'" else "Global scope"
+            val availableCommands = commandsMap.allApplicationCommands
+                .map { commandInfo ->
+                    when (commandInfo) {
+                        is SlashCommandInfo -> "/" + commandInfo.path.getFullPath(' ')
+                        else -> commandInfo.path.fullPath
+                    }
+                }
+                .sorted()
+                .joinToString("\n")
+            "Commands available in $scopeName:\n$availableCommands"
+        }
+
+        if (context.applicationConfig.onlineAppCommandCheckEnabled) {
+            logger.warn(
+                """
+                    An application command could not be recognized even though online command check was performed. An update will be forced.
+                    Please check if you have another bot instance running as it could have replaced the current command set.
+                    Do not share your tokens with anyone else (even your friend), and use a separate token when testing.
+                """.trimIndent()
+            )
+            if (guild != null) {
+                context.applicationCommandsContext.updateGuildApplicationCommands(guild, force = true).whenComplete { _, e ->
+                    if (e != null)
+                        logger.error("An exception occurred while trying to update commands of guild '${guild.name}' (${guild.id}) after a command was missing", e)
+                }
+            } else {
+                context.applicationCommandsContext.updateGlobalApplicationCommands(force = true).whenComplete { _, e ->
+                    if (e != null)
+                        logger.error("An exception occurred while trying to update global commands after a command was missing", e)
+                }
             }
         }
     }
@@ -128,15 +173,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                 }
                 UnusableReason.BOT_PERMISSIONS in unusableReasons -> {
                     if (event.guild == null) throwInternal("BOT_PERMISSIONS got checked even if guild is null")
-                    val missingBuilder = StringJoiner(", ")
 
                     //Take needed permissions, extract bot current permissions
                     val missingPerms = applicationCommand.botPermissions
                     missingPerms.removeAll(event.guild!!.selfMember.getPermissions(event.guildChannel))
-                    for (botPermission in missingPerms) {
-                        missingBuilder.add(botPermission.getName())
-                    }
-                    reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingBuilder.toString()))
+                    reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingPerms.joinToString()))
 
                     return false
                 }

@@ -119,6 +119,15 @@ public interface ApplicationCommandsContext {
 	@NotNull ApplicationCommandMap getLiveApplicationCommandsMap(@Nullable Guild guild);
 
 	/**
+	 * Returns the effective application commands available for the specific guild.
+	 *
+	 * @param guild The guild in which to query the commands, can be {@code null} for global commands
+	 *
+	 * @return The {@link ApplicationCommandMap} of the specific guild
+	 */
+	@NotNull ApplicationCommandMap getEffectiveApplicationCommandsMap(@Nullable Guild guild);
+
+	/**
 	 * Updates the application commands for the global scope <br><br>
 	 *
 	 * @param force Whether the commands should be updated no matter what

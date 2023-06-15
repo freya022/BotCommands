@@ -6,10 +6,17 @@ import com.freya02.botcommands.internal.commands.application.context.message.Mes
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
+import com.freya02.botcommands.internal.enumMapOf
+import net.dv8tion.jda.api.interactions.commands.Command
+import java.util.*
 import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType
 
-class MutableApplicationCommandMap : ApplicationCommandMap() {
+class MutableApplicationCommandMap(
+    private val rawTypeMap: Map<Command.Type, CommandMap<ApplicationCommandInfo>> = Collections.synchronizedMap(enumMapOf())
+) : ApplicationCommandMap() {
+    override fun getRawTypeMap() = rawTypeMap
+
     override fun getSlashCommands(): MutableCommandMap<SlashCommandInfo> {
         return getTypeMap(CommandType.SLASH)
     }
@@ -30,12 +37,26 @@ class MutableApplicationCommandMap : ApplicationCommandMap() {
 
     fun <T : ApplicationCommandInfo> put(type: CommandType, path: CommandPath, value: T): T? = getTypeMap<T>(type).put(path, value)
 
+    override operator fun plus(map: ApplicationCommandMap): MutableApplicationCommandMap {
+        val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
+        Command.Type.values().forEach { commandType ->
+            val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
+
+            listOf(this, map).forEach { sourceMap ->
+                sourceMap.getTypeMap<ApplicationCommandInfo>(commandType).forEach { (path, info) ->
+                    commandMap[path] = info
+                }
+            }
+        }
+
+        return MutableApplicationCommandMap(newMap)
+    }
+
     override fun <T : ApplicationCommandInfo> getTypeMap(type: CommandType): MutableCommandMap<T> {
         return super.getTypeMap<T>(type) as MutableCommandMap<T>
     }
 
     companion object {
-        @JvmStatic
         fun fromCommandList(guildApplicationCommands: Collection<ApplicationCommandInfo>) = MutableApplicationCommandMap().also { map ->
             for (info in guildApplicationCommands) {
                 val type = when (info) {
