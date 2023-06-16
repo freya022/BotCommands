@@ -16,7 +16,6 @@ internal class AutocompleteListener(private val context: BContextImpl) {
     internal suspend fun onAutocomplete(event: CommandAutoCompleteInteractionEvent) {
         val slashCommand = CommandPath.of(event.fullCommandName).let {
             context.applicationCommandsContext.findLiveSlashCommand(event.guild, it)
-                ?: context.applicationCommandsContext.findLiveSlashCommand(null, it)
                 ?: throwUser("A slash command could not be found: ${event.fullCommandName}")
         }
 
