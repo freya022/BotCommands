@@ -61,42 +61,54 @@
 
     <profiles>
         <profile>
-            <id>check-docs</id>
-            <properties>
-                <maven.javadoc.failOnError>true</maven.javadoc.failOnError>
-                <maven.javadoc.failOnWarnings>true</maven.javadoc.failOnWarnings>
-            </properties>
+            <id>docs</id>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.3.1</version>
-                        <configuration>
-                            <release>17</release>
-                            <additionalJOptions>
-                                <!-- No need to print "no comment" warnings -->
-                                <additionalJOption>-Xdoclint:-missing,html,reference,syntax</additionalJOption>
-                            </additionalJOptions>
-                            <links>
-                                <link>https://ci.dv8tion.net/job/JDA5/javadoc</link>
-                                <link>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</link>
-                            </links>
-                            <excludePackageNames>
-                                com.freya02.botcommands.internal.*:com.freya02.botcommands.internal
-                            </excludePackageNames>
-                            <sourceFileExcludes>
-                                <sourceFileExclude>com/freya02/botcommands/api/$BCInfo.java</sourceFileExclude>
-                            </sourceFileExcludes>
-                        </configuration>
+                        <groupId>org.jetbrains.dokka</groupId>
+                        <artifactId>dokka-maven-plugin</artifactId>
+                        <version>1.8.20</version>
                         <executions>
                             <execution>
-                                <id>attach-javadocs</id>
+                                <phase>package</phase>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>dokka</goal>
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <jdkVersion>17</jdkVersion>
+                            <failOnWarning>true</failOnWarning>
+                            <sourceLinks>
+                                <link>
+                                    <path>src</path>
+                                    <url>${project.scm.url}/tree/${project.scm.tag}/src</url>
+                                    <lineSuffix>#L</lineSuffix>
+                                </link>
+                            </sourceLinks>
+                            <suppressedFiles>${project.basedir}/src/main/java/com/freya02/botcommands/api/$BCInfo.java</suppressedFiles>
+                            <sourceDirectories>
+                                <dir>${project.basedir}/src/main/java</dir>
+                                <dir>${project.build.directory}/generated-sources</dir>
+                                <dir>${project.basedir}/src/main/kotlin</dir>
+                            </sourceDirectories>
+                            <externalDocumentationLinks>
+                                <link>
+                                    <url>https://docs.jda.wiki/</url>
+                                    <packageListUrl>https://docs.jda.wiki/element-list</packageListUrl>
+                                </link>
+                                <link>
+                                    <url>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0</url>
+                                    <packageListUrl>https://javadoc.io/doc/org.jetbrains/annotations/23.0.0/element-list</packageListUrl>
+                                </link>
+                            </externalDocumentationLinks>
+                            <perPackageOptions>
+                                <packageOptions>
+                                    <matchingRegex>.*internal.*</matchingRegex>
+                                    <suppress>true</suppress>
+                                </packageOptions>
+                            </perPackageOptions>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -220,7 +232,7 @@
             <plugin>
                 <groupId>io.github.freya022</groupId>
                 <artifactId>BotCommandsBuild-maven-plugin</artifactId>
-                <version>fdf1d2b251</version>
+                <version>8f0b3bee26</version>
                 <executions>
                     <execution>
                         <goals>
