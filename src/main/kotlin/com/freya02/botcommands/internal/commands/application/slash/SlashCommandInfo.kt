@@ -46,6 +46,11 @@ abstract class SlashCommandInfo internal constructor(
         parameters = builder.optionAggregateBuilders.transform {
             SlashCommandParameter(this@SlashCommandInfo, builder.optionAggregateBuilders, it)
         }
+
+        parameters
+            .flatMap { it.allOptions }
+            .filterIsInstance<SlashCommandOption>()
+            .forEach(SlashCommandOption::buildAutocomplete)
     }
 
     internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {

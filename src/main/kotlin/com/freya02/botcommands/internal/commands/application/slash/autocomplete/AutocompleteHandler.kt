@@ -21,7 +21,7 @@ import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal class AutocompleteHandler(
-    private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
+    private val slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
@@ -103,6 +103,10 @@ internal class AutocompleteHandler(
         } else {
             ChoiceSupplierStringContinuity(maxChoices)
         }
+    }
+
+    fun validateParameters() {
+        //TODO
     }
 
     internal companion object {
