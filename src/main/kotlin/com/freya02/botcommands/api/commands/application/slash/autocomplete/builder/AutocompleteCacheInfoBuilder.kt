@@ -9,6 +9,7 @@ class AutocompleteCacheInfoBuilder internal constructor(val cacheMode: Autocompl
     internal fun build() = AutocompleteCacheInfo(this)
 
     var cacheSize: Long = 2048
+    var compositeKeys: List<String> = emptyList()
     var guildLocal: Boolean = false
     var userLocal: Boolean = false
     var channelLocal: Boolean = false

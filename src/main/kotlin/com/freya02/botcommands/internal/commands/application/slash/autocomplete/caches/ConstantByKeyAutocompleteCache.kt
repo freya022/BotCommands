@@ -38,7 +38,7 @@ internal class ConstantByKeyAutocompleteCache(cacheInfo: AutocompleteCacheInfo) 
         event: CommandAutoCompleteInteractionEvent,
         valueComputer: suspend (CommandAutoCompleteInteractionEvent) -> List<Command.Choice>
     ): List<Command.Choice> {
-        val compositeKey = getCompositeKey(handler, event)
+        val compositeKey = getCompositeKey(event)
 
         lock.withLock() {
             return cache.getIfPresent(compositeKey)

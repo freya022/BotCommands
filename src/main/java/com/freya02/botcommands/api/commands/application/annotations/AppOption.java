@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.application.GuildApplicationSettings;
 import com.freya02.botcommands.api.commands.application.slash.annotations.*;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CompositeKey;
 import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
@@ -34,7 +33,6 @@ import java.lang.annotation.Target;
  * @see Length @Length
  * @see ChannelTypes @ChannelTypes
  * @see AutocompleteHandler @AutocompleteHandler
- * @see CompositeKey @CompositeKey
  * @see VarArgs @VarArgs
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -80,8 +78,6 @@ public @interface AppOption { //TODO separate this into specialised options, why
 
 	/**
 	 * Name of the autocomplete handler, must match a method annotated with {@link AutocompleteHandler} with the same name in it
-	 *
-	 * @see CompositeKey
 	 */
 	String autocomplete() default "";
 }

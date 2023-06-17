@@ -58,7 +58,6 @@ import java.util.List;
  *
  * @see AppOption
  * @see JDASlashCommand
- * @see CompositeKey
  * @see CacheAutocomplete
  */
 @Retention(RetentionPolicy.RUNTIME)

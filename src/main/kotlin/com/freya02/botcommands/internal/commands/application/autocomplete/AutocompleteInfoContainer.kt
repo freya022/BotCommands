@@ -43,6 +43,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
                         cache(autocompleteCacheAnnotation.cacheMode) {
                             cacheSize = autocompleteCacheAnnotation.cacheSize
 
+                            compositeKeys = autocompleteCacheAnnotation.compositeKeys.toList()
                             userLocal = autocompleteCacheAnnotation.userLocal
                             channelLocal = autocompleteCacheAnnotation.channelLocal
                             guildLocal = autocompleteCacheAnnotation.guildLocal

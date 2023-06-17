@@ -8,7 +8,6 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CompositeKey;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import org.slf4j.Logger;
@@ -71,11 +70,11 @@ public class SlashAutocompleteCache extends ApplicationCommand {
 				"Winnipeg Jets"));
 	}
 
-	@CacheAutocomplete
+	@CacheAutocomplete(compositeKeys = {"str", "integer"})
 	@AutocompleteHandler(name = "autoCacheInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
-	                          @CompositeKey @AppOption(name = "str") String autoStr,
-	                          @CompositeKey @AppOption long integer) throws InterruptedException {
+	                          @AppOption(name = "str") String autoStr,
+	                          @AppOption long integer) throws InterruptedException {
 		LOGGER.warn("Computing constant by key");
 
 		Thread.sleep(2000); //Simulate a long API request to show cache working
