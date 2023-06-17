@@ -130,5 +130,5 @@ object TextUtils {
     fun CommandPath.getSpacedPath(): String = getFullPath(' ')
 
     val CommandPath.components: List<String>
-        get() = fullPath.split('/')
+        get() = fullPath.split(' ')
 }
