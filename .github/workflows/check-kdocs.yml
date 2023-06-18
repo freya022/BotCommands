@@ -43,4 +43,4 @@ jobs:
           java-version: '17'
           cache: 'maven'
       - name: Build KDocs with Maven
-        run: mvn -P docs -B dokka:dokka --file pom.xml
+        run: mvn -P docs -B BotCommandsBuild:generate-version-info dokka:dokka --file pom.xml
