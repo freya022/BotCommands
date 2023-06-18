@@ -1,9 +1,9 @@
-name: Check compile, tests & javadocs
+name: Check compile, tests & KDocs
 on:
   workflow_dispatch:
   pull_request:
     branches:
-      - master # This will take "legacy/v2" once V3 is released
+      - 3.0.0-dev # This will be moved to master once released
     paths:
       - 'pom.xml'
       - 'src/main/**.java'
@@ -12,8 +12,8 @@ on:
       - 'src/test/**.kt'
   push:
     branches: 
-      - master
-    paths:
+      - 3.0.0-dev
+    paths: 
       - 'pom.xml'
       - 'src/main/**.java'
       - 'src/test/**.java'
@@ -32,7 +32,7 @@ jobs:
           cache: 'maven'
       - name: Compile and run tests with Maven
         run: mvn -B --file pom.xml test
-  check-javadoc:
+  check-kdocs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -42,5 +42,5 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-      - name: Compile and Build Javadocs with Maven
-        run: mvn -P check-docs -B javadoc:javadoc --file pom.xml
+      - name: Build KDocs with Maven
+        run: mvn -P docs -B dokka:dokka --file pom.xml

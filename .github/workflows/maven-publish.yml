@@ -6,11 +6,12 @@
 name: Publish to Maven Central
 on:
   release:
-    types: [ released ]
+    types: [ published ]
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: github.event.release.draft == false
     steps:
       - uses: actions/checkout@v3
       - name: Configure Git User
