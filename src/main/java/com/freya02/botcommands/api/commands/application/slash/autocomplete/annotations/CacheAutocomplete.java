@@ -51,14 +51,14 @@ public @interface CacheAutocomplete {
 	long cacheSize() default 2048;
 
 	/**
-	 * The set of <b>option names</b> which forms the cache key.
+	 * The set of <b>parameter names</b> which forms the cache key.
 	 *
 	 * <p>
 	 * This could be useful when making an autocomplete which depends on multiple options.
 	 *
 	 * <p>
 	 * <b>Note:</b> The focused option will always be in the composite key.
-	 * <br><b>Note 2:</b> An option name is the name displayed on Discord, not the name of your parameter.
+	 * <br><b>Note 2:</b> Option names should also work.
 	 */
 	String[] compositeKeys() default {};
 

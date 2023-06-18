@@ -52,7 +52,7 @@ class SlashAggregate {
                     this.showUserInput = false
 
                     cache(AutocompleteCacheMode.CONSTANT_BY_KEY) {
-                        compositeKeys = listOf("string", "nested_double")
+                        compositeKeys = listOf("string", "nestedDouble")
                     }
                 }
             }

@@ -1,11 +1,12 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete
 
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
+import com.freya02.botcommands.internal.asDiscordString
 
 class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoBuilder) {
     val cacheMode: AutocompleteCacheMode = builder.cacheMode
     val cacheSize: Long = builder.cacheSize
-    val compositeKeys: List<String> = builder.compositeKeys
+    val compositeKeys: List<String> = builder.compositeKeys.map { it.asDiscordString() }
     val guildLocal: Boolean = builder.guildLocal
     val userLocal: Boolean = builder.userLocal
     val channelLocal: Boolean = builder.channelLocal
