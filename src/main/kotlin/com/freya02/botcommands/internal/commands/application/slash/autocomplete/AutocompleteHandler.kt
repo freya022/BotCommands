@@ -10,40 +10,35 @@ import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.application.slash.SlashCommandOption
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.suppliers.*
-import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
+import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import kotlin.reflect.full.*
+import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal class AutocompleteHandler(
-    private val slashCommandInfo: SlashCommandInfo, //Beware of this-leaks, the object is not completely initialized
+    private val slashCommandInfo: SlashCommandInfo,
     slashCmdOptionAggregateBuilders: Map<String, SlashCommandOptionAggregateBuilder>,
     internal val autocompleteInfo: AutocompleteInfo
 ) : IExecutableInteractionInfo {
     override val eventFunction = autocompleteInfo.eventFunction
     override val parameters: List<AutocompleteCommandParameter>
 
-    internal val compositeOptions: List<AutocompleteCommandOption>
-
     //accommodate for user input
     private val maxChoices = OptionData.MAX_CHOICES - if (autocompleteInfo.showUserInput) 1 else 0
     private val choiceSupplier: ChoiceSupplier
 
     init {
-        this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform<SlashCommandOptionAggregateBuilder, _> {
+        this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
         }
-
-        compositeOptions = this.parameters
-            .flatMap { it.allOptions }
-            .filter { it.optionType == OptionType.OPTION }
-            .map { it as AutocompleteCommandOption }
-            .filter { it.isCompositeKey }
 
         val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
             ?: throwUser("Unable to determine return type, it should inherit Collection")
@@ -102,6 +97,21 @@ internal class AutocompleteHandler(
             ChoiceSupplierStringFuzzy(maxChoices)
         } else {
             ChoiceSupplierStringContinuity(maxChoices)
+        }
+    }
+
+    internal fun validateParameters() {
+        autocompleteInfo.autocompleteCache?.compositeKeys?.let { compositeKeys ->
+            val optionNames = slashCommandInfo.parameters
+                .flatMap { it.allOptions }
+                .filterIsInstance<SlashCommandOption>()
+                .map { it.discordName }
+            for (compositeKey in compositeKeys) {
+                if (compositeKey !in optionNames) {
+                    throwUser(autocompleteInfo.function, "Could not find composite key named '$compositeKey', available options: $optionNames\n" +
+                            "See ${slashCommandInfo.function.shortSignature}")
+                }
+            }
         }
     }
 

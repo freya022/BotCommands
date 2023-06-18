@@ -20,13 +20,11 @@ class SlashCommandOption(
 ) : AbstractSlashCommandOption(optionBuilder, resolver) {
     val description: String = optionBuilder.description
 
-    internal val autocompleteHandler: AutocompleteHandler? = when {
-        optionBuilder.autocompleteInfo != null -> AutocompleteHandler(
-            slashCommandInfo,
-            optionAggregateBuilders,
-            optionBuilder.autocompleteInfo!!
-        )
-        else -> null
+    internal val autocompleteHandler by lazy {
+        when (val autocompleteInfo = optionBuilder.autocompleteInfo) {
+            null -> null
+            else -> AutocompleteHandler(slashCommandInfo, optionAggregateBuilders, autocompleteInfo)
+        }
     }
 
     val usePredefinedChoices = optionBuilder.usePredefinedChoices
@@ -46,6 +44,10 @@ class SlashCommandOption(
                 throw IllegalStateException("Cannot use lengths on an option that doesn't accept an string")
             }
         }
+    }
+
+    internal fun buildAutocomplete() {
+        autocompleteHandler?.validateParameters()
     }
 
     fun hasAutocomplete() = autocompleteHandler != null

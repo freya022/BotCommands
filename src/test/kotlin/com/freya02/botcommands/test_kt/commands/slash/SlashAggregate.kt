@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.test_kt.CustomObject
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
@@ -49,6 +50,10 @@ class SlashAggregate {
             inlineClassOption<MyInlineString>("inlineAutoStr") {
                 autocomplete("SlashAggregate: inlineAutoStr", ::onInlineAutoStrAutocomplete) {
                     this.showUserInput = false
+
+                    cache(AutocompleteCacheMode.CONSTANT_BY_KEY) {
+                        compositeKeys = listOf("string", "nested_double")
+                    }
                 }
             }
 
