@@ -16,4 +16,4 @@ TestDB
 
 schemas/Test.json
 /schemas
-logback-test.xml
+/src/test/resources/logback-test.xml
