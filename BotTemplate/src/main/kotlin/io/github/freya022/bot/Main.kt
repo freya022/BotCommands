@@ -9,6 +9,7 @@ import io.github.freya022.bot.utils.namedDefaultScope
 import kotlinx.coroutines.cancel
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
+import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.lang.management.ManagementFactory
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
@@ -62,6 +63,8 @@ object Main {
 
                 applicationCommands {
                     testGuildIds += config.testGuildIds
+
+                    addLocalizations("Commands", DiscordLocale.FRENCH)
                 }
 
                 components {

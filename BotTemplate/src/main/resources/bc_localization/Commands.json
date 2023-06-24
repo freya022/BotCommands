@@ -1,6 +1,5 @@
 {
   "ban": {
-
     "outputs": {
       "defaultReason": "No reason supplied",
       "confirmationMessage": "Do you really want to ban {userMention}?",

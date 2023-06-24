@@ -82,7 +82,7 @@ class SlashBan(private val componentsService: Components) {
                     "outputs.success",
                     entry("userMention", target.asMention),
                     entry("time", timeframe.time),
-                    entry("unit", timeframe.unit.name.lowercase().trimEnd('s')),
+                    entry("unit", timeframe.unit.name.lowercase().trimEnd('s')), //TODO localize unit
                     entry("reason", reason)
                 )).setComponents().queue()
 
