@@ -21,7 +21,7 @@ internal class ComponentController(
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
-    private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<*>>>()
+    private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<GenericComponentInteractionCreateEvent>>>()
     private val lock = ReentrantLock()
 
     init {
@@ -62,11 +62,12 @@ internal class ComponentController(
         return continuationMap.remove(componentId) ?: emptyList()
     }
 
-    private fun <T : GenericComponentInteractionCreateEvent> putContinuation(componentId: Int, cont: CancellableContinuation<T>) = lock.withLock {
+    private fun putContinuation(componentId: Int, cont: CancellableContinuation<GenericComponentInteractionCreateEvent>) = lock.withLock {
         continuationMap.computeIfAbsent(componentId) { arrayListOf() }.add(cont)
     }
 
-    suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
+    @Suppress("UNCHECKED_CAST")
+    internal suspend fun <T : GenericComponentInteractionCreateEvent> awaitComponent(component: IdentifiableComponent): T {
         return suspendCancellableCoroutine { continuation ->
             val componentId = component.getId()!!.toInt()
             putContinuation(componentId, continuation)
@@ -74,6 +75,6 @@ internal class ComponentController(
             continuation.invokeOnCancellation {
                 removeContinuations(componentId)
             }
-        }
+        } as T
     }
 }
