@@ -84,10 +84,11 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, one_use, users, roles, permissions
-            from bc_component
-                     natural left join bc_component_constraints
-            where component_id = ?""".trimIndent()
+            select lifetime_type, component_type, one_use, users, roles, permissions, group_id
+            from bc_component component
+                     natural left join bc_component_constraints constraints
+                     left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
+            where component.component_id = ?""".trimIndent()
         ) {
             val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
 
@@ -111,14 +112,16 @@ internal class ComponentRepository(
                     componentType,
                     lifetimeType,
                     oneUse,
-                    constraints
+                    constraints,
+                    dbResult["group_id"]
                 )
                 LifetimeType.EPHEMERAL -> getEphemeralComponent(
                     id,
                     componentType,
                     lifetimeType,
                     oneUse,
-                    constraints
+                    constraints,
+                    dbResult["group_id"]
                 )
             }
         }
@@ -244,7 +247,8 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
-        constraints: InteractionConstraints
+        constraints: InteractionConstraints,
+        groupId: Int?
     ): PersistentComponentData = preparedStatement(
         """
            select ph.handler_name         as handler_handler_name,
@@ -259,7 +263,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOnce()
-            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints)
+            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
             PersistentHandler(
@@ -276,7 +280,7 @@ internal class ComponentRepository(
             )
         }
 
-        PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
+        PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
@@ -285,7 +289,8 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
-        constraints: InteractionConstraints
+        constraints: InteractionConstraints,
+        groupId: Int?
     ): EphemeralComponentData = preparedStatement(
         """
             select ph.handler_id           as handler_handler_id,
@@ -298,7 +303,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOnce()
-            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints)
+            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
             ephemeralComponentHandlers[handlerId]
@@ -315,7 +320,7 @@ internal class ComponentRepository(
             )
         }
 
-        EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints)
+        EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)

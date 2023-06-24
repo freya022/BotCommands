@@ -9,7 +9,4 @@ internal class ComponentGroupData internal constructor(
     oneUse: Boolean,
     timeout: ComponentTimeout?,
     internal val componentsIds: List<Int>
-): ComponentData(groupId, ComponentType.GROUP, LifetimeType.PERSISTENT, oneUse, null, timeout, null) {
-    val groupId: Int
-        get() = componentId
-}
+): ComponentData(groupId, ComponentType.GROUP, LifetimeType.PERSISTENT, oneUse, null, timeout, null, groupId)
