@@ -12,6 +12,7 @@ import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger { }
 
+// Interfaced service used to retrieve an SQL Connection
 @BService
 @ServiceType(ConnectionSupplier::class)
 class DatabaseSource(config: Config) : ConnectionSupplier {
@@ -27,6 +28,8 @@ class DatabaseSource(config: Config) : ConnectionSupplier {
     init {
         //Migrate BC tables
         createFlyway("bc", "bc_database_scripts").migrate()
+
+        //You can use the same function for your database, you just have to change the schema and scripts location
 
         logger.info("Created database source")
     }
