@@ -61,7 +61,7 @@ internal object ReflectionMetadata {
                 .disableNestedJarScanning()
                 .scan()
                 .also { scanResult -> // Don't keep test classes
-                    add(scanResult to scanResult.allStandardClasses.filter {
+                    add(scanResult to scanResult.allClasses.filter {
                         return@filter it.isServiceOrHasFactories(config)
                                 || it.outerClasses.any { outer -> outer.isServiceOrHasFactories(config) }
                     })
@@ -76,7 +76,7 @@ internal object ReflectionMetadata {
                 .disableNestedJarScanning()
                 .scan()
                 .also { scanResult -> //No filtering is done as to allow checkers to log warnings/throw in case a service annotation is missing
-                    add(scanResult to scanResult.allStandardClasses)
+                    add(scanResult to scanResult.allClasses)
                 }
         }
 
@@ -92,7 +92,7 @@ internal object ReflectionMetadata {
                     }
 
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    return@filter !it.isSynthetic && !it.isEnum && !it.isAbstract
+                    return@filter !it.isSynthetic && !it.isEnum && !it.isRecord && !it.isAnnotation
                 }
                 .processClasses(context)
                 .map { classInfo ->
