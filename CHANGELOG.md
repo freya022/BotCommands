@@ -64,7 +64,8 @@ and also enables more features, such as [option aggregates](#option-aggregates).
 The DSL also enables you to declare commands with code, configure your names, descriptions, choices... everything by code, 
 so you are not limited to static values with annotations.
 
-You can find an example [here](BotTemplate/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+see `SlashBanDetailedFront#onDeclare`.
 
 ## New option aggregates
 Option aggregates are a way to combine multiple options into one object, 
@@ -76,6 +77,9 @@ Normal aggregates can accept any option type (Discord option, custom option or g
 You can still insert options without declaring an aggregate; these options will implicitly have an aggregate created for you.
 
 **Note:** Option aggregates are only available with DSL declaration (and components and modal handlers by using `@Aggregate`).
+
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt),
+see `aggregate` in `SlashBanDetailedFront#onDeclare`.
 
 ### Vararg options
 Vararg options are a special type of option aggregate, they are essentially an aggregate which generates N options, 
@@ -105,7 +109,7 @@ The library now loads asynchronously, you previously had to wait for your entire
 
 Building JDA before the framework will result in an error, I strongly recommend that you create a "JDA service" class, which must be started at the `ServiceStart.READY` phase.
 
-You can also refer to [the bot template's JDA service](BotTemplate/src/main/kotlin/io/github/freya022/bot/JDAService.kt).
+You can also refer to [the example JDA service](examples/src/main/kotlin/io/github/freya022/bot/JDAService.kt).
 
 ## New database utils
 A `Database` interface has been added, this is mostly useful for Kotlin users and only serves as a very basic abstraction for transactions.
@@ -156,4 +160,4 @@ These parameters must be annotated with `@LocalizationBundle`, as to specify whe
 
 You can specify as many of them as you'd like, as well as construct them manually using the static methods.
 
-You can find an example [here](BotTemplate/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
