@@ -131,6 +131,8 @@ The DSL is very similar to the component's DSL, with your usual `bindTo` and `se
 `@BEventListener` can now be specified to be run asynchronously (within the parallelism limits of `BCoroutineScopesConfig#eventDispatcherScope`), 
 they can also have a priority assigned to them, as well as a timeout, used for suspending handlers.
 
+An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/ReadyListener.kt).
+
 ## Suspend resolvers & resolver factories
 `ParameterResolver` are now type safe and also support coroutines.
 
