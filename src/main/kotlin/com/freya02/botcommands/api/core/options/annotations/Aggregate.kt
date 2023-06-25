@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.core.options.annotations
 
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 
 /**
@@ -13,7 +14,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
  *
  * **Note:** The first parameter can be the event or a subtype of it, but is optional.
  *
- * Can be used on parameters of [ModalHandler] or [JDAButtonListener] functions.
+ * Can be used on parameters of [ModalHandler], [JDASelectMenuListener] or [JDAButtonListener] functions.
  */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)

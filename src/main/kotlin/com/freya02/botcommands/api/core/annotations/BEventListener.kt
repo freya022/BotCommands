@@ -8,7 +8,13 @@ import java.util.concurrent.TimeUnit
 annotation class BEventListener(
     /** Whether this event listener is executed on its own coroutine, using the [event dispatcher scope][BCoroutineScopesConfig.eventDispatcherScope] */
     val async: Boolean = false,
-    /** The priority for this event listener */
+    /**
+     * The priority for this event listener
+     *
+     * **Note:** While the priority is used when dispatching the events, if another handler is async then it will not be awaited before this one is fired.
+     *
+     * This means that this handler might start running before the previous (async) one has finished running.
+     */
     val priority: Int = 0, //Default priority
     /** The time before the coroutine is cancelled, using a negative value means no timeout */
     val timeout: Long = 0,

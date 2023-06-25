@@ -12,5 +12,6 @@ internal class EphemeralComponentData(
     oneUse: Boolean,
     override val handler: EphemeralHandler<*>?,
     override val timeout: EphemeralTimeout?,
-    constraints: InteractionConstraints
-) : AbstractComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints)
+    constraints: InteractionConstraints,
+    groupId: Int?
+) : AbstractComponentData(componentId, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)

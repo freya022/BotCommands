@@ -16,6 +16,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerOption
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
+import com.freya02.botcommands.internal.components.data.AbstractComponentData
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
@@ -90,10 +91,7 @@ internal class ComponentsListener(
             when (component) {
                 is PersistentComponentData -> {
                     transformEvent(event)?.let { evt ->
-                        componentController.removeContinuations(component.componentId).forEach {
-                            @Suppress("UNCHECKED_CAST")
-                            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
-                        }
+                        resumeCoroutines(component, evt)
 
                         val (handlerName, userData) = component.handler ?: return@launch
 
@@ -110,10 +108,7 @@ internal class ComponentsListener(
                 }
                 is EphemeralComponentData -> {
                     transformEvent(event)?.let { evt ->
-                        componentController.removeContinuations(component.componentId).forEach {
-                            @Suppress("UNCHECKED_CAST")
-                            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
-                        }
+                        resumeCoroutines(component, evt)
 
                         val ephemeralHandler = component.handler ?: return@launch
 
@@ -124,6 +119,19 @@ internal class ComponentsListener(
             }
         } catch (e: Throwable) {
             handleException(event, e)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun resumeCoroutines(component: AbstractComponentData, evt: GenericComponentInteractionCreateEvent) {
+        component.groupId?.let { groupId ->
+            componentController.removeContinuations(groupId).forEach {
+                (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
+            }
+        }
+
+        componentController.removeContinuations(component.componentId).forEach {
+            (it as Continuation<GenericComponentInteractionCreateEvent>).resume(evt)
         }
     }
 

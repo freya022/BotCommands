@@ -11,7 +11,8 @@ class ComponentGroup internal constructor(private val componentController: Compo
      * **Awaiting on a component that is part of a group is undefined behavior**
      *
      * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
+     * @throws ClassCastException If the received event cannot be cast to the requested type
      */
     @JvmSynthetic
-    suspend fun await(): GenericComponentInteractionCreateEvent = componentController.awaitComponent(this)
+    suspend fun <T : GenericComponentInteractionCreateEvent> await(): T = componentController.awaitComponent(this)
 }
