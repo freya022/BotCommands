@@ -50,6 +50,8 @@ The framework will give you the class of what it wants to instantiate,
 and you can then tell if your supplier supports the class, or not, 
 or if it is supported but cannot create an instance of it.
 
+An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/ban/BanService.kt).
+
 ## New command declarations
 Commands can now be declared using a DSL, these works best if you use Kotlin.
 
