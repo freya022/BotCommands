@@ -89,6 +89,8 @@ You can use these with `optionVararg`.
 
 **Note**: Aggregators can accept `List` parameters, but all the options must be under the same *declared* parameter name, so they can be all put in the list.
 
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashChoose.kt).
+
 ### Inline class options
 Kotlin's inline classes can also be used as options, 
 you can use `inlineClassOption` to declare one in the DSL, they also automatically work for annotated commands.
