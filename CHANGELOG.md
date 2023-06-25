@@ -134,6 +134,8 @@ Just like components, modals are now created using a DSL, while their handlers a
 
 The DSL is very similar to the component's DSL, with your usual `bindTo` and `setTimeout` functions, you can also await on your modals.
 
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashModal.kt).
+
 ## New event handler
 
 `@BEventListener` can now be specified to be run asynchronously (within the parallelism limits of `BCoroutineScopesConfig#eventDispatcherScope`), 

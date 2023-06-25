@@ -27,6 +27,11 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+                <configuration>
+                    <args>
+                        -Xcontext-receivers
+                    </args>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -134,7 +139,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>d1136b0991</version>
+            <version>3.0.0-alpha.1_DEV</version>
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->
