@@ -18,12 +18,16 @@ import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.localization.Localization.Entry.entry
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
+import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.requests.ErrorResponse
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
@@ -49,6 +53,22 @@ class SlashBan(private val componentsService: Components) {
         timeframe: DeleteTimeframe,
         reason: String = localizationContext.localize("outputs.defaultReason")
     ) {
+        val targetMember: Member? = try {
+            event.guild.retrieveMember(target).await()
+        } catch (e: ErrorResponseException) {
+            if (e.errorResponse != ErrorResponse.UNKNOWN_MEMBER)
+                throw e
+            null
+        }
+
+        if (targetMember != null) {
+            if (!event.member.canInteract(targetMember)) {
+                return event.reply_(localizationContext.localize("errors.user.interactError", entry("userMention", target.asMention)), ephemeral = true).queue()
+            } else if (!event.guild.selfMember.canInteract(targetMember)) {
+                return event.reply_(localizationContext.localize("errors.bot.interactError", entry("userMention", target.asMention)), ephemeral = true).queue()
+            }
+        }
+
         val cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")) {
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user

@@ -7,6 +7,10 @@
       "success": "{userMention} has been banned, {time} {unit}{time, choice, 0#s|1#|1<s} of messages were deleted, reason: '{reason}'",
       "cancelled": "The ban has been cancelled"
     },
+    "errors": {
+      "bot.interactError": "I can't ban {userMention}",
+      "user.interactError": "You cannot ban {userMention}"
+    },
     "buttons": {
       "cancel": "Cancel",
       "confirm": "Confirm"

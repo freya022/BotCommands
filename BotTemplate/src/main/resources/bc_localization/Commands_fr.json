@@ -27,6 +27,10 @@
       "success": "{userMention} a été banni, {time} {unit}{time, choice, 0#s|1#|1<s} de messages ont été supprimés, raison: '{reason}'",
       "cancelled": "Le bannissement a été annulé"
     },
+    "errors": {
+      "bot.interactError": "Je ne peux pas bannir {userMention}",
+      "user.interactError": "Tu ne peux pas bannir {userMention}"
+    },
     "buttons": {
       "cancel": "Annuler",
       "confirm": "Confirmer"
