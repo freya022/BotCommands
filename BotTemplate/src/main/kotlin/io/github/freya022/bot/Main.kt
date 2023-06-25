@@ -25,7 +25,10 @@ object Main {
             System.setProperty(LogbackConstants.CONFIG_FILE_PROPERTY, Environment.logbackConfigPath.absolutePathString())
             logger.info("Loading logback configuration at ${Environment.logbackConfigPath.absolutePathString()}")
 
+            // I use hotswap agent in order to update my code without restarting the bot
+            // Of course this only supports modifying existing code
             // Refer to https://github.com/HotswapProjects/HotswapAgent#readme on how to use hotswap
+
             // stacktrace-decoroutinator has issues when reloading with hotswap agent
             when {
                 "-XX:+AllowEnhancedClassRedefinition" in ManagementFactory.getRuntimeMXBean().inputArguments ->
@@ -37,6 +40,7 @@ object Main {
                 else -> DecoroutinatorRuntime.load()
             }
 
+            // Create a scope for our event manager
             val scope = namedDefaultScope("BotTemplate Coroutine", 4)
             val manager = CoroutineEventManager(scope, 1.minutes)
             manager.listener<ShutdownEvent> {
@@ -62,15 +66,20 @@ object Main {
                 }
 
                 applicationCommands {
+                    // Guilds in which `@Test` commands will be inserted
                     testGuildIds += config.testGuildIds
 
+                    // Add french localization for application commands
                     addLocalizations("Commands", DiscordLocale.FRENCH)
                 }
 
                 components {
+                    // Enables usage of components
                     useComponents = true
                 }
             }
+
+            // There is no JDABuilder going on here, it's taken care of in JDAService
 
             logger.info("Loaded bot")
         } catch (e: Exception) {

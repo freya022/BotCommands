@@ -32,7 +32,7 @@ import kotlin.time.toJavaDuration
 
 private val logger = KotlinLogging.logger { }
 
-// This data class is practically pointless,
+// This data class is practically pointless;
 // this is just to demonstrate how you can group parameters together,
 // so you can benefit from functions/backed properties limited to your parameters,
 // without polluting classes with extensions

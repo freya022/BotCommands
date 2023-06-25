@@ -14,10 +14,10 @@ class ReadyListener {
         val jda = event.jda
 
         //Print some information about the bot
-        logger.info("Bot connected as {}", jda.selfUser.name)
+        logger.info("Bot connected as ${jda.selfUser.name}")
         logger.info("The bot is present on these guilds :")
         for (guild in jda.guildCache) {
-            logger.info("\t- {} ({})", guild.name, guild.id)
+            logger.info("\t- ${guild.name} (${guild.id})")
         }
     }
 }

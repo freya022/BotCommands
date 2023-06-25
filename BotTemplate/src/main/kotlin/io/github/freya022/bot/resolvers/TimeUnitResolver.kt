@@ -19,6 +19,7 @@ class TimeUnitResolver :
 
     override val optionType = OptionType.STRING
 
+    // Sets the choices on the option, if opted-in with "usePredefinedChoices"
     override fun getPredefinedChoices(guild: Guild?): List<Command.Choice> =
         listOf(TimeUnit.SECONDS, TimeUnit.MINUTES, TimeUnit.HOURS, TimeUnit.DAYS).map { unit ->
             Command.Choice(unit.name.lowercase().replaceFirstChar { it.uppercase() }, unit.name)
