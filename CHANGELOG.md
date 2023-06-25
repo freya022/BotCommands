@@ -9,7 +9,7 @@ they should still be usable by Java users.
 
 Fortunately, annotation-driven features that already existed can still be used with no problem, both in Java and Kotlin.
 
-You can also refer to the [examples](Examples) and [bot template](BotTemplate) folder on the repository in order to have an idea on how V3 is supposed to be used.
+You can also refer to the [examples](examples) and [bot template](BotTemplate) folder on the repository in order to have an idea on how V3 is supposed to be used.
 
 ## Kotlin support
 All commands and handlers support coroutines and default parameters.
