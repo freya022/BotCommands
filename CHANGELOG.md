@@ -135,6 +135,8 @@ As these handlers are optional, you can still handle them using coroutines, by u
 
 **Note:** I recommend setting `timeout` when creating your component, with or without a handler, instead of using `withTimeout`. Be sure to catch `TimeoutCancellationException`.
 
+An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashButton.kt).
+
 ## New modals
 Just like components, modals are now created using a DSL, while their handlers are still annotated. 
 
