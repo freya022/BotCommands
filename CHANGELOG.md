@@ -97,6 +97,9 @@ you can use `inlineClassOption` to declare one in the DSL, they also automatical
 
 `inlineClassOptionVararg` can also be used for inline classes that accept a varargs.
 
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+with `SlashSentence.SentenceParts`.
+
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
 
@@ -105,6 +108,9 @@ This lets you configure what Discord options (you can also put the parameter nam
 even if the option is not being used by the autocomplete handler itself.
 
 The slash command DSL also let you configure autocomplete by using `SlashCommandOptionBuilder#autocomplete` (or `SlashCommandOptionBuilder#autocompleteReference` for handlers defined by annotation).
+
+You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
+on `SlashSentence#onSentencePartAutocomplete`.
 
 ## Async loading
 The library now loads asynchronously, you previously had to wait for your entire bot to be loaded, but now you **must** start the framework before building JDA, which lets you get your stuff started up before the bot goes fully online.
