@@ -31,7 +31,12 @@ class SlashChooseDetailedFront {
         manager.slashCommand("choose", function = SlashChoose::onSlashChoose) {
             description = "Randomly choose a value"
 
-            optionVararg("choices", 10, 2, { count -> "choice_$count" }) { count ->
+            optionVararg(
+                declaredName = "choices",
+                amount = 10,
+                requiredAmount = 2,
+                optionNameSupplier = { count -> "choice_$count" }
+            ) { count ->
                 description = "Choice N°$count"
             }
         }
