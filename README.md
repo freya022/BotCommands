@@ -1,56 +1,62 @@
 <img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
 
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.11+-important)](https://github.com/discord-jda/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
-This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
+A Kotlin-first framework that makes creating Discord bots a piece of cake,
+using the [JDA](https://github.com/discord-jda/JDA) library.
 
 ## Features
 
-* Automatic command registration
-* Text based commands, with 2 ways of working:
-  * More manual parsing, you have a tokenized message, and you choose how to process the tokens
-  * Automatic parsing of the arguments, your method signature is translated into a command syntax, for example:
+* Automatic registration of commands, resolvers, services, etc... with full dependency injection
+* Text commands (annotated or manually declared), either with:
+  * Automatic token parsing into your parameters
     * Suppose the prefix is `!` and the command is `ban`
-      ```java
+      ```kt
       @JDATextCommand(name = "ban")
-      public void runBan(BaseCommandEvent event,
-                         @TextOption User user,
-                         @TextOption long delDays,
-                         @TextOption String reason) {
+      fun onTextBan(event: BaseCommandEvent,
+                    @TextOption user: User,
+                    @TextOption timeframe: Long,
+                    @TextOption unit: TimeUnit, // A resolver is used here
+                    @TextOption reason: String) {
           //Ban the user
       }
       ```
-    * Which means `!ban @someone 42 Foobar` should be valid
-* Application commands
-  * Slash commands with **automatic & customizable argument parsing** (see wiki to add parsers)
-    * Also supports choices, min/max values, channel types and autocomplete
+    * Which can be used as: `!ban @freya02 7 days Get banned`
+  * Manual token consuming
+* Application commands (annotated or manually declared)
+  * Slash commands with **automatic & customizable argument parsing**
+    * Options can be grouped into _aggregates_, as to benefit from methods specifically on them 
+    * Also supports choices, min/max values/length, channel types and autocomplete
   * Context menu commands (User / Message)
-  * Application commands are **automatically registered on Discord on startup**
-    * This also includes command permissions
-  * These commands as well as their options and choices **can also be localized** (per-guild language)
-* A JDA **event waiter** with (multiple) preconditions, timeouts and consumers for every completion states 
-* Secure and unique components (buttons / selection menus) IDs *with persistent and non-persistent storage*
+  * **Automatic smart** application commands registration
+  * Entirely localizable, from the command declaration to the bot responses
+* Customizable and localizable error messages
+* Custom (annotated) event handlers, with priorities and async
+* Modals
+* _Unlimited_ data storage for components, *with persistent and ephemeral storage*
   * **They can also receive additional arguments** the same way as slash commands do
-* Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (can turn `:joy:` into 😂)
-* Paginators and menus of different types (using buttons !)
-* Flexible constructors for your commands and injectable fields
+* Several utilities such as:
+  * An event waiter with (multiple) preconditions, timeouts and consumers for every completion state
+  * Message parsers (tokenizers, see `RichTextParser`) and emoji resolvers (turning `:joy:` into 😂)
+  * Paginators and menus of different types (using components!)
 
-Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://jda.wiki/using-jda/using-restaction/) 
+While every event runs on their own coroutine,
+you still need to be mindful in not blocking your bot.
 
 ## Getting Started
-You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
+You are strongly recommended to have some experience with Kotlin (or Java),
+OOP, [JDA](https://github.com/discord-jda/JDA) and Dependency Injection basics before you start using this library.
 
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
-* Enable method parameters names, [How I enabled them for Java](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L111-L116), [for Kotlin](https://github.com/freya022/BotCommands/blob/2363d820820c35ee4c1a538ab8d7e63bb4849270/pom.xml#L77-L81), you can also see the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
-* An IDE which supports Maven projects (I strongly recommend you use IntelliJ, it could be useful to save time with Live Templates)
-
-[//]: # (* Enable preview features in your compiler with `--enable-preview`, [How I enable it]&#40;https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81&#41;, [IntelliJ w/ Maven tutorial]&#40;https://www.baeldung.com/java-preview-features#intellij-idea&#41;, [Gradle tutorial]&#40;https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle&#41;)
+* A competent IDE (I recommend IntelliJ IDEA, you can't go wrong with it in Java & Kotlin, + Live Templates)
+* (Recommended) Enable method parameters names, please refer to the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
+* (Recommended) Use [HotswapAgent](https://github.com/HotswapProjects/HotswapAgent) in development, to avoid restarting too often
 
 ## Getting the library
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
@@ -69,7 +75,6 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 ```gradle
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -77,86 +82,65 @@ dependencies {
 }
 ```
 
-Alternatively, you can use jitpack to use snapshot versions, you can refer to [this wiki](https://jda.wiki/using-jda/using-new-features/) for more information
+Alternatively, you can use jitpack to use snapshot versions, you can refer to [the JDA wiki](https://jda.wiki/using-jda/using-new-features/) for more information
 
 ### Building / Installing manually
 
 While I don't recommend, you can see [BUILDING.md](BUILDING.md)
 
-**You're now ready to start coding!**
-
 ## How to use
-You first need to get your JDA instance:
-```java
-final JDA jda = JDABuilder.create(token, /* GatewayIntents here */)
-		/* Other options */
-		.build();
+[//]: # (TODO Java example)
+You will need to build the framework first:
+```kt
+// Create a scope for our event manager
+val scope = namedDefaultScope("MyBot Coroutine", 4)
+val manager = CoroutineEventManager(scope, 1.minutes)
+manager.listener<ShutdownEvent> {
+  scope.cancel()
+}
 
-jda.awaitReady();
-```
-Once you have your JDA instance ready, you can use the `CommandsBuilder` class to start using the library.<br>
-There is 2 text-based command triggers:
-* Ping-as-prefix: Triggers commands when your bot is mentioned (e.g: `@YourBot`)
-* Custom-prefix: Triggers commands when any message contains your selected prefix (e.g: `!`)
+BBuilder.newBuilder(manager) {
+  addOwners(1234L)
 
-(Of course you can still use only slash commands if you wish)
+  addSearchPath("io.github.freya022.bot")
 
-You can build a CommandsBuilder instance with `CommandsBuilder#newBuilder` and supply it the bot owner id, which should be your user ID
-
-Additionally, the ids of the Discord users are those who can use the bot freely and receive messages when an uncaught exception happens
-
-You should have some code that looks like this now:
-```java
-final CommandsBuilder commandsBuilder = CommandsBuilder.newBuilder(222046562543468545L);
+  textCommands {
+    usePingAsPrefix = true
+  }
+}
 ```
 
-You can also add 
-```java
-commandsBuilder.textCommandBuilder(textCommandsBuilder -> textCommandsBuilder
-    .addPrefix(":")
-)
-```
+You can then either build JDA after, or create a JDA service,
+which will get started automatically, as any other service.
+You can refer to the [bot template](BotTemplate/src/main/kotlin/io/github/freya022/bot/JDAService.kt) for more details.
 
-To add a prefix for text based commands, this will also disable ping-as-prefix
+## Template bot
 
-### Building the framework
-You can now build the framework
-```java
-commandsBuilder.build(
-    jda,                        // The JDA instance you just built 
-    "com.freya02.bot.commands"  // This is the package name which contains all your commands / handlers...
-); 
-```
+To get started with the framework,
+you can also clone this repo and extract the `BotTemplate` folder and use it as a bot template,
+of course, be sure to replace the group id as well as the artifact name, as well as providing a valid config file
 
-## How do I make commands ?
-See the [wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/using-slash-commands/Slash-commands/), you got a page for each type of command (regular prefixed / regex prefixed / slash commands)
+## Examples
+
+You can find a more complete bot example in the [examples](examples) folder.
 
 ## Some debugging tools
 
 - Enable the debug/trace logs in your logback.xml file, for a logging tutorial you can look at [the wiki's logging page](https://freya022.github.io/BotCommands-Wiki/Logging)
-- There are also some switches in `DebugBuilder`, if you ever need them
-- To test your application commands you can use the `@Test` annotation
+- Look at the switches in `BDebugConfig`
 
-## Replacing help content
+[//]: # (TODO update live templates)
+[//]: # (## Live templates)
 
-See the [wiki page](https://freya022.github.io/BotCommands-Wiki/using-commands/Prefixed-commands/#replacing-help-content)
+[//]: # ()
+[//]: # (If you use IntelliJ, you can use the "live templates" provided [in live_templates.zip]&#40;live_templates.zip&#41;, this will help you make commands and handlers with predefined templates and ask you to complete them)
 
-## Examples
+[//]: # ()
+[//]: # (For example: if you type `slash` in your class, this will generate a slash command declaration and ask you to complete the command name, description, etc... Of course there are many more templates, you can see all of these in `Settings > Editor > Live Templates` and in the `BotCommands` group )
 
-You can find example bots in the [examples](examples) folder
-
-## Template bot
-
-To get started with the framework, you can also clone this repo and extract the `BotTemplate` folder and use it as a bot template, of course, be sure to replace the group id as well as the artifact name, as well as providing a valid config file
-
-## Live templates
-
-If you use IntelliJ, you can use the "live templates" provided [in live_templates.zip](live_templates.zip), this will help you make commands and handlers with predefined templates and ask you to complete them
-
-For example: if you type `slash` in your class, this will generate a slash command declaration and ask you to complete the command name, description, etc... Of course there are many more templates, you can see all of these in `Settings > Editor > Live Templates` and in the `BotCommands` group 
-
-If you don't know how to install live templates, you can follow [this guide from JetBrains](https://www.jetbrains.com/help/idea/sharing-live-templates.html#import)
+[//]: # ()
+[//]: # (If you don't know how to install live templates, you can follow [this guide from JetBrains]&#40;https://www.jetbrains.com/help/idea/sharing-live-templates.html#import&#41;)
 
 ## Support
 
-The [JDA guild](https://discord.gg/jda) is not a place where you should ask for support on this framework, if you need support please join [this guild instead (link)](https://discord.gg/frpCcQfvTz)
+Don't hesitate to join [the support server](https://discord.gg/frpCcQfvTz) if you have any question!
