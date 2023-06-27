@@ -12,7 +12,7 @@ Fortunately, annotation-driven features that already existed can still be used w
 You can also refer to the [examples](examples) and [bot template](BotTemplate) folder on the repository in order to have an idea on how V3 is supposed to be used.
 
 ## Kotlin support
-All commands and handlers support coroutines and default parameters.
+All commands and handlers support coroutines (except service factories) and default parameters.
 
 Each feature has its own `CoroutineScope`, configurable in `BCoroutineScopesConfigBuilder` 
 

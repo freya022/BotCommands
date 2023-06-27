@@ -2,12 +2,13 @@ package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
+import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
 import com.freya02.botcommands.api.core.events.PreLoadEvent
 import com.freya02.botcommands.api.core.service.ServiceStart
+import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Version
@@ -37,10 +38,13 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
         /**
          * Creates a new instance of the framework.
          *
-         * Tip: If you wish to use JDA as a service, you can have a class annotated with `@BService(ServiceStart.READY)`,
-         * starting it when [newBuilder] returns is also fine.
+         * Note: Building JDA before the framework will result in an error,
+         * I strongly recommend that you create a "JDA service" class,
+         * which must be started at the `ServiceStart.READY` phase.
          *
-         * Example - Main.kt:
+         * Creating a JDA instance when this method return is also fine.
+         *
+         * **Example** - Main.kt:
          * ```kt
          * val scope = getDefaultScope()
          * val manager = CoroutineEventManager(scope, 1.minutes)
@@ -48,7 +52,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          *     this.cancel() //"this" is a scope delegate
          * }
          *
-         * BBuilder.newBuilder({
+         * BBuilder.newBuilder(manager) {
          *     addSearchPath("io.github.name.bot") //Change this
          *
          *     components {
@@ -58,13 +62,13 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          *     textCommands {
          *         usePingAsPrefix = true
          *     }
-         * }, manager)
+         * }
          * ```
          *
          * JDAService.kt:
          * ```kt
          * @BService(ServiceStart.READY) //Initializing JDA before the framework is ready will error.
-         * class JDAService(config: Config, eventManager: IEventManager) {
+         * class JDAService(config: Config, eventManager: IEventManager) { //Same manager as the one passed to BBuilder
          *     init {
          *         light(config.token, enableCoroutines = false /* required */) {
          *             //Configure JDA
@@ -75,7 +79,9 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          * }
          * ```
          *
+         * @see BService
          * @see InterfacedService
+         * @see Command
          */
         @JvmStatic
         @JvmOverloads
