@@ -146,7 +146,7 @@
                                 <configuration>
                                     <rules>
                                         <requireActiveProfile>
-                                            <profiles>check-docs</profiles>
+                                            <profiles>docs</profiles>
                                         </requireActiveProfile>
                                         <requireJavaVersion>
                                             <!-- Generating docs on the JDK 17 is important -->
