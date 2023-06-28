@@ -41,6 +41,7 @@ internal class AutocompleteInfoContainer(private val context: BContextImpl, func
 
                     autocompleteFunction.findAnnotation<CacheAutocomplete>()?.let { autocompleteCacheAnnotation ->
                         cache(autocompleteCacheAnnotation.cacheMode) {
+                            forceCache = autocompleteCacheAnnotation.forceCache
                             cacheSize = autocompleteCacheAnnotation.cacheSize
 
                             compositeKeys = autocompleteCacheAnnotation.compositeKeys.toList()

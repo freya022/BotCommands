@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.build
 import com.freya02.botcommands.internal.asDiscordString
 
 class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoBuilder) {
+    val force: Boolean = builder.forceCache
     val cacheMode: AutocompleteCacheMode = builder.cacheMode
     val cacheSize: Long = builder.cacheSize
     val compositeKeys: List<String> = builder.compositeKeys.map { it.asDiscordString() }
@@ -17,6 +18,7 @@ class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoB
 
         other as AutocompleteCacheInfo
 
+        if (force != other.force) return false
         if (cacheMode != other.cacheMode) return false
         if (cacheSize != other.cacheSize) return false
         if (compositeKeys != other.compositeKeys) return false
@@ -28,7 +30,8 @@ class AutocompleteCacheInfo internal constructor(builder: AutocompleteCacheInfoB
     }
 
     override fun hashCode(): Int {
-        var result = cacheMode.hashCode()
+        var result = force.hashCode()
+        result = 31 * result + cacheMode.hashCode()
         result = 31 * result + cacheSize.hashCode()
         result = 31 * result + compositeKeys.hashCode()
         result = 31 * result + guildLocal.hashCode()

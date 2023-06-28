@@ -18,7 +18,7 @@ class AutocompleteInfo internal constructor(context: BContextImpl, builder: Auto
 
     @get:JvmSynthetic
     internal val cache = when {
-        context.config.disableAutocompleteCache -> NoCacheAutocomplete
+        context.config.disableAutocompleteCache && builder.autocompleteCache?.force != true -> NoCacheAutocomplete
         else -> AbstractAutocompleteCache.fromMode(this)
     }
 
