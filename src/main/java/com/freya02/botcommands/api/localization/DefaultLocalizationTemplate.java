@@ -77,8 +77,11 @@ public class DefaultLocalizationTemplate implements LocalizationTemplate {
 				sb.append(rawString.get());
 			} else if (localizableString instanceof FormattableString formattableString) {
 				final Object value = getValueByFormatterName(args, formattableString.getFormatterName());
-
-				sb.append(formattableString.format(value));
+				try {
+					sb.append(formattableString.format(value));
+				} catch (Exception e) { //For example, if the user provided a string to a number format
+					throw new RuntimeException("Could not get localized string from FormattableString '%s' with value '%s'".formatted(formattableString.getFormatterName(), value), e);
+				}
 			}
 		}
 
