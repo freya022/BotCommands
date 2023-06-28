@@ -7,7 +7,7 @@
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
-A Kotlin-first framework that makes creating Discord bots a piece of cake,
+A Kotlin-first (and Java) framework that makes creating Discord bots a piece of cake,
 using the [JDA](https://github.com/discord-jda/JDA) library.
 
 ## Features
@@ -89,11 +89,11 @@ Alternatively, you can use jitpack to use snapshot versions, you can refer to [t
 While I don't recommend, you can see [BUILDING.md](BUILDING.md)
 
 ## How to use
-[//]: # (TODO Java example)
-You will need to build the framework first:
+You will need to build the framework first:<br>
+Kotlin:
 ```kt
 // Create a scope for our event manager
-val scope = namedDefaultScope("MyBot Coroutine", 4)
+val scope = getDefaultScope()
 val manager = CoroutineEventManager(scope, 1.minutes)
 manager.listener<ShutdownEvent> {
   scope.cancel()
@@ -108,6 +108,19 @@ BBuilder.newBuilder(manager) {
     usePingAsPrefix = true
   }
 }
+```
+
+Java:
+```java
+BBuilder.newBuilder(builder -> {
+    builder.addOwners(1234L);
+    
+    builder.addSearchPath("io.github.freya022.bot");
+    
+    builder.textCommands(textCommands -> {
+        textCommands.setUsePingAsPrefix(true);
+    });
+});
 ```
 
 You can then either build JDA after, or create a JDA service,
