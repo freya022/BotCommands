@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
  * <br>In a nutshell, this is a copy of the {@link MessageFormat} specification, but with named parameters
  * <br>To declare a variable inside your localization template, you may use "<code>{variable_name}</code>"
  * <br>As this supports {@link MessageFormat}, you can also specify format types, such as: "<code>{variable_name, number}</code>",
- * and format styles, such as: "<code>{@literal {user_amount, choice, 0#users|1#user|2<users}}</code>"
+ * and format styles, such as: "<code>{@literal {user_amount, choice, 0#users|1#user|1<users}}</code>"
  *
- * <p>Full example: <code>{@literal "There are {user_amount} {user_amount, choice, 0#users|1#user|2<users} and my up-time is {uptime, number} seconds"}</code>
+ * <p>Full example: <code>{@literal "There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"}</code>
  */
 public class DefaultLocalizationTemplate implements LocalizationTemplate {
 	private static final Pattern BRACKETS_PATTERN = Pattern.compile("\\{.*?}");

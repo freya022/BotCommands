@@ -21,5 +21,5 @@
     },
     "key2": "{myNumber} {myNumber, choice, -1#is negative| 0#is zero or fraction | 1#is one |1.0<is 1+ |2#is two |2<is more than 2.}",
     "key3": "pi: {pi, number}",
-    "commands.localization.response": "Il y a {guild_users} {guild_users, choice, 0#utilisateurs|1#utilisateur|2<utilisateurs} et je suis resté allumé pendant {uptime, number} ms"
+    "commands.localization.response": "Il y a {guild_users} {guild_users, choice, 0#utilisateurs|1#utilisateur|1<utilisateurs} et je suis resté allumé pendant {uptime, number} ms"
 }
