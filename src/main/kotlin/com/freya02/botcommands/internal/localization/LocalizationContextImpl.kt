@@ -68,6 +68,8 @@ internal class LocalizationContextImpl(
         else -> localize(DiscordLocale.ENGLISH_US, localizationPath, *entries)
     }
 
+    override fun getEffectiveLocale(): DiscordLocale = userLocale ?: guildLocale ?: DiscordLocale.ENGLISH_US
+
     override fun getLocalizationPrefix(): String? {
         return localizationPrefix
     }

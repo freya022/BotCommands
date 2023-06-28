@@ -38,6 +38,9 @@ public interface LocalizationContext {
         return new LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale);
     }
 
+    @NotNull
+    DiscordLocale getEffectiveLocale();
+
     /**
      * Returns the localization bundle of the current context.
      * <br>The localization bundle can either come from {@link LocalizationBundle#value()} from {@link #withBundle(String)}.
