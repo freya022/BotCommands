@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.toImmutableList
 import com.freya02.botcommands.internal.toImmutableMap
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -88,9 +89,13 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     }
 
     /**
-     * Adds the specified bundle names with its locales, those bundles will be used for command localization (name, description, options, choices...)
+     * Adds the specified bundle names with its locales;
+     * those bundles will be used for command localization (name, description, options, choices...)
      *
-     * All the locales will be considered as pointing to a valid localization bundle, logging a warning if it can't be found
+     * All the locales will be considered as pointing to a valid localization bundle,
+     * logging a warning if it can't be found
+     *
+     * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
      * See [DefaultLocalizationMapProvider] for default implementation details
      *
@@ -98,15 +103,20 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
+     * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, locales: List<DiscordLocale>) {
         _baseNameToLocalesMap.computeIfAbsent(bundleName) { ArrayList() } += locales.map { Locale.forLanguageTag(it.locale) }
     }
 
     /**
-     * Adds the specified bundle names with its locales, those bundles will be used for command localization (name, description, options, choices...)
+     * Adds the specified bundle names with its locales;
+     * those bundles will be used for command localization (name, description, options, choices...)
      *
-     * All the locales will be considered as pointing to a valid localization bundle, logging a warning if it can't be found
+     * All the locales will be considered as pointing to a valid localization bundle,
+     * logging a warning if it can't be found
+     *
+     * See [LocalizationFunction] on how your command localization keys need to be constructed
      *
      * See [DefaultLocalizationMapProvider] for default implementation details
      *
@@ -114,6 +124,7 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
      * @param locales    The locales the localization bundle supports
      *
      * @see DefaultLocalizationMapProvider
+     * @see LocalizationFunction
      */
     fun addLocalizations(bundleName: String, vararg locales: DiscordLocale) {
         addLocalizations(bundleName, locales.asList())
