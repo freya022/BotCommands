@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.localization.context;
 
 import com.freya02.botcommands.api.localization.Localization;
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
@@ -10,11 +11,11 @@ import javax.annotation.CheckReturnValue;
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
- * localization prefixes and context-aware localization.
+ * localization prefixes, and context-aware localization.
  *
  * <p>This interface also includes the user's and the guild's locale by default.
  *
- * <p>While instances of this interface are primarily injected,
+ * <p>While instances of this interface are primarily injected with {@link LocalizationBundle},
  * you can also construct instances of this interface with {@link #create(String, String, DiscordLocale, DiscordLocale)}.
  *
  * @see #getUserLocale()

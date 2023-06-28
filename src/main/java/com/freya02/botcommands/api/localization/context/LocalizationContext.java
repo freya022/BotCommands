@@ -11,7 +11,7 @@ import javax.annotation.CheckReturnValue;
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
- * localization prefixes and context-aware localization.
+ * localization prefixes, and context-aware localization.
  *
  * <p>While this interface cannot be injected, sub-interfaces can.
  *
