@@ -38,5 +38,5 @@ class Button internal constructor(private val componentController: ComponentCont
      * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
      */
     @JvmSynthetic
-    suspend fun await(): ButtonEvent = componentController.awaitComponent(this)
+    override suspend fun await(): ButtonEvent = componentController.awaitComponent(this)
 }

@@ -7,12 +7,26 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 class ComponentGroup internal constructor(private val componentController: ComponentController, private val id: String) : IdentifiableComponent {
     override fun getId(): String = id
 
-    /**
-     * **Awaiting on a component that is part of a group is undefined behavior**
-     *
-     * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
-     * @throws ClassCastException If the received event cannot be cast to the requested type
-     */
     @JvmSynthetic
-    suspend fun <T : GenericComponentInteractionCreateEvent> await(): T = componentController.awaitComponent(this)
+    override suspend fun await(): GenericComponentInteractionCreateEvent = componentController.awaitComponent(this)
 }
+
+/**
+ * Suspends until the component is used and all checks passed, and returns the event.
+ *
+ * @throws TimeoutCancellationException If the timeout set in the component builder has been reached
+ * @throws ClassCastException If the received event cannot be cast to the requested type
+ */
+@JvmSynthetic
+@Suppress("UNCHECKED_CAST")
+suspend fun <T : GenericComponentInteractionCreateEvent> ComponentGroup.awaitAny(): T = await() as T
+
+/**
+ * Suspends until the component is used and all checks passed, and returns the event,
+ * or `null` if the timeout has been reached.
+ *
+ * @throws ClassCastException If the received event cannot be cast to the requested type
+ */
+@JvmSynthetic
+@Suppress("UNCHECKED_CAST")
+suspend fun <T : GenericComponentInteractionCreateEvent> ComponentGroup.awaitAnyOrNull(): T? = awaitOrNull() as T?
