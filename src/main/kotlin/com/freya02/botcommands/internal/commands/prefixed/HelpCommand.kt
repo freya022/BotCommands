@@ -31,16 +31,17 @@ import java.time.Instant
 import java.util.*
 
 private val logger = KotlinLogging.logger { }
+private val spacePattern = Regex("\\s+")
 
 @Command
 @ServiceName("builtinHelpCommand")
 @ServiceType(IHelpCommand::class)
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
-class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand {
+internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
         override fun checkServiceAvailability(context: BContext): String? {
             // Try to get IHelpCommand interfaced services, except ours
-            // If empty then the user didn't provide one, in which case we can allow
+            // If empty, then the user didn't provide one, in which case we can allow
             //Won't take HelpCommand into account
             val helpCommands = context.serviceContainer.getInterfacedServices<IHelpCommand>()
             return when {
@@ -71,7 +72,7 @@ class HelpCommand internal constructor(private val context: BContextImpl) : IHel
 
     @CommandMarker
     suspend fun onTextHelpCommand(event: BaseCommandEvent, commandStr: String) {
-        val commandInfo = context.textCommandsContext.findTextCommand(SPACE_PATTERN.split(commandStr))
+        val commandInfo = context.textCommandsContext.findTextCommand(spacePattern.split(commandStr))
         if (commandInfo == null) {
             event.respond("Command '$commandStr' does not exist").await()
             return
@@ -165,9 +166,5 @@ class HelpCommand internal constructor(private val context: BContextImpl) : IHel
 
             variation(HelpCommand::onTextHelpFallback) //fallback
 		}
-    }
-
-    companion object {
-        private val SPACE_PATTERN = Regex("\\s+")
     }
 }
