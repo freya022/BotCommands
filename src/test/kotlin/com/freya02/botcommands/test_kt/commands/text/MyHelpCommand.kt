@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 
 object HelpCondition : ConditionalServiceChecker {
-    override fun checkServiceAvailability(context: BContext): String? {
+    override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
         return "No help handler for you"
     }
 }

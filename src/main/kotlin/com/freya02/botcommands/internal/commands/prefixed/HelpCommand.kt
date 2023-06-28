@@ -39,7 +39,7 @@ private val spacePattern = Regex("\\s+")
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
 internal class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand {
     internal object ExistingHelpChecker : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext): String? {
+        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
             // Try to get IHelpCommand interfaced services, except ours
             // If empty, then the user didn't provide one, in which case we can allow
             //Won't take HelpCommand into account

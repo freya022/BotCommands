@@ -168,7 +168,7 @@ class Components internal constructor(private val componentController: Component
     }
 
     internal companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext): String? {
+        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? {
             if (context.componentsConfig.useComponents) {
                 return null
             }

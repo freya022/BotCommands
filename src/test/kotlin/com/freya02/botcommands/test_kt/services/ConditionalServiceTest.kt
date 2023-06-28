@@ -31,6 +31,6 @@ class ConditionalServiceTest {
             else -> "Bad luck"
         }
 
-        override fun checkServiceAvailability(context: BContext): String? = serviceErrorMessage
+        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String? = serviceErrorMessage
     }
 }

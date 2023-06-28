@@ -73,7 +73,7 @@ internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (va
     }
 }
 
-internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl): ServiceError? {
+internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {
     findAnnotation<Dependencies>()?.value?.let { dependencies ->
         dependencies.forEach { dependency ->
             serviceContainer.canCreateService(dependency)?.let { serviceError ->
@@ -86,7 +86,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     findAnnotation<ConditionalService>()?.let { conditionalService ->
         conditionalService.checks.forEach {
             val instance = it.objectInstance ?: it.createInstance()
-            instance.checkServiceAvailability(serviceContainer.context)
+            instance.checkServiceAvailability(serviceContainer.context, checkedClass.java)
                 ?.let { errorMessage ->
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,

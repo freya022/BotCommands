@@ -33,6 +33,6 @@ class SlashUploadStream : ApplicationCommand() {
     }
 
     companion object : ConditionalServiceChecker {
-        override fun checkServiceAvailability(context: BContext) = "nope"
+        override fun checkServiceAvailability(context: BContext, checkedClass: Class<*>) = "nope"
     }
 }

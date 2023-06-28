@@ -20,7 +20,7 @@ internal class FunctionServiceProvider(
         if (isInstantiable) return null
         if (instance != null) return null
 
-        function.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
+        function.commonCanInstantiate(serviceContainer, primaryType)?.let { serviceError -> return serviceError }
         function.checkConstructingFunction(serviceContainer)?.let { serviceError -> return serviceError }
 
         isInstantiable = true

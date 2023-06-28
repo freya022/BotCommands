@@ -35,7 +35,7 @@ internal class ClassServiceProvider(
             return ErrorType.UNAVAILABLE_INJECTED_SERVICE.toError("Tried to load an unavailable InjectedService '${clazz.simpleNestedName}', reason might include: ${it.message}")
         }
 
-        clazz.commonCanInstantiate(serviceContainer)?.let { serviceError -> return serviceError }
+        clazz.commonCanInstantiate(serviceContainer, clazz)?.let { serviceError -> return serviceError }
 
         //Check dynamic suppliers
         serviceContainer.getInterfacedServices<DynamicSupplier>().forEach { dynamicSupplier ->

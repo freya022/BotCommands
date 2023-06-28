@@ -12,7 +12,11 @@ import com.freya02.botcommands.api.core.service.annotations.ConditionalService
  */
 interface ConditionalServiceChecker {
     /**
+     * @param context      The current BContext
+     * @param checkedClass The primary type of the service being created,
+     *                     the class being instantiated for services, or the return type for service factories
+     *
      * @return An error string if the service is not instantiable, `null` otherwise
      */
-    fun checkServiceAvailability(context: BContext): String?
+    fun checkServiceAvailability(context: BContext, checkedClass: Class<*>): String?
 }
