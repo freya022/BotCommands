@@ -373,14 +373,13 @@ internal class ComponentRepository(
         ) {
             val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
 
-            dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
-                val handlerId: Int = dbResult["timeout_handler_id"]
-                return EphemeralTimeout(
-                    timestamp.toInstant().toKotlinInstant(),
-                    ephemeralTimeoutHandlers[handlerId]
-                        ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
-                )
-            }
+            val timestamp: Timestamp = dbResult.getOrNull("timeout_expiration_timestamp") ?: return null
+            val handlerId: Int = dbResult.getOrNull("timeout_handler_id") ?: return null
+            return EphemeralTimeout(
+                timestamp.toInstant().toKotlinInstant(),
+                ephemeralTimeoutHandlers[handlerId]
+                    ?: throwInternal("Unable to find ephemeral handler with id $handlerId")
+            )
         }
 
         return null
