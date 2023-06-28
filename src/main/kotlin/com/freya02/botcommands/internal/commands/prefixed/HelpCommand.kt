@@ -11,6 +11,7 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.core.config.BTextConfig
 import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
+import com.freya02.botcommands.api.core.service.annotations.ServiceName
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.internal.BContextImpl
@@ -32,6 +33,7 @@ import java.util.*
 private val logger = KotlinLogging.logger { }
 
 @Command
+@ServiceName("builtinHelpCommand")
 @ServiceType(IHelpCommand::class)
 @ConditionalService(HelpCommand.ExistingHelpChecker::class)
 class HelpCommand internal constructor(private val context: BContextImpl) : IHelpCommand {
