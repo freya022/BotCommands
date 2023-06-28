@@ -9,6 +9,8 @@
 # BotCommands
 This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
 
+*Note: there is a V3 update pre-release, if you want to try it out, checkout [this README](https://github.com/freya022/BotCommands/tree/3.0.0-dev#readme) and the [pre-releases](https://github.com/freya022/BotCommands/releases)*
+
 ## Features
 
 * Automatic command registration
