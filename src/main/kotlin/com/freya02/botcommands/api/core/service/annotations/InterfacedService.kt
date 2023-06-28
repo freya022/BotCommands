@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.autocomplete.Autoc
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.core.*
+import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.service.DynamicSupplier
 
 /**
@@ -21,6 +22,7 @@ import com.freya02.botcommands.api.core.service.DynamicSupplier
  * @see IHelpCommand
  * @see HelpBuilderConsumer
  * @see AutocompleteTransformer
+ * @see ConnectionSupplier
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)
