@@ -1,7 +1,9 @@
 package com.freya02.botcommands.api.modals
 
+import com.freya02.botcommands.internal.modals.ModalDSL
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
+@ModalDSL
 interface IModalBuilder {
     /**
      * Binds the following handler to this modal
