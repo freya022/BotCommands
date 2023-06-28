@@ -4,26 +4,24 @@ import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.parameters.IAggregatedParameter
 import com.freya02.botcommands.internal.parameters.MethodParameter
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import net.dv8tion.jda.api.events.Event
 import kotlin.reflect.KParameter
 
-enum class InsertOptionResult {
+internal enum class InsertOptionResult {
     OK,
     SKIP,
     ABORT
 }
 
-inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
+internal inline fun List<IAggregatedParameter>.mapOptions(block: MutableMap<Option, Any?>.(Option) -> Unit): Map<Option, Any?> {
     val options = this.flatMap { it.allOptions }
     return buildMap(options.size) {
         options.forEach { block(it) }
     }
 }
 
-fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<Option, Any?>): InsertOptionResult {
+internal fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<Option, Any?>): InsertOptionResult {
     if (value != null) {
         optionMap[option] = value
         return InsertOptionResult.OK
@@ -46,7 +44,7 @@ fun tryInsertNullableOption(value: Any?, option: Option, optionMap: MutableMap<O
 }
 
 context(IExecutableInteractionInfo)
-suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
+internal suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     event: Event,
     optionValues: Map<Option, Any?>
 ) = buildMap(eventFunction.parametersSize) {
@@ -58,7 +56,7 @@ suspend fun Collection<IAggregatedParameter>.mapFinalParameters(
     }
 }
 
-suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
+internal suspend fun insertAggregate(event: Event, aggregatedObjects: MutableMap<KParameter, Any?>, optionValues: Map<Option, Any?>, parameter: IAggregatedParameter) {
     val aggregator = parameter.aggregator
 
     if (aggregator.isSingleAggregator) {

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.core.service
 
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwService
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwService
 import kotlin.reflect.KFunction
 
 class ServiceError private constructor(

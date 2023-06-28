@@ -1,10 +1,14 @@
 package com.freya02.botcommands.internal.parameters
 
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.jvmErasure
 

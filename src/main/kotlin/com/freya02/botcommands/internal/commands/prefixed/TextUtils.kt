@@ -14,6 +14,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmErasure
 
 object TextUtils {
+    @JvmStatic
     fun generateCommandHelp(commandInfo: TextCommandInfo, event: BaseCommandEvent): EmbedBuilder {
         val builder = event.defaultEmbed
 
@@ -117,6 +118,7 @@ object TextUtils {
         }
     }
 
+    @JvmStatic
     fun List<TextCommandOption>.hasMultipleQuotable(): Boolean =
         count { p -> p.resolver is QuotableRegexParameterResolver } > 1
 

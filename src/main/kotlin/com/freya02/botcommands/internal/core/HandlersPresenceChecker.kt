@@ -7,8 +7,8 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
-import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.shortSignature
 import com.freya02.botcommands.internal.utils.toShortSignature
 import io.github.classgraph.ClassInfo

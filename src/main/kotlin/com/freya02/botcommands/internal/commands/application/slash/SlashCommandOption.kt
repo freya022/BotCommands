@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionAggregateBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.OptionType

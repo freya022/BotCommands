@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.api.core.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import net.dv8tion.jda.api.events.Event
@@ -12,6 +12,7 @@ import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.valueParameters
+import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
 
@@ -139,3 +140,12 @@ internal object ReflectionUtils {
         return this.kotlinFunction ?: throwInternal("Unable to get kotlin function from $this")
     }
 }
+
+internal fun KParameter.findDeclarationName(): String =
+    name ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
+
+internal fun KParameter.findOptionName(): String =
+    name?.toDiscordString() ?: throwUser("Parameter '$this' does not have any name information, please add the compiler options to include those (see wiki or readme)")
+
+internal val KFunction<*>.javaMethodInternal: Method
+    get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")

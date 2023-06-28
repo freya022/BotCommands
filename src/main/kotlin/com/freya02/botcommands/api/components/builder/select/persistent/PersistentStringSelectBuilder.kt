@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.components.builder.PersistentActionableC
 import com.freya02.botcommands.internal.components.builder.PersistentTimeoutableComponentImpl
 import com.freya02.botcommands.internal.components.builder.UniqueComponentImpl
 import com.freya02.botcommands.internal.components.controller.ComponentController
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu as JDAStringSelectMenu
 
 class PersistentStringSelectBuilder internal constructor(private val componentController: ComponentController) :

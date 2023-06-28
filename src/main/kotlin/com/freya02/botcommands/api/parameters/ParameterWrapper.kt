@@ -1,11 +1,11 @@
 package com.freya02.botcommands.api.parameters
 
-import com.freya02.botcommands.internal.bestName
+import com.freya02.botcommands.api.core.utils.bestName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
-import com.freya02.botcommands.internal.throwUser as utilsThrowUser
+import com.freya02.botcommands.internal.utils.throwUser as utilsThrowUser
 
 data class ParameterWrapper(
     val type: KType,

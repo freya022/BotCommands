@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.application.slash
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
@@ -13,10 +14,7 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.reflection.checkEventScope
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.utils.InsertOptionResult
-import com.freya02.botcommands.internal.utils.mapFinalParameters
-import com.freya02.botcommands.internal.utils.mapOptions
-import com.freya02.botcommands.internal.utils.tryInsertNullableOption
+import com.freya02.botcommands.internal.utils.*
 import dev.minn.jda.ktx.messages.reply_
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event

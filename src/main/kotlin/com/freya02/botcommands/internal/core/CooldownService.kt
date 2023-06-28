@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.Cooldownable
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.throwInternal
 import gnu.trove.TCollections
 import gnu.trove.impl.Constants
 import gnu.trove.map.hash.TObjectLongHashMap

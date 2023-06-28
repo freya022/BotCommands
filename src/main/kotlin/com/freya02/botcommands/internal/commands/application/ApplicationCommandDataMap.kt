@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.internal.enumMapOf
+import com.freya02.botcommands.api.core.utils.enumMapOf
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
 import java.util.function.Function
 import net.dv8tion.jda.api.interactions.commands.Command.Type as CommandType

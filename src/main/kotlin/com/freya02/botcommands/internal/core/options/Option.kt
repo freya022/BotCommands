@@ -1,13 +1,13 @@
 package com.freya02.botcommands.internal.core.options
 
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
+import com.freya02.botcommands.api.core.utils.isPrimitive
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
-import com.freya02.botcommands.internal.isPrimitive
 import com.freya02.botcommands.internal.parameters.OptionParameter
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
+import com.freya02.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType

@@ -10,14 +10,10 @@ import com.freya02.botcommands.internal.core.EventHandlerFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.toClassPathFunctions
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.unreflect
-import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import com.freya02.botcommands.internal.utils.withFilter
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -229,6 +225,6 @@ class EventDispatcher internal constructor(
 
     private fun printException(eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
         "An exception occurred while dispatching an event for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
-        e.unreflect()
+        e.unwrap()
     )
 }

@@ -1,9 +1,13 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.throwUser
+import com.freya02.botcommands.internal.utils.toDiscordString
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -27,7 +31,7 @@ abstract class SlashCommandBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     @JvmOverloads
-    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
+    fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
         }
@@ -39,7 +43,7 @@ abstract class SlashCommandBuilder internal constructor(
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
                 ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
-            option(parameterName, optionName ?: parameterName.asDiscordString(), block)
+            option(parameterName, optionName ?: parameterName.toDiscordString(), block)
         }
     }
 

@@ -17,9 +17,9 @@ import com.freya02.botcommands.internal.components.PersistentHandler
 import com.freya02.botcommands.internal.components.controller.ComponentTimeoutManager
 import com.freya02.botcommands.internal.components.data.*
 import com.freya02.botcommands.internal.core.db.InternalDatabase
-import com.freya02.botcommands.internal.rethrowUser
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.rethrowUser
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant

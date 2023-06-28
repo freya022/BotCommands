@@ -2,8 +2,8 @@ package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.utils.toImmutableList
 import com.freya02.botcommands.internal.core.config.ConfigDSL
-import com.freya02.botcommands.internal.toImmutableList
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 
 @InjectedService

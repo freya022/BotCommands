@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.parameters;
 
-import com.freya02.botcommands.internal.UtilsKt;
+import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +20,8 @@ public abstract class ParameterResolverFactory<T extends ParameterResolver<?, R>
 	 * @param clazz Class of the parameter being resolved
 	 */
 	public ParameterResolverFactory(Class<T> resolverType, @NotNull Class<R> clazz) {
-		this.resolverType = UtilsKt.toKotlin(resolverType);
-		this.jvmErasure = UtilsKt.toKotlin(clazz);
+		this.resolverType = ReflectionUtils.toKotlin(resolverType);
+		this.jvmErasure = ReflectionUtils.toKotlin(clazz);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public abstract class ParameterResolverFactory<T extends ParameterResolver<?, R>
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static <T extends ParameterResolver<?, R>, R> ParameterResolverFactory<T, R> singleton(T resolver) {
-		return new ParameterResolverFactory<>(resolver.getClass(), UtilsKt.toJava(resolver.getJvmErasure())) {
+		return new ParameterResolverFactory<>(resolver.getClass(), ReflectionUtils.toJava(resolver.getJvmErasure())) {
 			@NotNull
 			@Override
 			public T get(@NotNull ParameterWrapper parameter) {

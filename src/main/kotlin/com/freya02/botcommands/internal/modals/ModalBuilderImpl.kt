@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.modals.Modal
 import com.freya02.botcommands.api.modals.ModalBuilder
 import com.freya02.botcommands.api.modals.ModalTimeoutInfo
 import com.freya02.botcommands.api.modals.Modals
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.internal.utils.Checks
 import java.util.concurrent.TimeUnit

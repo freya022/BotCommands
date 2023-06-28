@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.internal.UtilsKt;
+import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -54,7 +54,7 @@ public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
 	 * @param clazz Class of the parameter being resolved
 	 */
 	public ParameterResolver(@NotNull Class<R> clazz) {
-		this.jvmErasure = UtilsKt.toKotlin(clazz);
+		this.jvmErasure = ReflectionUtils.toKotlin(clazz);
 	}
 
 	/**

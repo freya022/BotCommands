@@ -5,11 +5,11 @@ import com.freya02.botcommands.api.core.service.ServiceError.ErrorType.*
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
 import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.api.core.utils.toImmutableMap
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwUser
-import com.freya02.botcommands.internal.toImmutableMap
+import com.freya02.botcommands.internal.utils.throwUser
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation

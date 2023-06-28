@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.autobuilder.metadata
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application
 
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.Guild
 
 class GuildApplicationCommandManager internal constructor(context: BContextImpl, val guild: Guild): AbstractApplicationCommandManager(context) {

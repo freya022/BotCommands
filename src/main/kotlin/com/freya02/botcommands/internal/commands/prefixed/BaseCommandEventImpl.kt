@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.utils.EmojiUtils
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.logger
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission

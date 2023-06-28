@@ -13,13 +13,14 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.enumSetOf
+import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.requiredFilter
-import com.freya02.botcommands.internal.utils.FunctionFilter
-import com.freya02.botcommands.internal.utils.LocalizationUtils
+import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
@@ -184,13 +185,13 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
                             guild,
                             commandId,
                             path,
-                            kParameter.findOptionName().asDiscordString(),
+                            kParameter.findOptionName(),
                             ParameterType.ofType(kParameter.type)
                         )
                     )
                 }
                 else -> {
-                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.asDiscordString()
+                    val optionName = optionAnnotation.name.nullIfEmpty() ?: declaredName.toDiscordString()
                     if (kParameter.type.jvmErasure.isValue) {
                         val inlineClassType = kParameter.type.jvmErasure.java
                         when (val varArgs = kParameter.findAnnotation<VarArgs>()) {

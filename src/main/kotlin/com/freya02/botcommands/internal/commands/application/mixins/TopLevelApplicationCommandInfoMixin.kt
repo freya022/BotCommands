@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.throwMixin
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwMixin
+import com.freya02.botcommands.internal.utils.throwUser
 
 open class TopLevelApplicationCommandInfoMixin(
     context: BContextImpl,

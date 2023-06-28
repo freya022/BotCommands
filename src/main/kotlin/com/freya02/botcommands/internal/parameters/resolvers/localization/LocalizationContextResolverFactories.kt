@@ -1,15 +1,19 @@
 package com.freya02.botcommands.internal.parameters.resolvers.localization
 
 import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.api.core.utils.isSubclassOfAny
+import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
 import com.freya02.botcommands.api.parameters.ParameterWrapper
-import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl
 import com.freya02.botcommands.internal.parameters.resolvers.localization.LocalizationContextResolverFactories.getBaseLocalizationContext
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction
 import kotlin.reflect.KClass

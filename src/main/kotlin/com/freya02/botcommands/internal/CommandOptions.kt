@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.builder.GeneratedOptionBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
 import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
@@ -14,6 +15,9 @@ import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 
 object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(

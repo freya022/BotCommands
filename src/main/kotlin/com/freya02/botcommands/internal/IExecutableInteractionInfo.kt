@@ -2,6 +2,8 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
 import com.freya02.botcommands.internal.parameters.MethodParameter
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction

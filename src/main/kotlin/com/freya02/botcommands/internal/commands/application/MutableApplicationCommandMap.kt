@@ -2,11 +2,11 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.application.ApplicationCommandMap
+import com.freya02.botcommands.api.core.utils.enumMapOf
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
-import com.freya02.botcommands.internal.enumMapOf
 import net.dv8tion.jda.api.interactions.commands.Command
 import java.util.*
 import java.util.function.Function

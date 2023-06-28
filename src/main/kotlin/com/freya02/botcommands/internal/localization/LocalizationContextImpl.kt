@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.localization
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 

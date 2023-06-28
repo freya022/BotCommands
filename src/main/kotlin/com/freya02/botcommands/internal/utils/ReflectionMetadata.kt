@@ -2,13 +2,11 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.utils.javaMethodOrConstructor
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandsPresenceChecker
 import com.freya02.botcommands.internal.core.HandlersPresenceChecker
-import com.freya02.botcommands.internal.javaMethodOrConstructor
 import com.freya02.botcommands.internal.parameters.resolvers.ResolverSupertypeChecker
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import io.github.classgraph.*
 import java.lang.reflect.Executable

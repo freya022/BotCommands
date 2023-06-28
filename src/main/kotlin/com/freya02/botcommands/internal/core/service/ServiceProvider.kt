@@ -5,13 +5,13 @@ import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
 import com.freya02.botcommands.api.core.service.annotations.*
-import com.freya02.botcommands.internal.bestName
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.api.core.utils.bestName
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

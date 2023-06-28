@@ -5,14 +5,14 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationComma
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import kotlin.reflect.KClass

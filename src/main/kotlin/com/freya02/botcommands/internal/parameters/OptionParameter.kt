@@ -1,9 +1,9 @@
 package com.freya02.botcommands.internal.parameters
 
-import com.freya02.botcommands.internal.findDeclarationName
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
 class OptionParameter(

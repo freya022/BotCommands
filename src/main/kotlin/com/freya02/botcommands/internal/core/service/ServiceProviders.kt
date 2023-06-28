@@ -3,9 +3,9 @@ package com.freya02.botcommands.internal.core.service
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isService
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import java.lang.reflect.Executable

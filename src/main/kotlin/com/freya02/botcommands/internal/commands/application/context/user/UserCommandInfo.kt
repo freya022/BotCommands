@@ -16,12 +16,8 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.reflection.checkEventScope
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.transform
-import com.freya02.botcommands.internal.utils.InsertOptionResult
-import com.freya02.botcommands.internal.utils.mapFinalParameters
-import com.freya02.botcommands.internal.utils.mapOptions
-import com.freya02.botcommands.internal.utils.tryInsertNullableOption
+import com.freya02.botcommands.internal.utils.*
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 import kotlin.reflect.full.callSuspendBy
 

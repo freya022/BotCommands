@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.parameters
 
-import com.freya02.botcommands.internal.findDeclarationName
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
+import com.freya02.botcommands.internal.utils.findDeclarationName
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure

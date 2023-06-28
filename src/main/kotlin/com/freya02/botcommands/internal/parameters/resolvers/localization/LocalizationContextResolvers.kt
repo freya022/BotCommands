@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.Interaction

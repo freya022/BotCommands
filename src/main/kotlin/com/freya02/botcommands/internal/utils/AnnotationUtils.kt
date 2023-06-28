@@ -4,10 +4,9 @@ import com.freya02.botcommands.api.annotations.AppendMode
 import com.freya02.botcommands.api.commands.annotations.BotPermissions
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.annotations.Test
+import com.freya02.botcommands.api.core.utils.enumSetOf
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.enumSetOf
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
@@ -26,7 +25,7 @@ internal object AnnotationUtils {
         return function.findAnnotations(annotation) + function.declaringClass.findAnnotations(annotation)
     }
 
-    fun getEffectiveTestGuildIds(context: BContextImpl, function: KFunction<*>): TLongSet {
+    internal fun getEffectiveTestGuildIds(context: BContextImpl, function: KFunction<*>): TLongSet {
         val testIds: TLongSet = TLongHashSet(context.applicationConfig.testGuildIds)
         val effectiveAnnotations = getEffectiveAnnotations(function, Test::class)
         for (test in effectiveAnnotations) {
@@ -46,8 +45,7 @@ internal object AnnotationUtils {
         return testIds
     }
 
-    @JvmStatic
-    fun <A : Annotation> getEffectiveAnnotation(function: KFunction<*>, annotationType: KClass<A>): A? {
+    internal fun <A : Annotation> getEffectiveAnnotation(function: KFunction<*>, annotationType: KClass<A>): A? {
         val methodAnnot = function.findAnnotations(annotationType)
 
         return when {
@@ -56,7 +54,7 @@ internal object AnnotationUtils {
         }
     }
 
-    fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
+    internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
         val annotation = func.findAnnotation<UserPermissions>() ?: return enumSetOf()
 
         return enumSetOf<Permission>().also { set ->
@@ -70,7 +68,7 @@ internal object AnnotationUtils {
         }
     }
 
-    fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
+    internal fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
         val annotation = func.findAnnotation<BotPermissions>() ?: return enumSetOf()
 
         return enumSetOf<Permission>().also { set ->
@@ -85,7 +83,7 @@ internal object AnnotationUtils {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T, A : Annotation> getAnnotationValue(annotation: A, methodName: String): T {
+    internal fun <T, A : Annotation> getAnnotationValue(annotation: A, methodName: String): T {
         val kFunction = annotation.annotationClass.declaredMemberProperties.find { it.name == methodName }
             ?: throwInternal("Could not read '$methodName' from annotation '${annotation.annotationClass.simpleName}'")
         return kFunction.call(annotation) as? T

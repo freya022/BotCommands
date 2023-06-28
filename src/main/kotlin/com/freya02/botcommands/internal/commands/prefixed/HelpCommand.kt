@@ -14,10 +14,10 @@ import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.ServiceName
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.core.service.getInterfacedServices
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.getSpacedPath
-import com.freya02.botcommands.internal.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch

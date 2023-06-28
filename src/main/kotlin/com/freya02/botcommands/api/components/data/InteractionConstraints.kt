@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components.data
 
-import com.freya02.botcommands.internal.enumSetOf
+import com.freya02.botcommands.api.core.utils.enumSetOf
 import gnu.trove.list.array.TLongArrayList
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role

@@ -1,9 +1,8 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.isStatic
-import com.freya02.botcommands.internal.isSubclassOfAny
-import com.freya02.botcommands.internal.simpleNestedName
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.api.core.utils.isStatic
+import com.freya02.botcommands.api.core.utils.isSubclassOfAny
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction

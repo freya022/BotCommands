@@ -15,8 +15,9 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBu
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.castFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
@@ -24,7 +25,7 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.requiredFilter
-import com.freya02.botcommands.internal.utils.FunctionFilter
+import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
 import kotlin.reflect.KFunction
@@ -182,7 +183,7 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl) {
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
                             path,
-                            kParameter.findOptionName().asDiscordString(),
+                            kParameter.findOptionName(),
                             ParameterType.ofType(kParameter.type)
                         )
                     )

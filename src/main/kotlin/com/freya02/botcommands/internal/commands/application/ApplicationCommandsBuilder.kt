@@ -12,10 +12,10 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCo
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging

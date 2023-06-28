@@ -2,14 +2,14 @@ package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.Resolver
+import com.freya02.botcommands.api.core.utils.onErrorResponseException
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils
 import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.onErrorResponseException
-import com.freya02.botcommands.internal.throwInternal
+import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent

@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.commands.application
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.throwUser
 import java.util.*
 import kotlin.reflect.KFunction
 

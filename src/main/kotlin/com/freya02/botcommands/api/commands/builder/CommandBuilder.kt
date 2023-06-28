@@ -2,11 +2,11 @@ package com.freya02.botcommands.api.commands.builder
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.commands.CooldownStrategy
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
-import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.Permission
 import java.util.*
 import java.util.concurrent.TimeUnit

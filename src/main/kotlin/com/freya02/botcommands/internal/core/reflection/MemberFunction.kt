@@ -1,8 +1,8 @@
 package com.freya02.botcommands.internal.core.reflection
 
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.throwInternal
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.throwInternal
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.valueParameters

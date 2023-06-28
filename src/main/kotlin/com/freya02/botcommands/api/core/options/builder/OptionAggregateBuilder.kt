@@ -4,8 +4,8 @@ import com.freya02.botcommands.api.core.options.annotations.Aggregate
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
-import com.freya02.botcommands.internal.requireUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.requireUser
 import kotlin.reflect.KFunction
 
 abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal constructor(

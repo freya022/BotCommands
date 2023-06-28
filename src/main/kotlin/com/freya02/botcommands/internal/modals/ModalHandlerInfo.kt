@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
@@ -9,11 +10,8 @@ import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.reflection.*
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
-import com.freya02.botcommands.internal.utils.InsertOptionResult
+import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
-import com.freya02.botcommands.internal.utils.mapFinalParameters
-import com.freya02.botcommands.internal.utils.mapOptions
-import com.freya02.botcommands.internal.utils.tryInsertNullableOption
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2

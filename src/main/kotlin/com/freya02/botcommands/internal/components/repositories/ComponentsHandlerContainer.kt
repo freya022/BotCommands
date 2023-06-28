@@ -13,9 +13,9 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.core.reflection.toMemberEventFunction
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.full.findAnnotation
 
 @BService

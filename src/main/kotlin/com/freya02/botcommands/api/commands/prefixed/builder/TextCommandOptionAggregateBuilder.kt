@@ -3,8 +3,8 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.options.builder.OptionAggregateBuilder
-import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
+import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
 class TextCommandOptionAggregateBuilder(
@@ -12,7 +12,7 @@ class TextCommandOptionAggregateBuilder(
     aggregator: KFunction<*>
 ) : OptionAggregateBuilder<TextCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     @JvmOverloads
-    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
+    fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
         this += TextCommandOptionBuilder(aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 

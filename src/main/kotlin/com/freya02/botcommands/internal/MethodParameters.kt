@@ -7,6 +7,8 @@ import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.hasAnnotation

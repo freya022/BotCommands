@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.commands.application.SimpleCommandMap
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.isFakeSlashFunction
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KFunction
 
 class TopLevelSlashCommandBuilder internal constructor(

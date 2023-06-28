@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.components
 
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 
 enum class LifetimeType(val key: Int) {
     PERSISTENT(0),

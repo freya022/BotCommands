@@ -17,14 +17,18 @@ import com.freya02.botcommands.api.commands.application.context.builder.UserComm
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.MessageContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.findOptionName
+import com.freya02.botcommands.internal.utils.throwInternal
 import net.dv8tion.jda.api.entities.Guild
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.findAnnotation
@@ -160,7 +164,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
                             guild,
                             commandId,
                             CommandPath.ofName(name),
-                            kParameter.findOptionName().asDiscordString(),
+                            kParameter.findOptionName(),
                             ParameterType.ofType(kParameter.type)
                         )
                     )

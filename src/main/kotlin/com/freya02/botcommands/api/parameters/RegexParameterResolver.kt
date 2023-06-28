@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
-import com.freya02.botcommands.internal.throwUser
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
 

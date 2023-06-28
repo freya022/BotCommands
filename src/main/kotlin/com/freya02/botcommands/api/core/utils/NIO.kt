@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal
+package com.freya02.botcommands.api.core.utils
 
 import java.nio.file.Files
 import java.nio.file.Path

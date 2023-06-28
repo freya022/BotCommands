@@ -2,8 +2,8 @@ package com.freya02.botcommands.internal.commands.application.autocomplete
 
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.throwUser
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 

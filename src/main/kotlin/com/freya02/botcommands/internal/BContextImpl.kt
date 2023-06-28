@@ -14,11 +14,13 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
+import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandsContextImpl
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
 import com.freya02.botcommands.internal.commands.application.slash.autocomplete.AutocompleteHandler
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandsContextImpl
 import com.freya02.botcommands.internal.core.service.*
+import com.freya02.botcommands.internal.utils.unwrap
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -131,7 +133,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
             val exceptionStr = when (t) {
                 null -> ""
                 else -> "\nException:```\n${
-                    t.unreflect().stackTraceToString()
+                    t.unwrap().stackTraceToString()
                         .lineSequence()
                         .filterNot { "jdk.internal" in it }
                         .filterNot { "kotlin.reflect.jvm.internal" in it }

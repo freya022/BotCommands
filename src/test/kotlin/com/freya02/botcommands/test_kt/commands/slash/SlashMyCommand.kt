@@ -14,8 +14,8 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.parameters.ParameterType
-import com.freya02.botcommands.internal.enumSetOf
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.ChannelType

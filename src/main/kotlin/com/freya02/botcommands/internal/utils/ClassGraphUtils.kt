@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.internal.shortQualifiedName
+import com.freya02.botcommands.api.core.utils.shortQualifiedName
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import kotlin.reflect.KClass

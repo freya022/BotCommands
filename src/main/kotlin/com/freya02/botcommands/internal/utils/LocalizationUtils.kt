@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import java.util.*
 
 internal object LocalizationUtils {
-    fun getCommandRootLocalization(context: BContextImpl, path: String?): String? {
+    internal fun getCommandRootLocalization(context: BContextImpl, path: String?): String? {
         val localesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
         for (baseName in localesMap.keys) {
             val localization = Localization.getInstance(baseName, Locale.ROOT)

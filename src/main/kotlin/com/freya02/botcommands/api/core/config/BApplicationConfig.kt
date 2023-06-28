@@ -4,10 +4,10 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
+import com.freya02.botcommands.api.core.utils.toImmutableList
+import com.freya02.botcommands.api.core.utils.toImmutableMap
 import com.freya02.botcommands.api.localization.providers.DefaultLocalizationMapProvider
 import com.freya02.botcommands.internal.core.config.ConfigDSL
-import com.freya02.botcommands.internal.toImmutableList
-import com.freya02.botcommands.internal.toImmutableMap
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction

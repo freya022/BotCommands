@@ -4,11 +4,11 @@ import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.GeneratedOption
 import com.freya02.botcommands.internal.parameters.resolvers.channels.ChannelResolver
-import com.freya02.botcommands.internal.requireUser
-import com.freya02.botcommands.internal.throwInternal
-import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.utils.ReflectionUtils.function
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.requireUser
+import com.freya02.botcommands.internal.utils.throwInternal
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
@@ -19,15 +19,15 @@ import kotlin.reflect.jvm.jvmErasure
 import net.dv8tion.jda.api.interactions.commands.OptionType as JDAOptionType
 
 internal object SlashUtils {
-    val fakeSlashFunction = SlashUtils::fakeFunction.reflectReference()
+    internal val fakeSlashFunction = SlashUtils::fakeFunction.reflectReference()
 
     @Suppress("UNUSED_PARAMETER", "MemberVisibilityCanBePrivate")
-    fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
+    internal fun fakeFunction(event: GlobalSlashEvent): Nothing = throwInternal("Fake function was used")
 
-    fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
+    internal fun KFunction<*>.isFakeSlashFunction() = this === fakeSlashFunction
 
     context(IExecutableInteractionInfo)
-    inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
+    internal inline fun <T : GeneratedOption> T.getCheckedDefaultValue(supplier: (T) -> Any?): Any? = let { option ->
         return supplier(this).also { defaultValue ->
             checkDefaultValue(option, defaultValue)
         }
@@ -36,17 +36,17 @@ internal object SlashUtils {
     private fun IExecutableInteractionInfo.checkDefaultValue(option: GeneratedOption, defaultValue: Any?) {
         if (defaultValue != null) {
             val expectedType: KClass<*> = option.type.jvmErasure
-            requireUser(expectedType.isSuperclassOf(defaultValue::class)) {
+            requireUser(expectedType.isSuperclassOf(defaultValue::class), this.function) {
                 "Generated value supplier for parameter #${option.index} has returned a default value of type ${defaultValue::class.simpleName} but a value of type ${expectedType.simpleName} was expected"
             }
         } else {
-            requireUser(option.isOptionalOrNullable) {
+            requireUser(option.isOptionalOrNullable, this.function) {
                 "Generated value supplier for parameter #${option.index} has returned a null value but parameter is not optional"
             }
         }
     }
 
-    fun SlashCommandInfo.getDiscordOptions(guild: Guild?) = parameters
+    internal fun SlashCommandInfo.getDiscordOptions(guild: Guild?) = parameters
         .flatMap { it.allOptions }
         .filterIsInstance<SlashCommandOption>()
         //Move all optional options at the front

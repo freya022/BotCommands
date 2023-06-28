@@ -2,12 +2,16 @@ package com.freya02.botcommands.api.commands.prefixed.builder
 
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
-import com.freya02.botcommands.internal.*
+import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.utils.ReflectionUtils.reflectReference
+import com.freya02.botcommands.internal.utils.findDeclarationName
+import com.freya02.botcommands.internal.utils.throwUser
+import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 
@@ -30,7 +34,7 @@ class TextCommandVariationBuilder internal constructor(
      * @param declaredName Name of the declared parameter in the [function]
      */
     @JvmOverloads
-    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
+    fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: TextCommandOptionBuilder.() -> Unit = {}) {
         selfAggregate(declaredName) {
             option(declaredName, optionName, block)
         }
@@ -42,7 +46,7 @@ class TextCommandVariationBuilder internal constructor(
         aggregate(declaredName, aggregatorConstructor) {
             val parameterName = aggregatorConstructor.parameters.singleOrNull()?.findDeclarationName()
                 ?: throwUser(aggregatorConstructor, "Constructor must only have one parameter")
-            option(parameterName, optionName ?: parameterName.asDiscordString(), block)
+            option(parameterName, optionName ?: parameterName.toDiscordString(), block)
         }
     }
 

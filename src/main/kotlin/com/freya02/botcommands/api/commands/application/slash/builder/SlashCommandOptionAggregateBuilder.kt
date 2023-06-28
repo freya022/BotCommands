@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.commands.application.builder.ApplicationGener
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.BContextImpl
-import com.freya02.botcommands.internal.asDiscordString
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
+import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
 class SlashCommandOptionAggregateBuilder(
@@ -15,7 +15,7 @@ class SlashCommandOptionAggregateBuilder(
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<SlashCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {
     @JvmOverloads
-    fun option(declaredName: String, optionName: String = declaredName.asDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
+    fun option(declaredName: String, optionName: String = declaredName.toDiscordString(), block: SlashCommandOptionBuilder.() -> Unit = {}) {
         this += SlashCommandOptionBuilder(context, aggregatorParameter.toOptionParameter(aggregator, declaredName), optionName).apply(block)
     }
 

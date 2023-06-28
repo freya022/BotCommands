@@ -9,7 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
-import com.freya02.botcommands.internal.simpleNestedName
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.shortSignature
 import com.freya02.botcommands.internal.utils.toShortSignature
 import io.github.classgraph.ClassInfo
