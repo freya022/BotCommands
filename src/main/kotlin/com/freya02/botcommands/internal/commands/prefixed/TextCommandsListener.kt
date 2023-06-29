@@ -6,11 +6,13 @@ import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.getMissingPermissions
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.core.CooldownService
+import com.freya02.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -141,7 +143,8 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        val usability = Usability.of(context, commandInfo, event.member!!, event.guildChannel, isNotOwner)
+        val member = event.member ?: throwInternal("Text command was executed out of a Guild")
+        val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
 
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
@@ -161,15 +164,12 @@ internal class TextCommandsListener internal constructor(
                 replyError(event, context.getDefaultMessages(event.guild).nsfwdmDeniedErrorMsg)
                 return ExecutionResult.STOP
             } else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
-                replyError(event, context.getDefaultMessages(event.guild).userPermErrorMsg)
+                val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
+                replyError(event, context.getDefaultMessages(event.guild).getUserPermErrorMsg(missingPermissions))
                 return ExecutionResult.STOP
             } else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
-                val missingPermsStr =
-                    (commandInfo.botPermissions - event.guild.selfMember.getPermissions(event.guildChannel)).joinToString {
-                        it.name
-                    }
-
-                replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(missingPermsStr))
+                val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
+                replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(missingPermissions))
                 return ExecutionResult.STOP
             }
         }

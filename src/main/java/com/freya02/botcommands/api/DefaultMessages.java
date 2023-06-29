@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.application.annotations.NSFW;
 import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import org.jetbrains.annotations.ApiStatus;
@@ -11,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
@@ -49,6 +52,16 @@ public final class DefaultMessages {
 
 	@NotNull
 	private LocalizationTemplate getLocalizationTemplate(@NotNull String path) {
+		final LocalizationTemplate template = getLocalizationTemplateOrNull(path);
+		if (template == null) {
+			throw new IllegalArgumentException("Localization template for default messages '" + path + "' could not be found");
+		}
+
+		return template;
+	}
+
+	@Nullable
+	private LocalizationTemplate getLocalizationTemplateOrNull(@NotNull String path) {
 		LocalizationTemplate template = localization == null
 				? null
 				: localization.get(path);
@@ -57,11 +70,16 @@ public final class DefaultMessages {
 			template = defaultLocalization.get(path);
 		}
 
-		if (template == null) {
-			throw new IllegalArgumentException("Localization template for default messages '" + path + "' could not be found");
-		}
-
 		return template;
+	}
+
+	/**
+	 * @return The localized permission, or {@link Permission#getName()} if the translation is missing.
+	 */
+	@NotNull
+	public String getPermission(Permission permission) {
+		final LocalizationTemplate localizationTemplate = getLocalizationTemplateOrNull("permissions." + permission.name());
+		return localizationTemplate != null ? localizationTemplate.localize() : permission.getName();
 	}
 
 	/**
@@ -74,15 +92,17 @@ public final class DefaultMessages {
 	/**
 	 * @return Message to display when the user does not have enough permissions
 	 */
-	public String getUserPermErrorMsg() {
-		return getLocalizationTemplate("user.perm.error.message").localize();
+	public String getUserPermErrorMsg(Set<Permission> permissions) {
+		final String localizedPermissions = permissions.stream().map(this::getPermission).collect(Collectors.joining(", "));
+		return getLocalizationTemplate("user.perm.error.message").localize(entry("permissions", localizedPermissions));
 	}
 
 	/**
 	 * @return Message to display when the bot does not have enough permissions
 	 */
-	public String getBotPermErrorMsg(String permissionsString) {
-		return getLocalizationTemplate("bot.perm.error.message").localize(entry("permissions", permissionsString));
+	public String getBotPermErrorMsg(Set<Permission> permissions) {
+		final String localizedPermissions = permissions.stream().map(this::getPermission).collect(Collectors.joining(", "));
+		return getLocalizationTemplate("bot.perm.error.message").localize(entry("permissions", localizedPermissions));
 	}
 
 	/**

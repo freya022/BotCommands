@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.getMissingPermissions
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
@@ -168,17 +169,15 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                     return false
                 }
                 UnusableReason.USER_PERMISSIONS in unusableReasons -> {
-                    reply(event, context.getDefaultMessages(event).userPermErrorMsg)
+                    val member = event.member ?: throwInternal("USER_PERMISSIONS got checked even if guild is null")
+                    val missingPermissions = getMissingPermissions(applicationCommand.userPermissions, member, event.guildChannel)
+                    reply(event, context.getDefaultMessages(event).getUserPermErrorMsg(missingPermissions))
                     return false
                 }
                 UnusableReason.BOT_PERMISSIONS in unusableReasons -> {
-                    if (event.guild == null) throwInternal("BOT_PERMISSIONS got checked even if guild is null")
-
-                    //Take needed permissions, extract bot current permissions
-                    val missingPerms = applicationCommand.botPermissions
-                    missingPerms.removeAll(event.guild!!.selfMember.getPermissions(event.guildChannel))
-                    reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingPerms.joinToString()))
-
+                    val guild = event.guild ?: throwInternal("BOT_PERMISSIONS got checked even if guild is null")
+                    val missingPermissions = getMissingPermissions(applicationCommand.botPermissions, guild.selfMember, event.guildChannel)
+                    reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingPermissions))
                     return false
                 }
             }
