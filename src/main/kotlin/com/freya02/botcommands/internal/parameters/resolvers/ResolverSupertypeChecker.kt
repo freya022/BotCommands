@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
-import com.freya02.botcommands.internal.utils.toShortSignature
+import com.freya02.botcommands.internal.utils.shortSignature
 import io.github.classgraph.ClassInfo
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -20,17 +20,17 @@ class ResolverSupertypeChecker : ClassGraphProcessor {
         val isResolverAnnotated = classInfo.hasAnnotation(Resolver::class.java)
         val isResolverSubclass = kClass.isSubclassOf(ParameterResolver::class)
         if (isResolverAnnotated && !isResolverSubclass) {
-            errorMessages += "Resolver ${classInfo.toShortSignature(kClass)} needs to extend ${ParameterResolver::class.simpleNestedName}"
+            errorMessages += "Resolver ${classInfo.shortSignature} needs to extend ${ParameterResolver::class.simpleNestedName}"
         } else if (!isResolverAnnotated && isResolverSubclass) {
-            errorMessages +=  "Resolver ${classInfo.toShortSignature(kClass)} needs to be annotated with @${Resolver::class.simpleNestedName}"
+            errorMessages +=  "Resolver ${classInfo.shortSignature} needs to be annotated with @${Resolver::class.simpleNestedName}"
         }
 
         val isResolverFactoryAnnotated = classInfo.hasAnnotation(ResolverFactory::class.java)
         val isResolverFactorySubclass = kClass.isSubclassOf(ParameterResolverFactory::class)
         if (isResolverFactoryAnnotated && !isResolverFactorySubclass) {
-            errorMessages += "Resolver factory ${classInfo.toShortSignature(kClass)} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
+            errorMessages += "Resolver factory ${classInfo.shortSignature} needs to extend ${ParameterResolverFactory::class.simpleNestedName}"
         } else if (!isResolverFactoryAnnotated && isResolverFactorySubclass) {
-            errorMessages += "Resolver factory ${classInfo.toShortSignature(kClass)} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
+            errorMessages += "Resolver factory ${classInfo.shortSignature} needs to be annotated with @${ResolverFactory::class.simpleNestedName}"
         }
     }
 

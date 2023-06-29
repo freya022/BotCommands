@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
 import com.freya02.botcommands.internal.utils.shortSignature
-import com.freya02.botcommands.internal.utils.toShortSignature
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 import mu.KotlinLogging
@@ -41,7 +40,7 @@ class HandlersPresenceChecker : ClassGraphProcessor {
             }
 
         if (isHandler && handlerDeclarations.isEmpty()) {
-            noDeclarationClasses += classInfo.toShortSignature(kClass)
+            noDeclarationClasses += classInfo.shortSignature
         } else if (!isService && handlerDeclarations.isNotEmpty()) {
             // If there is no handler annotation but handler declarations were found
             noAnnotationMethods += handlerDeclarations

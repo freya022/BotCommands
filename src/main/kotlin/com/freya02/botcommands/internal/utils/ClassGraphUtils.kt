@@ -1,12 +1,13 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.core.utils.shortQualifiedName
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
-import kotlin.reflect.KClass
 
 internal val ClassInfo.simpleNestedName
     get() = name.dropWhile { !it.isUpperCase() }
+
+val ClassInfo.shortQualifiedName
+    get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
 
 internal val MethodInfo.shortSignatureNoSrc: String
     get() {
@@ -27,4 +28,5 @@ internal val MethodInfo.shortSignature: String
         return "$shortSignatureNoSrc: $returnType ($source)"
     }
 
-fun ClassInfo.toShortSignature(kClass: KClass<*>): String = "${kClass.shortQualifiedName}(${this.sourceFile}:0)"
+val ClassInfo.shortSignature: String
+    get() = "$shortQualifiedName($sourceFile:0)"
