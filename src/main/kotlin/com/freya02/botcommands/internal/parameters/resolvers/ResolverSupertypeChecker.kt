@@ -4,10 +4,10 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.api.core.utils.shortSignature
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ParameterResolver
 import com.freya02.botcommands.api.parameters.ParameterResolverFactory
-import com.freya02.botcommands.internal.utils.shortSignature
 import io.github.classgraph.ClassInfo
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf

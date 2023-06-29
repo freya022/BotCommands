@@ -1,15 +1,15 @@
-package com.freya02.botcommands.internal.utils
+package com.freya02.botcommands.api.core.utils
 
 import io.github.classgraph.ClassInfo
 import io.github.classgraph.MethodInfo
 
-internal val ClassInfo.simpleNestedName
+val ClassInfo.simpleNestedName
     get() = name.dropWhile { !it.isUpperCase() }
 
 val ClassInfo.shortQualifiedName
     get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
 
-internal val MethodInfo.shortSignatureNoSrc: String
+val MethodInfo.shortSignatureNoSrc: String
     get() {
         val declaringClassName = this.classInfo.simpleNestedName
         val methodName = this.name
@@ -19,8 +19,7 @@ internal val MethodInfo.shortSignatureNoSrc: String
             .joinToString { it.typeSignatureOrTypeDescriptor.toStringWithSimpleNames() }
         return "$declaringClassName.$methodName($parameters)"
     }
-
-internal val MethodInfo.shortSignature: String
+val MethodInfo.shortSignature: String
     get() {
         val returnType = this.typeSignatureOrTypeDescriptor.resultType.toStringWithSimpleNames()
         val sourceFile = classInfo.sourceFile ?: "<no-source>"
