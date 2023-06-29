@@ -13,15 +13,15 @@ interface IdentifiableComponent {
      */
     @JvmSynthetic
     suspend fun await(): GenericComponentInteractionCreateEvent
+}
 
-    /**
-     * Suspends until the component is used and all checks passed, and returns the event,
-     * or `null` if the timeout has been reached.
-     */
-    @JvmSynthetic
-    suspend fun awaitOrNull(): GenericComponentInteractionCreateEvent? = try {
-        await()
-    } catch (e: TimeoutCancellationException) {
-        null
-    }
+/**
+ * Suspends until the component is used and all checks passed, and returns the event,
+ * or `null` if the timeout has been reached.
+ */
+@JvmSynthetic
+suspend fun IdentifiableComponent.awaitOrNull(): GenericComponentInteractionCreateEvent? = try {
+    await()
+} catch (e: TimeoutCancellationException) {
+    null
 }
