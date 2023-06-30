@@ -1,6 +1,5 @@
 package io.github.freya022.bot.commands.slash
 
-import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.annotations.BotPermissions
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
@@ -11,8 +10,8 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
-import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.localization.Localization.Entry.entry
@@ -20,6 +19,9 @@ import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.bot.commands.FrontendChooser
+import io.github.freya022.bot.commands.SimpleFrontend
+import io.github.freya022.bot.resolvers.localize
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -87,7 +89,7 @@ class SlashBan(private val componentsService: Components) {
             .queue()
 
         val componentEvent: ButtonEvent = try {
-            componentGroup.await()
+            componentGroup.awaitAny()
         } catch (e: TimeoutCancellationException) {
             return event.hook.editOriginal(localizationContext.localize("outputs.timeout"))
                 .delay(5.seconds.toJavaDuration())
@@ -111,7 +113,7 @@ class SlashBan(private val componentsService: Components) {
                     "outputs.success",
                     entry("userMention", target.asMention),
                     entry("time", timeframe.time),
-                    entry("unit", timeframe.unit.name.lowercase().trimEnd('s')), //TODO localize unit
+                    entry("unit", timeframe.unit.localize(timeframe.time, localizationContext)),
                     entry("reason", reason)
                 )).setComponents().queue()
 
@@ -122,14 +124,8 @@ class SlashBan(private val componentsService: Components) {
     }
 }
 
-object DisableFrontend : ConditionalServiceChecker {
-    override fun checkServiceAvailability(context: BContext) = "This frontend was disabled"
-}
-
 @Command
-// Comment this and uncomment the condition for SlashBanSimplifiedFront if you want to switch front,
-// even though they produce the same command, minus the aggregated object
-@ConditionalService(DisableFrontend::class)
+@ConditionalService(FrontendChooser::class)
 class SlashBanDetailedFront {
     @AppDeclaration
     fun onDeclare(manager: GlobalApplicationCommandManager) {
@@ -165,7 +161,8 @@ class SlashBanDetailedFront {
 }
 
 @Command
-//@ConditionalService(DisableFrontend::class)
+@SimpleFrontend
+@ConditionalService(FrontendChooser::class)
 class SlashBanSimplifiedFront(private val banImpl: SlashBan) : ApplicationCommand() {
     @UserPermissions(Permission.BAN_MEMBERS)
     @BotPermissions(Permission.BAN_MEMBERS)
