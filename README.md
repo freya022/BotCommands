@@ -1,15 +1,15 @@
 <img align="right" src="assets/logo.svg" height="200" alt="BotCommands logo">
 
 [![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=2)](#getting-the-library)
-[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/DV8FromTheWorld/JDA/releases)
+[![](https://img.shields.io/badge/JDA%20Version-5.0.0--beta.8+-important)](https://github.com/jda-discord/JDA/releases)
 [![image](https://discord.com/api/guilds/848502702731165738/embed.png?style=shield)](https://discord.gg/frpCcQfvTz)
 [![image](https://img.shields.io/badge/Javadocs-Overview-blue)](https://freya022.github.io/BotCommands/)
 [![image](https://img.shields.io/badge/Wiki-Home-blue)](https://freya022.github.io/BotCommands-Wiki/)
 
 # BotCommands
-This framework simplifies the creation of Discord bots with the [JDA](https://github.com/DV8FromTheWorld/JDA) library.
+This framework simplifies the creation of Discord bots with the [JDA](https://github.com/jda-discord/JDA) library.
 
-*Note: there is a V3 update pre-release, if you want to try it out, checkout [this README](https://github.com/freya022/BotCommands/tree/3.0.0-dev#readme) and the [pre-releases](https://github.com/freya022/BotCommands/releases)*
+*Note: V3 pre-releases are out, if you want to try V3 out, checkout [this README](https://github.com/freya022/BotCommands/tree/3.0.0-dev#readme), the [examples](https://github.com/freya022/BotCommands/tree/3.0.0-dev/examples) and the [pre-releases](https://github.com/freya022/BotCommands/releases)*
 
 ## Features
 
@@ -45,7 +45,7 @@ This framework simplifies the creation of Discord bots with the [JDA](https://gi
 Note that text-based commands, slash commands and component handlers are running in separate threads from JDA as to not block the websocket, keep in mind that this does not allow you to have bad practises as described in [how to use RestAction(s)](https://jda.wiki/using-jda/using-restaction/) 
 
 ## Getting Started
-You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/DV8FromTheWorld/JDA) before you start using this library
+You are recommended to have some experience with Java, OOP in general and [JDA](https://github.com/jda-discord/JDA) before you start using this library
 
 ### Prerequisites
 * An [OpenJDK 17+](https://adoptium.net/temurin/releases/?version=17) installation
@@ -54,7 +54,7 @@ You are recommended to have some experience with Java, OOP in general and [JDA](
 [//]: # (* Enable preview features in your compiler with `--enable-preview`, [How I enable it]&#40;https://github.com/freya022/BotCommands/blob/c537adba0619a2d74767796b1aec60a9c8ee720b/pom.xml#L74-L81&#41;, [IntelliJ w/ Maven tutorial]&#40;https://www.baeldung.com/java-preview-features#intellij-idea&#41;, [Gradle tutorial]&#40;https://stackoverflow.com/questions/55433883/how-to-enable-java-12-preview-features-with-gradle&#41;)
 
 ## Getting the library
-[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
+[![](https://img.shields.io/maven-central/v/io.github.freya022/BotCommands?versionPrefix=2)](https://mvnrepository.com/artifact/io.github.freya022/BotCommands/latest)
 ### Maven
 ```xml
 <dependencies>
