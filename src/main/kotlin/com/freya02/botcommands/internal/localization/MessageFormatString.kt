@@ -2,8 +2,11 @@ package com.freya02.botcommands.internal.localization
 
 import java.text.MessageFormat
 import java.util.*
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class MessageFormatString(override val formatterName: String, formatter: String?, locale: Locale) : FormattableString {
+    private val lock = ReentrantLock()
     private val formatter: MessageFormat?
 
     init {
@@ -12,6 +15,6 @@ class MessageFormatString(override val formatterName: String, formatter: String?
 
     override fun format(obj: Any?): String {
         if (formatter == null) return obj.toString()
-        synchronized(formatter) { return formatter.format(arrayOf(obj)) }
+        lock.withLock { return formatter.format(arrayOf(obj)) }
     }
 }

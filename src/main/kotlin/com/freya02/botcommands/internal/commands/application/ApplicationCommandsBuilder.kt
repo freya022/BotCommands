@@ -39,8 +39,9 @@ internal class ApplicationCommandsBuilder(
 
     private val guildReadyMutex = Mutex()
     private val globalUpdateMutex = Mutex()
+    private val guildUpdateGlobalMutex: Mutex = Mutex()
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
-    private var init = false
+    private var isFirstReady = true
 
     init {
         val slashCommandAutoBuilder = serviceContainer.getService<SlashCommandAutoBuilder>()
@@ -77,16 +78,12 @@ internal class ApplicationCommandsBuilder(
 
     @BEventListener
     internal suspend fun onGuildReady(event: GuildReadyEvent) {
-        guildReadyMutex.withLock {
-            val isFirstRun = synchronized(this) {
-                if (init) return@synchronized false
-                init = true
-
-                true
-            }
-
-            if (isFirstRun) {
-                onFirstRun()
+        if (isFirstReady) {
+            guildReadyMutex.withLock {
+                if (isFirstReady) {
+                    isFirstReady = false
+                    onFirstRun()
+                }
             }
         }
 
@@ -142,7 +139,7 @@ internal class ApplicationCommandsBuilder(
             }
         }
 
-        synchronized(guildUpdateMutexMap) {
+        guildUpdateGlobalMutex.withLock {
             guildUpdateMutexMap.computeIfAbsent(guild.idLong) { Mutex() }
         }.withLock {
             val failedDeclarations: MutableList<CommandUpdateException> = arrayListOf()

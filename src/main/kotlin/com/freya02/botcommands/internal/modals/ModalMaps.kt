@@ -9,6 +9,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.pow
@@ -19,13 +21,16 @@ private val MIN_ID = 10.0.pow(floor(log10(MAX_ID.toDouble()))).toLong()
 
 @BService
 internal class ModalMaps(private val config: BConfig) {
+    private val modalLock = ReentrantLock()
+    private val inputLock = ReentrantLock()
+
     private val modalMap: MutableMap<String, ModalData> = hashMapOf()
 
     //Modals input IDs are temporarily stored here while it waits for its ModalBuilder owner to be built, and it's InputData to be associated with it
     private val inputMap: MutableMap<String, InputData> = hashMapOf()
 
     fun insertModal(partialModalData: PartialModalData, id: String): String {
-        synchronized(modalMap) {
+        modalLock.withLock {
             if (id == "0") { //If not a user supplied ID
                 return insertModal(partialModalData, nextModalId())
             }
@@ -34,7 +39,7 @@ internal class ModalMaps(private val config: BConfig) {
                 config.coroutineScopesConfig.cooldownScope.launch {
                     delay(timeoutInfo.unit.toMillis(timeoutInfo.timeout))
 
-                    synchronized(modalMap) {
+                    modalLock.withLock {
                         val data = modalMap.remove(id)
                         if (data != null) { //If the timeout was reached without the modal being used
                             timeoutInfo.onTimeout.run()
@@ -53,7 +58,7 @@ internal class ModalMaps(private val config: BConfig) {
     }
 
     fun insertInput(inputData: InputData, id: String): String {
-        synchronized(inputMap) {
+        inputLock.withLock {
             if (id == "0") {
                 return insertInput(inputData, nextInputId())
             }
@@ -75,25 +80,25 @@ internal class ModalMaps(private val config: BConfig) {
     }
 
     fun consumeModal(modalId: String): ModalData? {
-        synchronized(modalMap) {
+        modalLock.withLock {
             return modalMap.remove(modalId)?.also { it.cancelTimeout() }
         }
     }
 
     fun consumeInput(inputId: String): InputData? {
-        synchronized(inputMap) { return inputMap.remove(inputId) }
+        inputLock.withLock { return inputMap.remove(inputId) }
     }
 
     private fun nextModalId(): String {
         val random = ThreadLocalRandom.current()
-        synchronized(modalMap) {
+        modalLock.withLock {
             return generateId(random, modalMap)
         }
     }
 
     private fun nextInputId(): String {
         val random = ThreadLocalRandom.current()
-        synchronized(inputMap) {
+        inputLock.withLock {
             return generateId(random, inputMap)
         }
     }
