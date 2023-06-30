@@ -11,6 +11,8 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.VarArg
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import dev.minn.jda.ktx.messages.reply_
+import io.github.freya022.bot.commands.FrontendChooser
+import io.github.freya022.bot.commands.SimpleFrontend
 
 @BService
 class SlashChoose {
@@ -20,11 +22,7 @@ class SlashChoose {
 }
 
 @Command
-// Comment this and uncomment the condition for SlashChooseSimplifiedFront if you want to switch front,
-// even though they produce the same command, minus the aggregated object
-//@ConditionalService(DisableFrontend::class)
-//TODO keep those annotations enabled and make a switch in the checker once we are able to access the instantiated class
-// as to be able to switch between simplified and detailed versions across the whole bot
+@ConditionalService(FrontendChooser::class)
 class SlashChooseDetailedFront {
     @AppDeclaration
     fun onDeclare(manager: GlobalApplicationCommandManager) {
@@ -44,7 +42,8 @@ class SlashChooseDetailedFront {
 }
 
 @Command
-@ConditionalService(DisableFrontend::class)
+@SimpleFrontend
+@ConditionalService(FrontendChooser::class)
 class SlashChooseSimplifiedFront(private val slashChoose: SlashChoose) : ApplicationCommand() {
     @JDASlashCommand(name = "choose", description = "Randomly choose a value")
     fun onSlashBan(

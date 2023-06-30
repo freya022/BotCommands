@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 
 private val logger = KotlinLogging.logger { }
 
+// You can optionally have a name to differentiate between multiple instance of your services
 @BService(name = "myReadyListener")
 class ReadyListener {
     @BEventListener(priority = 1)

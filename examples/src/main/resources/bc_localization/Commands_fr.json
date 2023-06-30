@@ -13,7 +13,13 @@
       },
       "unit": {
         "name": "unité",
-        "description": "L'unité de la période de temps"
+        "description": "L'unité de la période de temps",
+        "choices": {
+          "seconds.name": "Secondes",
+          "minutes.name": "Minutes",
+          "hours.name": "Heures",
+          "days.name": "Jours"
+        }
       },
       "reason": {
         "name": "raison",
@@ -24,7 +30,7 @@
       "defaultReason": "Pas de raison",
       "confirmationMessage": "Voulez-vous vraiment bannir {userMention} ?",
       "timeout": "Timeout",
-      "success": "{userMention} a été banni, {time} {unit}{time, choice, 0#s|1#|1<s} de messages ont été supprimés, raison: '{reason}'",
+      "success": "{userMention} a été banni, {time} {unit} de messages ont été supprimés, raison: '{reason}'",
       "cancelled": "Le bannissement a été annulé"
     },
     "errors": {

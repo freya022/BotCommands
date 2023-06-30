@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 
 private val logger = KotlinLogging.logger { }
 
-@BService(name = "myReadyListener")
+@BService
 class ReadyListener {
     @BEventListener
     fun onReady(event: ReadyEvent) {
