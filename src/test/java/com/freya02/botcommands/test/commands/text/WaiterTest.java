@@ -12,8 +12,8 @@ public class WaiterTest extends TextCommand {
 	@JDATextCommand(
 			name = "waiter"
 	)
-	public void execute(CommandEvent event) {
-		EventWaiter.of(MessageReceivedEvent.class)
+	public void execute(CommandEvent event, EventWaiter eventWaiter) {
+		eventWaiter.of(MessageReceivedEvent.class)
 				.setOnComplete((f, e, t) -> System.out.println("Completed"))
 				.setOnTimeout(() -> System.err.println("Timeout"))
 				.setOnSuccess(e -> System.out.println("Success"))

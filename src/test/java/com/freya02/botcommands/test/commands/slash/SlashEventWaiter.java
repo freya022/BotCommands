@@ -10,10 +10,10 @@ public class SlashEventWaiter extends ApplicationCommand {
 	@JDASlashCommand(
 			name = "event_waiter"
 	)
-	public void onSlashEventWaiter(GuildSlashEvent event) {
+	public void onSlashEventWaiter(GuildSlashEvent event, EventWaiter eventWaiter) {
 		event.reply("Waiting for a message").setEphemeral(true).queue();
 
-		EventWaiter.of(MessageReceivedEvent.class)
+		eventWaiter.of(MessageReceivedEvent.class)
 				.setOnSuccess(e -> event.getHook().setEphemeral(true).sendMessage("Received !").queue())
 				.submit();
 	}

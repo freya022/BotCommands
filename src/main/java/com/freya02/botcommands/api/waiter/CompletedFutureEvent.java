@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.waiter;
 
-import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.concurrent.Future;
 
@@ -10,6 +10,6 @@ import java.util.concurrent.Future;
  *
  * @param <T> The JDA event waited for
  */
-public interface CompletedFutureEvent<T extends GenericEvent> {
+public interface CompletedFutureEvent<T extends Event> {
 	void accept(Future<T> future, T e, Throwable t);
 }
