@@ -1,99 +1,100 @@
-package com.freya02.botcommands.api.waiter;
+package com.freya02.botcommands.api.waiter
 
-import net.dv8tion.jda.api.events.Event;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.*;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import net.dv8tion.jda.api.events.Event
+import java.util.concurrent.CancellationException
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
+import java.util.function.Predicate
 
 /**
- * Builder for {@link EventWaiter}
+ * Builder for [EventWaiter]
  *
- * @param <T> Type of the JDA event to wait after
+ * @param T Type of the JDA event to wait after
  */
-public interface EventWaiterBuilder<T extends Event> {
+interface EventWaiterBuilder<T : Event> {
     /**
-     * Sets the timeout for this event waiter; this means the action will no longer be usable after the time has elapsed
+     * Sets the timeout for this event waiter;
+     * the action will no longer be usable after the time has elapsed.
      *
      * @param timeout     Amount of time before the timeout occurs
      * @param timeoutUnit Unit of time for the timeout (minutes / seconds / millis...)
      *
+     * @throws IllegalArgumentException If the timeout is not positive
+     *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> setTimeout(long timeout, @NotNull TimeUnit timeoutUnit);
+    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit): EventWaiterBuilder<T>
 
     /**
-     * Adds a precondition to this event waiter; this means your actions won't be executed unless all your preconditions are met<br>
-     * <b>You can have multiple preconditions</b>
+     * Adds a precondition to this event waiter;
+     * the action won't be executed unless all your preconditions are met.
      *
      * @param precondition The precondition to check on each event
      *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> addPrecondition(@NotNull Predicate<T> precondition);
+    fun addPrecondition(precondition: Predicate<T>): EventWaiterBuilder<T>
 
     /**
      * Sets the consumer called after the event waiter has all its preconditions met
-     * and the task has not timeout nor been canceled
+     * and the task has not timeout nor been canceled.
      *
      * @param onSuccess The success consumer to call
      *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> setOnSuccess(@NotNull Consumer<T> onSuccess);
+    fun setOnSuccess(onSuccess: Consumer<T>): EventWaiterBuilder<T>
 
     /**
-     * Sets the consumer called when the event waiter has expired due to a timeout
+     * Sets the consumer called when the event waiter has expired due to a timeout.
      *
      * @param onTimeout The timeout consumer to call
      *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> setOnTimeout(@NotNull Runnable onTimeout);
+    fun setOnTimeout(onTimeout: Runnable): EventWaiterBuilder<T>
 
     /**
-     * Sets the consumer called after the event waiter has been canceled
+     * Sets the consumer called after the event waiter has been canceled.
      *
      * @param onCancelled The cancellation consumer to call
      *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> setOnCancelled(@NotNull Runnable onCancelled);
+    fun setOnCancelled(onCancelled: Runnable): EventWaiterBuilder<T>
 
     /**
      * Sets the consumer called after the event waiter has "completed,"
-     * i.e., it has either been successfully run, or been canceled, or has been timeout
+     * i.e., it has either been successfully run, or been canceled, or has been timeout.
      *
      * @param onComplete The consumer to call when the waiter is completed
      *
      * @return This builder for chaining convenience
      */
-    @NotNull
-    EventWaiterBuilder<T> setOnComplete(@NotNull CompletedFutureEvent<T> onComplete);
+    fun setOnComplete(onComplete: CompletedFutureEvent<T>): EventWaiterBuilder<T>
 
     /**
-     * Submits the event waiter to the event waiting queue and returns the corresponding future, <b>This operation is not blocking</b>
+     * Returns a [CompletableFuture] which is completed when the event waiter receives an event of the specified type,
+     * and all [preconditions][addPrecondition] have passed.
      *
-     * @return The {@link Future} of this event waiter, can be canceled
+     * @return The [CompletableFuture] of this event waiter, can be canceled
      */
-    @NotNull
-    CompletableFuture<T> submit();
+    fun submit(): CompletableFuture<T>
 
     /**
-     * Submits the event waiter to the event waiting queue, waits for the event to arrive and returns the event, <b>This operation is blocking</b>
+     * Blocks until the event waiter receives an event of the specified type,
+     * and all [preconditions][addPrecondition] have passed.
      *
-     * @return The event specified in {@link EventWaiter#of(Class)}
+     * **Note**: I recommend you use [submit] with [CompletableFuture.whenComplete]
      *
-     * @throws CancellationException If your code has canceled the event waiter
+     * @return The event specified in [EventWaiter.of]
+     *
+     * @throws CancellationException If you [canceled][CompletableFuture.cancel] the event waiter
      * @throws ExecutionException    If an exception occurred in the event waiter or in a callback
      * @throws InterruptedException  If this thread gets interrupted while waiting for the event
      */
-    @NotNull
-    T complete() throws CancellationException, ExecutionException, InterruptedException;
+    @Throws(CancellationException::class, ExecutionException::class, InterruptedException::class)
+    fun complete(): T
 }
