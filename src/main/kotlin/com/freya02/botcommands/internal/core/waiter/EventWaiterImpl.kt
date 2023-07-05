@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.core.waiter
+package com.freya02.botcommands.internal.core.waiter
 
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -12,7 +12,6 @@ import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.utils.EventUtils
 import com.freya02.botcommands.internal.utils.Utils
 import com.freya02.botcommands.internal.utils.throwInternal
-import com.freya02.botcommands.internal.waiter.WaitingEvent
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.Event
