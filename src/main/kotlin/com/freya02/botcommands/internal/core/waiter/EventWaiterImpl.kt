@@ -5,8 +5,8 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.api.waiter.EventWaiter
-import com.freya02.botcommands.api.waiter.EventWaiterBuilder
+import com.freya02.botcommands.api.core.waiter.EventWaiter
+import com.freya02.botcommands.api.core.waiter.EventWaiterBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.utils.EventUtils

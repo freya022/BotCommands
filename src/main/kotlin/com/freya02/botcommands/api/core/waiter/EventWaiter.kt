@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.waiter
+package com.freya02.botcommands.api.core.waiter
 
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import net.dv8tion.jda.api.events.Event

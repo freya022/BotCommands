@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.core.waiter
 
-import com.freya02.botcommands.api.waiter.CompletedFutureEvent
+import com.freya02.botcommands.api.core.waiter.CompletedFutureEvent
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit

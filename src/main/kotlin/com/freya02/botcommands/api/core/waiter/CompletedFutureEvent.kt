@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.waiter
+package com.freya02.botcommands.api.core.waiter
 
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.Future
