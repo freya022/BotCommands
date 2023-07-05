@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.waiter
 
+import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CompletableFuture
@@ -98,3 +99,5 @@ interface EventWaiterBuilder<T : Event> {
     @Throws(CancellationException::class, ExecutionException::class, InterruptedException::class)
     fun complete(): T
 }
+
+suspend fun <T : Event> EventWaiterBuilder<T>.await(): T = submit().await()

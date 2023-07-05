@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.waiter
 
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
-import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.events.Event
 
 /**
@@ -48,5 +47,3 @@ interface EventWaiter {
      */
     fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T>
 }
-
-suspend fun <T : Event> EventWaiterBuilder<T>.await(): T = submit().await()
