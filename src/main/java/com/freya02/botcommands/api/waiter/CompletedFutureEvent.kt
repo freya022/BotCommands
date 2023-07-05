@@ -1,15 +1,14 @@
-package com.freya02.botcommands.api.waiter;
+package com.freya02.botcommands.api.waiter
 
-import net.dv8tion.jda.api.events.Event;
-
-import java.util.concurrent.Future;
+import net.dv8tion.jda.api.events.Event
+import java.util.concurrent.Future
 
 /**
- * Just a TriConsumer for {@link EventWaiterBuilder#setOnComplete(CompletedFutureEvent)}, accepts a {@link Future} and the provided event or an exception.
- * <br><b>You will either receive the event object or a Throwable</b>
+ * Just a TriConsumer for [EventWaiterBuilder.setOnComplete],
+ * provides a [Future] and **either** the event **or** an exception.
  *
- * @param <T> The JDA event waited for
+ * @param T The JDA event waited for
  */
-public interface CompletedFutureEvent<T extends Event> {
-	void accept(Future<T> future, T e, Throwable t);
+interface CompletedFutureEvent<T : Event> {
+    fun accept(future: Future<T>, e: T?, t: Throwable?)
 }
