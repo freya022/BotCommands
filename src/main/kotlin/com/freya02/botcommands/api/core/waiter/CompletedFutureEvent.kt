@@ -9,6 +9,6 @@ import java.util.concurrent.Future
  *
  * @param T The JDA event waited for
  */
-interface CompletedFutureEvent<T : Event> {
+fun interface CompletedFutureEvent<T : Event> {
     fun accept(future: Future<T>, e: T?, t: Throwable?)
 }
