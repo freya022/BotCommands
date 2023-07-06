@@ -33,6 +33,8 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private val exceptionHandler = ExceptionHandler(context, logger)
 
     private val waitingMap: MutableMap<Class<out Event>, MutableList<WaitingEvent<out Event>>> = HashMap()
+    private val lock = ReentrantLock()
+
     private var commandThreadNumber = 0
     private val waiterCompleteService: ExecutorService = Utils.createCommandPool { r: Runnable ->
         Thread(r, "Event waiter thread #${commandThreadNumber++}").apply {
@@ -62,21 +64,21 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             future.orTimeout(waitingEvent.timeout, waitingEvent.timeoutUnit)
         }
 
-        val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { CopyOnWriteArrayList() }
+        val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() }
         future.whenCompleteAsync({ t: T?, throwable: Throwable? ->
             try {
                 waitingEvent.onComplete?.accept(future, t, throwable)
                 if (throwable is TimeoutException) {
                     logger.trace { "Timeout for ${waitingEvent.eventType.simpleNestedName} waiter" }
                     //Not removed automatically by Iterator#remove before this method is called
-                    waitingEvents.remove(waitingEvent)
+                    lock.withLock { waitingEvents.remove(waitingEvent) }
                     waitingEvent.onTimeout?.run()
                 } else if (t != null) {
                     waitingEvent.onSuccess?.accept(t)
                 } else if (future.isCancelled) {
                     logger.trace { "Cancelled ${waitingEvent.eventType.simpleNestedName} waiter" }
                     //Not removed automatically by Iterator#remove before this method is called
-                    waitingEvents.remove(waitingEvent)
+                    lock.withLock { waitingEvents.remove(waitingEvent) }
                     waitingEvent.onCancelled?.run()
                 } else {
                     throwInternal("Unexpected branch with stack trace: ${throwable?.stackTraceToString()}")
@@ -86,7 +88,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             }
         }, waiterCompleteService)
 
-        waitingEvents.add(waitingEvent)
+        lock.withLock { waitingEvents.add(waitingEvent) }
 
         return future
     }
@@ -95,36 +97,40 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     @BEventListener // Just listen to any event, I just need any JDA instance
     internal fun onEvent(event: Event, eventDispatcher: EventDispatcher) {
         if (!::jda.isInitialized) {
-            logger.trace("Got JDA instance")
+            lock.withLock {
+                if (!::jda.isInitialized) {
+                    logger.trace("Got JDA instance")
 
-            this.jda = event.jda
-            this.intents = event.jda.gatewayIntents
+                    this.jda = event.jda
+                    this.intents = event.jda.gatewayIntents
+                }
+            }
         }
 
         val waitingEvents: MutableList<WaitingEvent<out Event>> = waitingMap[event.javaClass] ?: return
 
-        val iterator = waitingEvents.iterator()
-        eventLoop@ while (iterator.hasNext()) {
-            try {
-                val waitingEvent = iterator.next()
-                for ((index, precondition) in waitingEvent.preconditions.withIndex()) {
-                    precondition as Predicate<Event>
-                    if (!precondition.test(event)) {
-                        logger.trace { "Failed ${event.javaClass.simpleNestedName} precondition #$index $precondition with $event" }
-                        continue@eventLoop
+        lock.withLock {
+            val iterator = waitingEvents.iterator()
+            eventLoop@ while (iterator.hasNext()) {
+                try {
+                    val waitingEvent = iterator.next()
+                    for ((index, precondition) in waitingEvent.preconditions.withIndex()) {
+                        precondition as Predicate<Event>
+                        if (!precondition.test(event)) {
+                            logger.trace { "Failed ${event.javaClass.simpleNestedName} precondition #$index $precondition with $event" }
+                            continue@eventLoop
+                        }
                     }
-                }
 
-                val completableFuture = waitingEvent.completableFuture as CompletableFuture<Event>
-                if (completableFuture.complete(event)) {
-                    // Thread safe as underlying list is a CopyOnWriteArrayList,
-                    // existing iterators won't be affected
-                    iterator.remove()
-                } else {
-                    throwInternal("Completable future was already completed")
+                    val completableFuture = waitingEvent.completableFuture as CompletableFuture<Event>
+                    if (completableFuture.complete(event)) {
+                        iterator.remove()
+                    } else {
+                        throwInternal("Completable future was already completed")
+                    }
+                } catch (e: Exception) {
+                    exceptionHandler.handleException(event, e, "EventWaiter handler for $event")
                 }
-            } catch (e: Exception) {
-                exceptionHandler.handleException(event, e, "EventWaiter handler for $event")
             }
         }
     }
