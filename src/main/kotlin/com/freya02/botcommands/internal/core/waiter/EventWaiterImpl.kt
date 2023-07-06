@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.core.waiter
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.core.waiter.EventWaiter
@@ -18,14 +19,16 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeoutException
+import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Predicate
+import kotlin.concurrent.withLock
 
 private val logger = KotlinLogging.logger<EventWaiter>()
 
 @BService
+@ServiceType(EventWaiter::class)
 internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private val exceptionHandler = ExceptionHandler(context, logger)
 
