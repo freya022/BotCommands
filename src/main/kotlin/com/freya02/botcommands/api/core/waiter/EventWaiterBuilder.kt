@@ -2,10 +2,7 @@ package com.freya02.botcommands.api.core.waiter
 
 import dev.minn.jda.ktx.coroutines.await
 import net.dv8tion.jda.api.events.Event
-import java.util.concurrent.CancellationException
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Predicate
 
@@ -100,4 +97,12 @@ interface EventWaiterBuilder<T : Event> {
     fun complete(): T
 }
 
+/**
+ * Suspends until the event waiter receives an event of the specified type,
+ * and all [preconditions][EventWaiterBuilder.addPrecondition] have passed.
+ *
+ * @return The event specified in [EventWaiter.of]
+ *
+ * @throws TimeoutException If you the [timeout][EventWaiterBuilder.setTimeout] was reached
+ */
 suspend fun <T : Event> EventWaiterBuilder<T>.await(): T = submit().await()
