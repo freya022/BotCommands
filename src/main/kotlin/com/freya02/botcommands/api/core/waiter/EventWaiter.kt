@@ -4,7 +4,8 @@ import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import net.dv8tion.jda.api.events.Event
 
 /**
- * An event waiter - if you need to wait for a specific event to occur while not blocking threads or having listeners everywhere.
+ * Lets you run code when receiving a specific event, while not blocking threads nor having listeners everywhere,
+ * and being able to capture existing variables.
  *
  * You can set multiple preconditions, timeouts and actions to run when the event gets received / has an exception, etc...
  *
@@ -38,7 +39,7 @@ import net.dv8tion.jda.api.events.Event
 @InjectedService
 interface EventWaiter {
     /**
-     * Creates a new event waiter builder, waiting for the specified event to occur.
+     * Creates a new event waiter builder with the specified event type being awaited.
      *
      * @param eventType The JDA event to wait after
      * @param T         Type of the JDA event

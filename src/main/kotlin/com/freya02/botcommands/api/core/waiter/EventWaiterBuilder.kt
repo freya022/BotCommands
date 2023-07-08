@@ -9,7 +9,7 @@ import java.util.function.Predicate
 /**
  * Builder for [EventWaiter]
  *
- * @param T Type of the JDA event to wait after
+ * @param T Type of the JDA event being awaited
  */
 interface EventWaiterBuilder<T : Event> {
     /**
