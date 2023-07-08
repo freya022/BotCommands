@@ -52,6 +52,12 @@ public class DoubleResolver
 		return "1234.42";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "3.14159";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

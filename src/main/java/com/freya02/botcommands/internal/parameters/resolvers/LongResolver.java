@@ -52,6 +52,12 @@ public class LongResolver
 		return "1234";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return isID ? "222046562543468545" : "42";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

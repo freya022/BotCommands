@@ -32,6 +32,10 @@ class UserResolver : ParameterResolver<UserResolver, User>(User::class),
     override val testExample: String = "<@1234>"
     override val optionType: OptionType = OptionType.USER
 
+    override fun getHelpExample(isID: Boolean): String {
+        return "user-id/mention"
+    }
+
     override suspend fun resolveSuspend(
         context: BContext,
         variation: TextCommandVariation,

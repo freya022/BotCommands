@@ -56,6 +56,12 @@ public class StringResolver
 		return "foobar";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "foo bar";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

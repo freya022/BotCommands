@@ -104,5 +104,11 @@ public class CommandPatternTest {
         public @NotNull String getTestExample() {
             return "jda";
         }
+
+        @NotNull
+        @Override
+        public String getHelpExample(boolean isID) {
+            return "jda";
+        }
     }
 }

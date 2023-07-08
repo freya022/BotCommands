@@ -52,6 +52,12 @@ public class IntegerResolver
 		return "1234";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "42";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

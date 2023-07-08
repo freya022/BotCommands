@@ -32,6 +32,10 @@ class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
     override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     override val testExample: String = "<@1234>"
 
+    override fun getHelpExample(isID: Boolean): String {
+        return "member-id/mention"
+    }
+
     override val optionType: OptionType = OptionType.USER
 
     override suspend fun resolveSuspend(

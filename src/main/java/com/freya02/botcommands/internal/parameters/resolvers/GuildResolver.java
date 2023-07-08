@@ -50,6 +50,12 @@ public class GuildResolver
 		return "1234";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "guild-id";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

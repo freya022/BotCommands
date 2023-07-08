@@ -48,6 +48,12 @@ public class BooleanResolver
 		return "true";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "true";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

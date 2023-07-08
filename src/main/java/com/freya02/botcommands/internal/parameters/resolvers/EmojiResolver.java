@@ -53,6 +53,12 @@ public class EmojiResolver
 		return "<:name:1234>";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return ":joy:";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {

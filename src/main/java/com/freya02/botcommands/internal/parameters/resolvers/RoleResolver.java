@@ -54,6 +54,12 @@ public class RoleResolver
 		return "<@&1234>";
 	}
 
+	@NotNull
+	@Override
+	public String getHelpExample(boolean isID) {
+		return "role-id/mention";
+	}
+
 	@Override
 	@NotNull
 	public OptionType getOptionType() {
