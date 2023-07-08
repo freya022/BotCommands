@@ -6,7 +6,7 @@ import mu.KLogger
 import net.dv8tion.jda.api.events.Event
 
 internal class ExceptionHandler(private val context: BContext, private val logger: KLogger) {
-    fun handleException(event: Event, e: Throwable, locationDescription: String) {
+    fun handleException(event: Event?, e: Throwable, locationDescription: String) {
         val unreflectedException = e.unwrap()
         val handler = context.globalExceptionHandler
         if (handler != null) {
