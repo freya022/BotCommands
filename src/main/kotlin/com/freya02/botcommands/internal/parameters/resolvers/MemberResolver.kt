@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.core.utils.onErrorResponse
 import com.freya02.botcommands.api.core.utils.onErrorResponseException
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
+import kotlin.reflect.KParameter
 
 @Resolver
 class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
@@ -31,6 +33,10 @@ class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
 
     override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     override val testExample: String = "<@1234>"
+
+    override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
+        return event.member.asMention
+    }
 
     override val optionType: OptionType = OptionType.USER
 

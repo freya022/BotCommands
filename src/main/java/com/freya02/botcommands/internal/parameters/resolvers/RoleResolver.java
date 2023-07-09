@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.core.service.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
@@ -9,6 +10,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -52,6 +54,15 @@ public class RoleResolver
 	@NotNull
 	public String getTestExample() {
 		return "<@&1234>";
+	}
+
+	@NotNull
+	@Override
+	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+		return event.getMember().getRoles().stream().findAny()
+				.or(() -> event.getGuild().getRoleCache().streamUnordered().findAny())
+				.map(Role::getAsMention)
+				.orElse("role-id/mention");
 	}
 
 	@Override

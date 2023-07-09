@@ -4,7 +4,8 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
-interface UserContextParameterResolver<T : ParameterResolver<T, R>, R> {
+interface UserContextParameterResolver<T, R> where T : ParameterResolver<T, R>,
+                                                   T : UserContextParameterResolver<T, R> {
     /**
      * Returns a resolved object from this user context interaction
      *

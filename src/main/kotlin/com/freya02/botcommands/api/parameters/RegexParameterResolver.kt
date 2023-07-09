@@ -1,21 +1,25 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.prefixed.annotations.ID
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
+import kotlin.reflect.KParameter
 
 /**
  * Interface which indicates this class can resolve parameters for regex commands
  */
-interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
+interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
+                                             T : RegexParameterResolver<T, R> {
     /**
      * Returns a resolved object from this text command interaction
      *
      * @param context   The [BContext] of this bot
      * @param variation The text command variation of the command being executed
-     * @param event     The event of this received message
+     * @param event     The event of the received message
      * @param args      The text arguments of this command, extracted with [pattern]
      *
      * @return The resolved option mapping
@@ -66,8 +70,16 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
     val testExample: String
 
     val preferredPattern: Pattern
-        get() = when (this) {
-            is QuotableRegexParameterResolver -> this.quotedPattern
-            else -> pattern
-        }
+        get() = pattern
+
+    /**
+     * Returns a help example for this parameter.
+     *
+     * **Tip:** You may use the event as a way to get sample data (such as getting the member, channel, roles, etc...).
+     *
+     * @param parameter the [parameter][KParameter] of the command being shown in the help content
+     * @param event the event of the command that triggered help content to be displayed
+     * @param isID whether this option was [marked as being an ID][ID]
+     */
+    fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String
 }

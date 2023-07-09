@@ -1,12 +1,14 @@
 package com.freya02.botcommands.othertests;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern.ParameterPattern;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.parameters.resolvers.*;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -102,6 +104,12 @@ public class CommandPatternTest {
 
         @Override
         public @NotNull String getTestExample() {
+            return "jda";
+        }
+
+        @NotNull
+        @Override
+        public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
             return "jda";
         }
     }

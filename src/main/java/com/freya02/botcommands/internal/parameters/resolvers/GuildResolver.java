@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.core.service.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
@@ -9,6 +10,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -48,6 +50,12 @@ public class GuildResolver
 	@NotNull
 	public String getTestExample() {
 		return "1234";
+	}
+
+	@NotNull
+	@Override
+	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+		return event.getGuild().getId();
 	}
 
 	@Override

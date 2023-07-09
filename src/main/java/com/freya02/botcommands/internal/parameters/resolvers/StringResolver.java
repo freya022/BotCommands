@@ -1,12 +1,14 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.core.service.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.*;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
 import com.freya02.botcommands.internal.modals.ModalHandlerInfo;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -22,8 +24,7 @@ import java.util.regex.Pattern;
 @Resolver
 public class StringResolver
 		extends ParameterResolver<StringResolver, String>
-		implements RegexParameterResolver<StringResolver, String>,
-		           QuotableRegexParameterResolver,
+		implements QuotableRegexParameterResolver<StringResolver, String>,
 		           SlashParameterResolver<StringResolver, String>,
 		           ComponentParameterResolver<StringResolver, String>,
 		           ModalParameterResolver<StringResolver, String> {
@@ -54,6 +55,12 @@ public class StringResolver
 	@NotNull
 	public String getTestExample() {
 		return "foobar";
+	}
+
+	@NotNull
+	@Override
+	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+		return "foo bar";
 	}
 
 	@Override
