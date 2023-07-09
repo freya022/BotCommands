@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -71,7 +72,7 @@ public abstract class AbstractChannelResolver<T extends GuildChannel>
 
 	@NotNull
 	@Override
-	public String getHelpExample(boolean isID) {
+	public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
 		return "channel-id/mention";
 	}
 

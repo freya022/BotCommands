@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
+import kotlin.reflect.KParameter
 
 @Resolver
 class UserResolver : ParameterResolver<UserResolver, User>(User::class),
@@ -32,7 +33,7 @@ class UserResolver : ParameterResolver<UserResolver, User>(User::class),
     override val testExample: String = "<@1234>"
     override val optionType: OptionType = OptionType.USER
 
-    override fun getHelpExample(isID: Boolean): String {
+    override fun getHelpExample(parameter: KParameter, isID: Boolean): String {
         return "user-id/mention"
     }
 

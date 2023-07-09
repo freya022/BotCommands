@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -52,7 +53,7 @@ public class GuildResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(boolean isID) {
+	public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
 		return "guild-id";
 	}
 

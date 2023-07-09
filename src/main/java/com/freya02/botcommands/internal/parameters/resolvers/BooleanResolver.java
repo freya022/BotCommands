@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.components.ComponentDescriptor;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload;
@@ -50,7 +51,7 @@ public class BooleanResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(boolean isID) {
+	public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
 		return "true";
 	}
 

@@ -5,6 +5,7 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.regex.Pattern
+import kotlin.reflect.KParameter
 
 /**
  * Interface which indicates this class can resolve parameters for regex commands
@@ -71,5 +72,5 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
             else -> pattern
         }
 
-    fun getHelpExample(isID: Boolean): String
+    fun getHelpExample(parameter: KParameter, isID: Boolean): String
 }

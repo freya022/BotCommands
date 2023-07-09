@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.commands.prefixed.CommandPattern;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern.ParameterPattern;
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation;
 import com.freya02.botcommands.internal.parameters.resolvers.*;
+import kotlin.reflect.KParameter;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,7 +108,7 @@ public class CommandPatternTest {
 
         @NotNull
         @Override
-        public String getHelpExample(boolean isID) {
+        public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
             return "jda";
         }
     }

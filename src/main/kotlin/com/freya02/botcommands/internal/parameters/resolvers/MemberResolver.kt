@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.regex.Pattern
+import kotlin.reflect.KParameter
 
 @Resolver
 class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
@@ -32,7 +33,7 @@ class MemberResolver : ParameterResolver<MemberResolver, Member>(Member::class),
     override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     override val testExample: String = "<@1234>"
 
-    override fun getHelpExample(isID: Boolean): String {
+    override fun getHelpExample(parameter: KParameter, isID: Boolean): String {
         return "member-id/mention"
     }
 
