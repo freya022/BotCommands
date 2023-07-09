@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.prefixed.annotations.ID
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -71,5 +72,14 @@ interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
     val preferredPattern: Pattern
         get() = pattern
 
+    /**
+     * Returns a help example for this parameter.
+     *
+     * **Tip:** You may use the event as a way to get sample data (such as getting the member, channel, roles, etc...).
+     *
+     * @param parameter the [parameter][KParameter] of the command being shown in the help content
+     * @param event the event of the command that triggered help content to be displayed
+     * @param isID whether this option was [marked as being an ID][ID]
+     */
     fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String
 }
