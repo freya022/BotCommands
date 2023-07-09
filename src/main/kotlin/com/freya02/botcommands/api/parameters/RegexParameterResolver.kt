@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -70,5 +71,5 @@ interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
     val preferredPattern: Pattern
         get() = pattern
 
-    fun getHelpExample(parameter: KParameter, isID: Boolean): String
+    fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String
 }

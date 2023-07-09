@@ -42,7 +42,7 @@ object TextUtils {
                     val boxedType = commandOption.type.jvmErasure
 
                     val argName = getArgName(needsQuote, commandOption, boxedType)
-                    val argExample = getArgExample(needsQuote, commandOption)
+                    val argExample = getArgExample(needsQuote, commandOption, event)
 
                     val isOptional = commandOption.isOptionalOrNullable
                     syntax.append(if (isOptional) '[' else '`').append(argName).append(if (isOptional) ']' else '`').append(' ')
@@ -77,8 +77,9 @@ object TextUtils {
         return builder
     }
 
-    private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption): String {
-        val example = commandOption.helpExample ?: commandOption.resolver.getHelpExample(commandOption.kParameter, commandOption.isId)
+    private fun getArgExample(needsQuote: Boolean, commandOption: TextCommandOption, event: BaseCommandEvent): String {
+        val example = commandOption.helpExample
+            ?: commandOption.resolver.getHelpExample(commandOption.kParameter, event, commandOption.isId)
 
         return when {
             needsQuote && commandOption.resolver is QuotableRegexParameterResolver -> "\"$example\""

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.parameters.resolvers;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.core.service.annotations.Resolver;
 import com.freya02.botcommands.api.parameters.ComponentParameterResolver;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
@@ -53,8 +54,8 @@ public class GuildResolver
 
 	@NotNull
 	@Override
-	public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
-		return "guild-id";
+	public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
+		return event.getGuild().getId();
 	}
 
 	@Override

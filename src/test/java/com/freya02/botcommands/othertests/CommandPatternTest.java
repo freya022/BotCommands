@@ -1,6 +1,7 @@
 package com.freya02.botcommands.othertests;
 
 import com.freya02.botcommands.api.BContext;
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.api.parameters.RegexParameterResolver;
 import com.freya02.botcommands.internal.commands.prefixed.CommandPattern;
@@ -108,7 +109,7 @@ public class CommandPatternTest {
 
         @NotNull
         @Override
-        public String getHelpExample(@NotNull KParameter parameter, boolean isID) {
+        public String getHelpExample(@NotNull KParameter parameter, @NotNull BaseCommandEvent event, boolean isID) {
             return "jda";
         }
     }
