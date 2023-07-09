@@ -4,7 +4,8 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.internal.commands.application.context.message.MessageCommandInfo
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent
 
-interface MessageContextParameterResolver<T : ParameterResolver<T, R>, R> {
+interface MessageContextParameterResolver<T, R> where T : ParameterResolver<T, R>,
+                                                      T : MessageContextParameterResolver<T, R> {
     /**
      * Returns a resolved object from this message context interaction
      *

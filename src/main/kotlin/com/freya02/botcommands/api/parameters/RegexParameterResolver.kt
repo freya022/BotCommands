@@ -10,7 +10,8 @@ import kotlin.reflect.KParameter
 /**
  * Interface which indicates this class can resolve parameters for regex commands
  */
-interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
+interface RegexParameterResolver<T, R> where T : ParameterResolver<T, R>,
+                                             T : RegexParameterResolver<T, R> {
     /**
      * Returns a resolved object from this text command interaction
      *
@@ -67,10 +68,7 @@ interface RegexParameterResolver<T : ParameterResolver<T, R>, R> {
     val testExample: String
 
     val preferredPattern: Pattern
-        get() = when (this) {
-            is QuotableRegexParameterResolver -> this.quotedPattern
-            else -> pattern
-        }
+        get() = pattern
 
     fun getHelpExample(parameter: KParameter, isID: Boolean): String
 }
