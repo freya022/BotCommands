@@ -107,7 +107,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
             }
         }
 
-        if (!checkTestCommand(manager, func, metadata.annotation.scope, context)) {
+        if (checkTestCommand(manager, func, metadata.annotation.scope, context) == TestState.EXCLUDE) {
             return
         }
 
@@ -116,7 +116,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func, annotation)
 
-            defaultLocked = annotation.defaultLocked
+            isDefaultLocked = annotation.defaultLocked
 
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }
@@ -134,7 +134,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
             }
         }
 
-        if (!checkTestCommand(manager, func, metadata.annotation.scope, context)) {
+        if (checkTestCommand(manager, func, metadata.annotation.scope, context) == TestState.EXCLUDE) {
             return
         }
 
@@ -143,7 +143,7 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
             fillCommandBuilder(func)
             fillApplicationCommandBuilder(func, annotation)
 
-            defaultLocked = annotation.defaultLocked
+            isDefaultLocked = annotation.defaultLocked
 
             processOptions((manager as? GuildApplicationCommandManager)?.guild, func, instance, commandId)
         }

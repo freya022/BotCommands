@@ -9,7 +9,7 @@ class TopLevelSlashCommandInfo internal constructor(
     context: BContextImpl,
     builder: TopLevelSlashCommandBuilder
 ) : SlashCommandInfo(context, builder),
-    ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(context, builder) {
+    ITopLevelSlashCommandInfo by TopLevelSlashCommandInfoMixin(builder) {
 
     override val topLevelInstance: TopLevelSlashCommandInfo = this
     override val parentInstance = null

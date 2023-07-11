@@ -4,26 +4,18 @@ import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
-import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.utils.throwMixin
 import com.freya02.botcommands.internal.utils.throwUser
 
 open class TopLevelApplicationCommandInfoMixin(
-    context: BContextImpl,
     builder: ITopLevelApplicationCommandBuilder
 ) : ITopLevelApplicationCommandInfo {
-    final override val scope: CommandScope
-    final override val isDefaultLocked: Boolean
-    final override val isGuildOnly: Boolean
-    final override val isTestOnly: Boolean
+    final override val scope: CommandScope = builder.scope
+    final override val isDefaultLocked: Boolean = builder.isDefaultLocked
+    final override val isGuildOnly: Boolean = scope.isGuildOnly
 
     init {
         builder as? ApplicationCommandBuilder<*> ?: throwMixin<ApplicationCommandBuilder<*>>()
-
-        scope = builder.scope
-        isDefaultLocked = builder.isDefaultLocked
-        isGuildOnly = context.applicationConfig.forceGuildCommands || scope.isGuildOnly
-        isTestOnly = builder.isDefaultLocked
 
         if (builder.cooldownStrategy.scope != CooldownScope.USER && !scope.isGuildOnly) {
             throwUser("Application command cannot have a ${builder.cooldownStrategy.scope} cooldown scope with a global slash command")

@@ -55,16 +55,25 @@ internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance
     return true
 }
 
-internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): Boolean {
+enum class TestState {
+    INCLUDE,
+    EXCLUDE,
+    NO_ANNOTATION
+}
+
+internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: KFunction<*>, scope: CommandScope, context: BContextImpl): TestState {
     if (func.hasAnnotation<Test>()) {
         if (scope != CommandScope.GUILD) throwUser(func, "Test commands must have their scope set to GUILD")
         if (manager !is GuildApplicationCommandManager) throwInternal("GUILD scoped command was not registered with a guild command manager")
 
         //Returns whether the command can be registered
-        return manager.guild.idLong in AnnotationUtils.getEffectiveTestGuildIds(context, func)
+        return when (manager.guild.idLong) {
+            in AnnotationUtils.getEffectiveTestGuildIds(context, func) -> TestState.INCLUDE
+            else -> TestState.EXCLUDE
+        }
     }
 
-    return true
+    return TestState.NO_ANNOTATION
 }
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {

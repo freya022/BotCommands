@@ -30,6 +30,8 @@ import kotlin.reflect.jvm.jvmErasure
 
 @BService
 internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
+    private val forceGuildCommands = context.applicationConfig.forceGuildCommands
+
     private val functions: List<SlashFunctionMetadata> =
         context.instantiableServiceAnnotationsMap
             .getInstantiableFunctionsWithAnnotation<Command, JDASlashCommand>()
@@ -57,7 +59,11 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions {
                 val annotation = it.annotation
-                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                if (forceGuildCommands || !manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+
+                if (checkTestCommand(manager, it.func, annotation.scope, context) == TestState.EXCLUDE) {
+                    return
+                }
 
                 processCommand(manager, it, subcommands, subcommandGroups)
             }
@@ -72,7 +78,8 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
             .distinctBy { it.path.name } //Subcommands are handled by processCommand, only retain one metadata per top-level name
             .forEachWithDelayedExceptions { metadata ->
                 val annotation = metadata.annotation
-                if (!manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
+                //Declare as a guild command: remove invalid scopes when commands aren't forced as guild scoped
+                if (!forceGuildCommands && !manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
                 val instance = metadata.instance
                 val path = metadata.path
@@ -84,7 +91,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
                     }
                 }
 
-                if (!checkTestCommand(manager, metadata.func, annotation.scope, context)) {
+                if (checkTestCommand(manager, metadata.func, annotation.scope, context) == TestState.EXCLUDE) {
                     return
                 }
 
@@ -124,7 +131,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         val subcommandGroupsMetadata = subcommandGroups[name]
         val isTopLevel = subcommandsMetadata == null && subcommandGroupsMetadata == null
         manager.slashCommand(name, annotation.scope, if (isTopLevel) metadata.func.castFunction() else null) {
-            defaultLocked = annotation.defaultLocked
+            isDefaultLocked = annotation.defaultLocked
             description = getEffectiveDescription(annotation)
 
             subcommandsMetadata?.let { metadataList ->

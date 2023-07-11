@@ -25,7 +25,7 @@ class MessageCommandInfo internal constructor(
     private val context: BContextImpl,
     builder: MessageCommandBuilder
 ) : ApplicationCommandInfo(builder),
-    ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(context, builder) {
+    ITopLevelMessageCommandInfo by TopLevelMessageCommandInfoMixin(builder) {
 
     override val eventFunction = builder.toMemberEventFunction<GlobalMessageEvent, _>(context)
 

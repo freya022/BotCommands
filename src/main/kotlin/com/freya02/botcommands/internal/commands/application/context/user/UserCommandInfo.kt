@@ -25,7 +25,7 @@ class UserCommandInfo internal constructor(
     private val context: BContextImpl,
     builder: UserCommandBuilder
 ) : ApplicationCommandInfo(builder),
-    ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(context, builder) {
+    ITopLevelUserCommandInfo by TopLevelUserCommandInfoMixin(builder) {
 
     override val eventFunction = builder.toMemberEventFunction<GlobalUserEvent, _>(context)
 
