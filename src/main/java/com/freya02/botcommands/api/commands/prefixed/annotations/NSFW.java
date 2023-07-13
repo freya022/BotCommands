@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application.annotations;
+package com.freya02.botcommands.api.commands.prefixed.annotations;
 
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.api.core.SettingsProvider;

@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
-import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.builder.NSFWStrategyBuilder
+import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.NSFWStrategy
 import net.dv8tion.jda.api.EmbedBuilder
