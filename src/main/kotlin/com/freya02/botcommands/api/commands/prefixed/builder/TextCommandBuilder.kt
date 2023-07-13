@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
+import com.freya02.botcommands.api.commands.application.annotations.NSFW
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.builder.NSFWStrategyBuilder
 import com.freya02.botcommands.internal.BContextImpl
@@ -51,6 +52,13 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
         variations += TextCommandVariationBuilder(context, function).apply(block)
     }
 
+    /**
+     * Configures the NSFW strategy for this command
+     *
+     * **Annotation equivalent:** [NSFW]
+     *
+     * @see NSFW
+     */
     fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {
         nsfwStrategy = NSFWStrategyBuilder().apply(block).build()
     }

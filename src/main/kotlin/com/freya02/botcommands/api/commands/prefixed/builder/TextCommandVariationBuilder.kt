@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed.builder
 
+import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.commands.builder.IBuilderFunctionHolder
 import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
 import com.freya02.botcommands.api.core.utils.simpleNestedName
@@ -55,6 +56,9 @@ class TextCommandVariationBuilder internal constructor(
         inlineClassOption(declaredName, optionName, T::class.java, block)
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     fun inlineClassOptionVararg(declaredName: String, clazz: Class<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         val aggregatorConstructor = clazz.kotlin.primaryConstructor
             ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
@@ -65,11 +69,17 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     @JvmSynthetic
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         if (_optionAggregateBuilders.hasVararg())

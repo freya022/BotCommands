@@ -11,13 +11,15 @@ import java.lang.annotation.Target;
 /**
  * Allows you to set a command ID on your application command methods.
  *
+ * <p><b>Note:</b>This only works on annotated commands.
+ *
  * @see ApplicationCommand#getGuildsForCommandId(String, CommandPath)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface CommandId {
 	/**
-	 * @return The ID of this command method, must be unique
+	 * @return The <b>unique</b> ID of this command.
 	 */
 	String value();
 }

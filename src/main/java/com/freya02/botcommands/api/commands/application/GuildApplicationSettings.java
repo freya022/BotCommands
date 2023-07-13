@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.annotations.CommandId;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import net.dv8tion.jda.api.entities.Guild;
@@ -35,6 +36,8 @@ public interface GuildApplicationSettings {
 	 * @return The list of choices for this slash command's options
 	 *
 	 * @see SlashParameterResolver#getPredefinedChoices(Guild)
+	 *
+	 * @see SlashCommandOptionBuilder#setChoices(List) DSL equivalent
 	 */
 	@NotNull
 	default List<Command.Choice> getOptionChoices(@Nullable Guild guild, @NotNull CommandPath commandPath, @NotNull String optionName) {
@@ -54,7 +57,9 @@ public interface GuildApplicationSettings {
 	 * @param commandPath The {@link CommandPath} of the specified command ID
 	 *
 	 * @return A collection of Guild IDs where the specified command is allowed to be pushed in
-	 * 		<br>This returns <code>null</code> by default
+	 * 	   <br>This returns <code>null</code> by default
+	 *
+	 * @see CommandId
 	 */
 	@Nullable
 	default Collection<Long> getGuildsForCommandId(@NotNull String commandId, @NotNull CommandPath commandPath) {

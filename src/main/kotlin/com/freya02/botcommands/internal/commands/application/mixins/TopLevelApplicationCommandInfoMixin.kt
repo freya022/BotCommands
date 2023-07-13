@@ -21,18 +21,15 @@ open class TopLevelApplicationCommandInfoMixin(
             throwUser("Application command cannot have a ${builder.cooldownStrategy.scope} cooldown scope with a global slash command")
         }
 
-        if (isTestOnly && scope != CommandScope.GUILD) {
-            throwUser("Application command annotated with @Test must have the GUILD scope")
-        }
-
-        //Administrators manage who can use what, bot doesn't need to check for user mistakes
-        // Why would you ask for a permission if the administrators want a less-powerful user to be able to use it ?
+        //Administrators manage who can use what; the bot doesn't need to check for user mistakes
+        // Why would you ask for a permission
+        // if the administrators want a less-powerful user to be able to use it?
         if (isDefaultLocked && builder.userPermissions.isNotEmpty()) {
             throwUser(builder.function, "Cannot put user permissions on default locked commands")
         }
 
         if (!isGuildOnly && (builder.userPermissions.isNotEmpty() || builder.botPermissions.isNotEmpty())) {
-            throwUser("Application command with permissions should be guild-only, as permissions are not applied in DMs")
+            throwUser(builder.function, "Application command with permissions should be guild-only, as permissions are not applicable in DMs")
         }
     }
 }

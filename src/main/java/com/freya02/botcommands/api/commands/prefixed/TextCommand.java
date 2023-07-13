@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -12,8 +13,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * <p>Extend this class on classes that contains any command / subcommand</p>
- * <p>You also need to use the {@linkplain JDATextCommand @JDATextCommand} annotation on methods in order to register a command</p>
+ * Base class for <b>annotated</b> text commands.
+ *
+ * <p>You are not required to use this if you use the {@link TextDeclaration DSL declaration mode}
+ *
+ * @see JDATextCommand
  */
 public abstract class TextCommand {
 	/**

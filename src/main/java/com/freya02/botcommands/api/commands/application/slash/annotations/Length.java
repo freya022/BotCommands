@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations;
 
+import com.freya02.botcommands.api.commands.application.LengthRange;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.lang.annotation.ElementType;
@@ -9,8 +11,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows setting minimum and maximum string length on the specified {@link AppOption}.
- * <br><b>This is only for string types !</b>
+ * Sets the minimum and maximum string length on the specified {@link AppOption}.
+ * <br><b>Note:</b> this is only for string types!
+ *
+ * @see SlashCommandOptionBuilder#setLengthRange(LengthRange) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)

@@ -1,6 +1,9 @@
 package com.freya02.botcommands.api.commands.application.builder
 
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
 import kotlin.reflect.KFunction
@@ -11,8 +14,16 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
 ) : ExecutableCommandBuilder<T, Any>(name, function) {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
-    var defaultLocked: Boolean = DEFAULT_DEFAULT_LOCKED
-
+    /**
+     * **Annotation equivalents:**
+     * - [For slash commands][JDASlashCommand.nsfw]
+     * - [For user context commands][JDAUserCommand.nsfw]
+     * - [For message context commands][JDAMessageCommand.nsfw]
+     *
+     * @see JDASlashCommand.nsfw
+     * @see JDAUserCommand.nsfw
+     * @see JDAMessageCommand.nsfw
+     */
     var nsfw: Boolean = false
 
     /**
@@ -31,9 +42,5 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
         selfAggregate(declaredName) {
             generatedOption(declaredName, generatedValueSupplier)
         }
-    }
-
-    companion object {
-        const val DEFAULT_DEFAULT_LOCKED = false
     }
 }

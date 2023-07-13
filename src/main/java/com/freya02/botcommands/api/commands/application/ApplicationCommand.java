@@ -1,18 +1,17 @@
 package com.freya02.botcommands.api.commands.application;
 
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 
 /**
- * Base class for application commands (slash / context commands).
- * <br>Every application command has to inherit this class.
- * <p>
- * <b>Note: </b>You are able to get a BContext by putting it in your constructor, this works with <a href="https://freya022.github.io/BotCommands-Wiki/writing-extensions/Constructor-injection/" target="_blank">constructor injection</a>.
+ * Base class for <b>annotated</b> application commands (slash / context commands).
+ *
+ * <p>You are not required to use this if you use the {@link AppDeclaration DSL declaration mode}
  *
  * @see JDASlashCommand
  * @see JDAMessageCommand
  * @see JDAUserCommand
- * @see <a href="https://freya022.github.io/BotCommands-Wiki/writing-extensions/Constructor-injection/" target="_blank">Wiki on Constructor injection</a>
  */
 public abstract class ApplicationCommand implements GuildApplicationSettings {}

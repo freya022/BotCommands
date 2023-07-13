@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.CommandScope
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelSlashCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.TopLevelSlashCommandBuilderMixin
@@ -33,6 +34,11 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val allowSubcommandGroups: Boolean
         get() = optionAggregateBuilders.isEmpty()
 
+    /**
+     * **Annotation equivalent:** [JDASlashCommand.subcommand]
+     *
+     * @see JDASlashCommand.subcommand
+     */
     @JvmOverloads
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
         if (isFunctionSet()) throwUser("Cannot add subcommands as this already contains a function")
@@ -41,6 +47,11 @@ class TopLevelSlashCommandBuilder internal constructor(
         SlashSubcommandBuilder(context, name, function, this, this).apply(block).also(subcommands::putNewCommand)
     }
 
+    /**
+     * **Annotation equivalent:** [JDASlashCommand.group]
+     *
+     * @see JDASlashCommand.group
+     */
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {
         if (isFunctionSet()) throwUser("Cannot add subcommand groups as this already contains a function")
         if (!allowSubcommandGroups) throwUser("Cannot add subcommand groups as this already contains options")

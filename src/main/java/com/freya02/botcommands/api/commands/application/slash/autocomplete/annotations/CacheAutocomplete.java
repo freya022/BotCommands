@@ -2,7 +2,10 @@ package com.freya02.botcommands.api.commands.application.slash.autocomplete.anno
 
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
 import com.freya02.botcommands.api.core.config.BConfigBuilder;
+import kotlin.jvm.functions.Function1;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.Channel;
@@ -11,22 +14,28 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
- * Annotation to cache autocomplete handlers results
- * <br>By default this will cache results by key
- * <br>By default, that key is solely the input of the focused option
- * <br>However you can use composite keys if your input depends on more than the focused option, see {@link #compositeKeys()}
+ * Enables autocomplete caching.
+ *
+ * <br>By default this will cache results by key, which is the input of the focused option.
+ * <br>However you can use composite keys if you want to cache based off multiple option values,
+ * see {@link #compositeKeys()}
  *
  * @see AppOption
  * @see AutocompleteHandler
+ *
+ * @see AutocompleteInfoBuilder#cache(AutocompleteCacheMode, Function1) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface CacheAutocomplete {
 	/**
-	 * Sets the {@link AutocompleteCacheMode autocomplete cache mode}
-	 * <br>You can mark app options your autocomplete depends on as composite keys, this would be useful to make an autocomplete result depend on multiple options, instead of only the focused one
+	 * Sets the {@link AutocompleteCacheMode autocomplete cache mode}.
+	 * <p>Tip: You can mark app options your autocomplete depends on as composite keys,
+	 * this would be useful to make an autocomplete result depend on multiple options,
+	 * instead of only the focused one.
 	 *
 	 * @return Mode of the autocomplete cache
 	 */
@@ -36,17 +45,21 @@ public @interface CacheAutocomplete {
 	 * Whether the cache should be used even if {@link BConfigBuilder#setDisableAutocompleteCache(boolean) autocomplete cache is disabled}.
 	 * <br>This could be useful if your autocomplete is heavy even in a development environment.
 	 *
-	 * @return {@code} true if the autocomplete results should be cached anyway
+	 * @return {@code true} if the autocomplete results should be cached anyway
 	 *
 	 * @see BConfigBuilder#setDisableAutocompleteCache(boolean)
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setForceCache(boolean) DSL equivalent
 	 */
 	boolean forceCache() default false;
 
 	/**
-	 * Sets the cache size for this autocomplete cache, <b>in kilobytes (KB)</b>
+	 * Sets the cache size for this autocomplete cache, <b>in kilobytes (KB)</b>.
 	 * <br>This will work only on {@link AutocompleteCacheMode#CONSTANT_BY_KEY}
 	 *
 	 * @return The cache size for this autocomplete mode
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setCacheSize(long) DSL equivalent
 	 */
 	long cacheSize() default 2048;
 
@@ -60,27 +73,35 @@ public @interface CacheAutocomplete {
 	 * <b>Note:</b> The focused option will always be in the composite key.
 	 * <br><b>Note 2:</b> Parameter names also work, but will not work in case the parameter is a vararg;
 	 * in which case you must use the option names.
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setCompositeKeys(List) DSL equivalent
 	 */
 	String[] compositeKeys() default {};
 
 	/**
-	 * Defines whether this autocomplete will give different results based on which {@link Guild} this interaction is executing on
+	 * Defines whether this autocomplete will give different results based on which {@link Guild} this interaction is executing on.
 	 *
 	 * @return <code>true</code> if the autocomplete depends on the {@link Guild} this interaction is execution on
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setGuildLocal(boolean) DSL equivalent
 	 */
 	boolean guildLocal() default false;
 
 	/**
-	 * Defines whether this autocomplete will give different results based on which {@link User} is executing this interaction
+	 * Defines whether this autocomplete will give different results based on which {@link User} is executing this interaction.
 	 *
 	 * @return <code>true</code> if the autocomplete depends on which {@link User} is executing this interaction
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setUserLocal(boolean) DSL equivalent
 	 */
 	boolean userLocal() default false;
 
 	/**
-	 * Defines whether this autocomplete will give different results based on which {@link Channel} this interaction is executing on
+	 * Defines whether this autocomplete will give different results based on which {@link Channel} this interaction is executing on.
 	 *
 	 * @return <code>true</code> if the autocomplete depends on the {@link Channel} this interaction is execution on
+	 *
+	 * @see AutocompleteCacheInfoBuilder#setChannelLocal(boolean) DSL equivalent
 	 */
 	boolean channelLocal() default false;
 }

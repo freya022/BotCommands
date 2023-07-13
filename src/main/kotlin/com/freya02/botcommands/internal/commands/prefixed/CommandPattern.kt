@@ -85,6 +85,6 @@ internal object CommandPattern {
                 val position = positions[i]
                 append(pattern.toString(position))
             }
-        }.let { it.toRegex() }
+        }.toRegex()
     }
 }

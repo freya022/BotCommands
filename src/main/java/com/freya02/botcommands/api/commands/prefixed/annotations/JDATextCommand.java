@@ -4,13 +4,16 @@ import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
+import com.freya02.botcommands.api.commands.prefixed.TextCommandManager;
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.api.core.config.BConfigBuilder;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
 import com.freya02.botcommands.api.parameters.ParameterResolver;
 import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
+import kotlin.jvm.functions.Function1;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -23,12 +26,11 @@ import java.lang.annotation.Target;
  * <p>
  * <b>Requirements:</b>
  * <ul>
+ *     <li>The declaring class must be annotated with {@link Command}</li>
  *     <li>The method must be in the {@link BConfigBuilder#addSearchPath(String) search path}</li>
  *     <li>First parameter must be {@link BaseCommandEvent}, or, {@link CommandEvent} only for fallback commands</li>
  * </ul>
  * <p>Input options needs to be annotated with {@link TextOption @TextOption}, see supported types at {@link ParameterResolver}
- *
- * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
  * @see Command
  * @see TextOption
@@ -38,6 +40,9 @@ import java.lang.annotation.Target;
  * @see UserPermissions
  * @see Cooldown
  * @see Aggregate
+ *
+ * @see AppDeclaration Declaring text commands using the DSL
+ * @see TextCommandManager#textCommand(String, Function1) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

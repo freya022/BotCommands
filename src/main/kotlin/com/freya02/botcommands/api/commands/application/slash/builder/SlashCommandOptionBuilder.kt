@@ -1,10 +1,17 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GuildApplicationSettings
 import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
+import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
+import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
+import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange
+import com.freya02.botcommands.api.commands.application.slash.annotations.Length
+import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.parameters.SlashParameterResolver
@@ -22,34 +29,78 @@ class SlashCommandOptionBuilder(
     optionParameter: OptionParameter,
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {
+    /**
+     * **Annotation equivalent:** [AppOption.description]
+     *
+     * @see AppOption.usePredefinedChoices
+     */
     var description: String = "No description"
 
     /**
      * Required for [SlashParameterResolver.getPredefinedChoices] to be used.
      *
      * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
+     *
+     * **Annotation equivalent:** [AppOption.usePredefinedChoices]
+     *
+     * @see AppOption.usePredefinedChoices
      */
     var usePredefinedChoices: Boolean = false
+
+    /**
+     * **Equivalent for annotated commands:** [ApplicationCommand.getOptionChoices]
+     *
+     * @see ApplicationCommand.getOptionChoices
+     */
     var choices: List<Choice>? = null
 
+    /**
+     * **Annotation equivalents:**
+     * - [DoubleRange]
+     * - [LongRange]
+     *
+     * @see DoubleRange
+     * @see LongRange
+     */
     var valueRange: ValueRange? = null
+
+    /**
+     * **Annotation equivalent:** [Length]
+     *
+     * @see Length
+     */
     var lengthRange: LengthRange? = null
+
+    /**
+     * **Annotation equivalent:** [ChannelTypes]
+     *
+     * @see ChannelTypes
+     */
     var channelTypes: EnumSet<ChannelType>? = null
 
-    var autocompleteInfo: AutocompleteInfo? = null
+    internal var autocompleteInfo: AutocompleteInfo? = null
         private set
 
     /**
-     * Name must be unique
+     * Creates an autocomplete handler
      *
-     * Recommended naming: `ClassSimpleName: AutocompletedField`
-     *
+     * The name of the handler must be unique,
+     * I recommend naming them like: `YourClassSimpleName: AutocompletedField`<br>
      * Example: `SlashTag: tagName`
+     *
+     * **Annotation equivalent:** [AppOption.autocomplete]
+     *
+     * @see AppOption.autocomplete
      */
     fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
         autocompleteInfo = AutocompleteInfoBuilder(context, name, function).apply(block).build()
     }
 
+    /**
+     * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name]
+     *
+     * @see AutocompleteHandler
+     */
     fun autocompleteReference(name: String) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwUser("Unknown autocomplete handler: $name")
     }

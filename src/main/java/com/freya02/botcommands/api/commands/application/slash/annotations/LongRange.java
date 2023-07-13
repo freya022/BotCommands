@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations;
 
+import com.freya02.botcommands.api.commands.application.ValueRange;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +10,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Allows setting minimum and maximum values on the specified {@link AppOption}.
- * <br><b>This is only for integer types !</b>
+ * Sets the minimum and maximum values on the specified {@link AppOption}.
+ * <br><b>Note:</b> this is only for integer types!
+ *
+ * @see SlashCommandOptionBuilder#setValueRange(ValueRange) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})

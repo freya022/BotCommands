@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
@@ -17,6 +19,11 @@ abstract class SlashCommandBuilder internal constructor(
     name: String,
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: fakeSlashFunction) {
+    /**
+     * **Annotation equivalent:** [JDASlashCommand.description]
+     *
+     * @see JDASlashCommand.description
+     */
     var description: String = DEFAULT_DESCRIPTION
 
     protected abstract val allowOptions: Boolean
@@ -52,6 +59,9 @@ abstract class SlashCommandBuilder internal constructor(
         inlineClassOption(declaredName, optionName, T::class.java, block)
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     fun inlineClassOptionVararg(declaredName: String, clazz: Class<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         val aggregatorConstructor = clazz.kotlin.primaryConstructor
             ?: throwUser("Found no public constructor for class ${clazz.simpleNestedName}")
@@ -62,11 +72,17 @@ abstract class SlashCommandBuilder internal constructor(
         }
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     @JvmSynthetic
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
     }
 
+    /**
+     * **Annotation equivalent:** [VarArgs]
+     */
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         //Same as in TextCommandVariationBuilder#optionVararg

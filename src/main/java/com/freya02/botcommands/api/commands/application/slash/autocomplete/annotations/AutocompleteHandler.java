@@ -1,11 +1,17 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations;
 
+import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import com.freya02.botcommands.api.core.annotations.Handler;
 import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
+import kotlin.jvm.functions.Function1;
 import kotlin.reflect.KClass;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 
 import java.lang.annotation.ElementType;
@@ -15,50 +21,46 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Annotation to mark methods as being autocomplete functions for {@link AppOption slash command options}.
+ * Uses the method as an autocomplete function for {@link AppOption slash command options}.
  *
- * <br>Requirements:
+ * <p>Requirements:
  * <ul>
  *     <li>The method must be public</li>
  *     <li>The method must be non-static</li>
  *     <li>The first parameter must be {@link CommandAutoCompleteInteractionEvent}</li>
  * </ul>
  *
- * The annotated method returns a {@link List} of things
- * <br>These things can be, and are mapped as follows:
+ * The annotated method returns a {@link List} of the following types:
  * <ul>
  *     <li>String, Long, Double -> Choice(String, String), uses fuzzy matching to give the best choices first</li>
  *     <li>Choice -> keep the same choice, same order as provided</li>
- *     <li>Object -> Transformer -> Choice, same order as provided</li>
+ *     <li>T (the type of your choice) -> Transformer -> Choice, same order as provided
+ *         <br>i.e. this means that an {@link AutocompleteTransformer} will be used to transform the items of your list, while preserving the order</li>
  * </ul>
- * <b>Note that the first choice is always what the user typed</b>
  *
  * <p>
  *
  * You can add more List element types with {@link BApplicationConfigBuilder#registerAutocompleteTransformer(KClass)}
  *
  * <h2>State aware autocomplete</h2>
- * You can also use "state aware autocomplete", this means you can retrieve parameters the user has already entered and use it to make your autocomplete better
+ * You can also use state-aware autocomplete,
+ * as you can retrieve parameters the user has <b>already</b> entered.
  *
  * <br>The requirements are as follows:
  * <ul>
- *     <li>The parameters must be annotated with {@link AppOption} if they are on the original slash commands too</li>
  *     <li>The parameters must be named the same as in the original slash command</li>
  *     <li>The parameters of the same name must have the same type as the original slash command</li>
  * </ul>
  *
- * However:
- * <ul>
- *     <li>The parameters can be in any order</li>
- *     <li>You are free to put as many or less parameters as the original slash commands</li>
- *     <li>You can also use custom parameters, like getting a JDA instance, these do not have to be on the original slash commands</li>
- * </ul>
+ * You are free to add custom options, or omit parameters.
  *
- * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
+ * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler} or be in an existing {@link Command} class.
  *
  * @see AppOption
  * @see JDASlashCommand
  * @see CacheAutocomplete
+ *
+ * @see SlashCommandOptionBuilder#autocomplete(String, KFunction, Function1) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
@@ -76,7 +78,10 @@ public @interface AutocompleteHandler {
 	 * <br><b>This is only usable on collection return types of String, Double and Long</b>
 	 *
 	 * @return Mode of the autocomplete
+	 *
 	 * @see AutocompleteMode
+	 *
+	 * @see AutocompleteInfoBuilder#setMode(AutocompleteMode) DSL equivalent
 	 */
 	AutocompleteMode mode() default AutocompleteMode.FUZZY;
 
@@ -86,6 +91,8 @@ public @interface AutocompleteHandler {
 	 * <br><b>This being <code>false</code> does not mean that the bot-provided choices are forced upon the user, autocomplete is never forced, unlike choices</b>
 	 *
 	 * @return <code>true</code> if the user's input should be shown, <code>false</code> if not
+	 *
+	 * @see AutocompleteInfoBuilder#setShowUserInput(boolean) DSL equivalent
 	 */
 	boolean showUserInput() default true;
 }

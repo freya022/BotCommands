@@ -5,9 +5,13 @@ import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.application.GuildApplicationSettings;
 import com.freya02.botcommands.api.commands.application.slash.annotations.*;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
 import com.freya02.botcommands.internal.annotations.DiscordNamePattern;
+import kotlin.jvm.functions.Function1;
+import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -22,9 +26,12 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used to specify an application command parameter is supplied from Discord.
- * <br>This also can set name and description of {@linkplain JDASlashCommand slash commands} parameters.
+ * <br>This also can set name and description of {@link JDASlashCommand slash commands} parameters.
+ *
  * <p>
- * {@linkplain #name()} is optional if the parameter name is available (add -parameters to your java compiler)
+ * {@link #name()} is optional if the parameter name is available (add {@code -parameters} to your java compiler)
+ *
+ * @see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">Wiki about inferred option names</a>
  *
  * @see Optional @Optional
  * @see Nullable @Nullable (same as @Optional but better)
@@ -34,16 +41,21 @@ import java.lang.annotation.Target;
  * @see ChannelTypes @ChannelTypes
  * @see AutocompleteHandler @AutocompleteHandler
  * @see VarArgs @VarArgs
+ *
+ * @see SlashCommandBuilder#option(String, String, Function1) DSL equivalent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
 public @interface AppOption { //TODO separate this into specialised options, why use AppOption for things that don't support descriptions / autocomplete ?
 	/**
-	 * Name of the option, must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
+	 * Name of the option.
+	 * <br>Must follow the Discord specifications,
+	 * see {@link OptionData#OptionData(OptionType, String, String)} for details.
 	 *
 	 * <p>
-	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped.
-	 * <br>This is optional if the parameter name is found, see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
+	 * This can be localized, see {@link LocalizationFunction} on how options are mapped.
+	 * <br>This is optional if the parameter name is found,
+	 * see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
 	 *
 	 * @return Name of the option
 	 */
@@ -51,7 +63,8 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	String name() default "";
 
 	/**
-	 * Description of the option, must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
+	 * Description of the option.
+	 * <br>Must follow the Discord specifications, see {@link OptionData#OptionData(OptionType, String, String)} for details.
 	 *
 	 * <p>
 	 * If this description is omitted, a default localization is
@@ -60,12 +73,14 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
 	 *
 	 * <p>
-	 * This can be a localization property, see {@link LocalizationFunction} on how options are mapped, example: <code>ban.options.user.description</code>.
+	 * This can be localized, see {@link LocalizationFunction} on how options are mapped, example: <code>ban.options.user.description</code>.
 	 * <br>This is optional if the parameter is not a slash command parameter.
 	 *
 	 * @return Description of the option
+	 *
+	 * @see SlashCommandOptionBuilder#setDescription(String) DSL equivalent
 	 */
-	String description() default "";
+	String description() default ""; //TODO reverse mapping
 
 	/**
 	 * Enables using choices from {@link SlashParameterResolver#getPredefinedChoices(Guild)}.
@@ -73,11 +88,17 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 * <p><b>Note:</b> Predefined choices can still be overridden by {@link GuildApplicationSettings#getOptionChoices(Guild, CommandPath, String)}.
 	 *
 	 * @return {@code true} to enable using choices from {@link SlashParameterResolver#getPredefinedChoices(Guild)}
+	 *
+	 * @see SlashCommandOptionBuilder#setUsePredefinedChoices(boolean) DSL equivalent
 	 */
 	boolean usePredefinedChoices() default false;
 
 	/**
-	 * Name of the autocomplete handler, must match a method annotated with {@link AutocompleteHandler} with the same name in it
+	 * Name of the autocomplete handler.
+	 * <br>Must match a method annotated with {@link AutocompleteHandler} with the same name in it
+	 *
+	 * @see SlashCommandOptionBuilder#autocompleteReference(String) DSL equivalent
+	 * @see SlashCommandOptionBuilder#autocomplete(String, KFunction, Function1) Declaring an autocomplete handler using the DSL
 	 */
 	String autocomplete() default "";
 }

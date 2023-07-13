@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.builder
 
 import com.freya02.botcommands.api.commands.CommandPath
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandDSL
@@ -26,7 +27,11 @@ class SlashSubcommandGroupBuilder(private val context: BContextImpl, override va
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Text command name")
     }
 
-    @JvmSynthetic
+    /**
+     * **Annotation equivalent:** [JDASlashCommand.subcommand]
+     *
+     * @see JDASlashCommand.subcommand
+     */
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {
         SlashSubcommandBuilder(context, name, function, topLevelBuilder, this).apply(block).also(subcommands::putNewCommand)
     }
