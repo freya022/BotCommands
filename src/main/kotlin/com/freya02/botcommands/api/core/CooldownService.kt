@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.core
+package com.freya02.botcommands.api.core
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
@@ -14,8 +14,13 @@ import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Service storing cooldowns of all commands.
+ *
+ * You may retrieve the active cooldown for a command, but you may not set a cooldown.
+ */
 @BService
-internal class CooldownService(private val context: BContextImpl) {
+class CooldownService internal constructor(private val context: BContextImpl) {
     @JvmRecord
     private data class CooldownKey(private val commandPath: CommandPath, private val placeId: Long?, private val userId: Long)
 
@@ -23,14 +28,22 @@ internal class CooldownService(private val context: BContextImpl) {
     private val cooldowns =
         TCollections.synchronizedMap(TObjectLongHashMap<CooldownKey>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, 0))
 
-    fun applyCooldown(cooldownable: Cooldownable, event: MessageReceivedEvent) =
+    @JvmSynthetic
+    internal fun applyCooldown(cooldownable: Cooldownable, event: MessageReceivedEvent) =
         applyCooldown(cooldownable, event.toCooldownKey(cooldownable))
 
-    fun applyCooldown(cooldownable: Cooldownable, event: GenericCommandInteractionEvent) =
+    @JvmSynthetic
+    internal fun applyCooldown(cooldownable: Cooldownable, event: GenericCommandInteractionEvent) =
         applyCooldown(cooldownable, event.toCooldownKey(cooldownable))
 
+    /**
+     * Gets the amount of time (in milliseconds) before the cooldown expires.
+     */
     fun getCooldown(cooldownable: Cooldownable, event: MessageReceivedEvent) = cooldowns[event.toCooldownKey(cooldownable)] - System.currentTimeMillis()
 
+    /**
+     * Gets the amount of time (in milliseconds) before the cooldown expires.
+     */
     fun getCooldown(cooldownable: Cooldownable, event: GenericCommandInteractionEvent) = cooldowns[event.toCooldownKey(cooldownable)] - System.currentTimeMillis()
 
     private fun applyCooldown(cooldownable: Cooldownable, cooldownKey: CooldownKey) {

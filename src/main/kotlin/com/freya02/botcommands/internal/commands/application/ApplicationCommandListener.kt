@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.commands.application
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
+import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.getMissingPermissions
@@ -11,7 +12,6 @@ import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
-import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch

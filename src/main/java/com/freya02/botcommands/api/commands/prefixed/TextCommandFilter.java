@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
+import com.freya02.botcommands.api.core.CooldownService;
 import com.freya02.botcommands.api.core.config.BTextConfigBuilder;
 
 import java.util.function.Predicate;
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
  * @see Predicate
  * @see BTextConfigBuilder#getTextFilters()
  * @see #isAccepted(TextFilteringData)
+ * @see CooldownService
  */
 public interface TextCommandFilter {
 	/**

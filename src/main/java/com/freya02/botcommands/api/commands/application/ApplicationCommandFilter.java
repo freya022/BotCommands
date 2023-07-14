@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.commands.application;
 
+import com.freya02.botcommands.api.core.CooldownService;
 import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
 
 import java.util.function.Predicate;
@@ -10,6 +11,7 @@ import java.util.function.Predicate;
  * @see Predicate
  * @see BApplicationConfigBuilder#getApplicationFilters()
  * @see #isAccepted(ApplicationFilteringData)
+ * @see CooldownService
  */
 public interface ApplicationCommandFilter {
 	/**

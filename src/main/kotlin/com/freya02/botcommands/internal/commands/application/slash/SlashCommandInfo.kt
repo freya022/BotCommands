@@ -3,12 +3,12 @@ package com.freya02.botcommands.internal.commands.application.slash
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
-import com.freya02.botcommands.internal.core.CooldownService
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.core.reflection.checkEventScope
