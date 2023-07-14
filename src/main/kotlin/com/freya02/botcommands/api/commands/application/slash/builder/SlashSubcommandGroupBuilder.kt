@@ -14,7 +14,7 @@ import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
 @CommandDSL
-class SlashSubcommandGroupBuilder(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
+class SlashSubcommandGroupBuilder internal constructor(private val context: BContextImpl, override val name: String, private val topLevelBuilder: TopLevelSlashCommandBuilder) : INamedCommand {
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
 

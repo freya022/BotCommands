@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
-class SlashCommandOptionAggregateBuilder(
+class SlashCommandOptionAggregateBuilder internal constructor(
     private val context: BContextImpl,
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>

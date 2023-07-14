@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.BCInfo
-import com.freya02.botcommands.api.core.exceptions.ServiceException
+import com.freya02.botcommands.internal.core.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import net.dv8tion.jda.api.JDAInfo
 import java.lang.reflect.InvocationTargetException

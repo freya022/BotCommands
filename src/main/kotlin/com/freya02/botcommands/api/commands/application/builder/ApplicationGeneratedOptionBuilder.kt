@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.commands.GeneratedOption
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
-class ApplicationGeneratedOptionBuilder(
+class ApplicationGeneratedOptionBuilder internal constructor(
     optionParameter: OptionParameter,
     val generatedValueSupplier: ApplicationGeneratedValueSupplier
 ) : OptionBuilder(optionParameter), GeneratedOptionBuilder {

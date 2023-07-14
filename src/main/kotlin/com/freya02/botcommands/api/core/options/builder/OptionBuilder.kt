@@ -4,13 +4,13 @@ import com.freya02.botcommands.internal.commands.CommandDSL
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
 @CommandDSL
-abstract class OptionBuilder(
+abstract class OptionBuilder internal constructor(
     /**
-     * Declared name is not unique ! (varargs for example)
+     * Declared name is not unique! (varargs, for example)
      */
-    val optionParameter: OptionParameter
+    internal val optionParameter: OptionParameter
 ) {
-    val owner = optionParameter.typeCheckingFunction
+    internal val owner = optionParameter.typeCheckingFunction
 
     /**
      * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options

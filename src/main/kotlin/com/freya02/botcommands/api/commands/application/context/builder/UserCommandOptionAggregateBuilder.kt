@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.builder.CustomOptionBuilder
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
-class UserCommandOptionAggregateBuilder(
+class UserCommandOptionAggregateBuilder internal constructor(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : ApplicationCommandOptionAggregateBuilder<UserCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {

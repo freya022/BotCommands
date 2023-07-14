@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.core.options.builder.OptionBuilder
 import com.freya02.botcommands.internal.core.options.OptionImpl
 import com.freya02.botcommands.internal.parameters.OptionParameter
 
-abstract class CommandOptionBuilder(
+abstract class CommandOptionBuilder internal constructor(
     optionParameter: OptionParameter
 ) : OptionBuilder(optionParameter) {
     /**

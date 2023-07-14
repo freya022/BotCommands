@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
-abstract class ApplicationCommandOptionAggregateBuilder<T : ApplicationCommandOptionAggregateBuilder<T>>(
+abstract class ApplicationCommandOptionAggregateBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : CommandOptionAggregateBuilder<T>(aggregatorParameter, aggregator) {

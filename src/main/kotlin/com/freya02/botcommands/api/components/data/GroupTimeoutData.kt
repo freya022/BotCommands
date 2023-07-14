@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.components.data
 
-data class GroupTimeoutData(private val _componentIds: List<Int>) {
+data class GroupTimeoutData internal constructor(private val _componentIds: List<Int>) {
     val componentIds: List<String> by lazy {
         _componentIds.map { it.toString() }
     }

@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import java.util.*
 import kotlin.reflect.KFunction
 
-class SlashCommandOptionBuilder(
+class SlashCommandOptionBuilder internal constructor(
     private val context: BContextImpl,
     optionParameter: OptionParameter,
     val optionName: String

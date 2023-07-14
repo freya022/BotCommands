@@ -7,15 +7,15 @@ import kotlin.reflect.KType
 import kotlin.reflect.jvm.jvmErasure
 import com.freya02.botcommands.internal.utils.throwUser as utilsThrowUser
 
-data class ParameterWrapper(
+data class ParameterWrapper internal constructor(
     val type: KType,
     val index: Int,
     val name: String,
     val parameter: KParameter? /* Nullable in case parameters would be "created" without a function */
 ) {
-    constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
-
     val erasure = type.jvmErasure
+
+    internal constructor(parameter: KParameter) : this(parameter.type, parameter.index, parameter.bestName, parameter)
 
     fun toListElementType() = when (type.jvmErasure) {
         List::class -> copy(

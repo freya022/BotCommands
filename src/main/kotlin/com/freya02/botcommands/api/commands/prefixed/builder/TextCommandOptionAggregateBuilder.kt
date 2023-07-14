@@ -7,7 +7,7 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.toDiscordString
 import kotlin.reflect.KFunction
 
-class TextCommandOptionAggregateBuilder(
+class TextCommandOptionAggregateBuilder internal constructor(
     aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) : OptionAggregateBuilder<TextCommandOptionAggregateBuilder>(aggregatorParameter, aggregator) {

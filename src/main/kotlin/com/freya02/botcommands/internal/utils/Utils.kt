@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.core.exceptions.InitializationException
+import com.freya02.botcommands.internal.core.exceptions.InitializationException
 import net.dv8tion.jda.api.entities.Guild
 
 internal fun String.toDiscordString(): String {
