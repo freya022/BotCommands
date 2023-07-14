@@ -11,13 +11,10 @@ import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
 abstract class TextCommandBuilder internal constructor(protected val context: BContextImpl, name: String) : CommandBuilder(name) {
-    @get:JvmSynthetic
     internal val subcommands: MutableList<TextSubcommandBuilder> = arrayListOf()
 
-    @get:JvmSynthetic
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()
 
-    @get:JvmSynthetic
     internal var nsfwStrategy: NSFWStrategy? = null
         private set
 

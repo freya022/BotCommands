@@ -18,7 +18,6 @@ abstract class CommandBuilder internal constructor(override val name: String) : 
 
     final override val path: CommandPath by lazy { computePath() }
 
-    @get:JvmSynthetic
     internal var cooldownStrategy: CooldownStrategy = CooldownStrategy(0, TimeUnit.SECONDS, CooldownScope.USER)
         private set
 

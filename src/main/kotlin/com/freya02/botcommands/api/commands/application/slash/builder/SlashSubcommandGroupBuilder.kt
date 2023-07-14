@@ -18,7 +18,6 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
     override val parentInstance: INamedCommand = topLevelBuilder
     override val path: CommandPath by lazy { computePath() }
 
-    @get:JvmSynthetic
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
 
     var description: String = DEFAULT_DESCRIPTION

@@ -54,7 +54,6 @@ abstract class SlashCommandBuilder internal constructor(
         }
     }
 
-    @JvmSynthetic
     inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: SlashCommandOptionBuilder.() -> Unit) {
         inlineClassOption(declaredName, optionName, T::class.java, block)
     }
@@ -75,7 +74,6 @@ abstract class SlashCommandBuilder internal constructor(
     /**
      * **Annotation equivalent:** [VarArgs]
      */
-    @JvmSynthetic
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
     }

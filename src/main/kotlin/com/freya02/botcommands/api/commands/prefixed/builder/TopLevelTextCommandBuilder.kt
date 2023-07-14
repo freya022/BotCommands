@@ -9,7 +9,6 @@ class TopLevelTextCommandBuilder internal constructor(context: BContextImpl, nam
 
     var category: String = "No category"
 
-    @JvmSynthetic
     internal fun build(): TopLevelTextCommandInfo {
         require(variations.isNotEmpty() || subcommands.isNotEmpty()) {
             "Top-level-only text command should have at least 1 variation"

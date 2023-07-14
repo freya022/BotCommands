@@ -22,9 +22,7 @@ class TopLevelSlashCommandBuilder internal constructor(
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 
-    @get:JvmSynthetic
     internal val subcommands: SimpleCommandMap<SlashSubcommandBuilder> = SimpleCommandMap.ofBuilders()
-    @get:JvmSynthetic
     internal val subcommandGroups: SimpleCommandMap<SlashSubcommandGroupBuilder> = SimpleCommandMap(null)
 
     override val allowOptions: Boolean

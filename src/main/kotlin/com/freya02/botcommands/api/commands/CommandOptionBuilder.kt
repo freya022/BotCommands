@@ -12,6 +12,5 @@ abstract class CommandOptionBuilder internal constructor(
      *
      * @see OptionImpl.isOptionalOrNullable
      */
-    @get:JvmSynthetic @set:JvmSynthetic
     internal var isOptional: Boolean? = null
 }

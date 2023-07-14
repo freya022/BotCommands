@@ -12,18 +12,14 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
     val aggregatorParameter: AggregatorParameter,
     aggregator: KFunction<*>
 ) {
-    @get:JvmSynthetic
     internal val aggregator: KFunction<*> = aggregator.reflectReference()
-    @get:JvmSynthetic
     internal val parameter = aggregatorParameter.typeCheckingParameter
 
     private val _optionBuilders: MutableMap<String, MutableList<OptionBuilder>> = mutableMapOf()
-    @get:JvmSynthetic
     internal val optionBuilders: Map<String, List<OptionBuilder>>
         get() = _optionBuilders
 
     private val _nestedAggregates = OptionAggregateBuildersImpl(aggregator, ::constructNestedAggregate)
-    @get:JvmSynthetic
     internal val nestedAggregates: Map<String, T>
         get() = _nestedAggregates.optionAggregateBuilders
 
@@ -47,7 +43,6 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
 
     protected abstract fun constructNestedAggregate(aggregatorParameter: AggregatorParameter, aggregator: KFunction<*>): T
 
-    @JvmSynthetic
     internal operator fun plusAssign(optionBuilder: OptionBuilder) {
         _optionBuilders.computeIfAbsent(optionBuilder.optionParameter.typeCheckingParameterName) { arrayListOf() }.add(optionBuilder)
     }

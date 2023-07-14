@@ -15,6 +15,5 @@ abstract class OptionBuilder internal constructor(
     /**
      * **Note:** Could be an array parameter! In which case this parameter could be repeated on multiple options
      */
-    @get:JvmSynthetic
     internal val parameter = optionParameter.typeCheckingParameter
 }

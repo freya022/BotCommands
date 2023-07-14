@@ -27,7 +27,6 @@ class TextCommandVariationBuilder internal constructor(
         TextCommandOptionAggregateBuilder(aggregatorParameter, aggregator)
     }
 
-    @get:JvmSynthetic
     internal val optionAggregateBuilders: Map<String, TextCommandOptionAggregateBuilder>
         get() = _optionAggregateBuilders.optionAggregateBuilders
 
@@ -51,7 +50,6 @@ class TextCommandVariationBuilder internal constructor(
         }
     }
 
-    @JvmSynthetic
     inline fun <reified T : Any> inlineClassOption(declaredName: String, optionName: String? = null, noinline block: TextCommandOptionBuilder.() -> Unit) {
         inlineClassOption(declaredName, optionName, T::class.java, block)
     }
@@ -72,7 +70,6 @@ class TextCommandVariationBuilder internal constructor(
     /**
      * **Annotation equivalent:** [VarArgs]
      */
-    @JvmSynthetic
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: TextCommandOptionBuilder.(Int) -> Unit = {}) {
         inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
     }
@@ -126,7 +123,6 @@ class TextCommandVariationBuilder internal constructor(
         _optionAggregateBuilders.selfAggregate(declaredName, block)
     }
 
-    @JvmSynthetic
     internal fun build(info: TextCommandInfo): TextCommandVariation {
         return TextCommandVariation(context, info, this)
     }
