@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete;
 
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <E> Type of the List's elements
  *
- * @see AppOption#autocomplete()
+ * @see SlashOption#autocomplete()
  * @see AutocompleteHandler
  * @see InterfacedService
  */

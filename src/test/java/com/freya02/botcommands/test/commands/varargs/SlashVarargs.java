@@ -2,10 +2,10 @@ package com.freya02.botcommands.test.commands.varargs;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.parameters.ParameterType;
@@ -33,15 +33,15 @@ public class SlashVarargs extends ApplicationCommand {
 
 	@JDASlashCommand(name = "varargs")
 	public void run(GuildSlashEvent event,
-	                @AppOption(autocomplete = STR_AUTOCOMPLETE_NAME) String string,
-	                @AppOption(name = "number", description = "lol") @VarArgs(value = 3, numRequired = 2) List<Long> longs) {
+	                @SlashOption(autocomplete = STR_AUTOCOMPLETE_NAME) String string,
+	                @SlashOption(name = "number", description = "lol") @VarArgs(value = 3, numRequired = 2) List<Long> longs) {
 		event.reply("longs: " + longs)
 				.setEphemeral(true)
 				.queue();
 	}
 
 	@AutocompleteHandler(name = STR_AUTOCOMPLETE_NAME)
-	public Collection<String> onStrAutocomplete(CommandAutoCompleteInteractionEvent event, @AppOption(name = "number") @VarArgs(3) List<Long> longs, @AppOption String string) {
+	public Collection<String> onStrAutocomplete(CommandAutoCompleteInteractionEvent event, @SlashOption(name = "number") @VarArgs(3) List<Long> longs, @SlashOption String string) {
 		return List.of(
 				string + "_" + "str1" + "_" + longs.get(0),
 				string + "_" + "str2" + "_" + longs.get(1),

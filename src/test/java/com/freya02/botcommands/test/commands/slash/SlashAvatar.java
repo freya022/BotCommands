@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import net.dv8tion.jda.api.entities.User;
 
 public class SlashAvatar extends ApplicationCommand {
@@ -11,7 +11,7 @@ public class SlashAvatar extends ApplicationCommand {
 			name = "avatar",
 			description = "Gives the avatar of any user"
 	)
-	public void avatar(GuildSlashEvent event, @AppOption User user) {
+	public void avatar(GuildSlashEvent event, @SlashOption User user) {
 		event.reply(user.getEffectiveAvatarUrl() + "?size=512").setEphemeral(true).queue();
 	}
 }

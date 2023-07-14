@@ -4,11 +4,8 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GuildApplicationSettings
 import com.freya02.botcommands.api.commands.application.LengthRange
 import com.freya02.botcommands.api.commands.application.ValueRange
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandOptionBuilder
-import com.freya02.botcommands.api.commands.application.slash.annotations.ChannelTypes
-import com.freya02.botcommands.api.commands.application.slash.annotations.DoubleRange
-import com.freya02.botcommands.api.commands.application.slash.annotations.Length
+import com.freya02.botcommands.api.commands.application.slash.annotations.*
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteInfo
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
@@ -30,9 +27,9 @@ class SlashCommandOptionBuilder internal constructor(
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {
     /**
-     * **Annotation equivalent:** [AppOption.description]
+     * **Annotation equivalent:** [SlashOption.description]
      *
-     * @see AppOption.usePredefinedChoices
+     * @see SlashOption.usePredefinedChoices
      */
     var description: String = "No description"
 
@@ -41,9 +38,9 @@ class SlashCommandOptionBuilder internal constructor(
      *
      * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
      *
-     * **Annotation equivalent:** [AppOption.usePredefinedChoices]
+     * **Annotation equivalent:** [SlashOption.usePredefinedChoices]
      *
-     * @see AppOption.usePredefinedChoices
+     * @see SlashOption.usePredefinedChoices
      */
     var usePredefinedChoices: Boolean = false
 
@@ -88,9 +85,9 @@ class SlashCommandOptionBuilder internal constructor(
      * I recommend naming them like: `YourClassSimpleName: AutocompletedField`<br>
      * Example: `SlashTag: tagName`
      *
-     * **Annotation equivalent:** [AppOption.autocomplete]
+     * **Annotation equivalent:** [SlashOption.autocomplete]
      *
-     * @see AppOption.autocomplete
+     * @see SlashOption.autocomplete
      */
     fun autocomplete(name: String, function: KFunction<Collection<Any>>, block: AutocompleteInfoBuilder.() -> Unit) {
         autocompleteInfo = AutocompleteInfoBuilder(context, name, function).apply(block).build()

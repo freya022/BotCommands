@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import net.dv8tion.jda.api.JDA;
@@ -14,9 +14,9 @@ import java.util.*;
 public class SlashAutocomplete extends ApplicationCommand {
 	@JDASlashCommand(name = "auto")
 	public void auto(GuildSlashEvent event,
-	                 @AppOption(autocomplete = "autoStr") String str,
-	                 @AppOption(autocomplete = "autoInt") long integer,
-	                 @AppOption(autocomplete = "autoDou") double number
+	                 @SlashOption(autocomplete = "autoStr") String str,
+	                 @SlashOption(autocomplete = "autoInt") long integer,
+	                 @SlashOption(autocomplete = "autoDou") double number
 	) {
 		event.reply(str).queue();
 	}
@@ -61,17 +61,17 @@ public class SlashAutocomplete extends ApplicationCommand {
 
 	@AutocompleteHandler(name = "autoInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
-	                          @AppOption(name = "str") String autoStr,
-	                          @AppOption long integer) {
+	                          @SlashOption(name = "str") String autoStr,
+	                          @SlashOption long integer) {
 		return new HashSet<>(List.of(1L, 12L, 123L));
 	}
 
 	@AutocompleteHandler(name = "autoDou")
 	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
-	                                  @AppOption String str,
+	                                  @SlashOption String str,
 	                                  JDA jda,
-	                                  @AppOption long integer,
-	                                  @AppOption double number) {
+	                                  @SlashOption long integer,
+	                                  @SlashOption double number) {
 		System.out.println(event.getOptions());
 		System.out.println("str = " + str);
 		System.out.println("jda = " + jda);

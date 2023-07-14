@@ -8,11 +8,11 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ValueRange.Companion.range
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.LongRange
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
 import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.parameters.ParameterType
@@ -54,12 +54,12 @@ class SlashMyCommand : ApplicationCommand() {
     @JDASlashCommand(name = "my_command_annotated", subcommand = "kt", description = "mah desc")
     fun executeCommand(
         event: GuildSlashEvent,
-        @AppOption(name = "string_annotated", description = "Option description") stringOption: String,
-        @AppOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
-        @AppOption(name = "user_annotated", description = "An user") userOption: User,
-        @AppOption(name = "channel_annotated") channelOption: GuildChannel,
-        @AppOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
-        @AppOption(name = "double_annotated", description = "A double") doubleOption: Double?,
+        @SlashOption(name = "string_annotated", description = "Option description") stringOption: String,
+        @SlashOption(name = "int_annotated", description = "An integer") @LongRange(from = 1, to = 2) intOption: Int,
+        @SlashOption(name = "user_annotated", description = "An user") userOption: User,
+        @SlashOption(name = "channel_annotated") channelOption: GuildChannel,
+        @SlashOption(name = "autocomplete_str_annotated", description = "Autocomplete !", autocomplete = autocompleteHandlerName) autocompleteStr: String,
+        @SlashOption(name = "double_annotated", description = "A double") doubleOption: Double?,
         custom: BContext,
         @GeneratedOption guildName: String
     ) {

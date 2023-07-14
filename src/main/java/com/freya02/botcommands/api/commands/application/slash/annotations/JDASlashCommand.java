@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager;
 import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashSubcommandGroupBuilder;
 import com.freya02.botcommands.api.commands.application.slash.builder.TopLevelSlashCommandBuilder;
@@ -56,13 +55,13 @@ import java.lang.annotation.Target;
  *     </li>
  * </ul>
  *
- * Input options needs to be annotated with {@link AppOption @AppOption}, see supported types at {@link ParameterResolver}
+ * Input options needs to be annotated with {@link SlashOption @SlashOption}, see supported types at {@link ParameterResolver}
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups">Discord docs</a>
  * @see Command
- * @see AppOption @AppOption
+ * @see SlashOption @SlashOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown

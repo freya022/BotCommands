@@ -2,10 +2,10 @@ package com.freya02.botcommands.api.commands.application;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.annotations.CommandId;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import com.freya02.botcommands.api.parameters.SlashParameterResolver;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public interface GuildApplicationSettings {
 	/**
-	 * Returns the choices available for this command path, on the specific {@code optionIndex} (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
+	 * Returns the choices available for this command path, on the specific {@code optionIndex} (option index starts at 0 and is composed of only the parameters annotated with {@link SlashOption @SlashOption})
 	 *
 	 * <p><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
 	 *

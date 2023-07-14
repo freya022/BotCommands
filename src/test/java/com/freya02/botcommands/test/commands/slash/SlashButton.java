@@ -1,9 +1,9 @@
 package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
@@ -34,7 +34,7 @@ public class SlashButton extends ApplicationCommand {
 	}
 
 	@JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
-	public void onPersistentButtonClicked(ButtonEvent event, @AppOption long timeCreated, JDA jda) {
+	public void onPersistentButtonClicked(ButtonEvent event, @SlashOption long timeCreated, JDA jda) {
 		event.replyFormat("Button created on %s and I am %s", timeCreated, jda.getSelfUser().getAsTag())
 				.setEphemeral(true)
 				.queue();

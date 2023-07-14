@@ -77,14 +77,14 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  * 	}
  *
  * 	@JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
- * 	public void onPersistentButtonClicked(ButtonEvent event, @AppOption long timeCreated, JDA jda) {
+ * 	public void onPersistentButtonClicked(ButtonEvent event, long timeCreated, JDA jda) {
  * 		event.replyFormat("Button created on %s and I am %s", timeCreated, jda.getSelfUser().getAsTag())
  * 				.setEphemeral(true)
  * 				.queue();
  * 	}
  * }
  * ```
- */
+ */ //TODO update docs
 @BService
 @ConditionalService(Components.Companion::class)
 class Components internal constructor(private val componentController: ComponentController) {

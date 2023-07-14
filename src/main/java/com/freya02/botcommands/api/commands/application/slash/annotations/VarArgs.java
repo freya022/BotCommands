@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations;
 
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption;
 import kotlin.jvm.functions.Function1;
@@ -14,7 +13,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Generates N command options from the specified {@link AppOption} or {@link TextOption}.
+ * Generates N command options from the specified {@link SlashOption} or {@link TextOption}.
  * <br>The target parameter must be of type {@link List}.
  * <br>You can configure how many arguments are required with {@link #numRequired()}.
  * <br><b>Note:</b> you are limited to 1 vararg parameter in text commands.

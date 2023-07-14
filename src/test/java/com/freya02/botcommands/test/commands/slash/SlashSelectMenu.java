@@ -2,9 +2,9 @@ package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder;
 import com.freya02.botcommands.api.components.builder.IEphemeralTimeoutableComponent;
@@ -51,7 +51,7 @@ public class SlashSelectMenu extends ApplicationCommand {
 	}
 
 	@JDASlashCommand(name = "select_menu")
-	public void onSlashSelectMenu(GuildSlashEvent event, @AppOption String selectType, Components components) {
+	public void onSlashSelectMenu(GuildSlashEvent event, @SlashOption String selectType, Components components) {
 		final SelectMenu menu = switch (selectType) {
 			case "String" -> components.ephemeralStringSelectMenu(builder -> {
 				builder.bindTo(selectEvt -> selectEvt.reply("Values: " + selectEvt.getValues()).queue());

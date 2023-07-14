@@ -2,9 +2,9 @@ package com.freya02.botcommands.test.commands.slash;
 
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete;
@@ -21,9 +21,9 @@ public class SlashAutocompleteCache extends ApplicationCommand {
 
 	@JDASlashCommand(name = "auto_cache")
 	public void auto(GuildSlashEvent event,
-	                 @AppOption(autocomplete = "autoCacheStr") String str,
-	                 @AppOption(autocomplete = "autoCacheInt") long integer,
-	                 @AppOption(autocomplete = "autoCacheDou") double number
+	                 @SlashOption(autocomplete = "autoCacheStr") String str,
+	                 @SlashOption(autocomplete = "autoCacheInt") long integer,
+	                 @SlashOption(autocomplete = "autoCacheDou") double number
 	) {
 		event.reply(str).queue();
 	}
@@ -73,8 +73,8 @@ public class SlashAutocompleteCache extends ApplicationCommand {
 	@CacheAutocomplete(compositeKeys = {"str", "integer"})
 	@AutocompleteHandler(name = "autoCacheInt")
 	public Set<Long> autoLong(CommandAutoCompleteInteractionEvent event,
-	                          @AppOption(name = "str") String autoStr,
-	                          @AppOption long integer) throws InterruptedException {
+	                          @SlashOption(name = "str") String autoStr,
+	                          @SlashOption long integer) throws InterruptedException {
 		LOGGER.warn("Computing constant by key");
 
 		Thread.sleep(2000); //Simulate a long API request to show cache working
@@ -84,10 +84,10 @@ public class SlashAutocompleteCache extends ApplicationCommand {
 
 	@AutocompleteHandler(name = "autoCacheDou")
 	public Collection<Double> autoDou(CommandAutoCompleteInteractionEvent event,
-	                                  @AppOption String str,
+	                                  @SlashOption String str,
 	                                  JDA jda,
-	                                  @AppOption long integer,
-	                                  @AppOption double number) throws InterruptedException {
+	                                  @SlashOption long integer,
+	                                  @SlashOption double number) throws InterruptedException {
 		LOGGER.warn("Computing key");
 
 		Thread.sleep(2000); //Simulate a long API request to show cache working
