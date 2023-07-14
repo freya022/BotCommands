@@ -2,7 +2,7 @@ package com.freya02.botcommands.test_kt.commands.message
 
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
+import com.freya02.botcommands.api.commands.application.context.annotations.ContextOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.components.Components
@@ -38,7 +38,7 @@ class MessageContextAddReactionRole(private val componentsService: Components,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)
     suspend fun onMessageContextAddReactionRole(event: GuildMessageEvent,
-                                                @AppOption message: Message) {
+                                                @ContextOption message: Message) {
         val roleSelectMenu = componentsService.ephemeralEntitySelectMenu(EntitySelectMenu.SelectTarget.ROLE) {
             timeout(1.minutes)
         }

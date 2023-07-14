@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations;
 
 import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * Uses the method as an autocomplete function for {@link AppOption slash command options}.
+ * Uses the method as an autocomplete function for {@link SlashOption slash command options}.
  *
  * <p>Requirements:
  * <ul>
@@ -56,7 +56,7 @@ import java.util.List;
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler} or be in an existing {@link Command} class.
  *
- * @see AppOption
+ * @see SlashOption
  * @see JDASlashCommand
  * @see CacheAutocomplete
  *
@@ -66,7 +66,7 @@ import java.util.List;
 @Target({ElementType.METHOD})
 public @interface AutocompleteHandler {
 	/**
-	 * Sets the name of the autocomplete handler, <b>it must be the same as what you set in {@link AppOption#autocomplete()}</b>
+	 * Sets the name of the autocomplete handler, <b>it must be the same as what you set in {@link SlashOption#autocomplete()}</b>
 	 * <br>The name must be unique, another handler cannot share it
 	 *
 	 * @return Name of the autocomplete handler

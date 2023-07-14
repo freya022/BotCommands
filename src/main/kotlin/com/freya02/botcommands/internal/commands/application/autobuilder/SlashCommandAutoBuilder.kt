@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.GeneratedOption
 import com.freya02.botcommands.api.commands.application.*
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.annotations.CommandId
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.*
@@ -184,7 +183,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
 
         func.nonInstanceParameters.drop(1).forEach { kParameter ->
             val declaredName = kParameter.findDeclarationName()
-            when (val optionAnnotation = kParameter.findAnnotation<AppOption>()) {
+            when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
                     null -> customOption(declaredName)
                     else -> generatedOption(
@@ -225,7 +224,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
     }
 
     context(SlashCommandBuilder)
-    private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: AppOption) {
+    private fun SlashCommandOptionBuilder.configureOption(guild: Guild?, instance: ApplicationCommand, kParameter: KParameter, optionAnnotation: SlashOption) {
         description = getEffectiveDescription(optionAnnotation)
 
         kParameter.findAnnotation<LongRange>()?.let { range -> valueRange = ValueRange.ofLong(range.from, range.to) }
@@ -244,7 +243,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
         choices = instance.getOptionChoices(guild, this@SlashCommandBuilder.path, optionName)
     }
 
-    private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: AppOption) {
+    private fun SlashCommandOptionBuilder.processAutocomplete(optionAnnotation: SlashOption) {
         if (optionAnnotation.autocomplete.isNotEmpty()) {
             autocompleteReference(optionAnnotation.autocomplete)
         }
@@ -260,7 +259,7 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
     }
 
     context(SlashCommandBuilder, SlashCommandOptionBuilder)
-    private fun getEffectiveDescription(optionAnnotation: AppOption): String {
+    private fun getEffectiveDescription(optionAnnotation: SlashOption): String {
         val joinedPath = path.getFullPath('.')
         val rootLocalization = LocalizationUtils.getCommandRootLocalization(context, "$joinedPath.options.${this@SlashCommandOptionBuilder.optionName}.description")
         if (rootLocalization != null) return rootLocalization

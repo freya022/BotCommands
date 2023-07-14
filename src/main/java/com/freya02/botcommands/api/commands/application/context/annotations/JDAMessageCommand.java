@@ -7,10 +7,10 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager;
 import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder;
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent;
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import kotlin.jvm.functions.Function1;
 import kotlin.reflect.KFunction;
 import net.dv8tion.jda.api.entities.Message;
@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  *
  * <p>
  * The targeted method must have a {@link GlobalMessageEvent} or a {@link GuildMessageEvent},
- * with the only accepted {@link AppOption option} being {@link Message},
+ * with the only accepted {@link SlashOption option} being {@link Message},
  * which will be the <i>targeted</i> message
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.

@@ -2,9 +2,9 @@ package com.freya02.botcommands.test_kt.commands.slash
 
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.localization.Localization.Entry.entry
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
@@ -16,7 +16,7 @@ class SlashLocalization : ApplicationCommand() {
     @JDASlashCommand(name = "localization")
     fun onSlashLocalization(event: GuildSlashEvent,
                             @LocalizationBundle("Test", prefix = "commands.localization") ctx: AppLocalizationContext,
-                            @AppOption localizationOpt: String?) {
+                            @SlashOption localizationOpt: String?) {
         val content = """
             User localized (${ctx.userLocale}): %s
             Guild localized (${ctx.guildLocale}): %s

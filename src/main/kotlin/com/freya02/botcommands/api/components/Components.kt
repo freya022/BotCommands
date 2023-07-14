@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.SelectTarget
 
 /**
- * This class lets you create smart components such as buttons, select menus and groups.
+ * This class lets you create smart components such as buttons, select menus, and groups.
  *
  * Every component can either be persistent or ephemeral, all components can be configured to:
  *  - Be used once
@@ -39,49 +39,99 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu.S
  *
  * Except component groups which can only have its timeout configured.
  *
- * **Persistent components**:
+ * ### Persistent components
  *  - Kept after restart
- *  - Handlers are methods, they can have arguments passed to them
- *  - Timeouts are also methods, additionally they will be rescheduled when the bot restarts
+ *  - Handlers are methods; they can have arguments passed to them
+ *  - Timeouts are also methods, additionally, they will be rescheduled when the bot restarts
  *
- * **Ephemeral components**:
+ * ### Ephemeral components
  *  - Are deleted once the bot restarts
  *  - Handlers are closures, they can capture objects, but you [shouldn't capture JDA entities](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)
  *  - Timeouts are also closures, but are not rescheduled when restarting
  *
- * **Component groups**:
+ * ### Component groups
  *  - If deleted, all contained components are deleted
  *  - If one of the contained components is deleted, then all of its subsequent groups are also deleted
  *
- * **Example**:
+ * ### Java example
  * ```java
+ * @Command
  * public class SlashButton extends ApplicationCommand {
- * 	private static final String PERSISTENT_BUTTON_LISTENER_NAME = "leBouton";
+ *     private static final String BUTTON_LISTENER_NAME = "SlashButton: persistentButton"; //ClassName: theButtonPurpose
  *
- * 	@JDASlashCommand(name = "button")
- * 	public void onSlashButton(GuildSlashEvent event, Components components) {
- * 		event.reply("Buttons")
- * 				.addActionRow(
- * 						components.persistentButton(ButtonStyle.PRIMARY, "Persistent button (1 minute timeout)", builder -> {
- * 							builder.setOneUse(true);
- * 							builder.bindTo(PERSISTENT_BUTTON_LISTENER_NAME, System.currentTimeMillis());
- * 							builder.timeout(1, TimeUnit.MINUTES);
- * 						}),
- * 						components.ephemeralButton(ButtonStyle.PRIMARY, "Ephemeral button (1 second timeout)", builder -> {
- * 							builder.bindTo(btnEvt -> btnEvt.deferEdit().queue());
- * 							builder.timeout(1, TimeUnit.SECONDS, () -> event.getHook().editOriginal("Ephemeral expired :/").queue());
- * 						})
- * 				)
- * 				.setEphemeral(true)
- * 				.queue();
- * 	}
+ *     private final Components componentsService;
  *
- * 	@JDAButtonListener(name = PERSISTENT_BUTTON_LISTENER_NAME)
- * 	public void onPersistentButtonClicked(ButtonEvent event, @AppOption long timeCreated, JDA jda) {
- * 		event.replyFormat("Button created on %s and I am %s", timeCreated, jda.getSelfUser().getAsTag())
- * 				.setEphemeral(true)
- * 				.queue();
- * 	}
+ *     public SlashButton(Components componentsService) {
+ *         this.componentsService = componentsService;
+ *     }
+ *
+ *     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
+ *     public void onSlashButton(GuildSlashEvent event) {
+ *         final List<Button> components = new ArrayList<>();
+ *
+ *         components.add(componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds", builder -> {
+ *             builder.timeout(5, TimeUnit.SECONDS, () -> {
+ *                 event.getHook()
+ *                         .editOriginalComponents(ActionRow.of(
+ *                                 components.stream().map(Button::asDisabled).collect(Collectors.toList())
+ *                         ))
+ *                         .queue();
+ *             });
+ *
+ *             builder.bindTo(buttonEvent -> {
+ *                 buttonEvent.editButton(buttonEvent.getButton().asDisabled()).queue();
+ *             });
+ *         }));
+ *
+ *         components.add(componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime", builder -> {
+ *             builder.bindTo(BUTTON_LISTENER_NAME);
+ *         }));
+ *
+ *         event.replyComponents(ActionRow.of(components))
+ *                 .setContent(TimeFormat.RELATIVE.format(Instant.now().plus(Duration.ofSeconds(5))))
+ *                 .setEphemeral(true)
+ *                 .queue();
+ *     }
+ *
+ *     @JDAButtonListener(name = BUTTON_LISTENER_NAME)
+ *     public void onPersistentButtonClick(ButtonEvent event) {
+ *         event.editButton(event.getButton().asDisabled()).queue();
+ *     }
+ * }
+ * ```
+ *
+ * ### Kotlin example
+ * ```kt
+ * private const val buttonListenerName = "SlashButton: persistentButton" //ClassName: theButtonPurpose
+ *
+ * @Command
+ * class SlashButton(private val componentsService: Components) : ApplicationCommand() {
+ *     @JDASlashCommand(name = "button", description = "Try out the new buttons!")
+ *     fun onSlashButton(event: GuildSlashEvent) {
+ *         val components: MutableList<Button> = arrayListOf()
+ *         components += componentsService.ephemeralButton(ButtonStyle.PRIMARY, "Click me under 5 seconds") {
+ *             timeout(5.seconds) {
+ *                 event.hook.editOriginalComponents(components.map(Button::asDisabled).row()).queue()
+ *             }
+ *             bindTo { buttonEvent ->
+ *                 buttonEvent.editButton(buttonEvent.button.asDisabled()).await() // Coroutines!
+ *             }
+ *         }
+ *
+ *         components += componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime") {
+ *             bindTo(buttonListenerName)
+ *         }
+ *
+ *         event.replyComponents(listOf(components.row()))
+ *             .setContent(TimeFormat.RELATIVE.format(Instant.now() + 5.seconds.toJavaDuration()))
+ *             .setEphemeral(true)
+ *             .queue()
+ *     }
+ *
+ *     @JDAButtonListener(name = buttonListenerName)
+ *     suspend fun onPersistentButtonClick(event: ButtonEvent) {
+ *         event.editButton(event.button.asDisabled()).await()
+ *     }
  * }
  * ```
  */

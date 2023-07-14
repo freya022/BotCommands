@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations;
 
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
@@ -23,7 +23,7 @@ import java.util.List;
  * <br>However you can use composite keys if you want to cache based off multiple option values,
  * see {@link #compositeKeys()}
  *
- * @see AppOption
+ * @see SlashOption
  * @see AutocompleteHandler
  *
  * @see AutocompleteInfoBuilder#cache(AutocompleteCacheMode, Function1) DSL equivalent

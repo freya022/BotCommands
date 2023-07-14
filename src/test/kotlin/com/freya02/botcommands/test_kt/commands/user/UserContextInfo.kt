@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
+import com.freya02.botcommands.api.commands.application.context.annotations.ContextOption
 import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
@@ -40,7 +40,7 @@ class UserContextInfo : ApplicationCommand() {
     @JDAUserCommand(scope = CommandScope.GUILD, name = "User info (annotated)")
     fun onUserContextInfo(
         event: GuildUserEvent,
-        @AppOption user: User,
+        @ContextOption user: User,
         @GeneratedOption userTag: String
     ) {
         event.reply_("Tag of user ID ${user.id}: $userTag", ephemeral = true).queue()

@@ -2,10 +2,10 @@ package com.freya02.botcommands.test.commands.guild_specific;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
-import com.freya02.botcommands.api.commands.application.annotations.AppOption;
 import com.freya02.botcommands.api.commands.application.annotations.CommandId;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ public class SlashCommandId extends ApplicationCommand {
 
 	@CommandId("specific_run")
 	@JDASlashCommand(name = "specific")
-	public void run2(GuildSlashEvent event, @AppOption(description = "lol") User user) {
+	public void run2(GuildSlashEvent event, @SlashOption(description = "lol") User user) {
 		event.reply("user " + user.getAsMention() + " ok")
 				.setEphemeral(true)
 				.queue();

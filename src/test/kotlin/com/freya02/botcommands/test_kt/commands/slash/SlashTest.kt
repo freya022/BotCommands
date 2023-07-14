@@ -7,10 +7,10 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.parameters.ParameterType
 import dev.minn.jda.ktx.messages.reply_
@@ -37,7 +37,7 @@ class SlashTest : ApplicationCommand() {
     @JDASlashCommand(name = "test_annotated", scope = CommandScope.GUILD)
     fun onSlashTest(
         event: GuildSlashEvent,
-        @AppOption(autocomplete = guildNicknameAutocompleteName) guildNickname: String,
+        @SlashOption(autocomplete = guildNicknameAutocompleteName) guildNickname: String,
         @GeneratedOption guildName: String
     ) {
         event.reply_("woo in $guildName ($guildNickname)", ephemeral = true).queue()

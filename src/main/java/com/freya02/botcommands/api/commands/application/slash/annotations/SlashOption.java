@@ -1,9 +1,8 @@
-package com.freya02.botcommands.api.commands.application.annotations;
+package com.freya02.botcommands.api.commands.application.slash.annotations;
 
 import com.freya02.botcommands.api.commands.CommandPath;
 import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.application.GuildApplicationSettings;
-import com.freya02.botcommands.api.commands.application.slash.annotations.*;
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
@@ -25,8 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to specify an application command parameter is supplied from Discord.
- * <br>This also can set name and description of {@link JDASlashCommand slash commands} parameters.
+ * Sets a parameter as a slash command option from Discord.
  *
  * <p>
  * {@link #name()} is optional if the parameter name is available (add {@code -parameters} to your java compiler)
@@ -46,15 +44,16 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-public @interface AppOption { //TODO separate this into specialised options, why use AppOption for things that don't support descriptions / autocomplete ?
+public @interface SlashOption {
 	/**
 	 * Name of the option.
 	 * <br>Must follow the Discord specifications,
-	 * see {@link OptionData#OptionData(OptionType, String, String)} for details.
+	 * see {@link OptionData#OptionData(OptionType, String, String) the OptionData constructor} for details.
 	 *
 	 * <p>
 	 * This can be localized, see {@link LocalizationFunction} on how options are mapped.
-	 * <br>This is optional if the parameter name is found,
+	 *
+	 * <p>This is optional if the parameter name is found,
 	 * see <a href="https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/" target="_blank">the wiki</a> for more details.
 	 *
 	 * @return Name of the option
@@ -80,7 +79,7 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 *
 	 * @see SlashCommandOptionBuilder#setDescription(String) DSL equivalent
 	 */
-	String description() default ""; //TODO reverse mapping
+	String description() default "";
 
 	/**
 	 * Enables using choices from {@link SlashParameterResolver#getPredefinedChoices(Guild)}.
