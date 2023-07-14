@@ -18,7 +18,7 @@ public interface TextCommandFilter {
 	 * Tells whether the text command should run
 	 *
 	 * @param data The filtering data of the interaction
-	 * @return <code>true</code> if the text command can run, <code>false</code> if it must not run
+	 * @return {@code true} if the text command can run, {@code false} if it must not run
 	 */
 	boolean isAccepted(TextFilteringData data);
 }

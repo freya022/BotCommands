@@ -60,7 +60,7 @@ public record ButtonContent(String text, Emoji emoji) {
 	}
 
 	/**
-	 * Constructs a {@link ButtonContent} from a shortcode emoji, such as <code>:joy:</code>
+	 * Constructs a {@link ButtonContent} from a shortcode emoji, such as {@code :joy:}
 	 *
 	 * @param shortcode The shortcode emoji
 	 * @return The {@link ButtonContent} with the shortcode emoji
@@ -70,7 +70,7 @@ public record ButtonContent(String text, Emoji emoji) {
 	}
 
 	/**
-	 * Constructs a {@link ButtonContent} from a {@link String} and a shortcode emoji, such as <code>:joy:</code>
+	 * Constructs a {@link ButtonContent} from a {@link String} and a shortcode emoji, such as {@code :joy:}
 	 *
 	 * @param shortcode The shortcode emoji
 	 * @return The {@link ButtonContent} with the text and shortcode emoji

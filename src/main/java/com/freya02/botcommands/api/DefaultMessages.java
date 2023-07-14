@@ -19,11 +19,11 @@ import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
 /**
  * Class which holds all the strings the framework may use
- * <p>The default values are contained in the resources, at <code>bc_localization/DefaultMessages.json</code>
+ * <p>The default values are contained in the resources, at {@code bc_localization/DefaultMessages.json}
  * <p>You may change the default values by:
  * <ul>
- *     <li>Creating a new <code>DefaultMessages.json</code> in the resource folder <code>bc_localization</code>, effectively overriding the default resource</li>
- *     <li>Creating language variations with a file with the same name, suffixed by the locale string, in the same folder, for example <code>bc_localization/DefaultMessages_fr.json</code></li>
+ *     <li>Creating a new {@code DefaultMessages.json} in the resource folder {@code bc_localization}, effectively overriding the default resource</li>
+ *     <li>Creating language variations with a file with the same name, suffixed by the locale string, in the same folder, for example {@code bc_localization/DefaultMessages_fr.json}</li>
  * </ul>
  * <p>The resulting paths must not be changed, however the localization templates can have their values in any order, and different format specifiers, but need to keep the same names
  *

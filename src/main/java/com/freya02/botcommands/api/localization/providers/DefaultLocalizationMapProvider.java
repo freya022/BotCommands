@@ -13,9 +13,9 @@ import java.util.*;
 /**
  * Default localization bundle provider
  * <p><b>Specification:</b>
- * <br>Localization bundles are read from "<code>/bc_localization/</code>", so, a "<code>bc_localization</code>" directory, in the root of your resources
- * <br>Those localization bundles are in the JSON format and can have any name, with the extension being <code>.json</code>
- * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as "<code>"my_command.name": "my_command_in_en_US"</code>"
+ * <br>Localization bundles are read from {@code /bc_localization/}, so, a {@code bc_localization} directory, in the root of your resources
+ * <br>Those localization bundles are in the JSON format and can have any name, with the extension being {@code .json}
+ * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as {@code "my_command.name": "my_command_in_en_US"}
  * <br>But you can also use nesting as a way to not copy the same path prefix everytime, such as:
  * <pre><code>
  *     {

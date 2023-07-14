@@ -125,7 +125,7 @@ public interface BContext {
 	 * Tells whether this user is an owner or not
 	 *
 	 * @param userId ID of the user
-	 * @return <code>true</code> if the user is an owner
+	 * @return {@code true} if the user is an owner
 	 */
 	default boolean isOwner(long userId) {
 		return getOwnerIds().contains(userId);

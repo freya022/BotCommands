@@ -69,11 +69,11 @@ public @interface AppOption { //TODO separate this into specialised options, why
 	 * <p>
 	 * If this description is omitted, a default localization is
 	 * searched in {@link BApplicationConfigBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
-	 * using the root locale, for example: <code>MyCommands.json</code>.
-	 * <br>If none is found then it is defaulted to <code>"No Description"</code>.
+	 * using the root locale, for example: {@code MyCommands.json}.
+	 * <br>If none is found then it is defaulted to {@code "No Description"}.
 	 *
 	 * <p>
-	 * This can be localized, see {@link LocalizationFunction} on how options are mapped, example: <code>ban.options.user.description</code>.
+	 * This can be localized, see {@link LocalizationFunction} on how options are mapped, example: {@code ban.options.user.description}.
 	 * <br>This is optional if the parameter is not a slash command parameter.
 	 *
 	 * @return Description of the option

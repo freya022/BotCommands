@@ -30,9 +30,9 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
     }
 
     /**
-     * Returns a detailed embed of what the command is, it is used by the internal <code>'help'</code> command
+     * Returns a detailed embed of what the command is, it is used by the internal `help` command
      *
-     * The "`help`" command will automatically set the embed title to be "`Command 'command_name'`" but can be overridden
+     * The `help` command will automatically set the embed title to be `Command 'command_name'` but can be overridden
      *
      * It will also set the embed's description to be the command's description, **you can override with [EmbedBuilder.setDescription]**
      *

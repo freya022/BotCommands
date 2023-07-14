@@ -21,7 +21,8 @@ public interface LocalizationMap {
 
 	/**
 	 * Returns the localization template map.
-	 * <br>The key is the localization path, such as "<code>my_command.name</code>", and the value is a LocalizationTemplate of your choice, possibly {@link DefaultLocalizationTemplate}.
+	 * <br>The key is the localization path, such as {@code my_command.name},
+	 * and the value is a LocalizationTemplate of your choice, possibly {@link DefaultLocalizationTemplate}.
 	 *
 	 * @return The localization template map
 	 */

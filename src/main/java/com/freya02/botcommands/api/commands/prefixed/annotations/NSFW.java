@@ -26,7 +26,7 @@ public @interface NSFW {
 	/**
 	 * Specifies whether this NSFW command should work in guild channels
 	 *
-	 * @return <code>true</code> if the command should run on guild channels
+	 * @return {@code true} if the command should run on guild channels
 	 */
 	boolean guild() default true;
 
@@ -34,7 +34,7 @@ public @interface NSFW {
 	 * Specifies whether this NSFW command should work in a users DMs
 	 * <br><b>The user also needs to consent to NSFW DMs</b>
 	 *
-	 * @return <code>true</code> if the command should run in user DMs
+	 * @return {@code true} if the command should run in user DMs
 	 * @see SettingsProvider#doesUserConsentNSFW(User)
 	 */
 	boolean dm() default false;

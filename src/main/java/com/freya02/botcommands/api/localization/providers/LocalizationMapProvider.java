@@ -19,7 +19,7 @@ public interface LocalizationMapProvider {
 	ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
 
 	/**
-	 * Utility method to append a path component to an existing path, this is simply "<code>path + '.' + other</code>".
+	 * Utility method to append a path component to an existing path, this is simply {@code path + '.' + other}.
 	 *
 	 * @param path  The current path
 	 * @param other The other path component
@@ -34,7 +34,8 @@ public interface LocalizationMapProvider {
 
 	/**
 	 * Returns the bundle name with the specified base name and Locale.
-	 * <br>This follows the same naming as the one used by {@link ResourceBundle}, such as "<code>baseName_en_US</code>", or "<code>baseName_fr</code>" depending on the locale supplied
+	 * <br>This follows the same naming as the one used by {@link ResourceBundle},
+	 * such as {@code baseName_en_US}, or {@code baseName_fr} depending on the locale supplied
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale

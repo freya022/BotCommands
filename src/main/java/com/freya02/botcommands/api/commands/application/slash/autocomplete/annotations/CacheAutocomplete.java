@@ -81,7 +81,7 @@ public @interface CacheAutocomplete {
 	/**
 	 * Defines whether this autocomplete will give different results based on which {@link Guild} this interaction is executing on.
 	 *
-	 * @return <code>true</code> if the autocomplete depends on the {@link Guild} this interaction is execution on
+	 * @return {@code true} if the autocomplete depends on the {@link Guild} this interaction is execution on
 	 *
 	 * @see AutocompleteCacheInfoBuilder#setGuildLocal(boolean) DSL equivalent
 	 */
@@ -90,7 +90,7 @@ public @interface CacheAutocomplete {
 	/**
 	 * Defines whether this autocomplete will give different results based on which {@link User} is executing this interaction.
 	 *
-	 * @return <code>true</code> if the autocomplete depends on which {@link User} is executing this interaction
+	 * @return {@code true} if the autocomplete depends on which {@link User} is executing this interaction
 	 *
 	 * @see AutocompleteCacheInfoBuilder#setUserLocal(boolean) DSL equivalent
 	 */
@@ -99,7 +99,7 @@ public @interface CacheAutocomplete {
 	/**
 	 * Defines whether this autocomplete will give different results based on which {@link Channel} this interaction is executing on.
 	 *
-	 * @return <code>true</code> if the autocomplete depends on the {@link Channel} this interaction is execution on
+	 * @return {@code true} if the autocomplete depends on the {@link Channel} this interaction is execution on
 	 *
 	 * @see AutocompleteCacheInfoBuilder#setChannelLocal(boolean) DSL equivalent
 	 */

@@ -43,7 +43,7 @@ public abstract class BasicInteractiveMenuBuilder<T extends BasicInteractiveMenu
 	 * Sets whether the paginator buttons (previous, next, delete, etc...) should appear with this interactive menu
 	 * <br>This is disabled by default
 	 *
-	 * @param usePaginator <code>true</code> to use the paginator buttons
+	 * @param usePaginator {@code true} to use the paginator buttons
 	 *
 	 * @return This builder for chaining convenience
 	 */

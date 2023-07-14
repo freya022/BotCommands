@@ -49,7 +49,7 @@ public interface ApplicationCommandsContext {
 	/**
 	 * Returns the live application commands for the specific guild
 	 *
-	 * @param guild The guild in which to query the commands, can be <code>null</code> for global commands
+	 * @param guild The guild in which to query the commands, can be {@code null} for global commands
 	 *
 	 * @return The {@link ApplicationCommandMap} of the specific guild
 	 */

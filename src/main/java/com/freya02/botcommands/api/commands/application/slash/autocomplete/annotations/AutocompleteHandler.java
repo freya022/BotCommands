@@ -88,9 +88,9 @@ public @interface AutocompleteHandler {
 	/**
 	 * Determines if the user input is shown as the first suggestion
 	 * <br>This allows the user to force his own input more easily
-	 * <br><b>This being <code>false</code> does not mean that the bot-provided choices are forced upon the user, autocomplete is never forced, unlike choices</b>
+	 * <br><b>This being {@code false} does not mean that the bot-provided choices are forced upon the user, autocomplete is never forced, unlike choices</b>
 	 *
-	 * @return <code>true</code> if the user's input should be shown, <code>false</code> if not
+	 * @return {@code true} if the user's input should be shown, {@code false} if not
 	 *
 	 * @see AutocompleteInfoBuilder#setShowUserInput(boolean) DSL equivalent
 	 */

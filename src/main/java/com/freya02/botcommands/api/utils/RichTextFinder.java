@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *     <li>Emotes</li>
  *     <li>Roles</li>
  *     <li>Unicode/shortcode emojis</li>
- *     <li><code>@here</code> and <code>@everyone</code> mentions</li>
+ *     <li>{@code @here} and {@code @everyone} mentions</li>
  *     <li>URLs</li>
  * </ul>
  *
@@ -40,7 +40,7 @@ public class RichTextFinder extends EmojiParser {
 	 *
 	 * @param input The input to parse
 	 * @param getIMentionable Whether to take Users/Channels/Emotes/Roles
-	 * @param getGlobalMentions Whether to take <code>@here</code> and <code>@everyone</code> mentions
+	 * @param getGlobalMentions Whether to take {@code @here} and {@code @everyone} mentions
 	 * @param getEmojis Whether to take Unicode/shortcode emojis
 	 * @param getUrls Whether to take URLs
 	 */

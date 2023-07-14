@@ -124,9 +124,9 @@ public class Localization {
 	}
 
 	/**
-	 * Returns an unmodifiable view of the <code>localization path -> LocalizationTemplate</code> map
+	 * Returns an unmodifiable view of the {@code localization path -> LocalizationTemplate} map
 	 *
-	 * @return An unmodifiable view of the <code>localization path -> LocalizationTemplate</code> map
+	 * @return An unmodifiable view of the {@code localization path -> LocalizationTemplate} map
 	 */
 	@NotNull
 	@UnmodifiableView

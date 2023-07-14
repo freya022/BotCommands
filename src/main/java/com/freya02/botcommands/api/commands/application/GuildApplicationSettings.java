@@ -23,13 +23,13 @@ import java.util.List;
  */
 public interface GuildApplicationSettings {
 	/**
-	 * Returns the choices available for this command path, on the specific <code>optionIndex</code> (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
+	 * Returns the choices available for this command path, on the specific {@code optionIndex} (option index starts at 0 and is composed of only the parameters annotated with {@link AppOption @AppOption})
 	 *
 	 * <p><i>The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles</i>
 	 *
 	 * <p><b>Note:</b> This method is only used for annotation-declared application commands.
 	 *
-	 * @param guild       The {@link Guild} in which the command is, might be <code>null</code> for global commands with choices
+	 * @param guild       The {@link Guild} in which the command is, might be {@code null} for global commands with choices
 	 * @param commandPath The {@link CommandPath} of the command, this is composed of it's name and optionally of its group and subcommand name
 	 * @param optionName  The option name, this is the same name that appears on Discord
 	 *
@@ -46,7 +46,7 @@ public interface GuildApplicationSettings {
 
 	/**
 	 * Returns a collection of {@link Guild} IDs in which the specified command ID will be allowed to be pushed in
-	 * <br>A <code>null</code> return value means that the command can be used in any guild
+	 * <br>A {@code null} return value means that the command can be used in any guild
 	 * <br>Meanwhile, an empty list means that the command cannot be used anywhere
 	 *
 	 * <p>You will have exceptions later if multiple commands IDs under the same command path share at least one guild ID
@@ -57,7 +57,7 @@ public interface GuildApplicationSettings {
 	 * @param commandPath The {@link CommandPath} of the specified command ID
 	 *
 	 * @return A collection of Guild IDs where the specified command is allowed to be pushed in
-	 * 	   <br>This returns <code>null</code> by default
+	 * 	   <br>This returns {@code null} by default
 	 *
 	 * @see CommandId
 	 */
@@ -72,8 +72,8 @@ public interface GuildApplicationSettings {
 	 *
 	 * <p>This method will only be called once per command option per guild
 	 *
-	 * @param guild         The {@link Guild} in which to add the default value, <code>null</code> if the scope is <b>not</b> {@link CommandScope#GUILD}
-	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be <code>null</code>
+	 * @param guild         The {@link Guild} in which to add the default value, {@code null} if the scope is <b>not</b> {@link CommandScope#GUILD}
+	 * @param commandId     The ID of the command, as optionally set in {@link CommandId}, might be {@code null}
 	 * @param commandPath   The path of the command, as set in {@link JDASlashCommand}
 	 * @param optionName    The name of the <b>transformed</b> command option, might not be equal to the parameter name
 	 * @param parameterType The <b>boxed</b> type of the command option

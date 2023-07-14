@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.pagination.TimeoutInfo;
 import com.freya02.botcommands.api.utils.ButtonContent;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -99,9 +100,9 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 	/**
 	 * Sets the page number, <b>this does not update the embed in any way</b>,
-	 * you can use {@link #get()} with an <code>editOriginal</code> in order to update the embed on Discord
+	 * you can use {@link #get()} with an {@link InteractionHook#editOriginal(MessageEditData)} in order to update the embed on Discord
 	 *
-	 * @param page Number of the page, from <code>0</code> to <code>maxPages - 1</code>
+	 * @param page Number of the page, from {@code 0} to {@code maxPages - 1}
 	 * @return This instance for chaining convenience
 	 */
 	public T setPage(int page) {

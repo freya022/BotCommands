@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Enables you to suppress unused warnings for reflectively accessed classes, such as (application) commands.
- * <br>IDEs such as IntelliJ will suggest you a quick-fix to ignore unused warnings if annotated with <code>@CommandMarker</code>.
+ * <br>IDEs such as IntelliJ will suggest you a quick-fix to ignore unused warnings if annotated with {@code @CommandMarker}.
  * <br><i>This also works the same as with other annotations such as {@link JDATextCommand @JDATextCommand} on methods</i>.
  */
 @Retention(RetentionPolicy.SOURCE)

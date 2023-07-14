@@ -18,7 +18,7 @@ public class CommandList {
 
 	/**
 	 * Makes a list of <b>usable</b> commands (in a Guild context),
-	 * <br><b>You have to insert full commands paths such as <code>name group subcommand</code>, which comes from the Discord representation of <code>/name group subcommand</code></b>
+	 * <br><b>You have to insert full commands paths such as {@code name group subcommand}, which comes from the Discord representation of {@code /name group subcommand}</b>
 	 * <br>This is constructed by joining each path component with a space
 	 * <br><b>Keep in mind you cannot enable global commands on a per-guild basis</b>
 	 *
@@ -43,7 +43,7 @@ public class CommandList {
 
 	/**
 	 * Makes a list of <b>unusable</b> commands (in a Guild context),
-	 * <br><b>You have to insert full commands paths such as <code>name group subcommand</code>, which comes from the Discord representation of <code>/name group subcommand</code></b>
+	 * <br><b>You have to insert full commands paths such as {@code name group subcommand}, which comes from the Discord representation of {@code /name group subcommand}</b>
 	 * <br>This is constructed by joining each path component with a space
 	 * <br><b>Keep in mind you cannot disable global commands on a per-guild basis</b>
 	 *
@@ -77,7 +77,7 @@ public class CommandList {
 	/**
 	 * Makes a list that enables current guild's commands if they satisfy the given predicate
 	 *
-	 * @param predicate The CommandPath predicate, returns <code>true</code> if the command can be used
+	 * @param predicate The CommandPath predicate, returns {@code true} if the command can be used
 	 * @return The CommandList for this predicate
 	 */
 	public static CommandList filter(Predicate<CommandPath> predicate) {

@@ -34,7 +34,7 @@ public final class LocalizationMapProviders {
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle, may not be the same as the one in {@link LocalizationMap#effectiveLocale()}
 	 *
-	 * @return a {@link LocalizationMap} if a provider returned one, <code>null</code> otherwise
+	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */
 	@Nullable
 	public static LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
@@ -61,7 +61,7 @@ public final class LocalizationMapProviders {
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle, may not be the same as the one in {@link LocalizationMap#effectiveLocale()}
 	 *
-	 * @return a {@link LocalizationMap} if a provider returned one, <code>null</code> otherwise
+	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */
 	@Nullable
 	public static LocalizationMap cycleProvidersNoParent(@NotNull String baseName, @NotNull Locale locale) throws IOException {

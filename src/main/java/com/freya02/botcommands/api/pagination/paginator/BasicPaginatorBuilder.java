@@ -55,7 +55,7 @@ public abstract class BasicPaginatorBuilder<T extends BasicPaginationBuilder<T, 
 	 *
 	 * <p><b>Note: </b>This button has the same constraints as those set by {@link #setConstraints(InteractionConstraints)}
 	 *
-	 * @param hasDeleteButton <code>true</code> if the delete button has to appear
+	 * @param hasDeleteButton {@code true} if the delete button has to appear
 	 * @return This builder for chaining convenience
 	 *
 	 * @see #setConstraints(InteractionConstraints)

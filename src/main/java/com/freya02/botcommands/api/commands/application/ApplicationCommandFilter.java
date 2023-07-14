@@ -19,7 +19,7 @@ public interface ApplicationCommandFilter {
 	 * <br><b>You still have to acknowledge the interaction if you don't let it run</b>
 	 *
 	 * @param data The filtering data of the interaction
-	 * @return <code>true</code> if the application command can run, <code>false</code> if it must not run
+	 * @return {@code true} if the application command can run, {@code false} if it must not run
 	 */
 	boolean isAccepted(ApplicationFilteringData data);
 }

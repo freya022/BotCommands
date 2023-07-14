@@ -52,7 +52,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the top level name of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>show</code>"
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code show}
 	 *
 	 * @return Top level name of this command path
 	 */
@@ -61,7 +61,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the subcommand group name of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>me</code>"
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code me}
 	 *
 	 * @return Subcommand group name of this command path
 	 */
@@ -70,8 +70,8 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the subcommand name of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>something</code>"
-	 * <br>For a slash command such as "<code>/tag info</code>", this would be "<code>info</code>"
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code something}
+	 * <br>For a slash command such as {@code /tag info}, this would be {@code info}
 	 *
 	 * @return Subcommand name of this command path
 	 */
@@ -80,9 +80,9 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the number of path components of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be <code>3</code>
-	 * <br>For a slash command such as "<code>/tag info</code>", this would be <code>2</code>
-	 * <br>For a slash command such as "<code>/say</code>", this would be <code>1</code>
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code 3}
+	 * <br>For a slash command such as {@code /tag info}, this would be {@code 2}
+	 * <br>For a slash command such as {@code /say}, this would be {@code 1}
 	 *
 	 * @return The number of path components of this command path
 	 */
@@ -90,9 +90,9 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the parent path of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>/show me</code>"
-	 * <br>For a slash command such as "<code>/tag info</code>", this would be "<code>/tag</code>"
-	 * <br>For a slash command such as "<code>/say</code>", this would be <code>null</code>
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code /show me}
+	 * <br>For a slash command such as {@code /tag info}, this would be {@code /tag}
+	 * <br>For a slash command such as {@code /say}, this would be {@code null}
 	 *
 	 * @return The parent path of this command path
 	 */
@@ -102,7 +102,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	/**
 	 * Returns the full <i>encoded</i> path of this command path
 	 * <br>Each path component is joined with a space delimiter
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>show me something</code>"
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code show me something}
 	 *
 	 * @return The full encoded path of this command path
 	 */
@@ -111,8 +111,8 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the full path with the specified separator.
-	 * <br>For a slash command such as "<code>/show me something</code>", with a <code>-</code> separator,
-	 * this would be "<code>show-me-something</code>"
+	 * <br>For a slash command such as {@code /show me something}, with a {@code -} separator,
+	 * this would be {@code show-me-something}
 	 *
 	 * @return The full path with the specified separator
 	 */
@@ -121,7 +121,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns the right-most name of this command path
-	 * <br>For a slash command such as "<code>/show me something</code>", this would be "<code>something</code>"
+	 * <br>For a slash command such as {@code /show me something}, this would be {@code something}
 	 *
 	 * @return The right-most name of this command path
 	 */
@@ -129,7 +129,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	String getLastName();
 
 	/**
-	 * Return the name at the <code>i</code> index
+	 * Return the name at the {@code i} index
 	 *
 	 * @param i The index of the name to get
 	 * @return The name at the specified index
@@ -147,10 +147,10 @@ public interface CommandPath extends Comparable<CommandPath> {
 
 	/**
 	 * Returns whether this command path starts with the supplied command path
-	 * <br>For example "<code>/show me something</code>" starts with "<code>/show me</code>"
+	 * <br>For example {@code /show me something} starts with {@code /show me}
 	 *
 	 * @param o The other path to test against
-	 * @return <code>true</code> if this path starts with the other, <code>false</code> otherwise
+	 * @return {@code true} if this path starts with the other, {@code false} otherwise
 	 */
 	boolean startsWith(CommandPath o);
 
@@ -158,7 +158,7 @@ public interface CommandPath extends Comparable<CommandPath> {
 	 * Indicates if this command path is equal to another object
 	 *
 	 * @param o Another object
-	 * @return <code>true</code> if they are equal, <code>false</code> if not
+	 * @return {@code true} if they are equal, {@code false} if not
 	 */
 	boolean equals(Object o);
 

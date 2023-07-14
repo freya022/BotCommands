@@ -34,24 +34,24 @@ import java.lang.annotation.Target;
  * <ul>
  *     <li>1 unique command name, examples:
  *     <ul>
- *         <li><code>/nick</code></li>
+ *         <li>{@code /nick}</li>
  *     </ul>
  *     </li>
  *
  *     <li>Multiple commands with the same base name but different subcommand names, examples:
  *     <ul>
- *         <li><code>/info user</code></li>
- *         <li><code>/info role</code></li>
- *         <li><code>/info channel</code></li>
+ *         <li>{@code /info user}</li>
+ *         <li>{@code /info role}</li>
+ *         <li>{@code /info channel}</li>
  *     </ul>
  *     </li>
  *
  *     <li>Multiple subcommands with the same base name and base group but with different subcommand names, examples:
  *     <ul>
- *         <li><code>/info simple user</code></li>
- *         <li><code>/info simple role</code></li>
- *         <li><code>/info complete user</code></li>
- *         <li><code>/info complete role</code></li>
+ *         <li>{@code /info simple user}</li>
+ *         <li>{@code /info simple role}</li>
+ *         <li>{@code /info complete user}</li>
+ *         <li>{@code /info complete role}</li>
  *     </ul>
  *     </li>
  * </ul>
@@ -167,10 +167,10 @@ public @interface JDASlashCommand {
 	 * <p>
 	 * If this description is omitted, a default localization is
 	 * searched in {@link BApplicationConfigBuilder#addLocalizations(String, DiscordLocale...) the command localization bundles}
-	 * using the root locale, for example: <code>MyCommands.json</code>.
+	 * using the root locale, for example: {@code MyCommands.json}.
 	 *
 	 * <p>
-	 * This can be localized, see {@link LocalizationFunction} on how commands are mapped, example: <code>ban.description</code>.
+	 * This can be localized, see {@link LocalizationFunction} on how commands are mapped, example: {@code ban.description}.
 	 *
 	 * @return Short description of the command
 	 *

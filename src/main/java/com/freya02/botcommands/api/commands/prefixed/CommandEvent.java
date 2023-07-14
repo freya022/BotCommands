@@ -36,11 +36,11 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
 	public abstract List<Object> getArguments();
 
 	/**
-	 * Checks if the next argument exists and is of type T, returns <code>true</code> if so
+	 * Checks if the next argument exists and is of type T, returns {@code true} if so
 	 *
 	 * @param clazz Class of the requested type
 	 * @param <T>   Type of the requested argument
-	 * @return <code>true</code> if the argument exists, <code>false</code> if not
+	 * @return {@code true} if the argument exists, {@code false} if not
 	 */
 	public abstract <T> boolean hasNext(Class<T> clazz);
 

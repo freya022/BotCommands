@@ -75,7 +75,7 @@ public interface SettingsProvider {
 	 * <br>Note: <b>You</b> may also use this method to know if a user consents to getting NSFW content from other users
 	 *
 	 * @param user The {@link User} which would receive NSFW content
-	 * @return <code>true</code> if the {@link User} is consenting to NSFW content, <code>false</code> otherwise
+	 * @return {@code true} if the {@link User} is consenting to NSFW content, {@code false} otherwise
 	 */
 	default boolean doesUserConsentNSFW(@NotNull User user) {
 		return false;
