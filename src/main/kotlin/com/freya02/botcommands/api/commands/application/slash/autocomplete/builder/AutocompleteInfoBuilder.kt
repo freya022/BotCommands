@@ -31,7 +31,7 @@ class AutocompleteInfoBuilder internal constructor(private val context: BContext
     /**
      * **Annotation equivalent:** [CacheAutocomplete]
      *
-     * @see CacheAutocomplete
+     * @see CacheAutocomplete @CacheAutocomplete
      */
     fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {
         autocompleteCache = AutocompleteCacheInfoBuilder(cacheMode).apply(block).build()

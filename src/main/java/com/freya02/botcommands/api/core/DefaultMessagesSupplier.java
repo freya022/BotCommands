@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link DefaultMessagesSupplier}.
  *
- * @see InterfacedService
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = false)
 public interface DefaultMessagesSupplier {

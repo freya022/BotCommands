@@ -12,7 +12,7 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
  *
  * If a class has a [ServiceType] of the injected service's interface then this interface can be requested.
  *
- * @see BService
+ * @see BService @BService
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS)

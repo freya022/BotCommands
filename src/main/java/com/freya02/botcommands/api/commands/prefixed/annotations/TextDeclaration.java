@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
- * @see Command
+ * @see Command @Command
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

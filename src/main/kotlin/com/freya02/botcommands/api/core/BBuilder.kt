@@ -79,9 +79,9 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          * }
          * ```
          *
-         * @see BService
-         * @see InterfacedService
-         * @see Command
+         * @see BService @BService
+         * @see InterfacedService @InterfacedService
+         * @see Command @Command
          */
         @JvmStatic
         @JvmOverloads

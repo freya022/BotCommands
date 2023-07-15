@@ -8,7 +8,7 @@ import com.freya02.botcommands.api.core.service.annotations.ConditionalService
  *
  * **Requirement:** A no-arg constructor must exist, or must be a Kotlin `object`.
  *
- * @see ConditionalService
+ * @see ConditionalService @ConditionalService
  */
 interface ConditionalServiceChecker {
     /**

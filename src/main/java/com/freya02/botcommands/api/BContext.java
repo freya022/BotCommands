@@ -193,9 +193,9 @@ public interface BContext {
 	void dispatchException(@NotNull String message, @Nullable Throwable t);
 
 	/**
-	 * Returns the {@linkplain SettingsProvider} for this context
+	 * Returns the {@link SettingsProvider} for this context
 	 *
-	 * @return The current {@linkplain SettingsProvider}
+	 * @return The current {@link SettingsProvider}
 	 */
 	@Nullable
 	SettingsProvider getSettingsProvider();

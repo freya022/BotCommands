@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  *
  * <p>You are not required to use this if you use the {@link TextDeclaration DSL declaration mode}
  *
- * @see JDATextCommand
+ * @see JDATextCommand @JDATextCommand
  */
 public abstract class TextCommand {
 	/**

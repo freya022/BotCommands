@@ -56,9 +56,9 @@ import java.util.List;
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler} or be in an existing {@link Command} class.
  *
- * @see SlashOption
- * @see JDASlashCommand
- * @see CacheAutocomplete
+ * @see SlashOption @SlashOption
+ * @see JDASlashCommand @JDASlashCommand
+ * @see CacheAutocomplete @CacheAutocomplete
  *
  * @see SlashCommandOptionBuilder#autocomplete(String, KFunction, Function1) DSL equivalent
  */

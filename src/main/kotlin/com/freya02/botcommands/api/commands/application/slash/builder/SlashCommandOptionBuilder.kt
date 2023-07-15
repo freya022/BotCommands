@@ -96,7 +96,7 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Uses an existing autocomplete handler with the specified [name][AutocompleteHandler.name]
      *
-     * @see AutocompleteHandler
+     * @see AutocompleteHandler @AutocompleteHandler
      */
     fun autocompleteReference(name: String) {
         autocompleteInfo = context.getService<AutocompleteInfoContainer>()[name] ?: throwUser("Unknown autocomplete handler: $name")

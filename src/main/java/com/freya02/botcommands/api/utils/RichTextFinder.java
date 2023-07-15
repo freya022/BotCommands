@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  *
  * This class takes your input and tokenises it as it finds what you're asking it to find.
  * <p>
- * You can then take the output using {@linkplain #getResults()} or consume it directly using {@linkplain #processResults(RichTextConsumer)}.
+ * You can then take the output using {@link #getResults()} or consume it directly using {@link #processResults(RichTextConsumer)}.
  */
 public class RichTextFinder extends EmojiParser {
 	private static final Pattern urlPattern = Pattern.compile("https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");

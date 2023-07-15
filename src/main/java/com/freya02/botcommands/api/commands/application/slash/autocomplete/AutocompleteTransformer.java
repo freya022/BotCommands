@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
  * @param <E> Type of the List's elements
  *
  * @see SlashOption#autocomplete()
- * @see AutocompleteHandler
- * @see InterfacedService
+ * @see AutocompleteHandler @AutocompleteHandler
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
 public interface AutocompleteTransformer<E> {

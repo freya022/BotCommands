@@ -22,11 +22,11 @@ import java.lang.annotation.Target;
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
- * @see Command
+ * @see Command @Command
  *
- * @see JDASlashCommand
- * @see JDAMessageCommand
- * @see JDAUserCommand
+ * @see JDASlashCommand @JDASlashCommand
+ * @see JDAMessageCommand @JDAMessageCommand
+ * @see JDAUserCommand @JDAUserCommand
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

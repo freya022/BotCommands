@@ -10,8 +10,8 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
  *
  * <p>You are not required to use this if you use the {@link AppDeclaration DSL declaration mode}
  *
- * @see JDASlashCommand
- * @see JDAMessageCommand
- * @see JDAUserCommand
+ * @see JDASlashCommand @JDASlashCommand
+ * @see JDAMessageCommand @JDAMessageCommand
+ * @see JDAUserCommand @JDAUserCommand
  */
 public abstract class ApplicationCommand implements GuildApplicationSettings {}

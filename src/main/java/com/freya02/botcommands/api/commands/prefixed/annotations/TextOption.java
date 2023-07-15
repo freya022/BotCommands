@@ -10,12 +10,12 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used to specify a text command parameter is supplied from a Discord message.
- * <br>This also can set name and example of {@linkplain JDATextCommand text commands} parameters
+ * <br>This also can set name and example of {@link JDATextCommand text commands} parameters
  * <p>
  * {@link #name()} is optional if the parameter name is available (add -parameters to your java compiler)
  *
- * @see Optional Optional (can also see @Nullable)
- * @see Nullable
+ * @see Optional @Optional (can also see @Nullable)
+ * @see Nullable @Nullable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})

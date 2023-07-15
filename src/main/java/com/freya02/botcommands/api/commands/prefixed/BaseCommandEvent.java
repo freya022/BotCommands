@@ -59,7 +59,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract String getArgumentsStr();
 
 	/**
-	 * Send an error message to the event's {@linkplain GuildMessageChannel} and to the bot owner with the exception name and the simple exception description
+	 * Send an error message to the event's {@link GuildMessageChannel} and to the bot owner with the exception name and the simple exception description
 	 *
 	 * @param message Custom message of what part of the command failed
 	 * @param e       The Exception that occurred
@@ -67,7 +67,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract void reportError(String message, Throwable e);
 
 	/**
-	 * Throwable consumer that, when triggered, sends an error message to the event's {@linkplain GuildMessageChannel} and to the bot owner with the exception name and the simple exception description
+	 * Throwable consumer that, when triggered, sends an error message to the event's {@link GuildMessageChannel} and to the bot owner with the exception name and the simple exception description
 	 *
 	 * @param message Custom message of what part of the command failed
 	 * @return A Throwable consumer
@@ -85,7 +85,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 
 	/**
 	 * The Author of the Message received as {@link net.dv8tion.jda.api.entities.Member Member} object.
-	 * <br>The {@linkplain Member} will never be null as this {@linkplain CommandEvent} is not constructed if the author is a web hook
+	 * <br>The {@link Member} will never be null as this {@link CommandEvent} is not constructed if the author is a web hook
 	 *
 	 * @return The Author of the Message as Member object.
 	 */
@@ -113,9 +113,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract InputStream getDefaultIconStream();
 
 	/**
-	 * Sends a {@linkplain MessageEmbed} on the event's channel with the default footer icon
+	 * Sends a {@link MessageEmbed} on the event's channel with the default footer icon
 	 *
-	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param embed       {@link MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
 	 *
 	 * @return The RestAction of the Message to send
@@ -127,10 +127,10 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageEmbed embed, Consumer<? super Throwable> onException);
 
 	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon
+	 * Sends a {@link MessageEmbed} on the specified channel with the default footer icon
 	 *
-	 * @param channel     {@linkplain MessageChannel} to send the embed in
-	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param channel     {@link MessageChannel} to send the embed in
+	 * @param embed       {@link MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
 	 *
 	 * @return The RestAction of the Message to send
@@ -142,11 +142,11 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	public abstract RestAction<Message> sendWithEmbedFooterIcon(MessageChannel channel, MessageEmbed embed, Consumer<? super Throwable> onException);
 
 	/**
-	 * Sends a {@linkplain MessageEmbed} on the specified channel with the default footer icon
+	 * Sends a {@link MessageEmbed} on the specified channel with the default footer icon
 	 *
-	 * @param channel     {@linkplain MessageChannel} to send the embed in
+	 * @param channel     {@link MessageChannel} to send the embed in
 	 * @param iconStream  InputStream of the footer icon, the input stream is closed once it is unreachable
-	 * @param embed       {@linkplain MessageEmbed} to send
+	 * @param embed       {@link MessageEmbed} to send
 	 * @param onException Consumer to call when an exception occurred
 	 *
 	 * @return The RestAction of the Message to send
@@ -160,7 +160,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Add a :white_check_mark: reaction on the event message to indicate command success
 	 *
-	 * @return The {@linkplain RestAction} responsible for adding the reaction
+	 * @return The {@link RestAction} responsible for adding the reaction
 	 */
 	@CheckReturnValue
 	public abstract RestAction<Void> reactSuccess();
@@ -168,7 +168,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Add a :x: reaction on the event message to indicate a command error
 	 *
-	 * @return The {@linkplain RestAction} responsible for adding the reaction
+	 * @return The {@link RestAction} responsible for adding the reaction
 	 */
 	@CheckReturnValue
 	public abstract RestAction<Void> reactError();
@@ -176,8 +176,8 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a response in the event's channel
 	 *
-	 * @param text {@linkplain CharSequence} to send to the event channel
-	 * @return {@linkplain RestAction} to send the message
+	 * @param text {@link CharSequence} to send to the event channel
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
@@ -187,9 +187,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a response in the event's channel
 	 *
-	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param format Formatting {@link String} to use for formatting the message sent to the event channel
 	 * @param args   Objects to use for formatting
-	 * @return {@linkplain RestAction} to send the message
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
@@ -199,9 +199,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a response in the event's channel
 	 *
-	 * @param embed {@linkplain MessageEmbed} to send to the event channel
-	 * @param other Additional {@linkplain MessageEmbed embeds} to send
-	 * @return {@linkplain RestAction} to send the message
+	 * @param embed {@link MessageEmbed} to send to the event channel
+	 * @param other Additional {@link MessageEmbed embeds} to send
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
@@ -211,9 +211,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a file as a response in the event's channel
 	 *
-	 * @param fileUploads The {@linkplain FileUpload file uploads} to send
+	 * @param fileUploads The {@link FileUpload file uploads} to send
 	 *
-	 * @return {@linkplain RestAction} to send the message
+	 * @return {@link RestAction} to send the message
 	 *
 	 * @see MessageChannel#sendFiles(FileUpload...)
 	 */
@@ -224,8 +224,8 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a reply in the event's channel
 	 *
-	 * @param text {@linkplain CharSequence} to send to the event channel
-	 * @return {@linkplain RestAction} to send the message
+	 * @param text {@link CharSequence} to send to the event channel
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
@@ -235,9 +235,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a reply in the event's channel
 	 *
-	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param format Formatting {@link String} to use for formatting the message sent to the event channel
 	 * @param args   Objects to use for formatting
-	 * @return {@linkplain RestAction} to send the message
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
@@ -247,9 +247,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a reply in the event's channel
 	 *
-	 * @param embed {@linkplain MessageEmbed} to send to the event channel
-	 * @param other Additional {@linkplain MessageEmbed embeds} to send
-	 * @return {@linkplain RestAction} to send the message
+	 * @param embed {@link MessageEmbed} to send to the event channel
+	 * @param other Additional {@link MessageEmbed embeds} to send
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue
@@ -259,9 +259,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends a file as a reply in the event's channel
 	 *
-	 * @param fileUploads The {@linkplain FileUpload file uploads} to send
+	 * @param fileUploads The {@link FileUpload file uploads} to send
 	 *
-	 * @return {@linkplain RestAction} to send the message
+	 * @return {@link RestAction} to send the message
 	 *
 	 * @see MessageChannel#sendFiles(FileUpload...)
 	 */
@@ -272,8 +272,8 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends an error reply in the event's channel
 	 *
-	 * @param text {@linkplain CharSequence} to send to the event channel
-	 * @return {@linkplain RestAction} to send the message
+	 * @param text {@link CharSequence} to send to the event channel
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessage(CharSequence)
 	 */
 	@CheckReturnValue
@@ -283,9 +283,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends an error reply in the event's channel
 	 *
-	 * @param format Formatting {@linkplain String} to use for formatting the message sent to the event channel
+	 * @param format Formatting {@link String} to use for formatting the message sent to the event channel
 	 * @param args   Objects to use for formatting
-	 * @return {@linkplain RestAction} to send the message
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageFormat(String, Object...)
 	 */
 	@CheckReturnValue
@@ -295,9 +295,9 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	/**
 	 * Sends an error reply in the event's channel
 	 *
-	 * @param embed {@linkplain MessageEmbed} to send to the event channel
-	 * @param other Additional {@linkplain MessageEmbed embeds} to send
-	 * @return {@linkplain RestAction} to send the message
+	 * @param embed {@link MessageEmbed} to send to the event channel
+	 * @param other Additional {@link MessageEmbed embeds} to send
+	 * @return {@link RestAction} to send the message
 	 * @see MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
 	 */
 	@CheckReturnValue

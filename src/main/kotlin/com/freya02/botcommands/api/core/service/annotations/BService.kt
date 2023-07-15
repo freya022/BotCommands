@@ -13,10 +13,10 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  *
  * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
  *
- * @see InjectedService
- * @see ConditionalService
- * @see ServiceType
- * @see ServiceName
+ * @see InjectedService @InjectedService
+ * @see ConditionalService @ConditionalService
+ * @see ServiceType @ServiceType
+ * @see ServiceName @ServiceName
  *
  * @see DynamicSupplier
  *

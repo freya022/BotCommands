@@ -32,8 +32,8 @@ import java.lang.annotation.Target;
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
  * @see GlobalMessageEvent#getTarget()
- * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
- * @see Command
+ * @see <a href="https://discord.com/developers/docs/interactions/application-commands#message-commands">Discord docs</a>
+ * @see Command @Command
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown

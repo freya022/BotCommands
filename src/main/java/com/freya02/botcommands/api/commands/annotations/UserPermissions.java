@@ -23,9 +23,9 @@ public @interface UserPermissions {
 	AppendMode mode() default AppendMode.SET;
 
 	/**
-	 * Required {@linkplain Permission permissions} of the user
+	 * Required {@link Permission permissions} of the user
 	 *
-	 * @return Required {@linkplain Permission permissions} of the user
+	 * @return Required {@link Permission permissions} of the user
 	 */
 	Permission[] value() default {};
 }

@@ -20,14 +20,14 @@ import java.lang.annotation.Target;
  * <p>A warning will be logged if this class does not have any commands,
  * i.e. methods that declare commands with annotations, or methods that declare using the DSL.
  *
- * @see BService
+ * @see BService @BService
  *
- * @see AppDeclaration
- * @see JDASlashCommand
- * @see JDAMessageCommand
- * @see JDAUserCommand
- * @see TextDeclaration
- * @see JDATextCommand
+ * @see AppDeclaration @AppDeclaration
+ * @see JDASlashCommand @JDASlashCommand
+ * @see JDAMessageCommand @JDAMessageCommand
+ * @see JDAUserCommand @JDAUserCommand
+ * @see TextDeclaration @TextDeclaration
+ * @see JDATextCommand @JDATextCommand
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS) //Read by ClassGraph

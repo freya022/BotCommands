@@ -17,19 +17,19 @@ import org.slf4j.Logger;
  * <p>
  * Parameters supported by default:
  * <ul>
- *     <li>{@linkplain String}</li>
+ *     <li>{@link String}</li>
  *
  *     <li>boolean</li>
  *     <li>long</li>
  *     <li>double</li>
  *
- *     <li>{@linkplain Emoji}</li>
+ *     <li>{@link Emoji}</li>
  *
- *     <li>{@linkplain Role}</li>
- *     <li>{@linkplain User}</li>
- *     <li>{@linkplain Member}</li>
- *     <li>{@linkplain GuildChannel all guild channels subtypes (in theory)}</li>
- *     <li>{@linkplain Message} (only message context commands)</li>
+ *     <li>{@link Role}</li>
+ *     <li>{@link User}</li>
+ *     <li>{@link Member}</li>
+ *     <li>{@link GuildChannel all guild channels subtypes (in theory)}</li>
+ *     <li>{@link Message} (only message context commands)</li>
  * </ul>
  *
  * You can also check loaded parameter resolvers in the logs, on the "trace" level

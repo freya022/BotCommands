@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  * Specifies that this parameter is queried from the modal inputs.
  * <br>The specified input name must be the same as the input name given in, for example, {@link Modals#createTextInput(String, String, TextInputStyle)}.
  *
- * @see ModalData
- * @see ModalHandler
+ * @see ModalData @ModalData
+ * @see ModalHandler @ModalHandler
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})

@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  *
  * All [ConditionalServiceChecker] must pass for this service to be instantiated.
  *
- * @see BService
+ * @see BService @BService
  * @see ConditionalServiceChecker
  */
 @Inherited

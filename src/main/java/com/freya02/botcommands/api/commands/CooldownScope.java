@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 public enum CooldownScope {
     /** Enables cooldown for the user who called the command */
     USER,
-    /** Enables cooldown for the {@linkplain Guild guild} the command got called in */
+    /** Enables cooldown for the {@link Guild guild} the command got called in */
     GUILD,
-    /** Enables cooldown for the {@linkplain GuildMessageChannel} the command got called in */
+    /** Enables cooldown for the {@link GuildMessageChannel} the command got called in */
     CHANNEL
 }

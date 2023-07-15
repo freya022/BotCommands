@@ -29,7 +29,7 @@ public @interface Cooldown {
 	TimeUnit unit() default TimeUnit.MILLISECONDS;
 
 	/**
-	 * Scope of the cooldown, can be either {@linkplain CooldownScope#USER}, {@linkplain CooldownScope#CHANNEL} or {@linkplain CooldownScope#GUILD}
+	 * Scope of the cooldown, can be either {@link CooldownScope#USER}, {@link CooldownScope#CHANNEL} or {@link CooldownScope#GUILD}
 	 *
 	 * @return Scope of the cooldown
 	 */

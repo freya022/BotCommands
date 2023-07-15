@@ -8,9 +8,9 @@ import kotlin.reflect.KClass
  * This may be useful in situations where implementation classes are services, but the interface needs to be constructible from it,
  * as the framework will find back the implementation from the declared service types
  *
- * @see BService
- * @see InjectedService
- * @see ConditionalService
+ * @see BService @BService
+ * @see InjectedService @InjectedService
+ * @see ConditionalService @ConditionalService
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)

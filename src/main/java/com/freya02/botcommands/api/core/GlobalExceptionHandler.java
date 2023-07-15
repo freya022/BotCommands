@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * You are still free from extending {@link GlobalExceptionHandlerAdapter}.
  *
  * @see GlobalExceptionHandlerAdapter
- * @see InterfacedService
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = false)
 public interface GlobalExceptionHandler {

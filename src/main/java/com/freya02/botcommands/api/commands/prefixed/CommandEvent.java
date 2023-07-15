@@ -29,7 +29,7 @@ public abstract class CommandEvent extends BaseCommandEventImpl {
 	}
 
 	/**
-	 * Returns the <b>resolved</b> arguments of the command event, these can be a {@linkplain User}, {@linkplain Role}, {@linkplain TextChannel} or a {@linkplain String}
+	 * Returns the <b>resolved</b> arguments of the command event, these can be a {@link User}, {@link Role}, {@link TextChannel} or a {@link String}
 	 *
 	 * @return List of arguments
 	 */

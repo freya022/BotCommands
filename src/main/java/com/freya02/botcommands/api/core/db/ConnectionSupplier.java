@@ -19,9 +19,9 @@ import java.sql.SQLException;
  *     <li>The class needs to be annotated with {@code @ServiceType(ConnectionSupplier.class)}</li>
  * </ul>
  *
- * @see BService
- * @see ServiceType
- * @see InjectedService
+ * @see BService @BService
+ * @see ServiceType @ServiceType
+ * @see InjectedService @InjectedService
  * @see BComponentsConfigBuilder#setUseComponents(boolean)
  */
 @InterfacedService(acceptMultiple = false)

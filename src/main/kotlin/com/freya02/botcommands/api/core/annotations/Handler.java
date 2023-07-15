@@ -18,12 +18,12 @@ import java.lang.annotation.Target;
  * <p>A warning will be logged if this class does not have any handlers,
  * i.e. methods that declare handlers with annotations.
  *
- * @see BService
+ * @see BService @BService
  *
- * @see JDAButtonListener
- * @see JDASelectMenuListener
- * @see AutocompleteHandler
- * @see ModalHandler
+ * @see JDAButtonListener @JDAButtonListener
+ * @see JDASelectMenuListener @JDASelectMenuListener
+ * @see AutocompleteHandler @AutocompleteHandler
+ * @see ModalHandler @ModalHandler
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS) //Read by ClassGraph

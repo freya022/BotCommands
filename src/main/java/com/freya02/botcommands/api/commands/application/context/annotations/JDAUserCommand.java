@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
  * @see GlobalUserEvent#getTarget()
  * @see GlobalUserEvent#getTargetMember()
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
- * @see Command
+ * @see Command @Command
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown

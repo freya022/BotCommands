@@ -32,14 +32,14 @@ import java.lang.annotation.Target;
  * </ul>
  * <p>Input options needs to be annotated with {@link TextOption @TextOption}, see supported types at {@link ParameterResolver}
  *
- * @see Command
- * @see TextOption
- * @see Hidden
- * @see ID
- * @see BotPermissions
- * @see UserPermissions
- * @see Cooldown
- * @see Aggregate
+ * @see Command @Command
+ * @see TextOption @TextOption
+ * @see Hidden @Hidden
+ * @see ID @ID
+ * @see BotPermissions @BotPermissions
+ * @see UserPermissions @UserPermissions
+ * @see Cooldown @Cooldown
+ * @see Aggregate @Aggregate
  *
  * @see AppDeclaration Declaring text commands using the DSL
  * @see TextCommandManager#textCommand(String, Function1) DSL equivalent

@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  *
  * @see Components
  * @see ParameterResolver
- * @see Aggregate
+ * @see Aggregate @Aggregate
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

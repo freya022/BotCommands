@@ -60,12 +60,12 @@ import java.lang.annotation.Target;
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
  *
  * @see <a href="https://discord.com/developers/docs/interactions/application-commands#subcommands-and-subcommand-groups">Discord docs</a>
- * @see Command
+ * @see Command @Command
  * @see SlashOption @SlashOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
- * @see Aggregate
+ * @see Aggregate @Aggregate
  *
  * @see AppDeclaration Declaring application commands using the DSL
  * @see AbstractApplicationCommandManager#slashCommand(String, CommandScope, KFunction, Function1) DSL equivalent

@@ -23,9 +23,9 @@ public @interface BotPermissions {
 	AppendMode mode() default AppendMode.SET;
 
 	/**
-	 * Required {@linkplain Permission permissions} of the bot
+	 * Required {@link Permission permissions} of the bot
 	 *
-	 * @return Required {@linkplain Permission permissions} of the bot
+	 * @return Required {@link Permission permissions} of the bot
 	 */
 	Permission[] value() default {};
 }

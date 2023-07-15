@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link HelpBuilderConsumer}.
  *
  * @see #accept(EmbedBuilder, boolean, TextCommandInfo)
- * @see InterfacedService
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = false)
 public interface HelpBuilderConsumer {

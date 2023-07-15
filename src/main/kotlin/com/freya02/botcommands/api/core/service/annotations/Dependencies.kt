@@ -6,9 +6,9 @@ import kotlin.reflect.KClass
 /**
  * Marks a service as requiring other services.
  *
- * @see BService
- * @see ConditionalService
- * @see InjectedService
+ * @see BService @BService
+ * @see ConditionalService @ConditionalService
+ * @see InjectedService @InjectedService
  */
 @Inherited
 @MustBeDocumented

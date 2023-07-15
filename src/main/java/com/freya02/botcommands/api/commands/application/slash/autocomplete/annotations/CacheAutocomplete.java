@@ -23,8 +23,8 @@ import java.util.List;
  * <br>However you can use composite keys if you want to cache based off multiple option values,
  * see {@link #compositeKeys()}
  *
- * @see SlashOption
- * @see AutocompleteHandler
+ * @see SlashOption @SlashOption
+ * @see AutocompleteHandler @AutocompleteHandler
  *
  * @see AutocompleteInfoBuilder#cache(AutocompleteCacheMode, Function1) DSL equivalent
  */

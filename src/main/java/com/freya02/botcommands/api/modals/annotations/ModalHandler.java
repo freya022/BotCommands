@@ -26,9 +26,9 @@ import java.lang.annotation.Target;
  *
  * <p><b>Requirement:</b> The declaring class must be annotated with {@link Handler}.
  *
- * @see ModalData
- * @see ModalInput
- * @see Aggregate
+ * @see ModalData @ModalData
+ * @see ModalInput @ModalInput
+ * @see Aggregate @Aggregate
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

@@ -24,7 +24,7 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
     /**
      * **Annotation equivalent:** [JDASlashCommand]
      *
-     * @see JDASlashCommand
+     * @see JDASlashCommand @JDASlashCommand
      */
     @JvmOverloads
     fun slashCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>?, builder: TopLevelSlashCommandBuilder.() -> Unit) {
@@ -39,7 +39,7 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
     /**
      * **Annotation equivalent:** [JDAUserCommand]
      *
-     * @see JDAUserCommand
+     * @see JDAUserCommand @JDAUserCommand
      */
     @JvmOverloads
     fun userCommand(name: String, scope: CommandScope = CommandScope.GLOBAL_NO_DM, function: KFunction<Any>, builder: UserCommandBuilder.() -> Unit) {

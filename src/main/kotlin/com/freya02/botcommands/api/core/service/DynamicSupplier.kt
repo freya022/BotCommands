@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
  *
  * **Usage:** Register your instance as a service with [BService], and a [ServiceType] of [DynamicSupplier].
  *
- * @see InterfacedService
+ * @see InterfacedService @InterfacedService
  */
 @InterfacedService(acceptMultiple = true)
 interface DynamicSupplier {

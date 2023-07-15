@@ -31,7 +31,7 @@ abstract class OptionAggregateBuilder<T : OptionAggregateBuilder<T>> internal co
     }
 
     /**
-     * @see Aggregate
+     * @see Aggregate @Aggregate
      */
     fun nestedAggregate(declaredName: String, aggregator: KFunction<*>, block: T.() -> Unit) {
         _nestedAggregates.aggregate(declaredName, aggregator, block)
