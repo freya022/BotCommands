@@ -22,8 +22,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
     protected abstract fun checkScope(scope: CommandScope)
 
     /**
-     * **Annotation equivalent:** [JDASlashCommand]
-     *
      * @see JDASlashCommand @JDASlashCommand
      */
     @JvmOverloads
@@ -37,8 +35,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
     }
 
     /**
-     * **Annotation equivalent:** [JDAUserCommand]
-     *
      * @see JDAUserCommand @JDAUserCommand
      */
     @JvmOverloads
@@ -52,8 +48,6 @@ sealed class AbstractApplicationCommandManager(private val context: BContextImpl
     }
 
     /**
-     * **Annotation equivalent:** [JDAMessageCommand]
-     *
      * @see JDAMessageCommand
      */
     @JvmOverloads

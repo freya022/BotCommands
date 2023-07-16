@@ -12,15 +12,11 @@ import kotlin.reflect.KFunction
 
 class AutocompleteInfoBuilder internal constructor(private val context: BContextImpl, val name: String, override val function: KFunction<Collection<Any>>) : IBuilderFunctionHolder<Collection<*>> {
     /**
-     * **Annotation equivalent:** [AutocompleteHandler.mode]
-     *
      * @see AutocompleteHandler.mode
      */
     var mode: AutocompleteMode = AutocompleteMode.FUZZY
 
     /**
-     * **Annotation equivalent:** [AutocompleteHandler.showUserInput]
-     *
      * @see AutocompleteHandler.showUserInput
      */
     var showUserInput: Boolean = true
@@ -29,8 +25,6 @@ class AutocompleteInfoBuilder internal constructor(private val context: BContext
         private set
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete]
-     *
      * @see CacheAutocomplete @CacheAutocomplete
      */
     fun cache(cacheMode: AutocompleteCacheMode, block: AutocompleteCacheInfoBuilder.() -> Unit = {}) {

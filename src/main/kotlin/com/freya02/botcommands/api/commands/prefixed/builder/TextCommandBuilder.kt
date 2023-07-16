@@ -52,8 +52,6 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
     /**
      * Configures the NSFW strategy for this command
      *
-     * **Annotation equivalent:** [NSFW]
-     *
      * @see NSFW
      */
     fun nsfw(block: NSFWStrategyBuilder.() -> Unit) {

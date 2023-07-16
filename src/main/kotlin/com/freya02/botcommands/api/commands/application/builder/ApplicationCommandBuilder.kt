@@ -15,11 +15,6 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     /**
-     * **Annotation equivalents:**
-     * - [For slash commands][JDASlashCommand.nsfw]
-     * - [For user context commands][JDAUserCommand.nsfw]
-     * - [For message context commands][JDAMessageCommand.nsfw]
-     *
      * @see JDASlashCommand.nsfw
      * @see JDAUserCommand.nsfw
      * @see JDAMessageCommand.nsfw

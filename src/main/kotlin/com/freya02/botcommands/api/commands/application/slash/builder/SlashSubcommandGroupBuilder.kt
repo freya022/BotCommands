@@ -27,8 +27,6 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
     }
 
     /**
-     * **Annotation equivalent:** [JDASlashCommand.subcommand]
-     *
      * @see JDASlashCommand.subcommand
      */
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {

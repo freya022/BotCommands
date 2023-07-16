@@ -27,8 +27,6 @@ class SlashCommandOptionBuilder internal constructor(
     val optionName: String
 ): ApplicationCommandOptionBuilder(optionParameter) {
     /**
-     * **Annotation equivalent:** [SlashOption.description]
-     *
      * @see SlashOption.usePredefinedChoices
      */
     var description: String = "No description"
@@ -37,8 +35,6 @@ class SlashCommandOptionBuilder internal constructor(
      * Required for [SlashParameterResolver.getPredefinedChoices] to be used.
      *
      * **Note:** Predefined choices can still be overridden by [GuildApplicationSettings.getOptionChoices].
-     *
-     * **Annotation equivalent:** [SlashOption.usePredefinedChoices]
      *
      * @see SlashOption.usePredefinedChoices
      */
@@ -52,25 +48,17 @@ class SlashCommandOptionBuilder internal constructor(
     var choices: List<Choice>? = null
 
     /**
-     * **Annotation equivalents:**
-     * - [DoubleRange]
-     * - [LongRange]
-     *
      * @see DoubleRange
      * @see LongRange
      */
     var valueRange: ValueRange? = null
 
     /**
-     * **Annotation equivalent:** [Length]
-     *
      * @see Length
      */
     var lengthRange: LengthRange? = null
 
     /**
-     * **Annotation equivalent:** [ChannelTypes]
-     *
      * @see ChannelTypes
      */
     var channelTypes: EnumSet<ChannelType>? = null
@@ -84,8 +72,6 @@ class SlashCommandOptionBuilder internal constructor(
      * The name of the handler must be unique,
      * I recommend naming them like: `YourClassSimpleName: AutocompletedField`<br>
      * Example: `SlashTag: tagName`
-     *
-     * **Annotation equivalent:** [SlashOption.autocomplete]
      *
      * @see SlashOption.autocomplete
      */

@@ -20,8 +20,6 @@ abstract class SlashCommandBuilder internal constructor(
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: fakeSlashFunction) {
     /**
-     * **Annotation equivalent:** [JDASlashCommand.description]
-     *
      * @see JDASlashCommand.description
      */
     var description: String = DEFAULT_DESCRIPTION
@@ -59,7 +57,7 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     /**
-     * **Annotation equivalent:** [VarArgs]
+     * @see VarArgs
      */
     fun inlineClassOptionVararg(declaredName: String, clazz: Class<*>, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         val aggregatorConstructor = clazz.kotlin.primaryConstructor
@@ -72,14 +70,14 @@ abstract class SlashCommandBuilder internal constructor(
     }
 
     /**
-     * **Annotation equivalent:** [VarArgs]
+     * @see VarArgs
      */
     inline fun <reified T : Any> inlineClassOptionVararg(declaredName: String, amount: Int, requiredAmount: Int, noinline optionNameSupplier: (Int) -> String, noinline block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {
         inlineClassOptionVararg(declaredName, T::class.java, amount, requiredAmount, optionNameSupplier, block)
     }
 
     /**
-     * **Annotation equivalent:** [VarArgs]
+     * @see VarArgs
      */
     @JvmOverloads
     fun optionVararg(declaredName: String, amount: Int, requiredAmount: Int, optionNameSupplier: (Int) -> String, block: SlashCommandOptionBuilder.(Int) -> Unit = {}) {

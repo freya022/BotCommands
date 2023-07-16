@@ -7,11 +7,6 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 
 interface ITopLevelApplicationCommandBuilder {
     /**
-     * **Annotation equivalents:**
-     * - [For slash commands][JDASlashCommand.scope]
-     * - [For user context commands][JDAUserCommand.scope]
-     * - [For message context commands][JDAMessageCommand.scope]
-     *
      * @see JDASlashCommand.scope
      * @see JDAUserCommand.scope
      * @see JDAMessageCommand.scope
@@ -19,11 +14,6 @@ interface ITopLevelApplicationCommandBuilder {
     val scope: CommandScope
 
     /**
-     * **Annotation equivalents:**
-     * - [For slash commands][JDASlashCommand.defaultLocked]
-     * - [For user context commands][JDAUserCommand.defaultLocked]
-     * - [For message context commands][JDAMessageCommand.defaultLocked]
-     *
      * @see JDASlashCommand.defaultLocked
      * @see JDAUserCommand.defaultLocked
      * @see JDAMessageCommand.defaultLocked

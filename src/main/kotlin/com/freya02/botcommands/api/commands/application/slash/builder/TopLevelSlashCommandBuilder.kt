@@ -33,8 +33,6 @@ class TopLevelSlashCommandBuilder internal constructor(
         get() = optionAggregateBuilders.isEmpty()
 
     /**
-     * **Annotation equivalent:** [JDASlashCommand.subcommand]
-     *
      * @see JDASlashCommand.subcommand
      */
     @JvmOverloads
@@ -46,8 +44,6 @@ class TopLevelSlashCommandBuilder internal constructor(
     }
 
     /**
-     * **Annotation equivalent:** [JDASlashCommand.group]
-     *
      * @see JDASlashCommand.group
      */
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {

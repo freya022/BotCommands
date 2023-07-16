@@ -16,44 +16,32 @@ class AutocompleteCacheInfoBuilder internal constructor(val cacheMode: Autocompl
      *
      * This could be useful if your autocomplete is heavy even in a development environment.
      *
-     * **Annotation equivalent:** [CacheAutocomplete.forceCache]
-     *
      * @see BConfigBuilder.disableAutocompleteCache
      * @see CacheAutocomplete.forceCache
      */
     var forceCache: Boolean = false
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete.cacheSize]
-     *
      * @see CacheAutocomplete.cacheSize
      */
     var cacheSize: Long = 2048
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete.compositeKeys]
-     *
      * @see CacheAutocomplete.compositeKeys
      */
     var compositeKeys: List<String> = emptyList()
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete.guildLocal]
-     *
      * @see CacheAutocomplete.userLocal
      */
     var guildLocal: Boolean = false
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete.userLocal]
-     *
      * @see CacheAutocomplete.userLocal
      */
     var userLocal: Boolean = false
 
     /**
-     * **Annotation equivalent:** [CacheAutocomplete.channelLocal]
-     *
      * @see CacheAutocomplete.channelLocal
      */
     var channelLocal: Boolean = false
