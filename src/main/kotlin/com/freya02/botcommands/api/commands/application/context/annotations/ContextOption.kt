@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.commands.application.context.annotations
 
-import com.freya02.botcommands.api.commands.annotations.Optional;
-import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder;
-import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.commands.annotations.Optional
+import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder
+import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import org.jetbrains.annotations.Nullable
 
 /**
  * Sets a parameter as a context command option.
@@ -14,6 +14,6 @@ import org.jetbrains.annotations.Nullable;
  * @see UserCommandBuilder.option DSL equivalent (user context commands)
  * @see MessageCommandBuilder.option DSL equivalent (message context commands)
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ContextOption

@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.localization.annotations
 
-import com.freya02.botcommands.api.localization.context.AppLocalizationContext;
-import com.freya02.botcommands.api.localization.context.TextLocalizationContext;
+import com.freya02.botcommands.api.localization.context.AppLocalizationContext
+import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 
 /**
  * Sets the bundle name and path prefix for injected [TextLocalizationContext] / [AppLocalizationContext] parameters

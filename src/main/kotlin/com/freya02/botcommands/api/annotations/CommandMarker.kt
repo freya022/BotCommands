@@ -5,6 +5,6 @@ package com.freya02.botcommands.api.annotations
  *
  * IDEs such as IntelliJ will suggest you a quick-fix to ignore unused warnings if annotated with `@CommandMarker`.
  */
-@Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
-annotation class CommandMarker  
+@Retention(AnnotationRetention.SOURCE)
+annotation class CommandMarker

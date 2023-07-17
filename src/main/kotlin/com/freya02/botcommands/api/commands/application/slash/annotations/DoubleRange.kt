@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 
 /**
  * Sets the minimum and maximum values on the specified [SlashOption].
@@ -9,8 +9,8 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
  *
  * @see SlashCommandOptionBuilder.valueRange DSL equivalent
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class DoubleRange(
     /**
      * The minimum value of this parameter (included)

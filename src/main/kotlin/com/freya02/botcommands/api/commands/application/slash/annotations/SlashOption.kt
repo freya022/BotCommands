@@ -1,10 +1,15 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.annotations.Optional;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.commands.annotations.Optional
+import com.freya02.botcommands.api.commands.application.GuildApplicationSettings
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder
+import com.freya02.botcommands.api.parameters.SlashParameterResolver
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
+import org.jetbrains.annotations.Nullable
 
 /**
  * Sets a parameter as a slash command option from Discord.
@@ -25,8 +30,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * @see SlashCommandBuilder.option DSL equivalent
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class SlashOption(
     /**
      * Name of the option.<br>

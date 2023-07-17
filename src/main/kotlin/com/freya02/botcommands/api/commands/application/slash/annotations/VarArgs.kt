@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
 
 /**
  * Generates N command options from the specified [SlashOption] or [TextOption].
@@ -14,8 +15,8 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
  * @see SlashCommandBuilder.optionVararg
  * @see SlashCommandBuilder.inlineClassOptionVararg
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class VarArgs(
     /**
      * The number of times this option needs to appear, which must be between 1 and {@value CommandData#MAX_OPTIONS}.

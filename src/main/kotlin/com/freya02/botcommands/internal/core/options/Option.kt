@@ -3,8 +3,8 @@ package com.freya02.botcommands.internal.core.options
 import com.freya02.botcommands.api.commands.CommandOptionBuilder
 import com.freya02.botcommands.api.core.utils.isPrimitive
 import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.internal.core.options.builder.InternalAggregators
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
-import com.freya02.botcommands.internal.core.options.builder.OptionAggregateBuildersImpl
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.ReflectionMetadata.isNullable
 import com.freya02.botcommands.internal.utils.throwInternal
@@ -31,7 +31,7 @@ interface Option {
     /**
      * This might be a KParameter from the command function or from an aggregate function.
      *
-     * - In the case the option was created from [the internal aggregator][OptionAggregateBuildersImpl.theSingleAggregator], the KParameter is grabbed from the command function.
+     * - In the case the option was created from [the internal aggregator][InternalAggregators.theSingleAggregator], the KParameter is grabbed from the command function.
      * - In the case the option was created in a user-defined aggregator, then the KParameter is grabbed from the aggregate function.
      *
      * **Beware of the types and nullabilities**, the KParameter could be of an array type.
@@ -49,7 +49,7 @@ interface Option {
 
     /**
      * The parameter is a vararg if:
-     * * The aggregator is [OptionAggregateBuildersImpl.theVarargAggregator]
+     * * The aggregator is [InternalAggregators.theVarargAggregator]
      * * The erased type is [List]
      */
     val isVararg: Boolean

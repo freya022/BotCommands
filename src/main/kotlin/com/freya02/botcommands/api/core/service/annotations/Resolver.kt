@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.core.service.annotations
 
-import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.parameters.ParameterResolver
 
 /**
  * Marks this class as a [parameter resolver][ParameterResolver].<br>

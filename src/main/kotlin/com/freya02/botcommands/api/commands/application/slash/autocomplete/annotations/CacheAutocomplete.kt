@@ -1,10 +1,13 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
-import com.freya02.botcommands.api.core.config.BConfigBuilder;
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteCacheMode
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteCacheInfoBuilder
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import com.freya02.botcommands.api.core.config.BConfigBuilder
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.Channel
 
 /**
  * Enables autocomplete caching.
@@ -18,8 +21,8 @@ import com.freya02.botcommands.api.core.config.BConfigBuilder;
  *
  * @see AutocompleteInfoBuilder.cache DSL equivalent
  */
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class CacheAutocomplete(
     /**
      * Sets the [autocomplete cache mode][AutocompleteCacheMode].

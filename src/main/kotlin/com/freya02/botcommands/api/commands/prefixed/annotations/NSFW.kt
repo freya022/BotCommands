@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations
 
-import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
-import com.freya02.botcommands.api.core.SettingsProvider;
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import com.freya02.botcommands.api.core.SettingsProvider
 
 
 /**
@@ -14,8 +14,8 @@ import com.freya02.botcommands.api.core.SettingsProvider;
  *
  * @see TextCommandBuilder.nsfw DSL equivalent
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class NSFW(
     /**
      * Specifies whether this NSFW command should work in guild channels.

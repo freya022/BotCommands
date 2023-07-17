@@ -1,5 +1,10 @@
 package com.freya02.botcommands.api.commands.annotations
 
+import com.freya02.botcommands.api.commands.application.ApplicationCommand
+import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier
+import com.freya02.botcommands.api.commands.prefixed.TextCommand
+import com.freya02.botcommands.api.commands.prefixed.TextGeneratedValueSupplier
+
 /**
  * Marks a parameter as being a generated option.
  *
@@ -13,6 +18,6 @@ package com.freya02.botcommands.api.commands.annotations
  * and return, on the correct guild/command id/command path/option name,
  * an appropriate [ApplicationGeneratedValueSupplier] that will generate an object of the correct type.
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class GeneratedOption  
+@Retention(AnnotationRetention.RUNTIME)
+annotation class GeneratedOption

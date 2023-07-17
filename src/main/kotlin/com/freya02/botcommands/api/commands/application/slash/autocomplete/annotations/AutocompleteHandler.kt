@@ -1,10 +1,14 @@
 package com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode;
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder;
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteMode
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.builder.AutocompleteInfoBuilder
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import com.freya02.botcommands.api.core.annotations.Handler
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 
 /**
  * Uses the method as an autocomplete function for [slash command options][SlashOption].
@@ -40,8 +44,8 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
  *
  * @see SlashCommandOptionBuilder.autocomplete DSL equivalent
  */
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class AutocompleteHandler(
     /**
      * Sets the name of the autocomplete handler, **it must be the same as what you set in [SlashOption.autocomplete]**.

@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.modals.annotations
 
+import com.freya02.botcommands.api.modals.Modals
+
 /**
  * Set this parameter as a modal input.
  *
@@ -8,8 +10,8 @@ package com.freya02.botcommands.api.modals.annotations
  * @see ModalData @ModalData
  * @see ModalHandler @ModalHandler
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ModalInput(
     /**
      * The name of the modal input.<br>

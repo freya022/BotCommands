@@ -1,5 +1,7 @@
 package com.freya02.botcommands.api.modals.annotations
 
+import com.freya02.botcommands.api.modals.ModalBuilder
+
 /**
  * Sets this parameter as data coming from [ModalBuilder.bindTo].
  *
@@ -9,6 +11,6 @@ package com.freya02.botcommands.api.modals.annotations
  * @see ModalHandler @ModalHandler
  * @see ModalInput @ModalInput
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ModalData

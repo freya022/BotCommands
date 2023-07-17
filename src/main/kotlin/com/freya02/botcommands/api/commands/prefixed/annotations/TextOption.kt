@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations
 
-import com.freya02.botcommands.api.commands.annotations.Optional;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.commands.annotations.Optional
+import org.jetbrains.annotations.Nullable
 
 /**
  * Sets a parameter as a text command option from the Discord message.
@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * @see Optional @Optional
  * @see Nullable @Nullable
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class TextOption(
     /**
      * The name of this option displayed on the help content.

@@ -1,5 +1,9 @@
 package com.freya02.botcommands.api.commands.annotations
 
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
+import org.jetbrains.annotations.Nullable
+
 /**
  * Marks an option ([@SlashOption][SlashOption] or [@TextOption][TextOption]) as being optional.
  *
@@ -14,6 +18,6 @@ package com.freya02.botcommands.api.commands.annotations
  *
  * Attempts at fixing the issue can include moving the parameters around, like avoiding 2 strings next to each other.
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class Optional  
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Optional

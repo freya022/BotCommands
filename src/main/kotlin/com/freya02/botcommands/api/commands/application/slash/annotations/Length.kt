@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 /**
  * Sets the minimum and maximum string length on the specified [SlashOption].
@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
  *
  * @see SlashCommandOptionBuilder.lengthRange DSL equivalent
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Length(
     /**
      * The minimum value of this parameter (included)

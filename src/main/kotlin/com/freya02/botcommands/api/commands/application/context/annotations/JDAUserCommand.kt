@@ -1,15 +1,18 @@
 package com.freya02.botcommands.api.commands.application.context.annotations
 
-import com.freya02.botcommands.api.commands.annotations.BotPermissions;
-import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.annotations.Cooldown;
-import com.freya02.botcommands.api.commands.annotations.UserPermissions;
-import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager;
-import com.freya02.botcommands.api.commands.application.CommandScope;
-import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder;
-import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent;
-import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
+import com.freya02.botcommands.api.commands.annotations.BotPermissions
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.CommandScope
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
+import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
+import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 
 /**
  * Declares this function as a user context command.
@@ -34,8 +37,8 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * @see AppDeclaration Declaring application commands using the DSL
  * @see AbstractApplicationCommandManager.userCommand DSL equivalent
  */
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class JDAUserCommand(
     /**
      * Specifies the application command scope for this command.

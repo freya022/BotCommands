@@ -1,9 +1,11 @@
 package com.freya02.botcommands.api.commands.application.annotations
 
-import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
-import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.GuildApplicationCommandManager
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 
 /**
  * Annotation for functions which declares application commands.
@@ -21,6 +23,6 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
  * @see JDAMessageCommand @JDAMessageCommand
  * @see JDAUserCommand @JDAUserCommand
  */
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class AppDeclaration  
+annotation class AppDeclaration

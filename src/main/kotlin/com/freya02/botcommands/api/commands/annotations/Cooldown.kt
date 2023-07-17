@@ -1,14 +1,14 @@
 package com.freya02.botcommands.api.commands.annotations
 
-import com.freya02.botcommands.api.commands.CooldownScope;
+import com.freya02.botcommands.api.commands.CooldownScope
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeUnit
 
 /**
  * Specifies the cooldown of this text / application command.
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Cooldown(
     /**
      * Cooldown time [in the specified unit][unit] before the command can be used again in the scope specified by [cooldownScope].

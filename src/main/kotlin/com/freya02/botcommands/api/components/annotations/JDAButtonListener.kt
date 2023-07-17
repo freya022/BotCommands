@@ -1,8 +1,13 @@
 package com.freya02.botcommands.api.components.annotations
 
-import com.freya02.botcommands.api.components.Components;
-import com.freya02.botcommands.api.core.options.annotations.Aggregate;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.builder.button.PersistentButtonBuilder
+import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.api.core.annotations.Handler
+import com.freya02.botcommands.api.core.config.BConfigBuilder
+import com.freya02.botcommands.api.core.options.annotations.Aggregate
+import com.freya02.botcommands.api.parameters.ParameterResolver
 
 /**
  * Annotation for defining a button listener,

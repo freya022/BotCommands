@@ -1,13 +1,16 @@
 package com.freya02.botcommands.api.commands.application.annotations
 
+import com.freya02.botcommands.api.core.config.BApplicationConfig
+import net.dv8tion.jda.api.entities.Guild
+
 /**
  * Defines an **annotated** application command as being test-only.
  *
  * This means this application command will only be pushed in guilds
  * defined by [BApplicationConfig.testGuildIds] and [guildIds].
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Test(
     /**
      * Specifies the [Guild] IDs in which the command should try to be inserted in

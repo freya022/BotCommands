@@ -16,6 +16,6 @@ import com.freya02.botcommands.api.modals.annotations.ModalHandler
  *
  * Can be used on parameters of [ModalHandler], [JDASelectMenuListener] or [JDAButtonListener] functions.
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class Aggregate

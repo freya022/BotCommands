@@ -19,7 +19,6 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  * @see ServiceName @ServiceName
  *
  * @see DynamicSupplier
- *
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)

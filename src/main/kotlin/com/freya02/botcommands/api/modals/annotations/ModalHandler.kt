@@ -1,6 +1,12 @@
 package com.freya02.botcommands.api.modals.annotations
 
-import com.freya02.botcommands.api.core.options.annotations.Aggregate;
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.core.annotations.Handler
+import com.freya02.botcommands.api.core.config.BConfigBuilder
+import com.freya02.botcommands.api.core.options.annotations.Aggregate
+import com.freya02.botcommands.api.modals.ModalBuilder
+import com.freya02.botcommands.api.modals.Modals
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
 /**
  * Declares this function as a modal handler for the specified modal name.
@@ -18,8 +24,8 @@ import com.freya02.botcommands.api.core.options.annotations.Aggregate;
  * @see ModalInput @ModalInput
  * @see Aggregate @Aggregate
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ModalHandler(
     /**
      * The name of the handler,

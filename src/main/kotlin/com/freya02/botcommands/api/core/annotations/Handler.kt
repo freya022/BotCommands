@@ -1,10 +1,10 @@
 package com.freya02.botcommands.api.core.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler;
-import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
-import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener;
-import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.modals.annotations.ModalHandler;
+import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.modals.annotations.ModalHandler
 
 /**
  * Enables this class to be scanned for one or more handler.<br>

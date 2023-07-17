@@ -1,13 +1,17 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations
 
-import com.freya02.botcommands.api.commands.annotations.BotPermissions;
-import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.annotations.Cooldown;
-import com.freya02.botcommands.api.commands.annotations.UserPermissions;
-import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.prefixed.TextCommandManager;
-import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
-import com.freya02.botcommands.api.core.options.annotations.Aggregate;
+import com.freya02.botcommands.api.commands.annotations.BotPermissions
+import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.commands.prefixed.CommandEvent
+import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
+import com.freya02.botcommands.api.core.config.BConfigBuilder
+import com.freya02.botcommands.api.core.options.annotations.Aggregate
+import com.freya02.botcommands.api.parameters.ParameterResolver
 
 /**
  * Declares this function as a text command.
@@ -37,8 +41,8 @@ import com.freya02.botcommands.api.core.options.annotations.Aggregate;
  *
  * @see TextCommandManager.textCommand DSL equivalent
  */
+@Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class JDATextCommand(
     /**
      * Primary name of the command, **must not contain any spaces**

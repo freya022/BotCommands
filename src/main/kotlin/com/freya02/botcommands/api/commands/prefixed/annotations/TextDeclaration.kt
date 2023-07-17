@@ -1,6 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations
 
-import com.freya02.botcommands.api.commands.annotations.Command;
+import com.freya02.botcommands.api.commands.annotations.Command
 
 /**
  * Declares the function as a text command declaration function.
@@ -11,6 +11,6 @@ import com.freya02.botcommands.api.commands.annotations.Command;
  *
  * @see Command @Command
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
-annotation class TextDeclaration  
+@Retention(AnnotationRetention.RUNTIME)
+annotation class TextDeclaration

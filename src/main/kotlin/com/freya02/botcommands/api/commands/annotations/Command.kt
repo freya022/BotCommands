@@ -1,12 +1,12 @@
 package com.freya02.botcommands.api.commands.annotations
 
-import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand;
-import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand;
-import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
-import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
-import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration;
-import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAMessageCommand
+import com.freya02.botcommands.api.commands.application.context.annotations.JDAUserCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
+import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
+import com.freya02.botcommands.api.core.service.annotations.BService
 
 /**
  * Enables this class to be scanned for one or more commands.<br>

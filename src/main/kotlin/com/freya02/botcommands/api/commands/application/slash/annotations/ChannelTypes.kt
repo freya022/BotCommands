@@ -1,7 +1,8 @@
 package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
+import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
 /**
  * Sets the desired channel types for this [SlashOption].
@@ -11,6 +12,6 @@ import net.dv8tion.jda.api.entities.channel.ChannelType;
  *
  * @see SlashCommandOptionBuilder.channelTypes DSL equivalent
  */
-@Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class ChannelTypes(vararg val value: ChannelType)
