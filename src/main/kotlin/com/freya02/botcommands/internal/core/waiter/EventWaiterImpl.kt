@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.core.waiter
 
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.core.utils.logger
@@ -93,20 +94,17 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         return future
     }
 
+    @BEventListener
+    internal fun onInjectedJDA(event: InjectedJDAEvent) {
+        logger.trace { "Got JDA instance ${event.jda}" }
+
+        this.jda = event.jda
+        this.intents = event.jda.gatewayIntents
+    }
+
     @Suppress("UNCHECKED_CAST")
-    @BEventListener // Just listen to any event, I just need any JDA instance
+    @BEventListener
     internal fun onEvent(event: Event, eventDispatcher: EventDispatcher) {
-        if (!::jda.isInitialized) {
-            lock.withLock {
-                if (!::jda.isInitialized) {
-                    logger.trace("Got JDA instance with ${event.javaClass.simpleNestedName}")
-
-                    this.jda = event.jda
-                    this.intents = event.jda.gatewayIntents
-                }
-            }
-        }
-
         val waitingEvents: MutableList<WaitingEvent<out Event>> = waitingMap[event.javaClass] ?: return
 
         lock.withLock {
