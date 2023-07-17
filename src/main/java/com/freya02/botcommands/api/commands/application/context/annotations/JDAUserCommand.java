@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application.context.annotations;
+package com.freya02.botcommands.api.commands.application.context.annotations
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Command;
@@ -9,91 +9,77 @@ import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder;
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent;
-import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent;
-import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import kotlin.jvm.functions.Function1;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Required annotation for user commands.
- * 
- * <p>
- * The targeted method must have a {@link GlobalUserEvent} or a {@link GuildUserEvent},
- * with the only accepted {@link SlashOption options} being {@link Member} and {@link User},
- * which will be the <i>targeted</i> entity
+ * Declares this function as a user context command.
  *
- * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
+ * The targeted method must have a [GlobalUserEvent] or a [GuildUserEvent],
+ * with the only accepted [options][ContextOption] being [Member] and [User],
+ * which will be the *targeted* entity.
  *
- * @see GlobalUserEvent#getTarget()
- * @see GlobalUserEvent#getTargetMember()
- * @see <a href="https://discord.com/developers/docs/interactions/application-commands#user-commands">Discord docs</a>
+ * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#user-commands) for more details.
+ *
+ * **Requirement:** The declaring class must be annotated with [@Command][Command].
+ *
+ * @see GlobalUserEvent.getTarget
+ * @see GlobalUserEvent.getTargetMember
+ *
  * @see Command @Command
+ * @see ContextOption @ContextOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
  *
  * @see AppDeclaration Declaring application commands using the DSL
- * @see AbstractApplicationCommandManager#userCommand(String, CommandScope, KFunction, Function1) DSL equivalent
+ * @see AbstractApplicationCommandManager.userCommand DSL equivalent
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface JDAUserCommand {
-	/**
-	 * Specified the application command scope for this command.
-	 *
-	 * <p><b>Default:</b> {@link CommandScope#GLOBAL_NO_DM GLOBAL_NO_DM}
-	 *
-	 * @return Scope of the command
-	 *
-	 * @see CommandScope
-	 */
-	CommandScope scope() default CommandScope.GLOBAL_NO_DM;
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class JDAUserCommand(
+    /**
+     * Specifies the application command scope for this command.
+     *
+     * **Default:** [CommandScope.GLOBAL_NO_DM]
+     *
+     * @see CommandScope DSL equivalent
+     */
+    val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
 
-	/**
-	 * Specifies whether the application command is disabled for everyone but administrators by default,
-	 * so that administrators can further configure the command.
-	 *
-	 * <br><b>Note:</b> you cannot use this with {@link UserPermissions}.
-	 *
-	 * <p><b>Default:</b> false
-	 *
-	 * @return {@code true} if the command should be disabled by default
-	 *
-	 * @see UserCommandBuilder#setDefaultLocked(boolean) DSL equivalent
-	 */
-	boolean defaultLocked() default false;
+    /**
+     * Specifies whether the application command is disabled for everyone but administrators by default,
+     * so that administrators can further configure the command.
+     *
+     * **Note:** you cannot use this with [UserPermissions].
+     *
+     * **Default:** false
+     *
+     * @return `true` if the command should be disabled by default
+     *
+     * @see UserCommandBuilder.isDefaultLocked
+     */
+    val defaultLocked: Boolean = false,
 
-	/**
-	 * Specifies whether the application command is usable in NSFW channels.
-	 * <br>Note: NSFW commands need to be enabled by the user in order to appear in DMs
-	 *
-	 * <p><b>Default:</b> false
-	 *
-	 * @return {@code true} if the command should only be usable in NSFW channels
-	 *
-	 * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
-	 *
-	 * @see UserCommandBuilder#setNsfw(boolean) DSL equivalent
-	 */
-	boolean nsfw() default false;
+    /**
+     * Specifies whether the application command is usable in NSFW channels.<br>
+     * Note: NSFW commands need to be enabled by the user in order to appear in DMs
+     *
+     * **Default:** false
+     *
+     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
+     *
+     * @return `true` if the command is restricted to NSFW channels
+     *
+     * @see UserCommandBuilder.nsfw DSL equivalent
+     */
+    val nsfw: Boolean = false,
 
-	/**
-	 * Primary name of the command, which can contain spaces and upper cases.
-	 *
-	 * <p>
-	 * This can be localized, see {@link LocalizationFunction} on how commands are mapped.
-	 *
-	 * @return Name of the command
-	 *
-	 * @see LocalizationFunction
-	 */
-	String name();
-}
+    /**
+     * Primary name of the command, which can contain spaces and upper cases.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped.
+     *
+     * @see LocalizationFunction
+     */
+    val name: String
+)

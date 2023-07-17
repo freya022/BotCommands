@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
@@ -23,7 +24,7 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * The only class you'll need to initialize the framework.
  *
- * See `newBuilder` methods
+ * @see newBuilder
  */
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuilder>) {
     private val logger = KotlinLogging.logger { }
@@ -32,7 +33,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
     /**
      * The only class you'll need to initialize the framework.
      *
-     * See `newBuilder` methods
+     * @see newBuilder
      */
     companion object {
         /**

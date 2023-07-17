@@ -1,26 +1,29 @@
-package com.freya02.botcommands.api.commands.prefixed.annotations;
+package com.freya02.botcommands.api.commands.prefixed.annotations
 
 import com.freya02.botcommands.api.commands.annotations.Optional;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotation used to specify a text command parameter is supplied from a Discord message.
- * <br>This also can set name and example of {@link JDATextCommand text commands} parameters
- * <p>
- * {@link #name()} is optional if the parameter name is available (add -parameters to your java compiler)
+ * Sets a parameter as a text command option from the Discord message.
  *
- * @see Optional @Optional (can also see @Nullable)
+ * This also can set name and example of [text commands][JDATextCommand] parameters.
+ *
+ * @see Optional @Optional
  * @see Nullable @Nullable
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
-public @interface TextOption {
-	String name() default "";
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class TextOption(
+    /**
+     * The name of this option displayed on the help content.
+     *
+     * This is optional if the parameter name is available,
+     * see [the wiki](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/) for more details.
+     */
+    val name: String = "",
 
-	String example() default "";
-}
+    /**
+     * The example input of this option displayed on the help content.
+     */
+    val example: String = ""
+)

@@ -1,30 +1,25 @@
-package com.freya02.botcommands.api.commands.application.slash.annotations;
+package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.LengthRange;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Sets the minimum and maximum string length on the specified {@link SlashOption}.
- * <br><b>Note:</b> this is only for string types!
+ * Sets the minimum and maximum string length on the specified [SlashOption].
  *
- * @see SlashCommandOptionBuilder#setLengthRange(LengthRange) DSL equivalent
+ * **Note:** this is only for string types!
+ *
+ * @see SlashCommandOptionBuilder.lengthRange DSL equivalent
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Length {
-	/**
-	 * @return The minimum value of this parameter (included)
-	 */
-	int min() default 1;
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class Length(
+    /**
+     * The minimum value of this parameter (included)
+     */
+    val min: Int = 1,
 
-	/**
-	 * @return The maximum value of this parameter  (included)
-	 */
-	int max() default OptionData.MAX_STRING_OPTION_LENGTH;
-}
+    /**
+     * The maximum value of this parameter (included)
+     */
+    val max: Int = OptionData.MAX_STRING_OPTION_LENGTH
+)

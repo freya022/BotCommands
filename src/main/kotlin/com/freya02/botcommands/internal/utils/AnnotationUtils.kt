@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.annotations.AppendMode
 import com.freya02.botcommands.api.commands.annotations.BotPermissions
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.annotations.Test
@@ -30,15 +29,14 @@ internal object AnnotationUtils {
         val effectiveAnnotations = getEffectiveAnnotations(function, Test::class)
         for (test in effectiveAnnotations) {
             val ids: LongArray = test.guildIds
-            val mode: AppendMode = test.mode
 
-            if (mode == AppendMode.SET) {
+            if (test.append) {
+                testIds.addAll(ids)
+            } else {
                 testIds.clear()
                 testIds.addAll(ids)
 
                 return testIds
-            } else if (mode == AppendMode.ADD) {
-                testIds.addAll(ids)
             }
         }
 
@@ -60,11 +58,13 @@ internal object AnnotationUtils {
         return enumSetOf<Permission>().also { set ->
             set += annotation.value
 
-            if (annotation.mode == AppendMode.SET) {
+            if (!annotation.append) {
                 return set
             }
 
-            set += func.declaringClass.findAnnotation<UserPermissions>()?.value ?: emptyArray()
+            func.declaringClass.findAnnotation<UserPermissions>()?.value?.let {
+                set += it
+            }
         }
     }
 
@@ -74,11 +74,13 @@ internal object AnnotationUtils {
         return enumSetOf<Permission>().also { set ->
             set += annotation.value
 
-            if (annotation.mode == AppendMode.SET) {
+            if (!annotation.append) {
                 return set
             }
 
-            set += func.declaringClass.findAnnotation<BotPermissions>()?.value ?: emptyArray()
+            func.declaringClass.findAnnotation<BotPermissions>()?.value?.let {
+                set += it
+            }
         }
     }
 

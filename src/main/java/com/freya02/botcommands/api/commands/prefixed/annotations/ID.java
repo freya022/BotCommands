@@ -1,15 +1,8 @@
-package com.freya02.botcommands.api.commands.prefixed.annotations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.freya02.botcommands.api.commands.prefixed.annotations
 
 /**
- * Use this annotation to specify this int/long parameter is supposed to be the ID of an entity (message, user, guild, channel, role...)
+ * Adapts the help content of this parameter as an ID of an entity (message, user, guild, channel, role...)
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
-public @interface ID {
-
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class ID

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.commands.application.context.annotations;
+package com.freya02.botcommands.api.commands.application.context.annotations
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Command;
@@ -9,89 +9,76 @@ import com.freya02.botcommands.api.commands.application.CommandScope;
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
 import com.freya02.botcommands.api.commands.application.context.builder.MessageCommandBuilder;
 import com.freya02.botcommands.api.commands.application.context.message.GlobalMessageEvent;
-import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent;
-import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import kotlin.jvm.functions.Function1;
-import kotlin.reflect.KFunction;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Required annotation for user commands.
+ * Declares this function as a message context command.
  *
- * <p>
- * The targeted method must have a {@link GlobalMessageEvent} or a {@link GuildMessageEvent},
- * with the only accepted {@link SlashOption option} being {@link Message},
- * which will be the <i>targeted</i> message
+ * The targeted method must have a [GlobalMessageEvent] or a [GuildMessageEvent],
+ * with the only accepted [option][ContextOption] being [Message],
+ * which will be the *targeted* message.
  *
- * <p><b>Requirement:</b> The declaring class must be annotated with {@link Command}.
+ * See the [Discord docs](https://discord.com/developers/docs/interactions/application-commands#message-commands) for more details.
  *
- * @see GlobalMessageEvent#getTarget()
- * @see <a href="https://discord.com/developers/docs/interactions/application-commands#message-commands">Discord docs</a>
+ * **Requirement:** The declaring class must be annotated with [@Command][Command].
+ *
+ * @see GlobalMessageEvent.getTarget
+ *
  * @see Command @Command
+ * @see ContextOption @ContextOption
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
  *
  * @see AppDeclaration Declaring application commands using the DSL
- * @see AbstractApplicationCommandManager#messageCommand(String, CommandScope, KFunction, Function1) DSL equivalent
+ * @see AbstractApplicationCommandManager.messageCommand DSL equivalent
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface JDAMessageCommand {
-	/**
-	 * Specified the application command scope for this command.
-	 *
-	 * <p><b>Default:</b> {@link CommandScope#GLOBAL_NO_DM GLOBAL_NO_DM}
-	 *
-	 * @return Scope of the command
-	 *
-	 * @see CommandScope
-	 */
-	CommandScope scope() default CommandScope.GLOBAL_NO_DM;
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class JDAMessageCommand(
+    /**
+     * Specifies the application command scope for this command.
+     *
+     * **Default:** [CommandScope.GLOBAL_NO_DM]
+     *
+     * @see CommandScope DSL equivalent
+     */
+    val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
 
-	/**
-	 * Specifies whether the application command is disabled for everyone but administrators by default,
-	 * so that administrators can further configure the command.
-	 *
-	 * <br><b>Note:</b> you cannot use this with {@link UserPermissions}.
-	 *
-	 * <p><b>Default:</b> false
-	 *
-	 * @return {@code true} if the command should be disabled by default
-	 *
-	 * @see MessageCommandBuilder#setDefaultLocked(boolean) DSL equivalent
-	 */
-	boolean defaultLocked() default false;
+    /**
+     * Specifies whether the application command is disabled for everyone but administrators by default,
+     * so that administrators can further configure the command.
+     *
+     * **Note:** you cannot use this with [UserPermissions].
+     *
+     * **Default:** false
+     *
+     * @return `true` if the command should be disabled by default
+     *
+     * @see MessageCommandBuilder.isDefaultLocked
+     */
+    val defaultLocked: Boolean = false,
 
-	/**
-	 * Specifies whether the application command is usable in NSFW channels.
-	 * <br>Note: NSFW commands need to be enabled by the user in order to appear in DMs
-	 *
-	 * <p><b>Default:</b> false
-	 *
-	 * @return {@code true} if the command should only be usable in NSFW channels
-	 *
-	 * @see <a href="https://support.discord.com/hc/en-us/articles/10123937946007" target="_blank">Age-Restricted Commands FAQ</a>
-	 *
-	 * @see MessageCommandBuilder#setNsfw(boolean) DSL equivalent
-	 */
-	boolean nsfw() default false;
+    /**
+     * Specifies whether the application command is usable in NSFW channels.<br>
+     * Note: NSFW commands need to be enabled by the user in order to appear in DMs
+     *
+     * **Default:** false
+     *
+     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
+     *
+     * @return `true` if the command is restricted to NSFW channels
+     *
+     * @see MessageCommandBuilder.nsfw DSL equivalent
+     */
+    val nsfw: Boolean = false,
 
-	/**
-	 * Primary name of the command, which can contain spaces and upper cases.
-	 *
-	 * <p>
-	 * This can be localized, see {@link LocalizationFunction} on how commands are mapped.
-	 *
-	 * @return Name of the command
-	 *
-	 * @see LocalizationFunction
-	 */
-	String name();
-}
+    /**
+     * Primary name of the command, which can contain spaces and upper cases.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped.
+     *
+     * @see LocalizationFunction
+     */
+    val name: String
+)

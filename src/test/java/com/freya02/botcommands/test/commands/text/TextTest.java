@@ -1,6 +1,5 @@
 package com.freya02.botcommands.test.commands.text;
 
-import com.freya02.botcommands.api.annotations.AppendMode;
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Optional;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
@@ -27,7 +26,7 @@ public class TextTest extends TextCommand {
 		event.replyFormat("ok %s : %s : %s", user, delDays, reason).queue();
 	}
 
-	@BotPermissions(mode = AppendMode.ADD, value = Permission.BAN_MEMBERS)
+	@BotPermissions(value = Permission.BAN_MEMBERS, append = true)
 	@JDATextCommand(
 			name = "test",
 			subcommand = "lol",
@@ -37,7 +36,7 @@ public class TextTest extends TextCommand {
 		event.reply("no2").queue();
 	}
 
-	@BotPermissions(mode = AppendMode.ADD, value = Permission.KICK_MEMBERS)
+	@BotPermissions(value = Permission.KICK_MEMBERS, append = true)
 	@JDATextCommand(
 			name = "test",
 			subcommand = "lol",
@@ -47,7 +46,7 @@ public class TextTest extends TextCommand {
 		event.reply("no").queue();
 	}
 
-	@BotPermissions(mode = AppendMode.ADD, value = Permission.KICK_MEMBERS)
+	@BotPermissions(value = Permission.KICK_MEMBERS, append = true)
 	@JDATextCommand(
 			name = "test",
 			subcommand = "lol"

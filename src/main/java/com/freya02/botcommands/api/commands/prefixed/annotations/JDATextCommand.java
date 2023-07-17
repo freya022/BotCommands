@@ -1,36 +1,28 @@
-package com.freya02.botcommands.api.commands.prefixed.annotations;
+package com.freya02.botcommands.api.commands.prefixed.annotations
 
 import com.freya02.botcommands.api.commands.annotations.BotPermissions;
 import com.freya02.botcommands.api.commands.annotations.Command;
 import com.freya02.botcommands.api.commands.annotations.Cooldown;
 import com.freya02.botcommands.api.commands.annotations.UserPermissions;
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration;
-import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
-import com.freya02.botcommands.api.commands.prefixed.CommandEvent;
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager;
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
-import com.freya02.botcommands.api.core.config.BConfigBuilder;
 import com.freya02.botcommands.api.core.options.annotations.Aggregate;
-import com.freya02.botcommands.api.parameters.ParameterResolver;
-import com.freya02.botcommands.internal.annotations.LowercaseDiscordNamePattern;
-import kotlin.jvm.functions.Function1;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
- * Required annotation for text commands, see all possible options.
+ * Declares this function as a text command.
  *
- * <p>
- * <b>Requirements:</b>
- * <ul>
- *     <li>The declaring class must be annotated with {@link Command}</li>
- *     <li>The method must be in the {@link BConfigBuilder#addSearchPath(String) search path}</li>
- *     <li>First parameter must be {@link BaseCommandEvent}, or, {@link CommandEvent} only for fallback commands</li>
- * </ul>
- * <p>Input options needs to be annotated with {@link TextOption @TextOption}, see supported types at {@link ParameterResolver}
+ * Text commands are composed of "variations";
+ * functions with the same path form a group of variations.<br>
+ * Each variation is run based off its [priority][order],
+ * the first variation that has its syntax match against the user input gets executed.
+ *
+ * **Requirements:**
+ *  - The declaring class must be annotated with [@Command][Command]
+ *  - The method must be in the [search path][BConfigBuilder.addSearchPath]
+ *  - First parameter must be [BaseCommandEvent], or, [CommandEvent] for fallback commands/manual token consumption
+ *
+ * Input options need to be annotated with [@TextOption][TextOption], see supported types at [ParameterResolver].
  *
  * @see Command @Command
  * @see TextOption @TextOption
@@ -42,53 +34,44 @@ import java.lang.annotation.Target;
  * @see Aggregate @Aggregate
  *
  * @see AppDeclaration Declaring text commands using the DSL
- * @see TextCommandManager#textCommand(String, Function1) DSL equivalent
+ *
+ * @see TextCommandManager.textCommand DSL equivalent
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface JDATextCommand {
-	/**
-	 * Primary name of the command, <b>must not contain any spaces</b>
-	 *
-	 * @return Name of this command
-	 */
-	@LowercaseDiscordNamePattern
-	String name();
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
+annotation class JDATextCommand(
+    /**
+     * Primary name of the command, **must not contain any spaces**
+     */
+    val name: String,
 
-	/**
-	 * Group name of the command, <b>must not contain any spaces</b>
-	 *
-	 * @return Group name of this command
-	 */
-	@LowercaseDiscordNamePattern
-	String group() default "";
+    /**
+     * Group name of the command, **must not contain any spaces**
+     */
+    val group: String = "",
 
-	/**
-	 * Subcommand name of the command, <b>must not contain any spaces</b>
-	 *
-	 * @return Subcommand name of this command
-	 */
-	@LowercaseDiscordNamePattern
-	String subcommand() default "";
+    /**
+     * Subcommand name of the command, **must not contain any spaces**
+     */
+    val subcommand: String = "",
 
-	/**
-	 * Specifies the specific order the executable has to be loaded in (1 is the most important)
-	 *
-	 * @return The order of the method to be loaded in
-	 */
-	int order() default 0;
+    /**
+     * Specifies the priority of this text command variation (1 is the most important)
+     */
+    val order: Int = 0,
 
-	/**
-	 * Secondary <b>paths</b> of the command, <b>must not contain any spaces</b>, must follow the same format as slash commands such as {@code name group subcommand}
-	 *
-	 * @return Secondary paths of the command
-	 */
-	String[] aliases() default {};
+    /**
+     * Secondary **paths** of the command, **must not contain any spaces**,
+     * and must follow the same format as slash commands such as `name group subcommand`
+     *
+     * @see TextCommandBuilder.aliases DSL equivalent
+     */
+    val aliases: Array<String> = [],
 
-	/**
-	 * Short description of the command, it is displayed in the help command
-	 *
-	 * @return Short description of the command
-	 */
-	String description() default TextCommandBuilder.defaultDescription;
-}
+    /**
+     * Short description of the command displayed in the help command
+     *
+     * @see TextCommandBuilder.description DSL equivalent
+     */
+    val description: String = TextCommandBuilder.defaultDescription
+)

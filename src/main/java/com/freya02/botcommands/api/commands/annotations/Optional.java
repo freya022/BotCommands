@@ -1,20 +1,19 @@
-package com.freya02.botcommands.api.commands.annotations;
-
-import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
-import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption;
-import org.jetbrains.annotations.Nullable;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.freya02.botcommands.api.commands.annotations
 
 /**
- * Denotes an optional parameter annotated with {@link SlashOption @SlashOption} or {@link TextOption @TextOption}
- * <p>You can also use the {@link Nullable @Nullable} annotation to represent an optional parameter while benefiting from static analysis
+ * Marks an option ([@SlashOption][SlashOption] or [@TextOption][TextOption]) as being optional.
  *
- * <p><br><b>For regex commands: Consider this annotation as experimental, you might have errors if your command is deemed too complex, for examples having strings in wrong places</b>
+ * **Note**: Kotlin users are not required to use this annotation, using `?` is enough.
+ *
+ * I recommend using [@Nullable][Nullable] annotation instead, to benefit from nullability analysis.
+ *
+ * **Note for text commands:** Take care with this annotation, you might have errors if your command is considered too complex.<br>
+ * Several factors can increase the chance of a command being unusable, such as
+ * - Too many optionals
+ * - Options with a dynamic number of spaces (such as strings)
+ *
+ * Attempts at fixing the issue can include moving the parameters around, like avoiding 2 strings next to each other.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
-public @interface Optional {}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class Optional  

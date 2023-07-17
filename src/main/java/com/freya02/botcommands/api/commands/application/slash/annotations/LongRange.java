@@ -1,29 +1,24 @@
-package com.freya02.botcommands.api.commands.application.slash.annotations;
+package com.freya02.botcommands.api.commands.application.slash.annotations
 
-import com.freya02.botcommands.api.commands.application.ValueRange;
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Sets the minimum and maximum values on the specified {@link SlashOption}.
- * <br><b>Note:</b> this is only for integer types!
+ * Sets the minimum and maximum values on the specified [SlashOption].
  *
- * @see SlashCommandOptionBuilder#setValueRange(ValueRange) DSL equivalent
+ * **Note:** this is only for integer types!
+ *
+ * @see SlashCommandOptionBuilder.valueRange DSL equivalent
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.PARAMETER})
-public @interface LongRange {
-	/**
-	 * @return The minimum value of this parameter (included)
-	 */
-	long from();
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.VALUE_PARAMETER)
+annotation class LongRange(
+    /**
+     * The minimum value of this parameter (included)
+     */
+    val from: Long,
 
-	/**
-	 * @return The maximum value of this parameter  (included)
-	 */
-	long to();
-}
+    /**
+     * The maximum value of this parameter (included)
+     */
+    val to: Long
+)

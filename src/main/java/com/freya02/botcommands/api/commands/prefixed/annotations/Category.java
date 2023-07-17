@@ -1,16 +1,8 @@
-package com.freya02.botcommands.api.commands.prefixed.annotations;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.freya02.botcommands.api.commands.prefixed.annotations
 
 /**
- * Use this annotation to specify the global category of the current command class.
- * <br>This is only used for the help command and only usable on top level commands.
+ * Specifies the global category of this top-level command.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface Category {
-	String value();
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.CLASS)
+annotation class Category(val value: String)
