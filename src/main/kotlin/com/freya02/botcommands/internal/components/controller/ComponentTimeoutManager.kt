@@ -16,7 +16,7 @@ import com.freya02.botcommands.internal.components.repositories.ComponentReposit
 import com.freya02.botcommands.internal.components.repositories.ComponentTimeoutHandlers
 import com.freya02.botcommands.internal.components.repositories.GroupTimeoutHandlers
 import com.freya02.botcommands.internal.core.reflection.MemberFunction
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.utils.TimeoutExceptionAccessor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -87,7 +87,7 @@ internal class ComponentTimeoutManager(
     fun throwTimeouts(componentId: Int) {
         componentController.removeContinuations(componentId).let { continuations ->
             if (continuations.isNotEmpty()) {
-                val timeoutException = Utils.createComponentTimeoutException()
+                val timeoutException = TimeoutExceptionAccessor.createComponentTimeoutException()
                 continuations.forEach {
                     it.cancel(timeoutException)
                 }

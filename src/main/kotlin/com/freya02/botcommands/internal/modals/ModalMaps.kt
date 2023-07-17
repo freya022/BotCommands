@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.modals
 
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.internal.utils.Utils
+import com.freya02.botcommands.internal.utils.TimeoutExceptionAccessor
 import com.freya02.botcommands.internal.utils.throwUser
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
@@ -44,7 +44,7 @@ internal class ModalMaps(private val config: BConfig) {
                         if (data != null) { //If the timeout was reached without the modal being used
                             timeoutInfo.onTimeout.run()
                             for (continuation in data.continuations) {
-                                continuation.cancel(Utils.createModalTimeoutException())
+                                continuation.cancel(TimeoutExceptionAccessor.createModalTimeoutException())
                             }
                         }
                     }
