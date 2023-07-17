@@ -12,7 +12,6 @@ import com.freya02.botcommands.api.core.waiter.EventWaiterBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.utils.EventUtils
-import com.freya02.botcommands.internal.utils.Utils
 import com.freya02.botcommands.internal.utils.throwInternal
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -20,7 +19,6 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.TimeoutException
 import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Predicate
@@ -35,16 +33,6 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
 
     private val waitingMap: MutableMap<Class<out Event>, MutableList<WaitingEvent<out Event>>> = HashMap()
     private val lock = ReentrantLock()
-
-    private var commandThreadNumber = 0
-    private val waiterCompleteService: ExecutorService = Utils.createCommandPool { r: Runnable ->
-        Thread(r, "Event waiter thread #${commandThreadNumber++}").apply {
-            isDaemon = false
-            uncaughtExceptionHandler = Thread.UncaughtExceptionHandler { t: Thread, e: Throwable ->
-                Utils.printExceptionString("An unexpected exception happened in an event waiter thread '${t.name}':", e)
-            }
-        }
-    }
 
     private lateinit var jda: JDA
     private lateinit var intents: EnumSet<GatewayIntent>
@@ -66,7 +54,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         }
 
         val waitingEvents = waitingMap.computeIfAbsent(waitingEvent.eventType) { arrayListOf() }
-        future.whenCompleteAsync({ t: T?, throwable: Throwable? ->
+        future.whenComplete { t: T?, throwable: Throwable? ->
             try {
                 waitingEvent.onComplete?.accept(future, t, throwable)
                 if (throwable is TimeoutException) {
@@ -87,7 +75,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
             } catch (e: Exception) {
                 exceptionHandler.handleException(t, e, "EventWaiter Future#whenCompleteAsync")
             }
-        }, waiterCompleteService)
+        }
 
         lock.withLock { waitingEvents.add(waitingEvent) }
 
