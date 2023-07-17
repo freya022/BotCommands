@@ -99,7 +99,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         if (!::jda.isInitialized) {
             lock.withLock {
                 if (!::jda.isInitialized) {
-                    logger.trace("Got JDA instance")
+                    logger.trace("Got JDA instance with ${event.javaClass.simpleNestedName}")
 
                     this.jda = event.jda
                     this.intents = event.jda.gatewayIntents

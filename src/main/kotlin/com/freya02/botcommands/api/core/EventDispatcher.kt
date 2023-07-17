@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
 import com.freya02.botcommands.internal.core.EventHandlerFunction
@@ -161,10 +162,10 @@ class EventDispatcher internal constructor(
         } catch (e: InvocationTargetException) {
             when (e.cause) {
                 is InitializationException -> throw e.cause!!
-                else -> printException(eventHandlerFunction, e)
+                else -> printException(event, eventHandlerFunction, e)
             }
         } catch (e: Throwable) {
-            printException(eventHandlerFunction, e)
+            printException(event, eventHandlerFunction, e)
         }
     }
 
@@ -223,8 +224,8 @@ class EventDispatcher internal constructor(
         }
     }
 
-    private fun printException(eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
-        "An exception occurred while dispatching an event for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
+    private fun printException(event: Any, eventHandlerFunction: EventHandlerFunction, e: Throwable) = logger.error(
+        "An exception occurred while dispatching a ${event.javaClass.simpleNestedName} for ${eventHandlerFunction.classPathFunction.function.shortSignature}",
         e.unwrap()
     )
 }
