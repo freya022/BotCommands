@@ -31,8 +31,9 @@ public abstract class TextCommand {
 	public Consumer<EmbedBuilder> getDetailedDescription() {return null;}
 
 	/**
-	 * Returns the generated value supplier of an {@link GeneratedOption}, if the method doesn't return a generated value supplier, the framework will throw.
-	 * <br>This method is called only if your option is annotated with {@link GeneratedOption}
+	 * Returns the generated value supplier of an {@link GeneratedOption @GeneratedOption},
+	 * if the method doesn't return a generated value supplier, the framework will throw.
+	 * <br>This method is called only if your option is annotated with {@link GeneratedOption @GeneratedOption}
 	 *
 	 * <p>This method will only be called once per command option per guild
 	 *
