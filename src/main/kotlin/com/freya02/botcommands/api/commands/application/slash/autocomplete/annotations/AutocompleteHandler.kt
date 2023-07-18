@@ -13,6 +13,10 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 /**
  * Uses the method as an autocomplete function for [slash command options][SlashOption].
  *
+ * The name of the handler must be unique,
+ * I recommend naming them like: `YourClassSimpleName: AutocompletedField`<br>
+ * Example: `SlashTag: tagName`
+ *
  * Requirements:
  *  - The method must be public
  *  - The method must be non-static
@@ -69,7 +73,8 @@ annotation class AutocompleteHandler(
      *
      * This allows the user to force his own input more easily
      *
-     * **This being `false` does not mean that the bot-provided choices are forced upon the user, autocomplete is never forced, unlike choices**
+     * **This being `false` does not mean that the bot-provided choices are forced upon the user,
+     * autocomplete is never forced, unlike choices**
      *
      * @return `true` if the user's input should be shown, `false` if not
      *

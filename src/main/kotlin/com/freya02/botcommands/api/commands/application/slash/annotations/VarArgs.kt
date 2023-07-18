@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextOption
 
 /**
- * Generates N command options from the specified [SlashOption] or [TextOption].
+ * Generates N command options from the specified [@SlashOption][SlashOption] or [@TextOption][TextOption].
  *
  * The target parameter must be of type [List].
  *

@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 /**
  * Declares this function as a user context command.
  *
- * The targeted method must have a [GlobalUserEvent] or a [GuildUserEvent],
+ * The targeted function must have a [GlobalUserEvent] or a [GuildUserEvent],
  * with the only accepted [options][ContextOption] being [Member] and [User],
  * which will be the *targeted* entity.
  *
@@ -44,8 +44,6 @@ annotation class JDAUserCommand(
      * Specifies the application command scope for this command.
      *
      * **Default:** [CommandScope.GLOBAL_NO_DM]
-     *
-     * @see CommandScope DSL equivalent
      */
     val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
 

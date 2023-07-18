@@ -10,6 +10,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashSubcomma
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand.Companion.computePath
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 
@@ -27,6 +28,10 @@ class SlashSubcommandGroupBuilder internal constructor(private val context: BCon
     }
 
     /**
+     * Adds a subcommand, **must not contain any spaces and no upper cases**.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped.
+     *
      * @see JDASlashCommand.subcommand
      */
     fun subcommand(name: String, function: KFunction<Any>, block: SlashSubcommandBuilder.() -> Unit = {}) {

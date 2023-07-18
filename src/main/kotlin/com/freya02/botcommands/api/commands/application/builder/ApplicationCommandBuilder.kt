@@ -15,6 +15,15 @@ abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBu
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     /**
+     * Specifies whether the application command is usable in NSFW channels.<br>
+     * Note: NSFW commands need to be enabled by the user in order to appear in DMs
+     *
+     * **Default:** false
+     *
+     * See the [Age-Restricted Commands FAQ](https://support.discord.com/hc/en-us/articles/10123937946007) for more details.
+     *
+     * @return `true` if the command is restricted to NSFW channels
+     *
      * @see JDASlashCommand.nsfw
      * @see JDAUserCommand.nsfw
      * @see JDAMessageCommand.nsfw

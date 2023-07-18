@@ -57,8 +57,6 @@ annotation class JDASlashCommand(
      * Specifies the application command scope for this command.
      *
      * **Default:** [CommandScope.GLOBAL_NO_DM]
-     *
-     * @see CommandScope DSL equivalent
      */
     val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
 
@@ -127,7 +125,7 @@ annotation class JDASlashCommand(
     val subcommand: String = "",
 
     /**
-     * Short description of the command, it is displayed in Discord.
+     * Short description of the command displayed on Discord.
      *
      * If this description is omitted, a default localization is
      * searched in [the command localization bundles][BApplicationConfigBuilder.addLocalizations]

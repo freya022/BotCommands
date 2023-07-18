@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 
 /**
- * Sets the desired channel types for this [SlashOption].
+ * Sets the desired channel types for this [@SlashOption][SlashOption].
  *
  * You can alternatively use a specific channel type,
  * such as [TextChannel] to automatically restrict the channel type.

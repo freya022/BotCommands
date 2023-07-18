@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.application.slash.builder
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
+import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.fakeSlashFunction
@@ -10,6 +11,7 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import com.freya02.botcommands.internal.utils.findDeclarationName
 import com.freya02.botcommands.internal.utils.throwUser
 import com.freya02.botcommands.internal.utils.toDiscordString
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import net.dv8tion.jda.internal.utils.Checks
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
@@ -20,6 +22,16 @@ abstract class SlashCommandBuilder internal constructor(
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
 ) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: fakeSlashFunction) {
     /**
+     * Short description of the command displayed on Discord.
+     *
+     * If this description is omitted, a default localization is
+     * searched in [the command localization bundles][BApplicationConfigBuilder.addLocalizations]
+     * using the root locale, for example: `MyCommands.json`.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped, example: `ban.description`.
+     *
+     * @see LocalizationFunction
+     *
      * @see JDASlashCommand.description
      */
     var description: String = DEFAULT_DESCRIPTION

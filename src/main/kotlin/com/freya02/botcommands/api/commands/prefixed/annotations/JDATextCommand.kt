@@ -46,21 +46,29 @@ import com.freya02.botcommands.api.parameters.ParameterResolver
 annotation class JDATextCommand(
     /**
      * Primary name of the command, **must not contain any spaces**
+     *
+     * @see JDATextCommand.name DSL equivalent
      */
     val name: String,
 
     /**
      * Group name of the command, **must not contain any spaces**
+     *
+     * @see JDATextCommand.group DSL equivalent
      */
     val group: String = "",
 
     /**
      * Subcommand name of the command, **must not contain any spaces**
+     *
+     * @see JDATextCommand.subcommand DSL equivalent
      */
     val subcommand: String = "",
 
     /**
      * Specifies the priority of this text command variation (1 is the most important)
+     *
+     * @see JDATextCommand.order DSL equivalent
      */
     val order: Int = 0,
 

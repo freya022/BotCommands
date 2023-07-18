@@ -24,7 +24,7 @@ interface GuildApplicationSettings {
      * Returns the choices available for this command path,
      * on the specific `optionIndex` (option index starts at 0 and are composed of only the parameters annotated with [@SlashOption][SlashOption]).
      *
-     * *The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles*
+     * The choices returned by this method will have their name and values localized if they are present in the BotCommands resource bundles
      *
      * @param guild       The [Guild] in which the command is, might be `null` for global commands with choices
      * @param commandPath The [CommandPath] of the command, this is composed of it's name and optionally of its group and subcommand name

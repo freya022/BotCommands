@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
 /**
  * Declares this function as a message context command.
  *
- * The targeted method must have a [GlobalMessageEvent] or a [GuildMessageEvent],
+ * The targeted function must have a [GlobalMessageEvent] or a [GuildMessageEvent],
  * with the only accepted [option][ContextOption] being [Message],
  * which will be the *targeted* message.
  *
@@ -42,8 +42,6 @@ annotation class JDAMessageCommand(
      * Specifies the application command scope for this command.
      *
      * **Default:** [CommandScope.GLOBAL_NO_DM]
-     *
-     * @see CommandScope DSL equivalent
      */
     val scope: CommandScope = CommandScope.GLOBAL_NO_DM,
 
@@ -57,7 +55,7 @@ annotation class JDAMessageCommand(
      *
      * @return `true` if the command should be disabled by default
      *
-     * @see MessageCommandBuilder.isDefaultLocked
+     * @see MessageCommandBuilder.isDefaultLocked DSL equivalent
      */
     val defaultLocked: Boolean = false,
 

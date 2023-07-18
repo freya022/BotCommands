@@ -74,8 +74,9 @@ annotation class SlashOption(
     val usePredefinedChoices: Boolean = false,
 
     /**
-     * Name of the autocomplete handler.<br>
-     * Must match a method annotated with [AutocompleteHandler] with the same name in it
+     * Name of the autocomplete handler.
+     *
+     * Must match a method annotated with [AutocompleteHandler] with the same name in it.
      *
      * @see SlashCommandOptionBuilder.autocompleteReference DSL equivalent
      * @see SlashCommandOptionBuilder.autocomplete Declaring an autocomplete handler using the DSL

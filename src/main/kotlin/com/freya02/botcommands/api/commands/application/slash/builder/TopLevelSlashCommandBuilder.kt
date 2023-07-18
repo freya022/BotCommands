@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.is
 import com.freya02.botcommands.internal.commands.application.slash.TopLevelSlashCommandInfo
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
 import com.freya02.botcommands.internal.utils.throwUser
+import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFunction
 import kotlin.reflect.KFunction
 
 class TopLevelSlashCommandBuilder internal constructor(
@@ -33,6 +34,10 @@ class TopLevelSlashCommandBuilder internal constructor(
         get() = optionAggregateBuilders.isEmpty()
 
     /**
+     * Adds a subcommand, **must not contain any spaces and no upper cases**.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped.
+     *
      * @see JDASlashCommand.subcommand
      */
     @JvmOverloads
@@ -44,6 +49,12 @@ class TopLevelSlashCommandBuilder internal constructor(
     }
 
     /**
+     * Adds a subcommand group, **must not contain any spaces and no upper cases**.
+     *
+     * This can be localized, see [LocalizationFunction] on how commands are mapped.
+     *
+     * @see LocalizationFunction
+     *
      * @see JDASlashCommand.group
      */
     fun subcommandGroup(name: String, block: SlashSubcommandGroupBuilder.() -> Unit) {

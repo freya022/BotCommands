@@ -4,7 +4,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 /**
- * Sets the minimum and maximum string length on the specified [SlashOption].
+ * Sets the minimum and maximum string length on the specified [@SlashOption][SlashOption].
  *
  * **Note:** this is only for string types!
  *

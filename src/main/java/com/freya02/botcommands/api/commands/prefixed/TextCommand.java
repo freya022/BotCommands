@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand;
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration;
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.api.parameters.ParameterType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,8 @@ public abstract class TextCommand {
 	 * <p>It will also set the embed's description to be the command's description, <b>you can override with {@link EmbedBuilder#setDescription(CharSequence)}</b></p>
 	 *
 	 * @return The EmbedBuilder to use as a detailed description
+	 *
+	 * @see TextCommandBuilder#setDetailedDescription(Consumer) DSL equivalent
 	 */
 	@Nullable
 	public Consumer<EmbedBuilder> getDetailedDescription() {return null;}

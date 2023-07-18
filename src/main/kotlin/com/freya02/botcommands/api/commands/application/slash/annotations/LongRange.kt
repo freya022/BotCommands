@@ -3,7 +3,7 @@ package com.freya02.botcommands.api.commands.application.slash.annotations
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandOptionBuilder
 
 /**
- * Sets the minimum and maximum values on the specified [SlashOption].
+ * Sets the minimum and maximum values on the specified [@SlashOption][SlashOption].
  *
  * **Note:** this is only for integer types!
  *
