@@ -2,7 +2,6 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.FirstReadyEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
@@ -44,7 +43,7 @@ internal class TextCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl, cooldownService: CooldownService) {
+    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl) {
         try {
             val manager = TextCommandManager(context)
             declarationFunctions.forEach { classPathFunction ->

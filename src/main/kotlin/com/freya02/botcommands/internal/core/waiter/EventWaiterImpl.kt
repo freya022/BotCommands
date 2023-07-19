@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core.waiter
 
-import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
@@ -92,7 +91,7 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
 
     @Suppress("UNCHECKED_CAST")
     @BEventListener
-    internal fun onEvent(event: Event, eventDispatcher: EventDispatcher) {
+    internal fun onEvent(event: Event) {
         val waitingEvents: MutableList<WaitingEvent<out Event>> = waitingMap[event.javaClass] ?: return
 
         lock.withLock {
