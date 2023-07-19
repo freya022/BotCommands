@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
@@ -37,11 +38,9 @@ internal class ApplicationCommandsBuilder(
     private val globalDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
     private val guildDeclarationFunctions: MutableList<ClassPathFunction> = arrayListOf()
 
-    private val guildReadyMutex = Mutex()
     private val globalUpdateMutex = Mutex()
     private val guildUpdateGlobalMutex: Mutex = Mutex()
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
-    private var isFirstReady = true
 
     init {
         val slashCommandAutoBuilder = serviceContainer.getService<SlashCommandAutoBuilder>()
@@ -77,16 +76,16 @@ internal class ApplicationCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onGuildReady(event: GuildReadyEvent) {
-        if (isFirstReady) {
-            guildReadyMutex.withLock {
-                if (isFirstReady) {
-                    isFirstReady = false
-                    onFirstRun()
-                }
-            }
+    internal suspend fun onInjectedJDA(event: InjectedJDAEvent) {
+        try {
+            updateCatching(null) { updateGlobalCommands() }
+        } catch (e: Throwable) {
+            logger.error("An error occurred while updating global commands", e)
         }
+    }
 
+    @BEventListener
+    internal suspend fun onGuildReady(event: GuildReadyEvent) {
         val guild = event.guild
 
         try {
@@ -176,16 +175,6 @@ internal class ApplicationCommandsBuilder(
         if (context.applicationConfig.onlineAppCommandCheckEnabled) "Online check" else "Local disk check"
 
     private fun Collection<ApplicationCommandInfo>.toApplicationCommandMap() = MutableApplicationCommandMap.fromCommandList(this)
-
-    private suspend fun onFirstRun() {
-        logger.debug("First ready")
-
-        try {
-            updateCatching(null) { updateGlobalCommands() }
-        } catch (e: Throwable) {
-            logger.error("An error occurred while updating global commands", e)
-        }
-    }
 
     private inline fun updateCatching(guild: Guild?, block: () -> CommandUpdateResult) {
         block().also { result ->

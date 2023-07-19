@@ -3,7 +3,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.TextCommandManager
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.events.FirstReadyEvent
+import com.freya02.botcommands.api.core.events.FirstGuildReadyEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.internal.BContextImpl
@@ -43,7 +43,7 @@ internal class TextCommandsBuilder(
     }
 
     @BEventListener
-    internal suspend fun onFirstReady(event: FirstReadyEvent, context: BContextImpl) {
+    internal suspend fun onFirstReady(event: FirstGuildReadyEvent, context: BContextImpl) {
         try {
             val manager = TextCommandManager(context)
             declarationFunctions.forEach { classPathFunction ->

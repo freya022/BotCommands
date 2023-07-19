@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal
 
 import com.freya02.botcommands.api.core.EventDispatcher
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.events.FirstReadyEvent
+import com.freya02.botcommands.api.core.events.FirstGuildReadyEvent
 import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.BService
@@ -41,8 +41,7 @@ internal class ReadyListener {
     @BEventListener(priority = Int.MAX_VALUE)
     internal suspend fun onGuildReadyEvent(
         event: GuildReadyEvent,
-        eventDispatcher: EventDispatcher,
-        serviceContainer: ServiceContainer
+        eventDispatcher: EventDispatcher
     ) {
         if (ready) return
         lock.withLock {
@@ -50,6 +49,6 @@ internal class ReadyListener {
             ready = true
         }
 
-        eventDispatcher.dispatchEvent(FirstReadyEvent(event))
+        eventDispatcher.dispatchEvent(FirstGuildReadyEvent(event))
     }
 }
