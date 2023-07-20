@@ -1,9 +1,7 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.DefaultLocalizationMap;
-import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
-import com.freya02.botcommands.api.localization.LocalizationMap;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.*;
+import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

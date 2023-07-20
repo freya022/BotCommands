@@ -3,6 +3,8 @@ package com.freya02.botcommands.api.localization.providers;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
+import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

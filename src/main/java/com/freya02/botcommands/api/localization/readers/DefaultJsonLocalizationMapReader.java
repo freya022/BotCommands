@@ -1,8 +1,9 @@
-package com.freya02.botcommands.api.localization.providers;
+package com.freya02.botcommands.api.localization.readers;
 
 import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.TemplateMapRequest;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
