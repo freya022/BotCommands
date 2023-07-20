@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.AutocompleteHandler
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
@@ -82,6 +82,6 @@ class SlashSentenceSimplifiedFront(private val slashSentence: SlashSentence) : A
     fun onSlashSentence(
         event: GuildSlashEvent,
         // Notice here how you are limited to 1 description for all your options
-        @AppOption(name = "part", description = "A sentence part", autocomplete = sentencePartAutocompleteName) @VarArgs(10, numRequired = 2) parts: SlashSentence.SentenceParts,
+        @SlashOption(name = "part", description = "A sentence part", autocomplete = sentencePartAutocompleteName) @VarArgs(10, numRequired = 2) parts: SlashSentence.SentenceParts,
     ) = slashSentence.onSlashSentence(event, parts)
 }

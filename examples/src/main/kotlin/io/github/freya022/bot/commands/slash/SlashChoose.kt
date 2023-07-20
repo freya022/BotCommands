@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.application.slash.annotations.VarArgs
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
@@ -49,6 +49,6 @@ class SlashChooseSimplifiedFront(private val slashChoose: SlashChoose) : Applica
     fun onSlashBan(
         event: GuildSlashEvent,
         // Notice here how you are limited to 1 description for all your options
-        @AppOption(name = "choice", description = "A choice") @VarArgs(10, numRequired = 2) choices: List<String>
+        @SlashOption(name = "choice", description = "A choice") @VarArgs(10, numRequired = 2) choices: List<String>
     ) = slashChoose.onSlashChoose(event, choices)
 }

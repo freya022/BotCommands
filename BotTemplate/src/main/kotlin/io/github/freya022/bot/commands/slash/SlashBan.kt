@@ -6,9 +6,9 @@ import com.freya02.botcommands.api.commands.annotations.UserPermissions
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.GlobalApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
-import com.freya02.botcommands.api.commands.application.annotations.AppOption
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -170,9 +170,9 @@ class SlashBanSimplifiedFront(private val banImpl: SlashBan) : ApplicationComman
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
-        @AppOption(description = "The user to ban") target: User,
-        @AppOption(description = "The timeframe of messages to delete with the specified unit") time: Long,
-        @AppOption(description = "The unit of the delete timeframe", usePredefinedChoices = true) unit: TimeUnit,
-        @AppOption(description = "The reason for the ban") reason: String = localizationContext.localize("outputs.defaultReason")
+        @SlashOption(description = "The user to ban") target: User,
+        @SlashOption(description = "The timeframe of messages to delete with the specified unit") time: Long,
+        @SlashOption(description = "The unit of the delete timeframe", usePredefinedChoices = true) unit: TimeUnit,
+        @SlashOption(description = "The reason for the ban") reason: String = localizationContext.localize("outputs.defaultReason")
     ) = banImpl.onSlashBan(event, localizationContext, target, DeleteTimeframe(time, unit), reason)
 }

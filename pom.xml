@@ -26,8 +26,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <kotlin.version>1.8.21</kotlin.version>
-        <kotlin.coroutine.version>1.7.1</kotlin.coroutine.version>
+        <kotlin.version>1.9.0</kotlin.version>
+        <kotlin.coroutine.version>1.7.2</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -455,7 +455,7 @@
         <dependency> <!-- Upgrade dependency used by emoji-java as to avoid vulnerabilities -->
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20230227</version>
+            <version>20230618</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -471,7 +471,7 @@
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
-            <version>4.8.158</version>
+            <version>4.8.161</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -508,7 +508,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.7</version>
+            <version>1.4.8</version>
             <scope>test</scope>
         </dependency>
         <dependency>

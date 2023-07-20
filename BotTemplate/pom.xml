@@ -14,8 +14,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <kotlin.version>1.8.22</kotlin.version>
-        <kotlin.coroutine.version>1.7.1</kotlin.coroutine.version>
+        <kotlin.version>1.9.0</kotlin.version>
+        <kotlin.coroutine.version>1.7.2</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -147,7 +147,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.11</version>
+            <version>5.0.0-beta.12</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -158,7 +158,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>3.0.0-alpha.2</version>
+            <version>3.0.0-alpha.3</version>
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->
@@ -188,7 +188,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>9.18.0</version>
+            <version>9.21.0</version>
         </dependency>
         <!-- Strongly recommended to pool SQL connections -->
         <dependency>
