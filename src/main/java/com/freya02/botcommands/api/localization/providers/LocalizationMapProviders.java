@@ -19,12 +19,20 @@ import java.util.*;
 public final class LocalizationMapProviders {
 	private static final Logger LOGGER = Logging.getLogger();
 	private static final Set<LocalizationMapProvider> providers = new HashSet<>();
+	private static final Set<LocalizationMapReader> readers = new HashSet<>();
 
 	@Contract(pure = true)
 	@NotNull
 	@UnmodifiableView
 	public static Collection<LocalizationMapProvider> getProviders() {
 		return Collections.unmodifiableSet(providers);
+	}
+
+	@Contract(pure = true)
+	@NotNull
+	@UnmodifiableView
+	public static Collection<LocalizationMapReader> getReaders() {
+		return Collections.unmodifiableSet(readers);
 	}
 
 	/**
@@ -86,7 +94,12 @@ public final class LocalizationMapProviders {
 		providers.add(provider);
 	}
 
+	public static void registerReader(@NotNull LocalizationMapReader reader) {
+		readers.add(reader);
+	}
+
 	static {
 		registerProvider(new DefaultLocalizationMapProvider());
+		registerReader(new DefaultJsonLocalizationMapReader());
 	}
 }

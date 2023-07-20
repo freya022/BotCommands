@@ -1,15 +1,16 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.*;
-import com.google.gson.Gson;
+import com.freya02.botcommands.api.localization.DefaultLocalizationMap;
+import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
+import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
+//TODO update docs, reading is in DefaultJsonLocalizationMapReader now
 /**
  * Default localization bundle provider
  * <p><b>Specification:</b>
@@ -51,23 +52,16 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		return new DefaultLocalizationMap(locale, map);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Nullable
 	private Map<String, LocalizationTemplate> readTemplateMap(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
-		final InputStream stream = Localization.class.getResourceAsStream("/bc_localization/" + getBundleName(baseName, effectiveLocale) + ".json");
-		if (stream == null) {
-			return null;
+		for (LocalizationMapReader reader : LocalizationMapProviders.getReaders()) {
+			Map<String, LocalizationTemplate> templateMap = reader.readTemplateMap(new TemplateMapRequest(baseName, effectiveLocale, getBundleName(baseName, effectiveLocale)));
+			if (templateMap != null) {
+				return templateMap;
+			}
 		}
 
-		final Map<String, LocalizationTemplate> templateMap = new HashMap<>();
-
-		try (InputStreamReader reader = new InputStreamReader(stream)) {
-			final Map<String, ?> map = new Gson().fromJson(reader, Map.class);
-
-			discoverEntries(templateMap, baseName, effectiveLocale, "", map.entrySet());
-		}
-
-		return templateMap;
+		return null;
 	}
 
 	@Nullable
@@ -100,31 +94,5 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		}
 
 		return new DefaultLocalizationMap(effectiveLocale, templateMap);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void discoverEntries(Map<String, LocalizationTemplate> templateMap, @NotNull String baseName, Locale effectiveLocale, String currentPath, Set<? extends Map.Entry<String, ?>> entries) {
-		for (Map.Entry<String, ?> entry : entries) {
-			final String key = appendPath(currentPath, entry.getKey());
-
-			if (entry.getValue() instanceof Map<?, ?> map) {
-				discoverEntries(
-						templateMap,
-						baseName,
-						effectiveLocale,
-						key,
-						((Map<String, ?>) map).entrySet()
-				);
-			} else {
-				if (!(entry.getValue() instanceof String))
-					throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String".formatted(key, baseName, effectiveLocale));
-
-				final LocalizationTemplate value = new DefaultLocalizationTemplate((String) entry.getValue(), effectiveLocale);
-
-				if (templateMap.put(key, value) != null) {
-					throw new IllegalStateException("Got two same localization keys: '" + key + "'");
-				}
-			}
-		}
 	}
 }
