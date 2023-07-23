@@ -30,7 +30,7 @@ import java.util.*;
  * </code></pre>
  * <p>
  * About localization bundle loading:
- * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProvidersNoParent(String, Locale)}
+ * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProviders(String, Locale)}
  *
  * <br>See {@link DefaultLocalizationTemplate} for what the localization templates should look like
  *
@@ -49,7 +49,7 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 
 	@Nullable
 	@Override
-	public LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) {
+	public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale effectiveLocale) {
 		final Map<String, LocalizationTemplate> templateMap = localizationMapReaders.cycleReaders(baseName, effectiveLocale);
 
 		return withParentBundles(baseName, effectiveLocale, templateMap);
@@ -57,7 +57,7 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 
 	@Nullable
 	@Override
-	public LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale) {
+	public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale) {
 		final Map<String, LocalizationTemplate> map = localizationMapReaders.cycleReaders(baseName, locale);
 		if (map == null) return null;
 
@@ -75,7 +75,7 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
 			//Do not use Localization, as it will **also** try to get the parent localizations
-			final LocalizationMap parentLocalization = localizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale);
+			final LocalizationMap parentLocalization = localizationMapProviders.cycleProviders(baseName, candidateLocale);
 			if (parentLocalization != null) {
 				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.templateMap();
 

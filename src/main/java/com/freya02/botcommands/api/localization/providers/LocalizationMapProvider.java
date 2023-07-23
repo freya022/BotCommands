@@ -31,7 +31,7 @@ public interface LocalizationMapProvider {
 	 * or {@code null} if no bundle could be read, or an exception happened.
 	 */
 	@Nullable
-	LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale locale); //TODO rename to getBundleOrParent
+	LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale locale);
 
 	/**
 	 * Loads a localization map with the specified name and requested locale.
@@ -45,5 +45,5 @@ public interface LocalizationMapProvider {
 	 * or {@code null} if no bundle could be read, or an exception happened.
 	 */
 	@Nullable
-	LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale); //TODO rename to getBundle
+	LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale);
 }

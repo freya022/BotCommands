@@ -13,7 +13,7 @@ public interface LocalizationMap {
 	/**
 	 * Returns the effective locale.
 	 * <br>This locale must be the one of the file which has been loaded successfully.
-	 * <br><b>It does not have to be the locale passed to {@link LocalizationMapProvider#getBundle(String, Locale)}</b>.
+	 * <br><b>It does not have to be the locale passed to {@link LocalizationMapProvider#fromBundleOrParent(String, Locale)}</b>.
 	 *
 	 * @return The effective locale for this localization map
 	 */

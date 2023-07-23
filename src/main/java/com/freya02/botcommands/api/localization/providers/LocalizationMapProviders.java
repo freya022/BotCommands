@@ -41,7 +41,9 @@ public final class LocalizationMapProviders {
 
 	/**
 	 * Cycles through all the registered providers with the specified base name and locale,
-	 * and returns a {@link LocalizationMap} when a provider returns one, returns null otherwise
+	 * and returns a {@link LocalizationMap} when a provider returns one, returns null otherwise.
+	 *
+	 * <p>This method also tries to get bundles with parent locales.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle,
@@ -50,10 +52,10 @@ public final class LocalizationMapProviders {
 	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */
 	@Nullable
-	public LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
+	public LocalizationMap cycleProvidersWithParents(@NotNull String baseName, @NotNull Locale locale) {
 		for (LocalizationMapProvider provider : getProviders()) {
 			try {
-				final LocalizationMap bundle = provider.getBundle(baseName, locale);
+				final LocalizationMap bundle = provider.fromBundleOrParent(baseName, locale);
 
 				if (bundle != null) {
 					return bundle;
@@ -69,7 +71,8 @@ public final class LocalizationMapProviders {
 	/**
 	 * Cycles through all the registered providers with the specified base name and locale,
 	 * and returns a {@link LocalizationMap} when a provider returns one, returns null otherwise.
-	 * <br>This method uses {@link LocalizationMapProvider#getBundleNoParent(String, Locale)} instead.
+	 *
+	 * <p>This method will only use the passed locale.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle,
@@ -78,10 +81,10 @@ public final class LocalizationMapProviders {
 	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */
 	@Nullable
-	public LocalizationMap cycleProvidersNoParent(@NotNull String baseName, @NotNull Locale locale) {
+	public LocalizationMap cycleProviders(@NotNull String baseName, @NotNull Locale locale) {
 		for (LocalizationMapProvider provider : getProviders()) {
 			try {
-				final LocalizationMap bundle = provider.getBundleNoParent(baseName, locale);
+				final LocalizationMap bundle = provider.fromBundle(baseName, locale);
 
 				if (bundle != null) {
 					return bundle;

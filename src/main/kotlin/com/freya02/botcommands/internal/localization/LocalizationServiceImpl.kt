@@ -83,7 +83,7 @@ internal class LocalizationServiceImpl internal constructor(
         val candidateLocales = control.getCandidateLocales(baseName, targetLocale)
         for (candidateLocale in candidateLocales) {
             //Try to retrieve with the locale
-            val localizationBundle = localizationMapProviders.cycleProviders(baseName, candidateLocale)
+            val localizationBundle = localizationMapProviders.cycleProvidersWithParents(baseName, candidateLocale)
             if (localizationBundle != null) {
                 return BestLocale(localizationBundle.effectiveLocale(), localizationBundle)
             }
