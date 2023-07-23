@@ -3,8 +3,8 @@ package com.freya02.botcommands.api.localization.providers;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.core.service.ServiceContainer;
 import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
@@ -17,7 +17,8 @@ import java.util.Locale;
 /**
  * Class which contains all the {@link LocalizationMapProvider}.
  * <br>This is mainly used by the localization map providers themselves,
- * or by {@link Localization} as to cycle through all providers until one returns a valid {@link LocalizationMap}.
+ * or by {@link LocalizationService} as to cycle through all providers
+ * until one returns a valid {@link LocalizationMap}.
  */
 @BService
 public final class LocalizationMapProviders {

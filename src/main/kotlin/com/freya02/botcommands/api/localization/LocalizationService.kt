@@ -6,6 +6,9 @@ import com.freya02.botcommands.api.localization.readers.LocalizationMapReader
 import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 
+/**
+ * Service to retrieve [Localization] instances with the requested name and locale.
+ */
 @InterfacedService(acceptMultiple = false)
 interface LocalizationService {
     /**
@@ -35,8 +38,14 @@ interface LocalizationService {
      */
     fun invalidateLocalization(baseName: String, locale: Locale)
 
+    /**
+     * Returns an unmodifiable view of [localization map providers][LocalizationMapProvider]
+     */
     fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider>
 
+    /**
+     * Returns an unmodifiable view of [localization map readers][LocalizationMapReader]
+     */
     fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader>
 }
 

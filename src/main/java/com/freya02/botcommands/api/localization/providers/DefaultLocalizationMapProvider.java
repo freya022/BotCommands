@@ -3,38 +3,26 @@ package com.freya02.botcommands.api.localization.providers;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.DefaultLocalizationMap;
-import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
-//TODO update docs, reading is in DefaultJsonLocalizationMapReader now
 /**
- * Default localization bundle provider
- * <p><b>Specification:</b>
- * <br>Localization bundles are read from {@code /bc_localization/}, so, a {@code bc_localization} directory, in the root of your resources
- * <br>Those localization bundles are in the JSON format and can have any name, with the extension being {@code .json}
- * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as {@code "my_command.name": "my_command_in_en_US"}
- * <br>But you can also use nesting as a way to not copy the same path prefix everytime, such as:
- * <pre><code>
- *     {
- *         "my_command": {
- *             "name": "my_command_in_en_US",
- *             "description": "my_command_description_in_en_US"
- *         }
- *     }
- * </code></pre>
- * <p>
- * About localization bundle loading:
- * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProviders(String, Locale)}
+ * Default implementation for {@link LocalizationMap} providers.
  *
- * <br>See {@link DefaultLocalizationTemplate} for what the localization templates should look like
+ * <p>This provider simply takes care of the loading order and merging of the localization templates.
+ * <br>The templates are loaded with the best (most specific or closest) locale available,
+ * followed by the templates of broader locales.
  *
- * @see DefaultLocalizationTemplate
+ * @see DefaultJsonLocalizationMapReader
  */
 @BService
 @ServiceType(types = LocalizationMapProvider.class)

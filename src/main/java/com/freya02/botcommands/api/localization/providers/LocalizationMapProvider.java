@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.localization.providers;
 
+import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,40 +11,45 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * Interface for localization bundle providers to implement.
- * <br>This supplies a {@link LocalizationMap} for the specified base name and locale, which may or may not inherit from parent bundles.
+ * Supplies {@link LocalizationMap}s for the requested bundle name and locale.
  *
- * <p>Localization map providers may need a mechanism so that a provider cannot read another file which is not in the correct format,
- * solutions could include having different extensions, or if you use a different format such as YAML or XML, or having your localization files in different directories.
+ * <p>
+ * <b>Usage:</b> Register your instance as a service with {@link BService},
+ * and a {@link ServiceType} of {@link LocalizationMapProvider}.
+ *
+ * @see DefaultLocalizationMapProvider
  */
 @InterfacedService(acceptMultiple = true)
 public interface LocalizationMapProvider {
 	ResourceBundle.Control CONTROL = ResourceBundle.Control.getNoFallbackControl(ResourceBundle.Control.FORMAT_DEFAULT);
 
 	/**
-	 * Loads a localization map with the specified name and requested locale.
-	 * <br>This may return a localization bundle with a parent locale, which must be returned by {@link LocalizationMap#effectiveLocale()}.
+	 * Loads a localization map with the requested name and requested locale.
+	 * <br>This may return a localization bundle with a broader locale,
+	 * which will be returned by {@link LocalizationMap#effectiveLocale()}.
 	 * <br>This may include parent bundles.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale
 	 *
 	 * @return A {@link LocalizationMap} instance with the requested data,
-	 * or {@code null} if no bundle could be read, or an exception happened.
+	 * or {@code null} if no bundle could be read, or a (logged) exception happened.
 	 */
 	@Nullable
 	LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale locale);
 
 	/**
-	 * Loads a localization map with the specified name and requested locale.
-	 * <br>This may return a localization bundle with a parent locale, which must be returned by {@link LocalizationMap#effectiveLocale()}.
-	 * <br>This must <b>NOT</b> include parent bundles.
+	 * Loads a localization map with the requested name and requested locale.
+	 * <br>This may return a localization bundle with a broader locale,
+	 * which must be returned by {@link LocalizationMap#effectiveLocale()}.
+	 *
+	 * <p><b>Note:</b> this does <b>NOT</b> include parent bundles.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale
 	 *
 	 * @return A {@link LocalizationMap} instance with the requested data,
-	 * or {@code null} if no bundle could be read, or an exception happened.
+	 * or {@code null} if no bundle could be read, or a (logged) exception happened.
 	 */
 	@Nullable
 	LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale);

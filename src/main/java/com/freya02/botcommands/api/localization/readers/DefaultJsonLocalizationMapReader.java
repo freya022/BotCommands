@@ -13,11 +13,30 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+/**
+ * Default implementation for {@link LocalizationTemplate} mappings readers.
+ *
+ * <p>Localization templates are loaded from the {@code /bc_localization} folder (i.e., the {@code bc_localization} in your jar's root)
+ * <br>Your localization bundle must be a valid JSON file and use the {@code .json} extension.
+ * <br>The localization bundle can use any name, but <b>must</b> be suffixed with the same locale formatting as {@link ResourceBundle} would use, such as {@code _fr} or {@code _en_US}.
+ *
+ * <p>The JSON content root must be an object, where the keys must either be delimited by dots, or by using nested objects.
+ * <h3>Example</h3>
+ * <pre><code>
+ *     {
+ *         "myCommand": {
+ *             "name": "my_command_in_en_US",
+ *             "description": "My command description in US english"
+ *         }
+ *     }
+ * </code></pre>
+ *
+ * <p>This reader uses the default localization templates, see {@link DefaultLocalizationTemplate} for more details.
+ *
+ * @see DefaultLocalizationTemplate
+ */
 @BService
 @ServiceType(types = LocalizationMapReader.class)
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
