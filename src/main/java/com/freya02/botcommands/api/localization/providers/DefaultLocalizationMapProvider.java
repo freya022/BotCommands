@@ -1,11 +1,15 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.*;
-import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
+import com.freya02.botcommands.api.localization.DefaultLocalizationMap;
+import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
+import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.*;
 
 //TODO update docs, reading is in DefaultJsonLocalizationMapReader now
@@ -32,38 +36,36 @@ import java.util.*;
  *
  * @see DefaultLocalizationTemplate
  */
+@BService
+@ServiceType(types = LocalizationMapProvider.class)
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
-	@Override
+	private final LocalizationMapProviders localizationMapProviders;
+	private final LocalizationMapReaders localizationMapReaders;
+
+	public DefaultLocalizationMapProvider(LocalizationMapProviders localizationMapProviders, LocalizationMapReaders localizationMapReaders) {
+		this.localizationMapProviders = localizationMapProviders;
+		this.localizationMapReaders = localizationMapReaders;
+	}
+
 	@Nullable
-	public LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
-		final Map<String, LocalizationTemplate> templateMap = readTemplateMap(baseName, effectiveLocale);
+	@Override
+	public LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) {
+		final Map<String, LocalizationTemplate> templateMap = localizationMapReaders.cycleReaders(baseName, effectiveLocale);
 
 		return withParentBundles(baseName, effectiveLocale, templateMap);
 	}
 
-	@Override
 	@Nullable
-	public LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale) throws IOException {
-		final Map<String, LocalizationTemplate> map = readTemplateMap(baseName, locale);
+	@Override
+	public LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale) {
+		final Map<String, LocalizationTemplate> map = localizationMapReaders.cycleReaders(baseName, locale);
 		if (map == null) return null;
 
 		return new DefaultLocalizationMap(locale, map);
 	}
 
 	@Nullable
-	private Map<String, LocalizationTemplate> readTemplateMap(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
-		for (LocalizationMapReader reader : LocalizationMapProviders.getReaders()) {
-			Map<String, LocalizationTemplate> templateMap = reader.readTemplateMap(new TemplateMapRequest(baseName, effectiveLocale, getBundleName(baseName, effectiveLocale)));
-			if (templateMap != null) {
-				return templateMap;
-			}
-		}
-
-		return null;
-	}
-
-	@Nullable
-	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) throws IOException {
+	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) {
 		//Need to get parent bundles
 		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
 
@@ -72,7 +74,8 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		for (Locale candidateLocale : candidateLocales) {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
-			final LocalizationMap parentLocalization = LocalizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale); //Do not try to use Localization which will **also** try to get the parent localizations
+			//Do not use Localization, as it will **also** try to get the parent localizations
+			final LocalizationMap parentLocalization = localizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale);
 			if (parentLocalization != null) {
 				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.templateMap();
 

@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.localization.context;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.localization.Localization;
+import com.freya02.botcommands.api.localization.LocalizationService;
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -17,25 +19,28 @@ import javax.annotation.CheckReturnValue;
  *
  * @see TextLocalizationContext
  * @see AppLocalizationContext
- * @see #create(String, String)
+ * @see #create(BContext, String, String)
  */
 public interface LocalizationContext {
-    static LocalizationContext create(@NotNull String localizationBundle,
+    static LocalizationContext create(@NotNull BContext context,
+                                      @NotNull String localizationBundle,
                                       @Nullable String localizationPrefix) {
-        return new LocalizationContextImpl(localizationBundle, localizationPrefix, null, null);
+        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, null, null);
     }
 
-    static TextLocalizationContext create(@NotNull String localizationBundle,
+    static TextLocalizationContext create(@NotNull BContext context,
+                                          @NotNull String localizationBundle,
                                           @Nullable String localizationPrefix,
                                           @Nullable DiscordLocale guildLocale) {
-        return new LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, null);
+        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, guildLocale, null);
     }
 
-    static AppLocalizationContext create(@NotNull String localizationBundle,
+    static AppLocalizationContext create(@NotNull BContext context,
+                                         @NotNull String localizationBundle,
                                          @Nullable String localizationPrefix,
                                          @Nullable DiscordLocale guildLocale,
                                          @Nullable DiscordLocale userLocale) {
-        return new LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale);
+        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, guildLocale, userLocale);
     }
 
     @NotNull

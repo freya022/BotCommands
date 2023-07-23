@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.localization
 
 import com.freya02.botcommands.api.localization.Localization
+import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
 import com.freya02.botcommands.internal.utils.throwUser
@@ -8,29 +9,30 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
 
 internal class LocalizationContextImpl(
+    private val localizationService: LocalizationService,
     private val localizationBundle: String,
     private val localizationPrefix: String?,
     private val guildLocale: DiscordLocale?,
     private val userLocale: DiscordLocale?
 ) : TextLocalizationContext, AppLocalizationContext {
     override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
     override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
     override fun withBundle(localizationBundle: String): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
     override fun withPrefix(localizationPrefix: String?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
     fun withLocales(guildLocale: DiscordLocale, userLocale: DiscordLocale): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
     override fun localize(
@@ -39,7 +41,7 @@ internal class LocalizationContextImpl(
         localizationPath: String,
         vararg entries: Localization.Entry
     ): String {
-        val instance = Localization.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
+        val instance = localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
             ?: throwUser("Found no localization instance for bundle '$localizationBundle' and locale '$locale'")
 
         val effectivePath = when (localizationPrefix) {

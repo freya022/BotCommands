@@ -16,12 +16,12 @@ import javax.annotation.CheckReturnValue;
  * <p>This interface also includes the guild's locale by default if the guild is a community.
  *
  * <p>While instances of this interface are primarily injected with {@link LocalizationBundle},
- * you can also construct instances of this interface with {@link #create(String, String, DiscordLocale)}.
+ * you can also construct instances of this interface with {@link LocalizationContext#create(com.freya02.botcommands.api.BContext, String, String, DiscordLocale)}.
  *
  * @see #getGuildLocale()
  *
  * @see AppLocalizationContext
- * @see #create(String, String, DiscordLocale)
+ * @see LocalizationContext#create(com.freya02.botcommands.api.BContext, String, String, DiscordLocale)
  */
 public interface TextLocalizationContext extends LocalizationContext {
     /**

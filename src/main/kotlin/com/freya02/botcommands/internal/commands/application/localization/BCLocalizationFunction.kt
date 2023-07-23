@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.commands.application.localization
 
-import com.freya02.botcommands.api.localization.Localization
+import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.SingleLogger
 import mu.KotlinLogging
@@ -11,6 +12,7 @@ import java.util.*
 private val logger = KotlinLogging.logger { }
 
 internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
+    private val localizationService: LocalizationService = context.getService()
     private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {
@@ -18,7 +20,7 @@ internal class BCLocalizationFunction(private val context: BContextImpl) : Local
 
         baseNameToLocalesMap.forEach { (baseName, locales) ->
             for (locale in locales) {
-                val instance = Localization.getInstance(baseName, locale)
+                val instance = localizationService.getInstance(baseName, locale)
                 if (instance != null) {
                     if (instance.effectiveLocale !== locale) {
                         SingleLogger.current().tryLog(baseName, locale.toLanguageTag(), instance.effectiveLocale.toLanguageTag()) {

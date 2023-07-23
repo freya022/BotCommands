@@ -1,7 +1,8 @@
 package com.freya02.botcommands.api.localization.readers;
 
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
-import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import com.freya02.botcommands.api.localization.TemplateMapRequest;
 import com.google.gson.Gson;
@@ -17,13 +18,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+@BService
+@ServiceType(types = LocalizationMapReader.class)
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
     private static final Gson GSON = new Gson();
 
     @Nullable
     @Override
     public Map<String, LocalizationTemplate> readTemplateMap(@NotNull TemplateMapRequest request) throws IOException {
-        final InputStream stream = Localization.class.getResourceAsStream("/bc_localization/" + request.bundleName() + ".json");
+        final InputStream stream = DefaultJsonLocalizationMapReader.class.getResourceAsStream("/bc_localization/" + request.bundleName() + ".json");
         if (stream == null) {
             return null;
         }

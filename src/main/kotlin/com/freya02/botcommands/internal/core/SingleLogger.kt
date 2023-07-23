@@ -1,5 +1,7 @@
 package com.freya02.botcommands.internal.core
 
+import kotlin.reflect.KClass
+
 internal class SingleLogger {
     private val set: MutableSet<String> = hashSetOf()
 
@@ -25,5 +27,7 @@ internal class SingleLogger {
 
         @JvmStatic
         operator fun get(clazz: Class<*>) = map.computeIfAbsent(clazz) { SingleLogger() }
+
+        operator fun get(clazz: KClass<*>) = get(clazz.java)
     }
 }
