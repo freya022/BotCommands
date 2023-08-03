@@ -23,20 +23,20 @@ private val messageFormatRegex = Regex("""\{(\w+)(,?.*?)}""")
  * Full example: `"There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"`
  */
 class DefaultLocalizationTemplate(private val template: String, locale: Locale) : LocalizationTemplate {
-    private val localizableStrings: MutableList<LocalizableString> = ArrayList()
+    private val localizableArguments: MutableList<LocalizableArgument> = ArrayList()
 
     init {
         var start = 0
         bracketsRegex.findAll(template).forEach { templateMatch ->
             val matchStart = templateMatch.range.first
-            addRawString(template.substring(start, matchStart))
+            addRawArgument(template.substring(start, matchStart))
 
             //TODO use LocalizableString factories and loop
             // users will be able to easily add different LocalizableString(s)
             val group = templateMatch.value
             templateRegex.matchEntire(group)?.let { javaFormatMatch ->
                 val (formatterName, formatter) = javaFormatMatch.groupValues
-                localizableStrings.add(JavaFormattableString(formatterName, formatter))
+                localizableArguments.add(JavaFormattableArgument(formatterName, formatter))
                 return@forEach
             }
 
@@ -45,28 +45,28 @@ class DefaultLocalizationTemplate(private val template: String, locale: Locale) 
             val (_, formatterName, formatterFormat) = messageFormatMatcher.groupValues
             //Replace named index by integer index
             val messageFormatter = "{0$formatterFormat}"
-            localizableStrings.add(MessageFormatString(formatterName, messageFormatter, locale))
+            localizableArguments.add(MessageFormatArgument(formatterName, messageFormatter, locale))
 
             start = templateMatch.range.last
         }
-        addRawString(template.substring(start))
+        addRawArgument(template.substring(start))
     }
 
-    private fun addRawString(substring: String) {
+    private fun addRawArgument(substring: String) {
         if (substring.isEmpty()) return
-        localizableStrings.add(RawString(substring))
+        localizableArguments.add(RawArgument(substring))
     }
 
     override fun localize(vararg args: Localization.Entry): String {
-        return localizableStrings.joinToString("") { localizableString ->
+        return localizableArguments.joinToString("") { localizableString ->
             when (localizableString) {
-                is RawString -> localizableString.get()
-                is FormattableString -> formatFormattableString(args, localizableString)
+                is RawArgument -> localizableString.get()
+                is FormattableArgument -> formatFormattableString(args, localizableString)
             }
         }
     }
 
-    private fun formatFormattableString(args: Array<out Localization.Entry>, localizableString: FormattableString): String {
+    private fun formatFormattableString(args: Array<out Localization.Entry>, localizableString: FormattableArgument): String {
         val value = getValueByFormatterName(args, localizableString.formatterName)
         return try {
             localizableString.format(value)

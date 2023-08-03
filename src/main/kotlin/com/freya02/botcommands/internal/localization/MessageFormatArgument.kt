@@ -5,11 +5,11 @@ import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
-internal class MessageFormatString internal constructor(
+internal class MessageFormatArgument internal constructor(
     override val formatterName: String,
     formatter: String,
     locale: Locale
-) : FormattableString {
+) : FormattableArgument {
     private val lock = ReentrantLock()
     private val formatter = MessageFormat(formatter, locale)
 
