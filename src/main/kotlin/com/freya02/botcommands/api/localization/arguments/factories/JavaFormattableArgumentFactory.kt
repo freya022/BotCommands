@@ -9,7 +9,7 @@ import java.util.*
 @BService
 @ServiceType(FormattableArgumentFactory::class)
 class JavaFormattableArgumentFactory : FormattableArgumentFactory {
-    override val regex: Regex = Regex("""\{(\w+):(%.+?)}""")
+    override val regex: Regex = Regex("""(\w+):(%.+?)""")
 
     override fun get(matchResult: MatchResult, locale: Locale): FormattableArgument {
         val (formatterName, formatter) = matchResult.destructured

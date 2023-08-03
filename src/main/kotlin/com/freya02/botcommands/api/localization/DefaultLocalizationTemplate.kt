@@ -12,8 +12,8 @@ import com.freya02.botcommands.internal.utils.throwUser
 import java.text.MessageFormat
 import java.util.*
 
-private val bracketsRegex = Regex("""\{.*?}""")
-private val alphanumericRegex = Regex("""\{\w+}""")
+private val argumentRegex = Regex("""\{(.*?)}""")
+private val alphanumericRegex = Regex("""\w+""")
 
 /**
  * Default implementation for [LocalizationTemplate].
@@ -34,24 +34,24 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
         val formattableArgumentFactories = context.getInterfacedServices<FormattableArgumentFactory>()
 
         var start = 0
-        bracketsRegex.findAll(template).forEach argumentsLoop@{ templateMatch ->
-            val matchStart = templateMatch.range.first
+        argumentRegex.findAll(template).forEach argumentsLoop@{ argumentMatch ->
+            val matchStart = argumentMatch.range.first
             addRawArgument(template.substring(start, matchStart))
 
-            val formattableArgument = templateMatch.value
+            val formattableArgument = argumentMatch.groups[1]?.value!!
             // Try to match against each factory
             formattableArgumentFactories.forEach { factory ->
                 factory.regex.matchEntire(formattableArgument)?.let {
                     localizableArguments += factory.get(it, locale)
-                    start = templateMatch.range.last
+                    start = argumentMatch.range.last
                     return@argumentsLoop
                 }
             }
 
             // If the entire thing looks like a simple argument name
-            alphanumericRegex.matchEntire(formattableArgument)?.let {
-                localizableArguments += SimpleArgument(it.groupValues[1])
-                start = templateMatch.range.last
+            if (formattableArgument.matches(alphanumericRegex)) {
+                localizableArguments += SimpleArgument(formattableArgument)
+                start = argumentMatch.range.last
                 return@argumentsLoop
             }
 
