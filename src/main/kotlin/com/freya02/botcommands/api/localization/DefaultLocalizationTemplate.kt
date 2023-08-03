@@ -85,7 +85,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
     }
 
     private fun getValueByFormatterName(args: Array<out Localization.Entry>, formatterName: String): Any {
-        return args.find { it.key == formatterName }
+        return args.find { it.key == formatterName }?.value
             ?: throw IllegalArgumentException("Could not find format '$formatterName' in template: '$template'")
     }
 
