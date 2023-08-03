@@ -11,9 +11,3 @@ package com.freya02.botcommands.api.localization
  * @see localize LocalizationTemplate.localize
  */
 infix fun String.to(value: Any): Localization.Entry = Localization.Entry.entry(this, value)
-
-/**
- * Processes the localization template and replaces the named parameters by theirs values
- */
-fun LocalizationTemplate.localize(vararg entries: Pair<String, Any>): String =
-    localize(*entries.map { (k, v) -> Localization.Entry.entry(k, v) }.toTypedArray())

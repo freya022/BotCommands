@@ -69,7 +69,7 @@ public class DefaultLocalizationTemplate implements LocalizationTemplate {
 
 	@NotNull
 	@Override
-	public String localize(Localization.Entry... args) {
+	public String localize(Localization.Entry @NotNull ... args) {
 		final StringBuilder sb = new StringBuilder();
 
 		for (LocalizableString localizableString : localizableStrings) {
