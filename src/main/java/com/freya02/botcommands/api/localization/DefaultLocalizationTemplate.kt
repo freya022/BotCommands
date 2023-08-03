@@ -1,105 +1,84 @@
-package com.freya02.botcommands.api.localization;
+package com.freya02.botcommands.api.localization
 
-import com.freya02.botcommands.internal.localization.*;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.internal.localization.*
+import com.freya02.botcommands.internal.utils.throwUser
+import java.text.MessageFormat
+import java.util.*
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+private val bracketsRegex = Regex("""\{.*?}""")
+private val templateRegex = Regex("""\{(\w+?)(?::(%.+))?}""")
+private val messageFormatRegex = Regex("""\{(\w+)(,?.*?)}""")
 
 /**
- * Default implementation for {@link LocalizationTemplate}.
+ * Default implementation for [LocalizationTemplate].
  *
- * <p>In a nutshell, this is a copy of {@link MessageFormat}, but with named parameters.
- * <br>To declare a variable inside your localization template, you may use {@code {variable_name}}.
- * <br>As this supports {@link MessageFormat}, you can also specify format types, such as: {@code {variable_name, number}},
- * and format styles, such as: {@code {user_amount, choice, 0#users|1#user|1<users}}.
+ * This is effectively [MessageFormat], but with named parameters.
  *
- * <p>Full example: {@code "There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"}
+ * To declare a variable inside your localization template, you may use `{variable_name}`.
+ *
+ * As this supports [MessageFormat], you can also specify format types, such as: `{variable_name, number}`,
+ * and format styles, such as: `{user_amount, choice, 0#users|1#user|1<users}`.
+ *
+ * Full example: `"There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"`
  */
-public class DefaultLocalizationTemplate implements LocalizationTemplate {
-	private static final Pattern BRACKETS_PATTERN = Pattern.compile("\\{.*?}");
-	private static final Pattern TEMPLATE_PATTERN = Pattern.compile("\\{(\\w+?)(?::(%.+))?}");
-	private static final Pattern MESSAGE_FORMAT_PATTERN = Pattern.compile("\\{(\\w+)(,?.*?)}");
+class DefaultLocalizationTemplate(private val template: String, locale: Locale) : LocalizationTemplate {
+    private val localizableStrings: MutableList<LocalizableString> = ArrayList()
 
-	private final List<LocalizableString> localizableStrings = new ArrayList<>();
-	private final String template;
+    init {
+        var start = 0
+        bracketsRegex.findAll(template).forEach { templateMatch ->
+            val matchStart = templateMatch.range.first
+            addRawString(template.substring(start, matchStart))
 
-	public DefaultLocalizationTemplate(@NotNull String template, @NotNull Locale locale) {
-		this.template = template;
+            //TODO use LocalizableString factories and loop
+            // users will be able to easily add different LocalizableString(s)
+            val group = templateMatch.value
+            templateRegex.matchEntire(group)?.let { javaFormatMatch ->
+                val (formatterName, formatter) = javaFormatMatch.groupValues
+                localizableStrings.add(JavaFormattableString(formatterName, formatter))
+                return@forEach
+            }
 
-		final Matcher bracketMatcher = BRACKETS_PATTERN.matcher(template);
+            val messageFormatMatcher = messageFormatRegex.matchEntire(group)
+                ?: throwUser("Invalid MessageFormat format '$group' in template '$template'")
+            val (_, formatterName, formatterFormat) = messageFormatMatcher.groupValues
+            //Replace named index by integer index
+            val messageFormatter = "{0$formatterFormat}"
+            localizableStrings.add(MessageFormatString(formatterName, messageFormatter, locale))
 
-		int start = 0;
-		while (bracketMatcher.find()) {
-			addRawString(template.substring(start, bracketMatcher.start()));
+            start = templateMatch.range.last
+        }
+        addRawString(template.substring(start))
+    }
 
-			final Matcher templateMatcher = TEMPLATE_PATTERN.matcher(bracketMatcher.group());
-			if (templateMatcher.matches()) {
-				final String formatterName = templateMatcher.group(1);
-				final String formatter = templateMatcher.group(2);
+    private fun addRawString(substring: String) {
+        if (substring.isEmpty()) return
+        localizableStrings.add(RawString(substring))
+    }
 
-				localizableStrings.add(new JavaFormattableString(formatterName, formatter));
-			} else {
-				final Matcher messageFormatMatcher = MESSAGE_FORMAT_PATTERN.matcher(bracketMatcher.group());
-				if (!messageFormatMatcher.matches()) {
-					throw new IllegalArgumentException("Invalid MessageFormat format '%s' in template '%s'".formatted(bracketMatcher.group(), template));
-				}
+    override fun localize(vararg args: Localization.Entry): String {
+        return localizableStrings.joinToString("") { localizableString ->
+            when (localizableString) {
+                is RawString -> localizableString.get()
+                is FormattableString -> formatFormattableString(args, localizableString)
+            }
+        }
+    }
 
-				final String formatterName = messageFormatMatcher.group(1);
-				final String messageFormatter = messageFormatMatcher.replaceFirst("{0$2}"); //Replace named index by integer index
+    private fun formatFormattableString(args: Array<out Localization.Entry>, localizableString: FormattableString): String {
+        val value = getValueByFormatterName(args, localizableString.formatterName)
+        return try {
+            localizableString.format(value)
+        } catch (e: Exception) { //For example, if the user provided a string to a number format
+            throw RuntimeException("Could not get localized string from ${localizableString::class.simpleNestedName} '${localizableString.formatterName}' with value '$value'", e)
+        }
+    }
 
-				localizableStrings.add(new MessageFormatString(formatterName, messageFormatter, locale));
-			}
+    private fun getValueByFormatterName(args: Array<out Localization.Entry>, formatterName: String): Any {
+        return args.find { it.key == formatterName }
+            ?: throw IllegalArgumentException("Could not find format '$formatterName' in template: '$template'")
+    }
 
-			start = bracketMatcher.end();
-		}
-
-		addRawString(template.substring(start));
-	}
-
-	private void addRawString(String substring) {
-		if (substring.isEmpty()) return;
-
-		localizableStrings.add(new RawString(substring));
-	}
-
-	@NotNull
-	@Override
-	public String localize(Localization.Entry @NotNull ... args) {
-		final StringBuilder sb = new StringBuilder();
-
-		for (LocalizableString localizableString : localizableStrings) {
-			if (localizableString instanceof RawString rawString) {
-				sb.append(rawString.get());
-			} else if (localizableString instanceof FormattableString formattableString) {
-				final Object value = getValueByFormatterName(args, formattableString.getFormatterName());
-				try {
-					sb.append(formattableString.format(value));
-				} catch (Exception e) { //For example, if the user provided a string to a number format
-					throw new RuntimeException("Could not get localized string from FormattableString '%s' with value '%s'".formatted(formattableString.getFormatterName(), value), e);
-				}
-			}
-		}
-
-		return sb.toString();
-	}
-
-	private Object getValueByFormatterName(Localization.Entry[] args, String formatterName) {
-		for (Localization.Entry entry : args) {
-			if (entry.key().equals(formatterName)) {
-				return entry.value();
-			}
-		}
-
-		throw new IllegalArgumentException("Could not find format '%s' in template: '%s'".formatted(formatterName, template));
-	}
-
-	@Override
-	public String toString() {
-		return template;
-	}
+    override fun toString(): String = template
 }
