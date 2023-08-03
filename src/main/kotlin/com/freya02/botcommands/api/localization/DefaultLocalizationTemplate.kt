@@ -1,7 +1,11 @@
 package com.freya02.botcommands.api.localization
 
 import com.freya02.botcommands.api.core.utils.simpleNestedName
-import com.freya02.botcommands.internal.localization.*
+import com.freya02.botcommands.api.localization.arguments.FormattableArgument
+import com.freya02.botcommands.api.localization.arguments.JavaFormattableArgument
+import com.freya02.botcommands.api.localization.arguments.MessageFormatArgument
+import com.freya02.botcommands.internal.localization.LocalizableArgument
+import com.freya02.botcommands.internal.localization.RawArgument
 import com.freya02.botcommands.internal.utils.throwUser
 import java.text.MessageFormat
 import java.util.*
@@ -58,20 +62,21 @@ class DefaultLocalizationTemplate(private val template: String, locale: Locale) 
     }
 
     override fun localize(vararg args: Localization.Entry): String {
-        return localizableArguments.joinToString("") { localizableString ->
-            when (localizableString) {
-                is RawArgument -> localizableString.get()
-                is FormattableArgument -> formatFormattableString(args, localizableString)
+        return localizableArguments.joinToString("") { localizableArgument ->
+            when (localizableArgument) {
+                is RawArgument -> localizableArgument.get()
+                is FormattableArgument -> formatFormattableString(args, localizableArgument)
+                else -> throwUser("Unknown localizable argument type: ${localizableArgument::class.simpleNestedName}")
             }
         }
     }
 
-    private fun formatFormattableString(args: Array<out Localization.Entry>, localizableString: FormattableArgument): String {
-        val value = getValueByFormatterName(args, localizableString.formatterName)
+    private fun formatFormattableString(args: Array<out Localization.Entry>, formattableArgument: FormattableArgument): String {
+        val value = getValueByFormatterName(args, formattableArgument.formatterName)
         return try {
-            localizableString.format(value)
+            formattableArgument.format(value)
         } catch (e: Exception) { //For example, if the user provided a string to a number format
-            throw RuntimeException("Could not get localized string from ${localizableString::class.simpleNestedName} '${localizableString.formatterName}' with value '$value'", e)
+            throw RuntimeException("Could not get localized string from ${formattableArgument::class.simpleNestedName} '${formattableArgument.formatterName}' with value '$value'", e)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.localization
+package com.freya02.botcommands.api.localization.arguments
 
 internal class JavaFormattableArgument internal constructor(
     override val formatterName: String,

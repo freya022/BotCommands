@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.localization
+package com.freya02.botcommands.api.localization.arguments
 
 import java.text.MessageFormat
 import java.util.*

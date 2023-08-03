@@ -1,3 +1,6 @@
 package com.freya02.botcommands.internal.localization
 
-sealed interface LocalizableArgument
+/**
+ * Marker interface, **do not implement.**
+ */
+interface LocalizableArgument
