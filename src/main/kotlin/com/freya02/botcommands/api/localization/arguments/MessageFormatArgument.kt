@@ -13,7 +13,5 @@ internal class MessageFormatArgument internal constructor(
     private val lock = ReentrantLock()
     private val formatter = MessageFormat(formatter, locale)
 
-    override fun format(obj: Any): String {
-        return lock.withLock { formatter.format(arrayOf(obj)) }
-    }
+    override fun format(obj: Any): String = lock.withLock { formatter.format(arrayOf(obj)) }
 }

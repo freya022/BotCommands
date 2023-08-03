@@ -1,18 +1,19 @@
 package com.freya02.botcommands.api.localization
 
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.localization.arguments.FormattableArgument
-import com.freya02.botcommands.api.localization.arguments.JavaFormattableArgument
-import com.freya02.botcommands.api.localization.arguments.MessageFormatArgument
+import com.freya02.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import com.freya02.botcommands.internal.localization.LocalizableArgument
 import com.freya02.botcommands.internal.localization.RawArgument
+import com.freya02.botcommands.internal.localization.SimpleArgument
 import com.freya02.botcommands.internal.utils.throwUser
 import java.text.MessageFormat
 import java.util.*
 
 private val bracketsRegex = Regex("""\{.*?}""")
-private val templateRegex = Regex("""\{(\w+?)(?::(%.+))?}""")
-private val messageFormatRegex = Regex("""\{(\w+)(,?.*?)}""")
+private val alphanumericRegex = Regex("""\{\w+}""")
 
 /**
  * Default implementation for [LocalizationTemplate].
@@ -26,39 +27,42 @@ private val messageFormatRegex = Regex("""\{(\w+)(,?.*?)}""")
  *
  * Full example: `"There are {user_amount} {user_amount, choice, 0#users|1#user|1<users} and my up-time is {uptime, number} seconds"`
  */
-class DefaultLocalizationTemplate(private val template: String, locale: Locale) : LocalizationTemplate {
+class DefaultLocalizationTemplate(context: BContext, private val template: String, locale: Locale) : LocalizationTemplate {
     private val localizableArguments: MutableList<LocalizableArgument> = ArrayList()
 
     init {
+        val formattableArgumentFactories = context.getInterfacedServices<FormattableArgumentFactory>()
+
         var start = 0
-        bracketsRegex.findAll(template).forEach { templateMatch ->
+        bracketsRegex.findAll(template).forEach argumentsLoop@{ templateMatch ->
             val matchStart = templateMatch.range.first
             addRawArgument(template.substring(start, matchStart))
 
-            //TODO use LocalizableString factories and loop
-            // users will be able to easily add different LocalizableString(s)
-            val group = templateMatch.value
-            templateRegex.matchEntire(group)?.let { javaFormatMatch ->
-                val (formatterName, formatter) = javaFormatMatch.groupValues
-                localizableArguments.add(JavaFormattableArgument(formatterName, formatter))
-                return@forEach
+            val formattableArgument = templateMatch.value
+            // Try to match against each factory
+            formattableArgumentFactories.forEach { factory ->
+                factory.regex.matchEntire(formattableArgument)?.let {
+                    localizableArguments += factory.get(it, locale)
+                    start = templateMatch.range.last
+                    return@argumentsLoop
+                }
             }
 
-            val messageFormatMatcher = messageFormatRegex.matchEntire(group)
-                ?: throwUser("Invalid MessageFormat format '$group' in template '$template'")
-            val (_, formatterName, formatterFormat) = messageFormatMatcher.groupValues
-            //Replace named index by integer index
-            val messageFormatter = "{0$formatterFormat}"
-            localizableArguments.add(MessageFormatArgument(formatterName, messageFormatter, locale))
+            // If the entire thing looks like a simple argument name
+            alphanumericRegex.matchEntire(formattableArgument)?.let {
+                localizableArguments += SimpleArgument(it.groupValues[1])
+                start = templateMatch.range.last
+                return@argumentsLoop
+            }
 
-            start = templateMatch.range.last
+            throwUser("Could not match formattable argument '$formattableArgument' against ${formattableArgumentFactories.map { it.javaClass.simpleNestedName }}")
         }
         addRawArgument(template.substring(start))
     }
 
     private fun addRawArgument(substring: String) {
         if (substring.isEmpty()) return
-        localizableArguments.add(RawArgument(substring))
+        localizableArguments += RawArgument(substring)
     }
 
     override fun localize(vararg args: Localization.Entry): String {

@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.localization.readers;
 
+import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
@@ -42,6 +43,12 @@ import java.util.*;
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
     private static final Gson GSON = new Gson();
 
+    private final BContext context;
+
+    public DefaultJsonLocalizationMapReader(BContext context) {
+        this.context = context;
+    }
+
     @Nullable
     @Override
     public Map<String, LocalizationTemplate> readTemplateMap(@NotNull TemplateMapRequest request) throws IOException {
@@ -78,7 +85,7 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
                 if (!(entry.getValue() instanceof String))
                     throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String".formatted(key, baseName, effectiveLocale));
 
-                final LocalizationTemplate value = new DefaultLocalizationTemplate((String) entry.getValue(), effectiveLocale);
+                final LocalizationTemplate value = new DefaultLocalizationTemplate(context, (String) entry.getValue(), effectiveLocale);
 
                 if (templateMap.put(key, value) != null) {
                     throw new IllegalStateException("Got two same localization keys: '" + key + "'");
