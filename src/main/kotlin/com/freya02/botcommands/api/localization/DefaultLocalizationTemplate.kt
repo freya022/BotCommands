@@ -43,7 +43,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             formattableArgumentFactories.forEach { factory ->
                 factory.regex.matchEntire(formattableArgument)?.let {
                     localizableArguments += factory.get(it, locale)
-                    start = argumentMatch.range.last
+                    start = argumentMatch.range.last + 1
                     return@argumentsLoop
                 }
             }
@@ -51,7 +51,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             // If the entire thing looks like a simple argument name
             if (formattableArgument.matches(alphanumericRegex)) {
                 localizableArguments += SimpleArgument(formattableArgument)
-                start = argumentMatch.range.last
+                start = argumentMatch.range.last + 1
                 return@argumentsLoop
             }
 
