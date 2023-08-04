@@ -46,17 +46,19 @@ public interface Localization {
     @NotNull
     Locale getEffectiveLocale();
 
-    record Entry(@NotNull String key, @NotNull Object value) {
+    record Entry(@NotNull String argumentName, @NotNull Object value) {
         /**
-         * Create a new localization entry, this binds a key (from a templated string) into a value
-         * <b>Highly recommended to use this method with a static import</b>
+         * Create a new localization entry,
+         * this binds a {@link LocalizationTemplate localization template} argument with the value.
          *
-         * @param key   The key from the templated string
-         * @param value The value to assign it to
+         * <p>I recommend using this method with a static import.
+         *
+         * @param argumentName The name of the argument from the templated string
+         * @param value        The value to assign it to
          */
         @NotNull
-        public static Entry entry(@NotNull String key, @NotNull Object value) {
-            return new Entry(key, value);
+        public static Entry entry(@NotNull String argumentName, @NotNull Object value) {
+            return new Entry(argumentName, value);
         }
     }
 }

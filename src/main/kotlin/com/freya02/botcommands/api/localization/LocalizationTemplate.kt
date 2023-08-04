@@ -1,9 +1,7 @@
 package com.freya02.botcommands.api.localization
 
 /**
- * Allows different implementation of localization templates.
- *
- * A localization template represents the entire string being localized, with parameters.
+ * Represents an entire localizable string, with parameters.
  *
  * You can implement your own template, the default one is [DefaultLocalizationTemplate].
  *

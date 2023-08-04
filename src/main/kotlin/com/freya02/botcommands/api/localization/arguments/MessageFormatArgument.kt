@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 internal class MessageFormatArgument internal constructor(
-    override val formatterName: String,
+    override val argumentName: String,
     formatter: String,
     locale: Locale
 ) : FormattableArgument {

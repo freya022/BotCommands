@@ -76,17 +76,17 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
     }
 
     private fun formatFormattableString(args: Array<out Localization.Entry>, formattableArgument: FormattableArgument): String {
-        val value = getValueByFormatterName(args, formattableArgument.formatterName)
+        val value = getValueByArgumentName(args, formattableArgument.argumentName)
         return try {
             formattableArgument.format(value)
         } catch (e: Exception) { //For example, if the user provided a string to a number format
-            throw RuntimeException("Could not get localized string from ${formattableArgument::class.simpleNestedName} '${formattableArgument.formatterName}' with value '$value'", e)
+            throw RuntimeException("Could not get localized string from ${formattableArgument::class.simpleNestedName} '${formattableArgument.argumentName}' with value '$value'", e)
         }
     }
 
-    private fun getValueByFormatterName(args: Array<out Localization.Entry>, formatterName: String): Any {
-        return args.find { it.key == formatterName }?.value
-            ?: throw IllegalArgumentException("Could not find format '$formatterName' in template: '$template'")
+    private fun getValueByArgumentName(args: Array<out Localization.Entry>, argumentName: String): Any {
+        return args.find { it.argumentName == argumentName }?.value
+            ?: throw IllegalArgumentException("Could not find argument '$argumentName' in ${args.contentToString()}, in template: '$template'")
     }
 
     override fun toString(): String = template
