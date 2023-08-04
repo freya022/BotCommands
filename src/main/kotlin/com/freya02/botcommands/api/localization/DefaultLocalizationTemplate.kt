@@ -89,5 +89,7 @@ class DefaultLocalizationTemplate(context: BContext, private val template: Strin
             ?: throw IllegalArgumentException("Could not find argument '$argumentName' in ${args.contentToString()}, in template: '$template'")
     }
 
-    override fun toString(): String = template
+    override fun toString(): String {
+        return "DefaultLocalizationTemplate(template='$template', localizableArguments=$localizableArguments)"
+    }
 }
