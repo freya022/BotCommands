@@ -4,10 +4,8 @@ import com.freya02.botcommands.api.localization.providers.LocalizationMapProvide
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Low-level interface for localization.
@@ -22,13 +20,6 @@ import java.util.Map;
  * @see LocalizationTemplate
  */
 public interface Localization {
-    /**
-     * Returns an unmodifiable view of the {@code localization path -> LocalizationTemplate} map
-     */
-    @NotNull
-    @UnmodifiableView
-    Map<String, ? extends LocalizationTemplate> getTemplateMap();
-
     /**
      * Returns the {@link LocalizationTemplate} for the specified localization path
      *

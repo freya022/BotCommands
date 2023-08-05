@@ -3,14 +3,17 @@ package com.freya02.botcommands.api.localization.readers;
 import com.freya02.botcommands.api.Logging;
 import com.freya02.botcommands.api.core.service.ServiceContainer;
 import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
-import com.freya02.botcommands.api.localization.TemplateMapRequest;
+import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationMapRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * Class which contains all the {@link LocalizationMapReader}.
@@ -47,14 +50,14 @@ public final class LocalizationMapReaders {
      * @return non-null mappings if a reader returned one, {@code null} otherwise
      */
     @Nullable
-    public Map<String, LocalizationTemplate> cycleReaders(@NotNull String baseName, @NotNull Locale locale) {
-        final TemplateMapRequest request = new TemplateMapRequest(baseName, locale, CONTROL.toBundleName(baseName, locale));
+    public LocalizationMap cycleReaders(@NotNull String baseName, @NotNull Locale locale) {
+        final LocalizationMapRequest request = new LocalizationMapRequest(baseName, locale, CONTROL.toBundleName(baseName, locale));
         for (LocalizationMapReader reader : getReaders()) {
             try {
-                Map<String, LocalizationTemplate> templateMap = reader.readTemplateMap(request);
+                LocalizationMap localizationMap = reader.readLocalizationMap(request);
 
-                if (templateMap != null) {
-                    return templateMap;
+                if (localizationMap != null) {
+                    return localizationMap;
                 }
             } catch (Exception e) {
                 LOGGER.error("An error occurred while reading a bundle '{}' with locale '{}' with reader '{}'", baseName, locale, reader.getClass().getName());

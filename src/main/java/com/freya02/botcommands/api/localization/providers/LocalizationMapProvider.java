@@ -29,14 +29,14 @@ public interface LocalizationMapProvider {
 	 * which will be returned by {@link LocalizationMap#effectiveLocale()}.
 	 * <br>This may include parent bundles.
 	 *
-	 * @param baseName The base name of the localization bundle
-	 * @param locale   The requested locale
+	 * @param baseName        The base name of the localization bundle
+	 * @param requestedLocale The requested locale
 	 *
 	 * @return A {@link LocalizationMap} instance with the requested data,
 	 * or {@code null} if no bundle could be read, or a (logged) exception happened.
 	 */
 	@Nullable
-	LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale locale);
+	LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale);
 
 	/**
 	 * Loads a localization map with the requested name and requested locale.

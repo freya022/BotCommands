@@ -3,13 +3,12 @@ package com.freya02.botcommands.api.localization.readers;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
-import com.freya02.botcommands.api.localization.TemplateMapRequest;
+import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationMapRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Reads localization mappings
@@ -34,6 +33,9 @@ public interface LocalizationMapReader {
         return path + '.' + other;
     }
 
+    /**
+     * Reads a {@link LocalizationMap} from the requested bundle, returns {@code null} if no localization map exists.
+     */
     @Nullable
-    Map<String, LocalizationTemplate> readTemplateMap(@NotNull TemplateMapRequest request) throws IOException;
+    LocalizationMap readLocalizationMap(@NotNull LocalizationMapRequest request) throws IOException;
 }

@@ -3,9 +3,7 @@ package com.freya02.botcommands.api.localization.readers;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
-import com.freya02.botcommands.api.localization.DefaultLocalizationTemplate;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
-import com.freya02.botcommands.api.localization.TemplateMapRequest;
+import com.freya02.botcommands.api.localization.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
@@ -51,31 +49,31 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
 
     @Nullable
     @Override
-    public Map<String, LocalizationTemplate> readTemplateMap(@NotNull TemplateMapRequest request) throws IOException {
+    public LocalizationMap readLocalizationMap(@NotNull LocalizationMapRequest request) throws IOException {
         final InputStream stream = DefaultJsonLocalizationMapReader.class.getResourceAsStream("/bc_localization/" + request.bundleName() + ".json");
         if (stream == null) {
             return null;
         }
 
-        final Map<String, LocalizationTemplate> templateMap = new HashMap<>();
+        final Map<String, LocalizationTemplate> localizationMap = new HashMap<>();
 
         try (InputStreamReader reader = new InputStreamReader(stream)) {
-            final Map<String, ?> map = GSON.fromJson(reader, new TemplateMapTypeToken());
+            final Map<String, ?> map = GSON.fromJson(reader, new LocalizationMapTypeToken());
 
-            discoverEntries(templateMap, request.baseName(), request.effectiveLocale(), "", map.entrySet());
+            discoverEntries(localizationMap, request.baseName(), request.requestedLocale(), "", map.entrySet());
         }
 
-        return templateMap;
+        return new DefaultLocalizationMap(request.requestedLocale(), localizationMap);
     }
 
     @SuppressWarnings("unchecked")
-    private void discoverEntries(Map<String, LocalizationTemplate> templateMap, @NotNull String baseName, Locale effectiveLocale, String currentPath, Set<? extends Map.Entry<String, ?>> entries) {
+    private void discoverEntries(Map<String, LocalizationTemplate> localizationMap, @NotNull String baseName, Locale effectiveLocale, String currentPath, Set<? extends Map.Entry<String, ?>> entries) {
         for (Map.Entry<String, ?> entry : entries) {
             final String key = appendPath(currentPath, entry.getKey());
 
             if (entry.getValue() instanceof Map<?, ?> map) {
                 discoverEntries(
-                        templateMap,
+                        localizationMap,
                         baseName,
                         effectiveLocale,
                         key,
@@ -87,13 +85,13 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
 
                 final LocalizationTemplate value = new DefaultLocalizationTemplate(context, (String) entry.getValue(), effectiveLocale);
 
-                if (templateMap.put(key, value) != null) {
+                if (localizationMap.put(key, value) != null) {
                     throw new IllegalStateException("Got two same localization keys: '" + key + "'");
                 }
             }
         }
     }
 
-    private static class TemplateMapTypeToken extends TypeToken<Map<String, ?>> {
+    private static class LocalizationMapTypeToken extends TypeToken<Map<String, ?>> {
     }
 }

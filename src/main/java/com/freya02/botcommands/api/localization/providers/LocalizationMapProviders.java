@@ -42,13 +42,14 @@ public final class LocalizationMapProviders {
 
 	/**
 	 * Cycles through all the registered providers with the specified base name and locale,
-	 * and returns a {@link LocalizationMap} when a provider returns one, returns null otherwise.
+	 * and returns a {@link LocalizationMap} when a provider returns one,
+	 * returns null otherwise.
 	 *
 	 * <p>This method also tries to get bundles with parent locales.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle,
-	 *                 which may not be the same as the one in {@link LocalizationMap#effectiveLocale()}
+	 *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
 	 *
 	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */
@@ -71,13 +72,14 @@ public final class LocalizationMapProviders {
 
 	/**
 	 * Cycles through all the registered providers with the specified base name and locale,
-	 * and returns a {@link LocalizationMap} when a provider returns one, returns null otherwise.
+	 * and returns a {@link LocalizationMap} when a provider returns one,
+	 * returns null otherwise.
 	 *
 	 * <p>This method will only use the passed locale.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle,
-	 *                 which may not be the same as the one in {@link LocalizationMap#effectiveLocale()}
+	 *                 which may not be the same as the one in {@link LocalizationMap#getEffectiveLocale()}
 	 *
 	 * @return a {@link LocalizationMap} if a provider returned one, {@code null} otherwise
 	 */

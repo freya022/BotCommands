@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.localization.providers;
 
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
-import com.freya02.botcommands.api.localization.DefaultLocalizationMap;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
@@ -10,10 +9,8 @@ import com.freya02.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Default implementation for {@link LocalizationMap} providers.
@@ -37,23 +34,20 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 
 	@Nullable
 	@Override
-	public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale effectiveLocale) {
-		final Map<String, LocalizationTemplate> templateMap = localizationMapReaders.cycleReaders(baseName, effectiveLocale);
+	public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale) {
+		final LocalizationMap localizationMap = localizationMapReaders.cycleReaders(baseName, requestedLocale);
 
-		return withParentBundles(baseName, effectiveLocale, templateMap);
+		return withParentBundles(baseName, requestedLocale, localizationMap);
 	}
 
 	@Nullable
 	@Override
 	public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale) {
-		final Map<String, LocalizationTemplate> map = localizationMapReaders.cycleReaders(baseName, locale);
-		if (map == null) return null;
-
-		return new DefaultLocalizationMap(locale, map);
+        return localizationMapReaders.cycleReaders(baseName, locale);
 	}
 
 	@Nullable
-	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) {
+	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable LocalizationMap localizationMap) {
 		//Need to get parent bundles
 		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
 
@@ -63,25 +57,35 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
 			//Do not use Localization, as it will **also** try to get the parent localizations
-			final LocalizationMap parentLocalization = localizationMapProviders.cycleProviders(baseName, candidateLocale);
-			if (parentLocalization != null) {
-				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.templateMap();
+			final LocalizationMap parentLocalizationMap = localizationMapProviders.cycleProviders(baseName, candidateLocale);
+			if (parentLocalizationMap != null) {
+                localizationMap = createDelegated(localizationMap, parentLocalizationMap);
+            }
+		}
 
-				if (templateMap == null) {
-					templateMap = new HashMap<>();
-					effectiveLocale = candidateLocale;
-				}
+		return localizationMap;
+	}
 
-				for (Map.Entry<String, ? extends LocalizationTemplate> entry : parentTemplateMap.entrySet()) {
-					templateMap.putIfAbsent(entry.getKey(), entry.getValue());
-				}
+	private LocalizationMap createDelegated(@Nullable LocalizationMap current, @NotNull LocalizationMap parent) {
+		final Locale effectiveLocale = current != null ? current.getEffectiveLocale() : parent.getEffectiveLocale();
+		return new LocalizationMap() {
+			@NotNull
+			@Override
+			public Locale getEffectiveLocale() {
+				return effectiveLocale;
 			}
-		}
 
-		if (templateMap == null) {
-			return null;
-		}
+			@Nullable
+			@Override
+			public LocalizationTemplate get(@NotNull String path) {
+				if (current != null) {
+					final LocalizationTemplate template = current.get(path);
+					if (template != null)
+						return template;
+				}
 
-		return new DefaultLocalizationMap(effectiveLocale, templateMap);
+				return parent.get(path);
+			}
+		};
 	}
 }

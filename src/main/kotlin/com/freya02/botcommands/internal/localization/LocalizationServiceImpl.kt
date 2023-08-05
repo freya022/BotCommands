@@ -85,7 +85,7 @@ internal class LocalizationServiceImpl internal constructor(
             //Try to retrieve with the locale
             val localizationBundle = localizationMapProviders.cycleProvidersWithParents(baseName, candidateLocale)
             if (localizationBundle != null) {
-                return BestLocale(localizationBundle.effectiveLocale(), localizationBundle)
+                return BestLocale(localizationBundle.effectiveLocale, localizationBundle)
             }
         }
 
