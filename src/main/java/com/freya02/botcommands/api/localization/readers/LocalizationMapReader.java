@@ -35,6 +35,8 @@ public interface LocalizationMapReader {
 
     /**
      * Reads a {@link LocalizationMap} from the requested bundle, returns {@code null} if no localization map exists.
+     *
+     * <p>This should not read parent bundles, only this specific one.
      */
     @Nullable
     LocalizationMap readLocalizationMap(@NotNull LocalizationMapRequest request) throws IOException;
