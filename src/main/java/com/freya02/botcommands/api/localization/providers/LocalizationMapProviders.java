@@ -45,7 +45,7 @@ public final class LocalizationMapProviders {
 	 * and returns a {@link LocalizationMap} when a provider returns one,
 	 * returns null otherwise.
 	 *
-	 * <p>This method also tries to get bundles with parent locales.
+	 * <p>This method should also try to get bundles with parent locales.
 	 *
 	 * @param baseName The base name of the localization bundle
 	 * @param locale   The requested locale for the localization bundle,
