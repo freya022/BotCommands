@@ -1,162 +1,144 @@
-package com.freya02.botcommands.api.localization.context;
+package com.freya02.botcommands.api.localization.context
 
-import com.freya02.botcommands.api.BContext;
-import com.freya02.botcommands.api.localization.Localization;
-import com.freya02.botcommands.api.localization.LocalizationService;
-import com.freya02.botcommands.api.localization.annotations.LocalizationBundle;
-import com.freya02.botcommands.internal.localization.LocalizationContextImpl;
-import net.dv8tion.jda.api.interactions.DiscordLocale;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.localization.Localization
+import com.freya02.botcommands.api.localization.LocalizationService
+import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
+import com.freya02.botcommands.api.localization.context.LocalizationContext.Companion.create
+import com.freya02.botcommands.internal.localization.LocalizationContextImpl
+import net.dv8tion.jda.api.interactions.DiscordLocale
+import javax.annotation.CheckReturnValue
 
-import javax.annotation.CheckReturnValue;
+typealias PairEntry = Pair<String, Any>
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
  * localization prefixes, and context-aware localization.
  *
- * <p>While this interface cannot be injected, sub-interfaces can.
+ * While this interface cannot be injected, sub-interfaces can.
  *
  * @see TextLocalizationContext
  * @see AppLocalizationContext
- * @see #create(BContext, String, String)
+ * @see create
  */
-public interface LocalizationContext {
-    static LocalizationContext create(@NotNull BContext context,
-                                      @NotNull String localizationBundle,
-                                      @Nullable String localizationPrefix) {
-        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, null, null);
-    }
-
-    static TextLocalizationContext create(@NotNull BContext context,
-                                          @NotNull String localizationBundle,
-                                          @Nullable String localizationPrefix,
-                                          @Nullable DiscordLocale guildLocale) {
-        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, guildLocale, null);
-    }
-
-    static AppLocalizationContext create(@NotNull BContext context,
-                                         @NotNull String localizationBundle,
-                                         @Nullable String localizationPrefix,
-                                         @Nullable DiscordLocale guildLocale,
-                                         @Nullable DiscordLocale userLocale) {
-        return new LocalizationContextImpl(context.getService(LocalizationService.class), localizationBundle, localizationPrefix, guildLocale, userLocale);
-    }
-
-    @NotNull
-    DiscordLocale getEffectiveLocale();
+interface LocalizationContext {
+    val effectiveLocale: DiscordLocale
 
     /**
      * Returns the localization bundle of the current context.
-     * <br>The localization bundle can either come from {@link LocalizationBundle#value()} from {@link #withBundle(String)}.
+     *
+     * The localization bundle can either come from [LocalizationBundle.value] from [withBundle].
      *
      * @return The localization bundle for this context
      *
-     * @see #withBundle(String)
+     * @see withBundle
      */
-    @NotNull
-    String getLocalizationBundle();
+    val localizationBundle: String
 
     /**
      * Returns the localization prefix of the current context.
-     * <br>The localization prefix can either come from {@link LocalizationBundle#prefix()} from {@link #withPrefix(String)}.
      *
-     * @return The localization prefix for this context, or {@code null} if none has been set
+     * The localization prefix can either come from [LocalizationBundle.prefix] from [withPrefix].
      *
-     * @see #withPrefix(String)
+     * @return The localization prefix for this context, or `null` if none has been set
+     *
+     * @see withPrefix
      */
-    @Nullable
-    String getLocalizationPrefix();
+    val localizationPrefix: String?
 
     /**
-     * Returns a new {@link TextLocalizationContext} with the specified guild locale.
+     * Returns a new [TextLocalizationContext] with the specified guild locale.
      *
-     * @param guildLocale The guild locale to use, or {@code null} to remove it
-     *
-     * @return the new {@link TextLocalizationContext}
+     * @param guildLocale The guild locale to use, or `null` to remove it
      */
-    @NotNull
     @CheckReturnValue
-    TextLocalizationContext withGuildLocale(@Nullable DiscordLocale guildLocale);
+    fun withGuildLocale(guildLocale: DiscordLocale?): TextLocalizationContext
 
     /**
-     * Returns a new {@link AppLocalizationContext} with the specified user locale.
+     * Returns a new [AppLocalizationContext] with the specified user locale.
      *
-     * @param userLocale The user locale to use, or {@code null} to remove it
-     *
-     * @return the new {@link AppLocalizationContext}
+     * @param userLocale The user locale to use, or `null` to remove it
      */
-    @NotNull
     @CheckReturnValue
-    AppLocalizationContext withUserLocale(@Nullable DiscordLocale userLocale);
+    fun withUserLocale(userLocale: DiscordLocale?): AppLocalizationContext
 
     /**
      * Returns a new localization context with the specified localization bundle.
      *
      * @param localizationBundle The localization bundle to use
-     *
-     * @return the new localization context
      */
-    @NotNull
     @CheckReturnValue
-    LocalizationContext withBundle(@NotNull String localizationBundle);
+    fun withBundle(localizationBundle: String): LocalizationContext
 
     /**
      * Returns a new localization context with the specified localization prefix.
      *
-     * @param localizationPrefix The localization prefix to use, or {@code null} to remove it
-     *
-     * @return the new localization context
+     * @param localizationPrefix The localization prefix to use, or `null` to remove it
      */
-    @NotNull
     @CheckReturnValue
-    LocalizationContext withPrefix(@Nullable String localizationPrefix);
+    fun withPrefix(localizationPrefix: String?): LocalizationContext
 
     /**
-     * Localizes the provided path, in the specified bundle, with the provided locale
+     * Localizes the provided path, in the current context's bundle, with the provided locale.
      *
      * @param locale             The DiscordLocale to use when fetching the localization bundle
-     * @param localizationBundle The name of the localization bundle
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
-     *
-     * @return The localized string
      */
-    @NotNull
-    String localize(@NotNull DiscordLocale locale, @NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+    fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
-     * Localizes the provided path, in the specified bundle, with the best locale available (User > Guild > Default)
+     * Localizes the provided path, in the specified bundle, with the provided locale.
      *
-     * @param localizationBundle The name of the localization bundle
+     * @param locale             The DiscordLocale to use when fetching the localization bundle
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
-     *
-     * @return The localized string
      */
-    @NotNull
-    String localize(@NotNull String localizationBundle, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+    @JvmSynthetic
+    fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
+        localize(locale, localizationPath, *entries.mapToEntries())
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the provided locale
+     * Localizes the provided path, in the specified bundle, with the provided locale.
      *
-     * @param locale           The DiscordLocale to use when fetching the localization bundle
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
-     *
-     * @return The localized string
+     * @param localizationPath   The localization path to search for
+     * @param entries            The entries to fill the template
      */
-    @NotNull
-    String localize(@NotNull DiscordLocale locale, @NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+    @JvmSynthetic
+    fun localize(localizationPath: String, vararg entries: PairEntry): String =
+        localize(effectiveLocale, localizationPath, *entries.mapToEntries())
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the best locale available (User > Guild > Default)
+     * Localizes the provided path, in the current context's bundle, with the best locale available. (User > Guild > Default)
      *
      * @param localizationPath The localization path to search for
      * @param entries          The entries to fill the template
-     *
-     * @return The localized string
      */
-    @NotNull
-    String localize(@NotNull String localizationPath, @NotNull Localization.Entry @NotNull ... entries);
+    fun localize(localizationPath: String, vararg entries: Localization.Entry): String =
+        localize(effectiveLocale, localizationPath, *entries)
+
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun create(
+            context: BContext,
+            localizationBundle: String,
+            localizationPrefix: String? = null,
+            guildLocale: DiscordLocale? = null,
+            userLocale: DiscordLocale? = null
+        ): AppLocalizationContext {
+            return LocalizationContextImpl(
+                context.getService(LocalizationService::class.java),
+                localizationBundle,
+                localizationPrefix,
+                guildLocale,
+                userLocale
+            )
+        }
+    }
+}
+
+@JvmSynthetic
+internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
+    Localization.Entry(this[it].first, this[it].second)
 }

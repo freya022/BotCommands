@@ -10,11 +10,24 @@ import java.util.*
 
 internal class LocalizationContextImpl(
     private val localizationService: LocalizationService,
-    private val localizationBundle: String,
-    private val localizationPrefix: String?,
-    private val guildLocale: DiscordLocale?,
-    private val userLocale: DiscordLocale?
+    override val localizationBundle: String,
+    override val localizationPrefix: String?,
+    private val _guildLocale: DiscordLocale?,
+    private val _userLocale: DiscordLocale?
 ) : TextLocalizationContext, AppLocalizationContext {
+    override val userLocale: DiscordLocale
+        get() = _userLocale ?: throwUser("Cannot user localize on an event which doesn't provide user localization")
+
+    override val guildLocale: DiscordLocale
+        get() = _guildLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
+
+    override val effectiveLocale: DiscordLocale
+        get() = when {
+            _userLocale != null -> _userLocale
+            hasGuildLocale() -> guildLocale
+            else -> DiscordLocale.ENGLISH_US
+        }
+
     override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
@@ -35,12 +48,7 @@ internal class LocalizationContextImpl(
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
 
-    override fun localize(
-        locale: DiscordLocale,
-        localizationBundle: String,
-        localizationPath: String,
-        vararg entries: Localization.Entry
-    ): String {
+    override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
         val instance = localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
             ?: throwUser("Found no localization instance for bundle '$localizationBundle' and locale '$locale'")
 
@@ -55,38 +63,7 @@ internal class LocalizationContextImpl(
         return template.localize(*entries)
     }
 
-    override fun localize(localizationBundle: String, localizationPath: String, vararg entries: Localization.Entry): String = when {
-        userLocale != null -> localizeUser(localizationPath, localizationBundle, *entries)
-        guildLocale != null -> localizeGuild(localizationPath, localizationBundle, *entries)
-        else -> localize(DiscordLocale.ENGLISH_US, localizationBundle, localizationPath, *entries)
-    }
-
-    override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String =
-        localize(locale, localizationBundle, localizationPath, *entries)
-
-    override fun localize(localizationPath: String, vararg entries: Localization.Entry): String = when {
-        userLocale != null -> localizeUser(localizationPath, *entries)
-        guildLocale != null -> localizeGuild(localizationPath, *entries)
-        else -> localize(DiscordLocale.ENGLISH_US, localizationPath, *entries)
-    }
-
-    override fun getEffectiveLocale(): DiscordLocale = userLocale ?: guildLocale ?: DiscordLocale.ENGLISH_US
-
-    override fun getLocalizationPrefix(): String? {
-        return localizationPrefix
-    }
-
-    override fun getLocalizationBundle(): String {
-        return localizationBundle
-    }
-
     override fun hasGuildLocale(): Boolean {
-        return guildLocale != null
+        return _guildLocale != null
     }
-
-    override fun getGuildLocale(): DiscordLocale =
-        guildLocale ?: throwUser("Cannot guild localize on an event which doesn't provide guild localization")
-
-    override fun getUserLocale(): DiscordLocale =
-        userLocale ?: throwUser("Cannot user localize on an event which doesn't provide user localization")
 }
