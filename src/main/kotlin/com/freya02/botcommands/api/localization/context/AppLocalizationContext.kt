@@ -42,7 +42,7 @@ interface AppLocalizationContext : TextLocalizationContext {
     override fun withPrefix(localizationPrefix: String?): AppLocalizationContext
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the user's locale.
+     * Localizes the provided path, with the user's locale.
      *
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
@@ -54,7 +54,7 @@ interface AppLocalizationContext : TextLocalizationContext {
         localize(userLocale, localizationPath, *entries.mapToEntries())
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the user's locale.
+     * Localizes the provided path, with the user's locale.
      *
      * @param localizationPath The localization path to search for
      * @param entries          The entries to fill the template

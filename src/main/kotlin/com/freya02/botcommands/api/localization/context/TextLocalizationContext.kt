@@ -57,7 +57,7 @@ interface TextLocalizationContext : LocalizationContext {
     override fun withPrefix(localizationPrefix: String?): TextLocalizationContext
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the guild's locale.
+     * Localizes the provided path, with the guild's locale.
      *
      * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
      *
@@ -72,7 +72,7 @@ interface TextLocalizationContext : LocalizationContext {
         localize(guildLocale, localizationPath, *entries)
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the guild's locale.
+     * Localizes the provided path, with the guild's locale.
      *
      * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
      *

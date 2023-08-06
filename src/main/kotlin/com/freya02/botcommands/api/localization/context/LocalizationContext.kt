@@ -9,7 +9,7 @@ import com.freya02.botcommands.internal.localization.LocalizationContextImpl
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import javax.annotation.CheckReturnValue
 
-typealias PairEntry = Pair<String, Any>
+internal typealias PairEntry = Pair<String, Any>
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
@@ -79,7 +79,7 @@ interface LocalizationContext {
     fun withPrefix(localizationPrefix: String?): LocalizationContext
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the provided locale.
+     * Localizes the provided path, with the provided locale.
      *
      * @param locale             The DiscordLocale to use when fetching the localization bundle
      * @param localizationPath   The localization path to search for
@@ -109,7 +109,7 @@ interface LocalizationContext {
         localize(effectiveLocale, localizationPath, *entries.mapToEntries())
 
     /**
-     * Localizes the provided path, in the current context's bundle, with the best locale available. (User > Guild > Default)
+     * Localizes the provided path, with the best locale available. (User > Guild > Default)
      *
      * @param localizationPath The localization path to search for
      * @param entries          The entries to fill the template
