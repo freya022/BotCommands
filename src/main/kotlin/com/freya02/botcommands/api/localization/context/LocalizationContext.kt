@@ -88,7 +88,7 @@ interface LocalizationContext {
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
-     * Localizes the provided path, in the specified bundle, with the provided locale.
+     * Localizes the provided path, with the provided locale.
      *
      * @param locale             The DiscordLocale to use when fetching the localization bundle
      * @param localizationPath   The localization path to search for
@@ -99,7 +99,7 @@ interface LocalizationContext {
         localize(locale, localizationPath, *entries.mapToEntries())
 
     /**
-     * Localizes the provided path, in the specified bundle, with the provided locale.
+     * Localizes the provided path, with the best locale available. (User > Guild > Default)
      *
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
