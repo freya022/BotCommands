@@ -14,7 +14,12 @@ import org.jetbrains.annotations.Nullable
 /**
  * Sets a parameter as a slash command option from Discord.
  *
- * See the [Wiki about inferred option names](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/) for more details.
+ * Option names can be inferred from the parameter's name,
+ * see the [Wiki about inferred option names](https://freya022.github.io/BotCommands-Wiki/using-commands/Inferred-option-names/)
+ * for more details.
+ *
+ * Choices can be added by either [their parameter resolver][SlashParameterResolver.getPredefinedChoices],
+ * or the [application command itself][GuildApplicationSettings.getOptionChoices].
  *
  * @see Optional @Optional
  * @see Nullable @Nullable
