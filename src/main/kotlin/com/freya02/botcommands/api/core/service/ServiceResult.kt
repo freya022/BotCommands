@@ -22,7 +22,7 @@ class ServiceError private constructor(
         NO_PROVIDER("No class annotated as a service or service factories were found"),
         INVALID_TYPE("The instantiated service was of the wrong type"),
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
-        UNAVAILABLE_DEPENDENCY("At least one dependency were missing"),
+        UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),
         FAILED_CONDITION("At least one check returned an error message"),
         UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing");
 
