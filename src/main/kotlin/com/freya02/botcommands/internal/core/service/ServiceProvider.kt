@@ -153,6 +153,10 @@ internal fun KFunction<*>.callConstructingFunction(serviceContainer: ServiceCont
 }
 
 internal fun <R> KFunction<R>.callStatic(serviceContainer: ServiceContainerImpl, args: MutableMap<KParameter, Any?>): R {
+    if (this.isSuspend) {
+        throwUser(this, "Suspending functions are not supported in this context")
+    }
+
     return when (val instanceParameter = this.instanceParameter) {
         null -> this.callBy(args)
         else -> {
