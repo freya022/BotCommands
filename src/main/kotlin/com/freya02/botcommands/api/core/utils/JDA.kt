@@ -7,7 +7,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 
 suspend fun Guild.retrieveMemberOrNull(userId: Long): Member? = retrieveMemberOrNull(UserSnowflake.fromId(userId))
 suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = try {
@@ -25,3 +29,25 @@ suspend fun JDA.retrieveUserOrNull(userId: Long): User? = try {
         throw e
     null
 }
+
+/**
+ * @see MessageEditData.fromCreateData
+ */
+fun MessageCreateData.toEditData() =
+    MessageEditData.fromCreateData(this)
+/**
+ * @see IMessageEditCallback.editMessage
+ */
+fun MessageEditData.edit(callback: IMessageEditCallback) =
+    callback.editMessage(this)
+
+/**
+ * @see MessageCreateData.fromEditData
+ */
+fun MessageEditData.toCreateData() =
+    MessageCreateData.fromEditData(this)
+/**
+ * @see IReplyCallback.reply
+ */
+fun MessageCreateData.edit(callback: IReplyCallback) =
+    callback.reply(this)
