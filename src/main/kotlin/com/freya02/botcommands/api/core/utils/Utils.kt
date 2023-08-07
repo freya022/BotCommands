@@ -1,15 +1,17 @@
 package com.freya02.botcommands.api.core.utils
 
-import com.freya02.botcommands.api.DefaultMessages
+import dev.minn.jda.ktx.events.getDefaultScope
+import kotlinx.coroutines.*
 import mu.KLogger
 import mu.KotlinLogging
 import mu.toKLogger
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.IPermissionHolder
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import org.slf4j.LoggerFactory
 import java.io.InputStream
-import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 @Suppress("UnusedReceiverParameter")
 inline fun <reified T : Any> KotlinLogging.logger(): KLogger =
@@ -45,10 +47,29 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
 }
 
 /**
- * Computes the missing permissions from the specified permission holder,
- * If you plan on showing them, be sure to use [DefaultMessages.getPermission]
+ * Creates a [CoroutineScope] with incremental thread naming, uses [getDefaultScope] under the hood.
  *
- * @see DefaultMessages.getPermission
+ * @param job The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
+ * @param errorHandler The [CoroutineExceptionHandler] used for handling uncaught exceptions,
+ *                     uses a logging handler which cancels the parent job on [Error] by default
+ * @param context Any additional context to add to the scope, uses [EmptyCoroutineContext] by default
  */
-fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: IPermissionHolder, channel: GuildChannel): Set<Permission> =
-    EnumSet.copyOf(requiredPerms).also { it.removeAll(permissionHolder.getPermissions(channel)) }
+fun namedDefaultScope(
+    name: String,
+    poolSize: Int,
+    job: Job? = null,
+    errorHandler: CoroutineExceptionHandler? = null,
+    context: CoroutineContext = EmptyCoroutineContext
+): CoroutineScope {
+    val lock = ReentrantLock()
+    var count = 0
+    val executor = Executors.newScheduledThreadPool(poolSize) {
+        Thread(it).apply {
+            lock.withLock {
+                this.name = "$name ${++count}"
+            }
+        }
+    }
+
+    return getDefaultScope(pool = executor, context = CoroutineName(name) + context, job = job, errorHandler = errorHandler)
+}
