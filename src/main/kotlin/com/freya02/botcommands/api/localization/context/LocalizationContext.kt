@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.localization.context
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
@@ -128,7 +129,7 @@ interface LocalizationContext {
             userLocale: DiscordLocale? = null
         ): AppLocalizationContext {
             return LocalizationContextImpl(
-                context.getService(LocalizationService::class.java),
+                context.getService<LocalizationService>(),
                 localizationBundle,
                 localizationPrefix,
                 guildLocale,

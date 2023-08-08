@@ -12,7 +12,7 @@ import java.util.*
 private val logger = KotlinLogging.logger { }
 
 internal class BCLocalizationFunction(private val context: BContextImpl) : LocalizationFunction {
-    private val localizationService: LocalizationService = context.getService()
+    private val localizationService: LocalizationService = context.getService<LocalizationService>()
     private val baseNameToLocalesMap: Map<String, List<Locale>> = context.applicationConfig.baseNameToLocalesMap
 
     override fun apply(localizationKey: String): Map<DiscordLocale, String> {

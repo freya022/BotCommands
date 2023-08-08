@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core.service
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 @InjectedService
 interface ServiceContainer {
@@ -99,6 +100,12 @@ inline fun <reified T : Any> BContext.getInterfacedServices() = serviceContainer
  */
 inline fun <reified T : Any> ServiceContainer.getInterfacedServices() = getInterfacedServices(T::class)
 
-inline fun <reified R : Any> ServiceContainer.lazy() = lazy { this.getService(R::class) }
+inline fun <reified R : Any> ServiceContainer.lazy(): Lazy<R> = lazy { this.getService(R::class) }
 
-inline fun <reified R : Any> ServiceContainer.lazy(name: String) = lazy { this.getService(name, R::class) }
+fun <R : Any> ServiceContainer.lazy(clazz: KClass<R>): Lazy<R> = lazy { this.getService(clazz) }
+
+inline fun <reified R : Any> ServiceContainer.lazy(name: String): Lazy<R> = lazy { this.getService(name, R::class) }
+
+inline operator fun <reified T : Any> ServiceContainer.getValue(thisRef: Any?, prop: KProperty<*>): T {
+    return getService(T::class.java)
+}
