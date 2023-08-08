@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.localization.readers;
 
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import com.freya02.botcommands.api.localization.LocalizationMapRequest;
 import org.jetbrains.annotations.NotNull;
@@ -14,8 +14,8 @@ import java.io.IOException;
  * Reads localization mappings
  *
  * <p>
- * <b>Usage:</b> Register your instance as a service with {@link BService},
- * and a {@link ServiceType} of {@link LocalizationMapReader}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  */
 @InterfacedService(acceptMultiple = true)
 public interface LocalizationMapReader {

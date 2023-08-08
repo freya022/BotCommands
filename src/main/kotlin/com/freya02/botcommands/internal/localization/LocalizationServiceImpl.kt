@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.localization
 
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService
@@ -21,7 +20,6 @@ import kotlin.concurrent.withLock
 private val logger = KotlinLogging.logger<LocalizationService>()
 
 @BService
-@ServiceType(LocalizationService::class)
 internal class LocalizationServiceImpl internal constructor(
     private val localizationMapProviders: LocalizationMapProviders,
     private val localizationMapReader: LocalizationMapReaders

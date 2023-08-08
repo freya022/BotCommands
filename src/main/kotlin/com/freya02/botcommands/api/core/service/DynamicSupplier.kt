@@ -1,15 +1,16 @@
 package com.freya02.botcommands.api.core.service
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlin.reflect.KClass
 
 /**
  * Interface to supply services of the requested type.
  *
- * **Usage:** Register your instance as a service with [BService], and a [ServiceType] of [DynamicSupplier].
+ * **Usage**: Register your instance as a service with [BService]
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see InterfacedService @InterfacedService
  */

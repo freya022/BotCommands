@@ -2,9 +2,9 @@ package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.GlobalExceptionHandlerAdapter;
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
  * where the exception happened after the interaction has been acknowledged), see {@link Interaction#isAcknowledged()}
  *
  * <p>
- * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link GlobalExceptionHandler}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * <p>
  * You are still free from extending {@link GlobalExceptionHandlerAdapter}.

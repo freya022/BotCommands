@@ -1,8 +1,8 @@
 package com.freya02.botcommands.api.localization.providers;
 
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +14,8 @@ import java.util.ResourceBundle;
  * Supplies {@link LocalizationMap}s for the requested bundle name and locale.
  *
  * <p>
- * <b>Usage:</b> Register your instance as a service with {@link BService},
- * and a {@link ServiceType} of {@link LocalizationMapProvider}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * @see DefaultLocalizationMapProvider
  */

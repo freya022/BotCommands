@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 
 object HelpCondition : ConditionalServiceChecker {
@@ -16,7 +15,6 @@ object HelpCondition : ConditionalServiceChecker {
 }
 
 @BService
-@ServiceType(IHelpCommand::class)
 @ConditionalService(HelpCondition::class)
 class MyHelpCommand : IHelpCommand {
     //Only triggered when an existing command is misused
@@ -26,7 +24,6 @@ class MyHelpCommand : IHelpCommand {
 }
 
 @BService
-@ServiceType(IHelpCommand::class)
 @ConditionalService(HelpCondition::class)
 class MyHelpCommand2 : IHelpCommand {
     //Only triggered when an existing command is misused

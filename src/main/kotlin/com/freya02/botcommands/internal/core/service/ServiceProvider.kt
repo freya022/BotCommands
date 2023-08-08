@@ -12,18 +12,18 @@ import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
+import mu.KotlinLogging
 import kotlin.reflect.KAnnotatedElement
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
+
+private val logger = KotlinLogging.logger { }
 
 /**
  * Either a class nested simple name, or a function signature for factories
@@ -61,16 +61,26 @@ internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
     return null
 }
 
-internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>) = when (val serviceType = findAnnotation<ServiceType>()) {
-    null -> setOf(returnType)
-    else -> buildSet(serviceType.types.size + 1) {
-        this += returnType
-        this += serviceType.types.onEach {
-            if (!it.isSuperclassOf(returnType)) {
-                throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${returnType.simpleNestedName}")
+internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>): Set<KClass<*>> {
+    val explicitTypes = when (val serviceType = findAnnotation<ServiceType>()) {
+        null -> setOf(returnType)
+        else -> buildSet(serviceType.types.size + 1) {
+            this += returnType
+            this += serviceType.types.onEach {
+                if (!it.isSuperclassOf(returnType)) {
+                    throw IllegalArgumentException("${it.simpleNestedName} is not a supertype of service ${returnType.simpleNestedName}")
+                }
             }
         }
     }
+
+    val interfacedServiceTypes = returnType.allSuperclasses.filter { it.hasAnnotation<InterfacedService>() }
+    val existingServiceTypes = interfacedServiceTypes.intersect(explicitTypes)
+    if (existingServiceTypes.isNotEmpty()) {
+        logger.warn { "Instance of ${returnType.simpleNestedName} should not have their implemented interfaced services (${interfacedServiceTypes.joinToString { it.simpleNestedName }}) in @${ServiceType::class.simpleNestedName}, source: $this" }
+    }
+
+    return explicitTypes + interfacedServiceTypes
 }
 
 internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceContainerImpl, checkedClass: KClass<*>): ServiceError? {

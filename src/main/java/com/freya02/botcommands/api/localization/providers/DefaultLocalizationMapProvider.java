@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.localization.providers;
 
 import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.localization.LocalizationMap;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
@@ -22,7 +21,6 @@ import java.util.Locale;
  * @see DefaultJsonLocalizationMapReader
  */
 @BService
-@ServiceType(types = LocalizationMapProvider.class)
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 	private final LocalizationMapProviders localizationMapProviders;
 	private final LocalizationMapReaders localizationMapReaders;

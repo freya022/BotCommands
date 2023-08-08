@@ -3,9 +3,9 @@ package com.freya02.botcommands.api.core;
 import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
 import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.DiscordLocale;
@@ -21,7 +21,8 @@ import java.util.function.Predicate;
  * Interface for settings requested by the framework, such as prefixes, guild locale or guild commands whitelist.
  *
  * <p>
- * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link SettingsProvider}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * @see InterfacedService @InterfacedService
  */

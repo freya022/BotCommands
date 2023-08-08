@@ -1,9 +1,9 @@
 package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent;
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,7 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * <br>This embed is also used in the default help command.
  *
  * <p>
- * <b>Usage:</b> Register your instance as a service with {@link BService}, and a {@link ServiceType} of {@link DefaultEmbedSupplier}.
+ * <b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
  *
  * @see InterfacedService @InterfacedService
  */

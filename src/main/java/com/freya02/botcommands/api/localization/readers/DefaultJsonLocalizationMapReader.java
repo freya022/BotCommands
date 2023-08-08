@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.localization.readers;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.core.service.annotations.ServiceType;
 import com.freya02.botcommands.api.core.utils.DefaultObjectMapper;
 import com.freya02.botcommands.api.localization.*;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +34,6 @@ import java.util.*;
  * @see DefaultLocalizationTemplate
  */
 @BService
-@ServiceType(types = LocalizationMapReader.class)
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
     private final BContext context;
 
