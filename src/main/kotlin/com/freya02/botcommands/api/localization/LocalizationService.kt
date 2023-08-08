@@ -14,7 +14,8 @@ interface LocalizationService {
     /**
      * Gets the localization instance for the specified bundle name and locale.
      *
-     * This cycles through all the available [LocalizationMapProviders][LocalizationMapProvider] until one returns a valid localization bundle.
+     * This cycles through all the available [LocalizationMap providers][LocalizationMapProvider]
+     * until one returns a valid localization bundle.
      *
      * @param baseName The name of the bundle
      * @param locale   The locale of the bundle
@@ -39,12 +40,12 @@ interface LocalizationService {
     fun invalidateLocalization(baseName: String, locale: Locale)
 
     /**
-     * Returns an unmodifiable view of [localization map providers][LocalizationMapProvider]
+     * Returns an unmodifiable view of [LocalizationMap providers][LocalizationMapProvider]
      */
     fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider>
 
     /**
-     * Returns an unmodifiable view of [localization map readers][LocalizationMapReader]
+     * Returns an unmodifiable view of [LocalizationMap readers][LocalizationMapReader]
      */
     fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader>
 }

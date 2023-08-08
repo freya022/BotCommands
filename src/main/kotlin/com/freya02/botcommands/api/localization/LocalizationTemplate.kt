@@ -9,13 +9,13 @@ package com.freya02.botcommands.api.localization
  */
 interface LocalizationTemplate {
     /**
-     * Processes the localization template and replaces the named parameters by theirs values
+     * Processes the localization template and replaces the named parameters by their values
      */
     fun localize(vararg args: Localization.Entry): String
 }
 
 /**
- * Processes the localization template and replaces the named parameters by theirs values
+ * Processes the localization template and replaces the named parameters by their values
  */
 fun LocalizationTemplate.localize(vararg args: Pair<String, Any>): String =
     localize(*args.map { (k, v) -> Localization.Entry.entry(k, v) }.toTypedArray())

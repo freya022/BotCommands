@@ -15,6 +15,8 @@ import javax.annotation.CheckReturnValue
  * While instances of this interface are primarily injected with [LocalizationBundle],
  * you can also construct instances of this interface with [LocalizationContext.create].
  *
+ * Instances are only injectable if the event is a subclass of either [Interaction].
+ *
  * @see userLocale
  * @see guildLocale
  * @see LocalizationContext.create

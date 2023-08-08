@@ -27,7 +27,7 @@ interface LocalizationContext {
     /**
      * Returns the localization bundle of the current context.
      *
-     * The localization bundle can either come from [LocalizationBundle.value] from [withBundle].
+     * The localization bundle can either come from [LocalizationBundle.value] or [withBundle].
      *
      * @return The localization bundle for this context
      *
@@ -38,7 +38,7 @@ interface LocalizationContext {
     /**
      * Returns the localization prefix of the current context.
      *
-     * The localization prefix can either come from [LocalizationBundle.prefix] from [withPrefix].
+     * The localization prefix can either come from [LocalizationBundle.prefix] or [withPrefix].
      *
      * @return The localization prefix for this context, or `null` if none has been set
      *
@@ -81,7 +81,7 @@ interface LocalizationContext {
     /**
      * Localizes the provided path, with the provided locale.
      *
-     * @param locale             The DiscordLocale to use when fetching the localization bundle
+     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
      */
@@ -90,7 +90,7 @@ interface LocalizationContext {
     /**
      * Localizes the provided path, with the provided locale.
      *
-     * @param locale             The DiscordLocale to use when fetching the localization bundle
+     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
      * @param localizationPath   The localization path to search for
      * @param entries            The entries to fill the template
      */

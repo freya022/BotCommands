@@ -3,7 +3,9 @@ package com.freya02.botcommands.api.localization.context
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.Interaction
 import javax.annotation.CheckReturnValue
 
 /**
@@ -15,6 +17,8 @@ import javax.annotation.CheckReturnValue
  * While instances of this interface are primarily injected with [LocalizationBundle],
  * you can also construct instances of this interface with [LocalizationContext.create].
  *
+ * Instances are only injectable if the event is a subclass of either [Interaction] or [MessageReceivedEvent].
+ *
  * @see guildLocale
  * @see AppLocalizationContext
  *
@@ -24,7 +28,7 @@ interface TextLocalizationContext : LocalizationContext {
     /**
      * Whether this localization context has a Guild locale.
      *
-     * The locale can either come from the Guild or from [.withGuildLocale].
+     * The locale can either come from the Guild or from [withGuildLocale].
      *
      * @return `true` if there is a guild locale in this context
      *
@@ -41,7 +45,7 @@ interface TextLocalizationContext : LocalizationContext {
      * **Note:** If the context does not provide a guild locale (such as text commands) but the event comes from a [Guild] and is a community,
      * then the community's locale will be returned, or [DiscordLocale.ENGLISH_US] by default.
      *
-     * @return the DiscordLocale of the guild
+     * @return the [DiscordLocale] of the guild
      *
      * @throws IllegalStateException If the event did not happen in a Guild and the guild locale was not supplied
      *

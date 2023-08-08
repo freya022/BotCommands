@@ -32,8 +32,8 @@ public final class LocalizationMapReaders {
         this.serviceContainer = serviceContainer;
     }
 
-	@NotNull
-	@UnmodifiableView
+    @NotNull
+    @UnmodifiableView
     public Collection<LocalizationMapReader> getReaders() {
         if (readers == null)
             readers = serviceContainer.getInterfacedServices(LocalizationMapReader.class);
@@ -42,7 +42,7 @@ public final class LocalizationMapReaders {
 
     /**
      * Cycles through all the registered readers with the specified base name and locale,
-     * and returns when a reader returns non-null mappings, returns null otherwise
+     * and returns when a reader returns non-null mappings, returns {@code null} otherwise
      *
      * @param baseName The base name of the localization bundle
      * @param locale   The locale of the localization bundle
