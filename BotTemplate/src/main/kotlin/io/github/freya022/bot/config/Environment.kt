@@ -30,5 +30,5 @@ object Environment {
 
     val configFolder: Path =
         folder.resolve(if (isDev) "dev-config" else "config")
-    val logbackConfigPath: Path = configFolder.resolve("logback.xml")
+    val logbackConfigPath: Path = configFolder.resolve(if (isDev) "logback-test.xml" else "logback.xml")
 }

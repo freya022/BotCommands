@@ -14,9 +14,8 @@ object Data {
     /**
      * Checks whether the path exists, throwing if not.
      */
-    private fun validatedPath(desc: String, p: Path): Path {
-        if (p.notExists())
-            throw FileNotFoundException("$desc at ${p.absolutePathString()} does not exist.")
-        return p
+    private fun Path.validatedPath(desc: String): Path = this.also {
+        if (it.notExists())
+            throw FileNotFoundException("$desc at ${it.absolutePathString()} does not exist.")
     }
 }
