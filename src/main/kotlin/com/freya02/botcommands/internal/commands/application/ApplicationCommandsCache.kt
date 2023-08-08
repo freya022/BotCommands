@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.core.utils.DefaultObjectMapper
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.application.diff.DiffLogger
-import com.google.gson.Gson
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.build.CommandData
@@ -29,13 +29,11 @@ internal class ApplicationCommandsCache(serviceContainer: ServiceContainer) {
     }
 
     companion object {
-        private val gson = Gson()
-
         fun Collection<CommandData>.toJsonBytes(): ByteArray = DataArray.empty().addAll(this).toJson()
 
         fun isJsonContentSame(context: BContextImpl, oldContentBytes: ByteArray, newContentBytes: ByteArray): Boolean {
-            val oldMap = gson.fromJson(oldContentBytes.decodeToString(), Any::class.java)
-            val newMap = gson.fromJson(newContentBytes.decodeToString(), Any::class.java)
+            val oldMap = DefaultObjectMapper.readList(oldContentBytes)
+            val newMap = DefaultObjectMapper.readList(newContentBytes)
 
             val isSame = DiffLogger.getLogger(context).let { diffLogger ->
                 checkDiff(oldMap, newMap, diffLogger, 0).also {

@@ -3,15 +3,13 @@ package com.freya02.botcommands.api.localization.readers;
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.ServiceType;
+import com.freya02.botcommands.api.core.utils.DefaultObjectMapper;
 import com.freya02.botcommands.api.localization.*;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
 /**
@@ -39,8 +37,6 @@ import java.util.*;
 @BService
 @ServiceType(types = LocalizationMapReader.class)
 public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
-    private static final Gson GSON = new Gson();
-
     private final BContext context;
 
     public DefaultJsonLocalizationMapReader(BContext context) {
@@ -57,8 +53,8 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
 
         final Map<String, LocalizationTemplate> localizationMap = new HashMap<>();
 
-        try (InputStreamReader reader = new InputStreamReader(stream)) {
-            final Map<String, ?> map = GSON.fromJson(reader, new LocalizationMapTypeToken());
+        try (var ignored = stream) {
+            final Map<String, ?> map = DefaultObjectMapper.readMap(stream);
 
             discoverEntries(localizationMap, request.baseName(), request.requestedLocale(), "", map.entrySet());
         }
@@ -90,8 +86,5 @@ public class DefaultJsonLocalizationMapReader implements LocalizationMapReader {
                 }
             }
         }
-    }
-
-    private static class LocalizationMapTypeToken extends TypeToken<Map<String, ?>> {
     }
 }
