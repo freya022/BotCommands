@@ -43,8 +43,8 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     }
 
     @JvmOverloads
-    fun registerService(annotationReceiver: KClass<*>, start: ServiceStart = ServiceStart.DEFAULT, name: String = "") {
-        _serviceAnnotationsMap.put(annotationReceiver, BService::class, BService(start, name))
+    fun registerService(annotationReceiver: KClass<*>, start: ServiceStart = ServiceStart.DEFAULT, name: String = "", priority: Int = 0) {
+        _serviceAnnotationsMap.put(annotationReceiver, BService::class, BService(start, name, priority))
     }
 
     fun registerCommand(annotationReceiver: KClass<*>) {

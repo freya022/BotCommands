@@ -17,6 +17,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  * @see ConditionalService @ConditionalService
  * @see ServiceType @ServiceType
  * @see ServiceName @ServiceName
+ * @see ServicePriority @ServicePriority
  *
  * @see DynamicSupplier
  */
@@ -33,5 +34,11 @@ annotation class BService( //Parameters tied to BServiceConfig#registerService
      *
      * The default is the name of the type the service is inserted as, but with the first letter lowercase.
      */
-    val name: String = ""
+    val name: String = "",
+    /**
+     * The priority of this service.
+     *
+     * Higher value = Will be loaded first/shown first in interfaces service lists
+     */
+    val priority: Int = 0
 )

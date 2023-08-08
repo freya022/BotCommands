@@ -13,6 +13,7 @@ internal class FunctionServiceProvider(
     override val providerKey = function.shortSignatureNoSrc
     override val primaryType get() = function.returnType.jvmErasure
     override val types = function.getServiceTypes(function.returnType.jvmErasure)
+    override val priority = function.getAnnotatedServicePriority()
 
     private var isInstantiable = false
 

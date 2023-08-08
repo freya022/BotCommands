@@ -23,6 +23,7 @@ internal class ClassServiceProvider(
     override val providerKey = clazz.simpleNestedName
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(clazz)
+    override val priority = clazz.getAnnotatedServicePriority()
 
     private var isInstantiable = false
 

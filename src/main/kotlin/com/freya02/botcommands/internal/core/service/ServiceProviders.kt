@@ -11,7 +11,7 @@ import io.github.classgraph.MethodInfo
 import java.lang.reflect.Executable
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentSkipListSet
 import kotlin.reflect.KClass
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaGetter
@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.kotlinFunction
 
 internal class ServiceProviders : ClassGraphProcessor {
     private val nameMap: MutableMap<String, ServiceProvider> = ConcurrentHashMap()
-    private val typeMap: MutableMap<KClass<*>, MutableList<ServiceProvider>> = ConcurrentHashMap()
+    private val typeMap: MutableMap<KClass<*>, MutableSet<ServiceProvider>> = ConcurrentHashMap()
 
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in nameMap)
@@ -27,11 +27,11 @@ internal class ServiceProviders : ClassGraphProcessor {
 
         nameMap[serviceProvider.name] = serviceProvider
         serviceProvider.types.forEach { type ->
-            typeMap.computeIfAbsent(type) { CopyOnWriteArrayList() }.add(serviceProvider)
+            typeMap.computeIfAbsent(type) { ConcurrentSkipListSet() }.add(serviceProvider)
         }
     }
 
-    internal fun findAllForType(type: KClass<*>): List<ServiceProvider> = typeMap[type] ?: emptyList()
+    internal fun findAllForType(type: KClass<*>): Set<ServiceProvider> = typeMap[type] ?: emptySet()
     internal fun findForType(type: KClass<*>): ServiceProvider? = typeMap[type]?.firstOrNull()
     internal fun findForName(name: String): ServiceProvider? = nameMap[name]
 

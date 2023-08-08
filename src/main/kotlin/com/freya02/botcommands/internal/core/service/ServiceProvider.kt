@@ -32,17 +32,26 @@ internal typealias ProviderName = String
 
 internal data class TimedInstantiation(val result: ServiceResult<*>, val duration: Duration)
 
-internal interface ServiceProvider {
+internal interface ServiceProvider : Comparable<ServiceProvider> {
     val name: String
     val providerKey: ProviderName
     val primaryType: KClass<*>
     val types: Set<KClass<*>>
+    val priority: Int
 
     val instance: Any?
 
     fun canInstantiate(serviceContainer: ServiceContainerImpl): ServiceError?
 
     fun createInstance(serviceContainer: ServiceContainerImpl): TimedInstantiation
+
+    override fun compareTo(other: ServiceProvider): Int {
+        // Reverse order
+        val priorityCmp = -priority.compareTo(other.priority)
+        if (priorityCmp != 0) return priorityCmp
+
+        return name.compareTo(other.name)
+    }
 }
 
 internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
@@ -59,6 +68,19 @@ internal fun KAnnotatedElement.getAnnotatedServiceName(): String? {
     }
 
     return null
+}
+
+internal fun KAnnotatedElement.getAnnotatedServicePriority(): Int {
+    findAnnotation<ServicePriority>()?.let {
+        return it.value
+    }
+
+    findAnnotation<BService>()?.let {
+        return it.priority
+    }
+
+    // In case another annotation is used
+    return 0
 }
 
 internal fun KAnnotatedElement.getServiceTypes(returnType: KClass<*>): Set<KClass<*>> {
