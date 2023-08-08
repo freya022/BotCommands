@@ -7,5 +7,7 @@ package com.freya02.botcommands.api.localization
  * @param value The value to assign it to
  *
  * @see Localization
+ *
+ * @see localize LocalizationTemplate.localize
  */
 infix fun String.to(value: Any): Localization.Entry = Localization.Entry.entry(this, value)

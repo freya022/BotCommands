@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.parameters.resolvers.localization
 import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
 import com.freya02.botcommands.api.core.utils.nullIfEmpty
+import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
@@ -22,29 +23,29 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 @ResolverFactory
-internal class AppLocalizationContextResolverFactory : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
+internal class AppLocalizationContextResolverFactory(private val localizationService: LocalizationService) : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
     AppLocalizationContextResolver::class,
     AppLocalizationContext::class
 ) {
     override fun get(parameter: ParameterWrapper) =
         AppLocalizationContextResolver(getBaseLocalizationContext(
-            parameter, Interaction::class
+            localizationService, parameter, Interaction::class
         ))
 }
 
 @ResolverFactory
-internal class TextLocalizationContextResolverFactory : ParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(
+internal class TextLocalizationContextResolverFactory(private val localizationService: LocalizationService) : ParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(
     TextLocalizationContextResolver::class.java,
     TextLocalizationContext::class.java
 ) {
     override fun get(parameter: ParameterWrapper) =
         TextLocalizationContextResolver(getBaseLocalizationContext(
-            parameter, Interaction::class, MessageReceivedEvent::class
+            localizationService, parameter, Interaction::class, MessageReceivedEvent::class
         ))
 }
 
 internal object LocalizationContextResolverFactories {
-    fun getBaseLocalizationContext(parameterWrapper: ParameterWrapper, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
+    fun getBaseLocalizationContext(localizationService: LocalizationService, parameterWrapper: ParameterWrapper, vararg requiredEventTypes: KClass<*>): LocalizationContextImpl {
         val parameter = parameterWrapper.parameter ?: throwInternal("Tried to get localization context on a null parameter")
         val parameterFunction = parameter.function
         val annotation = parameter.findAnnotation<LocalizationBundle>()
@@ -56,10 +57,11 @@ internal object LocalizationContextResolverFactories {
         }
 
         return LocalizationContextImpl(
+            localizationService,
             localizationBundle = annotation.value,
             localizationPrefix = annotation.prefix.nullIfEmpty(),
-            guildLocale = null,
-            userLocale = null
+            _guildLocale = null,
+            _userLocale = null
         )
     }
 }

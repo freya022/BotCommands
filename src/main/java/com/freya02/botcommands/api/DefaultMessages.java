@@ -3,6 +3,7 @@ package com.freya02.botcommands.api;
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW;
 import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.localization.Localization;
+import com.freya02.botcommands.api.localization.LocalizationService;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
@@ -40,14 +41,15 @@ public final class DefaultMessages {
 	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
 	 */
 	@ApiStatus.Internal
-	public DefaultMessages(@NotNull Locale locale) {
-		final Localization defaultLocalization = Localization.getInstance("DefaultMessages_default", locale);
+	public DefaultMessages(@NotNull BContext context, @NotNull Locale locale) {
+		final LocalizationService localizationService = context.getService(LocalizationService.class);
+		final Localization defaultLocalization = localizationService.getInstance("DefaultMessages_default", locale);
 		if (defaultLocalization == null) {
 			throw new IllegalStateException("Could not find any DefaultMessages_default bundle");
 		}
 
 		this.defaultLocalization = defaultLocalization;
-		this.localization = Localization.getInstance("DefaultMessages", locale);
+		this.localization = localizationService.getInstance("DefaultMessages", locale);
 	}
 
 	@NotNull

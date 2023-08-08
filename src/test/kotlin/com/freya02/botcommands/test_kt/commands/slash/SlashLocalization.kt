@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
-import com.freya02.botcommands.api.localization.Localization.Entry.entry
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import dev.minn.jda.ktx.messages.reply_
@@ -23,14 +22,14 @@ class SlashLocalization : ApplicationCommand() {
             German localized: %s
         """.trimIndent().format(
             ctx.localizeUser("response",
-                entry("guild_users", event.guild.memberCount),
-                entry("uptime", 3.141519)),
+                "guild_users" to event.guild.memberCount,
+                "uptime" to 3.141519),
             ctx.localizeGuild("response",
-                entry("guild_users", event.guild.memberCount),
-                entry("uptime", 3.141519)),
+                "guild_users" to event.guild.memberCount,
+                "uptime" to 3.141519),
             ctx.localize(DiscordLocale.GERMAN, "response",
-                entry("guild_users", event.guild.memberCount),
-                entry("uptime", 3.141519))
+                "guild_users" to event.guild.memberCount,
+                "uptime" to 3.141519)
         )
 
         event.reply_(content, ephemeral = true).queue()

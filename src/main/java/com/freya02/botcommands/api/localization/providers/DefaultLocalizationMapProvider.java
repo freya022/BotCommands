@@ -1,77 +1,53 @@
 package com.freya02.botcommands.api.localization.providers;
 
-import com.freya02.botcommands.api.localization.*;
-import com.google.gson.Gson;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.ServiceType;
+import com.freya02.botcommands.api.localization.LocalizationMap;
+import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
+import com.freya02.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Default localization bundle provider
- * <p><b>Specification:</b>
- * <br>Localization bundles are read from {@code /bc_localization/}, so, a {@code bc_localization} directory, in the root of your resources
- * <br>Those localization bundles are in the JSON format and can have any name, with the extension being {@code .json}
- * <br>The JSON format work the same as java's {@link ResourceBundle}, you can provide localization entries such as {@code "my_command.name": "my_command_in_en_US"}
- * <br>But you can also use nesting as a way to not copy the same path prefix everytime, such as:
- * <pre><code>
- *     {
- *         "my_command": {
- *             "name": "my_command_in_en_US",
- *             "description": "my_command_description_in_en_US"
- *         }
- *     }
- * </code></pre>
- * <p>
- * About localization bundle loading:
- * <br>The initial file to be loaded will be the one mentioned above, parent localization bundles may be loaded from other providers, as all providers are tested with {@link LocalizationMapProviders#cycleProvidersNoParent(String, Locale)}
+ * Default implementation for {@link LocalizationMap} providers.
  *
- * <br>See {@link DefaultLocalizationTemplate} for what the localization templates should look like
+ * <p>This provider simply takes care of the loading order and merging of the localization templates.
+ * <br>The templates are loaded with the best (most specific or closest) locale available,
+ * followed by the templates of broader locales.
  *
- * @see DefaultLocalizationTemplate
+ * @see DefaultJsonLocalizationMapReader
  */
+@BService
+@ServiceType(types = LocalizationMapProvider.class)
 public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
+	private final LocalizationMapProviders localizationMapProviders;
+	private final LocalizationMapReaders localizationMapReaders;
+
+	public DefaultLocalizationMapProvider(LocalizationMapProviders localizationMapProviders, LocalizationMapReaders localizationMapReaders) {
+		this.localizationMapProviders = localizationMapProviders;
+		this.localizationMapReaders = localizationMapReaders;
+	}
+
+	@Nullable
 	@Override
-	@Nullable
-	public LocalizationMap getBundle(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
-		final Map<String, LocalizationTemplate> templateMap = readTemplateMap(baseName, effectiveLocale);
+	public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale) {
+		final LocalizationMap localizationMap = localizationMapReaders.cycleReaders(baseName, requestedLocale);
 
-		return withParentBundles(baseName, effectiveLocale, templateMap);
+		return withParentBundles(baseName, requestedLocale, localizationMap);
 	}
 
+	@Nullable
 	@Override
-	@Nullable
-	public LocalizationMap getBundleNoParent(@NotNull String baseName, @NotNull Locale locale) throws IOException {
-		final Map<String, LocalizationTemplate> map = readTemplateMap(baseName, locale);
-		if (map == null) return null;
-
-		return new DefaultLocalizationMap(locale, map);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Nullable
-	private Map<String, LocalizationTemplate> readTemplateMap(@NotNull String baseName, @NotNull Locale effectiveLocale) throws IOException {
-		final InputStream stream = Localization.class.getResourceAsStream("/bc_localization/" + getBundleName(baseName, effectiveLocale) + ".json");
-		if (stream == null) {
-			return null;
-		}
-
-		final Map<String, LocalizationTemplate> templateMap = new HashMap<>();
-
-		try (InputStreamReader reader = new InputStreamReader(stream)) {
-			final Map<String, ?> map = new Gson().fromJson(reader, Map.class);
-
-			discoverEntries(templateMap, baseName, effectiveLocale, "", map.entrySet());
-		}
-
-		return templateMap;
+	public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale) {
+        return localizationMapReaders.cycleReaders(baseName, locale);
 	}
 
 	@Nullable
-	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable Map<String, LocalizationTemplate> templateMap) throws IOException {
+	private LocalizationMap withParentBundles(@NotNull String baseName, @NotNull Locale effectiveLocale, @Nullable LocalizationMap localizationMap) {
 		//Need to get parent bundles
 		final List<Locale> candidateLocales = CONTROL.getCandidateLocales(baseName, effectiveLocale);
 
@@ -80,51 +56,36 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 		for (Locale candidateLocale : candidateLocales) {
 			if (candidateLocale.equals(effectiveLocale)) continue;
 
-			final LocalizationMap parentLocalization = LocalizationMapProviders.cycleProvidersNoParent(baseName, candidateLocale); //Do not try to use Localization which will **also** try to get the parent localizations
-			if (parentLocalization != null) {
-				final Map<String, ? extends LocalizationTemplate> parentTemplateMap = parentLocalization.templateMap();
-
-				if (templateMap == null) {
-					templateMap = new HashMap<>();
-					effectiveLocale = candidateLocale;
-				}
-
-				for (Map.Entry<String, ? extends LocalizationTemplate> entry : parentTemplateMap.entrySet()) {
-					templateMap.putIfAbsent(entry.getKey(), entry.getValue());
-				}
-			}
+			//Do not use Localization, as it will **also** try to get the parent localizations
+			final LocalizationMap parentLocalizationMap = localizationMapProviders.cycleProviders(baseName, candidateLocale);
+			if (parentLocalizationMap != null) {
+                localizationMap = createDelegated(localizationMap, parentLocalizationMap);
+            }
 		}
 
-		if (templateMap == null) {
-			return null;
-		}
-
-		return new DefaultLocalizationMap(effectiveLocale, templateMap);
+		return localizationMap;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void discoverEntries(Map<String, LocalizationTemplate> templateMap, @NotNull String baseName, Locale effectiveLocale, String currentPath, Set<? extends Map.Entry<String, ?>> entries) {
-		for (Map.Entry<String, ?> entry : entries) {
-			final String key = appendPath(currentPath, entry.getKey());
-
-			if (entry.getValue() instanceof Map<?, ?> map) {
-				discoverEntries(
-						templateMap,
-						baseName,
-						effectiveLocale,
-						key,
-						((Map<String, ?>) map).entrySet()
-				);
-			} else {
-				if (!(entry.getValue() instanceof String))
-					throw new IllegalArgumentException("Key '%s' in bundle '%s' (locale '%s') can only be a String".formatted(key, baseName, effectiveLocale));
-
-				final LocalizationTemplate value = new DefaultLocalizationTemplate((String) entry.getValue(), effectiveLocale);
-
-				if (templateMap.put(key, value) != null) {
-					throw new IllegalStateException("Got two same localization keys: '" + key + "'");
-				}
+	private LocalizationMap createDelegated(@Nullable LocalizationMap current, @NotNull LocalizationMap parent) {
+		final Locale effectiveLocale = current != null ? current.getEffectiveLocale() : parent.getEffectiveLocale();
+		return new LocalizationMap() {
+			@NotNull
+			@Override
+			public Locale getEffectiveLocale() {
+				return effectiveLocale;
 			}
-		}
+
+			@Nullable
+			@Override
+			public LocalizationTemplate get(@NotNull String path) {
+				if (current != null) {
+					final LocalizationTemplate template = current.get(path);
+					if (template != null)
+						return template;
+				}
+
+				return parent.get(path);
+			}
+		};
 	}
 }
