@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.core.utils.toImmutableMap
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
+import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import mu.KotlinLogging
 import kotlin.reflect.KClass
@@ -43,17 +44,37 @@ internal class InstantiableServiceAnnotationsMap internal constructor(private va
         }
 
     init {
+        val singularTypeToImplementationsMap = hashMapOf<KClass<*>, MutableSet<ServiceProvider>>()
         getAllInstantiableClasses().forEach { kClass ->
-            //For each instantiable interfaced service that does not accept multiple implementations
-            // If there is more than 1 implementation then throw
-            if (kClass.findAnnotation<InterfacedService>()?.acceptMultiple != true) { //False or null
-                val serviceProviders = context.serviceProviders
-                    .findAllForType(kClass)
-                    .filter { it.canInstantiate(context.serviceContainer) == null }
-                if (serviceProviders.size > 1) {
-                    throw IllegalArgumentException("Service ${kClass.simpleNestedName} cannot have multiple providers. Current providers: ${serviceProviders.joinToString { it.providerKey }}")
+            // For each service, take their implemented interfaced services
+            // and put them in a map as to figure out if multiple - instantiable - implementation exists
+            val provider = context.serviceProviders.findForType(kClass)
+                ?: throwInternal("Could not find back service provider for ${kClass.simpleNestedName}")
+            if (provider.canInstantiate(context.serviceContainer) != null) return@forEach
+
+            provider.types
+                // Keep single-implementation interfaced services.
+                // Do not take non-interfaced services as single-implementations,
+                // as they can use names to differentiate each others
+                .filter { it.findAnnotation<InterfacedService>()?.acceptMultiple == false }
+                .forEach { interfacedServiceType ->
+                    singularTypeToImplementationsMap
+                        .computeIfAbsent(interfacedServiceType) { hashSetOf() }
+                        .add(provider)
+                }
+        }
+
+        val nonUniqueImplementations = singularTypeToImplementationsMap.filterValues { it.size > 1 }
+        if (nonUniqueImplementations.isNotEmpty()) {
+            val message = buildString {
+                appendLine("Interfaced services with 'acceptMultiple = false' cannot have multiple implementations, " +
+                        "please adjust your services so at most one implementation is instantiable:")
+
+                nonUniqueImplementations.forEach { (interfacedServiceType, implementations) ->
+                    appendLine("${interfacedServiceType.simpleNestedName}: ${implementations.joinToString { it.providerKey }}")
                 }
             }
+            throw IllegalStateException(message)
         }
     }
 
