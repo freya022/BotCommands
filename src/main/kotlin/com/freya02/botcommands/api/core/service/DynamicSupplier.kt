@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.api.core.utils.ReflectionUtils
 import kotlin.reflect.KClass
 
 /**
@@ -30,7 +31,21 @@ interface DynamicSupplier {
         }
     }
 
+    /**
+     * Returns the instantiability status of the requested service.
+     *
+     * @see Instantiability.InstantiabilityType
+     * @see ReflectionUtils
+     */
     fun getInstantiability(context: BContext, clazz: KClass<*>): Instantiability
 
+    /**
+     * Returns an instance of the requested service.
+     *
+     * This only runs if [getInstantiability] returned [Instantiability.InstantiabilityType.INSTANTIABLE]
+     *
+     * @see Instantiability.InstantiabilityType
+     * @see ReflectionUtils
+     */
     fun get(context: BContext, clazz: KClass<*>): Any
 }

@@ -13,6 +13,9 @@ import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 
+/**
+ * Utility class to convert between Kotlin and Java reflection objects.
+ */
 object ReflectionUtils { //For Java users
     @JvmStatic
     fun <T : Any> Class<T>.toKotlin(): KClass<T> = this.kotlin

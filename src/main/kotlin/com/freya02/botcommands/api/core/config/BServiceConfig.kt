@@ -43,20 +43,36 @@ class BServiceConfigBuilder internal constructor() : BServiceConfig {
     }
 
     @JvmOverloads
+    fun registerService(annotationReceiver: Class<*>, start: ServiceStart = ServiceStart.DEFAULT, name: String = "", priority: Int = 0) =
+        registerService(annotationReceiver.kotlin, start, name, priority)
+
+    @JvmSynthetic
     fun registerService(annotationReceiver: KClass<*>, start: ServiceStart = ServiceStart.DEFAULT, name: String = "", priority: Int = 0) {
         _serviceAnnotationsMap.put(annotationReceiver, BService::class, BService(start, name, priority))
     }
 
+    fun registerCommand(annotationReceiver: Class<*>) =
+        registerCommand(annotationReceiver.kotlin)
+
+    @JvmSynthetic
     fun registerCommand(annotationReceiver: KClass<*>) {
         _serviceAnnotationsMap.put(annotationReceiver, Command::class, Command())
     }
 
+    fun registerResolver(annotationReceiver: Class<*>) =
+        registerResolver(annotationReceiver.kotlin)
+
+    @JvmSynthetic
     fun registerResolver(annotationReceiver: KClass<*>) {
         _serviceAnnotationsMap.put(annotationReceiver, Resolver::class,
             Resolver()
         )
     }
 
+    fun registerResolverFactory(annotationReceiver: Class<*>) =
+        registerResolverFactory(annotationReceiver.kotlin)
+
+    @JvmSynthetic
     fun registerResolverFactory(annotationReceiver: KClass<*>) {
         _serviceAnnotationsMap.put(annotationReceiver, ResolverFactory::class,
             ResolverFactory()

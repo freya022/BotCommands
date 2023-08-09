@@ -1,4 +1,4 @@
-package com.freya02.botcommands.api.core
+package com.freya02.botcommands.internal.core
 
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.service.annotations.BService

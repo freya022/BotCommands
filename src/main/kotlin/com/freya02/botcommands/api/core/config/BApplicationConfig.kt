@@ -81,12 +81,27 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     /**
      * Registers an autocomplete transformer.
      *
-     * If your autocomplete handler return a `List<YourObject>`, you will have to register an `AutocompleteTransformer<YourObject>`
+     * If your autocomplete handler return a `List<YourObject>`,
+     * you will have to register an `AutocompleteTransformer<YourObject>`
      *
      * @param transformerType The type of the transformer service, which will transform an element of a [List], into a [Choice].
      *
      * @return This builder for chaining convenience
      */
+    fun registerAutocompleteTransformer(transformerType: Class<AutocompleteTransformer<*>>) =
+        registerAutocompleteTransformer(transformerType.kotlin)
+
+    /**
+     * Registers an autocomplete transformer.
+     *
+     * If your autocomplete handler return a `List<YourObject>`,
+     * you will have to register an `AutocompleteTransformer<YourObject>`
+     *
+     * @param transformerType The type of the transformer service, which will transform an element of a [List], into a [Choice].
+     *
+     * @return This builder for chaining convenience
+     */
+    @JvmSynthetic
     fun registerAutocompleteTransformer(transformerType: KClass<AutocompleteTransformer<*>>) {
         serviceConfig.registerService(transformerType)
     }
