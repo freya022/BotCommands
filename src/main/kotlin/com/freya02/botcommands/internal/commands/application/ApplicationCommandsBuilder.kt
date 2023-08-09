@@ -42,6 +42,9 @@ internal class ApplicationCommandsBuilder(
     private val guildUpdateGlobalMutex: Mutex = Mutex()
     private val guildUpdateMutexMap: MutableMap<Long, Mutex> = hashMapOf()
 
+    private var firstGlobalUpdate = true
+    private val firstGuildUpdates = hashSetOf<Long>()
+
     init {
         val slashCommandAutoBuilder = serviceContainer.getService<SlashCommandAutoBuilder>()
         globalDeclarationFunctions += ClassPathFunction(slashCommandAutoBuilder, SlashCommandAutoBuilder::declareGlobal)
@@ -116,6 +119,11 @@ internal class ApplicationCommandsBuilder(
             }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
         }
 
+        if (failedDeclarations.isNotEmpty() && firstGlobalUpdate) {
+            logger.error { "An exception occurred while updating global commands on startup, aborting any update" }
+            return CommandUpdateResult(null, false, failedDeclarations)
+        }
+
         val globalUpdater = ApplicationCommandsUpdater.ofGlobal(context, manager)
         val needsUpdate = force || globalUpdater.shouldUpdateCommands()
         if (needsUpdate) {
@@ -127,6 +135,7 @@ internal class ApplicationCommandsBuilder(
 
         applicationCommandsContext.putLiveApplicationCommandsMap(null, globalUpdater.applicationCommands.toApplicationCommandMap())
 
+        firstGlobalUpdate = false
         return CommandUpdateResult(null, needsUpdate, failedDeclarations)
     }
 
@@ -150,6 +159,11 @@ internal class ApplicationCommandsBuilder(
                 }.onFailure { failedDeclarations.add(CommandUpdateException(classPathFunction.function, it)) }
             }
 
+            if (failedDeclarations.isNotEmpty() && guild.idLong !in firstGuildUpdates) {
+                logger.error { "An exception occurred while updating commands for '${guild.name}' (${guild.idLong}) on startup, aborting any update" }
+                return CommandUpdateResult(guild, false, failedDeclarations)
+            }
+
             val guildUpdater = ApplicationCommandsUpdater.ofGuild(context, guild, manager)
             val needsUpdate = force || guildUpdater.shouldUpdateCommands()
             if (needsUpdate) {
@@ -165,6 +179,7 @@ internal class ApplicationCommandsBuilder(
 
             applicationCommandsContext.putLiveApplicationCommandsMap(guild, guildUpdater.applicationCommands.toApplicationCommandMap())
 
+            firstGuildUpdates.add(guild.idLong)
             return CommandUpdateResult(guild, needsUpdate, failedDeclarations)
         }
     }
