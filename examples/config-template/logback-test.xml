@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true"> <!-- A complete logback.xml can be found at https://freya022.github.io/BotCommands-Wiki/Logging/  -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %boldCyan(%-26.-26thread) %boldYellow(%-20.-20logger{0}) %highlight(%-6level) %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="net.dv8tion.jda" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.zaxxer.hikari" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="com.freya02.botcommands" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <!-- Logging queries, set to trace to enable -->
+    <logger name="com.freya02.botcommands.api.core.db.KPreparedStatement" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

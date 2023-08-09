@@ -18,6 +18,9 @@ import ch.qos.logback.classic.ClassicConstants as LogbackConstants
 
 private val logger by lazy { KotlinLogging.logger {} } // Must not load before system property is set
 
+private const val mainPackageName = "io.github.freya022.bot"
+private const val botName = "ExampleBot"
+
 object Main {
     @JvmStatic
     fun main(args: Array<out String>) {
@@ -41,7 +44,7 @@ object Main {
             }
 
             // Create a scope for our event manager
-            val scope = namedDefaultScope("ExampleBot Coroutine", 4)
+            val scope = namedDefaultScope("$botName Coroutine", 4)
             val manager = CoroutineEventManager(scope, 1.minutes)
             manager.listener<ShutdownEvent> {
                 scope.cancel()
@@ -57,7 +60,7 @@ object Main {
 
                 addOwners(*config.ownerIds.toLongArray())
 
-                addSearchPath("io.github.freya022.bot")
+                addSearchPath(mainPackageName)
 
                 textCommands {
                     //Use ping as prefix if configured
