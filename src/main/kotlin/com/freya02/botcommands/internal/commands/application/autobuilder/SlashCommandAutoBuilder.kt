@@ -22,6 +22,7 @@ import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import kotlin.reflect.KParameter
@@ -33,6 +34,8 @@ internal class SlashCommandAutoBuilder(
     private val context: BContextImpl,
     private val resolverContainer: ResolverContainer
 ) {
+    private val logger = KotlinLogging.logger { }
+
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
 
     private val functions: List<SlashFunctionMetadata> =
@@ -91,11 +94,13 @@ internal class SlashCommandAutoBuilder(
                 metadata.commandId?.also { id ->
                     if (!checkCommandId(manager, instance, id, path)) {
                         return
+                        logger.trace { "Skipping command '$path' as its command ID was rejected on ${manager.guild}" }
                     }
                 }
 
                 if (checkTestCommand(manager, metadata.func, annotation.scope, context) == TestState.EXCLUDE) {
                     return
+                    logger.trace { "Skipping command '$path' as it is a test command on ${manager.guild}" }
                 }
 
                 processCommand(manager, metadata, subcommands, subcommandGroups)
