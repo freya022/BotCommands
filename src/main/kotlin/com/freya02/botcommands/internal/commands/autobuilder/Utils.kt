@@ -27,7 +27,7 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
-internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(block: (T) -> Unit) {
+internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
     var ex: Throwable? = null
     forEach { metadata ->
         runCatching {

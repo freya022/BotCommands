@@ -68,7 +68,7 @@ internal class SlashCommandAutoBuilder(
                 if (forceGuildCommands || !manager.isValidScope(annotation.scope)) return@forEachWithDelayedExceptions
 
                 if (checkTestCommand(manager, it.func, annotation.scope, context) == TestState.EXCLUDE) {
-                    return
+                    return@forEachWithDelayedExceptions
                 }
 
                 processCommand(manager, it, subcommands, subcommandGroups)
@@ -93,14 +93,14 @@ internal class SlashCommandAutoBuilder(
                 //TODO test
                 metadata.commandId?.also { id ->
                     if (!checkCommandId(manager, instance, id, path)) {
-                        return
                         logger.trace { "Skipping command '$path' as its command ID was rejected on ${manager.guild}" }
+                        return@forEachWithDelayedExceptions
                     }
                 }
 
                 if (checkTestCommand(manager, metadata.func, annotation.scope, context) == TestState.EXCLUDE) {
-                    return
                     logger.trace { "Skipping command '$path' as it is a test command on ${manager.guild}" }
+                    return@forEachWithDelayedExceptions
                 }
 
                 processCommand(manager, metadata, subcommands, subcommandGroups)
