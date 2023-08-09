@@ -20,10 +20,12 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.castFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
 import com.freya02.botcommands.internal.commands.autobuilder.forEachWithDelayedExceptions
+import com.freya02.botcommands.internal.commands.autobuilder.requireCustomOption
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging
@@ -34,7 +36,10 @@ import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class TextCommandAutoBuilder(private val context: BContextImpl) {
+internal class TextCommandAutoBuilder(
+    private val context: BContextImpl,
+    private val resolverContainer: ResolverContainer
+) {
     private val logger = KotlinLogging.logger { }
 
     private val functions: List<TextFunctionMetadata>
@@ -178,7 +183,10 @@ internal class TextCommandAutoBuilder(private val context: BContextImpl) {
             val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<TextOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(declaredName)
+                    null -> {
+                        resolverContainer.requireCustomOption(func, kParameter, TextOption::class)
+                        customOption(declaredName)
+                    }
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
                             path,

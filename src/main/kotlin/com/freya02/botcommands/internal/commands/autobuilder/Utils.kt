@@ -10,13 +10,19 @@ import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
+import com.freya02.botcommands.api.core.utils.simpleNestedName
+import com.freya02.botcommands.api.parameters.ICustomResolver
+import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
+import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
@@ -98,4 +104,12 @@ internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KF
     }
 
     nsfw = AnnotationUtils.getAnnotationValue(annotation, "nsfw")
+}
+
+internal fun ResolverContainer.requireCustomOption(func: KFunction<*>, kParameter: KParameter, optionAnnotation: KClass<out Annotation>) {
+    val parameterWrapper = kParameter.wrap()
+    if (getResolver(parameterWrapper) !is ICustomResolver<*, *>) {
+        throwUser(func, "Custom option '${parameterWrapper.name}' (${parameterWrapper.type.simpleNestedName}) does not have a compatible ICustomResolver, " +
+                "if this is a Discord option, use @${optionAnnotation.simpleNestedName}")
+    }
 }

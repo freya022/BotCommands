@@ -23,6 +23,7 @@ import com.freya02.botcommands.internal.commands.application.autobuilder.metadat
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.UserContextFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.FunctionFilter
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.findDeclarationName
@@ -34,7 +35,10 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 @BService
-internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
+internal class ContextCommandAutoBuilder(
+    private val context: BContextImpl,
+    private val resolverContainer: ResolverContainer
+) {
     private val messageFunctions: List<MessageContextFunctionMetadata>
     private val userFunctions: List<UserContextFunctionMetadata>
 
@@ -163,7 +167,10 @@ internal class ContextCommandAutoBuilder(private val context: BContextImpl) {
                 }
             } else {
                 when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(kParameter.findDeclarationName())
+                    null -> {
+                        resolverContainer.requireCustomOption(func, kParameter, ContextOption::class)
+                        customOption(kParameter.findDeclarationName())
+                    }
                     else -> generatedOption(
                         kParameter.findDeclarationName(), instance.getGeneratedValueSupplier(
                             guild,

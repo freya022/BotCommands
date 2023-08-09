@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.metadata.SlashFunctionMetadata
 import com.freya02.botcommands.internal.commands.autobuilder.*
 import com.freya02.botcommands.internal.core.requiredFilter
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import net.dv8tion.jda.api.entities.Guild
@@ -28,7 +29,10 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
+internal class SlashCommandAutoBuilder(
+    private val context: BContextImpl,
+    private val resolverContainer: ResolverContainer
+) {
     private val forceGuildCommands = context.applicationConfig.forceGuildCommands
 
     private val functions: List<SlashFunctionMetadata> =
@@ -185,7 +189,10 @@ internal class SlashCommandAutoBuilder(private val context: BContextImpl) {
             val declaredName = kParameter.findDeclarationName()
             when (val optionAnnotation = kParameter.findAnnotation<SlashOption>()) {
                 null -> when (kParameter.findAnnotation<GeneratedOption>()) {
-                    null -> customOption(declaredName)
+                    null -> {
+                        resolverContainer.requireCustomOption(func, kParameter, SlashOption::class)
+                        customOption(declaredName)
+                    }
                     else -> generatedOption(
                         declaredName, instance.getGeneratedValueSupplier(
                             guild,
