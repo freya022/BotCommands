@@ -1,5 +1,8 @@
 package com.freya02.botcommands.api.core.utils
 
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.javaMethodInternal
 import com.freya02.botcommands.internal.utils.throwInternal
 import java.lang.reflect.Executable
@@ -9,9 +12,11 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaConstructor
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.jvm.jvmName
 
 /**
  * Utility class to convert between Kotlin and Java reflection objects.
@@ -32,6 +37,19 @@ val KParameter.isPrimitive: Boolean
 
 val KParameter.bestName: String
     get() = this.name ?: "arg${this.index}"
+
+val KType.qualifiedNestedName: String
+    get() = buildString {
+        append(jvmErasure.jvmName)
+        if (arguments.isNotEmpty()) {
+            append("<")
+            append(arguments.joinToString {
+                it.type?.qualifiedNestedName ?: "*"
+            })
+            append(">")
+        }
+        if (isMarkedNullable) append("?")
+    }
 
 val KType.simpleNestedName: String
     get() = buildString {
@@ -70,3 +88,41 @@ val KFunction<*>.javaMethodOrConstructorOrNull: Executable?
 
 val KFunction<*>.javaMethodOrConstructor: Executable
     get() = javaMethodOrConstructorOrNull ?: throwInternal(this, "Could not resolve Java method or constructor")
+
+fun KFunction<*>.getSignature(
+    parameterNames: List<String> = listOf(),
+    qualifiedClass: Boolean = false,
+    qualifiedTypes: Boolean = false,
+    returnType: Boolean = false,
+    source: Boolean = true
+): String = buildString {
+    val declaringClassName = if (qualifiedClass) declaringClass.jvmName else declaringClass.simpleNestedName
+    val methodName = name
+    val parameters = valueParameters.joinToString {
+        val type = if (qualifiedTypes) it.type.qualifiedNestedName else it.type.simpleNestedName
+        when (it.name) {
+            in parameterNames -> "${it.bestName}: $type"
+            else -> type
+        }
+    }
+
+    append("$declaringClassName.$methodName($parameters)")
+    if (returnType) {
+        append(": ")
+        append(if (qualifiedTypes) this@getSignature.returnType.qualifiedNestedName else this@getSignature.returnType.simpleNestedName)
+    }
+    if (source) {
+        val sourceStr = javaMethodOrConstructorOrNull.let { method ->
+            return@let when {
+                method != null && lineNumber != 0 -> {
+                    val sourceFile = method.declaringClass.sourceFile
+                    val lineNumber = lineNumber
+
+                    "$sourceFile:$lineNumber"
+                }
+                else -> "<no-source>"
+            }
+        }
+        append(" ($sourceStr)")
+    }
+}

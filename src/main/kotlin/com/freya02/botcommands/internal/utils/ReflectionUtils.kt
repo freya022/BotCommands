@@ -1,8 +1,6 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.core.utils.*
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.lineNumber
-import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
@@ -11,7 +9,6 @@ import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.reflect.jvm.kotlinFunction
@@ -82,29 +79,10 @@ internal object ReflectionUtils {
         get() = parameters.filter { it.kind != KParameter.Kind.INSTANCE && !it.type.jvmErasure.isSubclassOf(Event::class) }
 
     internal val KFunction<*>.shortSignatureNoSrc: String
-        get() {
-            val declaringClassName = this.declaringClass.simpleNestedName
-            val methodName = this.name
-            val parameters = this.valueParameters.joinToString { it.type.simpleNestedName }
-            return "$declaringClassName.$methodName($parameters)"
-        }
+        get() = getSignature(returnType = true, source = false)
 
     internal val KFunction<*>.shortSignature: String
-        get() {
-            val returnType = this.returnType.simpleNestedName
-            val source = this.javaMethodOrConstructorOrNull.let { method ->
-                return@let when {
-                    method != null && this.lineNumber != 0 -> {
-                        val sourceFile = method.declaringClass.sourceFile
-                        val lineNumber = this.lineNumber
-
-                        "$sourceFile:$lineNumber"
-                    }
-                    else -> "<no-source>"
-                }
-            }
-            return "$shortSignatureNoSrc: $returnType ($source)"
-        }
+        get() = getSignature(returnType = true)
 
     internal val KProperty<*>.referenceString: String
         get() {

@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.commands.application.slash.builder.SlashComma
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.arrayOfSize
+import com.freya02.botcommands.api.core.utils.getSignature
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.autocomplete.AutocompleteHandlerContainer
@@ -49,7 +50,8 @@ internal class AutocompleteHandler(
 
         val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
         if (unmappedParameters.isNotEmpty()) {
-            throwUser(slashCommandInfo.function, "\nCould not find options declared as $unmappedParameters, required by autocomplete function ${function.shortSignature}")
+            val autocompleteSignature = function.getSignature(parameterNames = unmappedParameters)
+            throwUser(slashCommandInfo.function, "\nCould not find options declared as $unmappedParameters, required by autocomplete function $autocompleteSignature")
         }
 
         val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
