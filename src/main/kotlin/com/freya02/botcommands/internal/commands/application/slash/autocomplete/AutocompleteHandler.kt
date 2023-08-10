@@ -17,7 +17,9 @@ import com.freya02.botcommands.internal.commands.application.slash.autocomplete.
 import com.freya02.botcommands.internal.throwUser
 import com.freya02.botcommands.internal.transform
 import com.freya02.botcommands.internal.utils.ReflectionUtils.collectionElementType
+import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.findDeclarationName
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
@@ -43,6 +45,11 @@ internal class AutocompleteHandler(
     init {
         this.parameters = slashCmdOptionAggregateBuilders.filterKeys { function.findParameterByName(it) != null }.transform {
             AutocompleteCommandParameter(slashCommandInfo, slashCmdOptionAggregateBuilders, it, function)
+        }
+
+        val unmappedParameters = function.nonEventParameters.map { it.findDeclarationName() } - parameters.mapTo(hashSetOf()) { it.name }
+        if (unmappedParameters.isNotEmpty()) {
+            throwUser(slashCommandInfo.function, "\nCould not find options declared as $unmappedParameters, required by autocomplete function ${function.shortSignature}")
         }
 
         val collectionElementType = autocompleteInfo.function.returnType.collectionElementType?.jvmErasure
@@ -107,13 +114,13 @@ internal class AutocompleteHandler(
 
     internal fun validateParameters() {
         autocompleteInfo.autocompleteCache?.compositeKeys?.let { compositeKeys ->
-            val optionNames = slashCommandInfo.parameters
+            val optionDiscordNames = slashCommandInfo.parameters
                 .flatMap { it.allOptions }
                 .filterIsInstance<SlashCommandOption>()
                 .map { it.discordName }
             for (compositeKey in compositeKeys) {
-                if (compositeKey !in optionNames) {
-                    throwUser(autocompleteInfo.function, "Could not find composite key named '$compositeKey', available options: $optionNames\n" +
+                if (compositeKey !in optionDiscordNames) {
+                    throwUser(autocompleteInfo.function, "Could not find composite key named '$compositeKey', available options: $optionDiscordNames\n" +
                             "See ${slashCommandInfo.function.shortSignature}")
                 }
             }
