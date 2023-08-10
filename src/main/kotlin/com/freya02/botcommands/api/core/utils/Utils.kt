@@ -35,6 +35,22 @@ fun readResource(url: String): InputStream {
 }
 
 /**
+ * Reads a resource relative as a string from the calling class.
+ *
+ * If the URL starts with a `/`, then the resource will be read from the root,
+ * so either the JAR root, or from your `resources` directory.
+ *
+ * If the URL does not start with a `/`, then it is read relative to the package of the calling class.
+ */
+fun readResourceAsString(url: String): String {
+    val callerClass = stackWalker.callerClass
+    val stream = requireNotNull(callerClass.getResourceAsStream(url)) {
+        "Resource of class " + callerClass.simpleName + " at URL '" + url + "' does not exist"
+    }
+    return stream.bufferedReader().use { it.readText() }
+}
+
+/**
  * Reads a resource relative from the calling class.
  *
  * If the URL starts with a `/`, then the resource will be read from the root,
