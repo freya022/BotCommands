@@ -29,18 +29,19 @@ interface BApplicationConfig {
     val testGuildIds: List<Long>
 
     /**
-     * Enables the library to do network calls to Discord in order to check if application commands need to be updated
+     * Enables the library to compare local commands against Discord's command,
+     * in order to check if application commands need to be updated.
      *
-     * It's better to leave it disk-based, it is faster and doesn't require any request to Discord
+     * The default behavior is to compare the command data to what has been locally saved,
+     * as it does not require any request, and is therefore way faster.
      *
-     * **Online checks are to be avoided on production environments**, I strongly recommend you have a separate bot for tests purpose
+     * The issue with local checks is that you could update commands on another machine,
+     * while the other machine is not aware of it.
      *
+     * Which is why you should use online checks during development,
+     * but local checks in production, as they avoid requests and aren't run on multiple machines.
      *
-     * This option only makes sense if you work on your "development" bot is on multiple computers,
-     * as the files required for caching the already-pushed-commands are stored in your temporary files folder,
-     * another computer is not aware of it and might take *its own* files as being up-to-date, even if the commands on Discord are not.
-     *
-     * This issue is fixed by using online checks
+     * **Note**: This does not enable you to run two instances simultaneously.
      *
      * Default: `false`
      */
