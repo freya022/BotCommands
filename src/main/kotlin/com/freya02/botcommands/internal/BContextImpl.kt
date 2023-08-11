@@ -88,8 +88,9 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     override fun getStatus(): Status = status
 
     internal fun setStatus(newStatus: Status) {
+        val oldStatus = this.status
         this.status = newStatus
-        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(status, newStatus)) }
+        runBlocking { eventDispatcher.dispatchEvent(BStatusChangeEvent(oldStatus, newStatus)) }
     }
 
     override fun getPrefixes(): List<String> = config.textConfig.prefixes
