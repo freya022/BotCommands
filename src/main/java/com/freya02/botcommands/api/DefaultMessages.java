@@ -5,6 +5,9 @@ import com.freya02.botcommands.api.core.SettingsProvider;
 import com.freya02.botcommands.api.localization.Localization;
 import com.freya02.botcommands.api.localization.LocalizationService;
 import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
+import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
+import com.freya02.botcommands.internal.utils.ExceptionsKt;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
@@ -19,23 +22,35 @@ import java.util.stream.Collectors;
 import static com.freya02.botcommands.api.localization.Localization.Entry.entry;
 
 /**
- * Class which holds all the strings the framework may use
- * <p>The default values are contained in the resources, at {@code bc_localization/DefaultMessages.json}
+ * Helper class to translate framework-specific messages.
+ *
+ * <p>The default values are contained in the {@code resources}, at {@code /bc_localization/DefaultMessages-default.json}.
+ *
  * <p>You may change the default values by:
  * <ul>
- *     <li>Creating a new {@code DefaultMessages.json} in the resource folder {@code bc_localization}, effectively overriding the default resource</li>
- *     <li>Creating language variations with a file with the same name, suffixed by the locale string, in the same folder, for example {@code bc_localization/DefaultMessages_fr.json}</li>
+ *     <li>Creating a new {@code DefaultMessages.json}</li>
+ *     <li>Creating language variations with a file of the same name, suffixed by the {@link Locale#toLanguageTag() locale tag},
+ *         for example {@code /bc_localization/DefaultMessages_fr.json}</li>
  * </ul>
- * <p>The resulting paths must not be changed, however the localization templates can have their values in any order, and different format specifiers, but need to keep the same names
  *
- * <p>Refer to {@link Localization} for more details
+ * <p>You can always customize:
+ * <ul>
+ *     <li>Loading directories: by creating new {@link LocalizationMapProvider LocalizationMap providers}</li>
+ *     <li>File formats: by creating new {@link LocalizationMapReader LocalizationMap readers}</li>
+ *     <li>Template formats: by creating new {@link LocalizationTemplate localization templates}</li>
+ * </ul>
+ * Most of the time it's easier to just add your new localization files in {@code /bc_localization}.
+ *
+ * <p>The localization paths must not be changed, of course, the templates can have their values in any order,
+ * use different format specifiers, but need to keep the same names.
+ *
+ * <p>Refer to {@link Localization} for more details.
  *
  * @see SettingsProvider#doesUserConsentNSFW(User)
  * @see Localization
  */
 public final class DefaultMessages {
-	@NotNull private final Localization defaultLocalization;
-	@Nullable private final Localization localization;
+	private final Localization localization;
 
 	/**
 	 * <b>THIS IS NOT A PUBLIC CONSTRUCTOR</b>
@@ -43,13 +58,13 @@ public final class DefaultMessages {
 	@ApiStatus.Internal
 	public DefaultMessages(@NotNull BContext context, @NotNull Locale locale) {
 		final LocalizationService localizationService = context.getService(LocalizationService.class);
-		final Localization defaultLocalization = localizationService.getInstance("DefaultMessages_default", locale);
-		if (defaultLocalization == null) {
-			throw new IllegalStateException("Could not find any DefaultMessages_default bundle");
-		}
 
-		this.defaultLocalization = defaultLocalization;
 		this.localization = localizationService.getInstance("DefaultMessages", locale);
+		if (this.localization == null) {
+			final var mappingProviders = localizationService.getMappingProviders();
+			final var mappingReaders = localizationService.getMappingReaders();
+			ExceptionsKt.throwInternal("Could not load DefaultMessages, providers: " + mappingProviders + ", readers: " + mappingReaders);
+		}
 	}
 
 	@NotNull
@@ -64,15 +79,7 @@ public final class DefaultMessages {
 
 	@Nullable
 	private LocalizationTemplate getLocalizationTemplateOrNull(@NotNull String path) {
-		LocalizationTemplate template = localization == null
-				? null
-				: localization.get(path);
-
-		if (template == null) {
-			template = defaultLocalization.get(path);
-		}
-
-		return template;
+        return localization.get(path);
 	}
 
 	/**

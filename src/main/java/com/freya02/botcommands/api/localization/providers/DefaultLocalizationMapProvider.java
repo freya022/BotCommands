@@ -2,7 +2,7 @@ package com.freya02.botcommands.api.localization.providers;
 
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.localization.LocalizationMap;
-import com.freya02.botcommands.api.localization.LocalizationTemplate;
+import com.freya02.botcommands.api.localization.LocalizationMapKt;
 import com.freya02.botcommands.api.localization.readers.DefaultJsonLocalizationMapReader;
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReaders;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +17,9 @@ import java.util.Locale;
  * <p>This provider simply takes care of the loading order and merging of the localization templates.
  * <br>The templates are loaded with the best (most specific or closest) locale available,
  * followed by the templates of broader locales.
+ *
+ * <p>Additionally, this reads bundles with a {@code -default} postfix (after the locale tag),
+ * such as {@code DefaultMessage_fr_FR-default}.
  *
  * @see DefaultJsonLocalizationMapReader
  */
@@ -33,15 +36,19 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 	@Nullable
 	@Override
 	public LocalizationMap fromBundleOrParent(@NotNull String baseName, @NotNull Locale requestedLocale) {
-		final LocalizationMap localizationMap = localizationMapReaders.cycleReaders(baseName, requestedLocale);
-
+		final LocalizationMap localizationMap = fromBundle(baseName, requestedLocale);
 		return withParentBundles(baseName, requestedLocale, localizationMap);
 	}
 
 	@Nullable
 	@Override
-	public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale) {
-        return localizationMapReaders.cycleReaders(baseName, locale);
+	public LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale requestedLocale) {
+		final LocalizationMap localizationMap = localizationMapReaders.cycleReaders(baseName, requestedLocale);
+		final LocalizationMap defaultLocalizationMap = localizationMapReaders.cycleReaders(baseName + "-default", requestedLocale);
+		if (defaultLocalizationMap != null) {
+			return LocalizationMapKt.createDelegated(localizationMap, defaultLocalizationMap);
+		}
+		return localizationMap;
 	}
 
 	@Nullable
@@ -57,33 +64,10 @@ public class DefaultLocalizationMapProvider implements LocalizationMapProvider {
 			//Do not use Localization, as it will **also** try to get the parent localizations
 			final LocalizationMap parentLocalizationMap = localizationMapProviders.cycleProviders(baseName, candidateLocale);
 			if (parentLocalizationMap != null) {
-                localizationMap = createDelegated(localizationMap, parentLocalizationMap);
+                localizationMap = LocalizationMapKt.createDelegated(localizationMap, parentLocalizationMap);
             }
 		}
 
 		return localizationMap;
-	}
-
-	private LocalizationMap createDelegated(@Nullable LocalizationMap current, @NotNull LocalizationMap parent) {
-		final Locale effectiveLocale = current != null ? current.getEffectiveLocale() : parent.getEffectiveLocale();
-		return new LocalizationMap() {
-			@NotNull
-			@Override
-			public Locale getEffectiveLocale() {
-				return effectiveLocale;
-			}
-
-			@Nullable
-			@Override
-			public LocalizationTemplate get(@NotNull String path) {
-				if (current != null) {
-					final LocalizationTemplate template = current.get(path);
-					if (template != null)
-						return template;
-				}
-
-				return parent.get(path);
-			}
-		};
 	}
 }

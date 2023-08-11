@@ -20,3 +20,19 @@ interface LocalizationMap {
      */
     operator fun get(path: String): LocalizationTemplate?
 }
+
+fun createDelegated(current: LocalizationMap?, parent: LocalizationMap): LocalizationMap {
+    if (current == null) return parent
+
+    val effectiveLocale = current.effectiveLocale
+    return object : LocalizationMap {
+        override val effectiveLocale: Locale
+            get() = effectiveLocale
+
+        override fun get(path: String): LocalizationTemplate? {
+            val template = current[path]
+            if (template != null) return template
+            return parent[path]
+        }
+    }
+}
