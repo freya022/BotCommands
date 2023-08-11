@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
 import com.freya02.botcommands.internal.core.exceptions.InitializationException
+import com.freya02.botcommands.internal.core.exceptions.InternalException
 import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
@@ -18,7 +19,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
 import java.lang.reflect.InvocationTargetException
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -31,39 +31,36 @@ import kotlin.time.Duration
 import kotlin.time.toDuration
 import kotlin.time.toDurationUnit
 
-// https://discord.com/channels/125227483518861312/125227483518861312/1114953133722980453
-internal class ConcurrentTreeSet<T> {
+internal class SortedList<T>(private val comparator: Comparator<T>) {
     // Only protect modification operations, traversal is fine
     private val lock = ReentrantLock()
-    private var set: MutableSet<T> = TreeSet()
+    private var list: List<T> = arrayListOf()
 
-    fun add(t: T): Boolean = lock.withLock {
-        val newSet = TreeSet(set)
-        return newSet.add(t).also {
-            this.set = newSet
-        }
+    fun add(t: T): Unit = lock.withLock {
+        val newList = list + t
+        this.list = newList.sortedWith(comparator)
     }
 
     fun remove(t: T): Boolean = lock.withLock {
-        val newSet = TreeSet(set)
-        return newSet.remove(t).also {
-            this.set = newSet
+        val newList = list.toMutableList()
+        newList.remove(t).also {
+            this.list = newList
         }
     }
 
-    inline fun <R> map(block: (T) -> R): List<R> = set.map(block)
+    inline fun <R> map(block: (T) -> R): List<R> = list.map(block)
 
-    fun removeAll(removedSet: ConcurrentTreeSet<T>): Boolean = lock.withLock {
-        val newSet = TreeSet(set)
-        return newSet.removeAll(removedSet.set).also {
-            this.set = newSet
+    fun removeAll(removedList: SortedList<T>): Boolean = lock.withLock {
+        val newList = list.toMutableList()
+        return newList.removeAll(removedList.list).also {
+            this.list = newList
         }
     }
 
-    inline fun forEach(block: (T) -> Unit) = set.forEach(block)
+    inline fun forEach(block: (T) -> Unit) = list.forEach(block)
 }
 
-private typealias EventMap = MutableMap<KClass<*>, ConcurrentTreeSet<EventHandlerFunction>>
+private typealias EventMap = MutableMap<KClass<*>, SortedList<EventHandlerFunction>>
 
 @BService
 class EventDispatcher internal constructor(
@@ -98,11 +95,13 @@ class EventDispatcher internal constructor(
     }
 
     fun removeEventListener(listener: Any) {
-        listeners[listener::class.java]?.let { instanceMap ->
+        listeners.remove(listener::class.java)?.let { instanceMap ->
             instanceMap.forEach { (kClass, functions) ->
                 val functionMap = map[kClass]
                     ?: throwInternal("Listener was registered without having its functions added to the listener map")
-                functionMap.removeAll(functions)
+                if (!functionMap.removeAll(functions)) {
+                    logger.error(InternalException("Unable to remove listener functions from registered functions")) { "An exception occurred while removing event listener $listener" }
+                }
             }
         }
     }
@@ -201,12 +200,12 @@ class EventDispatcher internal constructor(
                 val instanceMap = listeners.computeIfAbsent(clazz) { hashMapOf() }
 
                 (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                    instanceMap.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
+                    instanceMap.computeIfAbsent(it) { SortedList(EventHandlerFunction.priorityComparator) }.add(eventHandlerFunction)
                 }
             }
 
             (eventTreeService.getSubclasses(eventErasure) + eventErasure).forEach {
-                map.computeIfAbsent(it) { ConcurrentTreeSet() }.add(eventHandlerFunction)
+                map.computeIfAbsent(it) { SortedList(EventHandlerFunction.priorityComparator) }.add(eventHandlerFunction)
             }
         }
 

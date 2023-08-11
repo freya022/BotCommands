@@ -8,15 +8,25 @@ internal class EventHandlerFunction(
     val isAsync: Boolean,
     val timeout: Duration,
     private val parametersBlock: () -> Array<Any>
-) : Comparable<EventHandlerFunction> {
+) {
     val parameters: Array<Any> by lazy {
         parametersBlock()
     }
 
-    //Higher priority is above
-    override fun compareTo(other: EventHandlerFunction): Int {
-        if (priority != other.priority) return -priority.compareTo(other.priority)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
-        return if (classPathFunction == other.classPathFunction) 0 else 1
+        other as EventHandlerFunction
+
+        return classPathFunction == other.classPathFunction
+    }
+
+    override fun hashCode(): Int {
+        return classPathFunction.hashCode()
+    }
+
+    companion object {
+        val priorityComparator: Comparator<EventHandlerFunction> = Comparator.comparingInt { it.priority }
     }
 }
