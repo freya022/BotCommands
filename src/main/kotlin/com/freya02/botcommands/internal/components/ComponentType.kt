@@ -9,7 +9,7 @@ enum class ComponentType(val key: Int) {
 
     companion object {
         fun fromId(key: Int): ComponentType {
-            return ComponentType.values().find { it.key == key } ?: throwUser("Unknown ComponentType: $key")
+            return entries.find { it.key == key } ?: throwUser("Unknown ComponentType: $key")
         }
     }
 }

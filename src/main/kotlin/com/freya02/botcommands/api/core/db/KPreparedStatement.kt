@@ -5,7 +5,6 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import java.sql.PreparedStatement
 import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 private val logger = KotlinLogging.logger { }
@@ -24,7 +23,6 @@ class KPreparedStatement @PublishedApi internal constructor(private val database
         withLoggedParametrizedQuery(params) { DBResult(executeQuery()) }
     }
 
-    @OptIn(ExperimentalTime::class)
     private inline fun <R> withLoggedParametrizedQuery(params: Array<out Any?>, block: () -> R): R {
         if (!database.config.logQueries || !logger.isTraceEnabled) {
             setParameters(params)

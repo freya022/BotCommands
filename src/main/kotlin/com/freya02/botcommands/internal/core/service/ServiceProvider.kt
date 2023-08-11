@@ -20,7 +20,6 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
 private val logger = KotlinLogging.logger { }
@@ -133,7 +132,6 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     return null
 }
 
-@OptIn(ExperimentalTime::class)
 internal inline fun <T> measureTimedInstantiation(block: () -> T): TimedInstantiation {
     val measureTimedValue = measureTimedValue(block)
     return TimedInstantiation(ServiceResult.pass(measureTimedValue.value!!), measureTimedValue.duration)

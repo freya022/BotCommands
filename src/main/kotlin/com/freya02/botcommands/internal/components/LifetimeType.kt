@@ -8,7 +8,7 @@ enum class LifetimeType(val key: Int) {
 
     companion object {
         fun fromId(key: Int): LifetimeType {
-            return values().find { it.key == key } ?: throwUser("Unknown LifetimeType: $key")
+            return entries.find { it.key == key } ?: throwUser("Unknown LifetimeType: $key")
         }
     }
 }

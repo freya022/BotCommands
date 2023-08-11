@@ -35,7 +35,7 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
      *
      * @see JDATextCommand.description
      */
-    var description = defaultDescription
+    var description = DEFAULT_DESCRIPTION
 
     /**
      * Marks this text command as only usable by the bot owners.
@@ -90,6 +90,6 @@ abstract class TextCommandBuilder internal constructor(protected val context: BC
     }
 
     companion object {
-        const val defaultDescription = "No description"
+        const val DEFAULT_DESCRIPTION = "No description"
     }
 }

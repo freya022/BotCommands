@@ -39,7 +39,7 @@ class MutableApplicationCommandMap(
 
     override operator fun plus(map: ApplicationCommandMap): MutableApplicationCommandMap {
         val newMap: MutableMap<Command.Type, MutableCommandMap<ApplicationCommandInfo>> = enumMapOf<Command.Type, MutableCommandMap<ApplicationCommandInfo>>()
-        Command.Type.values().forEach { commandType ->
+        Command.Type.entries.forEach { commandType ->
             val commandMap = newMap.getOrPut(commandType) { MutableCommandMap() }
 
             listOf(this, map).forEach { sourceMap ->

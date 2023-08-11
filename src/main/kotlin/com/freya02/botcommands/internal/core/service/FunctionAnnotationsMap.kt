@@ -11,7 +11,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 private val logger = KotlinLogging.logger { }
@@ -19,7 +18,6 @@ private val logger = KotlinLogging.logger { }
 /**
  * This class holds all functions with at least one annotation
  */
-@OptIn(ExperimentalTime::class)
 @BService
 internal class FunctionAnnotationsMap(context: BContextImpl, instantiableServiceAnnotationsMap: InstantiableServiceAnnotationsMap) {
     private val map: MutableMap<KClass<out Annotation>, MutableMap<KFunction<*>, ClassPathFunction>> = hashMapOf()

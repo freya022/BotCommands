@@ -4,7 +4,7 @@ import com.freya02.botcommands.internal.commands.application.slash.autocomplete.
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.Command
 
-internal object NoCacheAutocomplete : AbstractAutocompleteCache() {
+internal data object NoCacheAutocomplete : AbstractAutocompleteCache() {
     override suspend fun retrieveAndCall(
         handler: AutocompleteHandler,
         event: CommandAutoCompleteInteractionEvent,

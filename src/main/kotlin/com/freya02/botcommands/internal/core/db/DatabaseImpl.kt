@@ -12,6 +12,8 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 
+private const val latestVersion = "3.0.0-alpha.7" // Change in base migration script too
+
 @BService
 @ServiceType(Database::class)
 @Dependencies(ConnectionSupplier::class)
@@ -51,9 +53,5 @@ internal class DatabaseImpl internal constructor(
             }
             it.isReadOnly = readOnly
         }
-    }
-
-    companion object {
-        private const val latestVersion = "3.0.0-alpha.7" // Change in base migration script too
     }
 }

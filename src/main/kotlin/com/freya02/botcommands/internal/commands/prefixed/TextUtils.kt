@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.defaultDescription
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder.Companion.DEFAULT_DESCRIPTION
 import com.freya02.botcommands.api.parameters.QuotableRegexParameterResolver
 import com.freya02.botcommands.internal.BContextImpl
 import net.dv8tion.jda.api.EmbedBuilder
@@ -24,7 +24,7 @@ object TextUtils {
         }
 
         val description = commandInfo.description
-        if (description != defaultDescription) {
+        if (description != DEFAULT_DESCRIPTION) {
             builder.addField("Description", description, false)
         }
 
@@ -51,7 +51,7 @@ object TextUtils {
             }
 
             val effectiveCandidateDescription = when (description) {
-                defaultDescription -> ""
+                DEFAULT_DESCRIPTION -> ""
                 else -> "**Description**: $description\n"
             }
 

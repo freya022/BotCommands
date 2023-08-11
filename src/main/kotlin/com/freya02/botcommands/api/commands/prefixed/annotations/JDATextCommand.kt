@@ -85,5 +85,5 @@ annotation class JDATextCommand(
      *
      * @see TextCommandBuilder.description DSL equivalent
      */
-    val description: String = TextCommandBuilder.defaultDescription
+    val description: String = TextCommandBuilder.DEFAULT_DESCRIPTION
 )
