@@ -26,7 +26,7 @@ public interface LocalizationMapProvider {
 	/**
 	 * Loads a localization map with the requested name and requested locale.
 	 * <br>This may return a localization bundle with a broader locale,
-	 * which will be returned by {@link LocalizationMap#effectiveLocale()}.
+	 * which will be returned by {@link LocalizationMap#getEffectiveLocale()}.
 	 * <br>This may include parent bundles.
 	 *
 	 * @param baseName        The base name of the localization bundle
@@ -41,16 +41,16 @@ public interface LocalizationMapProvider {
 	/**
 	 * Loads a localization map with the requested name and requested locale.
 	 * <br>This may return a localization bundle with a broader locale,
-	 * which must be returned by {@link LocalizationMap#effectiveLocale()}.
+	 * which must be returned by {@link LocalizationMap#getEffectiveLocale()}.
 	 *
 	 * <p><b>Note:</b> this does <b>NOT</b> include parent bundles.
 	 *
-	 * @param baseName The base name of the localization bundle
-	 * @param locale   The requested locale
+	 * @param baseName        The base name of the localization bundle
+	 * @param requestedLocale The requested locale
 	 *
 	 * @return A {@link LocalizationMap} instance with the requested data,
 	 * or {@code null} if no bundle could be read, or a (logged) exception happened.
 	 */
 	@Nullable
-	LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale locale);
+	LocalizationMap fromBundle(@NotNull String baseName, @NotNull Locale requestedLocale);
 }

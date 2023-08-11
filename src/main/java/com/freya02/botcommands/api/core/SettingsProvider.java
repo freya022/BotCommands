@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.core;
 
 import com.freya02.botcommands.api.DefaultMessages;
 import com.freya02.botcommands.api.commands.CommandList;
-import com.freya02.botcommands.api.commands.application.ApplicationCommandsContext;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
@@ -40,8 +39,7 @@ public interface SettingsProvider {
 	}
 
 	/**
-	 * Returns the list of guild commands usable in that Guild
-	 * <br><i>You can have a list of command names if needed in {@link ApplicationCommandsContext#getSlashCommandsPaths()} ()}</i>
+	 * Returns the list of guild commands usable in that Guild.
 	 *
 	 * @return A CommandList of this guild's commands
 	 * @see CommandList#all()
