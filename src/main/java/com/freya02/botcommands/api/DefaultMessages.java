@@ -71,7 +71,8 @@ public final class DefaultMessages {
 	private LocalizationTemplate getLocalizationTemplate(@NotNull String path) {
 		final LocalizationTemplate template = getLocalizationTemplateOrNull(path);
 		if (template == null) {
-			throw new IllegalArgumentException("Localization template for default messages '" + path + "' could not be found");
+			ExceptionsKt.throwInternal("Localization template for default messages '" + path + "' could not be found, available keys: " + localization.getKeys());
+			throw new AssertionError();
 		}
 
 		return template;

@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.localization;
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider;
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReader;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
@@ -19,24 +18,7 @@ import java.util.Locale;
  * @see LocalizationMapReader
  * @see LocalizationTemplate
  */
-public interface Localization {
-    /**
-     * Returns the {@link LocalizationTemplate} for the specified localization path
-     *
-     * @param path The localization path of the template
-     */
-    @Nullable
-    LocalizationTemplate get(@NotNull String path);
-
-    /**
-     * Returns the effective Locale for this Localization instance.
-     *
-     * <p><b>Note:</b> this might not be the locale as provided
-     * in {@link LocalizationService#getInstance(String, Locale)} due to missing bundles/unsupported locales.
-     */
-    @NotNull
-    Locale getEffectiveLocale();
-
+public interface Localization extends LocalizationMap {
     record Entry(@NotNull String argumentName, @NotNull Object value) {
         /**
          * Create a new localization entry,

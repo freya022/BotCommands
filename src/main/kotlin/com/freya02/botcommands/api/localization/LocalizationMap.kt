@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.localization
 
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider
+import org.jetbrains.annotations.UnmodifiableView
 import java.util.*
 
 /**
@@ -15,6 +16,12 @@ interface LocalizationMap {
     val effectiveLocale: Locale
 
     /**
+     * Returns an unmodifiable set of keys this localization map contains,
+     * or `null` if unsupported.
+     */
+    val keys: @UnmodifiableView Set<String>?
+
+    /**
      * Returns the [LocalizationTemplate] with the corresponding path,
      * or `null` if there is no such entry.
      */
@@ -24,15 +31,14 @@ interface LocalizationMap {
 fun createDelegated(current: LocalizationMap?, parent: LocalizationMap): LocalizationMap {
     if (current == null) return parent
 
-    val effectiveLocale = current.effectiveLocale
     return object : LocalizationMap {
         override val effectiveLocale: Locale
-            get() = effectiveLocale
+            get() = current.effectiveLocale
 
-        override fun get(path: String): LocalizationTemplate? {
-            val template = current[path]
-            if (template != null) return template
-            return parent[path]
-        }
+        override val keys: Set<String>?
+            get() = current.keys
+
+        override fun get(path: String): LocalizationTemplate? =
+            current[path] ?: parent[path]
     }
 }
