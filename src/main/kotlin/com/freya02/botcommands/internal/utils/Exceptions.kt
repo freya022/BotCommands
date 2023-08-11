@@ -1,21 +1,18 @@
 package com.freya02.botcommands.internal.utils
 
-import com.freya02.botcommands.api.BCInfo
+import com.freya02.botcommands.internal.core.exceptions.InternalException
 import com.freya02.botcommands.internal.core.exceptions.ServiceException
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import net.dv8tion.jda.api.JDAInfo
 import java.lang.reflect.InvocationTargetException
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.reflect.KFunction
 
 internal fun throwInternal(message: String): Nothing =
-    throw IllegalArgumentException("$message, please report this to the devs. ${getDiagVersion()}")
+    throw InternalException(message)
 
 internal fun throwInternal(function: KFunction<*>, message: String): Nothing =
-    throw IllegalArgumentException("${function.shortSignature} : $message, please report this to the devs. ${getDiagVersion()}")
-
-internal fun getDiagVersion() = "[ BC version: ${BCInfo.VERSION} | Current JDA version: ${JDAInfo.VERSION} ]"
+    throw InternalException("${function.shortSignature} : $message")
 
 @Suppress("NOTHING_TO_INLINE") //Don't want this to appear in stack trace
 internal inline fun throwUser(function: KFunction<*>, message: String): Nothing =
