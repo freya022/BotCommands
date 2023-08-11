@@ -18,8 +18,8 @@ import java.util.Locale;
  * <br>The templates are loaded with the best (most specific or closest) locale available,
  * followed by the templates of broader locales.
  *
- * <p>Additionally, this reads bundles with a {@code -default} postfix (after the locale tag),
- * such as {@code DefaultMessage_fr_FR-default}.
+ * <p>Additionally, this reads bundles with a {@code -default} postfix on the base name,
+ * such as {@code DefaultMessage-default_fr_FR}.
  *
  * @see DefaultJsonLocalizationMapReader
  */
