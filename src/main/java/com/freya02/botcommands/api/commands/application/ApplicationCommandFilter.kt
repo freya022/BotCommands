@@ -1,39 +1,38 @@
-package com.freya02.botcommands.api.commands.application;
+package com.freya02.botcommands.api.commands.application
 
-import com.freya02.botcommands.api.core.CooldownService;
-import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
-import com.freya02.botcommands.api.core.service.annotations.BService;
-import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
-import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo;
-import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import org.jetbrains.annotations.NotNull;
+import com.freya02.botcommands.api.core.CooldownService
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
+import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
 /**
  * Filters application command interactions (such as slash commands and user/message context commands),
- * any filter that returns {@code false} prevents the command from executing.
+ * any filter that returns `false` prevents the command from executing.
  *
- * <p>Filters are tested right before the command gets executed (i.e., after the permissions/cooldown... were checked).
+ * Filters are tested right before the command gets executed (i.e., after the permissions/cooldown... were checked).
  *
- * <p><b>Note:</b> Your filter still has to acknowledge the interaction.
+ * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
  *
- * <p><b>Usage</b>: Register your instance as a service with {@link BService}
- * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ * **Usage**: Register your instance as a service with [BService]
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see InterfacedService @InterfacedService
  *
- * @see #isAccepted(GenericCommandInteractionEvent, ApplicationCommandInfo)
+ * @see isAccepted
  * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
-public interface ApplicationCommandFilter {
+interface ApplicationCommandFilter {
     /**
      * Returns whether the command should be accepted or not.
      *
-     * <p><b>Note:</b> Your filter still has to acknowledge the interaction in case it rejects it.
+     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
      *
-     * @return {@code true} if the application command can run, {@code false} otherwise
+     * @return `true` if the application command can run, `false` otherwise
      *
      * @see ApplicationCommandFilter
      */
-    boolean isAccepted(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo);
+    fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean
 }
