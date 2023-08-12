@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.application
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
-import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
 import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
@@ -196,9 +195,8 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
             }
         }
 
-        val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
         for (filter in filters) {
-            if (!filter.isAccepted(applicationFilteringData)) {
+            if (!filter.isAccepted(event, applicationCommand)) {
                 logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
                 return false
             }

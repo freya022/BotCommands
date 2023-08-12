@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
-import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.utils.simpleNestedName
@@ -70,9 +69,8 @@ class TextCommandVariation internal constructor(
                 return ExecutionResult.CONTINUE //Go to next variation
         }
 
-        val filteringData = TextFilteringData(context, event, this.info, args)
         for (filter in filters) {
-            if (!filter.isAccepted(filteringData)) {
+            if (!filter.isAccepted(event, this.info, args)) {
                 logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
                 return ExecutionResult.STOP
             }

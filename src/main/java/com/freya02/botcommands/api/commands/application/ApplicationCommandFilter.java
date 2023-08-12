@@ -4,6 +4,8 @@ import com.freya02.botcommands.api.core.CooldownService;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see InterfacedService @InterfacedService
  *
- * @see #isAccepted(ApplicationFilteringData)
+ * @see #isAccepted(GenericCommandInteractionEvent, ApplicationCommandInfo)
  * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
@@ -33,5 +35,5 @@ public interface ApplicationCommandFilter {
      *
      * @see ApplicationCommandFilter
      */
-    boolean isAccepted(@NotNull ApplicationFilteringData data);
+    boolean isAccepted(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo);
 }

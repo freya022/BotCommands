@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.components.controller
 
-import com.freya02.botcommands.api.components.ComponentFilteringData
 import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -78,7 +77,7 @@ internal class ComponentsListener(
             }
 
             for (filter in filters) {
-                if (!filter.isAccepted(ComponentFilteringData(context, event))) {
+                if (!filter.isAccepted(event)) {
                     return@launch logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction: ${event.componentId}" }
                 }
             }

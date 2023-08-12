@@ -5,7 +5,9 @@ import com.freya02.botcommands.api.core.CooldownService;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo;
 import kotlin.reflect.KFunction;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see InterfacedService @InterfacedService
  *
- * @see #isAccepted(TextFilteringData)
+ * @see #isAccepted(MessageReceivedEvent, TextCommandInfo, String)
  * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
@@ -32,5 +34,5 @@ public interface TextCommandFilter {
 	 *
 	 * @see TextCommandFilter
 	 */
-	boolean isAccepted(@NotNull TextFilteringData data);
+	boolean isAccepted(@NotNull MessageReceivedEvent event, @NotNull TextCommandInfo commandInfo, @NotNull String args);
 }
