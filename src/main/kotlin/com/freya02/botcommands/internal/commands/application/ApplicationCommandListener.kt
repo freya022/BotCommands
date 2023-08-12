@@ -142,7 +142,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         }
     }
 
-    private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
+    private suspend fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
         val isNotOwner = !context.isOwner(event.user.idLong)
         val usability = Usability.of(event, applicationCommand, isNotOwner)
         if (usability.isUnusable) {
@@ -196,7 +196,7 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         }
 
         for (filter in filters) {
-            if (!filter.isAccepted(event, applicationCommand)) {
+            if (!filter.isAcceptedSuspend(event, applicationCommand)) {
                 logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
                 return false
             }

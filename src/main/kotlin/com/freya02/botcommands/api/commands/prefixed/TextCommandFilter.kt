@@ -32,5 +32,16 @@ interface TextCommandFilter {
      *
      * @see TextCommandFilter
      */
+    @JvmSynthetic
+    suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean =
+        isAccepted(event, commandInfo, args)
+
+    /**
+     * Returns whether the command should be accepted or not.
+     *
+     * @return `true` if the command can run, `false` otherwise
+     *
+     * @see TextCommandFilter
+     */
     fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean
 }

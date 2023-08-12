@@ -34,5 +34,18 @@ interface ApplicationCommandFilter {
      *
      * @see ApplicationCommandFilter
      */
+    @JvmSynthetic
+    suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
+        isAccepted(event, commandInfo)
+
+    /**
+     * Returns whether the command should be accepted or not.
+     *
+     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
+     *
+     * @return `true` if the application command can run, `false` otherwise
+     *
+     * @see ApplicationCommandFilter
+     */
     fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean
 }

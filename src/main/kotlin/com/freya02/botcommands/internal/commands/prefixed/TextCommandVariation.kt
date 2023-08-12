@@ -70,7 +70,7 @@ class TextCommandVariation internal constructor(
         }
 
         for (filter in filters) {
-            if (!filter.isAccepted(event, this.info, args)) {
+            if (!filter.isAcceptedSuspend(event, this.info, args)) {
                 logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
                 return ExecutionResult.STOP
             }

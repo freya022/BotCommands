@@ -33,5 +33,19 @@ interface ComponentInteractionFilter {
      *
      * @see ComponentInteractionFilter
      */
-    fun isAccepted(event: GenericComponentInteractionCreateEvent): Boolean
+    @JvmSynthetic
+    suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent): Boolean =
+        isAccepted(event)
+
+    /**
+     * Returns whether the component interaction should be accepted or not.
+     *
+     * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
+     *
+     * @return `true` if the component interaction can run, `false` otherwise
+     *
+     * @see ComponentInteractionFilter
+     */
+    fun isAccepted(event: GenericComponentInteractionCreateEvent): Boolean =
+        throw UnsupportedOperationException("${this.javaClass.simpleName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }

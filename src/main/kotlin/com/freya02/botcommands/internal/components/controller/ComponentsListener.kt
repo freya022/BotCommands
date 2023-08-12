@@ -77,7 +77,7 @@ internal class ComponentsListener(
             }
 
             for (filter in filters) {
-                if (!filter.isAccepted(event)) {
+                if (!filter.isAcceptedSuspend(event)) {
                     return@launch logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction: ${event.componentId}" }
                 }
             }
