@@ -1,25 +1,37 @@
 package com.freya02.botcommands.api.commands.application;
 
 import com.freya02.botcommands.api.core.CooldownService;
-import com.freya02.botcommands.api.core.config.BApplicationConfigBuilder;
-
-import java.util.function.Predicate;
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Filters application command execution
+ * Filters application command interactions (such as slash commands and user/message context commands),
+ * any filter that returns {@code false} prevents the command from executing.
  *
- * @see Predicate
- * @see BApplicationConfigBuilder#getApplicationFilters()
+ * <p>Filters are tested right before the command gets executed (i.e., after the permissions/cooldown... were checked).
+ *
+ * <p><b>Note:</b> Your filter still has to acknowledge the interaction.
+ *
+ * <p><b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ *
+ * @see InterfacedService @InterfacedService
+ *
  * @see #isAccepted(ApplicationFilteringData)
  * @see CooldownService
  */
+@InterfacedService(acceptMultiple = true)
 public interface ApplicationCommandFilter {
-	/**
-	 * Tells whether the application command should run
-	 * <br><b>You still have to acknowledge the interaction if you don't let it run</b>
-	 *
-	 * @param data The filtering data of the interaction
-	 * @return {@code true} if the application command can run, {@code false} if it must not run
-	 */
-	boolean isAccepted(ApplicationFilteringData data);
+    /**
+     * Returns whether the command should be accepted or not.
+     *
+     * <p><b>Note:</b> Your filter still has to acknowledge the interaction in case it rejects it.
+     *
+     * @return {@code true} if the application command can run, {@code false} otherwise
+     *
+     * @see ApplicationCommandFilter
+     */
+    boolean isAccepted(@NotNull ApplicationFilteringData data);
 }

@@ -1,8 +1,11 @@
 package com.freya02.botcommands.api.core.service.annotations
 
+import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.commands.prefixed.HelpBuilderConsumer
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
+import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
+import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
@@ -21,15 +24,26 @@ import com.freya02.botcommands.api.localization.readers.LocalizationMapReader
  * in addition to their own type and the ones in [ServiceType]
  *
  * @see DynamicSupplier
+ *
  * @see DefaultMessagesSupplier
+ *
  * @see SettingsProvider
+ *
  * @see GlobalExceptionHandler
+ *
+ * @see TextCommandFilter
  * @see DefaultEmbedSupplier
  * @see DefaultEmbedFooterIconSupplier
  * @see IHelpCommand
  * @see HelpBuilderConsumer
+ *
  * @see AutocompleteTransformer
+ * @see ApplicationCommandFilter
+ *
  * @see ConnectionSupplier
+ *
+ * @see ComponentInteractionFilter
+ *
  * @see LocalizationMapProvider
  * @see LocalizationMapReader
  * @see FormattableArgumentFactory

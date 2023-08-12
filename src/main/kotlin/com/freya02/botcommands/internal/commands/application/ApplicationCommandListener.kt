@@ -2,11 +2,14 @@ package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
+import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.ApplicationFilteringData
 import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.getMissingPermissions
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
@@ -25,6 +28,8 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
+
+    private val filters = context.getInterfacedServices<ApplicationCommandFilter>()
 
     @BEventListener
     suspend fun onSlashCommand(event: SlashCommandInteractionEvent) {
@@ -139,14 +144,6 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
     }
 
     private fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
-        val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
-        for (applicationFilter in context.applicationConfig.applicationFilters) {
-            if (!applicationFilter.isAccepted(applicationFilteringData)) {
-                logger.trace("Cancelled application commands due to filter")
-                return false
-            }
-        }
-
         val isNotOwner = !context.isOwner(event.user.idLong)
         val usability = Usability.of(event, applicationCommand, isNotOwner)
         if (usability.isUnusable) {
@@ -195,6 +192,14 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                     else -> reply(event, messages.getChannelCooldownMsg(cooldown / 1000.0))
                 }
 
+                return false
+            }
+        }
+
+        val applicationFilteringData = ApplicationFilteringData(context, event, applicationCommand)
+        for (filter in filters) {
+            if (!filter.isAccepted(applicationFilteringData)) {
+                logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
                 return false
             }
         }

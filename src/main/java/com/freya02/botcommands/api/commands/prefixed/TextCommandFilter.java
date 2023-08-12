@@ -1,24 +1,36 @@
 package com.freya02.botcommands.api.commands.prefixed;
 
+import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder;
 import com.freya02.botcommands.api.core.CooldownService;
-import com.freya02.botcommands.api.core.config.BTextConfigBuilder;
-
-import java.util.function.Predicate;
+import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
+import com.freya02.botcommands.api.core.service.annotations.BService;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import kotlin.reflect.KFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Filters text command execution
+ * Filters text commands, any filter that returns {@code false} prevents the command from executing.
  *
- * @see Predicate
- * @see BTextConfigBuilder#getTextFilters()
+ * <p>Filters are tested right before the command gets executed (i.e., after the permissions/cooldown... were checked).
+ *
+ * <p><b>Note:</b> this runs on every {@link TextCommandBuilder#variation(KFunction) command variation}.
+ *
+ * <p><b>Usage</b>: Register your instance as a service with {@link BService}
+ * or {@link BServiceConfigBuilder#getServiceAnnotations() any annotation that enables your class for dependency injection}.
+ *
+ * @see InterfacedService @InterfacedService
+ *
  * @see #isAccepted(TextFilteringData)
  * @see CooldownService
  */
+@InterfacedService(acceptMultiple = true)
 public interface TextCommandFilter {
 	/**
-	 * Tells whether the text command should run
+	 * Returns whether the command should be accepted or not.
 	 *
-	 * @param data The filtering data of the interaction
-	 * @return {@code true} if the text command can run, {@code false} if it must not run
+	 * @return {@code true} if the command can run, {@code false} otherwise
+	 *
+	 * @see TextCommandFilter
 	 */
-	boolean isAccepted(TextFilteringData data);
+	boolean isAccepted(@NotNull TextFilteringData data);
 }
