@@ -16,7 +16,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubclassOf
 
-@BService
+@BService(priority = Int.MAX_VALUE)
 internal class InstantiableServiceAnnotationsMap internal constructor(private val context: BContextImpl) {
     //Annotation type match such as: Map<KClass<A>, Map<KClass<*>, A>>
     private val map: Map<KClass<out Annotation>, Map<KClass<*>, Annotation>> = context.serviceAnnotationsMap
