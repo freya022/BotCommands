@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.core.config
 
-import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.AutocompleteTransformer
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
@@ -57,13 +56,6 @@ interface BApplicationConfig {
      */
     val forceGuildCommands: Boolean
 
-    /**
-     * A list of application command filters, if one of them returns false, the command is not executed.
-     *
-     * **You still have to acknowledge to the interaction !**
-     */
-    val applicationFilters: List<ApplicationCommandFilter>
-
     val baseNameToLocalesMap: Map<String, List<Locale>>
 }
 
@@ -73,7 +65,6 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     override val testGuildIds: MutableList<Long> = mutableListOf()
     override var onlineAppCommandCheckEnabled: Boolean = false
     override var forceGuildCommands: Boolean = false
-    override val applicationFilters: MutableList<ApplicationCommandFilter> = arrayListOf()
 
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
     override val baseNameToLocalesMap: Map<String, List<Locale>>
@@ -155,7 +146,6 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
         override val testGuildIds = this@BApplicationConfigBuilder.testGuildIds.toImmutableList()
         override val onlineAppCommandCheckEnabled = this@BApplicationConfigBuilder.onlineAppCommandCheckEnabled
         override val forceGuildCommands = this@BApplicationConfigBuilder.forceGuildCommands
-        override val applicationFilters = this@BApplicationConfigBuilder.applicationFilters.toImmutableList()
         override val baseNameToLocalesMap =
             this@BApplicationConfigBuilder.baseNameToLocalesMap.mapValues { (_, v) -> v.toImmutableList() }
                 .toImmutableMap()
