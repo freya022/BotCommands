@@ -11,77 +11,56 @@ import gnu.trove.set.TLongSet
 import gnu.trove.set.hash.TLongHashSet
 import net.dv8tion.jda.api.Permission
 import java.util.*
-import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.findAnnotations
 
 internal object AnnotationUtils {
-    //List order is from deepest to most effective
-    //aka class --> method
-    private fun <A : Annotation> getEffectiveAnnotations(function: KFunction<*>, annotation: KClass<A>): List<A> {
-        return function.findAnnotations(annotation) + function.declaringClass.findAnnotations(annotation)
-    }
+    internal fun getEffectiveTestGuildIds(context: BContextImpl, func: KFunction<*>): TLongSet {
+        val set = TLongHashSet(context.applicationConfig.testGuildIds)
+        val annotation = func.findAnnotation<Test>() ?: return set
 
-    internal fun getEffectiveTestGuildIds(context: BContextImpl, function: KFunction<*>): TLongSet {
-        val testIds: TLongSet = TLongHashSet(context.applicationConfig.testGuildIds)
-        val effectiveAnnotations = getEffectiveAnnotations(function, Test::class)
-        for (test in effectiveAnnotations) {
-            val ids: LongArray = test.guildIds
+        val methodValue = annotation.guildIds
+        set.addAll(methodValue)
 
-            if (test.append) {
-                testIds.addAll(ids)
-            } else {
-                testIds.clear()
-                testIds.addAll(ids)
-
-                return testIds
-            }
+        if (!annotation.append && methodValue.isNotEmpty()) {
+            return set
         }
 
-        return testIds
-    }
+        val classValue: LongArray = func.declaringClass.findAnnotation<Test>()?.guildIds ?: LongArray(0)
+        set.addAll(classValue)
 
-    internal fun <A : Annotation> getEffectiveAnnotation(function: KFunction<*>, annotationType: KClass<A>): A? {
-        val methodAnnot = function.findAnnotations(annotationType)
-
-        return when {
-            methodAnnot.isNotEmpty() -> methodAnnot.first()
-            else -> function.declaringClass.findAnnotations(annotationType).firstOrNull()
-        }
+        return set
     }
 
     internal fun getUserPermissions(func: KFunction<*>): EnumSet<Permission> {
-        val annotation = func.findAnnotation<UserPermissions>() ?: return enumSetOf()
+        val set: EnumSet<Permission> = enumSetOf()
+        val annotation = func.findAnnotation<UserPermissions>() ?: return set
 
-        return enumSetOf<Permission>().also { set ->
-            set += annotation.value
+        val methodValue = annotation.value
+        set += methodValue
 
-            if (!annotation.append) {
-                return set
-            }
-
-            func.declaringClass.findAnnotation<UserPermissions>()?.value?.let {
-                set += it
-            }
+        if (annotation.append) {
+            val classValue = func.declaringClass.findAnnotation<UserPermissions>()?.value ?: emptyArray()
+            set += classValue
         }
+
+        return set
     }
 
     internal fun getBotPermissions(func: KFunction<*>): EnumSet<Permission> {
-        val annotation = func.findAnnotation<BotPermissions>() ?: return enumSetOf()
+        val set: EnumSet<Permission> = enumSetOf()
+        val annotation = func.findAnnotation<BotPermissions>() ?: return set
 
-        return enumSetOf<Permission>().also { set ->
-            set += annotation.value
+        val methodValue = annotation.value
+        set += methodValue
 
-            if (!annotation.append) {
-                return set
-            }
-
-            func.declaringClass.findAnnotation<BotPermissions>()?.value?.let {
-                set += it
-            }
+        if (annotation.append) {
+            val classValue = func.declaringClass.findAnnotation<BotPermissions>()?.value ?: emptyArray()
+            set += classValue
         }
+
+        return set
     }
 
     @Suppress("UNCHECKED_CAST")
