@@ -4,14 +4,14 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
-import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
 class MyCommandFilters : TextCommandFilter, ApplicationCommandFilter {
-    override suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean {
+    override suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandVariation: TextCommandVariation, args: String): Boolean {
         return event.channel.idLong == 722891685755093076
     }
 

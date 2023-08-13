@@ -2,10 +2,8 @@ package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
-import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.core.CooldownService
-import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
@@ -48,37 +46,30 @@ class TextCommandVariation internal constructor(
         }
     }
 
-    internal suspend fun execute(
-        jdaEvent: MessageReceivedEvent,
-        cooldownService: CooldownService,
-        filters: List<TextCommandFilter>,
-        content: String,
-        args: String,
-        matchResult: MatchResult?
-    ): ExecutionResult {
-        val event = when {
-            useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
-            else -> BaseCommandEventImpl(context, jdaEvent, args)
-        }
+    internal suspend fun createEvent(jdaEvent: MessageReceivedEvent, args: String): BaseCommandEvent = when {
+        useTokenizedEvent -> CommandEventImpl.create(context, jdaEvent, args)
+        else -> BaseCommandEventImpl(context, jdaEvent, args)
+    }
 
+    internal suspend fun tryParseOptionValues(event: BaseCommandEvent, args: String, matchResult: MatchResult?): Map<Option, Any?>? {
         val groupsIterator = matchResult?.groups?.iterator()
         groupsIterator?.next() //Skip entire match
 
-        val optionValues = parameters.mapOptions { option ->
+        return parameters.mapOptions { option ->
             if (tryInsertOption(event, this, option, groupsIterator, args) == InsertOptionResult.ABORT)
-                return ExecutionResult.CONTINUE //Go to next variation
+                return null
         }
+    }
 
-        for (filter in filters) {
-            if (!filter.isAcceptedSuspend(event, this.info, args)) {
-                logger.trace { "${filter::class.simpleNestedName} rejected text command '$content'" }
-                return ExecutionResult.STOP
-            }
-        }
+    internal suspend fun execute(
+        event: BaseCommandEvent,
+        cooldownService: CooldownService,
+        optionValues: Map<Option, Any?>
+    ): ExecutionResult {
+        val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
         cooldownService.applyCooldown(info, event)
-
-        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        function.callSuspendBy(finalParameters)
 
         return ExecutionResult.OK
     }
@@ -111,7 +102,7 @@ class TextCommandVariation internal constructor(
                 }
 
                 if (found == groupCount) { //Found all the groups
-                    val resolved = option.resolver.resolveSuspend(event.context, this, event, groups)
+                    val resolved = option.resolver.resolveSuspend(context, this, event, groups)
                     //Regex matched but could not be resolved
                     // if optional then it's ok
                     if (resolved == null && !option.isOptionalOrNullable) {
@@ -133,7 +124,7 @@ class TextCommandVariation internal constructor(
             OptionType.CUSTOM -> {
                 option as CustomMethodOption
 
-                option.resolver.resolveSuspend(event.context, this, event)
+                option.resolver.resolveSuspend(context, this, event)
             }
 
             OptionType.GENERATED -> {
