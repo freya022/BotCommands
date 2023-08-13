@@ -74,6 +74,7 @@ val Class<*>.simpleNestedName: String
     get() = when {
         this.isPrimitive -> canonicalName
         this.isArray -> componentType.simpleNestedName + "[]"
+        this.canonicalName == null -> this.typeName.substring(this.packageName.length + 1)
         else -> this.canonicalName.substring(this.packageName.length + 1)
     }
 
