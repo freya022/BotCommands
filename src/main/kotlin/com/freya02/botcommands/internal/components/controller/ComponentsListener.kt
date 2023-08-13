@@ -78,7 +78,11 @@ internal class ComponentsListener(
 
             for (filter in filters) {
                 if (!filter.isAcceptedSuspend(event)) {
-                    return@launch logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction: ${event.componentId}" }
+                    return@launch if (event.isAcknowledged) {
+                        logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
+                    } else {
+                        logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
+                    }
                 }
             }
 

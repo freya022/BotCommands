@@ -197,7 +197,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
 
         for (filter in filters) {
             if (!filter.isAcceptedSuspend(event, applicationCommand)) {
-                logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
+                if (event.isAcknowledged) {
+                    logger.trace { "${filter::class.simpleNestedName} rejected application command '${event.commandString}'" }
+                } else {
+                    logger.error { "${filter::class.simpleNestedName} rejected application command '${event.commandString}' but did not acknowledge the interaction" }
+                }
                 return false
             }
         }
