@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * ```kt
  * @BService
  * class MyCommandFilters : ApplicationCommandFilter {
- *     override fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
+ *     override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
  *         if (event.channel?.idLong != 722891685755093076) {
  *             event.reply_("Commands are not allowed in this channel", ephemeral = true).queue()
  *             return false

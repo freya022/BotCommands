@@ -11,11 +11,11 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 @BService
 class MyCommandFilters : TextCommandFilter, ApplicationCommandFilter {
-    override fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean {
+    override suspend fun isAcceptedSuspend(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean {
         return event.channel.idLong == 722891685755093076
     }
 
-    override fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
+    override suspend fun isAcceptedSuspend(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
         if (event.channel?.idLong != 722891685755093076) {
             event.reply_("Commands are not allowed in this channel", ephemeral = true).queue()
             return false

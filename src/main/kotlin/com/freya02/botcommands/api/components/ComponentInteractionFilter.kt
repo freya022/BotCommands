@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * ```kt
  * @BService
  * class MyComponentFilter(private val config: BConfig) : ComponentInteractionFilter {
- *     override fun isAccepted(event: GenericComponentInteractionCreateEvent): Boolean {
+ *     override suspend fun isAcceptedSuspend(event: GenericComponentInteractionCreateEvent): Boolean {
  *         if (event.user.idLong !in config.ownerIds) {
  *             event.reply_("Only owners are allowed to use components", ephemeral = true).queue()
  *             return false
