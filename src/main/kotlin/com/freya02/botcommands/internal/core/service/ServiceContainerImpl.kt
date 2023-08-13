@@ -22,6 +22,7 @@ import kotlin.reflect.cast
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.safeCast
 import kotlin.system.measureNanoTime
+import kotlin.time.DurationUnit
 
 internal class ServiceCreationStack {
     private val localSet: ThreadLocal<MutableSet<ProviderName>> = ThreadLocal.withInitial { linkedSetOf() }
@@ -128,7 +129,7 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
         try {
             return serviceCreationStack.withServiceCreateKey(provider) {
                 //Don't measure time globally, we need to not take into account the time to make dependencies
-                val (anyResult, nanos) = provider.createInstance(this)
+                val (anyResult, duration) = provider.createInstance(this)
                 //Doesn't really matter, the object is not used anyway
                 val result: ServiceResult<T> = anyResult as ServiceResult<T>
                 if (result.serviceError != null)
@@ -142,7 +143,10 @@ class ServiceContainerImpl internal constructor(internal val context: BContextIm
                         extraMessage = "provider: ${provider.providerKey}"
                     )
 
-                logger.trace { "Loaded service ${provider.types.joinToString(" and ") { it.simpleNestedName } } in %.3f ms".format((nanos.inWholeNanoseconds) / 1000000.0) }
+                logger.trace {
+                    val loadedAsTypes = provider.types.joinToString(prefix = "[", postfix = "]") { it.simpleNestedName }
+                    "Loaded service ${instance.javaClass.simpleNestedName} as $loadedAsTypes in ${duration.toString(DurationUnit.MILLISECONDS, decimals = 3)}"
+                }
                 ServiceResult.pass(instance)
             }
         } catch (e: Exception) {
