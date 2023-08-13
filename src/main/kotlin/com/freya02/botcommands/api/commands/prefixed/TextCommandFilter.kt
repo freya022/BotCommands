@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * **Note:** this runs on every [command variation][TextCommandBuilder.variation].
  *
  * **Usage**: Register your instance as a service with [BService]
- * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.getServiceAnnotations].
+ * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
  *
  * @see InterfacedService @InterfacedService
  *
@@ -43,5 +43,6 @@ interface TextCommandFilter {
      *
      * @see TextCommandFilter
      */
-    fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean
+    fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean =
+        throw UnsupportedOperationException("${this.javaClass.simpleName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
