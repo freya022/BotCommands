@@ -176,3 +176,8 @@ These parameters must be annotated with `@LocalizationBundle`, as to specify whe
 You can specify as many of them as you'd like, as well as construct them manually using the static methods.
 
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashBan.kt).
+
+## Misc
+
+### Command / Component filters
+Filters now support coroutines and are run right before their target should have been executed.
