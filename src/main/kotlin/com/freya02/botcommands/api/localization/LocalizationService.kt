@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.localization
 
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReader
 import org.jetbrains.annotations.UnmodifiableView
@@ -25,14 +26,14 @@ interface LocalizationService {
     fun getInstance(baseName: String, locale: Locale): Localization?
 
     /**
-     * Invalidates all the localization bundles with the specified base name
+     * Invalidates all the localization bundles with the specified base name.
      *
      * @param baseName The base name of the bundles to invalidate
      */
     fun invalidateLocalization(baseName: String)
 
     /**
-     * Invalidates the localization bundles with the specified base name and locale
+     * Invalidates the localization bundles with the specified base name and locale.
      *
      * @param baseName The base name of the bundles to invalidate
      * @param locale   The locale of the bundle to invalidate
@@ -40,13 +41,18 @@ interface LocalizationService {
     fun invalidateLocalization(baseName: String, locale: Locale)
 
     /**
-     * Returns an unmodifiable view of [LocalizationMap providers][LocalizationMapProvider]
+     * Returns an unmodifiable view of [LocalizationMap providers][LocalizationMapProvider].
      */
     fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider>
 
     /**
-     * Returns an unmodifiable view of [LocalizationMap readers][LocalizationMapReader]
+     * Returns an unmodifiable view of [LocalizationMap readers][LocalizationMapReader].
      */
     fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader>
+
+    /**
+     * Returns an unmodifiable view of [FormattableArgument factories][FormattableArgumentFactory].
+     */
+    fun getFormattableArgumentFactories(): @UnmodifiableView Collection<FormattableArgumentFactory>
 }
 

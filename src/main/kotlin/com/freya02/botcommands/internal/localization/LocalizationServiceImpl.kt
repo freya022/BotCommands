@@ -1,9 +1,12 @@
 package com.freya02.botcommands.internal.localization
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService
+import com.freya02.botcommands.api.localization.arguments.factories.FormattableArgumentFactory
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProvider
 import com.freya02.botcommands.api.localization.providers.LocalizationMapProviders
 import com.freya02.botcommands.api.localization.readers.LocalizationMapReader
@@ -21,9 +24,12 @@ private val logger = KotlinLogging.logger<LocalizationService>()
 
 @BService
 internal class LocalizationServiceImpl internal constructor(
+    context: BContext,
     private val localizationMapProviders: LocalizationMapProviders,
     private val localizationMapReader: LocalizationMapReaders
 ) : LocalizationService {
+    private val formattableArgumentFactories = Collections.unmodifiableList(context.getInterfacedServices<FormattableArgumentFactory>())
+
     private val lock = ReentrantLock()
     private val localizationMap: MutableMap<String, MutableMap<Locale, Localization>> = ConcurrentHashMap()
 
@@ -84,4 +90,6 @@ internal class LocalizationServiceImpl internal constructor(
     override fun getMappingProviders(): @UnmodifiableView Collection<LocalizationMapProvider> = localizationMapProviders.providers
 
     override fun getMappingReaders(): @UnmodifiableView Collection<LocalizationMapReader> = localizationMapReader.readers
+
+    override fun getFormattableArgumentFactories(): Collection<FormattableArgumentFactory> = formattableArgumentFactories
 }

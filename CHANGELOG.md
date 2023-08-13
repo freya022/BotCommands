@@ -1,4 +1,4 @@
-# 3.0.0-alpha.1
+# V3 Overview
 
 While V3 has most major features reworked and improved, this came to a cost; 
 in particular, some parts of the API are now built toward Kotlin users. 
@@ -165,6 +165,19 @@ Resolver factories were also added to enable you to give a parameter resolver ba
 
 *This is how `[App/Text]LocalizationContext` are injected, they use factories of `ICustomResolver`,
 and when you put a parameter, they read that parameter for `@LocalizationBundle` and then construct a resolver which gets you the correct localization bundle.*
+
+## Enhanced localization API
+The API has been improved to allow a more detailed loading mechanism, 
+as to let you easily extend the API, such as adding support for new formats (like HOCON), or new file structures:
+
+| Name                                                                                                                                     | Function                                                                                                                                                                                                                                                                                                  |
+|------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [LocalizationMapProvider](src/main/java/com/freya02/botcommands/api/localization/providers/LocalizationMapProvider.java)                 | Responsible for getting a `LocalizationMap` for a given base name and locale, using a broader locale is allowed. <br/>The provider can merge multiple maps as well as modify the base name. <br/>All providers can be found by using `LocalizationService#getMappingProviders`.                           |
+| [LocalizationMapReader](src/main/java/com/freya02/botcommands/api/localization/readers/LocalizationMapReader.java)                       | Responsible for reading a given localization map for a given bundle name (base name + locale). <br/>It is allowed to create any type of `LocalizationTemplate`, but is **not** allowed to use a different name or locale. <br/>All readers can be found by using `LocalizationService#getMappingReaders`. |
+| [LocalizationMapTemplate](src/main/kotlin/com/freya02/botcommands/api/localization/LocalizationTemplate.kt)                              | Represents a localization template, i.e., the entire string with parameters in it.                                                                                                                                                                                                                        |
+| [FormattableArgumentFactory](src/main/kotlin/com/freya02/botcommands/api/localization/arguments/factories/FormattableArgumentFactory.kt) | Responsible for creating `FormattableArgument`s based on an argument found in a template. <br/>All factories can be found by using `LocalizationService#getFormattableArgumentFactories`.                                                                                                                 |
+
+The old `Localization` factory is now `LocalizationService`.
 
 ## New in-interaction localization
 As briefly explained above, localization has been moved from the framework events, into injectable instances, `[App/Text]LocalizationContext`.
