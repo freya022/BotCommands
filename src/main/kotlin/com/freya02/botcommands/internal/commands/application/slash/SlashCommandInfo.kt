@@ -60,7 +60,6 @@ abstract class SlashCommandInfo internal constructor(
         val objects = getSlashOptions(event, parameters) ?: return false
 
         cooldownService.applyCooldown(this, event)
-
         function.callSuspendBy(objects)
 
         return true

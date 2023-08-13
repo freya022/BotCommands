@@ -52,9 +52,10 @@ class UserCommandInfo internal constructor(
                 return false
         }
 
-        cooldownService.applyCooldown(this, event)
+        val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
-        function.callSuspendBy(parameters.mapFinalParameters(event, optionValues))
+        cooldownService.applyCooldown(this, event)
+        function.callSuspendBy(finalParameters)
 
         return true
     }
