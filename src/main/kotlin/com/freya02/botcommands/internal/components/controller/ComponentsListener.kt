@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectEvent
 import com.freya02.botcommands.api.components.event.StringSelectEvent
 import com.freya02.botcommands.api.core.annotations.BEventListener
-import com.freya02.botcommands.api.core.config.BComponentsConfig
+import com.freya02.botcommands.api.core.config.BComponentsConfigBuilder
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
@@ -28,6 +28,7 @@ import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.utils.*
+import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
 import dev.minn.jda.ktx.messages.reply_
 import dev.minn.jda.ktx.messages.send
@@ -45,7 +46,6 @@ import kotlin.reflect.full.callSuspendBy
 @Dependencies(Components::class, InternalDatabase::class)
 internal class ComponentsListener(
     private val context: BContextImpl,
-    private val componentsConfig: BComponentsConfig,
     private val componentRepository: ComponentRepository,
     private val componentController: ComponentController,
     private val coroutinesScopesConfig: BCoroutineScopesConfig,
@@ -61,13 +61,11 @@ internal class ComponentsListener(
         try {
             logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
 
-            val component = event.componentId.toIntOrNull()?.let {
-                componentRepository.getComponent(it)
-            }
-            if (component == null) {
-                event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
-                return@launch
-            }
+            val componentId = event.componentId.toIntOrNull()
+                ?: return@launch logger.error { "Received an interaction for an external token format: '${event.componentId}', " +
+                        "please only use the framework's components or disable ${BComponentsConfigBuilder::useComponents.referenceString}" }
+            val component = componentRepository.getComponent(componentId)
+                ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
             component.constraints?.let { constraints ->
                 if (!constraints.isAllowed(event)) {
