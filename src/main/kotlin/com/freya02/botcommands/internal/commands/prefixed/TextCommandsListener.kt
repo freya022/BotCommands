@@ -15,6 +15,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
@@ -70,16 +71,20 @@ internal class TextCommandsListener internal constructor(
                     return@launch
                 }
 
+                if (!canRun(event, commandInfo, isNotOwner)) {
+                    return@launch
+                }
+
                 commandInfo.variations.forEach {
                     val bcEvent = it.createEvent(event, args)
                     when (it.completePattern) {
                         null -> { //Fallback method
-                            if (tryExecute(bcEvent, content, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return@launch
+                            if (tryExecute(bcEvent, content, args, it, null) != ExecutionResult.CONTINUE) return@launch
                         }
                         else -> { //Regex text command
                             val matchResult = it.completePattern.matchEntire(args)
                             if (matchResult != null) {
-                                if (tryExecute(bcEvent, content, args, it, isNotOwner, matchResult) != ExecutionResult.CONTINUE) return@launch
+                                if (tryExecute(bcEvent, content, args, it, matchResult) != ExecutionResult.CONTINUE) return@launch
                             }
                         }
                     }
@@ -131,44 +136,35 @@ internal class TextCommandsListener internal constructor(
         return context.textConfig.prefixes
     }
 
-    private suspend fun tryExecute(
-        event: BaseCommandEvent,
-        content: String,
-        args: String,
-        variation: TextCommandVariation,
-        isNotOwner: Boolean,
-        matchResult: MatchResult?
-    ): ExecutionResult {
-        val commandInfo = variation.info
-
-        val member = event.member
+    private fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
+        val member = event.member ?: throwInternal("Text command was executed out of a Guild")
         val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
 
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
             if (unusableReasons.contains(UnusableReason.HIDDEN)) {
                 onCommandNotFound(event, commandInfo.path, true)
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.OWNER_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).ownerOnlyErrorMsg)
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.NSFW_DISABLED)) {
                 replyError(event, context.getDefaultMessages(event.guild).nsfwDisabledErrorMsg)
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.NSFW_ONLY)) {
                 replyError(event, context.getDefaultMessages(event.guild).nsfwOnlyErrorMsg)
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.NSFW_DM_DENIED)) {
                 replyError(event, context.getDefaultMessages(event.guild).nsfwdmDeniedErrorMsg)
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.USER_PERMISSIONS)) {
                 val missingPermissions = getMissingPermissions(commandInfo.userPermissions, member, event.guildChannel)
                 replyError(event, context.getDefaultMessages(event.guild).getUserPermErrorMsg(missingPermissions))
-                return ExecutionResult.STOP
+                return false
             } else if (unusableReasons.contains(UnusableReason.BOT_PERMISSIONS)) {
                 val missingPermissions = getMissingPermissions(commandInfo.botPermissions, event.guild.selfMember, event.guildChannel)
                 replyError(event, context.getDefaultMessages(event.guild).getBotPermErrorMsg(missingPermissions))
-                return ExecutionResult.STOP
+                return false
             }
         }
 
@@ -182,10 +178,20 @@ internal class TextCommandsListener internal constructor(
                     CooldownScope.CHANNEL -> replyError(event, defaultMessages.getChannelCooldownMsg(cooldown / 1000.0))
                 }
 
-                return ExecutionResult.STOP
+                return false
             }
         }
 
+        return true
+    }
+
+    private suspend fun tryExecute(
+        event: BaseCommandEvent,
+        content: String,
+        args: String,
+        variation: TextCommandVariation,
+        matchResult: MatchResult?
+    ): ExecutionResult {
         val optionValues = variation.tryParseOptionValues(event, args, matchResult)
             ?: return ExecutionResult.CONTINUE //Go to next variation
 
