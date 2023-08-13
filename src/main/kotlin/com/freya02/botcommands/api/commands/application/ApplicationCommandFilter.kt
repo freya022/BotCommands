@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 
@@ -17,6 +18,36 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  *
  * **Usage**: Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ *
+ * **Example** - Rejecting commands from outside a channel:
+ * ```kt
+ * @BService
+ * class MyCommandFilters : ApplicationCommandFilter {
+ *     override fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean {
+ *         if (event.channel?.idLong != 722891685755093076) {
+ *             event.reply_("Commands are not allowed in this channel", ephemeral = true).queue()
+ *             return false
+ *         }
+ *         return true
+ *     }
+ * }
+ * ```
+ *
+ * <Hr>
+ *
+ * ```java
+ * @BService
+ * public class MyApplicationCommandFilter implements ApplicationCommandFilter {
+ *     @Override
+ *     public boolean isAccepted(@NotNull GenericCommandInteractionEvent event, @NotNull ApplicationCommandInfo commandInfo) {
+ *         if (event.getChannel() == null || event.getChannel().getIdLong() != 722891685755093076L) {
+ *             event.reply("Commands are not allowed in this channel").setEphemeral(true).queue();
+ *             return false;
+ *         }
+ *         return true;
+ *     }
+ * }
+ * ```
  *
  * @see InterfacedService @InterfacedService
  *
@@ -48,5 +79,5 @@ interface ApplicationCommandFilter {
      * @see ApplicationCommandFilter
      */
     fun isAccepted(event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Boolean =
-        throw UnsupportedOperationException("${this.javaClass.simpleName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }

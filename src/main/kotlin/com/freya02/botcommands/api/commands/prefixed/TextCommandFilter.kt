@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
@@ -17,6 +18,28 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * **Usage**: Register your instance as a service with [BService]
  * or [any annotation that enables your class for dependency injection][BServiceConfigBuilder.serviceAnnotations].
+ *
+ * **Example** - Rejecting commands from outside a channel:
+ * ```kt
+ * @BService
+ * class MyTextCommandFilter : TextCommandFilter {
+ *     override fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean {
+ *         return event.channel.idLong == 722891685755093076
+ *     }
+ * }
+ * ```
+ *
+ * <Hr>
+ *
+ * ```java
+ * @BService
+ * public class MyTextCommandFilter implements TextCommandFilter {
+ *     @Override
+ *     public boolean isAccepted(@NotNull MessageReceivedEvent event, @NotNull TextCommandInfo commandInfo, @NotNull String args) {
+ *         return event.getChannel().getIdLong() == 722891685755093076L;
+ *     }
+ * }
+ * ```
  *
  * @see InterfacedService @InterfacedService
  *
@@ -44,5 +67,5 @@ interface TextCommandFilter {
      * @see TextCommandFilter
      */
     fun isAccepted(event: MessageReceivedEvent, commandInfo: TextCommandInfo, args: String): Boolean =
-        throw UnsupportedOperationException("${this.javaClass.simpleName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
+        throw NotImplementedError("${this.javaClass.simpleNestedName} must implement the 'isAccepted' or 'isAcceptedSuspend' method")
 }
