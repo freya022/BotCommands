@@ -37,9 +37,12 @@ The annotation will only let the service be created if all the specified check i
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>
-This annotation indicates that this interface can be implemented, but needs to be registered as a service of the implemented interface.<br>
+This annotation indicates that this interface can be implemented, but needs to be registered as a service.<br>
 This is useful for when the framework needs an instance of the interface, without knowing what the implementation is.<br>
 For example, if you want to override the help command, you will need to make an implementation for `IHelpCommand`.
+
+Most interfaces that were configurable in `CommandsBuilder` were replaced by interfaced services,
+such as command/component filters, `SettingsProvider`, `ExceptionHandler`, `AutocompleteTransformer`, etc...
 
 An example can be found [here](examples/src/main/kotlin/io/github/freya022/bot/commands/text/HelpCommand.kt).
 
