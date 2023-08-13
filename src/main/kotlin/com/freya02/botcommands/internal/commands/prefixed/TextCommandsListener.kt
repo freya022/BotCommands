@@ -3,10 +3,11 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
-import com.freya02.botcommands.api.commands.prefixed.TextFilteringData
+import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
 import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.getMissingPermissions
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
@@ -33,6 +34,8 @@ internal class TextCommandsListener internal constructor(
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
     private val spacePattern = Regex("\\s+")
+
+    private val filters = context.getInterfacedServices<TextCommandFilter>()
 
     @BEventListener
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
@@ -69,12 +72,12 @@ internal class TextCommandsListener internal constructor(
                 commandInfo.variations.forEach {
                     when (it.completePattern) {
                         null -> { //Fallback method
-                            if (tryExecute(event, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return@launch
+                            if (tryExecute(event, content, args, it, isNotOwner, null) != ExecutionResult.CONTINUE) return@launch
                         }
                         else -> { //Regex text command
                             val matchResult = it.completePattern.matchEntire(args)
                             if (matchResult != null) {
-                                if (tryExecute(event, args, it, isNotOwner, matchResult) != ExecutionResult.CONTINUE) return@launch
+                                if (tryExecute(event, content, args, it, isNotOwner, matchResult) != ExecutionResult.CONTINUE) return@launch
                             }
                         }
                     }
@@ -128,20 +131,13 @@ internal class TextCommandsListener internal constructor(
 
     private suspend fun tryExecute(
         event: MessageReceivedEvent,
+        content: String,
         args: String,
         variation: TextCommandVariation,
         isNotOwner: Boolean,
         matchResult: MatchResult?
     ): ExecutionResult {
         val commandInfo = variation.info
-
-        val filteringData = TextFilteringData(context, event, commandInfo, args)
-        for (filter in context.textConfig.textFilters) {
-            if (!filter.isAccepted(filteringData)) {
-                logger.trace("Cancelled prefixed commands due to filter")
-                return ExecutionResult.STOP
-            }
-        }
 
         val member = event.member ?: throwInternal("Text command was executed out of a Guild")
         val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
@@ -188,7 +184,7 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        return variation.execute(event, cooldownService, args, matchResult)
+        return variation.execute(event, cooldownService, filters, content, args, matchResult)
     }
 
     private fun replyError(event: MessageReceivedEvent, msg: String) {

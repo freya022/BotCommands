@@ -1,5 +1,6 @@
 package com.freya02.botcommands.internal.components
 
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import net.dv8tion.jda.api.entities.ISnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
@@ -14,6 +15,10 @@ class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : Co
     operator fun component1() = handlerName
     operator fun component2() = userData
 
+    override fun toString(): String {
+        return "PersistentHandler(handlerName='$handlerName')"
+    }
+
     private fun processArgs(args: Array<out Any?>): Array<String> = args.map { arg ->
         when (arg) {
             is ISnowflake -> arg.id
@@ -24,4 +29,8 @@ class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : Co
 
 class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: suspend (T) -> Unit) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.EPHEMERAL
+
+    override fun toString(): String {
+        return "EphemeralHandler(handler=${handler::class.simpleNestedName})"
+    }
 }

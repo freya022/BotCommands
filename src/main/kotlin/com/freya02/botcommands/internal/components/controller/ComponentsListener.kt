@@ -1,6 +1,6 @@
 package com.freya02.botcommands.internal.components.controller
 
-import com.freya02.botcommands.api.components.ComponentFilteringData
+import com.freya02.botcommands.api.components.ComponentInteractionFilter
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.components.event.EntitySelectEvent
@@ -10,6 +10,8 @@ import com.freya02.botcommands.api.core.config.BComponentsConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.getInterfacedServices
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.components.ComponentDescriptor
@@ -52,16 +54,11 @@ internal class ComponentsListener(
     private val logger = KotlinLogging.logger { }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
+    private val filters = context.getInterfacedServices<ComponentInteractionFilter>()
+
     @BEventListener
     internal fun onComponentInteraction(event: GenericComponentInteractionCreateEvent) = coroutinesScopesConfig.componentsScope.launch {
         try {
-            componentsConfig.componentFilters.forEach {
-                if (!it.isAccepted(ComponentFilteringData(context, event))) {
-                    logger.trace { "Rejected ${event.componentType} interaction: ${event.componentId}" }
-                    return@launch
-                }
-            }
-
             logger.trace { "Received ${event.componentType} interaction: ${event.componentId}" }
 
             val component = event.componentId.toIntOrNull()?.let {
@@ -76,6 +73,16 @@ internal class ComponentsListener(
                 if (!constraints.isAllowed(event)) {
                     event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
                     return@launch
+                }
+            }
+
+            for (filter in filters) {
+                if (!filter.isAcceptedSuspend(event)) {
+                    return@launch if (event.isAcknowledged) {
+                        logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
+                    } else {
+                        logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
+                    }
                 }
             }
 
