@@ -15,7 +15,7 @@ interface UserContextParameterResolver<T, R> where T : ParameterResolver<T, R>,
      * @return The resolved option mapping
      */
     fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): R? =
-        throw UnsupportedOperationException("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
+        throw NotImplementedError("${this.javaClass.simpleName} must implement the 'resolve' or 'resolveSuspend' method")
 
     @JvmSynthetic
     suspend fun resolveSuspend(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent) = resolve(context, info, event)
