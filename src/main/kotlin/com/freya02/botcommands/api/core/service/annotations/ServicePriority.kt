@@ -6,6 +6,7 @@ package com.freya02.botcommands.api.core.service.annotations
  * Higher value = Will be loaded first/shown first in interfaces service lists
  *
  * @see BService @BService
+ * @see BService.priority
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)

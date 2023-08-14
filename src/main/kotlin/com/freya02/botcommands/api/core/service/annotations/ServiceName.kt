@@ -6,6 +6,7 @@ package com.freya02.botcommands.api.core.service.annotations
  * This annotation can be used for service declarations as well as when getting services
  *
  * @see BService @BService
+ * @see BService.name
  */
 @MustBeDocumented
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.VALUE_PARAMETER)

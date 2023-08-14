@@ -28,6 +28,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * When the service should be started
+     *
      * @see ServiceStart
      */
     val start: ServiceStart = ServiceStart.DEFAULT,
@@ -35,12 +36,16 @@ annotation class BService( //Parameters tied to BServiceConfig#registerService
      * The unique name of this service.
      *
      * The default is the name of the type the service is inserted as, but with the first letter lowercase.
+     *
+     * @see ServiceName @ServiceName
      */
     val name: String = "",
     /**
      * The priority of this service.
      *
      * Higher value = Will be loaded first/shown first in interfaces service lists
+     *
+     * @see ServicePriority @ServicePriority
      */
     val priority: Int = 0
 )
