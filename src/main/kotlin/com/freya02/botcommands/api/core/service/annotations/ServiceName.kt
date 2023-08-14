@@ -8,7 +8,7 @@ package com.freya02.botcommands.api.core.service.annotations
  * @see BService @BService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.VALUE_PARAMETER)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.VALUE_PARAMETER)
 annotation class ServiceName(
     /**
      * The unique name of this service.

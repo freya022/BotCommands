@@ -13,7 +13,7 @@ import kotlin.reflect.KClass
  * @see ConditionalService @ConditionalService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class ServiceType(
     /**
      * The additional types to register this service as, must be supertypes of this service

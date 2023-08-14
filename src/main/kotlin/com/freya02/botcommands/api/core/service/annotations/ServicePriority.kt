@@ -8,5 +8,5 @@ package com.freya02.botcommands.api.core.service.annotations
  * @see BService @BService
  */
 @MustBeDocumented
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class ServicePriority(val value: Int)
