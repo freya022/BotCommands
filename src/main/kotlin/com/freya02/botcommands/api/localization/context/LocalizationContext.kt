@@ -89,27 +89,6 @@ interface LocalizationContext {
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
-     * Localizes the provided path, with the provided locale.
-     *
-     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
-     */
-    @JvmSynthetic
-    fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
-        localize(locale, localizationPath, *entries.mapToEntries())
-
-    /**
-     * Localizes the provided path, with the best locale available. (User > Guild > Default)
-     *
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
-     */
-    @JvmSynthetic
-    fun localize(localizationPath: String, vararg entries: PairEntry): String =
-        localize(effectiveLocale, localizationPath, *entries.mapToEntries())
-
-    /**
      * Localizes the provided path, with the best locale available. (User > Guild > Default)
      *
      * @param localizationPath The localization path to search for
@@ -139,7 +118,25 @@ interface LocalizationContext {
     }
 }
 
-@JvmSynthetic
 internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
     Localization.Entry(this[it].first, this[it].second)
 }
+
+/**
+ * Localizes the provided path, with the provided locale.
+ *
+ * @param locale             The [DiscordLocale] to use when fetching the localization bundle
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ */
+fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
+    localize(locale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Localizes the provided path, with the best locale available. (User > Guild > Default)
+ *
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ */
+fun LocalizationContext.localize(localizationPath: String, vararg entries: PairEntry): String =
+    localize(effectiveLocale, localizationPath, *entries.mapToEntries())

@@ -7,6 +7,9 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
+import com.freya02.botcommands.api.localization.context.localize
+import com.freya02.botcommands.api.localization.context.localizeGuild
+import com.freya02.botcommands.api.localization.context.localizeUser
 import dev.minn.jda.ktx.messages.reply_
 import net.dv8tion.jda.api.interactions.DiscordLocale
 

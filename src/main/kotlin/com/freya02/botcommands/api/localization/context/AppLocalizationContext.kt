@@ -46,18 +46,6 @@ interface AppLocalizationContext : TextLocalizationContext {
     /**
      * Localizes the provided path, with the user's locale.
      *
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
-     *
-     * @return The localized string
-     */
-    @JvmSynthetic
-    fun localizeUser(localizationPath: String, vararg entries: PairEntry): String =
-        localize(userLocale, localizationPath, *entries.mapToEntries())
-
-    /**
-     * Localizes the provided path, with the user's locale.
-     *
      * @param localizationPath The localization path to search for
      * @param entries          The entries to fill the template
      *
@@ -66,3 +54,14 @@ interface AppLocalizationContext : TextLocalizationContext {
     fun localizeUser(localizationPath: String, vararg entries: Localization.Entry): String =
         localize(userLocale, localizationPath, *entries)
 }
+
+/**
+ * Localizes the provided path, with the user's locale.
+ *
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ *
+ * @return The localized string
+ */
+fun AppLocalizationContext.localizeUser(localizationPath: String, vararg entries: PairEntry): String =
+    localize(userLocale, localizationPath, *entries.mapToEntries())
