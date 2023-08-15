@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.localization.LocalizationContextImpl
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import javax.annotation.CheckReturnValue
 
-internal typealias PairEntry = Pair<String, Any>
+typealias PairEntry = Pair<String, Any>
 
 /**
  * Interface helping in localizing content, supports preset localization bundles,
