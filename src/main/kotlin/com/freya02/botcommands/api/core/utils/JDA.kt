@@ -7,13 +7,21 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.dv8tion.jda.internal.entities.ReceivedMessage
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 suspend fun Guild.retrieveMemberOrNull(userId: Long): Member? = retrieveMemberOrNull(UserSnowflake.fromId(userId))
 suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = try {
@@ -60,21 +68,57 @@ fun getMissingPermissions(requiredPerms: EnumSet<Permission>, permissionHolder: 
 /**
  * @see MessageEditData.fromCreateData
  */
-fun MessageCreateData.toEditData() =
+fun MessageCreateData.toEditData(): MessageEditData =
     MessageEditData.fromCreateData(this)
 /**
  * @see IMessageEditCallback.editMessage
  */
-fun MessageEditData.edit(callback: IMessageEditCallback) =
+fun MessageEditData.edit(callback: IMessageEditCallback): MessageEditCallbackAction =
     callback.editMessage(this)
 
 /**
  * @see MessageCreateData.fromEditData
  */
-fun MessageEditData.toCreateData() =
+fun MessageEditData.toCreateData(): MessageCreateData =
     MessageCreateData.fromEditData(this)
 /**
  * @see IReplyCallback.reply
  */
-fun MessageCreateData.edit(callback: IReplyCallback) =
+fun MessageCreateData.edit(callback: IReplyCallback): ReplyCallbackAction =
     callback.reply(this)
+
+/**
+ * @see InteractionHook.sendMessage
+ */
+fun MessageCreateData.send(hook: InteractionHook): WebhookMessageCreateAction<Message> =
+    hook.sendMessage(this)
+
+/**
+ * @see InteractionHook.editOriginal
+ */
+fun MessageEditData.edit(hook: InteractionHook): WebhookMessageEditAction<Message> =
+    hook.editOriginal(this)
+
+/**
+ * @see InteractionHook.editOriginal
+ */
+fun InteractionHook.replaceWith(data: MessageEditData): WebhookMessageEditAction<Message> =
+    editOriginal(data).setReplace(true)
+
+/**
+ * @see InteractionHook.editOriginal
+ */
+fun InteractionHook.replaceWith(data: MessageCreateData): WebhookMessageEditAction<Message> =
+    editOriginal(data.toEditData()).setReplace(true)
+
+/**
+ * @see InteractionHook.editOriginal
+ */
+fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Message> =
+    editOriginal(content).setReplace(true)
+
+/**
+ * @see RestAction.delay
+ */
+fun <T> RestAction<T>.delay(duration: Duration): RestAction<T> =
+    delay(duration.toJavaDuration())
