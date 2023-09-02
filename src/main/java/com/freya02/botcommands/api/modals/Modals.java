@@ -6,6 +6,7 @@ import com.freya02.botcommands.internal.modals.InternalModals;
 import com.freya02.botcommands.internal.modals.ModalData;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Factory methods for modals and modal inputs
@@ -21,7 +22,7 @@ public interface Modals {
 	 * @return The new ModalBuilder
 	 */
 	@NotNull
-	static ModalBuilder create(@NotNull String title, @NotNull String handlerName, Object... userData) {
+	static ModalBuilder create(@NotNull String title, @NotNull String handlerName, @Nullable Object @NotNull ... userData) {
 		return InternalModals.create(title, handlerName, userData);
 	}
 

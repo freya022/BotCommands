@@ -126,7 +126,7 @@ public class ModalHandlerInfo implements ExecutableInteractionInfo {
 
 			final Object data = userData[i];
 
-			if (!parameter.getBoxedType().isAssignableFrom(data.getClass())) {
+			if (data != null && !parameter.getBoxedType().isAssignableFrom(data.getClass())) {
 				throw new IllegalArgumentException("The modal user data '%s' is not a valid type (expected a %s, got a %s)".formatted(parameter.getParameter().getName(), parameter.getBoxedType().getSimpleName(), data.getClass().getSimpleName()));
 			}
 
