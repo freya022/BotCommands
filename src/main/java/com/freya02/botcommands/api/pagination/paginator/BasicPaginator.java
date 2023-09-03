@@ -107,7 +107,7 @@ public abstract class BasicPaginator<T extends BasicPaginator<T>> extends BasicP
 
 		if (!e.getMessage().isEphemeral()) {
 			e.deferEdit().queue();
-			e.getMessage().delete().queue();
+			e.getHook().deleteOriginal().queue();
 		} else {
 			e.editMessage(DELETED_MESSAGE).queue();
 
