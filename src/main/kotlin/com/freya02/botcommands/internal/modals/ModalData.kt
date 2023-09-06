@@ -5,7 +5,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class ModalData(
+internal class ModalData(
     partialModalData: PartialModalData,
     private val timeoutJob: Job?
 ) : IPartialModalData by partialModalData {

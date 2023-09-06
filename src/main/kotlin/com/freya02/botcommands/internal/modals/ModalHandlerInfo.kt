@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.OptionType
-import com.freya02.botcommands.internal.core.reflection.*
+import com.freya02.botcommands.internal.core.reflection.MemberEventFunction
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
 import com.freya02.botcommands.internal.parameters.OptionParameter
 import com.freya02.botcommands.internal.utils.*
@@ -16,7 +16,10 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
-import kotlin.reflect.full.*
+import kotlin.reflect.full.callSuspendBy
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.jvm.jvmErasure
 import com.freya02.botcommands.api.modals.annotations.ModalData as ModalDataAnnotation
 
@@ -51,8 +54,7 @@ class ModalHandlerInfo(
         expectedModalInputs = options.filterIsInstance<ModalHandlerInputOption>().count()
     }
 
-    @Throws(Exception::class)
-    suspend fun execute(modalData: ModalData, event: ModalInteractionEvent): Boolean {
+    internal suspend fun execute(modalData: ModalData, event: ModalInteractionEvent): Boolean {
         val handlerData = modalData.handlerData as? PersistentModalHandlerData ?: throwInternal("This method should have not been ran as there is no handler data")
 
         val inputDataMap = modalData.inputDataMap

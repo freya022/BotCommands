@@ -19,7 +19,7 @@ import com.freya02.botcommands.internal.utils.requireUser
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 
-object CommandOptions {
+internal object CommandOptions {
     internal inline fun <reified T : OptionBuilder, reified R : Any> transform(
         context: BContextImpl,
         aggregateBuilder: OptionAggregateBuilder<*>,

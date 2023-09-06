@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalInput
 import com.freya02.botcommands.api.parameters.ModalParameterResolver
 import kotlin.reflect.full.findAnnotation
 
-class ModalHandlerInputOption(
+internal class ModalHandlerInputOption(
     optionBuilder: OptionBuilder,
     val resolver: ModalParameterResolver<*, *>
 ) : ModalHandlerOption(optionBuilder) {
