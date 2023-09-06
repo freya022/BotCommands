@@ -22,6 +22,13 @@ interface BTextConfig {
      * Default: `false`
      */
     val isHelpDisabled: Boolean
+
+    /**
+     * Whether command suggestions will be shown when a user tries to use an invalid command.
+     *
+     * Default: `false`
+     */
+    val showSuggestions: Boolean
 }
 
 @ConfigDSL
@@ -30,11 +37,13 @@ class BTextConfigBuilder internal constructor() : BTextConfig {
     override var prefixes: MutableList<String> = mutableListOf()
 
     override var isHelpDisabled: Boolean = false
+    override val showSuggestions: Boolean = false
 
     @JvmSynthetic
     internal fun build() = object : BTextConfig {
         override val usePingAsPrefix = this@BTextConfigBuilder.usePingAsPrefix
         override val prefixes = this@BTextConfigBuilder.prefixes.toImmutableList()
         override val isHelpDisabled = this@BTextConfigBuilder.isHelpDisabled
+        override val showSuggestions = this@BTextConfigBuilder.showSuggestions
     }
 }

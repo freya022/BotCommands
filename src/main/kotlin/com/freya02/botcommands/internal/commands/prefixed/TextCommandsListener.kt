@@ -67,7 +67,9 @@ internal class TextCommandsListener internal constructor(
                 val isNotOwner = !context.config.isOwner(member.idLong)
 
                 val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
-//                onCommandNotFound(event, CommandPath.of(words[0]), isNotOwner)
+                    // At this point no top level command was found,
+                    // if a subcommand wasn't matched, it would simply appear in the args
+                    onCommandNotFound(event, CommandPath.of(content.substringBefore(' ')), isNotOwner)
                     return@launch
                 }
 
@@ -222,16 +224,20 @@ internal class TextCommandsListener internal constructor(
     }
 
     private fun onCommandNotFound(event: MessageReceivedEvent, commandName: CommandPath, isNotOwner: Boolean) {
-        val suggestions = getSuggestions(event, commandName, isNotOwner)
-        if (suggestions.isNotEmpty()) {
-            replyError(
-                event,
-                context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestions.joinToString("**, **", "**", "**"))
-            )
-        }
+        if (!context.textConfig.showSuggestions) return
+
+        TODO("Suggestions are not implemented yet")
+
+//        val suggestions = getSuggestions(event, commandName, isNotOwner)
+//        if (suggestions.isNotEmpty()) {
+//            replyError(
+//                event,
+//                context.getDefaultMessages(event.guild).getCommandNotFoundMsg(suggestions.joinToString("**, **", "**", "**"))
+//            )
+//        }
     }
 
-    private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
-        return listOf() //TODO decide if useful or not
-    }
+//    private fun getSuggestions(event: MessageReceivedEvent, triedCommandPath: CommandPath, isNotOwner: Boolean): List<String> {
+//        return listOf() //TODO decide if useful or not
+//    }
 }
