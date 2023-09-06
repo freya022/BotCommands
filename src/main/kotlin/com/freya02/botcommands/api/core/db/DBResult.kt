@@ -4,6 +4,8 @@ import java.sql.ResultSet
 import java.sql.SQLException
 import kotlin.reflect.full.isSubclassOf
 
+// TODO remove in alpha 6
+@Deprecated("For removal")
 typealias ResultFunction<R> = (DBResult) -> R
 
 class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, ResultSet by resultSet {
@@ -36,15 +38,27 @@ class DBResult internal constructor(resultSet: ResultSet) : Iterable<DBResult>, 
 
     inline fun <reified R> getOrNull(columnIndex: Int): R? = get<R>(columnIndex).let { if (wasNull()) null else it }
 
-    fun readOnce(): DBResult? = when {
+    fun read(): DBResult = readOrNull() ?: throw NoSuchElementException("There are no elements in this result set")
+
+    // TODO remove in alpha 6
+    @Deprecated("Replaced by readOrNull", ReplaceWith("readOrNull()"), DeprecationLevel.ERROR)
+    fun readOnce(): DBResult? = readOrNull()
+
+    fun readOrNull(): DBResult? = when {
         !next() -> null
         else -> this
     }
 
-    fun <R> readOnce(resultFunction: ResultFunction<R>): R? = when {
+    // TODO remove in alpha 6
+    @Deprecated("Replaced by readOrNull", ReplaceWith("readOrNull(resultFunction)"), DeprecationLevel.ERROR)
+    fun <R> readOnce(resultFunction: (DBResult) -> R): R? = readOrNull(resultFunction)
+
+    fun <R> readOrNull(resultFunction: (DBResult) -> R): R? = when {
         !next() -> null
         else -> resultFunction(this)
     }
 
-    fun <R> transformEach(resultFunction: ResultFunction<R>): List<R> = map(resultFunction)
+    // TODO remove in alpha 6
+    @Deprecated("Replaced by Iterable#map", ReplaceWith("map(resultFunction)"), DeprecationLevel.ERROR)
+    fun <R> transformEach(resultFunction: (DBResult) -> R): List<R> = map(resultFunction)
 }

@@ -48,7 +48,7 @@ internal class ComponentRepository(
             val componentId: Int =
                 preparedStatement("insert into bc_component (component_type, lifetime_type, one_use) VALUES (?, ?, ?) returning component_id") {
                     executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse)
-                        .readOnce()
+                        .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
                 }
 
@@ -90,7 +90,7 @@ internal class ComponentRepository(
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
             where component.component_id = ?""".trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
+            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
@@ -135,7 +135,7 @@ internal class ComponentRepository(
                 VALUES (?, ?, false)
                 returning component_id""".trimIndent()
             ) {
-                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key).readOnce()!!
+                executeQuery(ComponentType.GROUP.key, builder.lifetimeType.key).readOrNull()!!
                     .get<Int>("component_id")
             }
         }.onFailure {
@@ -161,7 +161,7 @@ internal class ComponentRepository(
                      natural left join bc_ephemeral_timeout
             where component_id = any (?)""".trimIndent()
         ) {
-            executeQuery(builder.componentIds.toTypedArray()).readOnce()!!["exists"]
+            executeQuery(builder.componentIds.toTypedArray()).readOrNull()!!["exists"]
         }
 
         if (hasTimeouts) {
@@ -262,7 +262,7 @@ internal class ComponentRepository(
         """.trimIndent()
     ) {
         // There is no rows if neither a handler nor a timeout has been set
-        val dbResult = executeQuery(id).readOnce()
+        val dbResult = executeQuery(id).readOrNull()
             ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
@@ -302,7 +302,7 @@ internal class ComponentRepository(
         """.trimIndent()
     ) {
         // There is no rows if neither a handler nor a timeout has been set
-        val dbResult = executeQuery(id).readOnce()
+        val dbResult = executeQuery(id).readOrNull()
             ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
@@ -351,7 +351,7 @@ internal class ComponentRepository(
                where component_id = ?;
             """.trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
+            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
             dbResult.getOrNull<Timestamp>("timeout_expiration_timestamp")?.let { timestamp ->
                 return PersistentTimeout(
@@ -371,7 +371,7 @@ internal class ComponentRepository(
                where component_id = ?;
             """.trimIndent()
         ) {
-            val dbResult = executeQuery(id).readOnce() ?: return@preparedStatement null
+            val dbResult = executeQuery(id).readOrNull() ?: return@preparedStatement null
 
             val timestamp: Timestamp = dbResult.getOrNull("timeout_expiration_timestamp") ?: return null
             val handlerId: Int = dbResult.getOrNull("timeout_handler_id") ?: return null
