@@ -31,7 +31,7 @@ internal class DatabaseImpl internal constructor(
         runBlocking {
             preparedStatement("select version from bc.bc_version", readOnly = true) {
                 val rs = executeQuery().readOrNull() ?:
-                    throw IllegalStateException("No version found, please create the BotCommands tables with the migration scripts in 'bc_database_scripts', in the resources folder")
+                    throw IllegalStateException("No version found, please create the BotCommands tables with the migration scripts in 'bc_database_scripts', in the resources folder (you can also use Flyway for example)")
 
                 val version = rs.getString("version")
 
