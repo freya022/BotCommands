@@ -10,17 +10,20 @@ import kotlin.time.measureTimedValue
 private val logger = KotlinLogging.logger { }
 private val commentRegex = Regex("""--(?!.* ')""")
 
-class KPreparedStatement @PublishedApi internal constructor(private val database: Database, val preparedStatement: PreparedStatement): PreparedStatement by preparedStatement {
+class KPreparedStatement @PublishedApi internal constructor(
+    private val database: Database,
+    preparedStatement: PreparedStatement
+): AbstractKPreparedStatement(preparedStatement) {
     suspend fun execute(vararg params: Any?): Boolean = withContext(Dispatchers.IO) {
-        withLoggedParametrizedQuery(params) { execute() }
+        withLoggedParametrizedQuery(params) { preparedStatement.execute() }
     }
 
     suspend fun executeUpdate(vararg params: Any?): Int = withContext(Dispatchers.IO) {
-        withLoggedParametrizedQuery(params) { executeUpdate() }
+        withLoggedParametrizedQuery(params) { preparedStatement.executeUpdate() }
     }
 
     suspend fun executeQuery(vararg params: Any?): DBResult = withContext(Dispatchers.IO) {
-        withLoggedParametrizedQuery(params) { DBResult(executeQuery()) }
+        withLoggedParametrizedQuery(params) { DBResult(preparedStatement.executeQuery()) }
     }
 
     private inline fun <R> withLoggedParametrizedQuery(params: Array<out Any?>, block: () -> R): R {
