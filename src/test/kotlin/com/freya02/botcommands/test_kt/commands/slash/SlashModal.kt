@@ -32,7 +32,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
         val modal = modals.create("Title") {
             shortTextInput(SLASH_MODAL_TEXT_INPUT, "Sample text")
 
-            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420)
+            bindTo(SLASH_MODAL_MODAL_HANDLER, "User data", 420, null)
 
 //            bindTo { event -> onModalSubmitted(event, "User data", 420, event.values[0].asString, CustomObject()) }
 
@@ -54,6 +54,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
         @ModalData dataStr: String,
         @ModalInput(name = SLASH_MODAL_TEXT_INPUT) inputStr: String,
         @ModalData dataInt: Int,
+        @ModalData definitelyNull: Any?,
         customObject: CustomObject
     ) {
         event.reply_(
@@ -62,6 +63,7 @@ class SlashModal(private val components: Components) : ApplicationCommand() {
             dataStr: $dataStr
             dataInt: $dataInt
             inputStr: $inputStr
+            definitelyNull: $definitelyNull
             customObject: $customObject
             """.trimIndent(),
             components = listOf(row(components.ephemeralButton(ButtonStyle.PRIMARY, "Test button") {

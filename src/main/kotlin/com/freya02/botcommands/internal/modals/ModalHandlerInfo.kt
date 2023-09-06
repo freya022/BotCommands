@@ -86,7 +86,7 @@ class ModalHandlerInfo(
         event: ModalInteractionEvent,
         option: Option,
         inputNameToInputIdMap: Map<String, String>,
-        userDataIterator: Iterator<Any>,
+        userDataIterator: Iterator<Any?>,
         optionMap: MutableMap<Option, Any?>
     ): InsertOptionResult {
         val value = when (option.optionType) {
@@ -114,6 +114,8 @@ class ModalHandlerInfo(
                     throwInternal("Mismatch in amount of user data provided by the user and the amount requested by the aggregates, this should have been checked")
 
                 userDataIterator.next().also { userData ->
+                    if (userData == null) return@also
+
                     requireUser(option.type.jvmErasure.isSuperclassOf(userData::class)) {
                         "The modal user data '%s' is not a valid type (expected a %s, got a %s)".format(
                             option.declaredName,

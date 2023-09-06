@@ -17,7 +17,7 @@ internal class ModalBuilderImpl internal constructor(
     private var handlerData: IModalHandlerData? = null
     private var timeoutInfo: ModalTimeoutInfo? = null
 
-    override fun bindTo(handlerName: String, vararg userData: Any): ModalBuilderImpl = this.also {
+    override fun bindTo(handlerName: String, vararg userData: Any?): ModalBuilderImpl = this.also {
         handlerData = PersistentModalHandlerData(handlerName, userData)
     }
 

@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.modals.annotations.ModalData;
 import com.freya02.botcommands.api.modals.annotations.ModalHandler;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -24,7 +25,7 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	 * @return This builder for chaining convenience
 	 */
 	@NotNull
-	public abstract ModalBuilder bindTo(@NotNull String handlerName, Object... userData);
+	public abstract ModalBuilder bindTo(@NotNull String handlerName, @Nullable Object @NotNull ... userData);
 
 	/**
 	 * Binds the following handler to this modal
