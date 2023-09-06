@@ -26,7 +26,7 @@ public class SlashModal extends ApplicationCommand {
 	)
 	public void onSlashModal(GuildSlashEvent event, Modals modals) {
 		final Modal modal = modals.create("Formatting !")
-				.bindTo(MODAL_HANDLER_NAME, "foobar", 42L)
+				.bindTo(MODAL_HANDLER_NAME, "foobar", 42L, null)
 				.setTimeout(10, TimeUnit.SECONDS, () -> System.out.println("bruh"))
 				.addActionRow(
 						modals.createTextInput(CODE_INPUT_NAME, "Java code", TextInputStyle.PARAGRAPH)
@@ -42,13 +42,15 @@ public class SlashModal extends ApplicationCommand {
 	public void handle(ModalInteractionEvent event,
 	                   @ModalData String test,
 	                   @ModalData long number,
+	                   @ModalData Object definitelyNull,
 	                   @ModalInput(name = CODE_INPUT_NAME) String javaCode,
 	                   BContext context) {
 		event.reply(("""
 						User data: %s
 						Context: %s
+						Definitely null: %s
 						Your code:
-						%s""").formatted(test + " = " + number, context, javaCode))
+						%s""").formatted(test + " = " + number, context, definitelyNull, javaCode))
 				.setEphemeral(true)
 				.queue();
 	}
