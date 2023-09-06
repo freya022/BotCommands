@@ -256,6 +256,8 @@ public final class CommandListener extends ListenerAdapter {
 	}
 
 	private void onCommandNotFound(MessageReceivedEvent event, CommandPath commandName, boolean isNotOwner) {
+		if (context.areSuggestionsDisabled()) return;
+
 		final List<String> suggestions = getSuggestions(event, commandName, isNotOwner);
 
 		if (!suggestions.isEmpty()) {

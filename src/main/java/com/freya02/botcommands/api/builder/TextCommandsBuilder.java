@@ -39,6 +39,20 @@ public final class TextCommandsBuilder {
 	}
 
 	/**
+	 * Disables the command suggestions.
+	 *
+	 * <p>Command suggestions are typically displayed when a command was not found, but a similar one exists.
+	 *
+	 * @param disableSuggestions <code>true</code> to disable the command suggestions
+	 * @return This builder for chaining convenience
+	 */
+	public TextCommandsBuilder disableSuggestions(boolean disableSuggestions) {
+		this.context.disableSuggestions(disableSuggestions);
+
+		return this;
+	}
+
+	/**
 	 * Sets the help builder consumer, it allows you to add stuff in the help embeds when they are created.
 	 * <br>This is called everytime a help embed is generated, when using the default help command
 	 *

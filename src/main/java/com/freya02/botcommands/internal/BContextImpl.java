@@ -79,6 +79,7 @@ public class BContextImpl implements BContext {
 	private Supplier<InputStream> defaultFooterIconSupplier = () -> null;
 
 	private boolean isHelpDisabled;
+	private boolean disableSuggestions = true;
 	private ComponentManager componentManager;
 	private SettingsProvider settingProvider;
 
@@ -389,6 +390,10 @@ public class BContextImpl implements BContext {
 		this.isHelpDisabled = isHelpDisabled;
 	}
 
+	public void disableSuggestions(boolean disableSuggestions) {
+		this.disableSuggestions = disableSuggestions;
+	}
+
 	@Override
 	public List<RegistrationListener> getRegistrationListeners() {
 		return Collections.unmodifiableList(registrationListeners);
@@ -516,6 +521,10 @@ public class BContextImpl implements BContext {
 
 	public boolean isHelpDisabled() {
 		return isHelpDisabled;
+	}
+
+	public boolean areSuggestionsDisabled() {
+		return disableSuggestions;
 	}
 
 	public void setUncaughtExceptionHandler(@Nullable ExceptionHandler exceptionHandler) {
