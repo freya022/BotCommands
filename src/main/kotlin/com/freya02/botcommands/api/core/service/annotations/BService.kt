@@ -17,6 +17,8 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  * @see ConditionalService @ConditionalService
  * @see InterfacedService @InterfacedService
  *
+ * @see Dependencies @Dependencies
+ *
  * @see ServiceType @ServiceType
  * @see ServiceName @ServiceName
  * @see ServicePriority @ServicePriority
