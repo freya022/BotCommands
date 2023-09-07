@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.createSingleton
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import mu.KotlinLogging
@@ -115,7 +116,7 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     // Services can be conditional
     findAnnotation<ConditionalService>()?.let { conditionalService ->
         conditionalService.checks.forEach {
-            val instance = it.objectInstance ?: it.createInstance()
+            val instance = it.createSingleton()
             instance.checkServiceAvailability(serviceContainer.context, checkedClass.java)
                 ?.let { errorMessage ->
                     return ErrorType.FAILED_CONDITION.toError(

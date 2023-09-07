@@ -7,11 +7,11 @@ import com.freya02.botcommands.api.core.service.annotations.Condition
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.createSingleton
 import com.freya02.botcommands.internal.utils.requireUser
 import io.github.classgraph.ClassInfo
 import mu.KotlinLogging
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmName
 
@@ -27,7 +27,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
         if (classInfo.annotationInfo.directOnly().containsName(Condition::class.jvmName)) {
             val conditionMetadata = kClass.findAnnotation<Condition>()!!
             val customConditionType = conditionMetadata.type
-            val checker = customConditionType.objectInstance ?: customConditionType.createInstance()
+            val checker = customConditionType.createSingleton()
             val checkerAnnotationType = checker.annotationType
             requireUser(checkerAnnotationType == kClass.java) {
                 buildString {

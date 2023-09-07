@@ -132,3 +132,13 @@ internal fun KParameter.findOptionName(): String =
 
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
+
+internal fun <T : Any> KClass<T>.createSingleton(): T {
+    val instance = this.objectInstance
+    if (instance != null)
+        return instance
+    val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
+        ?: throwUser("Class ${this.simpleNestedName} must either be an object, or have a no-arg constructor (or have only default parameters)")
+
+    return constructor.callBy(mapOf())
+}
