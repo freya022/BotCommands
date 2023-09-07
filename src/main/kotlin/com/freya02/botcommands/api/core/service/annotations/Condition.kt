@@ -9,6 +9,13 @@ import kotlin.reflect.KClass
  *
  * The annotated annotation need to be in the [search path][BConfigBuilder.addSearchPath]
  *
+ * Example:
+ * ```kt
+ * @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+ * @Condition(ProfileChecker::class, fail = false)
+ * annotation class RequireProfile(val profile: Profile)
+ * ```
+ *
  * @see BService @BService
  * @see CustomConditionChecker
  */

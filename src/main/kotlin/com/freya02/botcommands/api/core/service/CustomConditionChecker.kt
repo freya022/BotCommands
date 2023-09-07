@@ -11,6 +11,29 @@ import com.freya02.botcommands.api.core.service.annotations.Condition
  *
  * **Requirement:** A no-arg constructor must exist, or must be a Kotlin `object`.
  *
+ * Example:
+ * ```kt
+ * // Referenced by @RequireProfile
+ * object ProfileChecker : CustomConditionChecker<RequireProfile> {
+ *     // Let's just say it's loaded from the config
+ *     private val currentProfile = Profile.DEV
+ *
+ *     override val annotationType = RequireProfile::class.java
+ *
+ *     override fun checkServiceAvailability(
+ *         context: BContext,
+ *         checkedClass: Class<*>,
+ *         annotation: RequireProfile
+ *     ): String? {
+ *         if (annotation.profile != currentProfile) {
+ *             return "Profile ${annotation.profile} is required, current profile is $currentProfile"
+ *         }
+ *
+ *         return null
+ *     }
+ * }
+ * ```
+ *
  * @see Condition @Condition
  */
 interface CustomConditionChecker<A : Annotation> {
