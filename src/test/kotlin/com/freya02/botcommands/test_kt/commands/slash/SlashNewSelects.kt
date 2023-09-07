@@ -13,6 +13,7 @@ import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.components.data.ComponentTimeoutData
 import com.freya02.botcommands.api.components.data.GroupTimeoutData
 import com.freya02.botcommands.api.components.event.StringSelectEvent
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import dev.minn.jda.ktx.interactions.components.asDisabled
 import dev.minn.jda.ktx.interactions.components.row
 import dev.minn.jda.ktx.messages.reply_
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.time.Duration.Companion.seconds
 
 @Command
+@Dependencies(Components::class)
 class SlashNewSelects(private val components: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "new_selects")
     suspend fun onSlashNewButtons(event: GuildSlashEvent) {

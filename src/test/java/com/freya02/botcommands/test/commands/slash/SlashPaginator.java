@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
+import com.freya02.botcommands.api.core.service.annotations.Dependencies;
 import com.freya02.botcommands.api.pagination.paginator.Paginator;
 import com.freya02.botcommands.api.pagination.paginator.PaginatorBuilder;
 import com.freya02.botcommands.api.utils.ButtonContent;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
+@Dependencies(Components.class)
 public class SlashPaginator extends ApplicationCommand {
 	@JDASlashCommand(name = "paginator", subcommand = "user")
 	public void paginatorUser(GuildSlashEvent event, Components components) {

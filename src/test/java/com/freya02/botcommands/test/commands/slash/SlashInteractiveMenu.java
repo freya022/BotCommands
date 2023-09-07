@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
+import com.freya02.botcommands.api.core.service.annotations.Dependencies;
 import com.freya02.botcommands.api.pagination.interactive.InteractiveMenu;
 import com.freya02.botcommands.api.pagination.interactive.InteractiveMenuBuilder;
 import com.freya02.botcommands.api.pagination.interactive.SelectContent;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.concurrent.TimeUnit;
 
+@Dependencies(Components.class)
 public class SlashInteractiveMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "interactive")
 	public void interactiveMenu(GuildSlashEvent event, Components components) {

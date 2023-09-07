@@ -7,11 +7,13 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.SlashO
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener;
 import com.freya02.botcommands.api.components.event.ButtonEvent;
+import com.freya02.botcommands.api.core.service.annotations.Dependencies;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.util.concurrent.TimeUnit;
 
+@Dependencies(Components.class)
 public class SlashButton extends ApplicationCommand {
 	private static final String PERSISTENT_BUTTON_LISTENER_NAME = "leBouton";
 

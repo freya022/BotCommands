@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand;
 import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.data.InteractionConstraints;
+import com.freya02.botcommands.api.core.service.annotations.Dependencies;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenu;
 import com.freya02.botcommands.api.pagination.menu.ChoiceMenuBuilder;
 import com.freya02.botcommands.api.pagination.menu.Menu;
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import java.util.stream.IntStream;
 
+@Dependencies(Components.class)
 public class SlashMenu extends ApplicationCommand {
 	@JDASlashCommand(name = "choicemenu")
 	public void choicemenu(GuildSlashEvent event, Components components) {

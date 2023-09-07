@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.components.Components;
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder;
 import com.freya02.botcommands.api.components.builder.IEphemeralTimeoutableComponent;
 import com.freya02.botcommands.api.components.builder.IUniqueComponent;
+import com.freya02.botcommands.api.core.service.annotations.Dependencies;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Dependencies(Components.class)
 public class SlashSelectMenu extends ApplicationCommand {
 	@NotNull
 	@Override

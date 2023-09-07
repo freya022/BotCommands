@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.commands.application.context.annotations.JDAM
 import com.freya02.botcommands.api.commands.application.context.message.GuildMessageEvent
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.events.await
 import dev.minn.jda.ktx.interactions.components.row
@@ -34,6 +35,7 @@ class ReactionRoleService {
 }
 
 @Command
+@Dependencies(Components::class)
 class MessageContextAddReactionRole(private val componentsService: Components,
                                     private val reactionRoleService: ReactionRoleService) : ApplicationCommand() {
     @JDAMessageCommand(name = "Add reaction role", defaultLocked = true)

@@ -7,11 +7,13 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
+import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import kotlinx.coroutines.delay
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.system.measureTimeMillis
 
 @Command
+@Dependencies(Components::class)
 class TextDelay : TextCommand() {
     @JDATextCommand(name = "delay")
     suspend fun runDelay(event: BaseCommandEvent, components: Components) {
