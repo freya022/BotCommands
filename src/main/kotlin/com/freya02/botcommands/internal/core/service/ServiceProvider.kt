@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
@@ -122,7 +121,28 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,
                         // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = ConditionalServiceChecker::checkServiceAvailability.resolveReference(instance::class)
+                        failedFunction = instance::checkServiceAvailability.resolveReference(instance::class)
+                    )
+                }
+        }
+    }
+
+    serviceContainer.context.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
+        val annotation = customCondition.getCondition(checkedClass.java)
+        if (annotation != null) {
+            val checker = customCondition.checker
+            checker.checkServiceAvailability(serviceContainer.context, checkedClass.java, annotation)
+                ?.let { errorMessage ->
+                    val errorType = if (customCondition.conditionMetadata.fail) {
+                        ErrorType.FAILED_FATAL_CUSTOM_CONDITION
+                    } else {
+                        ErrorType.FAILED_CUSTOM_CONDITION
+                    }
+
+                    return errorType.toError(
+                        errorMessage,
+                        // instance::checkServiceAvailability does not bind to the actual instance
+                        failedFunction = checker::checkServiceAvailability.resolveReference(checker::class)
                     )
                 }
         }

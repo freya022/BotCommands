@@ -8,6 +8,7 @@ import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -47,6 +48,10 @@ internal object ReflectionUtils {
 
         return targetClass.declaredMemberFunctions.findFunction(this)
             ?: targetClass.constructors.findFunction(this)
+    }
+
+    internal fun KProperty<*>.resolveReference(targetClass: KClass<*>): KProperty<*>? {
+        return targetClass.declaredMemberProperties.find { it.name == this.name }
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =

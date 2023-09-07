@@ -24,7 +24,9 @@ class ServiceError private constructor(
         UNAVAILABLE_INJECTED_SERVICE("The injected service was not available at the time of instantiation"),
         UNAVAILABLE_DEPENDENCY("At least one dependency was missing"),
         FAILED_CONDITION("At least one check returned an error message"),
-        UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing");
+        UNAVAILABLE_PARAMETER("At least one parameter from a constructor or a service factory was missing"),
+        FAILED_CUSTOM_CONDITION("At least one custom check returned an error message"),
+        FAILED_FATAL_CUSTOM_CONDITION("At least one custom check returned an error message, and was configured to fail");
 
         @JvmOverloads
         fun toError(errorMessage: String, extraMessage: String? = null, failedFunction: KFunction<*>? = null, nestedError: ServiceError? = null, siblingErrors: List<ServiceError> = emptyList()) =

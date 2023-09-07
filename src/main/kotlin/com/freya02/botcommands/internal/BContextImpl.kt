@@ -43,6 +43,7 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     internal val serviceAnnotationsMap = ServiceAnnotationsMap(config.serviceConfig)
     internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
+    internal val customConditionsContainer = CustomConditionsContainer()
     val eventDispatcher: EventDispatcher get() = getService<EventDispatcher>()
 
     private var status : Status = Status.PRE_LOAD
