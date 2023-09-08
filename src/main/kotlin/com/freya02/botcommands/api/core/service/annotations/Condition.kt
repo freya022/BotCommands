@@ -23,7 +23,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.ANNOTATION_CLASS)
 annotation class Condition(
     /**
-     * The implementation type of this condition
+     * The implementation type of this condition, same as [CustomConditionChecker.annotationType].
      */
     val type: KClass<out CustomConditionChecker<*>>,
     /**

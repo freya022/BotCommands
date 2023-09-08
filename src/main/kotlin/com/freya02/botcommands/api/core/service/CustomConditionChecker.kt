@@ -37,6 +37,12 @@ import com.freya02.botcommands.api.core.service.annotations.Condition
  * @see Condition @Condition
  */
 interface CustomConditionChecker<A : Annotation> {
+    /**
+     * The condition annotation processed by this condition checker.
+     *
+     * This must be the annotation which is meta-annotated with [Condition],
+     * with its [type][Condition.type] being the checker implementation.
+     */
     val annotationType: Class<A>
 
     /**
