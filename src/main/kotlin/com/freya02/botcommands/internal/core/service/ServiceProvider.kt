@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.core.service
 
-import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.ServiceError
 import com.freya02.botcommands.api.core.service.ServiceError.ErrorType
 import com.freya02.botcommands.api.core.service.ServiceResult
@@ -10,6 +9,7 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignatureNoSrc
+import com.freya02.botcommands.internal.utils.createSingleton
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import mu.KotlinLogging
@@ -116,13 +116,34 @@ internal fun KAnnotatedElement.commonCanInstantiate(serviceContainer: ServiceCon
     // Services can be conditional
     findAnnotation<ConditionalService>()?.let { conditionalService ->
         conditionalService.checks.forEach {
-            val instance = it.objectInstance ?: it.createInstance()
+            val instance = it.createSingleton()
             instance.checkServiceAvailability(serviceContainer.context, checkedClass.java)
                 ?.let { errorMessage ->
                     return ErrorType.FAILED_CONDITION.toError(
                         errorMessage,
                         // instance::checkServiceAvailability does not bind to the actual instance
-                        failedFunction = ConditionalServiceChecker::checkServiceAvailability.resolveReference(instance::class)
+                        failedFunction = instance::checkServiceAvailability.resolveReference(instance::class)
+                    )
+                }
+        }
+    }
+
+    serviceContainer.context.customConditionsContainer.customConditionCheckers.forEach { customCondition ->
+        val annotation = customCondition.getCondition(checkedClass.java)
+        if (annotation != null) {
+            val checker = customCondition.checker
+            checker.checkServiceAvailability(serviceContainer.context, checkedClass.java, annotation)
+                ?.let { errorMessage ->
+                    val errorType = if (customCondition.conditionMetadata.fail) {
+                        ErrorType.FAILED_FATAL_CUSTOM_CONDITION
+                    } else {
+                        ErrorType.FAILED_CUSTOM_CONDITION
+                    }
+
+                    return errorType.toError(
+                        errorMessage,
+                        // instance::checkServiceAvailability does not bind to the actual instance
+                        failedFunction = checker::checkServiceAvailability.resolveReference(checker::class)
                     )
                 }
         }

@@ -8,6 +8,7 @@ import kotlin.concurrent.withLock
 import kotlin.jvm.internal.CallableReference
 import kotlin.reflect.*
 import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.javaMethod
 import kotlin.reflect.jvm.jvmErasure
@@ -47,6 +48,10 @@ internal object ReflectionUtils {
 
         return targetClass.declaredMemberFunctions.findFunction(this)
             ?: targetClass.constructors.findFunction(this)
+    }
+
+    internal fun KProperty<*>.resolveReference(targetClass: KClass<*>): KProperty<*>? {
+        return targetClass.declaredMemberProperties.find { it.name == this.name }
     }
 
     private fun Collection<KFunction<*>>.findFunction(callableReference: CallableReference): KFunction<*>? =
@@ -127,3 +132,13 @@ internal fun KParameter.findOptionName(): String =
 
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
+
+internal fun <T : Any> KClass<T>.createSingleton(): T {
+    val instance = this.objectInstance
+    if (instance != null)
+        return instance
+    val constructor = constructors.singleOrNull { it.parameters.all(KParameter::isOptional) }
+        ?: throwUser("Class ${this.simpleNestedName} must either be an object, or have a no-arg constructor (or have only default parameters)")
+
+    return constructor.callBy(mapOf())
+}

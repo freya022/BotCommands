@@ -32,8 +32,18 @@ and available to other classes.
 These services can all have a name, in case you want multiple services of the same type, but want to differentiate them.
 
 ### Conditional services
+#### Interfaced conditions
 `@ConditionalService` can be used when you want your service/command/resolver... to be created under certain conditions.<br>
 The annotation will only let the service be created if all the specified check interfaces passes.
+
+#### Annotation conditions
+`@Condition` is a meta-annotation that can be used on an annotation you create, 
+which enables this annotation to represent a custom condition for service creation.
+
+You can also specify if failure of these annotations throws an exception.
+
+An example can be found [here](src/test/kotlin/com/freya02/botcommands/test_kt/services/MyDevService.kt), 
+[here](src/test/kotlin/com/freya02/botcommands/test_kt/services/ProfileChecker.kt) and [here](src/test/kotlin/com/freya02/botcommands/test_kt/services/annotations/RequireProfile.kt)
 
 ### Interfaced services
 You can find the `@InterfacedService` annotations on some interfaces of the framework, such as `SettingsProvider` or `IHelpCommand`.<br>

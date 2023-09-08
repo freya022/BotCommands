@@ -79,6 +79,7 @@ internal object ReflectionMetadata {
         }
 
         val lowercaseInnerClassRegex = Regex("\\$[a-z]")
+        // TODO Refactor to avoid multiple ClassGraphProcessor#postProcess
         return scanned.flatMap { (scanResult, classes) ->
             classes
                 .filter {
@@ -90,7 +91,7 @@ internal object ReflectionMetadata {
                     }
 
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
-                    return@filter !it.isSynthetic && !it.isEnum && !it.isRecord && !it.isAnnotation
+                    return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
                 }
                 .processClasses(context)
                 .map { classInfo ->
@@ -129,7 +130,7 @@ internal object ReflectionMetadata {
 
     private fun List<ClassInfo>.processClasses(context: BContextImpl): List<ClassInfo> {
         val classGraphProcessors = context.config.classGraphProcessors +
-                listOf(context.serviceProviders, CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
+                listOf(context.serviceProviders, context.customConditionsContainer, CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
 
         return onEach { classInfo ->
             try {
