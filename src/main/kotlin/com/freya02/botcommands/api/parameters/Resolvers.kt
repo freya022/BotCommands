@@ -28,7 +28,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
 
     //region Regex
     //TODO test
-    override val pattern: Pattern = Pattern.compile("(?i)${values.joinToString("|") { Pattern.quote(nameFunction(it)) }}(?-i)")
+    override val pattern: Pattern = Pattern.compile("(?i)(${values.joinToString("|") { Pattern.quote(nameFunction(it)) }})(?-i)")
 
     override val testExample: String = values.first().name
 
