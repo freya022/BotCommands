@@ -124,9 +124,7 @@ internal object ReflectionMetadata {
         config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
 
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
-        config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> hasAnnotation(serviceAnnotation.jvmName) }
-                //Keep classes which have service factories
-                || config.serviceConfig.serviceAnnotations.any { serviceAnnotation -> methodAnnotations.any { it.name == serviceAnnotation.jvmName } }
+        isService(config) || methodInfo.any { it.isService(config) }
 
     private fun List<ClassInfo>.processClasses(context: BContextImpl): List<ClassInfo> {
         val classGraphProcessors = context.config.classGraphProcessors +

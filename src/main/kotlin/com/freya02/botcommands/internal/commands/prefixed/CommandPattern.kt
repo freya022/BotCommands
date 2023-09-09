@@ -45,6 +45,7 @@ internal object CommandPattern {
 
         init {
             requireUser(pattern.matcher("").groupCount() > 0) {
+                // Signature is not available here as resolver might be framework-provided (and so metadata not read)
                 "Regex patterns of ${resolver.javaClass.simpleNestedName} must have at least 1 capturing group"
             }
         }

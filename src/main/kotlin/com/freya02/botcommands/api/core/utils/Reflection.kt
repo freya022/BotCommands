@@ -64,8 +64,11 @@ val KType.simpleNestedName: String
         if (isMarkedNullable) append("?")
     }
 
+val Class<*>.shortQualifiedName
+    get() = packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
+
 val KClass<*>.shortQualifiedName
-    get() = java.packageName.split('.').joinToString(".") { it.first().toString() } + "." + simpleNestedName
+    get() = this.java.shortQualifiedName
 
 val KClass<*>.simpleNestedName: String
     inline get() = this.java.simpleNestedName

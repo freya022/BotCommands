@@ -1,6 +1,7 @@
 package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.core.utils.*
+import com.freya02.botcommands.internal.utils.ReflectionMetadata.sourceFile
 import net.dv8tion.jda.api.events.Event
 import java.lang.reflect.Method
 import java.util.concurrent.locks.ReentrantLock
@@ -132,6 +133,12 @@ internal fun KParameter.findOptionName(): String =
 
 internal val KFunction<*>.javaMethodInternal: Method
     get() = javaMethod ?: throwInternal(this, "Could not resolve Java method")
+
+internal val Class<*>.shortSignature: String
+    get() = "$shortQualifiedName($sourceFile:0)"
+
+internal val KClass<*>.shortSignature: String
+    get() = this.java.shortSignature
 
 internal fun <T : Any> KClass<T>.createSingleton(): T {
     val instance = this.objectInstance
