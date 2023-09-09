@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.core.service.annotations.Resolver
+import com.freya02.botcommands.api.parameters.Resolvers.toHumanName
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.components.ComponentDescriptor
@@ -17,13 +18,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 
 internal class EnumResolver<E : Enum<E>> internal constructor(
-    e: KClass<E>,
+    e: Class<E>,
     private val values: Array<out E>,
-    private val nameFunction: (e: E) -> String
+    private val nameFunction: EnumNameFunction<E>
 ) :
     ParameterResolver<EnumResolver<E>, E>(e),
     RegexParameterResolver<EnumResolver<E>, E>,
@@ -31,12 +31,12 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     ComponentParameterResolver<EnumResolver<E>, E> {
 
     //region Regex
-    override val pattern: Pattern = Pattern.compile("(?i)(${values.joinToString("|") { Pattern.quote(nameFunction(it)) }})(?-i)")
+    override val pattern: Pattern = Pattern.compile("(?i)(${values.joinToString("|") { Pattern.quote(nameFunction.apply(it)) }})(?-i)")
 
     override val testExample: String = values.first().name
 
     override fun getHelpExample(parameter: KParameter, event: BaseCommandEvent, isID: Boolean): String {
-        return nameFunction(values.first())
+        return nameFunction.apply(values.first())
     }
 
     override suspend fun resolveSuspend(
@@ -51,7 +51,7 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     override val optionType: OptionType = OptionType.STRING
 
     override fun getPredefinedChoices(guild: Guild?): Collection<Choice> {
-        return values.map { Choice(nameFunction(it), it.name) }
+        return values.map { Choice(nameFunction.apply(it), it.name) }
     }
 
     override suspend fun resolveSuspend(
@@ -70,6 +70,52 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
         arg: String
     ): E = values.first { it.name == arg }
     //endregion
+}
+
+fun interface EnumNameFunction<E : Enum<E>> {
+    fun apply(value: E): String
+}
+
+object Resolvers {
+    /**
+     * Creates an enum resolver for [text][RegexParameterResolver]/[slash][SlashParameterResolver] commands,
+     * as well as [component data][ComponentParameterResolver].
+     *
+     * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
+     * or by using a service factory with [Resolver] as such:
+     *
+     * ```java
+     * public class EnumResolvers {
+     *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers#toHumanName'
+     *     @Resolver
+     *     public ParameterResolver<?, ?> timeUnitResolver() {
+     *         return Resolvers.enumResolver(TimeUnit.class, TimeUnit.values());
+     *     }
+     *
+     *     ...other resolvers...
+     * }
+     * ```
+     *
+     * **Note:** you have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+     *
+     * @param values       the accepted enumeration values
+     * @param nameFunction the function transforming the enum value into the display name
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun <E : Enum<E>> enumResolver(
+        e: Class<E>,
+        values: Array<out E>,
+        nameFunction: EnumNameFunction<E> = EnumNameFunction { it.toHumanName() }
+    ): ParameterResolver<*, *> {
+        return EnumResolver(e, values, nameFunction)
+    }
+
+    @JvmStatic
+    @JvmOverloads
+    fun <E : Enum<E>> toHumanName(value: E, locale: Locale = Locale.ROOT): String {
+        return value.name.lowercase(locale).replaceFirstChar { it.uppercaseChar() }
+    }
 }
 
 /**
@@ -97,14 +143,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
 inline fun <reified E : Enum<E>> enumResolver(
     vararg values: E = enumValues(),
     noinline nameFunction: (e: E) -> String = { it.toHumanName() }
-): ParameterResolver<*, *> {
-    return enumResolver(E::class, values, nameFunction)
-}
+): ParameterResolver<*, *> = Resolvers.enumResolver(E::class.java, values, nameFunction)
 
-@PublishedApi
-internal fun <E : Enum<E>> enumResolver(e: KClass<E>, values: Array<out E>, nameFunction: (e: E) -> String): EnumResolver<E> {
-    return EnumResolver(e, values, nameFunction)
-}
-
-fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String =
-    this.name.lowercase(locale).replaceFirstChar { it.uppercaseChar() }
+fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String = toHumanName(this, locale)
