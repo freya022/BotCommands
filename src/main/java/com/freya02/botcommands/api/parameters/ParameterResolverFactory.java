@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.parameters;
 
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
 import org.jetbrains.annotations.NotNull;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @see ParameterResolver
  */
+@InterfacedService(acceptMultiple = true)
 public abstract class ParameterResolverFactory<T extends ParameterResolver<?, R>, R> {
 	private final KClass<T> resolverType;
 	private final KClass<R> jvmErasure;

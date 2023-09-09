@@ -13,9 +13,9 @@ import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
+import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
-import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.throwInternal

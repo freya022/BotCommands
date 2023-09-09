@@ -16,6 +16,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommand
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
+import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.castFunction
 import com.freya02.botcommands.internal.commands.autobuilder.fillCommandBuilder
@@ -25,7 +26,6 @@ import com.freya02.botcommands.internal.commands.prefixed.TextCommandComparator
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.components
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.metadata.TextFunctionMetadata
 import com.freya02.botcommands.internal.core.requiredFilter
-import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.*
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonInstanceParameters
 import mu.KotlinLogging

@@ -1,8 +1,10 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.RegexParameterResolver
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.hasMultipleQuotable
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.requireUser
 import java.util.regex.Pattern
 
 internal object CommandPattern {
@@ -39,6 +41,13 @@ internal object CommandPattern {
         private val pattern: Pattern = when {
             hasMultipleQuotable -> resolver.preferredPattern //Might be a quotable pattern
             else -> resolver.pattern
+        }
+
+        init {
+            requireUser(pattern.matcher("").groupCount() > 0) {
+                // Signature is not available here as resolver might be framework-provided (and so metadata not read)
+                "Regex patterns of ${resolver.javaClass.simpleNestedName} must have at least 1 capturing group"
+            }
         }
 
         fun toString(position: SpacePosition?): String {

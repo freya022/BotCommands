@@ -9,11 +9,11 @@ import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
+import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.core.options.Option
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isSpecialAggregator
 import com.freya02.botcommands.internal.core.options.builder.InternalAggregators.isVarargAggregator
 import com.freya02.botcommands.internal.parameters.CustomMethodOption
-import com.freya02.botcommands.internal.parameters.ResolverContainer
 import com.freya02.botcommands.internal.utils.ReflectionUtils.nonEventParameters
 import com.freya02.botcommands.internal.utils.requireUser
 import com.freya02.botcommands.internal.utils.throwInternal

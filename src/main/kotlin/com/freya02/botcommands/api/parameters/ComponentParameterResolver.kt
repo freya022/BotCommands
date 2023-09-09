@@ -5,7 +5,7 @@ import com.freya02.botcommands.internal.components.ComponentDescriptor
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
 /**
- * Interface which indicates this class can resolve parameters for buttons commands
+ * Interface which indicates this class can resolve parameters for component interactions.
  */
 interface ComponentParameterResolver<T, R> where T : ParameterResolver<T, R>,
                                                  T : ComponentParameterResolver<T, R> {

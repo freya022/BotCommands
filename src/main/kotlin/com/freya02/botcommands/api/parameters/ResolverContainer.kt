@@ -1,14 +1,12 @@
-package com.freya02.botcommands.internal.parameters
+package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.Resolver
-import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
-import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.utils.runInitialization
@@ -23,7 +21,7 @@ import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
 @BService
-internal class ResolverContainer(
+class ResolverContainer internal constructor(
     context: BContextImpl,
     private val serviceContainer: ServiceContainer
 ) {
@@ -32,13 +30,8 @@ internal class ResolverContainer(
     private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotationAndType<Resolver, ParameterResolver<*, *>>()
-            .forEach { clazz -> addResolver(serviceContainer.getService(clazz)) }
-
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotationAndType<ResolverFactory, ParameterResolverFactory<*, *>>()
-            .forEach { clazz -> addResolverFactory(serviceContainer.getService(clazz)) }
+        context.getInterfacedServices<ParameterResolver<*, *>>().forEach { addResolver(it) }
+        context.getInterfacedServices<ParameterResolverFactory<*, *>>().forEach { addResolverFactory(it) }
     }
 
     fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {
@@ -55,8 +48,9 @@ internal class ResolverContainer(
         factories[resolver.jvmErasure] = resolver
     }
 
+    @JvmSynthetic
     @BEventListener
-    fun onLoad(event: LoadEvent) = runInitialization {
+    internal fun onLoad(event: LoadEvent) = runInitialization {
         if (factories.isEmpty()) {
             throwInternal("No resolvers/factories were found") //Never happens
         } else {
@@ -84,7 +78,8 @@ internal class ResolverContainer(
     @JvmSynthetic
     internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
-    fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
+    @JvmSynthetic
+    internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
         val requestedType = parameter.erasure
 
         return factories.computeIfAbsent(requestedType) { type ->
@@ -106,7 +101,7 @@ internal class ResolverContainer(
         override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 
-    companion object {
+    internal companion object {
         private val compatibleInterfaces = listOf(
             RegexParameterResolver::class,
             SlashParameterResolver::class,
