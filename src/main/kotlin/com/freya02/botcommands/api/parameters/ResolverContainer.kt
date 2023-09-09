@@ -1,4 +1,4 @@
-package com.freya02.botcommands.internal.parameters
+package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -7,7 +7,6 @@ import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
-import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.utils.runInitialization
@@ -21,9 +20,8 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
-//TODO expose only addResolver/addResolverFactory
 @BService
-internal class ResolverContainer(
+class ResolverContainer internal constructor(
     context: BContextImpl,
     private val serviceContainer: ServiceContainer
 ) {
@@ -50,8 +48,9 @@ internal class ResolverContainer(
         factories[resolver.jvmErasure] = resolver
     }
 
+    @JvmSynthetic
     @BEventListener
-    fun onLoad(event: LoadEvent) = runInitialization {
+    internal fun onLoad(event: LoadEvent) = runInitialization {
         if (factories.isEmpty()) {
             throwInternal("No resolvers/factories were found") //Never happens
         } else {
@@ -79,7 +78,8 @@ internal class ResolverContainer(
     @JvmSynthetic
     internal fun getResolverOrNull(parameter: KParameter) = factories[parameter.type.jvmErasure]
 
-    fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
+    @JvmSynthetic
+    internal fun getResolver(parameter: ParameterWrapper): ParameterResolver<*, *> {
         val requestedType = parameter.erasure
 
         return factories.computeIfAbsent(requestedType) { type ->
@@ -101,7 +101,7 @@ internal class ResolverContainer(
         override suspend fun resolveSuspend(context: BContext, executableInteractionInfo: IExecutableInteractionInfo, event: Event) = o
     }
 
-    companion object {
+    internal companion object {
         private val compatibleInterfaces = listOf(
             RegexParameterResolver::class,
             SlashParameterResolver::class,
