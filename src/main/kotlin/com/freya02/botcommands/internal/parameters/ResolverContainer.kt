@@ -21,6 +21,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 
+//TODO expose only addResolver/addResolverFactory
 @BService
 internal class ResolverContainer(
     context: BContextImpl,

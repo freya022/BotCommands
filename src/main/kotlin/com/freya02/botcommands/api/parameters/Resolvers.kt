@@ -1,10 +1,13 @@
 package com.freya02.botcommands.api.parameters
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
+import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.components.ComponentDescriptor
+import com.freya02.botcommands.internal.parameters.ResolverContainer
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -12,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.Command.Choice
 import net.dv8tion.jda.api.interactions.commands.CommandInteractionPayload
 import net.dv8tion.jda.api.interactions.commands.OptionMapping
 import net.dv8tion.jda.api.interactions.commands.OptionType
+import java.util.*
 import java.util.regex.Pattern
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
@@ -68,9 +72,32 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     //endregion
 }
 
-//TODO docs
-// do not forget predefined choices
-inline fun <reified E : Enum<E>> enumResolver(vararg values: E = enumValues(), noinline nameFunction: (e: E) -> String): ParameterResolver<*, *> {
+/**
+ * Creates an enum resolver for [text][RegexParameterResolver]/[slash][SlashParameterResolver] commands,
+ * as well as [component data][ComponentParameterResolver].
+ *
+ * The created resolver needs to be registered either by calling [ResolverContainer.addResolver],
+ * or by using a service factory with [Resolver] as such:
+ *
+ * ```kt
+ * object EnumResolvers {
+ *     // Resolver for DAYS/HOURS/MINUTES, where the displayed name is given by 'Resolvers.Enum#toHumanName'
+ *     @Resolver
+ *     fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES)
+ *
+ *     ...other resolvers...
+ * }
+ * ```
+ *
+ * **Note:** you have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+ *
+ * @param values       the accepted enumeration values
+ * @param nameFunction the function transforming the enum value into the display name
+ */
+inline fun <reified E : Enum<E>> enumResolver(
+    vararg values: E = enumValues(),
+    noinline nameFunction: (e: E) -> String = { it.toHumanName() }
+): ParameterResolver<*, *> {
     return enumResolver(E::class, values, nameFunction)
 }
 
@@ -78,3 +105,6 @@ inline fun <reified E : Enum<E>> enumResolver(vararg values: E = enumValues(), n
 internal fun <E : Enum<E>> enumResolver(e: KClass<E>, values: Array<out E>, nameFunction: (e: E) -> String): EnumResolver<E> {
     return EnumResolver(e, values, nameFunction)
 }
+
+fun <E : Enum<E>> E.toHumanName(locale: Locale = Locale.ROOT): String =
+    this.name.lowercase(locale).replaceFirstChar { it.uppercaseChar() }
