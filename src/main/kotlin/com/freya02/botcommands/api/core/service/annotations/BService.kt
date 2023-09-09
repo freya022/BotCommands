@@ -13,6 +13,8 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  *
  * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
  *
+ * **Warning:** Top-level functions are not processed, you must have them in an object/class.
+ *
  * @see InjectedService @InjectedService
  * @see ConditionalService @ConditionalService
  * @see InterfacedService @InterfacedService
