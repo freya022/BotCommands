@@ -34,6 +34,9 @@ class ResolverSupertypeChecker : ClassGraphProcessor {
         }
     }
 
+    //TODO those checks should probably be enforced on the services factories too
+    // process methods too
+
     override fun postProcess(context: BContext) {
         if (errorMessages.isNotEmpty()) {
             throw IllegalStateException(errorMessages.joinToString(prefix = "\n - ", separator = "\n - "))

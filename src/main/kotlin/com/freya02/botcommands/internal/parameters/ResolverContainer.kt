@@ -5,8 +5,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.Resolver
-import com.freya02.botcommands.api.core.service.annotations.ResolverFactory
+import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.isSubclassOfAny
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.BContextImpl
@@ -32,13 +31,8 @@ internal class ResolverContainer(
     private val factories: MutableMap<KClass<*>, ParameterResolverFactory<*, *>> = Collections.synchronizedMap(hashMapOf())
 
     init {
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotationAndType<Resolver, ParameterResolver<*, *>>()
-            .forEach { clazz -> addResolver(serviceContainer.getService(clazz)) }
-
-        context.instantiableServiceAnnotationsMap
-            .getInstantiableClassesWithAnnotationAndType<ResolverFactory, ParameterResolverFactory<*, *>>()
-            .forEach { clazz -> addResolverFactory(serviceContainer.getService(clazz)) }
+        context.getInterfacedServices<ParameterResolver<*, *>>().forEach { addResolver(it) }
+        context.getInterfacedServices<ParameterResolverFactory<*, *>>().forEach { addResolverFactory(it) }
     }
 
     fun <R : Any> addResolver(resolver: ParameterResolver<*, R>) {

@@ -1,6 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
+import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
 import net.dv8tion.jda.api.entities.Member;
@@ -43,6 +44,7 @@ import org.slf4j.Logger;
  * @see ICustomResolver
  */
 @SuppressWarnings("unused") //T is used for the inheritance constraint
+@InterfacedService(acceptMultiple = true)
 public abstract class ParameterResolver<T extends ParameterResolver<T, R>, R> {
 	protected final Logger LOGGER = Logging.getLogger(this);
 
