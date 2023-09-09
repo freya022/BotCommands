@@ -88,7 +88,7 @@ internal object ReflectionMetadata {
                         //Only keep classes, not others such as file facades
                         val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
                         if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
-                            checkFacadeFactories(it, config)
+                            it.checkFacadeFactories(config)
                             return@filter false
                         } else if (kind != KotlinClassHeader.Kind.CLASS) {
                             return@filter false
@@ -122,8 +122,8 @@ internal object ReflectionMetadata {
         }
     }
 
-    private fun checkFacadeFactories(it: ClassInfo, config: BConfig) {
-        it.declaredMethodInfo.forEach { methodInfo ->
+    private fun ClassInfo.checkFacadeFactories(config: BConfig) {
+        this.declaredMethodInfo.forEach { methodInfo ->
             check(!methodInfo.isService(config)) {
                 "Top-level service factories are not supported: ${methodInfo.shortSignature}"
             }
