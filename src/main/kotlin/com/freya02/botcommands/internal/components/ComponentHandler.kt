@@ -8,9 +8,9 @@ sealed interface ComponentHandler {
     val lifetimeType: LifetimeType
 }
 
-class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : ComponentHandler {
+class PersistentHandler(val handlerName: String, userData: List<Any?>) : ComponentHandler {
     override val lifetimeType: LifetimeType = LifetimeType.PERSISTENT
-    val userData: Array<out String> = processArgs(userData)
+    val userData: List<String> = processArgs(userData)
 
     operator fun component1() = handlerName
     operator fun component2() = userData
@@ -19,12 +19,12 @@ class PersistentHandler(val handlerName: String, userData: Array<out Any?>) : Co
         return "PersistentHandler(handlerName='$handlerName')"
     }
 
-    private fun processArgs(args: Array<out Any?>): Array<String> = args.map { arg ->
+    private fun processArgs(args: List<Any?>): List<String> = args.map { arg ->
         when (arg) {
             is ISnowflake -> arg.id
             else -> arg.toString()
         }
-    }.toTypedArray()
+    }
 }
 
 class EphemeralHandler<T : GenericComponentInteractionCreateEvent>(val handler: suspend (T) -> Unit) : ComponentHandler {

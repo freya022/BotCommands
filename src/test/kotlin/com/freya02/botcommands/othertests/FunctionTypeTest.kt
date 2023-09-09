@@ -17,7 +17,7 @@ object FunctionTypeTest {
         override val handler: ComponentHandler?
             get() = null
 
-        override fun bindTo(handlerName: String, vararg data: Any?) {
+        override fun bindTo(handlerName: String, data: List<Any?>) {
             println("ok")
         }
     }

@@ -70,7 +70,7 @@ internal class ComponentRepository(
                 }
             } else if (handler is PersistentHandler) {
                 preparedStatement("insert into bc_persistent_handler (component_id, handler_name, user_data) VALUES (?, ?, ?)") {
-                    executeUpdate(componentId, handler.handlerName, handler.userData)
+                    executeUpdate(componentId, handler.handlerName, handler.userData.toTypedArray())
                 }
             }
 
