@@ -3,6 +3,7 @@ package com.freya02.botcommands.internal.utils
 import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.utils.javaMethodOrConstructor
+import com.freya02.botcommands.api.core.utils.shortSignature
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.CommandsPresenceChecker
 import com.freya02.botcommands.internal.core.HandlersPresenceChecker
@@ -85,7 +86,11 @@ internal object ReflectionMetadata {
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
                         //Only keep classes, not others such as file facades
-                        if (KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int) != KotlinClassHeader.Kind.CLASS) {
+                        val kind = KotlinClassHeader.Kind.getById(annotationInfo.parameterValues["k"].value as Int)
+                        if (kind == KotlinClassHeader.Kind.FILE_FACADE) {
+                            checkFacadeFactories(it, config)
+                            return@filter false
+                        } else if (kind != KotlinClassHeader.Kind.CLASS) {
                             return@filter false
                         }
                     }
@@ -114,6 +119,14 @@ internal object ReflectionMetadata {
                 .also {
                     scanResult.close()
                 }
+        }
+    }
+
+    private fun checkFacadeFactories(it: ClassInfo, config: BConfig) {
+        it.declaredMethodInfo.forEach { methodInfo ->
+            check(!methodInfo.isService(config)) {
+                "Top-level service factories are not supported: ${methodInfo.shortSignature}"
+            }
         }
     }
 
