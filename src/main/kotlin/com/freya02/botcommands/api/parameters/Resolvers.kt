@@ -27,7 +27,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     ComponentParameterResolver<EnumResolver<E>, E> {
 
     //region Regex
-    //TODO test
     override val pattern: Pattern = Pattern.compile("(?i)(${values.joinToString("|") { Pattern.quote(nameFunction(it)) }})(?-i)")
 
     override val testExample: String = values.first().name
@@ -60,7 +59,6 @@ internal class EnumResolver<E : Enum<E>> internal constructor(
     //endregion
 
     //region Component
-    //TODO test
     override suspend fun resolveSuspend(
         context: BContext,
         descriptor: ComponentDescriptor,

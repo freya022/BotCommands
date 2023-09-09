@@ -5,24 +5,34 @@ import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.annotations.SlashOption
-import com.freya02.botcommands.api.core.service.annotations.Resolver
-import com.freya02.botcommands.api.parameters.enumResolver
+import com.freya02.botcommands.api.components.Components
+import com.freya02.botcommands.api.components.annotations.JDAButtonListener
+import com.freya02.botcommands.api.components.event.ButtonEvent
+import dev.minn.jda.ktx.messages.into
 import dev.minn.jda.ktx.messages.reply_
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
+private const val TIME_UNIT_BUTTON_NAME = "SlashTimeUnit: timeUnit"
+
 @Command
-class SlashTimeUnit : ApplicationCommand() {
+class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
     fun onSlashTimeUnit(
         event: GuildSlashEvent,
         @SlashOption(usePredefinedChoices = true) timeUnit: TimeUnit,
         @SlashOption(usePredefinedChoices = true) chronoUnit: ChronoUnit
-    ) = event.reply_("${timeUnit.name} / ${chronoUnit.name}", ephemeral = true).queue()
+    ) {
+        val button = componentsService.persistentButton(ButtonStyle.PRIMARY, "TimeUnit: ${timeUnit.name}") {
+            oneUse = true
+            bindTo(TIME_UNIT_BUTTON_NAME, timeUnit)
+        }
+        event.reply_("${timeUnit.name} / ${chronoUnit.name}", components = button.into(), ephemeral = true).queue()
+    }
 
-    @Resolver
-    fun timeUnitResolver() = enumResolver<TimeUnit>(TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES) { it.name.lowercase() }
-
-    @Resolver
-    fun chronoUnitResolver() = enumResolver<ChronoUnit>(ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES) { it.name.lowercase() }
+    @JDAButtonListener(TIME_UNIT_BUTTON_NAME)
+    fun onTimeUnitClicked(event: ButtonEvent, unit: TimeUnit) {
+        event.reply_("Time unit is ${unit.name}!", ephemeral = true).queue()
+    }
 }
