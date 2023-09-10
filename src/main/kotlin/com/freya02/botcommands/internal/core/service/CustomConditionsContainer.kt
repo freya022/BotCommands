@@ -47,11 +47,15 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     }
 
     override fun postProcess(context: BContext) {
-        logger.debug { "Loaded ${customConditionCheckers.size} custom conditions" }
         if (customConditionCheckers.isNotEmpty()) {
             logger.trace {
-                customConditionCheckers.joinToString(prefix = " - ", separator = "\n - ") { it.javaClass.simpleNestedName }
+                val checkersList = customConditionCheckers.joinToString(prefix = " - ", separator = "\n - ") {
+                    "${it.checker.javaClass.simpleNestedName} (${it.checker.annotationType.simpleNestedName})"
+                }
+                "Loaded ${customConditionCheckers.size} custom conditions:\n$checkersList"
             }
+        } else {
+            logger.debug { "Loaded ${customConditionCheckers.size} custom conditions" }
         }
     }
 }
