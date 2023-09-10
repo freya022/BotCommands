@@ -15,8 +15,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
-private const val TIME_UNIT_BUTTON_NAME = "SlashTimeUnit: timeUnit"
-
 @Command
 class SlashTimeUnit(private val componentsService: Components) : ApplicationCommand() {
     @JDASlashCommand(name = "time_unit")
@@ -32,7 +30,7 @@ class SlashTimeUnit(private val componentsService: Components) : ApplicationComm
         event.reply_("${timeUnit.name} / ${chronoUnit.name}", components = button.into(), ephemeral = true).queue()
     }
 
-    @JDAButtonListener(TIME_UNIT_BUTTON_NAME)
+    @JDAButtonListener("SlashTimeUnit: timeUnit")
     fun onTimeUnitClicked(event: ButtonEvent, unit: TimeUnit) {
         event.reply_("Time unit is ${unit.name}!", ephemeral = true).queue()
     }
