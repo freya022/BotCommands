@@ -93,7 +93,15 @@ inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActio
     bindToCallable(func as KFunction<*>, E::class, emptyList())
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: (event: E) -> Unit) {
+    bindToCallable(func as KFunction<*>, E::class, emptyList())
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1) -> Unit, arg1: T1) {
+    bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1))
+}
+
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1) -> Unit, arg1: T1) {
     bindToCallable(func as KFunction<*>, E::class, listOf<Any?>(arg1))
 }
 
@@ -101,7 +109,15 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersist
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2))
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2) -> Unit, arg1: T1, arg2: T2) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2))
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3))
+}
+
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3) -> Unit, arg1: T1, arg2: T2, arg3: T3) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3))
 }
 
@@ -109,7 +125,15 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> 
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4))
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4))
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5))
+}
+
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5))
 }
 
@@ -117,7 +141,15 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6))
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
+}
+
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7))
 }
 
@@ -125,11 +157,23 @@ inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, 
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8))
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
 }
 
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9))
+}
+
 inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10) {
+    bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
+}
+
+inline fun <reified E : GenericComponentInteractionCreateEvent, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> IPersistentActionableComponent.bindTo(noinline func: (event: E, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10) -> Unit, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5, arg6: T6, arg7: T7, arg8: T8, arg9: T9, arg10: T10) {
     bindToCallable(func as KFunction<*>, E::class, listOf(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10))
 }
 
