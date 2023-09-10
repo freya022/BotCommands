@@ -7,7 +7,7 @@ internal class PersistentActionableComponentImpl : IPersistentActionableComponen
     override var handler: PersistentHandler? = null
         private set
 
-    override fun bindTo(handlerName: String, vararg data: Any?) {
+    override fun bindTo(handlerName: String, data: List<Any?>) {
         this.handler = PersistentHandler(handlerName, data)
     }
 }

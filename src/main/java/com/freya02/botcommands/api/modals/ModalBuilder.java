@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -25,7 +27,22 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	 * @return This builder for chaining convenience
 	 */
 	@NotNull
-	public abstract ModalBuilder bindTo(@NotNull String handlerName, @Nullable Object @NotNull ... userData);
+	public abstract ModalBuilder bindTo(@NotNull String handlerName, @NotNull List<@Nullable Object> userData);
+
+	/**
+	 * Binds the following handler (defined by {@link ModalHandler}) with its arguments
+	 *
+	 * <br>This step is optional if you do not wish to use methods for that
+	 *
+	 * @param handlerName The name of the modal handler, must be the same as your {@link ModalHandler}
+	 * @param userData    The optional user data to be passed to the modal handler via {@link ModalData}
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	@NotNull
+	public final ModalBuilder bindTo(@NotNull String handlerName, @Nullable Object @NotNull ... userData) {
+		return bindTo(handlerName, Arrays.asList(userData));
+	}
 
 	/**
 	 * Binds the following handler to this modal
