@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfigBuilder
+import com.freya02.botcommands.api.core.events.BReadyEvent
 import com.freya02.botcommands.api.core.events.LoadEvent
 import com.freya02.botcommands.api.core.events.PostLoadEvent
 import com.freya02.botcommands.api.core.events.PreLoadEvent
@@ -124,6 +125,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
 
             context.status = BContext.Status.READY
             context.serviceContainer.loadServices(ServiceStart.READY)
+            context.eventDispatcher.dispatchEvent(BReadyEvent())
         }
     }
 }

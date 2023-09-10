@@ -4,12 +4,11 @@ import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.ClassPathFunction
-import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.memberFunctions
 import kotlin.time.DurationUnit
 import kotlin.time.measureTime
 
@@ -27,9 +26,9 @@ internal class FunctionAnnotationsMap(context: BContextImpl, instantiableService
             instantiableServiceAnnotationsMap
                 .getAllInstantiableClasses()
                 .forEach { kClass ->
-                    kClass.declaredMemberFunctions.forEach { function ->
+                    kClass.memberFunctions.forEach { function ->
                         function.annotations.forEach { annotation ->
-                            put(context, function, annotation.annotationClass)
+                            put(context, kClass, function, annotation.annotationClass)
                         }
                     }
                 }
@@ -38,13 +37,13 @@ internal class FunctionAnnotationsMap(context: BContextImpl, instantiableService
         logger.trace { "Functions annotations reflection took ${duration.toDouble(DurationUnit.MILLISECONDS)} ms" }
     }
 
-    private fun <A : Annotation> put(context: BContextImpl, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
+    private fun <A : Annotation> put(context: BContextImpl, kClass: KClass<*>, annotationReceiver: KFunction<*>, annotationType: KClass<A>) {
         val instanceAnnotationMap = map.computeIfAbsent(annotationType) { hashMapOf() }
         if (annotationReceiver in instanceAnnotationMap) {
             logger.warn("An annotation instance of type '${annotationType.simpleNestedName}' already exists on function '${annotationReceiver.shortSignature}'")
             return
         }
-        instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, annotationReceiver.declaringClass, annotationReceiver)
+        instanceAnnotationMap[annotationReceiver] = ClassPathFunction(context, kClass, annotationReceiver)
     }
 
     internal fun <A : Annotation> get(annotationClass: KClass<A>): Map<KFunction<*>, ClassPathFunction>? = map[annotationClass]
