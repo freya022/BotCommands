@@ -24,7 +24,7 @@ private val handlerAnnotations = listOf(
     ModalHandler::class.jvmName
 )
 
-class HandlersPresenceChecker : ClassGraphProcessor {
+internal class HandlersPresenceChecker : ClassGraphProcessor {
     private val noDeclarationClasses: MutableList<String> = arrayListOf()
     private val noAnnotationMethods: MutableList<MethodInfo> = arrayListOf()
 
