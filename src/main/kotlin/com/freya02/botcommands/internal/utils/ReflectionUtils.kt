@@ -94,7 +94,7 @@ internal object ReflectionUtils {
         get() {
             val callableReference = (this as? CallableReference)
                 ?: throwInternal("Referenced field doesn't seem to be compiler generated, exact type: ${this::class}")
-            return (callableReference.owner as KClass<*>).simpleName + "." + this.name
+            return (callableReference.owner as KClass<*>).simpleNestedName + "." + this.name
         }
 
     private val trustedCollections = listOf(Collection::class, List::class, Set::class)

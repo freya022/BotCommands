@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.BEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.service.getServiceOrNull
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.core.*
@@ -18,6 +19,7 @@ import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.requests.GatewayIntent
 import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
@@ -26,6 +28,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.callSuspend
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.jvm.jvmErasure
 import kotlin.time.Duration
 import kotlin.time.toDuration
@@ -70,6 +73,7 @@ class EventDispatcher internal constructor(
 ) {
     private val logger = KotlinLogging.logger { }
     private val eventManager: CoroutineEventManager = context.eventManager
+    private val jdaService: JDAService? = context.getServiceOrNull()
 
     private val map: EventMap = ConcurrentHashMap()
     private val listeners: MutableMap<Class<*>, EventMap> = ConcurrentHashMap()
@@ -111,13 +115,13 @@ class EventDispatcher internal constructor(
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
-        handlers.forEach { preboundFunction ->
-            if (preboundFunction.isAsync) {
+        handlers.forEach { eventHandler ->
+            if (eventHandler.isAsync) {
                 context.coroutineScopesConfig.eventDispatcherScope.launch {
-                    runEventHandler(preboundFunction, event)
+                    runEventHandler(eventHandler, event)
                 }
             } else {
-                runEventHandler(preboundFunction, event)
+                runEventHandler(eventHandler, event)
             }
         }
     }
@@ -131,8 +135,8 @@ class EventDispatcher internal constructor(
         val handlers = map[event::class] ?: return emptyList()
 
         val scope = context.coroutineScopesConfig.eventDispatcherScope
-        return handlers.map { preboundFunction ->
-            scope.async { runEventHandler(preboundFunction, event) }
+        return handlers.map { eventHandler ->
+            scope.async { runEventHandler(eventHandler, event) }
         }
     }
 
@@ -176,6 +180,15 @@ class EventDispatcher internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure = parameters.first().type.jvmErasure
+            if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf(Event::class)) {
+                @Suppress("UNCHECKED_CAST")
+                val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
+                val missingIntents = requiredIntents - jdaService.intents - context.config.ignoredIntents
+                if (missingIntents.isNotEmpty()) {
+                    return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
+                }
+            }
+
             val eventParametersErasures = parameters.drop(1).map { it.type.jvmErasure }
                 // The main risk was with injected services, as they may not be available at that point,
                 // but they are pretty much limited to objects manually added by the framework, before the service loading occurs
