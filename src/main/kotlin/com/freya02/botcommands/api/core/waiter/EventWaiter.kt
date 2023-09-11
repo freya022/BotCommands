@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.waiter
 
+import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import net.dv8tion.jda.api.events.Event
 
@@ -35,6 +36,8 @@ import net.dv8tion.jda.api.events.Event
  *     LOGGER.error("Error waiting for event", e);
  * }
  * ```
+ *
+ * @see BConfigBuilder.ignoredEventIntents
  */
 @InjectedService
 interface EventWaiter {

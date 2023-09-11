@@ -12,7 +12,9 @@ import com.freya02.botcommands.api.core.service.putServiceAs
 import com.freya02.botcommands.api.core.utils.enumSetOf
 import com.freya02.botcommands.api.core.utils.toImmutableList
 import com.freya02.botcommands.api.core.utils.toImmutableSet
+import com.freya02.botcommands.api.core.waiter.EventWaiter
 import com.freya02.botcommands.internal.core.config.ConfigDSL
+import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 
 @InjectedService
@@ -59,6 +61,13 @@ interface BConfig {
      */
     val ignoredIntents: Set<GatewayIntent>
 
+    /**
+     * Events for which the [event waiter][EventWaiter] must ignore intent requirements.
+     *
+     * Either way, the event would still be being listened to, but a warning would have been logged.
+     */
+    val ignoredEventIntents: Set<Class<out Event>>
+
     val classGraphProcessors: List<ClassGraphProcessor>
 
     val debugConfig: BDebugConfig
@@ -85,6 +94,8 @@ class BConfigBuilder internal constructor() : BConfig {
     override var logQueryParameters: Boolean = true
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
+
+    override val ignoredEventIntents: MutableSet<Class<out Event>> = hashSetOf()
 
     override val classGraphProcessors: MutableList<ClassGraphProcessor> = arrayListOf()
 
@@ -177,7 +188,8 @@ class BConfigBuilder internal constructor() : BConfig {
         override val disableAutocompleteCache = this@BConfigBuilder.disableAutocompleteCache
         override val logQueries = this@BConfigBuilder.logQueries
         override val logQueryParameters = this@BConfigBuilder.logQueryParameters
-        override val ignoredIntents = this@BConfigBuilder.ignoredIntents
+        override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()
+        override val ignoredEventIntents = this@BConfigBuilder.ignoredEventIntents.toImmutableSet()
         override val classGraphProcessors = this@BConfigBuilder.classGraphProcessors.toImmutableList()
         override val debugConfig = this@BConfigBuilder.debugConfig.build()
         override val serviceConfig = this@BConfigBuilder.serviceConfig.build()

@@ -1,21 +1,26 @@
 package com.freya02.botcommands.internal.core.waiter
 
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
+import com.freya02.botcommands.api.core.utils.getSignature
 import com.freya02.botcommands.api.core.utils.logger
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.core.waiter.EventWaiter
 import com.freya02.botcommands.api.core.waiter.EventWaiterBuilder
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
-import com.freya02.botcommands.internal.utils.EventUtils
+import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import com.freya02.botcommands.internal.utils.throwInternal
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
+import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.events.Event
+import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.internal.JDAImpl
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeoutException
@@ -36,12 +41,14 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
     private lateinit var jda: JDA
     private lateinit var intents: EnumSet<GatewayIntent>
 
+    private val jdaIntents: Set<GatewayIntent> by lazy { jda.gatewayIntents }
+
     override fun <T : Event> of(eventType: Class<T>): EventWaiterBuilder<T> {
         if (!::jda.isInitialized) {
             throw IllegalStateException("Cannot use the event waiter before a JDA instance has been detected")
         }
 
-        EventUtils.checkEvent(jda, intents, eventType)
+        checkEventIntents(eventType)
 
         return EventWaiterBuilderImpl(this, eventType)
     }
@@ -116,6 +123,31 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
                 } catch (e: Exception) {
                     exceptionHandler.handleException(event, e, "EventWaiter handler for $event")
                 }
+            }
+        }
+    }
+
+    private val warnedEventTypes: MutableSet<Class<out Event>> = context.config.ignoredEventIntents.toMutableSet()
+
+    private fun checkEventIntents(eventType: Class<out Event>) {
+        val neededIntents = GatewayIntent.fromEvents(eventType)
+        val missingIntents = neededIntents - jdaIntents
+        if (missingIntents.isNotEmpty() && warnedEventTypes.add(eventType)) {
+            logger.warn(
+                """
+					Cannot listen to a ${eventType.simpleNestedName} as there are missing intents:
+					Enabled intents: ${jdaIntents.joinToString { it.name }}
+					Intents needed: ${neededIntents.joinToString { it.name }}
+					Missing intents: ${missingIntents.joinToString { it.name }}
+					If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.referenceString}
+					See ${eventType.simpleNestedName} for more detail
+                """.trimIndent()
+            )
+        }
+
+        if (RawGatewayEvent::class.java.isAssignableFrom(eventType)) {
+            require((jda as JDAImpl).isRawEvents) {
+                "Cannot listen to a ${eventType.simpleNestedName} as JDA is not configured to emit raw gateway events, see ${JDABuilder::setRawEventsEnabled.getSignature(source = false)}"
             }
         }
     }
