@@ -183,7 +183,7 @@ class EventDispatcher internal constructor(
             if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf(Event::class)) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
-                val missingIntents = requiredIntents - jdaService.intents
+                val missingIntents = requiredIntents - jdaService.intents - context.config.ignoredIntents
                 if (missingIntents.isNotEmpty()) {
                     return@forEach logger.debug { "Skipping event listener ${function.shortSignature} as it is missing intents: $missingIntents" }
                 }

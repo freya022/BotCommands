@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.annotations
 
+import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.config.BCoroutineScopesConfig
 import java.util.concurrent.TimeUnit
 
@@ -18,6 +19,8 @@ annotation class BEventListener(
     val priority: Int = 0, //Default priority
     /**
      * Whether this event listener should be kept enabled, even if it is missing intents.
+     *
+     * @see BConfig.ignoredIntents
      */
     val ignoreIntents: Boolean = false,
     /** The time before the coroutine is cancelled, using a negative value means no timeout */
