@@ -16,6 +16,10 @@ annotation class BEventListener(
      * This means that this handler might start running before the previous (async) one has finished running.
      */
     val priority: Int = 0, //Default priority
+    /**
+     * Whether this event listener should be kept enabled, even if it is missing intents.
+     */
+    val ignoreIntents: Boolean = false,
     /** The time before the coroutine is cancelled, using a negative value means no timeout */
     val timeout: Long = 0,
     /** The time unit used for the timeout */

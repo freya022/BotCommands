@@ -115,13 +115,13 @@ class EventDispatcher internal constructor(
         // No need to check for `event` type as if it's in the map, then it's recognized
         val handlers = map[event::class] ?: return
 
-        handlers.forEach { preboundFunction ->
-            if (preboundFunction.isAsync) {
+        handlers.forEach { eventHandler ->
+            if (eventHandler.isAsync) {
                 context.coroutineScopesConfig.eventDispatcherScope.launch {
-                    runEventHandler(preboundFunction, event)
+                    runEventHandler(eventHandler, event)
                 }
             } else {
-                runEventHandler(preboundFunction, event)
+                runEventHandler(eventHandler, event)
             }
         }
     }
@@ -135,8 +135,8 @@ class EventDispatcher internal constructor(
         val handlers = map[event::class] ?: return emptyList()
 
         val scope = context.coroutineScopesConfig.eventDispatcherScope
-        return handlers.map { preboundFunction ->
-            scope.async { runEventHandler(preboundFunction, event) }
+        return handlers.map { eventHandler ->
+            scope.async { runEventHandler(eventHandler, event) }
         }
     }
 
@@ -180,7 +180,7 @@ class EventDispatcher internal constructor(
             val parameters = function.nonInstanceParameters
 
             val eventErasure = parameters.first().type.jvmErasure
-            if (jdaService != null && eventErasure.isSubclassOf(Event::class)) {
+            if (!annotation.ignoreIntents && jdaService != null && eventErasure.isSubclassOf(Event::class)) {
                 @Suppress("UNCHECKED_CAST")
                 val requiredIntents = GatewayIntent.fromEvents(eventErasure.java as Class<out Event>)
                 val missingIntents = requiredIntents - jdaService.intents
