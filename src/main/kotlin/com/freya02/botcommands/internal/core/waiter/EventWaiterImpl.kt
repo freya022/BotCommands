@@ -135,12 +135,12 @@ internal class EventWaiterImpl(context: BContextImpl) : EventWaiter {
         if (missingIntents.isNotEmpty() && warnedEventTypes.add(eventType)) {
             logger.warn(
                 """
-					Cannot listen to a ${eventType.simpleNestedName} as there are missing intents:
-					Enabled intents: ${jdaIntents.joinToString { it.name }}
-					Intents needed: ${neededIntents.joinToString { it.name }}
-					Missing intents: ${missingIntents.joinToString { it.name }}
-					If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.referenceString}
-					See ${eventType.simpleNestedName} for more detail
+                    Cannot listen to a ${eventType.simpleNestedName} as there are missing intents:
+                    Enabled intents: ${jdaIntents.joinToString { it.name }}
+                    Intents needed: ${neededIntents.joinToString { it.name }}
+                    Missing intents: ${missingIntents.joinToString { it.name }}
+                    If this is intentional, this can be suppressed using ${BConfigBuilder::ignoredEventIntents.referenceString}
+                    See ${eventType.simpleNestedName} for more detail
                 """.trimIndent()
             )
         }
