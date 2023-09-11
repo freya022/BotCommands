@@ -39,7 +39,7 @@ internal class TextCommandsListener internal constructor(
 
     private val filters = context.getInterfacedServices<TextCommandFilter>()
 
-    @BEventListener
+    @BEventListener(ignoreIntents = true)
     suspend fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.author.isBot || event.isWebhookMessage) return
 
