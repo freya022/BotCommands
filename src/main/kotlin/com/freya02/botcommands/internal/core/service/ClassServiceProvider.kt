@@ -20,7 +20,7 @@ internal class ClassServiceProvider(
     override var instance: Any? = null
 ) : ServiceProvider {
     override val name = clazz.getServiceName()
-    override val providerKey = clazz.simpleNestedName
+    override val providerKey = clazz.jvmName
     override val primaryType get() = clazz
     override val types = clazz.getServiceTypes(clazz)
     override val priority = clazz.getAnnotatedServicePriority()
