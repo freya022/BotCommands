@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 @BService
 class Bot(private val config: Config) : JDAService() {
     override val intents: Set<GatewayIntent> =
-        GatewayIntent.getIntents(GatewayIntent.DEFAULT) + GatewayIntent.GUILD_MEMBERS + GatewayIntent.MESSAGE_CONTENT
+        defaultIntents + GatewayIntent.GUILD_MEMBERS + GatewayIntent.MESSAGE_CONTENT
 
     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
         DefaultShardManagerBuilder.createLight(config.token, intents).apply {

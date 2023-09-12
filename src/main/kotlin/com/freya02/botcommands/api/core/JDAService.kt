@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.hooks.IEventManager
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
+import java.util.*
 
 /**
  * Optional interfaced service to be implemented by the service which creates a JDA instance.
@@ -61,4 +62,10 @@ abstract class JDAService {
     @JvmSynthetic
     @BEventListener
     internal fun onReadyEvent(event: BReadyEvent, eventManager: IEventManager) = createJDA(event, eventManager)
+
+    companion object {
+        @JvmStatic
+        val defaultIntents: EnumSet<GatewayIntent>
+            get() = GatewayIntent.getIntents(GatewayIntent.DEFAULT)
+    }
 }
