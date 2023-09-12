@@ -1,5 +1,6 @@
 package io.github.freya022.bot.commands.slash
 
+import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.annotations.BotPermissions
 import com.freya02.botcommands.api.commands.annotations.Command
 import com.freya02.botcommands.api.commands.annotations.UserPermissions
@@ -14,9 +15,9 @@ import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
-import com.freya02.botcommands.api.localization.Localization.Entry.entry
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
+import com.freya02.botcommands.api.localization.context.localize
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.messages.reply_
 import io.github.freya022.bot.commands.FrontendChooser
@@ -31,7 +32,6 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.requests.ErrorResponse
-import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -48,7 +48,7 @@ data class DeleteTimeframe(val time: Long, val unit: TimeUnit) {
 }
 
 @BService
-class SlashBan(private val componentsService: Components, private val banService: BanService) {
+class SlashBan(private val context: BContext, private val componentsService: Components, private val banService: BanService) {
     suspend fun onSlashBan(
         event: GuildSlashEvent,
         @LocalizationBundle("Commands", prefix = "ban") localizationContext: AppLocalizationContext,
@@ -66,9 +66,10 @@ class SlashBan(private val componentsService: Components, private val banService
 
         if (targetMember != null) {
             if (!event.member.canInteract(targetMember)) {
-                return event.reply_(localizationContext.localize("errors.user.interactError", entry("userMention", target.asMention)), ephemeral = true).queue()
+                //TODO replace with replyLocalizedEphemeral
+                return event.reply_(localizationContext.localize("errors.user.interactError", "userMention" to target.asMention), ephemeral = true).queue()
             } else if (!event.guild.selfMember.canInteract(targetMember)) {
-                return event.reply_(localizationContext.localize("errors.bot.interactError", entry("userMention", target.asMention)), ephemeral = true).queue()
+                return event.reply_(localizationContext.localize("errors.bot.interactError", "userMention" to target.asMention), ephemeral = true).queue()
             }
         }
 
@@ -87,7 +88,7 @@ class SlashBan(private val componentsService: Components, private val banService
             timeout(1.minutes)
         }
 
-        event.reply_(localizationContext.localize("outputs.confirmationMessage", entry("userMention", target.asMention)), ephemeral = true)
+        event.reply_(localizationContext.localize("outputs.confirmationMessage", "userMention" to target.asMention), ephemeral = true)
             .addActionRow(cancelButton, confirmButton)
             .queue()
 
@@ -114,10 +115,10 @@ class SlashBan(private val componentsService: Components, private val banService
 
                 componentEvent.editMessage(localizationContext.localize(
                     "outputs.success",
-                    entry("userMention", target.asMention),
-                    entry("time", timeframe.time),
-                    entry("unit", timeframe.unit.localize(timeframe.time, localizationContext)),
-                    entry("reason", reason)
+                    "userMention" to target.asMention,
+                    "time" to timeframe.time,
+                    "unit" to timeframe.unit.localize(timeframe.time, context, localizationContext),
+                    "reason" to reason
                 )).setComponents().queue()
 
                 //Ban logic
@@ -135,8 +136,8 @@ class SlashBanDetailedFront {
         manager.slashCommand("ban", function = SlashBan::onSlashBan) {
             description = "Ban any user from this guild"
 
-            botPermissions = EnumSet.of(Permission.BAN_MEMBERS)
-            userPermissions = EnumSet.of(Permission.BAN_MEMBERS)
+            botPermissions += Permission.BAN_MEMBERS
+            userPermissions += Permission.BAN_MEMBERS
 
             customOption("localizationContext")
 

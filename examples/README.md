@@ -42,7 +42,7 @@ If you are seeking for a bot you can set up yourself, you can look at [the bot t
 * [A choose command using inline classes](src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt), with `SlashSentence.SentenceParts`
  
 ### Services
-* [How to automatically load with a service](src/main/kotlin/io/github/freya022/bot/JDAService.kt)
+* [How to automatically load with a service](src/main/kotlin/io/github/freya022/bot/Bot.kt)
 * [How to make a strategy-based ban service, using dynamic service suppliers](src/main/kotlin/io/github/freya022/bot/commands/ban/BanService.kt)
 
 ### Components

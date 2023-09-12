@@ -130,9 +130,9 @@ on `SlashSentence#onSentencePartAutocomplete`.
 ## Async loading
 The library now loads asynchronously, you previously had to wait for your entire bot to be loaded, but now you **must** start the framework before building JDA, which lets you get your stuff started up before the bot goes fully online.
 
-Building JDA before the framework will result in an error, I strongly recommend that you create a "JDA service" class, which must be started at the `ServiceStart.READY` phase.
+Building JDA before the framework will result in an error, I strongly recommend that you use a service which implements `JDAService`.
 
-You can also refer to [the example JDA service](examples/src/main/kotlin/io/github/freya022/bot/JDAService.kt).
+You can also refer to [the example JDA service](examples/src/main/kotlin/io/github/freya022/bot/Bot.kt).
 
 ## New database utils
 A `Database` interface has been added, this is mostly useful for Kotlin users and only serves as a very basic abstraction for transactions.

@@ -10,6 +10,7 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import dev.minn.jda.ktx.coroutines.await
 import dev.minn.jda.ktx.interactions.components.row
+import dev.minn.jda.ktx.messages.into
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.utils.TimeFormat
 import java.time.Instant
@@ -34,9 +35,10 @@ class SlashButton(private val componentsService: Components) : ApplicationComman
 
         components += componentsService.persistentButton(ButtonStyle.SECONDARY, "Click me anytime") {
             bindTo(buttonListenerName)
+//            bindTo(::onPersistentButtonClick) //Also works
         }
 
-        event.replyComponents(listOf(components.row()))
+        event.replyComponents(components.into())
             .setContent(TimeFormat.RELATIVE.format(Instant.now() + 5.seconds.toJavaDuration()))
             .setEphemeral(true)
             .queue()

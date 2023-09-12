@@ -14,8 +14,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <kotlin.version>1.9.0</kotlin.version>
-        <kotlin.coroutine.version>1.7.2</kotlin.coroutine.version>
+        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.coroutine.version>1.7.3</kotlin.coroutine.version>
 
         <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-beta.12</version>
+            <version>5.0.0-beta.13</version>
             <exclusions>
                 <exclusion>
                     <groupId>club.minnced</groupId>
@@ -139,19 +139,19 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>3.0.0-alpha.3</version>
+            <version>3.0.0-alpha.4_DEV</version>
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.7</version>
+            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.8</version>
+            <version>1.4.11</version>
         </dependency>
         <dependency>
             <groupId>io.github.microutils</groupId>
@@ -169,7 +169,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>9.21.0</version>
+            <version>9.22.0</version>
         </dependency>
         <!-- Strongly recommended to pool SQL connections -->
         <dependency>

@@ -2,7 +2,6 @@ package io.github.freya022.bot.config
 
 import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
@@ -14,7 +13,6 @@ private val logger = KotlinLogging.logger { }
 
 // Interfaced service used to retrieve an SQL Connection
 @BService
-@ServiceType(ConnectionSupplier::class)
 class DatabaseSource(config: Config) : ConnectionSupplier {
     private val source = HikariDataSource(HikariConfig().apply {
         jdbcUrl = config.databaseConfig.url

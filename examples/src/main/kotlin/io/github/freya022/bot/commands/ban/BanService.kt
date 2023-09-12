@@ -4,7 +4,6 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.DynamicSupplier
 import com.freya02.botcommands.api.core.service.DynamicSupplier.Instantiability
 import com.freya02.botcommands.api.core.service.annotations.BService
-import com.freya02.botcommands.api.core.service.annotations.ServiceType
 import kotlin.reflect.KClass
 
 @BService // Just a marker, not required
@@ -27,7 +26,6 @@ class JsonBanService : BanService {
 // This class is just an example on how you can provide services based off a strategy,
 // i.e., giving a different implementation based on some parameters, while using the same interface.
 @BService
-@ServiceType(DynamicSupplier::class)
 class BanServiceSupplier : DynamicSupplier {
     private val useSql = true
 
