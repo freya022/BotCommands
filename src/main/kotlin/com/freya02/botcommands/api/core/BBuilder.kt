@@ -41,8 +41,7 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          * Creates a new instance of the framework.
          *
          * Note: Building JDA before the framework will result in an error,
-         * I strongly recommend that you create a "JDA service" class,
-         * which must be started at the `ServiceStart.READY` phase.
+         * I strongly recommend that you create a service which extends [JDAService].
          *
          * Creating a JDA instance when this method return is also fine.
          *
@@ -67,11 +66,13 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
          * }
          * ```
          *
-         * JDAService.kt:
+         * Bot.kt:
          * ```kt
-         * @BService(ServiceStart.READY) //Initializing JDA before the framework is ready will error.
-         * class JDAService(config: Config, eventManager: IEventManager) { //Same manager as the one passed to BBuilder
-         *     init {
+         * @BService
+         * class Bot(private val config: Config) : JDAService() {
+         *     override val intents: Set<GatewayIntent> = defaultIntents
+         *
+         *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
          *         light(config.token, enableCoroutines = false /* required */) {
          *             //Configure JDA
          *
