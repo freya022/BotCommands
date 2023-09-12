@@ -1,11 +1,11 @@
 package io.github.freya022.bot
 
 import com.freya02.botcommands.api.core.BBuilder
+import com.freya02.botcommands.api.core.utils.namedDefaultScope
 import dev.minn.jda.ktx.events.CoroutineEventManager
 import dev.reformator.stacktracedecoroutinator.runtime.DecoroutinatorRuntime
 import io.github.freya022.bot.config.Config
 import io.github.freya022.bot.config.Environment
-import io.github.freya022.bot.utils.namedDefaultScope
 import kotlinx.coroutines.cancel
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.session.ShutdownEvent
