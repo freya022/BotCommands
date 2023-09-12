@@ -31,6 +31,8 @@ and available to other classes.
 
 These services can all have a name, in case you want multiple services of the same type, but want to differentiate them.
 
+**Kotlin note:** Service factories can be top-level functions.
+
 ### Conditional services
 #### Interfaced conditions
 `@ConditionalService` can be used when you want your service/command/resolver... to be created under certain conditions.<br>
@@ -175,6 +177,13 @@ Resolver factories were also added to enable you to give a parameter resolver ba
 
 *This is how `[App/Text]LocalizationContext` are injected, they use factories of `ICustomResolver`,
 and when you put a parameter, they read that parameter for `@LocalizationBundle` and then construct a resolver which gets you the correct localization bundle.*
+
+### Resolvers (& factories) from service factories
+Resolvers can not only be created from classes, but also from service factories (function with `@BService`) 
+returning an implementation.
+
+For example, the framework provides `Resolver#enumResolver`, which can help you quickly handle any enumeration, 
+while also letting you easily transform a value into its displayed string.
 
 ## Enhanced localization API
 The API has been improved to allow a more detailed loading mechanism, 

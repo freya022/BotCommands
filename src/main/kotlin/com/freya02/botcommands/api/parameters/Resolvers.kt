@@ -75,6 +75,9 @@ fun interface EnumNameFunction<E : Enum<E>> {
     fun apply(value: E): String
 }
 
+/**
+ * Utility factories to create commonly used parameter resolvers.
+ */
 object Resolvers {
     /**
      * Creates an enum resolver for [text][RegexParameterResolver]/[slash][SlashParameterResolver] commands,
