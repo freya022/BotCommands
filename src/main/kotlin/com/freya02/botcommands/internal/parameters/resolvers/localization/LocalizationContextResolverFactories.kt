@@ -23,10 +23,9 @@ import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 @ResolverFactory
-internal class AppLocalizationContextResolverFactory(private val localizationService: LocalizationService) : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(
-    AppLocalizationContextResolver::class,
-    AppLocalizationContext::class
-) {
+internal class AppLocalizationContextResolverFactory(
+    private val localizationService: LocalizationService
+) : ParameterResolverFactory<AppLocalizationContextResolver, AppLocalizationContext>(AppLocalizationContextResolver::class, AppLocalizationContext::class) {
     override fun get(parameter: ParameterWrapper) =
         AppLocalizationContextResolver(getBaseLocalizationContext(
             localizationService, parameter, Interaction::class
@@ -34,10 +33,9 @@ internal class AppLocalizationContextResolverFactory(private val localizationSer
 }
 
 @ResolverFactory
-internal class TextLocalizationContextResolverFactory(private val localizationService: LocalizationService) : ParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(
-    TextLocalizationContextResolver::class.java,
-    TextLocalizationContext::class.java
-) {
+internal class TextLocalizationContextResolverFactory(
+    private val localizationService: LocalizationService
+) : ParameterResolverFactory<TextLocalizationContextResolver, TextLocalizationContext>(TextLocalizationContextResolver::class, TextLocalizationContext::class) {
     override fun get(parameter: ParameterWrapper) =
         TextLocalizationContextResolver(getBaseLocalizationContext(
             localizationService, parameter, Interaction::class, MessageReceivedEvent::class
