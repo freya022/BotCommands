@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.TextLocalizationContext
+import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import java.util.*
@@ -28,6 +29,13 @@ internal class LocalizationContextImpl(
             else -> DiscordLocale.ENGLISH_US
         }
 
+    init {
+        // At least the root bundle must exists
+        requireNotNull(localizationService.getInstance(localizationBundle, Locale.ROOT)) {
+            "A root localization bundle must exist for $localizationBundle"
+        }
+    }
+
     override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
         return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
     }
@@ -50,7 +58,7 @@ internal class LocalizationContextImpl(
 
     override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
         val instance = localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
-            ?: throwUser("Found no localization instance for bundle '$localizationBundle' and locale '$locale'")
+            ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$locale', the root bundle should have been checked")
 
         val effectivePath = when (localizationPrefix) {
             null -> localizationPath
