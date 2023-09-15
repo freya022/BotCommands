@@ -77,12 +77,20 @@ fun namedDefaultScope(
     errorHandler: CoroutineExceptionHandler? = null,
     context: CoroutineContext = EmptyCoroutineContext
 ): CoroutineScope {
+    require(poolSize > 0) {
+        "Pool size must be positive"
+    }
+
     val lock = ReentrantLock()
     var count = 0
     val executor = Executors.newScheduledThreadPool(poolSize) {
         Thread(it).apply {
-            lock.withLock {
-                this.name = "$name ${++count}"
+            if (poolSize == 1) {
+                this.name = name
+            } else {
+                lock.withLock {
+                    this.name = "$name ${++count}"
+                }
             }
         }
     }
