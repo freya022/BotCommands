@@ -57,18 +57,29 @@ internal class LocalizationContextImpl(
     }
 
     override fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String {
-        val instance = localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
-            ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$locale', the root bundle should have been checked")
-
-        val effectivePath = when (localizationPrefix) {
-            null -> localizationPath
-            else -> "$localizationPrefix.$localizationPath"
-        }
-
-        val template = instance[effectivePath]
-            ?: throwUser("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${instance.effectiveLocale}')")
+        val localization = getLocalization(locale)
+        val effectivePath = getEffectivePath(localizationPath)
+        val template = localization[effectivePath]
+            ?: throwUser("Found no localization template for '$effectivePath' (in bundle '$localizationBundle' with locale '${localization.effectiveLocale}')")
 
         return template.localize(*entries)
+    }
+
+    override fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String? {
+        val localization = getLocalization(locale)
+        val effectivePath = getEffectivePath(localizationPath)
+        val template = localization[effectivePath] ?: return null
+
+        return template.localize(*entries)
+    }
+
+    private fun getLocalization(locale: DiscordLocale) =
+        localizationService.getInstance(localizationBundle, Locale.forLanguageTag(locale.locale))
+            ?: throwInternal("Found no localization instance for bundle '$localizationBundle' and locale '$locale', the root bundle should have been checked")
+
+    private fun getEffectivePath(localizationPath: String) = when (localizationPrefix) {
+        null -> localizationPath
+        else -> "$localizationPrefix.$localizationPath"
     }
 
     override fun hasGuildLocale(): Boolean {

@@ -89,6 +89,15 @@ interface LocalizationContext {
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
+     * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
+     *
+     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
+     * @param localizationPath   The localization path to search for
+     * @param entries            The entries to fill the template
+     */
+    fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String?
+
+    /**
      * Localizes the provided path, with the best locale available. (User > Guild > Default)
      *
      * @param localizationPath The localization path to search for
@@ -96,6 +105,16 @@ interface LocalizationContext {
      */
     fun localize(localizationPath: String, vararg entries: Localization.Entry): String =
         localize(effectiveLocale, localizationPath, *entries)
+
+    /**
+     * Localizes the provided path, with the best locale available (User > Guild > Default),
+     * or returns `null` if the path does not exist.
+     *
+     * @param localizationPath The localization path to search for
+     * @param entries          The entries to fill the template
+     */
+    fun localizeOrNull(localizationPath: String, vararg entries: Localization.Entry): String? =
+        localizeOrNull(effectiveLocale, localizationPath, *entries)
 
     companion object {
         @JvmStatic
@@ -133,6 +152,16 @@ fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String
     localize(locale, localizationPath, *entries.mapToEntries())
 
 /**
+ * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
+ *
+ * @param locale             The [DiscordLocale] to use when fetching the localization bundle
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ */
+fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String? =
+    localizeOrNull(locale, localizationPath, *entries.mapToEntries())
+
+/**
  * Localizes the provided path, with the best locale available. (User > Guild > Default)
  *
  * @param localizationPath   The localization path to search for
@@ -140,3 +169,13 @@ fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String
  */
 fun LocalizationContext.localize(localizationPath: String, vararg entries: PairEntry): String =
     localize(effectiveLocale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Localizes the provided path, with the best locale available (User > Guild > Default),
+ * or returns `null` if the path does not exist.
+ *
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ */
+fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries: PairEntry): String? =
+    localizeOrNull(effectiveLocale, localizationPath, *entries.mapToEntries())

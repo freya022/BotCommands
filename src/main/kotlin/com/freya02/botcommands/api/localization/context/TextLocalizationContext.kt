@@ -74,6 +74,21 @@ interface TextLocalizationContext : LocalizationContext {
      */
     fun localizeGuild(localizationPath: String, vararg entries: Localization.Entry): String =
         localize(guildLocale, localizationPath, *entries)
+
+    /**
+     * Localizes the provided path, with the guild's locale, or returns `null` if the path does not exist.
+     *
+     * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
+     *
+     * @param localizationPath The localization path to search for
+     * @param entries          The entries to fill the template
+     *
+     * @throws IllegalStateException If the event did not happen in a Guild
+     *
+     * @see Guild.getLocale
+     */
+    fun localizeGuildOrNull(localizationPath: String, vararg entries: Localization.Entry): String? =
+        localizeOrNull(guildLocale, localizationPath, *entries)
 }
 
 /**
@@ -90,3 +105,18 @@ interface TextLocalizationContext : LocalizationContext {
  */
 fun TextLocalizationContext.localizeGuild(localizationPath: String, vararg entries: PairEntry): String =
     localize(guildLocale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Localizes the provided path, with the guild's locale, or returns `null` if the path does not exist.
+ *
+ * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
+ *
+ * @param localizationPath   The localization path to search for
+ * @param entries            The entries to fill the template
+ *
+ * @throws IllegalStateException If the event did not happen in a Guild
+ *
+ * @see Guild.getLocale
+ */
+fun TextLocalizationContext.localizeGuildOrNull(localizationPath: String, vararg entries: PairEntry): String? =
+    localizeOrNull(guildLocale, localizationPath, *entries.mapToEntries())
