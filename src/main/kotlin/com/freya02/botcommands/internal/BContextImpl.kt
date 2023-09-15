@@ -10,7 +10,6 @@ import com.freya02.botcommands.api.core.*
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.config.putConfigInServices
 import com.freya02.botcommands.api.core.events.BStatusChangeEvent
-import com.freya02.botcommands.api.core.service.ServiceStart
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.service.putServiceAs
@@ -44,9 +43,9 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
     internal val instantiableServiceAnnotationsMap get() = getService<InstantiableServiceAnnotationsMap>()
     internal val serviceProviders = ServiceProviders()
     internal val customConditionsContainer = CustomConditionsContainer()
-    val eventDispatcher: EventDispatcher get() = getService<EventDispatcher>()
+    val eventDispatcher: EventDispatcher by lazy { getService<EventDispatcher>() }
 
-    private var status : Status = Status.PRE_LOAD
+    private var status: Status = Status.PRE_LOAD
 
     private var nextExceptionDispatch: Long = 0
 
@@ -67,8 +66,6 @@ class BContextImpl internal constructor(private val config: BConfig, val eventMa
 
         serviceContainer.putServiceAs<ApplicationCommandsContext>(applicationCommandsContext)
         serviceContainer.putServiceAs<TextCommandsContext>(textCommandsContext)
-
-        serviceContainer.loadServices(ServiceStart.DEFAULT)
     }
 
     private val _defaultMessagesSupplier by serviceContainer.interfacedService<DefaultMessagesSupplier, _> { DefaultDefaultMessagesSupplier(this) }

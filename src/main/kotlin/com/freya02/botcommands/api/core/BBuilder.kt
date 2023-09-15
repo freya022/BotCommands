@@ -115,6 +115,8 @@ class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuild
             if (config.disableAutocompleteCache)
                 logger.info("Configuration disabled autocomplete cache, except forced caches")
 
+            context.serviceContainer.loadServices(ServiceStart.DEFAULT)
+
             context.status = BContext.Status.PRE_LOAD
             context.eventDispatcher.dispatchEvent(PreLoadEvent())
 
