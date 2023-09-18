@@ -19,3 +19,26 @@ fun <T> Set<T>.toImmutableSet(): Set<T> {
 fun <K, V> Map<K, V>.toImmutableMap(): Map<K, V> {
     return Collections.unmodifiableMap(LinkedHashMap(this))
 }
+
+/**
+ * Returns `null` if the element already exists
+ */
+fun <K, V> MutableMap<K, V>.computeIfAbsentOrNull(key: K, block: (K) -> V): V? {
+    if (key !in this) {
+        val value = block(key)
+        put(key, value)
+        return value
+    }
+    return null
+}
+
+/**
+ * Returns `null` if the element already exists
+ */
+fun <K, V> MutableMap<K, V>.putIfAbsentOrNull(key: K, value: V): V? {
+    if (key !in this) {
+        put(key, value)
+        return value
+    }
+    return null
+}

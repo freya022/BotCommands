@@ -4,14 +4,15 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandBuilder
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
 import com.freya02.botcommands.internal.commands.NSFWStrategy
 import com.freya02.botcommands.internal.commands.mixins.INamedCommand
+import com.freya02.botcommands.internal.utils.throwUser
 import net.dv8tion.jda.api.EmbedBuilder
 import java.util.function.Consumer
 
-abstract class TextCommandInfo(
+sealed class TextCommandInfo(
     builder: TextCommandBuilder,
     override val parentInstance: INamedCommand?
 ) : AbstractCommandInfo(builder) {
-    val subcommands: Map<String, TextCommandInfo> = builder.subcommands.associate { it.name to it.build(this) }
+    val subcommands: Map<String, TextCommandInfo>
 
     val variations: List<TextCommandVariation> = builder.variations.map { it.build(this) }
 
@@ -24,4 +25,17 @@ abstract class TextCommandInfo(
     val hidden: Boolean = builder.hidden
 
     val detailedDescription: Consumer<EmbedBuilder>? = builder.detailedDescription
+
+    init {
+        subcommands = buildMap(builder.subcommands.size + builder.subcommands.sumOf { it.aliases.size }) {
+            builder.subcommands.forEach { subcommandBuilder ->
+                val textCommandInfo = subcommandBuilder.build(this@TextCommandInfo)
+                (subcommandBuilder.aliases + subcommandBuilder.name).forEach { subcommandName ->
+                    this.put(subcommandName, textCommandInfo)?.let { commandInfo ->
+                        throwUser("Text subcommand with path '${commandInfo.path}' already exists")
+                    }
+                }
+            }
+        }
+    }
 }
