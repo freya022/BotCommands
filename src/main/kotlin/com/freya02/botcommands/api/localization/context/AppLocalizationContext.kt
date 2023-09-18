@@ -43,6 +43,9 @@ interface AppLocalizationContext : TextLocalizationContext {
     @CheckReturnValue
     override fun withPrefix(localizationPrefix: String?): AppLocalizationContext
 
+    @CheckReturnValue
+    override fun switchBundle(localizationBundle: String): AppLocalizationContext
+
     /**
      * Localizes the provided path, with the user's locale.
      *

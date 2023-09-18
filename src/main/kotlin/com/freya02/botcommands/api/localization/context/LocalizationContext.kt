@@ -100,6 +100,15 @@ interface LocalizationContext {
     fun withPrefix(localizationPrefix: String?): LocalizationContext
 
     /**
+     * Returns a new localization context with the specified localization bundle,
+     * and resets the localization prefix.
+     *
+     * @param localizationBundle The localization bundle to use
+     */
+    @CheckReturnValue
+    fun switchBundle(localizationBundle: String): LocalizationContext
+
+    /**
      * Localizes the provided path, with the provided locale.
      *
      * @param locale           The [DiscordLocale] to use when fetching the localization bundle

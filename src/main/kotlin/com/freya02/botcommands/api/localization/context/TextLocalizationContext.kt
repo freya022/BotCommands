@@ -60,6 +60,9 @@ interface TextLocalizationContext : LocalizationContext {
     @CheckReturnValue
     override fun withPrefix(localizationPrefix: String?): TextLocalizationContext
 
+    @CheckReturnValue
+    override fun switchBundle(localizationBundle: String): TextLocalizationContext
+
     /**
      * Localizes the provided path, with the guild's locale.
      *
