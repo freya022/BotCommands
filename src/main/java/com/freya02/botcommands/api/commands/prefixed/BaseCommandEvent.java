@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -182,7 +183,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> respond(@NotNull CharSequence text);
+	public abstract MessageCreateAction respond(@NotNull CharSequence text);
 
 	/**
 	 * Sends a response in the event's channel
@@ -194,7 +195,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> respondFormat(@NotNull String format, @NotNull Object... args);
+	public abstract MessageCreateAction respondFormat(@NotNull String format, @NotNull Object... args);
 
 	/**
 	 * Sends a response in the event's channel
@@ -206,7 +207,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+	public abstract MessageCreateAction respond(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a response in the event's channel
@@ -219,7 +220,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> respondFile(@NotNull FileUpload... fileUploads);
+	public abstract MessageCreateAction respondFile(@NotNull FileUpload... fileUploads);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -230,7 +231,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> reply(@NotNull CharSequence text);
+	public abstract MessageCreateAction reply(@NotNull CharSequence text);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -242,7 +243,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> replyFormat(@NotNull String format, @NotNull Object... args);
+	public abstract MessageCreateAction replyFormat(@NotNull String format, @NotNull Object... args);
 
 	/**
 	 * Sends a reply in the event's channel
@@ -254,7 +255,7 @@ public abstract class BaseCommandEvent extends MessageReceivedEvent {
 	 */
 	@CheckReturnValue
 	@NotNull
-	public abstract RestAction<Message> reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
+	public abstract MessageCreateAction reply(@NotNull MessageEmbed embed, @NotNull MessageEmbed... other);
 
 	/**
 	 * Sends a file as a reply in the event's channel

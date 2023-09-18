@@ -15,7 +15,9 @@ import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
-import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import javax.annotation.CheckReturnValue
 
 typealias PairEntry = Pair<String, Any>
@@ -202,7 +204,7 @@ fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries:
  * 
  * @see MessageChannel.sendMessage
  */
-fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageCreateAction =
     sendMessage(context.localize(localizationPath, *entries))
 
 /**
@@ -213,7 +215,7 @@ fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath:
  *
  * @see MessageChannel.sendMessage
  */
-fun BaseCommandEvent.respondLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+fun BaseCommandEvent.respondLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageCreateAction =
     respond(context.localize(localizationPath, *entries))
 
 /**
@@ -224,7 +226,7 @@ fun BaseCommandEvent.respondLocalized(context: LocalizationContext, localization
  * 
  * @see MessageChannel.sendMessage
  */
-fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageCreateAction =
     reply(context.localize(localizationPath, *entries))
 
 /**
@@ -235,7 +237,7 @@ fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPa
  *
  * @see IReplyCallback.reply
  */
-fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<InteractionHook> =
+fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): ReplyCallbackAction =
     reply(context.localize(localizationPath, *entries))
 
 /**
@@ -246,7 +248,7 @@ fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath
  *
  * @see IReplyCallback.reply
  */
-fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<InteractionHook> =
+fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): ReplyCallbackAction =
     reply(context.localize(localizationPath, *entries)).setEphemeral(true)
 
 /**
@@ -260,7 +262,7 @@ fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localiz
  *
  * @see InteractionHook.sendMessage
  */
-fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageCreateAction<Message> =
     sendMessage(context.localize(localizationPath, *entries))
 
 /**
@@ -274,5 +276,5 @@ fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath
  *
  * @see InteractionHook.sendMessage
  */
-fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageCreateAction<Message> =
     sendMessage(context.localize(localizationPath, *entries)).setEphemeral(true)
