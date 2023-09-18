@@ -37,19 +37,19 @@ internal class LocalizationContextImpl(
     }
 
     override fun withGuildLocale(guildLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, _userLocale)
     }
 
     override fun withUserLocale(userLocale: DiscordLocale?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, userLocale)
     }
 
     override fun withBundle(localizationBundle: String): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, _userLocale)
     }
 
     override fun withPrefix(localizationPrefix: String?): LocalizationContextImpl {
-        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, guildLocale, userLocale)
+        return LocalizationContextImpl(localizationService, localizationBundle, localizationPrefix, _guildLocale, _userLocale)
     }
 
     override fun switchBundle(localizationBundle: String): LocalizationContextImpl {
