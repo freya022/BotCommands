@@ -23,6 +23,12 @@ typealias PairEntry = Pair<String, Any>
  * @see create
  */
 interface LocalizationContext {
+    /**
+     * The locale used when no locale is specified, the best locale is picked in this order:
+     * - The [user locale][Interaction.getUserLocale]
+     * - The [guild locale][Guild.getLocale]
+     * - The default locale ([DiscordLocale.ENGLISH_US])
+     */
     val effectiveLocale: DiscordLocale
 
     /**
@@ -98,7 +104,7 @@ interface LocalizationContext {
     fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String?
 
     /**
-     * Localizes the provided path, with the best locale available. (User > Guild > Default)
+     * Localizes the provided path, with the [best locale][effectiveLocale] available.
      *
      * @param localizationPath The localization path to search for
      * @param entries          The entries to fill the template
@@ -107,7 +113,7 @@ interface LocalizationContext {
         localize(effectiveLocale, localizationPath, *entries)
 
     /**
-     * Localizes the provided path, with the best locale available (User > Guild > Default),
+     * Localizes the provided path, with the [best locale][effectiveLocale] available,
      * or returns `null` if the path does not exist.
      *
      * @param localizationPath The localization path to search for
@@ -162,7 +168,7 @@ fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: 
     localizeOrNull(locale, localizationPath, *entries.mapToEntries())
 
 /**
- * Localizes the provided path, with the best locale available. (User > Guild > Default)
+ * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available.
  *
  * @param localizationPath   The localization path to search for
  * @param entries            The entries to fill the template
@@ -171,7 +177,7 @@ fun LocalizationContext.localize(localizationPath: String, vararg entries: PairE
     localize(effectiveLocale, localizationPath, *entries.mapToEntries())
 
 /**
- * Localizes the provided path, with the best locale available (User > Guild > Default),
+ * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available,
  * or returns `null` if the path does not exist.
  *
  * @param localizationPath   The localization path to search for
