@@ -1,13 +1,21 @@
 package com.freya02.botcommands.api.localization.context
 
 import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.localization.Localization
 import com.freya02.botcommands.api.localization.LocalizationService
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.LocalizationContext.Companion.create
 import com.freya02.botcommands.internal.localization.LocalizationContextImpl
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
+import net.dv8tion.jda.api.interactions.Interaction
+import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
+import net.dv8tion.jda.api.requests.RestAction
 import javax.annotation.CheckReturnValue
 
 typealias PairEntry = Pair<String, Any>
@@ -185,3 +193,86 @@ fun LocalizationContext.localize(localizationPath: String, vararg entries: PairE
  */
 fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries: PairEntry): String? =
     localizeOrNull(effectiveLocale, localizationPath, *entries.mapToEntries())
+
+/**
+ * Sends a localized message to this channel.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ * 
+ * @see MessageChannel.sendMessage
+ */
+fun MessageChannel.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+    sendMessage(context.localize(localizationPath, *entries))
+
+/**
+ * Sends a localized message to the event's channel.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see MessageChannel.sendMessage
+ */
+fun BaseCommandEvent.respondLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+    respond(context.localize(localizationPath, *entries))
+
+/**
+ * Replies a localized message to the user's command.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ * 
+ * @see MessageChannel.sendMessage
+ */
+fun BaseCommandEvent.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+    reply(context.localize(localizationPath, *entries))
+
+/**
+ * Replies a localized message to this interaction and acknowledges it.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see IReplyCallback.reply
+ */
+fun IReplyCallback.replyLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<InteractionHook> =
+    reply(context.localize(localizationPath, *entries))
+
+/**
+ * Replies a localized ephemeral message to this interaction and acknowledges it.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see IReplyCallback.reply
+ */
+fun IReplyCallback.replyLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<InteractionHook> =
+    reply(context.localize(localizationPath, *entries)).setEphemeral(true)
+
+/**
+ * Sends a localized followup message to this interaction hook.
+ *
+ * If the interaction was originally [deferred][IReplyCallback.deferReply],
+ * then the ephemeral-ness of this message depends on what was passed there.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see InteractionHook.sendMessage
+ */
+fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+    sendMessage(context.localize(localizationPath, *entries))
+
+/**
+ * Sends a localized ephemeral followup message to this interaction hook.
+ *
+ * If the interaction was originally [deferred][IReplyCallback.deferReply],
+ * then the ephemeral-ness of this message depends on what was passed there.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see InteractionHook.sendMessage
+ */
+fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): RestAction<Message> =
+    sendMessage(context.localize(localizationPath, *entries)).setEphemeral(true)
