@@ -62,6 +62,8 @@ internal class TextCommandAutoBuilder(
             }
     }
 
+    //TODO this does not prevent duplicates as the map entries are simply overridden
+    // Try to switch to a recursive approach?
     fun declare(manager: TextCommandManager) {
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
