@@ -46,8 +46,8 @@ interface AppLocalizationContext : TextLocalizationContext {
     /**
      * Localizes the provided path, with the user's locale.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      *
      * @return The localized string
      */
@@ -57,8 +57,8 @@ interface AppLocalizationContext : TextLocalizationContext {
     /**
      * Localizes the provided path, with the user's locale, or returns `null` if the path does not exist.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      *
      * @return The localized string
      */
@@ -69,8 +69,8 @@ interface AppLocalizationContext : TextLocalizationContext {
 /**
  * Localizes the provided path, with the user's locale.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  *
  * @return The localized string
  */
@@ -80,8 +80,8 @@ fun AppLocalizationContext.localizeUser(localizationPath: String, vararg entries
 /**
  * Localizes the provided path, with the user's locale, or returns `null` if the path does not exist.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  *
  * @return The localized string
  */

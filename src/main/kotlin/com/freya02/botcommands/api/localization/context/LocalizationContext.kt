@@ -88,26 +88,26 @@ interface LocalizationContext {
     /**
      * Localizes the provided path, with the provided locale.
      *
-     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
+     * @param locale           The [DiscordLocale] to use when fetching the localization bundle
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      */
     fun localize(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String
 
     /**
      * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
      *
-     * @param locale             The [DiscordLocale] to use when fetching the localization bundle
-     * @param localizationPath   The localization path to search for
-     * @param entries            The entries to fill the template
+     * @param locale           The [DiscordLocale] to use when fetching the localization bundle
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      */
     fun localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: Localization.Entry): String?
 
     /**
      * Localizes the provided path, with the [best locale][effectiveLocale] available.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      */
     fun localize(localizationPath: String, vararg entries: Localization.Entry): String =
         localize(effectiveLocale, localizationPath, *entries)
@@ -116,8 +116,8 @@ interface LocalizationContext {
      * Localizes the provided path, with the [best locale][effectiveLocale] available,
      * or returns `null` if the path does not exist.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      */
     fun localizeOrNull(localizationPath: String, vararg entries: Localization.Entry): String? =
         localizeOrNull(effectiveLocale, localizationPath, *entries)
@@ -150,9 +150,9 @@ internal fun Array<out PairEntry>.mapToEntries() = Array(this.size) {
 /**
  * Localizes the provided path, with the provided locale.
  *
- * @param locale             The [DiscordLocale] to use when fetching the localization bundle
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param locale           The [DiscordLocale] to use when fetching the localization bundle
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String =
     localize(locale, localizationPath, *entries.mapToEntries())
@@ -160,9 +160,9 @@ fun LocalizationContext.localize(locale: DiscordLocale, localizationPath: String
 /**
  * Localizes the provided path, with the provided locale, or returns `null` if the path does not exist.
  *
- * @param locale             The [DiscordLocale] to use when fetching the localization bundle
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param locale           The [DiscordLocale] to use when fetching the localization bundle
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: String, vararg entries: PairEntry): String? =
     localizeOrNull(locale, localizationPath, *entries.mapToEntries())
@@ -170,8 +170,8 @@ fun LocalizationContext.localizeOrNull(locale: DiscordLocale, localizationPath: 
 /**
  * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localize(localizationPath: String, vararg entries: PairEntry): String =
     localize(effectiveLocale, localizationPath, *entries.mapToEntries())
@@ -180,8 +180,8 @@ fun LocalizationContext.localize(localizationPath: String, vararg entries: PairE
  * Localizes the provided path, with the [best locale][LocalizationContext.effectiveLocale] available,
  * or returns `null` if the path does not exist.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  */
 fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries: PairEntry): String? =
     localizeOrNull(effectiveLocale, localizationPath, *entries.mapToEntries())
