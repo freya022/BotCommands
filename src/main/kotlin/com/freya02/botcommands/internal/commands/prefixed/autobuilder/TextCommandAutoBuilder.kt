@@ -14,6 +14,7 @@ import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandOptionBu
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
 import com.freya02.botcommands.api.commands.prefixed.builder.TopLevelTextCommandBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
+import com.freya02.botcommands.api.core.utils.computeIfAbsentOrNull
 import com.freya02.botcommands.api.core.utils.nullIfEmpty
 import com.freya02.botcommands.api.parameters.ParameterType
 import com.freya02.botcommands.api.parameters.ResolverContainer
@@ -66,24 +67,21 @@ internal class TextCommandAutoBuilder(
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
         functions.forEachWithDelayedExceptions { metadata ->
-            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(metadata.path.name, metadata) }
+            val firstContainer = containers.computeIfAbsent(metadata.path.name) { TextCommandContainer(it, metadata) }
             val container = when (metadata.path.nameCount) {
                 1 -> firstContainer
                 else -> {
                     val split = metadata.path.components
                     // Navigate to the subcommand that's going to hold the command
-                    val subcommands = split
+                    split
                         .drop(1) //Skip first component as it is the initial step
                         .dropLast(1) //Navigate text command containers until n-1 path component
                         .fold(firstContainer) { acc, s ->
                             acc.subcommands.computeIfAbsent(s) { TextCommandContainer(s, null) }
                         }
                         .subcommands //Only put metadata on the last path component as this is what the annotation applies on
-
-                    val container = TextCommandContainer(split.last(), metadata)
-                    if (subcommands.put(split.last(), container) != null)
-                        throwUser(metadata.func, "Text subcommand with path '${metadata.path}' already exists")
-                    container
+                        .computeIfAbsentOrNull(split.last()) { TextCommandContainer(it, metadata) }
+                        ?: throwUser(metadata.func, "Text subcommand with path '${metadata.path}' already exists")
                 }
             }
 
