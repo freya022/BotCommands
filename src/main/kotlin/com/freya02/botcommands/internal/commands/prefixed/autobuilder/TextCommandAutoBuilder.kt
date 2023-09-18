@@ -62,8 +62,6 @@ internal class TextCommandAutoBuilder(
             }
     }
 
-    //TODO this does not prevent duplicates as the map entries are simply overridden
-    // Try to switch to a recursive approach?
     fun declare(manager: TextCommandManager) {
         val containers: MutableMap<String, TextCommandContainer> = hashMapOf()
 
@@ -73,14 +71,19 @@ internal class TextCommandAutoBuilder(
                 1 -> firstContainer
                 else -> {
                     val split = metadata.path.components
-                    split
+                    // Navigate to the subcommand that's going to hold the command
+                    val subcommands = split
                         .drop(1) //Skip first component as it is the initial step
                         .dropLast(1) //Navigate text command containers until n-1 path component
                         .fold(firstContainer) { acc, s ->
                             acc.subcommands.computeIfAbsent(s) { TextCommandContainer(s, null) }
                         }
                         .subcommands //Only put metadata on the last path component as this is what the annotation applies on
-                        .computeIfAbsent(split.last()) { TextCommandContainer(split.last(), metadata) }
+
+                    val container = TextCommandContainer(split.last(), metadata)
+                    if (subcommands.put(split.last(), container) != null)
+                        throwUser(metadata.func, "Text subcommand with path '${metadata.path}' already exists")
+                    container
                 }
             }
 
