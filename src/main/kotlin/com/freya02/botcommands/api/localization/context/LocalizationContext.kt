@@ -14,9 +14,13 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.interactions.DiscordLocale
 import net.dv8tion.jda.api.interactions.Interaction
 import net.dv8tion.jda.api.interactions.InteractionHook
+import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.MessageEditAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
+import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
 import javax.annotation.CheckReturnValue
 
@@ -196,6 +200,7 @@ fun LocalizationContext.localize(localizationPath: String, vararg entries: PairE
 fun LocalizationContext.localizeOrNull(localizationPath: String, vararg entries: PairEntry): String? =
     localizeOrNull(effectiveLocale, localizationPath, *entries.mapToEntries())
 
+//region Localized responses
 /**
  * Sends a localized message to this channel.
  *
@@ -278,3 +283,72 @@ fun InteractionHook.sendLocalized(context: LocalizationContext, localizationPath
  */
 fun InteractionHook.sendLocalizedEphemeral(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageCreateAction<Message> =
     sendMessage(context.localize(localizationPath, *entries)).setEphemeral(true)
+//endregion
+
+//region Localized edits
+/**
+ * Edits the text content of the original message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see IMessageEditCallback.editMessage
+ */
+fun IMessageEditCallback.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditCallbackAction =
+    editMessage(context.localize(localizationPath, *entries))
+
+/**
+ * Replaces the entire original message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see IMessageEditCallback.editMessage
+ */
+fun IMessageEditCallback.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditCallbackAction =
+    editMessage(context.localize(localizationPath, *entries)).setReplace(true)
+
+/**
+ * Edits the text content of the original message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see InteractionHook.editOriginal
+ */
+fun InteractionHook.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageEditAction<Message> =
+    editOriginal(context.localize(localizationPath, *entries))
+
+/**
+ * Replaces the entire original message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see InteractionHook.editOriginal
+ */
+fun InteractionHook.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): WebhookMessageEditAction<Message> =
+    editOriginal(context.localize(localizationPath, *entries)).setReplace(true)
+
+/**
+ * Edits the text content of the message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see Message.editMessage
+ */
+fun Message.editLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditAction =
+    editMessage(context.localize(localizationPath, *entries))
+
+/**
+ * Replaces the entire message with a localized message.
+ *
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
+ *
+ * @see Message.editMessage
+ */
+fun Message.replaceLocalized(context: LocalizationContext, localizationPath: String, vararg entries: PairEntry): MessageEditAction =
+    editMessage(context.localize(localizationPath, *entries)).setReplace(true)
+//endregion
