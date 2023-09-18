@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.RestAction
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
 import net.dv8tion.jda.api.utils.FileUpload
 import java.io.InputStream
 import java.util.function.Consumer
@@ -79,22 +80,22 @@ internal open class BaseCommandEventImpl(
     @CheckReturnValue
     override fun reactError(): RestAction<Void> = channel.addReactionById(messageId, ERROR)
 
-    override fun respond(text: CharSequence): RestAction<Message> = channel.sendMessage(text)
+    override fun respond(text: CharSequence): MessageCreateAction = channel.sendMessage(text)
 
-    override fun respondFormat(format: String, vararg args: Any): RestAction<Message> = channel.sendMessageFormat(format, *args)
+    override fun respondFormat(format: String, vararg args: Any): MessageCreateAction = channel.sendMessageFormat(format, *args)
 
-    override fun respond(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = channel.sendMessageEmbeds(embed, *other)
+    override fun respond(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = channel.sendMessageEmbeds(embed, *other)
 
-    override fun respondFile(vararg fileUploads: FileUpload): RestAction<Message> = channel.sendFiles(*fileUploads)
-
-    @CheckReturnValue
-    override fun reply(text: CharSequence): RestAction<Message> = message.reply(text)
+    override fun respondFile(vararg fileUploads: FileUpload): MessageCreateAction = channel.sendFiles(*fileUploads)
 
     @CheckReturnValue
-    override fun replyFormat(format: String, vararg args: Any): RestAction<Message> = message.replyFormat(format, *args)
+    override fun reply(text: CharSequence): MessageCreateAction = message.reply(text)
 
     @CheckReturnValue
-    override fun reply(embed: MessageEmbed, vararg other: MessageEmbed): RestAction<Message> = message.replyEmbeds(embed, *other)
+    override fun replyFormat(format: String, vararg args: Any): MessageCreateAction = message.replyFormat(format, *args)
+
+    @CheckReturnValue
+    override fun reply(embed: MessageEmbed, vararg other: MessageEmbed): MessageCreateAction = message.replyEmbeds(embed, *other)
 
     @CheckReturnValue
     override fun replyFile(vararg fileUploads: FileUpload): RestAction<Message> =

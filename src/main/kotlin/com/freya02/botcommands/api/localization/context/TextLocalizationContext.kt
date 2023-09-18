@@ -60,13 +60,16 @@ interface TextLocalizationContext : LocalizationContext {
     @CheckReturnValue
     override fun withPrefix(localizationPrefix: String?): TextLocalizationContext
 
+    @CheckReturnValue
+    override fun switchBundle(localizationBundle: String): TextLocalizationContext
+
     /**
      * Localizes the provided path, with the guild's locale.
      *
      * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      *
      * @throws IllegalStateException If the event did not happen in a Guild
      *
@@ -80,8 +83,8 @@ interface TextLocalizationContext : LocalizationContext {
      *
      * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
      *
-     * @param localizationPath The localization path to search for
-     * @param entries          The entries to fill the template
+     * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+     * @param entries          The entries to fill the template with
      *
      * @throws IllegalStateException If the event did not happen in a Guild
      *
@@ -96,8 +99,8 @@ interface TextLocalizationContext : LocalizationContext {
  *
  * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  *
  * @throws IllegalStateException If the event did not happen in a Guild
  *
@@ -111,8 +114,8 @@ fun TextLocalizationContext.localizeGuild(localizationPath: String, vararg entri
  *
  * This will localize to `en_US` if the Guild does not have the `COMMUNITY` feature flag.
  *
- * @param localizationPath   The localization path to search for
- * @param entries            The entries to fill the template
+ * @param localizationPath The path of the localization template, prefixed with [localizationPrefix][LocalizationContext.localizationPrefix]
+ * @param entries          The entries to fill the template with
  *
  * @throws IllegalStateException If the event did not happen in a Guild
  *
