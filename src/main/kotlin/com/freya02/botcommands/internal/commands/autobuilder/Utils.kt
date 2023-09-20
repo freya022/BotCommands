@@ -1,7 +1,7 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.annotations.*
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -20,6 +20,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
+import com.freya02.botcommands.internal.utils.requireUser
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import java.time.Duration
@@ -28,6 +29,8 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
+import io.github.bucket4j.Bandwidth as BucketBandwidth
+import io.github.bucket4j.Refill as BucketRefill
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
 internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
@@ -64,7 +67,7 @@ internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance
     return true
 }
 
-enum class TestState {
+internal enum class TestState {
     INCLUDE,
     EXCLUDE,
     NO_ANNOTATION
@@ -87,8 +90,29 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     //TODO find at class level too
-    //TODO rate limit annotations
-    func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
+    val rateLimitAnnotation = func.findAnnotation<RateLimit>()
+    val cooldownAnnotation = func.findAnnotation<Cooldown>()
+    requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, func) {
+        "Cannot use both @${Cooldown::class.simpleNestedName} and @${RateLimit::class.simpleNestedName}"
+    }
+
+    if (rateLimitAnnotation != null) {
+        fun Refill.toRealRefill(): BucketRefill {
+            val duration = Duration.of(period, periodUnit)
+            return when (type) {
+                RefillType.GREEDY -> BucketRefill.greedy(tokens, duration)
+                RefillType.INTERVAL -> BucketRefill.intervally(tokens, duration)
+            }
+        }
+
+        fun Bandwidth.toRealBandwidth(): BucketBandwidth {
+            return BucketBandwidth.classic(capacity, refill.toRealRefill())
+        }
+
+        rateLimit(BucketFactory.custom(rateLimitAnnotation.baseBandwidth.toRealBandwidth(), rateLimitAnnotation.spikeBandwidth.toRealBandwidth()))
+    }
+
+    if (cooldownAnnotation != null) {
         rateLimit(BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)), RateLimitHelper.defaultFactory(cooldownAnnotation.rateLimitScope))
     }
 
@@ -97,7 +121,7 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun KFunction<*>.castFunction() = this as KFunction<Any>
+internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 
 internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
     if (func.hasAnnotation<NSFW>()) {
