@@ -19,6 +19,7 @@ import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
 import com.freya02.botcommands.internal.utils.AnnotationUtils
+import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.requireUser
 import com.freya02.botcommands.internal.utils.throwInternal
@@ -89,9 +90,8 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 }
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
-    //TODO find at class level too
-    val rateLimitAnnotation = func.findAnnotation<RateLimit>()
-    val cooldownAnnotation = func.findAnnotation<Cooldown>()
+    val rateLimitAnnotation = func.findAnnotation<RateLimit>() ?: func.declaringClass.findAnnotation<RateLimit>()
+    val cooldownAnnotation = func.findAnnotation<Cooldown>() ?: func.declaringClass.findAnnotation<Cooldown>()
     requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, func) {
         "Cannot use both @${Cooldown::class.simpleNestedName} and @${RateLimit::class.simpleNestedName}"
     }
