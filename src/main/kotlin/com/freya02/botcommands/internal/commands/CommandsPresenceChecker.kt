@@ -9,6 +9,7 @@ import com.freya02.botcommands.api.commands.application.slash.annotations.JDASla
 import com.freya02.botcommands.api.commands.prefixed.annotations.JDATextCommand
 import com.freya02.botcommands.api.commands.prefixed.annotations.TextDeclaration
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.api.core.utils.shortSignature
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import io.github.classgraph.ClassInfo
@@ -51,13 +52,13 @@ class CommandsPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn("Some classes annotated with @${Command::class.simpleNestedName} were found to have no command declarations:\n${
-                noDeclarationClasses.joinToString(prefix = " - ", separator = "\n - ")
+                noDeclarationClasses.joinAsList()
             }")
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
             throw IllegalStateException("Some command declarations do not have their declaring class annotated with @${Command::class.simpleNestedName}:\n${
-                noAnnotationMethods.joinToString(prefix = " - ", separator = "\n - ") { it.shortSignature }
+                noAnnotationMethods.joinAsList()
             }")
         }
     }

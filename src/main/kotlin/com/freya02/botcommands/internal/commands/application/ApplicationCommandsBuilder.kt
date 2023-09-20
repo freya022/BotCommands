@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.InjectedJDAEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.autobuilder.ContextCommandAutoBuilder
 import com.freya02.botcommands.internal.commands.application.autobuilder.SlashCommandAutoBuilder
@@ -70,11 +71,11 @@ internal class ApplicationCommandsBuilder(
 
         logger.debug("Loaded ${globalDeclarationFunctions.size} global declaration functions and ${guildDeclarationFunctions.size} guild declaration functions")
         if (globalDeclarationFunctions.isNotEmpty()) {
-            logger.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Global declaration functions:\n" + globalDeclarationFunctions.joinAsList { it.function.shortSignature } }
         }
 
         if (guildDeclarationFunctions.isNotEmpty()) {
-            logger.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Guild declaration functions:\n" + guildDeclarationFunctions.joinAsList { it.function.shortSignature } }
         }
     }
 

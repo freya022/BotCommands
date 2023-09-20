@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDecla
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.utils.computeIfAbsentOrNull
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.internal.core.requiredFilter
 import com.freya02.botcommands.internal.core.service.FunctionAnnotationsMap
 import com.freya02.botcommands.internal.core.service.ServiceContainerImpl
@@ -37,7 +38,7 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
 
         if (logger.isTraceEnabled) {
             logger.trace {
-                "Loaded ${map.size} rate limiters with:\n${declarators.joinToString(prefix = " - ", separator = "\n - ") { it.function.shortSignature }}"
+                "Loaded ${map.size} rate limiters with:\n${declarators.joinAsList { it.function.shortSignature }}"
             }
         } else {
             logger.debug { "Loaded ${map.size} rate limiters" }
