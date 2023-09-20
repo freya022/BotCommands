@@ -17,7 +17,6 @@ annotation class Bandwidth(val capacity: Long, val refill: Refill)
 annotation class Refill(val type: RefillType, val tokens: Long, val period: Long, val periodUnit: ChronoUnit)
 
 //TODO docs
-//TODO reference annotation
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RateLimit(
@@ -25,3 +24,8 @@ annotation class RateLimit(
     val baseBandwidth: Bandwidth,
     val spikeBandwidth: Bandwidth
 )
+
+//TODO docs
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class RateLimitReference(val group: String)

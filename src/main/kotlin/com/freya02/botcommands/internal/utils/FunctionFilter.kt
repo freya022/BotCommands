@@ -72,6 +72,13 @@ internal abstract class FunctionFilter {
             override fun filter(function: Function): Boolean = !function.isStatic
         }
 
+        fun blocking() = object : FunctionFilter() {
+            override val errorMessage: String
+                get() = "Function must not be suspending"
+
+            override fun filter(function: Function): Boolean = !function.isSuspend
+        }
+
         inline fun <reified A : Annotation> annotation() = object : FunctionFilter() {
             override val errorMessage: String
                 get() = "Function must be annotated with @${A::class.simpleNestedName}"
