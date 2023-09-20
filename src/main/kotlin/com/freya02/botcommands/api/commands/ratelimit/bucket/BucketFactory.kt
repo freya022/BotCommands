@@ -26,10 +26,38 @@ fun interface BucketFactory {
         @JvmStatic
         fun default(capacity: Long, duration: JavaDuration): BucketFactory = BucketFactory {
             Bucket.builder()
-                .addLimit(Bandwidth.classic(capacity, Refill.greedy(capacity, duration)))
+                .addLimit(Bandwidth.simple(capacity, duration))
                 .build()
         }
 
-        //TODO spike protected bucket
+        //TODO explain bucket limit
+        fun spikeProtected(capacity: Long, duration: Duration, spikeCapacity: Long, spikeDuration: Duration): BucketFactory =
+            spikeProtected(capacity, duration.toJavaDuration(), spikeCapacity, spikeDuration.toJavaDuration())
+
+        //TODO explain bucket limit
+        @JvmStatic
+        fun spikeProtected(capacity: Long, duration: JavaDuration, spikeCapacity: Long, spikeDuration: JavaDuration): BucketFactory {
+            require(capacity > spikeCapacity) { "Spike capacity must be lower than capacity" }
+
+            return BucketFactory {
+                Bucket.builder()
+                    .addLimit(Bandwidth.simple(capacity, duration))
+                    .addLimit(Bandwidth.classic(spikeCapacity, Refill.intervally(spikeCapacity, spikeDuration)))
+                    .build()
+            }
+        }
+
+        @JvmStatic
+        fun custom(vararg limits: Bandwidth): BucketFactory {
+            return BucketFactory {
+                Bucket.builder()
+                    .apply {
+                        for (limit in limits) {
+                            addLimit(limit)
+                        }
+                    }
+                    .build()
+            }
+        }
     }
 }
