@@ -17,10 +17,10 @@ import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 
 abstract class SlashCommandBuilder internal constructor(
-    protected val context: BContextImpl,
+    context: BContextImpl,
     name: String,
     function: KFunction<Any>? //Nullable as subcommands make top level commands impossible to execute
-) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(name, function ?: fakeSlashFunction) {
+) : ApplicationCommandBuilder<SlashCommandOptionAggregateBuilder>(context, name, function ?: fakeSlashFunction) {
     /**
      * Short description of the command displayed on Discord.
      *

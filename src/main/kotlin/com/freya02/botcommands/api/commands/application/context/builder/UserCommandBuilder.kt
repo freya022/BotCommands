@@ -11,11 +11,11 @@ import com.freya02.botcommands.internal.parameters.AggregatorParameter
 import kotlin.reflect.KFunction
 
 class UserCommandBuilder internal constructor(
-    private val context: BContextImpl,
+    context: BContextImpl,
     name: String,
     function: KFunction<Any>,
     scope: CommandScope
-) : ApplicationCommandBuilder<UserCommandOptionAggregateBuilder>(name, function), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
+) : ApplicationCommandBuilder<UserCommandOptionAggregateBuilder>(context, name, function), ITopLevelApplicationCommandBuilder by TopLevelApplicationCommandBuilderMixin(scope) {
     override val topLevelBuilder: ITopLevelApplicationCommandBuilder = this
     override val parentInstance: INamedCommand? = null
 

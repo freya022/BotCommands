@@ -1,0 +1,74 @@
+package com.freya02.botcommands.api.commands.ratelimit.bucket
+
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.RateLimitScope
+import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
+import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
+import com.freya02.botcommands.internal.components.ComponentDescriptor
+import com.freya02.botcommands.internal.utils.throwInternal
+import io.github.bucket4j.Bucket
+import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+
+private val logger = KotlinLogging.logger { }
+
+class DefaultBucketAccessor(private val scope: RateLimitScope, private val bucketFactory: BucketFactory) :
+    BucketAccessor {
+    @JvmRecord
+    private data class RateLimitKey(private val placeId: Long?, private val userId: Long?)
+
+    private val map: MutableMap<RateLimitKey, Bucket> = hashMapOf()
+
+    override suspend fun getBucket(context: BContext, event: MessageReceivedEvent, commandInfo: TextCommandInfo): Bucket {
+        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+    }
+
+    private fun MessageReceivedEvent.toRateLimitKey(): RateLimitKey {
+        if (!isFromGuild) throwInternal("Invalid cooldown scope for text commands")
+        return when (scope) {
+            RateLimitScope.USER -> RateLimitKey(null, author.idLong)
+            RateLimitScope.USER_PER_GUILD -> RateLimitKey(guild.idLong, author.idLong)
+            RateLimitScope.USER_PER_CHANNEL -> RateLimitKey(channel.idLong, author.idLong)
+            RateLimitScope.GUILD -> RateLimitKey(guild.idLong, null)
+            RateLimitScope.CHANNEL -> RateLimitKey(channel.idLong, null)
+        }
+    }
+
+    override suspend fun getBucket(context: BContext, event: GenericCommandInteractionEvent, commandInfo: ApplicationCommandInfo): Bucket {
+        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+    }
+
+    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent, descriptor: ComponentDescriptor): Bucket {
+        return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
+    }
+
+    private fun GenericInteractionCreateEvent.toRateLimitKey(): RateLimitKey {
+        return when (scope) {
+            RateLimitScope.USER -> RateLimitKey(null, user.idLong)
+            RateLimitScope.USER_PER_GUILD -> {
+                val guild = guild ?: return fallbackUserKey(user)
+                RateLimitKey(guild.idLong, user.idLong)
+            }
+            RateLimitScope.USER_PER_CHANNEL -> {
+                if (isFromGuild) RateLimitKey(guildChannel.idLong, user.idLong) else fallbackUserKey(user)
+            }
+            RateLimitScope.GUILD -> {
+                val guild = guild ?: return fallbackUserKey(user)
+                RateLimitKey(guild.idLong, null)
+            }
+            RateLimitScope.CHANNEL -> {
+                if (isFromGuild) RateLimitKey(guildChannel.idLong, null) else fallbackUserKey(user)
+            }
+        }
+    }
+
+    private fun fallbackUserKey(user: UserSnowflake): RateLimitKey {
+        logger.warn("Tried to get an invalid rate limit bucket, rate limiters outside of guilds must only use the ${RateLimitScope.USER} scope. " +
+                "Returning an user bucket instead.")
+        return RateLimitKey(null, user.idLong)
+    }
+}

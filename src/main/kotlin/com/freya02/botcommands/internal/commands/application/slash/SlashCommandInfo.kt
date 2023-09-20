@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.application.slash
 import com.freya02.botcommands.api.commands.application.slash.GlobalSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent
 import com.freya02.botcommands.api.commands.application.slash.builder.SlashCommandBuilder
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.*
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
@@ -51,15 +50,13 @@ abstract class SlashCommandInfo internal constructor(
             .forEach(SlashCommandOption::buildAutocomplete)
     }
 
-    internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent, cooldownService: CooldownService): Boolean {
+    internal suspend fun execute(jdaEvent: SlashCommandInteractionEvent): Boolean {
         val event = when {
             topLevelInstance.isGuildOnly -> GuildSlashEvent(context, jdaEvent)
             else -> GlobalSlashEventImpl(context, jdaEvent)
         }
 
         val objects = getSlashOptions(event, parameters) ?: return false
-
-        cooldownService.applyCooldown(this, event)
         function.callSuspendBy(objects)
 
         return true

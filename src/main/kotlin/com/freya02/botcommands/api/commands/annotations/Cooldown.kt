@@ -1,17 +1,19 @@
 package com.freya02.botcommands.api.commands.annotations
 
-import com.freya02.botcommands.api.commands.CooldownScope
-
-import java.util.concurrent.TimeUnit
+import com.freya02.botcommands.api.commands.RateLimitScope
+import java.time.temporal.ChronoUnit
 
 /**
- * Specifies the cooldown of this text / application command.
+ * Add a simple rate limit-based cooldown of this text / application command and components.
+ *
+ * @see RateLimit @RateLimit
  */
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Cooldown(
     /**
-     * Cooldown time [in the specified unit][unit] before the command can be used again in the scope specified by [cooldownScope].
+     * Cooldown time [in the specified unit][unit]
+     * before the command can be used again in the scope specified by [rateLimitScope].
      *
      * @return Cooldown time [in the specified unit][unit]
      */
@@ -20,10 +22,12 @@ annotation class Cooldown(
     /**
      * The time unit of the cooldown
      */
-    val unit: TimeUnit = TimeUnit.MILLISECONDS,
+    val unit: ChronoUnit = ChronoUnit.MILLIS,
 
     /**
-     * Scope of the cooldown, either [CooldownScope.USER], [CooldownScope.CHANNEL] or [CooldownScope.GUILD]
+     * Scope of the cooldown, see [RateLimitScope] values.
+     *
+     * @see RateLimitScope
      */
-    val cooldownScope: CooldownScope = CooldownScope.USER
+    val rateLimitScope: RateLimitScope = RateLimitScope.USER
 )

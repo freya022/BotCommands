@@ -10,6 +10,8 @@ import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
+import com.freya02.botcommands.api.commands.ratelimit.RateLimitHelper
+import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
@@ -20,6 +22,7 @@ import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
+import java.time.Duration
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -83,12 +86,10 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 }
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
+    //TODO find at class level too
+    //TODO rate limit annotations
     func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
-        cooldown {
-            scope = cooldownAnnotation.cooldownScope
-            cooldown = cooldownAnnotation.cooldown
-            unit = cooldownAnnotation.unit
-        }
+        rateLimit(BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)), RateLimitHelper.defaultFactory(cooldownAnnotation.rateLimitScope))
     }
 
     userPermissions = AnnotationUtils.getUserPermissions(func)

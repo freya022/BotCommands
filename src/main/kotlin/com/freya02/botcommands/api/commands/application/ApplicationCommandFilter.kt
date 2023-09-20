@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.commands.application
 
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
