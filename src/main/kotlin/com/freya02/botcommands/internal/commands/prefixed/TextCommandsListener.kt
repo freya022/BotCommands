@@ -13,6 +13,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.commands.withRateLimit
 import com.freya02.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -71,7 +72,7 @@ internal class TextCommandsListener internal constructor(
                     return@launch
                 }
 
-                withRateLimit(event, commandInfo, isNotOwner) {
+                commandInfo.withRateLimit(context, event, isNotOwner) {
                     if (!canRun(event, commandInfo, isNotOwner)) {
                         false
                     } else {
@@ -118,27 +119,6 @@ internal class TextCommandsListener internal constructor(
 
         helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, ""), commandInfo)
         return false
-    }
-
-    // TODO move to RLHelper?
-    private suspend fun withRateLimit(event: MessageReceivedEvent, command: TextCommandInfo, isNotOwner: Boolean, block: suspend () -> Boolean) {
-        val rateLimitInfo = command.rateLimitInfo
-        if (isNotOwner && rateLimitInfo != null) {
-            val bucket = rateLimitInfo.helper.getBucket(context, event, command)
-            val probe = bucket.tryConsumeAndReturnRemaining(1)
-            if (probe.isConsumed) {
-                try {
-                    block()
-                } catch (e: Throwable) {
-                    bucket.addTokens(1)
-                    throw e
-                }
-            } else {
-                rateLimitInfo.helper.onRateLimit(context, event, command, probe)
-            }
-        } else {
-            block()
-        }
     }
 
     private fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
