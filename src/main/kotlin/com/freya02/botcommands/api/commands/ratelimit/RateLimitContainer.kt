@@ -59,10 +59,10 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
     fun rateLimit(
         group: String,
         bucketFactory: BucketFactory,
-        helperFactory: RateLimitHelperFactory = RateLimitHelper.defaultFactory(RateLimitScope.USER),
+        limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer { }
     ): RateLimitInfo {
-        return map.computeIfAbsentOrNull(group) { RateLimitBuilder(bucketFactory, helperFactory).apply(block).build() }
+        return map.computeIfAbsentOrNull(group) { RateLimitBuilder(bucketFactory, limiterFactory).apply(block).build() }
             ?: throwUser("A rate limiter already exists with a group of '$group'")
     }
 }

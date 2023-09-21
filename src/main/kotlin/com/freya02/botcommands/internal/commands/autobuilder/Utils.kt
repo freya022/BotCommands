@@ -10,7 +10,7 @@ import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
-import com.freya02.botcommands.api.commands.ratelimit.RateLimitHelper
+import com.freya02.botcommands.api.commands.ratelimit.RateLimiter
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
@@ -113,7 +113,7 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
     }
 
     if (cooldownAnnotation != null) {
-        rateLimit(BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)), RateLimitHelper.defaultFactory(cooldownAnnotation.rateLimitScope))
+        rateLimit(BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)), RateLimiter.defaultFactory(cooldownAnnotation.rateLimitScope))
     }
 
     userPermissions = AnnotationUtils.getUserPermissions(func)

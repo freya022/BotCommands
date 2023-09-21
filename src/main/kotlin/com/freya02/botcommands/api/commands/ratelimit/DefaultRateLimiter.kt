@@ -8,16 +8,16 @@ import com.freya02.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHa
 import com.freya02.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 
 /**
- * Default [RateLimitHelper] implementation, based on [DefaultRateLimitHandler] and [DefaultBucketAccessor].
+ * Default [RateLimiter] implementation, based on [DefaultRateLimitHandler] and [DefaultBucketAccessor].
  */
-class DefaultRateLimitHelper(
+class DefaultRateLimiter(
     private val scope: RateLimitScope,
     private val bucketFactory: BucketFactory
-) : RateLimitHelper,
+) : RateLimiter,
     RateLimitHandler by DefaultRateLimitHandler(scope),
     BucketAccessor by DefaultBucketAccessor(scope, bucketFactory) {
 
     override fun toString(): String {
-        return "DefaultRateLimitHelper(scope=$scope)"
+        return "DefaultRateLimiter(scope=$scope)"
     }
 }

@@ -17,12 +17,12 @@ internal sealed interface RateLimited {
 internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: MessageReceivedEvent, isNotOwner: Boolean, block: suspend () -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
-        val bucket = rateLimitInfo.helper.getBucket(context, event, this)
+        val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
         val probe = bucket.tryConsumeAndReturnRemaining(1)
         if (probe.isConsumed) {
             runRateLimited(block, bucket)
         } else {
-            rateLimitInfo.helper.onRateLimit(context, event, this, probe)
+            rateLimitInfo.limiter.onRateLimit(context, event, this, probe)
         }
     } else {
         block()
@@ -32,12 +32,12 @@ internal suspend fun TextCommandInfo.withRateLimit(context: BContext, event: Mes
 internal suspend fun ApplicationCommandInfo.withRateLimit(context: BContext, event: GenericCommandInteractionEvent, isNotOwner: Boolean, block: suspend () -> Boolean) {
     val rateLimitInfo = rateLimitInfo
     if (isNotOwner && rateLimitInfo != null) {
-        val bucket = rateLimitInfo.helper.getBucket(context, event, this)
+        val bucket = rateLimitInfo.limiter.getBucket(context, event, this)
         val probe = bucket.tryConsumeAndReturnRemaining(1)
         if (probe.isConsumed) {
             runRateLimited(block, bucket)
         } else {
-            rateLimitInfo.helper.onRateLimit(context, event, this, probe)
+            rateLimitInfo.limiter.onRateLimit(context, event, this, probe)
         }
     } else {
         block()

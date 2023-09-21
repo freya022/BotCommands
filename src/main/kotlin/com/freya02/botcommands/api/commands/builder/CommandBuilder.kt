@@ -4,9 +4,9 @@ import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.CommandPath
 import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
-import com.freya02.botcommands.api.commands.ratelimit.RateLimitHelper
-import com.freya02.botcommands.api.commands.ratelimit.RateLimitHelperFactory
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitInfo
+import com.freya02.botcommands.api.commands.ratelimit.RateLimiter
+import com.freya02.botcommands.api.commands.ratelimit.RateLimiterFactory
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.service.getService
 import com.freya02.botcommands.api.core.utils.enumSetOf
@@ -30,11 +30,11 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
 
     fun rateLimit(
         bucketFactory: BucketFactory,
-        helperFactory: RateLimitHelperFactory = RateLimitHelper.defaultFactory(RateLimitScope.USER),
+        limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         group: String = path.fullPath,
         block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer { }
     ) {
-        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(group, bucketFactory, helperFactory, block)
+        rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(group, bucketFactory, limiterFactory, block)
     }
 
     fun rateLimitReference(group: String) {
