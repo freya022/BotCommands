@@ -70,8 +70,8 @@ class DefaultRateLimitHandler(private val scope: RateLimitScope) : RateLimitHand
         probe: ConsumptionProbe
     ): String = when (scope) {
         RateLimitScope.USER -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
-        RateLimitScope.USER_PER_GUILD -> TODO()
-        RateLimitScope.USER_PER_CHANNEL -> TODO()
+        RateLimitScope.USER_PER_GUILD -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
+        RateLimitScope.USER_PER_CHANNEL -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
         RateLimitScope.GUILD -> messages.getGuildCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
         RateLimitScope.CHANNEL -> messages.getChannelCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
     }
