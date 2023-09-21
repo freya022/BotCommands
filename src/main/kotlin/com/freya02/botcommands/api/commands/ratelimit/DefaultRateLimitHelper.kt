@@ -7,6 +7,9 @@ import com.freya02.botcommands.api.commands.ratelimit.bucket.DefaultBucketAccess
 import com.freya02.botcommands.api.commands.ratelimit.handler.DefaultRateLimitHandler
 import com.freya02.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 
+/**
+ * Default [RateLimitHelper] implementation, based on [DefaultRateLimitHandler] and [DefaultBucketAccessor].
+ */
 class DefaultRateLimitHelper(
     private val scope: RateLimitScope,
     private val bucketFactory: BucketFactory

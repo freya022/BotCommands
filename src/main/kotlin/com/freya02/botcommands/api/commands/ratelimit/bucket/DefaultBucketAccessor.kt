@@ -16,10 +16,23 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 private val logger = KotlinLogging.logger { }
 
-class DefaultBucketAccessor(private val scope: RateLimitScope, private val bucketFactory: BucketFactory) :
-    BucketAccessor {
+/**
+ * Default [BucketAccessor] implementation based on [rate limit scopes][RateLimitScope].
+ *
+ * **Note:** The rate limit scopes using guilds or channels are limited to guild-only events,
+ * a user rate limit is applied if the limitation is violated.
+ */
+class DefaultBucketAccessor(
+    private val scope: RateLimitScope,
+    private val bucketFactory: BucketFactory
+) : BucketAccessor {
     @JvmRecord
-    private data class RateLimitKey(private val placeId: Long?, private val userId: Long?)
+    private data class RateLimitKey(private val placeId: Long?, private val userId: Long?) {
+        init {
+            if (placeId == null && userId == null)
+                throwInternal("Rate limiting cannot be done on an empty key")
+        }
+    }
 
     private val map: MutableMap<RateLimitKey, Bucket> = hashMapOf()
 

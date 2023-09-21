@@ -16,6 +16,15 @@ import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
 
+/**
+ * Default [RateLimitHandler] implementation based on [rate limit scopes][RateLimitScope].
+ *
+ * - Text command rate limits are sent to the user in the event's channel, if the bot cannot talk,
+ *   then it is sent to the user's DMs, or returns if not possible.
+ * - Interactions are simply replying an ephemeral message to the user.
+ *
+ * All messages sent to the user are localized messages from [DefaultMessages].
+ */
 class DefaultRateLimitHandler(private val scope: RateLimitScope) : RateLimitHandler {
     override suspend fun onRateLimit(
         context: BContext,

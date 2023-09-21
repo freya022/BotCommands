@@ -3,6 +3,9 @@ package com.freya02.botcommands.api.commands.ratelimit
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.RateLimitScope
+import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.annotations.RateLimit
+import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.builder.RateLimitBuilder
 import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
@@ -21,6 +24,11 @@ import kotlin.reflect.jvm.jvmErasure
 
 private val logger = KotlinLogging.logger { }
 
+/**
+ * Contains all the rate limit handlers, either declared with [rateLimit], [CommandBuilder.rateLimit],
+ * or annotations such as [@Cooldown][Cooldown], [@RateLimit][RateLimit]
+ * and [@RateLimitDeclaration][RateLimitDeclaration].
+ */
 @BService
 class RateLimitContainer internal constructor(serviceContainer: ServiceContainerImpl, functionAnnotationsMap: FunctionAnnotationsMap) {
     private val map: MutableMap<String, RateLimitInfo> = hashMapOf()
@@ -45,7 +53,8 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
         }
     }
 
-    operator fun get(group: String): RateLimitInfo? = map[group]
+    @JvmSynthetic
+    internal operator fun get(group: String): RateLimitInfo? = map[group]
 
     fun rateLimit(
         group: String,
