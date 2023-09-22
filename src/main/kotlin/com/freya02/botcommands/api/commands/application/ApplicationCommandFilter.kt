@@ -51,7 +51,6 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * @see InterfacedService @InterfacedService
  *
  * @see isAccepted
- * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
 interface ApplicationCommandFilter {

@@ -43,7 +43,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  * @see InterfacedService @InterfacedService
  *
  * @see isAccepted
- * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
 interface TextCommandFilter {

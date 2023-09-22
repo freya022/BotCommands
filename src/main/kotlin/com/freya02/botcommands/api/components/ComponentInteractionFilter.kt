@@ -56,7 +56,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * @see InterfacedService @InterfacedService
  *
  * @see isAccepted
- * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
 interface ComponentInteractionFilter {

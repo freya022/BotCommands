@@ -1,9 +1,6 @@
 package com.freya02.botcommands.api.commands.prefixed.annotations
 
-import com.freya02.botcommands.api.commands.annotations.BotPermissions
-import com.freya02.botcommands.api.commands.annotations.Command
-import com.freya02.botcommands.api.commands.annotations.Cooldown
-import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.annotations.*
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
@@ -35,6 +32,7 @@ import com.freya02.botcommands.api.parameters.ParameterResolver
  * @see BotPermissions @BotPermissions
  * @see UserPermissions @UserPermissions
  * @see Cooldown @Cooldown
+ * @see RateLimit @RateLimit
  * @see Aggregate @Aggregate
  *
  * @see AppDeclaration Declaring text commands using the DSL
