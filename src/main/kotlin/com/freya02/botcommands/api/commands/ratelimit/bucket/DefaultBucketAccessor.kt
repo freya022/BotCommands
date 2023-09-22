@@ -2,6 +2,7 @@ package com.freya02.botcommands.api.commands.ratelimit.bucket
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.RateLimitScope
+import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.components.ComponentDescriptor
@@ -21,6 +22,8 @@ private val logger = KotlinLogging.logger { }
  *
  * **Note:** The rate limit scopes using guilds or channels are limited to guild-only events,
  * a user rate limit is applied if the limitation is violated.
+ *
+ * @see DefaultRateLimiter
  */
 class DefaultBucketAccessor(
     private val scope: RateLimitScope,

@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.ratelimit.handler
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.commands.RateLimitScope
+import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import com.freya02.botcommands.internal.components.ComponentDescriptor
@@ -24,6 +25,8 @@ import net.dv8tion.jda.api.requests.ErrorResponse
  * - Interactions are simply replying an ephemeral message to the user.
  *
  * All messages sent to the user are localized messages from [DefaultMessages].
+ *
+ * @see DefaultRateLimiter
  */
 class DefaultRateLimitHandler(private val scope: RateLimitScope) : RateLimitHandler {
     override suspend fun onRateLimit(

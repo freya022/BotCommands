@@ -9,9 +9,12 @@ import com.freya02.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 
 /**
  * Default [RateLimiter] implementation, based on [DefaultRateLimitHandler] and [DefaultBucketAccessor].
+ *
+ * @see DefaultRateLimitHandler
+ * @see DefaultBucketAccessor
  */
 class DefaultRateLimiter(
-    private val scope: RateLimitScope,
+    val scope: RateLimitScope,
     private val bucketFactory: BucketFactory
 ) : RateLimiter,
     RateLimitHandler by DefaultRateLimitHandler(scope),
