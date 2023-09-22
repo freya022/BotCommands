@@ -142,6 +142,11 @@ fun interface BucketFactory {
 
         @JvmStatic
         fun custom(vararg limits: Bandwidth): BucketFactory {
+            return custom(limits.asList())
+        }
+
+        @JvmStatic
+        fun custom(limits: List<Bandwidth>): BucketFactory {
             return BucketFactory {
                 Bucket.builder()
                     .apply {

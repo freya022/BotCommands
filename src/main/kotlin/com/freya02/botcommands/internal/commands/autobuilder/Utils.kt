@@ -109,7 +109,7 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
             return BucketBandwidth.classic(capacity, refill.toRealRefill())
         }
 
-        rateLimit(BucketFactory.custom(rateLimitAnnotation.baseBandwidth.toRealBandwidth(), rateLimitAnnotation.spikeBandwidth.toRealBandwidth()))
+        rateLimit(BucketFactory.custom(rateLimitAnnotation.bandwidths.map { it.toRealBandwidth() }))
     }
 
     if (cooldownAnnotation != null) {
