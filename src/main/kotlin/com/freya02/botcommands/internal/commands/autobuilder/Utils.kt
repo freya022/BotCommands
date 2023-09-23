@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.annotations.*
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -10,28 +9,21 @@ import com.freya02.botcommands.api.commands.application.annotations.Test
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.CommandBuilder
 import com.freya02.botcommands.api.commands.prefixed.annotations.NSFW
-import com.freya02.botcommands.api.commands.ratelimit.RateLimiter
-import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketFactory
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.parameters.ICustomResolver
 import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
+import com.freya02.botcommands.internal.commands.ratelimit.readRateLimit
 import com.freya02.botcommands.internal.utils.AnnotationUtils
-import com.freya02.botcommands.internal.utils.ReflectionUtils.declaringClass
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
-import com.freya02.botcommands.internal.utils.requireUser
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
-import java.time.Duration
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
-import io.github.bucket4j.Bandwidth as BucketBandwidth
-import io.github.bucket4j.Refill as BucketRefill
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
 internal inline fun <T : CommandFunctionMetadata<*, *>> Iterable<T>.forEachWithDelayedExceptions(crossinline block: (T) -> Unit) {
@@ -90,30 +82,8 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 }
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
-    val rateLimitAnnotation = func.findAnnotation<RateLimit>() ?: func.declaringClass.findAnnotation<RateLimit>()
-    val cooldownAnnotation = func.findAnnotation<Cooldown>() ?: func.declaringClass.findAnnotation<Cooldown>()
-    requireUser(cooldownAnnotation == null || rateLimitAnnotation == null, func) {
-        "Cannot use both @${Cooldown::class.simpleNestedName} and @${RateLimit::class.simpleNestedName}"
-    }
-
-    if (rateLimitAnnotation != null) {
-        fun Refill.toRealRefill(): BucketRefill {
-            val duration = Duration.of(period, periodUnit)
-            return when (type) {
-                RefillType.GREEDY -> BucketRefill.greedy(tokens, duration)
-                RefillType.INTERVAL -> BucketRefill.intervally(tokens, duration)
-            }
-        }
-
-        fun Bandwidth.toRealBandwidth(): BucketBandwidth {
-            return BucketBandwidth.classic(capacity, refill.toRealRefill())
-        }
-
-        rateLimit(BucketFactory.custom(rateLimitAnnotation.bandwidths.map { it.toRealBandwidth() }))
-    }
-
-    if (cooldownAnnotation != null) {
-        rateLimit(BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)), RateLimiter.defaultFactory(cooldownAnnotation.rateLimitScope))
+    func.readRateLimit()?.let { (bucketFactory, rateLimiterFactory) ->
+        rateLimit(bucketFactory, rateLimiterFactory)
     }
 
     userPermissions = AnnotationUtils.getUserPermissions(func)
