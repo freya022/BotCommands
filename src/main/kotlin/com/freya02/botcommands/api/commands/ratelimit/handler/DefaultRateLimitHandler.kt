@@ -6,7 +6,6 @@ import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.components.ComponentDescriptor
 import dev.minn.jda.ktx.coroutines.await
 import io.github.bucket4j.ConsumptionProbe
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
@@ -65,7 +64,6 @@ class DefaultRateLimitHandler(private val scope: RateLimitScope) : RateLimitHand
     override suspend fun <T> onRateLimit(
         context: BContext,
         event: T,
-        descriptor: ComponentDescriptor,
         probe: ConsumptionProbe
     ) where T : GenericComponentInteractionCreateEvent, T : IReplyCallback, T : IMessageEditCallback {
         onRateLimit(context, event, probe)

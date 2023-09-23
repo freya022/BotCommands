@@ -60,6 +60,9 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
     @JvmSynthetic
     internal operator fun get(group: String): RateLimitInfo? = map[group]
 
+    @JvmSynthetic
+    internal operator fun contains(rateLimitGroup: String): Boolean = rateLimitGroup in map
+
     /**
      * Creates a rate limiter with the specified group.
      *

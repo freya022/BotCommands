@@ -5,7 +5,6 @@ import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
-import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.utils.throwInternal
 import io.github.bucket4j.Bucket
 import mu.KotlinLogging
@@ -58,7 +57,7 @@ class DefaultBucketAccessor(
         return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
     }
 
-    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent, descriptor: ComponentDescriptor): Bucket {
+    override suspend fun getBucket(context: BContext, event: GenericComponentInteractionCreateEvent): Bucket {
         return map.computeIfAbsent(event.toRateLimitKey()) { bucketFactory.createBucket() }
     }
 
