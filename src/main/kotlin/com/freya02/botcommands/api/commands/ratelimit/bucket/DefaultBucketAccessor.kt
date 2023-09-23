@@ -43,7 +43,7 @@ class DefaultBucketAccessor(
     }
 
     private fun MessageReceivedEvent.toRateLimitKey(): RateLimitKey {
-        if (!isFromGuild) throwInternal("Invalid cooldown scope for text commands")
+        if (!isFromGuild) throwInternal("Invalid rate limit scope for text commands")
         return when (scope) {
             RateLimitScope.USER -> RateLimitKey(null, author.idLong)
             RateLimitScope.USER_PER_GUILD -> RateLimitKey(guild.idLong, author.idLong)

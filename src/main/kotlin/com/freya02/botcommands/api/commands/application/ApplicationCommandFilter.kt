@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
  * Filters application command interactions (such as slash commands and user/message context commands),
  * any filter that returns `false` prevents the command from executing.
  *
- * Filters are tested right before the command gets executed (i.e., after the permissions/cooldown... were checked).
+ * Filters are tested right before the command gets executed (i.e., after the permissions/rate limits... were checked).
  *
  * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
  *
