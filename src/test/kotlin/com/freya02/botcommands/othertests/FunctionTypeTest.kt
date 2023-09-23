@@ -18,6 +18,9 @@ object FunctionTypeTest {
     val x = object : IPersistentActionableComponent {
         override val handler: ComponentHandler?
             get() = null
+        override val rateLimitGroup: String? = null
+
+        override fun rateLimitReference(group: String) { throw NotImplementedError() }
 
         override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>) {
             println("ok")

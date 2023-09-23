@@ -46,8 +46,8 @@ internal class ComponentRepository(
         database.transactional {
             // Create base component
             val componentId: Int =
-                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use) VALUES (?, ?, ?) returning component_id") {
-                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse)
+                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group) VALUES (?, ?, ?, ?) returning component_id") {
+                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup)
                         .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
                 }

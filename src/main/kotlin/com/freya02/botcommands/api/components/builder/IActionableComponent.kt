@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.components.builder
 
 import com.freya02.botcommands.api.ReceiverConsumer
+import com.freya02.botcommands.api.commands.annotations.RateLimitReference
+import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -26,6 +28,17 @@ import kotlin.reflect.full.isSubclassOf
  */
 interface IActionableComponent {
     val handler: ComponentHandler?
+
+    val rateLimitGroup: String?
+
+    /**
+     * Sets the rate limiter of this component to one declared by [@RateLimitDeclaration][RateLimitDeclaration].
+     *
+     * An exception will be thrown when constructing the button if the group is invalid.
+     *
+     * @see RateLimitReference @RateLimitReference
+     */
+    fun rateLimitReference(group: String)
 }
 
 /**

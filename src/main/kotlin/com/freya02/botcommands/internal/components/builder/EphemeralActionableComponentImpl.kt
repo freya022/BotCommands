@@ -6,7 +6,7 @@ import com.freya02.botcommands.api.components.builder.IEphemeralActionableCompon
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 
-internal class EphemeralActionableComponentImpl<E : GenericComponentInteractionCreateEvent> : IEphemeralActionableComponent<E> {
+internal class EphemeralActionableComponentImpl<E : GenericComponentInteractionCreateEvent> : AbstractActionableComponent(), IEphemeralActionableComponent<E> {
     override var handler: EphemeralHandler<*>? = null
         private set
 

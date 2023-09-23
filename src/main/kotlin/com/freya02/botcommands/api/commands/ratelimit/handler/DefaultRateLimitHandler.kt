@@ -66,7 +66,7 @@ class DefaultRateLimitHandler(private val scope: RateLimitScope) : RateLimitHand
         event: T,
         probe: ConsumptionProbe
     ) where T : GenericComponentInteractionCreateEvent, T : IReplyCallback, T : IMessageEditCallback {
-        onRateLimit(context, event, probe)
+        onRateLimit(context, event as IReplyCallback, probe)
     }
 
     private suspend fun onRateLimit(context: BContext, event: IReplyCallback, probe: ConsumptionProbe) {

@@ -5,7 +5,7 @@ import com.freya02.botcommands.api.components.builder.IPersistentActionableCompo
 import com.freya02.botcommands.api.components.builder.PersistentHandlerBuilder
 import com.freya02.botcommands.internal.components.PersistentHandler
 
-internal class PersistentActionableComponentImpl : IPersistentActionableComponent {
+internal class PersistentActionableComponentImpl : AbstractActionableComponent(), IPersistentActionableComponent {
     override var handler: PersistentHandler? = null
         private set
 
