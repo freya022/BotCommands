@@ -19,6 +19,7 @@ import com.freya02.botcommands.internal.components.ComponentHandlerOption
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.data.AbstractComponentData
+import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
@@ -116,6 +117,7 @@ internal class ComponentsListener(
                         (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
                     }
                 }
+                is ComponentGroupData -> throwInternal("Somehow received an interaction with a component ID that was a group")
             }
         } catch (e: Throwable) {
             handleException(event, e)
