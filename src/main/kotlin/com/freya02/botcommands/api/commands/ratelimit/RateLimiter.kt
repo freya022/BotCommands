@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.commands.ratelimit.RateLimiter.Companion.defa
 import com.freya02.botcommands.api.commands.ratelimit.bucket.BucketAccessor
 import com.freya02.botcommands.api.commands.ratelimit.handler.RateLimitHandler
 import com.freya02.botcommands.internal.commands.AbstractCommandInfo
+import io.github.bucket4j.ConsumptionProbe
 
 /**
  * Retrieves rate limit buckets and handles rate limits by combining [BucketAccessor] and [RateLimitHandler].
@@ -20,7 +21,13 @@ import com.freya02.botcommands.internal.commands.AbstractCommandInfo
  */
 interface RateLimiter : BucketAccessor, RateLimitHandler {
     companion object {
+        /**
+         * @param scope          Scope of the rate limit, see [RateLimitScope] values.
+         * @param deleteOnRefill Whether the rate limit message should be deleted after the [refill delay][ConsumptionProbe.nanosToWaitForRefill].
+         *
+         * @see RateLimitScope
+         */
         @JvmStatic
-        fun defaultFactory(scope: RateLimitScope): RateLimiterFactory = RateLimiterFactory { DefaultRateLimiter(scope, it) }
+        fun defaultFactory(scope: RateLimitScope, deleteOnRefill: Boolean = true): RateLimiterFactory = RateLimiterFactory { DefaultRateLimiter(scope, it, deleteOnRefill) }
     }
 }

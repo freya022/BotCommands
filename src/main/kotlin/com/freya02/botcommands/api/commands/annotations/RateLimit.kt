@@ -3,6 +3,7 @@ package com.freya02.botcommands.api.commands.annotations
 import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
 import io.github.bucket4j.Bucket
+import io.github.bucket4j.ConsumptionProbe
 import java.time.temporal.ChronoUnit
 
 /**
@@ -83,7 +84,21 @@ annotation class Refill(
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class RateLimit(
+    /**
+     * Scope of the rate limit, see [RateLimitScope] values.
+     *
+     * @see RateLimitScope
+     */
     val scope: RateLimitScope,
+    /**
+     * Whether the rate limit message should be deleted after the rate limit has expired.
+     *
+     * **Note:** the rate limit message won't be deleted in a private channel,
+     * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
+     *
+     * **Default:** `true`
+     */
+    val deleteOnRefill: Boolean = true,
     vararg val bandwidths: Bandwidth
 )
 

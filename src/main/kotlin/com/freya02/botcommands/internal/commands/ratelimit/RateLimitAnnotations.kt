@@ -33,9 +33,9 @@ fun KFunction<*>.readRateLimit(): Pair<BucketFactory, RateLimiterFactory>? {
     }
 
     return if (rateLimitAnnotation != null) {
-        BucketFactory.custom(rateLimitAnnotation.bandwidths.map { it.toRealBandwidth() }) to RateLimiter.defaultFactory(rateLimitAnnotation.scope)
+        BucketFactory.custom(rateLimitAnnotation.bandwidths.map { it.toRealBandwidth() }) to RateLimiter.defaultFactory(rateLimitAnnotation.scope, rateLimitAnnotation.deleteOnRefill)
     } else if (cooldownAnnotation != null) {
-        BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)) to RateLimiter.defaultFactory(cooldownAnnotation.rateLimitScope)
+        BucketFactory.ofCooldown(Duration.of(cooldownAnnotation.cooldown, cooldownAnnotation.unit)) to RateLimiter.defaultFactory(cooldownAnnotation.rateLimitScope, cooldownAnnotation.deleteOnRefill)
     } else {
         null
     }

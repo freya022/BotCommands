@@ -29,5 +29,15 @@ annotation class Cooldown(
      *
      * @see RateLimitScope
      */
-    val rateLimitScope: RateLimitScope = RateLimitScope.USER
+    val rateLimitScope: RateLimitScope = RateLimitScope.USER,
+
+    /**
+     * Whether the cooldown message should be deleted after the cooldown has expired.
+     *
+     * **Note:** the cooldown message won't be deleted in a private channel,
+     * or if the cooldown is longer than 10 minutes.
+     *
+     * **Default:** `true`
+     */
+    val deleteOnRefill: Boolean = true
 )
