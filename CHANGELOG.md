@@ -126,10 +126,10 @@ forcing them to spread out your resource usage.
 
 Rate limits can be used with:
 - `@RateLimit` (for annotated commands)
-- `CommandBuilder#rateLimitReference` (for DSL commands) 
+- `#rateLimitReference` (for DSL commands and components) 
 - A declarator function, annotated with `@RateLimitDeclaration`, using `RateLimitContainer#rateLimit`,
   using them is as simple as using `@RateLimitReference` for annotated commands,
-  or `CommandBuilder#rateLimitReference` for DSL commands.
+  or `#rateLimitReference` for DSL commands and components.
 
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
