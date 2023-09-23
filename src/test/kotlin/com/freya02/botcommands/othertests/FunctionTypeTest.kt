@@ -1,7 +1,9 @@
 package com.freya02.botcommands.othertests
 
+import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.builder.IPersistentActionableComponent
+import com.freya02.botcommands.api.components.builder.PersistentHandlerBuilder
 import com.freya02.botcommands.api.components.builder.bindTo
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.internal.components.ComponentHandler
@@ -17,7 +19,7 @@ object FunctionTypeTest {
         override val handler: ComponentHandler?
             get() = null
 
-        override fun bindTo(handlerName: String, data: List<Any?>) {
+        override fun bindTo(handlerName: String, block: ReceiverConsumer<PersistentHandlerBuilder>) {
             println("ok")
         }
     }
