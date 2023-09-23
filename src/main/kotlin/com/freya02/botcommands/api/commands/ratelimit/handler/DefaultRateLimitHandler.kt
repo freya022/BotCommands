@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
+import net.dv8tion.jda.api.utils.TimeFormat
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -112,11 +113,14 @@ class DefaultRateLimitHandler(
     private fun getRateLimitMessage(
         messages: DefaultMessages,
         probe: ConsumptionProbe
-    ): String = when (scope) {
-        RateLimitScope.USER -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
-        RateLimitScope.USER_PER_GUILD -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
-        RateLimitScope.USER_PER_CHANNEL -> messages.getUserCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
-        RateLimitScope.GUILD -> messages.getGuildCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
-        RateLimitScope.CHANNEL -> messages.getChannelCooldownMsg(probe.nanosToWaitForRefill / 1_000_000_000.0)
+    ): String {
+        val timestamp = TimeFormat.RELATIVE.atTimestamp(System.currentTimeMillis() + probe.nanosToWaitForRefill.floorDiv(1_000_000))
+        return when (scope) {
+            RateLimitScope.USER -> messages.getUserRateLimitMsg(timestamp)
+            RateLimitScope.USER_PER_GUILD -> messages.getUserRateLimitMsg(timestamp)
+            RateLimitScope.USER_PER_CHANNEL -> messages.getUserRateLimitMsg(timestamp)
+            RateLimitScope.GUILD -> messages.getGuildRateLimitMsg(timestamp)
+            RateLimitScope.CHANNEL -> messages.getChannelRateLimitMsg(timestamp)
+        }
     }
 }

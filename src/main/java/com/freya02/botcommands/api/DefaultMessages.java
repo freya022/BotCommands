@@ -11,6 +11,7 @@ import com.freya02.botcommands.internal.utils.ExceptionsKt;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
+import net.dv8tion.jda.api.utils.Timestamp;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -123,24 +124,24 @@ public final class DefaultMessages {
 	}
 
 	/**
-	 * @return Message to display when the command is on per-user cooldown
+	 * @return Message to display when the command is on per-user rate limit
 	 */
-	public String getUserCooldownMsg(double cooldown) {
-		return getLocalizationTemplate("user.cooldown.message").localize(entry("cooldown", cooldown));
+	public String getUserRateLimitMsg(Timestamp timestamp) {
+		return getLocalizationTemplate("user.rate_limit.message").localize(entry("delay", timestamp));
 	}
 
 	/**
-	 * @return Message to display when the command is on per-channel cooldown
+	 * @return Message to display when the command is on per-channel rate limit
 	 */
-	public String getChannelCooldownMsg(double cooldown) {
-		return getLocalizationTemplate("channel.cooldown.message").localize(entry("cooldown", cooldown));
+	public String getChannelRateLimitMsg(Timestamp timestamp) {
+		return getLocalizationTemplate("channel.rate_limit.message").localize(entry("delay", timestamp));
 	}
 
 	/**
-	 * @return Message to display when the command is on per-guild cooldown
+	 * @return Message to display when the command is on per-guild rate limit
 	 */
-	public String getGuildCooldownMsg(double cooldown) {
-		return getLocalizationTemplate("guild.cooldown.message").localize(entry("cooldown", cooldown));
+	public String getGuildRateLimitMsg(Timestamp timestamp) {
+		return getLocalizationTemplate("guild.rate_limit.message").localize(entry("delay", timestamp));
 	}
 
 	/**
