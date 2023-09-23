@@ -12,7 +12,8 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
 
-private const val latestVersion = "3.0.0-alpha.7" // Change in base migration script too
+// If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
+private const val latestVersion = "3.0.0-alpha.6" // Change in the latest migration script too
 
 @BService
 @ServiceType(Database::class)
