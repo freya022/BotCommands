@@ -95,7 +95,7 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val oneUse: Boolean = dbResult["one_use"]
-            val rateLimitGroup: String? = dbResult["rate_limit_group"]
+            val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
             if (componentType == ComponentType.GROUP) {
                 return@preparedStatement getGroup(id, oneUse, rateLimitGroup)
