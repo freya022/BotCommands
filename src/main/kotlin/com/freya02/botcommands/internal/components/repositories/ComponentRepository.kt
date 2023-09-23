@@ -84,7 +84,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, one_use, users, roles, permissions, group_id
+            select lifetime_type, component_type, one_use, users, roles, permissions, group_id, rate_limit_group
             from bc_component component
                      natural left join bc_component_constraints constraints
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
