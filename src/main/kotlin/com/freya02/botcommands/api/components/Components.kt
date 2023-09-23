@@ -2,7 +2,6 @@ package com.freya02.botcommands.api.components
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.components.builder.button.EphemeralButtonBuilder
 import com.freya02.botcommands.api.components.builder.button.PersistentButtonBuilder
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
