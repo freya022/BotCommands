@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.commands.ratelimit
 
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.annotations.RateLimit
@@ -77,7 +76,7 @@ class RateLimitContainer internal constructor(serviceContainer: ServiceContainer
         group: String,
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
-        block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer { }
+        block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ): RateLimitInfo {
         return checkNotNull(map.computeIfAbsentOrNull(group) { RateLimitBuilder(bucketFactory, limiterFactory).apply(block).build() }) {
             "A rate limiter already exists with a group of '$group'"

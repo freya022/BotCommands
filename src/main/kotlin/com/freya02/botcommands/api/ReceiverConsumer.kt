@@ -12,6 +12,13 @@ fun interface ReceiverConsumer<T> : (T) -> Unit {
 
         return receiver
     }
+
+    companion object {
+        private val NOOP = ReceiverConsumer<Unit> { }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> noop(): ReceiverConsumer<T> = NOOP as ReceiverConsumer<T>
+    }
 }
 
 //TODO replace with Kotlin's apply

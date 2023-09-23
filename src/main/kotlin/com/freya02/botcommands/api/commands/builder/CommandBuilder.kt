@@ -48,7 +48,7 @@ abstract class CommandBuilder internal constructor(protected val context: BConte
         bucketFactory: BucketFactory,
         limiterFactory: RateLimiterFactory = RateLimiter.defaultFactory(RateLimitScope.USER),
         group: String = path.fullPath,
-        block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer { }
+        block: ReceiverConsumer<RateLimitBuilder> = ReceiverConsumer.noop()
     ) {
         rateLimitInfo = context.getService<RateLimitContainer>().rateLimit(group, bucketFactory, limiterFactory, block)
     }
