@@ -2,9 +2,8 @@ package com.freya02.botcommands.test_kt.commands.slash;
 
 import com.freya02.botcommands.api.BContext;
 import com.freya02.botcommands.api.commands.CommandPath;
-import com.freya02.botcommands.api.commands.annotations.Command;
-import com.freya02.botcommands.api.commands.annotations.GeneratedOption;
-import com.freya02.botcommands.api.commands.annotations.Optional;
+import com.freya02.botcommands.api.commands.RateLimitScope;
+import com.freya02.botcommands.api.commands.annotations.*;
 import com.freya02.botcommands.api.commands.application.ApplicationCommand;
 import com.freya02.botcommands.api.commands.application.slash.ApplicationGeneratedValueSupplier;
 import com.freya02.botcommands.api.commands.application.slash.GuildSlashEvent;
@@ -22,6 +21,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +30,11 @@ import static net.dv8tion.jda.api.interactions.commands.Command.Choice;
 
 @Command
 public class SlashMyJavaCommand extends ApplicationCommand {
+	@RateLimit(
+			scope = RateLimitScope.USER, bandwidths = {
+			@Bandwidth(capacity = 5, refill = @Refill(type = RefillType.GREEDY, tokens = 5, period = 1, periodUnit = ChronoUnit.MINUTES)),
+			@Bandwidth(capacity = 2, refill = @Refill(type = RefillType.INTERVAL, tokens = 2, period = 5, periodUnit = ChronoUnit.SECONDS))
+	})
 	@Override
 	@NotNull
 	public ApplicationGeneratedValueSupplier getGeneratedValueSupplier(@Nullable Guild guild,

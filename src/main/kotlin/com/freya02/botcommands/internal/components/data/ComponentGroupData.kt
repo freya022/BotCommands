@@ -7,6 +7,7 @@ import com.freya02.botcommands.internal.components.LifetimeType
 internal class ComponentGroupData internal constructor(
     groupId: Int,
     oneUse: Boolean,
+    rateLimitGroup: String?,
     timeout: ComponentTimeout?,
     internal val componentsIds: List<Int>
-): ComponentData(groupId, ComponentType.GROUP, LifetimeType.PERSISTENT, oneUse, null, timeout, null, groupId)
+): ComponentData(groupId, ComponentType.GROUP, LifetimeType.PERSISTENT, oneUse, rateLimitGroup, null, timeout, null, groupId)

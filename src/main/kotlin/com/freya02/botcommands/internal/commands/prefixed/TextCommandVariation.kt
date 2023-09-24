@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.prefixed
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.CommandEvent
 import com.freya02.botcommands.api.commands.prefixed.builder.TextCommandVariationBuilder
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.IExecutableInteractionInfo
 import com.freya02.botcommands.internal.commands.application.slash.SlashUtils.getCheckedDefaultValue
@@ -63,12 +62,10 @@ class TextCommandVariation internal constructor(
 
     internal suspend fun execute(
         event: BaseCommandEvent,
-        cooldownService: CooldownService,
         optionValues: Map<Option, Any?>
     ): ExecutionResult {
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
 
-        cooldownService.applyCooldown(info, event)
         function.callSuspendBy(finalParameters)
 
         return ExecutionResult.OK

@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.commands.autobuilder
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.annotations.Cooldown
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.ApplicationCommand
 import com.freya02.botcommands.api.commands.application.CommandScope
@@ -16,6 +15,7 @@ import com.freya02.botcommands.api.parameters.ParameterWrapper.Companion.wrap
 import com.freya02.botcommands.api.parameters.ResolverContainer
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.autobuilder.metadata.CommandFunctionMetadata
+import com.freya02.botcommands.internal.commands.ratelimit.readRateLimit
 import com.freya02.botcommands.internal.utils.AnnotationUtils
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.throwInternal
@@ -23,7 +23,6 @@ import com.freya02.botcommands.internal.utils.throwUser
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 //This is used so commands can't prevent other commands from being registered when an exception happens
@@ -61,7 +60,7 @@ internal fun checkCommandId(manager: AbstractApplicationCommandManager, instance
     return true
 }
 
-enum class TestState {
+internal enum class TestState {
     INCLUDE,
     EXCLUDE,
     NO_ANNOTATION
@@ -83,12 +82,8 @@ internal fun checkTestCommand(manager: AbstractApplicationCommandManager, func: 
 }
 
 internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
-    func.findAnnotation<Cooldown>()?.let { cooldownAnnotation ->
-        cooldown {
-            scope = cooldownAnnotation.cooldownScope
-            cooldown = cooldownAnnotation.cooldown
-            unit = cooldownAnnotation.unit
-        }
+    func.readRateLimit()?.let { (bucketFactory, rateLimiterFactory) ->
+        rateLimit(bucketFactory, rateLimiterFactory)
     }
 
     userPermissions = AnnotationUtils.getUserPermissions(func)
@@ -96,7 +91,7 @@ internal fun CommandBuilder.fillCommandBuilder(func: KFunction<*>) {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun KFunction<*>.castFunction() = this as KFunction<Any>
+internal fun KFunction<*>.castFunction() = this as KFunction<Any>
 
 internal fun ApplicationCommandBuilder<*>.fillApplicationCommandBuilder(func: KFunction<*>, annotation: Annotation) {
     if (func.hasAnnotation<NSFW>()) {

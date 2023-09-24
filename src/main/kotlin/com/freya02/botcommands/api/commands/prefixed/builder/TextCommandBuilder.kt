@@ -14,7 +14,7 @@ import net.dv8tion.jda.internal.utils.Checks
 import java.util.function.Consumer
 import kotlin.reflect.KFunction
 
-abstract class TextCommandBuilder internal constructor(protected val context: BContextImpl, name: String) : CommandBuilder(name) {
+abstract class TextCommandBuilder internal constructor(context: BContextImpl, name: String) : CommandBuilder(context, name) {
     internal val subcommands: MutableList<TextSubcommandBuilder> = arrayListOf()
 
     internal val variations: MutableList<TextCommandVariationBuilder> = arrayListOf()

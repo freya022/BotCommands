@@ -1,5 +1,6 @@
 package com.freya02.botcommands.api.core.service
 
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwService
@@ -44,7 +45,7 @@ class ServiceError private constructor(
     fun withSibling(serviceError: ServiceError): ServiceError =
         ServiceError(errorType, errorMessage, extraMessage, failedFunction, nestedError, siblingErrors + serviceError)
 
-    fun toSimpleString(): String = (listOf(this) + siblingErrors).joinToString(prefix = " - ", separator = "\n - ") { it.toSingleSimpleString() }
+    fun toSimpleString(): String = (listOf(this) + siblingErrors).joinAsList { it.toSingleSimpleString() }
 
     private fun toSingleSimpleString(): String = when {
         extraMessage != null -> "$errorMessage (${errorType.explanation}, $extraMessage)"

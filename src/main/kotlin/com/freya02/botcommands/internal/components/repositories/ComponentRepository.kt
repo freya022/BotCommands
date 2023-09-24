@@ -46,8 +46,8 @@ internal class ComponentRepository(
         database.transactional {
             // Create base component
             val componentId: Int =
-                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use) VALUES (?, ?, ?) returning component_id") {
-                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse)
+                preparedStatement("insert into bc_component (component_type, lifetime_type, one_use, rate_limit_group) VALUES (?, ?, ?, ?) returning component_id") {
+                    executeQuery(builder.componentType.key, builder.lifetimeType.key, builder.oneUse, builder.rateLimitGroup)
                         .readOrNull()
                         ?.get<Int>("component_id") ?: throwInternal("Component was created without returning an ID")
                 }
@@ -84,7 +84,7 @@ internal class ComponentRepository(
     suspend fun getComponent(id: Int): ComponentData? = database.transactional(readOnly = true) {
         preparedStatement(
             """
-            select lifetime_type, component_type, one_use, users, roles, permissions, group_id
+            select lifetime_type, component_type, one_use, users, roles, permissions, group_id, rate_limit_group
             from bc_component component
                      natural left join bc_component_constraints constraints
                      left join bc_component_component_group componentGroup on componentGroup.component_id = component.component_id
@@ -95,9 +95,10 @@ internal class ComponentRepository(
             val lifetimeType = LifetimeType.fromId(dbResult["lifetime_type"])
             val componentType = ComponentType.fromId(dbResult["component_type"])
             val oneUse: Boolean = dbResult["one_use"]
+            val rateLimitGroup: String? = dbResult.getOrNull("rate_limit_group")
 
             if (componentType == ComponentType.GROUP) {
-                return@preparedStatement getGroup(id, oneUse)
+                return@preparedStatement getGroup(id, oneUse, rateLimitGroup)
             }
 
             val constraints = InteractionConstraints.of(
@@ -112,6 +113,7 @@ internal class ComponentRepository(
                     componentType,
                     lifetimeType,
                     oneUse,
+                    rateLimitGroup,
                     constraints,
                     dbResult["group_id"]
                 )
@@ -120,6 +122,7 @@ internal class ComponentRepository(
                     componentType,
                     lifetimeType,
                     oneUse,
+                    rateLimitGroup,
                     constraints,
                     dbResult["group_id"]
                 )
@@ -247,6 +250,7 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
+        rateLimitGroup: String?,
         constraints: InteractionConstraints,
         groupId: Int?
     ): PersistentComponentData = preparedStatement(
@@ -263,7 +267,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOrNull()
-            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
+            ?: return PersistentComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<String>("handler_handler_name")?.let { handlerName ->
             PersistentHandler(
@@ -280,7 +284,7 @@ internal class ComponentRepository(
             )
         }
 
-        PersistentComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+        PersistentComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
@@ -289,6 +293,7 @@ internal class ComponentRepository(
         componentType: ComponentType,
         lifetimeType: LifetimeType,
         oneUse: Boolean,
+        rateLimitGroup: String?,
         constraints: InteractionConstraints,
         groupId: Int?
     ): EphemeralComponentData = preparedStatement(
@@ -303,7 +308,7 @@ internal class ComponentRepository(
     ) {
         // There is no rows if neither a handler nor a timeout has been set
         val dbResult = executeQuery(id).readOrNull()
-            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler = null, timeout = null, constraints, groupId)
+            ?: return EphemeralComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler = null, timeout = null, constraints, groupId)
 
         val handler = dbResult.getOrNull<Int>("handler_handler_id")?.let { handlerId ->
             ephemeralComponentHandlers[handlerId]
@@ -320,11 +325,11 @@ internal class ComponentRepository(
             )
         }
 
-        EphemeralComponentData(id, componentType, lifetimeType, oneUse, handler, timeout, constraints, groupId)
+        EphemeralComponentData(id, componentType, lifetimeType, oneUse, rateLimitGroup, handler, timeout, constraints, groupId)
     }
 
     context(Transaction)
-    private suspend fun getGroup(id: Int, oneUse: Boolean): ComponentGroupData {
+    private suspend fun getGroup(id: Int, oneUse: Boolean, rateLimitGroup: String?): ComponentGroupData {
         val timeout = getGroupTimeout(id)
 
         val componentIds: List<Int> = preparedStatement(
@@ -337,7 +342,7 @@ internal class ComponentRepository(
             executeQuery(id).map { it["component_id"] }
         }
 
-        return ComponentGroupData(id, oneUse, timeout, componentIds)
+        return ComponentGroupData(id, oneUse, rateLimitGroup, timeout, componentIds)
     }
 
     context(Transaction)

@@ -1,11 +1,9 @@
 package com.freya02.botcommands.internal.commands.prefixed
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
 import com.freya02.botcommands.api.commands.prefixed.IHelpCommand
 import com.freya02.botcommands.api.commands.prefixed.TextCommandFilter
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
@@ -15,6 +13,7 @@ import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
+import com.freya02.botcommands.internal.commands.withRateLimit
 import com.freya02.botcommands.internal.utils.throwInternal
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
@@ -25,17 +24,17 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.requests.CompletedRestAction
 
-private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
+private val logger = KotlinLogging.logger { }
+private val spacePattern = Regex("\\s+")
 
 @BService
 internal class TextCommandsListener internal constructor(
     private val context: BContextImpl,
-    private val cooldownService: CooldownService,
     private val helpCommand: IHelpCommand?
 ) {
-    private val logger = KotlinLogging.logger {  }
+    private data class CommandWithArgs(val command: TextCommandInfo, val args: String)
+
     private val exceptionHandler = ExceptionHandler(context, logger)
-    private val spacePattern = Regex("\\s+")
 
     private val filters = context.getInterfacedServices<TextCommandFilter>()
 
@@ -73,30 +72,53 @@ internal class TextCommandsListener internal constructor(
                     return@launch
                 }
 
-                if (!canRun(event, commandInfo, isNotOwner)) {
-                    return@launch
-                }
-
-                commandInfo.variations.forEach {
-                    val bcEvent = it.createEvent(event, args)
-                    when (it.completePattern) {
-                        null -> { //Fallback method
-                            if (tryExecute(bcEvent, content, args, it, null) != ExecutionResult.CONTINUE) return@launch
-                        }
-                        else -> { //Regex text command
-                            val matchResult = it.completePattern.matchEntire(args)
-                            if (matchResult != null) {
-                                if (tryExecute(bcEvent, content, args, it, matchResult) != ExecutionResult.CONTINUE) return@launch
-                            }
-                        }
+                commandInfo.withRateLimit(context, event, isNotOwner) {
+                    if (!canRun(event, commandInfo, isNotOwner)) {
+                        false
+                    } else {
+                        tryVariations(event, commandInfo, content, args)
                     }
                 }
-
-                helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, ""), commandInfo)
             } catch (e: Throwable) {
                 handleException(event, e, msg)
             }
         }
+    }
+
+    private suspend fun tryVariations(
+        event: MessageReceivedEvent,
+        commandInfo: TextCommandInfo,
+        content: String,
+        args: String
+    ): Boolean {
+        commandInfo.variations.forEach {
+            val bcEvent = it.createEvent(event, args)
+
+            // null on a fallback command
+            val pattern = it.completePattern
+
+            val executionResult = if (pattern == null) {
+                //Fallback method
+                tryExecute(bcEvent, content, args, it, null)
+            } else {
+                //Regex text command
+                val matchResult = pattern.matchEntire(args)
+                if (matchResult != null) {
+                    tryExecute(bcEvent, content, args, it, matchResult)
+                } else {
+                    ExecutionResult.CONTINUE
+                }
+            }
+
+            when (executionResult) {
+                ExecutionResult.CONTINUE -> return@forEach //Check other variations
+                ExecutionResult.STOP -> return false
+                ExecutionResult.OK -> return true
+            }
+        }
+
+        helpCommand?.onInvalidCommand(BaseCommandEventImpl(context, event, ""), commandInfo)
+        return false
     }
 
     private fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
@@ -170,20 +192,6 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        if (isNotOwner) {
-            val cooldown: Long = cooldownService.getCooldown(commandInfo, event)
-            if (cooldown > 0) {
-                val defaultMessages = context.getDefaultMessages(event.guild)
-                when (commandInfo.cooldownStrategy.scope) {
-                    CooldownScope.USER -> replyError(event, defaultMessages.getUserCooldownMsg(cooldown / 1000.0))
-                    CooldownScope.GUILD -> replyError(event, defaultMessages.getGuildCooldownMsg(cooldown / 1000.0))
-                    CooldownScope.CHANNEL -> replyError(event, defaultMessages.getChannelCooldownMsg(cooldown / 1000.0))
-                }
-
-                return false
-            }
-        }
-
         return true
     }
 
@@ -205,7 +213,7 @@ internal class TextCommandsListener internal constructor(
             }
         }
 
-        return variation.execute(event, cooldownService, optionValues)
+        return variation.execute(event, optionValues)
     }
 
     private fun replyError(event: MessageReceivedEvent, msg: String) {

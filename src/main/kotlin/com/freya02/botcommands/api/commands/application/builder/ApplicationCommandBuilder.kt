@@ -6,12 +6,14 @@ import com.freya02.botcommands.api.commands.application.slash.ApplicationGenerat
 import com.freya02.botcommands.api.commands.application.slash.annotations.JDASlashCommand
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.builder.ExecutableCommandBuilder
+import com.freya02.botcommands.internal.BContextImpl
 import kotlin.reflect.KFunction
 
 abstract class ApplicationCommandBuilder<T : ApplicationCommandOptionAggregateBuilder<T>> internal constructor(
+    context: BContextImpl,
     name: String,
     function: KFunction<Any>
-) : ExecutableCommandBuilder<T, Any>(name, function) {
+) : ExecutableCommandBuilder<T, Any>(context, name, function) {
     abstract val topLevelBuilder: ITopLevelApplicationCommandBuilder
 
     /**

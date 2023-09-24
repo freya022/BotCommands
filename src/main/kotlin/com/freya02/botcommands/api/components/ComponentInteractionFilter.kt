@@ -1,6 +1,5 @@
 package com.freya02.botcommands.api.components
 
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService
@@ -11,7 +10,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * Filters component interactions (such as buttons and select menus),
  * any filter that returns `false` prevents the interaction from executing.
  *
- * Filters are tested right before the component gets executed (i.e., after the component constraints were checked).
+ * Filters are tested right before the component gets executed (i.e., after the constraints/rate limits were checked).
  *
  * **Note:** Your filter still has to acknowledge the interaction in case it rejects it.
  *
@@ -57,7 +56,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
  * @see InterfacedService @InterfacedService
  *
  * @see isAccepted
- * @see CooldownService
  */
 @InterfacedService(acceptMultiple = true)
 interface ComponentInteractionFilter {

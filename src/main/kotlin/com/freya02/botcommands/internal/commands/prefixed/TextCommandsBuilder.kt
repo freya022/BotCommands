@@ -6,6 +6,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.events.FirstGuildReadyEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getService
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.prefixed.autobuilder.TextCommandAutoBuilder
 import com.freya02.botcommands.internal.core.ClassPathFunction
@@ -38,7 +39,7 @@ internal class TextCommandsBuilder(
 
         logger.debug("Loaded ${declarationFunctions.size} text command declaration functions")
         if (declarationFunctions.isNotEmpty()) {
-            logger.trace { "Text command declaration functions:\n" + declarationFunctions.joinToString("\n") { it.function.shortSignature } }
+            logger.trace { "Text command declaration functions:\n" + declarationFunctions.joinAsList { it.function.shortSignature } }
         }
     }
 

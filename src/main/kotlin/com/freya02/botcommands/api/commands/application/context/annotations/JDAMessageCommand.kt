@@ -1,9 +1,6 @@
 package com.freya02.botcommands.api.commands.application.context.annotations
 
-import com.freya02.botcommands.api.commands.annotations.BotPermissions
-import com.freya02.botcommands.api.commands.annotations.Command
-import com.freya02.botcommands.api.commands.annotations.Cooldown
-import com.freya02.botcommands.api.commands.annotations.UserPermissions
+import com.freya02.botcommands.api.commands.annotations.*
 import com.freya02.botcommands.api.commands.application.AbstractApplicationCommandManager
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.annotations.AppDeclaration
@@ -31,6 +28,7 @@ import net.dv8tion.jda.api.interactions.commands.localization.LocalizationFuncti
  * @see UserPermissions @UserPermissions
  * @see BotPermissions @BotPermissions
  * @see Cooldown @Cooldown
+ * @see RateLimit @RateLimit
  *
  * @see AppDeclaration Declaring application commands using the DSL
  * @see AbstractApplicationCommandManager.messageCommand DSL equivalent

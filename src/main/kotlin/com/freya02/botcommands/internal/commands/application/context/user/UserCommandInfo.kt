@@ -3,7 +3,6 @@ package com.freya02.botcommands.internal.commands.application.context.user
 import com.freya02.botcommands.api.commands.application.context.builder.UserCommandBuilder
 import com.freya02.botcommands.api.commands.application.context.user.GlobalUserEvent
 import com.freya02.botcommands.api.commands.application.context.user.GuildUserEvent
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.application.ApplicationGeneratedOption
@@ -41,7 +40,7 @@ class UserCommandInfo internal constructor(
         }
     }
 
-    internal suspend fun execute(jdaEvent: UserContextInteractionEvent, cooldownService: CooldownService): Boolean {
+    internal suspend fun execute(jdaEvent: UserContextInteractionEvent): Boolean {
         val event = when {
             isGuildOnly -> GuildUserEvent(context, jdaEvent)
             else -> GlobalUserEvent(context, jdaEvent)
@@ -53,8 +52,6 @@ class UserCommandInfo internal constructor(
         }
 
         val finalParameters = parameters.mapFinalParameters(event, optionValues)
-
-        cooldownService.applyCooldown(this, event)
         function.callSuspendBy(finalParameters)
 
         return true

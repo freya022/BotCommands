@@ -14,11 +14,13 @@ import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
+import com.freya02.botcommands.internal.commands.withRateLimit
 import com.freya02.botcommands.internal.components.ComponentDescriptor
 import com.freya02.botcommands.internal.components.ComponentHandlerOption
 import com.freya02.botcommands.internal.components.ComponentType
 import com.freya02.botcommands.internal.components.EphemeralHandler
 import com.freya02.botcommands.internal.components.data.AbstractComponentData
+import com.freya02.botcommands.internal.components.data.ComponentGroupData
 import com.freya02.botcommands.internal.components.data.EphemeralComponentData
 import com.freya02.botcommands.internal.components.data.PersistentComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
@@ -67,55 +69,61 @@ internal class ComponentsListener(
             val component = componentRepository.getComponent(componentId)
                 ?: return@launch event.reply_(context.getDefaultMessages(event).componentExpiredErrorMsg, ephemeral = true).queue()
 
-            component.constraints?.let { constraints ->
-                if (!constraints.isAllowed(event)) {
-                    event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
-                    return@launch
-                }
-            }
-
-            for (filter in filters) {
-                if (!filter.isAcceptedSuspend(event)) {
-                    return@launch if (event.isAcknowledged) {
-                        logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
-                    } else {
-                        logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
+            component.withRateLimit(context, event, !context.isOwner(event.user.idLong)) {
+                component.constraints?.let { constraints ->
+                    if (!constraints.isAllowed(event)) {
+                        event.reply_(context.getDefaultMessages(event).componentNotAllowedErrorMsg, ephemeral = true).queue()
+                        return@withRateLimit false
                     }
                 }
-            }
 
-            if (component.oneUse) {
-                componentController.deleteComponent(component)
-            }
-
-            when (component) {
-                is PersistentComponentData -> {
-                    transformEvent(event)?.let { evt ->
-                        resumeCoroutines(component, evt)
-
-                        val (handlerName, userData) = component.handler ?: return@launch
-
-                        val descriptor = when (component.componentType) {
-                            ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
-                                ?: throwUser("Could not find a button handler named $handlerName")
-                            ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
-                                ?: throwUser("Could not find a select menu handler named $handlerName")
-                            else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                for (filter in filters) {
+                    if (!filter.isAcceptedSuspend(event)) {
+                        if (event.isAcknowledged) {
+                            logger.trace { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler})" }
+                        } else {
+                            logger.error { "${filter::class.simpleNestedName} rejected ${event.componentType} interaction (handler: ${component.handler}) but did not acknowledge the interaction" }
                         }
-
-                        handlePersistentComponent(descriptor, evt, userData.iterator())
+                        return@withRateLimit false
                     }
                 }
-                is EphemeralComponentData -> {
-                    transformEvent(event)?.let { evt ->
-                        resumeCoroutines(component, evt)
 
-                        val ephemeralHandler = component.handler ?: return@launch
-
-                        @Suppress("UNCHECKED_CAST")
-                        (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
-                    }
+                if (component.oneUse) {
+                    componentController.deleteComponent(component)
                 }
+
+                when (component) {
+                    is PersistentComponentData -> {
+                        transformEvent(event)?.let { evt ->
+                            resumeCoroutines(component, evt)
+
+                            val (handlerName, userData) = component.handler ?: return@withRateLimit true
+
+                            val descriptor = when (component.componentType) {
+                                ComponentType.BUTTON -> componentsHandlerContainer.getButtonDescriptor(handlerName)
+                                    ?: throwUser("Could not find a button handler named $handlerName")
+                                ComponentType.SELECT_MENU -> componentsHandlerContainer.getSelectMenuDescriptor(handlerName)
+                                    ?: throwUser("Could not find a select menu handler named $handlerName")
+                                else -> throwInternal("Invalid component type being handled: ${component.componentType}")
+                            }
+
+                            handlePersistentComponent(descriptor, evt, userData.iterator())
+                        }
+                    }
+                    is EphemeralComponentData -> {
+                        transformEvent(event)?.let { evt ->
+                            resumeCoroutines(component, evt)
+
+                            val ephemeralHandler = component.handler ?: return@withRateLimit true
+
+                            @Suppress("UNCHECKED_CAST")
+                            (ephemeralHandler as EphemeralHandler<GenericComponentInteractionCreateEvent>).handler(evt)
+                        }
+                    }
+                    is ComponentGroupData -> throwInternal("Somehow received an interaction with a component ID that was a group")
+                }
+
+                true
             }
         } catch (e: Throwable) {
             handleException(event, e)

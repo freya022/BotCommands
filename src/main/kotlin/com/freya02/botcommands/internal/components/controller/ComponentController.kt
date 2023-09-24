@@ -1,11 +1,16 @@
 package com.freya02.botcommands.internal.components.controller
 
+import com.freya02.botcommands.api.BContext
+import com.freya02.botcommands.api.commands.ratelimit.RateLimitContainer
+import com.freya02.botcommands.api.commands.ratelimit.annotations.RateLimitDeclaration
 import com.freya02.botcommands.api.components.ComponentGroup
 import com.freya02.botcommands.api.components.IdentifiableComponent
 import com.freya02.botcommands.api.components.builder.BaseComponentBuilder
 import com.freya02.botcommands.api.components.builder.group.ComponentGroupBuilder
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
+import com.freya02.botcommands.api.core.service.lazy
+import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.components.data.ComponentData
 import com.freya02.botcommands.internal.components.repositories.ComponentRepository
 import kotlinx.coroutines.CancellableContinuation
@@ -18,9 +23,13 @@ import kotlin.concurrent.withLock
 @BService
 @Dependencies(ComponentRepository::class)
 internal class ComponentController(
+    context: BContext,
     private val componentRepository: ComponentRepository,
     private val timeoutManager: ComponentTimeoutManager
 ) {
+    // This service might be used in classes that use components and also declare rate limiters
+    private val rateLimitContainer: RateLimitContainer by context.serviceContainer.lazy()
+
     private val continuationMap = hashMapOf<Int, MutableList<CancellableContinuation<GenericComponentInteractionCreateEvent>>>()
     private val lock = ReentrantLock()
 
@@ -29,6 +38,12 @@ internal class ComponentController(
     }
 
     fun createComponent(builder: BaseComponentBuilder): String {
+        builder.rateLimitGroup?.let { rateLimitGroup ->
+            require(rateLimitGroup in rateLimitContainer) {
+                "Rate limit group '$rateLimitGroup' was not registered using @${RateLimitDeclaration::class.simpleNestedName}"
+            }
+        }
+
         return componentRepository.createComponent(builder).also { id ->
             val timeout = builder.timeout ?: return@also
             timeoutManager.scheduleTimeout(id, timeout)

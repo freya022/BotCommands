@@ -1,6 +1,8 @@
 package com.freya02.botcommands.api.components.annotations
 
 import com.freya02.botcommands.api.commands.annotations.Command
+import com.freya02.botcommands.api.commands.annotations.Cooldown
+import com.freya02.botcommands.api.commands.annotations.RateLimit
 import com.freya02.botcommands.api.components.Components
 import com.freya02.botcommands.api.components.builder.button.PersistentButtonBuilder
 import com.freya02.botcommands.api.components.event.ButtonEvent
@@ -27,6 +29,9 @@ import com.freya02.botcommands.api.parameters.ParameterResolver
  * @see Components
  * @see ParameterResolver
  * @see Aggregate @Aggregate
+ *
+ * @see Cooldown @Cooldown
+ * @see RateLimit @RateLimit
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

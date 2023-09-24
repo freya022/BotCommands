@@ -7,6 +7,7 @@ import com.freya02.botcommands.api.components.annotations.JDAButtonListener
 import com.freya02.botcommands.api.components.annotations.JDASelectMenuListener
 import com.freya02.botcommands.api.core.annotations.Handler
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.api.core.utils.shortSignature
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.api.modals.annotations.ModalHandler
@@ -50,13 +51,13 @@ internal class HandlersPresenceChecker : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (noDeclarationClasses.isNotEmpty()) {
             logger.warn("Some classes annotated with @${Handler::class.simpleNestedName} were found to have no handler declarations:\n${
-                noDeclarationClasses.joinToString(prefix = " - ", separator = "\n - ")
+                noDeclarationClasses.joinAsList()
             }")
         }
 
         if (noAnnotationMethods.isNotEmpty()) {
             throw IllegalStateException("Some handler declarations do not have their declaring class annotated with @${Handler::class.simpleNestedName}:\n${
-                noAnnotationMethods.joinToString(prefix = " - ", separator = "\n - ") { it.shortSignature }
+                noAnnotationMethods.joinAsList { it.shortSignature }
             }")
         }
     }

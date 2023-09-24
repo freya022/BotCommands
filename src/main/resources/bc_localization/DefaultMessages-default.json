@@ -5,9 +5,9 @@
     "bot.perm.error.message": "I am missing these permissions: {permissions}",
     "owner.only.error.message": "Only the owner can use this",
 
-    "user.cooldown.message": "You must wait **{cooldown:%.2f} seconds**",
-    "channel.cooldown.message": "You must wait **{cooldown:%.2f} seconds in this channel**",
-    "guild.cooldown.message": "You must wait **{cooldown:%.2f} seconds in this guild**",
+    "user.rate_limit.message": "You will be able to use this {delay}",
+    "channel.rate_limit.message": "You will be able to use this, in this channel, {delay}",
+    "guild.rate_limit.message": "You will be able to use this, in this guild, {delay}",
 
     "command.not.found.message": "Unknown command, maybe you meant: {suggestions}",
 

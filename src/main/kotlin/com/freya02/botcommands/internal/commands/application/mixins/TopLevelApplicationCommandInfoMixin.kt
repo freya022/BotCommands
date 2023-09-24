@@ -1,6 +1,5 @@
 package com.freya02.botcommands.internal.commands.application.mixins
 
-import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.CommandScope
 import com.freya02.botcommands.api.commands.application.builder.ApplicationCommandBuilder
 import com.freya02.botcommands.api.commands.application.slash.builder.mixins.ITopLevelApplicationCommandBuilder
@@ -16,10 +15,6 @@ open class TopLevelApplicationCommandInfoMixin(
 
     init {
         builder as? ApplicationCommandBuilder<*> ?: throwMixin<ApplicationCommandBuilder<*>>()
-
-        if (builder.cooldownStrategy.scope != CooldownScope.USER && !scope.isGuildOnly) {
-            throwUser("Application command cannot have a ${builder.cooldownStrategy.scope} cooldown scope with a global slash command")
-        }
 
         //Administrators manage who can use what; the bot doesn't need to check for user mistakes
         // Why would you ask for a permission

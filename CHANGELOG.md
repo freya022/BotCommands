@@ -115,6 +115,22 @@ you can use `inlineClassOption` to declare one in the DSL, they also automatical
 You can find an example [here](examples/src/main/kotlin/io/github/freya022/bot/commands/slash/SlashSentence.kt),
 with `SlashSentence.SentenceParts`.
 
+## New rate limiting
+A [token bucket](https://en.wikipedia.org/wiki/Token_bucket)-based rate limiting has been added, 
+while `@Cooldown` still exists, `@RateLimit` now lets you define buckets, with multiple bandwidths, 
+letting you create custom rate limiting for each of your command/component handler.
+
+A common example outside classic cooldowns is a spike protected bucket, which in addition to the normal rate limit,
+helps you prevent users from spamming a command in a short period of time, 
+forcing them to spread out your resource usage.
+
+Rate limits can be used with:
+- `@RateLimit` (for annotated commands)
+- `#rateLimitReference` (for DSL commands and components) 
+- A declarator function, annotated with `@RateLimitDeclaration`, using `RateLimitContainer#rateLimit`,
+  using them is as simple as using `@RateLimitReference` for annotated commands,
+  or `#rateLimitReference` for DSL commands and components.
+
 ## Autocomplete changes
 Autocomplete annotations and event have been renamed using `Autocomplete` instead of `Autocompletion`.
 

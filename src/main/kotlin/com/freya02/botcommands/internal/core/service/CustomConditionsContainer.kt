@@ -4,6 +4,7 @@ import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.CustomConditionChecker
 import com.freya02.botcommands.api.core.service.annotations.Condition
+import com.freya02.botcommands.api.core.utils.joinAsList
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.utils.ReflectionUtils.resolveReference
 import com.freya02.botcommands.internal.utils.ReflectionUtils.shortSignature
@@ -49,7 +50,7 @@ internal class CustomConditionsContainer : ClassGraphProcessor {
     override fun postProcess(context: BContext) {
         if (customConditionCheckers.isNotEmpty()) {
             logger.trace {
-                val checkersList = customConditionCheckers.joinToString(prefix = " - ", separator = "\n - ") {
+                val checkersList = customConditionCheckers.joinAsList {
                     "${it.checker.javaClass.simpleNestedName} (${it.checker.annotationType.simpleNestedName})"
                 }
                 "Loaded ${customConditionCheckers.size} custom conditions:\n$checkersList"

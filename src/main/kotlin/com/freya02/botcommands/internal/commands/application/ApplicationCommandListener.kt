@@ -1,9 +1,7 @@
 package com.freya02.botcommands.internal.commands.application
 
 import com.freya02.botcommands.api.commands.CommandPath
-import com.freya02.botcommands.api.commands.CooldownScope
 import com.freya02.botcommands.api.commands.application.ApplicationCommandFilter
-import com.freya02.botcommands.api.core.CooldownService
 import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
@@ -14,6 +12,7 @@ import com.freya02.botcommands.internal.ExceptionHandler
 import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.application.slash.SlashCommandInfo
+import com.freya02.botcommands.internal.commands.withRateLimit
 import com.freya02.botcommands.internal.utils.throwInternal
 import dev.minn.jda.ktx.messages.reply_
 import kotlinx.coroutines.launch
@@ -24,7 +23,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent
 
 @BService
-internal class ApplicationCommandListener(private val context: BContextImpl, private val cooldownService: CooldownService) {
+internal class ApplicationCommandListener(private val context: BContextImpl) {
     private val logger = KotlinLogging.logger {  }
     private val exceptionHandler = ExceptionHandler(context, logger)
 
@@ -41,8 +40,14 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                         ?: return@launch onCommandNotFound(event, "A slash command could not be found: ${event.fullCommandName}")
                 }
 
-                if (!canRun(event, slashCommand)) return@launch
-                slashCommand.execute(event, cooldownService)
+                val isNotOwner = !context.isOwner(event.user.idLong)
+                slashCommand.withRateLimit(context, event, isNotOwner) {
+                    if (!canRun(event, slashCommand, isNotOwner)) {
+                        false
+                    } else {
+                        slashCommand.execute(event)
+                    }
+                }
             } catch (e: Throwable) {
                 handleException(e, event)
             }
@@ -60,8 +65,14 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                         ?: return@launch onCommandNotFound(event, "A user context command could not be found: ${event.name}")
                 }
 
-                if (!canRun(event, userCommand)) return@launch
-                userCommand.execute(event, cooldownService)
+                val isNotOwner = !context.isOwner(event.user.idLong)
+                userCommand.withRateLimit(context, event, isNotOwner) {
+                    if (!canRun(event, userCommand, isNotOwner)) {
+                        false
+                    } else {
+                        userCommand.execute(event)
+                    }
+                }
             } catch (e: Throwable) {
                 handleException(e, event)
             }
@@ -79,8 +90,14 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                         ?: return@launch onCommandNotFound(event, "A message context command could not be found: ${event.name}")
                 }
 
-                if (!canRun(event, messageCommand)) return@launch
-                messageCommand.execute(event, cooldownService)
+                val isNotOwner = !context.isOwner(event.user.idLong)
+                messageCommand.withRateLimit(context, event, isNotOwner) {
+                    if (!canRun(event, messageCommand, isNotOwner)) {
+                        false
+                    } else {
+                        messageCommand.execute(event)
+                    }
+                }
             } catch (e: Throwable) {
                 handleException(e, event)
             }
@@ -142,8 +159,11 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
         }
     }
 
-    private suspend fun canRun(event: GenericCommandInteractionEvent, applicationCommand: ApplicationCommandInfo): Boolean {
-        val isNotOwner = !context.isOwner(event.user.idLong)
+    private suspend fun canRun(
+        event: GenericCommandInteractionEvent,
+        applicationCommand: ApplicationCommandInfo,
+        isNotOwner: Boolean
+    ): Boolean {
         val usability = Usability.of(event, applicationCommand, isNotOwner)
         if (usability.isUnusable) {
             val unusableReasons = usability.unusableReasons
@@ -176,22 +196,6 @@ internal class ApplicationCommandListener(private val context: BContextImpl, pri
                     reply(event, context.getDefaultMessages(event).getBotPermErrorMsg(missingPermissions))
                     return false
                 }
-            }
-        }
-
-        if (isNotOwner) {
-            val cooldown = cooldownService.getCooldown(applicationCommand, event)
-            if (cooldown > 0) {
-                val messages = context.getDefaultMessages(event)
-
-                when (applicationCommand.cooldownStrategy.scope) {
-                    CooldownScope.USER -> reply(event, messages.getUserCooldownMsg(cooldown / 1000.0))
-                    CooldownScope.GUILD -> reply(event, messages.getGuildCooldownMsg(cooldown / 1000.0))
-                    //Implicit CooldownScope.CHANNEL
-                    else -> reply(event, messages.getChannelCooldownMsg(cooldown / 1000.0))
-                }
-
-                return false
             }
         }
 
