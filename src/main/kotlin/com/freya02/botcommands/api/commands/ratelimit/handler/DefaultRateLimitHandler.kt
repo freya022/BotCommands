@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.DefaultMessages
 import com.freya02.botcommands.api.commands.RateLimitScope
 import com.freya02.botcommands.api.commands.ratelimit.DefaultRateLimiter
 import com.freya02.botcommands.api.core.utils.namedDefaultScope
+import com.freya02.botcommands.api.core.utils.runIgnoringResponse
 import com.freya02.botcommands.internal.commands.application.ApplicationCommandInfo
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandInfo
 import dev.minn.jda.ktx.coroutines.await
@@ -16,7 +17,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
 import net.dv8tion.jda.api.requests.ErrorResponse
@@ -61,7 +61,7 @@ class DefaultRateLimitHandler(
         val messages = context.getDefaultMessages(event.guild)
         val content = getRateLimitMessage(messages, probe)
 
-        try {
+        runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
             val messageId = channel.sendMessage(content).await().idLong
             if (deleteOnRefill && channel is GuildChannel) {
                 val channelRef by channel.ref()
@@ -69,12 +69,6 @@ class DefaultRateLimitHandler(
                     delay(probe.nanosToWaitForRefill.nanoseconds)
                     runCatching { channelRef.deleteMessageById(messageId).await() }
                 }
-            }
-        } catch (e: Exception) {
-            if (e is ErrorResponseException && e.errorResponse == ErrorResponse.CANNOT_SEND_TO_USER) {
-                // Ignore
-            } else {
-                throw e
             }
         }
     }
