@@ -16,10 +16,15 @@ import net.dv8tion.jda.api.requests.restaction.WebhookMessageCreateAction
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageEditAction
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction
+import net.dv8tion.jda.api.utils.TimeFormat
+import net.dv8tion.jda.api.utils.Timestamp
+import net.dv8tion.jda.api.utils.concurrent.Task
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.dv8tion.jda.internal.entities.ReceivedMessage
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask
 import java.util.*
+import java.util.concurrent.ScheduledExecutorService
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
@@ -122,3 +127,50 @@ fun InteractionHook.replaceWith(content: String): WebhookMessageEditAction<Messa
  */
 fun <T> RestAction<T>.delay(duration: Duration): RestAction<T> =
     delay(duration.toJavaDuration())
+
+/**
+ * @see RestAction.delay
+ */
+fun <T> RestAction<T>.delay(duration: Duration, scheduler: ScheduledExecutorService): RestAction<T> =
+    delay(duration.toJavaDuration(), scheduler)
+
+/**
+ * @see JDA.awaitShutdown
+ */
+fun JDA.awaitShutdown(timeout: Duration) = awaitShutdown(timeout.toJavaDuration())
+
+/**
+ * @see Guild.timeoutFor
+ */
+fun Guild.timeoutFor(user: UserSnowflake, duration: Duration) = timeoutFor(user, duration.toJavaDuration())
+/**
+ * @see Member.timeoutFor
+ */
+fun Member.timeoutFor(duration: Duration) = timeoutFor(duration.toJavaDuration())
+
+/**
+ * @see TimeFormat.after
+ */
+fun TimeFormat.after(duration: Duration) = after(duration.toJavaDuration())
+/**
+ * @see TimeFormat.before
+ */
+fun TimeFormat.before(duration: Duration) = before(duration.toJavaDuration())
+
+/**
+ * @see Timestamp.plus
+ */
+operator fun Timestamp.plus(duration: Duration) = plus(duration.toJavaDuration())
+/**
+ * @see Timestamp.minus
+ */
+operator fun Timestamp.minus(duration: Duration) = minus(duration.toJavaDuration())
+
+/**
+ * @see Task.setTimeout
+ */
+fun <T> Task<T>.setTimeout(duration: Duration) = setTimeout(duration.toJavaDuration())
+/**
+ * @see GatewayTask.setTimeout
+ */
+fun <T> GatewayTask<T>.setTimeout(duration: Duration) = setTimeout(duration.toJavaDuration())
