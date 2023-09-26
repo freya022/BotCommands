@@ -4,25 +4,37 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 
 //TODO Usages of this function are kinda sus in UserResolver/MemberResolver
-//TODO docs
-// This does not dismiss the exception
+/**
+ * Runs the function [block] if the result is an [ErrorResponseException].
+ *
+ * This does not clear the exception.
+ */
 inline fun <T> Result<T>.onErrorResponseException(block: (ErrorResponseException) -> Unit): Result<T> {
     return onFailure { if (it is ErrorResponseException) block(it) }
 }
 
-//TODO docs
-// This does not dismiss the exception
+/**
+ * Runs the function [block] if the result is an [error response][ErrorResponse].
+ *
+ * This does not clear the exception.
+ */
 inline fun <T> Result<T>.onErrorResponse(block: (ErrorResponse) -> Unit): Result<T> {
     return onErrorResponseException { block(it.errorResponse) }
 }
 
-//TODO docs
-// This does not dismiss the exception
+/**
+ * Runs the function [block] if the result is the specified [error response][ErrorResponse].
+ *
+ * This does not clear the exception.
+ */
 inline fun <T> Result<T>.onErrorResponse(error: ErrorResponse, block: (ErrorResponseException) -> Unit): Result<T> {
     return onErrorResponseException { if (it.errorResponse == error) block(it) }
 }
 
-//TODO docs
+/**
+ * Dismisses the encapsulated [error response][ErrorResponse]
+ * if it corresponds to any of the ignored responses, making the [Result] a success.
+ */
 fun Result<Unit>.ignore(vararg responses: ErrorResponse): Result<Unit> = recoverCatching {
     if (it is ErrorResponseException && it.errorResponse in responses) {
         // Ignore
@@ -31,8 +43,10 @@ fun Result<Unit>.ignore(vararg responses: ErrorResponse): Result<Unit> = recover
     }
 }
 
-//TODO docs
-// This *does* dismiss the exception
+/**
+ * Maps the encapsulated [error response][ErrorResponse] using the given function [block]
+ * if it corresponds to an ignored response.
+ */
 inline fun <T : R, R> Result<T>.handle(vararg responses: ErrorResponse, block: (ErrorResponseException) -> R): Result<R> = recoverCatching {
     if (it is ErrorResponseException && it.errorResponse in responses) {
         block(it)
@@ -41,11 +55,17 @@ inline fun <T : R, R> Result<T>.handle(vararg responses: ErrorResponse, block: (
     }
 }
 
-//TODO docs
+/**
+ * Encapsulates the result of the specified function [block] and dismisses [error responses][ErrorResponse]
+ * that corresponds to any of the ignored responses.
+ */
 inline fun runCatchingResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit): Result<Unit> =
     runCatching(block).ignore(*ignoredResponses)
 
-//TODO docs
+/**
+ * Runs the specified function [block] and dismisses [error responses][ErrorResponse]
+ * that corresponds to any of the ignored responses.
+ */
 inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: () -> Unit) {
     try {
         block()
@@ -56,7 +76,10 @@ inline fun runIgnoringResponse(vararg ignoredResponses: ErrorResponse, block: ()
     }
 }
 
-//TODO docs
+/**
+ * Runs the specified function [block] and returns `null` on [error responses][ErrorResponse]
+ * that corresponds to any of the ignored responses.
+ */
 inline fun <R> runIgnoringResponseOrNull(vararg ignoredResponses: ErrorResponse, block: () -> R): R? {
     return try {
         block()
