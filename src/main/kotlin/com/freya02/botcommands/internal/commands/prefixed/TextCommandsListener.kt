@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.internal.requests.CompletedRestAction
+import net.dv8tion.jda.internal.utils.Checks
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -68,7 +69,11 @@ internal class TextCommandsListener internal constructor(
                 val (commandInfo: TextCommandInfo, args: String) = findCommandWithArgs(content) ?: let {
                     // At this point no top level command was found,
                     // if a subcommand wasn't matched, it would simply appear in the args
-                    onCommandNotFound(event, CommandPath.of(content.substringBefore(' ')), isNotOwner)
+                    val topLevelName = content.substringBefore(' ')
+                    if (topLevelName.matches(Checks.ALPHANUMERIC_WITH_DASH.toRegex())) {
+                        // Commands aren't going to be found if the user tried to use illegal characters anyway
+                        onCommandNotFound(event, CommandPath.of(topLevelName), isNotOwner)
+                    }
                     return@launch
                 }
 
