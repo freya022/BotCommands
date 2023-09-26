@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.core.utils
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 
-//TODO Usages of this function are kinda sus in UserResolver/MemberResolver
 /**
  * Runs the function [block] if the result is an [ErrorResponseException].
  *
