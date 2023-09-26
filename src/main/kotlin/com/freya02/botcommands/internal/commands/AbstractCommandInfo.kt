@@ -11,19 +11,13 @@ import java.util.*
 abstract class AbstractCommandInfo internal constructor(
     builder: CommandBuilder
 ) : RateLimited, INamedCommand {
-    final override val name: String
+    final override val name: String = builder.name
     final override val path: CommandPath by lazy { computePath() }
 
     override val rateLimitInfo: RateLimitInfo? = builder.rateLimitInfo
 
-    val userPermissions: EnumSet<Permission>
-    val botPermissions: EnumSet<Permission>
-
-    init {
-        name = builder.name
-        userPermissions = builder.userPermissions
-        botPermissions = builder.botPermissions
-    }
+    val userPermissions: EnumSet<Permission> = builder.userPermissions
+    val botPermissions: EnumSet<Permission> = builder.botPermissions
 
     override fun toString(): String {
         return "${this::class.simpleName}: ${path.fullPath}"
