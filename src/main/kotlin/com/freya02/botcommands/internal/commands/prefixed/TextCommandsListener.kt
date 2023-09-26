@@ -54,7 +54,7 @@ internal class TextCommandsListener internal constructor(
 
         val msg: String = event.message.contentRaw
         val content = when {
-            context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ')
+            context.textConfig.usePingAsPrefix && msg.startsWith(event.jda.selfUser.asMention) -> msg.substringAfter(' ', missingDelimiterValue = "")
             else -> getMsgNoPrefix(msg, event.guild)
         }
         if (content.isNullOrBlank()) return
