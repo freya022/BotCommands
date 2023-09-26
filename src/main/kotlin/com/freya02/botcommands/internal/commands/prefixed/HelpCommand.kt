@@ -13,6 +13,7 @@ import com.freya02.botcommands.api.core.service.ConditionalServiceChecker
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
 import com.freya02.botcommands.api.core.service.annotations.ServiceName
 import com.freya02.botcommands.api.core.service.getInterfacedServices
+import com.freya02.botcommands.api.core.utils.handle
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.Usability
@@ -24,7 +25,6 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import java.time.Instant
 import java.util.*
@@ -89,19 +89,16 @@ internal class HelpCommand internal constructor(private val context: BContextImp
         val builder = generateGlobalHelp(event.member, event.guildChannel)
         val embed = builder.build()
 
-        try {
+        runCatching {
             event.author
                 .openPrivateChannel()
                 .flatMap { event.sendWithEmbedFooterIcon(it, embed, event.failureReporter("Unable to send help message")) }
                 .await()
 
             event.reactSuccess().queue()
-        } catch (e: ErrorResponseException) {
-            when (e.errorResponse) {
-                ErrorResponse.CANNOT_SEND_TO_USER -> event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
-                else -> throw e
-            }
-        }
+        }.handle(ErrorResponse.CANNOT_SEND_TO_USER) {
+            event.respond(context.getDefaultMessages(event.guild).closedDMErrorMsg).queue()
+        }.getOrThrow()
     }
 
     private suspend fun sendCommandHelp(event: BaseCommandEvent, commandInfo: TextCommandInfo) {

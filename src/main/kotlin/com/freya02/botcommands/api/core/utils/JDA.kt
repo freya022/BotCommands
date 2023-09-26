@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.interactions.callbacks.IMessageEditCallback
 import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback
@@ -29,20 +28,12 @@ import kotlin.time.Duration
 import kotlin.time.toJavaDuration
 
 suspend fun Guild.retrieveMemberOrNull(userId: Long): Member? = retrieveMemberOrNull(UserSnowflake.fromId(userId))
-suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = try {
+suspend fun Guild.retrieveMemberOrNull(user: UserSnowflake): Member? = runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_MEMBER) {
     retrieveMember(user).await()
-} catch (e: ErrorResponseException) {
-    if (e.errorResponse != ErrorResponse.UNKNOWN_MEMBER)
-        throw e
-    null
 }
 
-suspend fun JDA.retrieveUserOrNull(userId: Long): User? = try {
+suspend fun JDA.retrieveUserOrNull(userId: Long): User? = runIgnoringResponseOrNull(ErrorResponse.UNKNOWN_USER) {
     retrieveUserById(userId).await()
-} catch (e: ErrorResponseException) {
-    if (e.errorResponse != ErrorResponse.UNKNOWN_MEMBER)
-        throw e
-    null
 }
 
 /**
