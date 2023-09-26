@@ -1,6 +1,7 @@
 package com.freya02.botcommands.test_kt
 
 import com.freya02.botcommands.api.core.BBuilder
+import com.freya02.botcommands.api.core.config.DevConfig
 import com.freya02.botcommands.test.BasicSettingsProvider
 import com.freya02.botcommands.test.Config
 import com.freya02.botcommands.test.TestDB
@@ -16,6 +17,7 @@ import kotlin.time.Duration.Companion.minutes
 object Main {
     private val logger = KotlinLogging.logger { }
 
+    @OptIn(DevConfig::class)
     @JvmStatic
     fun main(args: Array<out String>) {
         //stacktrace-decoroutinator seems to have issues when reloading with hotswap agent

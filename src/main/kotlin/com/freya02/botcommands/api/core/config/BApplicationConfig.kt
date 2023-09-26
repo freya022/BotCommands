@@ -63,6 +63,7 @@ interface BApplicationConfig {
 class BApplicationConfigBuilder internal constructor(private val serviceConfig: BServiceConfigBuilder) : BApplicationConfig {
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
+    @set:DevConfig
     override var onlineAppCommandCheckEnabled: Boolean = false
     override var forceGuildCommands: Boolean = false
 
