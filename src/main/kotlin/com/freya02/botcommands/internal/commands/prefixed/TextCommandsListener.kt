@@ -8,6 +8,7 @@ import com.freya02.botcommands.api.core.annotations.BEventListener
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.getInterfacedServices
 import com.freya02.botcommands.api.core.utils.getMissingPermissions
+import com.freya02.botcommands.api.core.utils.runIgnoringResponse
 import com.freya02.botcommands.api.core.utils.simpleNestedName
 import com.freya02.botcommands.internal.BContextImpl
 import com.freya02.botcommands.internal.ExceptionHandler
@@ -15,14 +16,13 @@ import com.freya02.botcommands.internal.Usability
 import com.freya02.botcommands.internal.Usability.UnusableReason
 import com.freya02.botcommands.internal.commands.withRateLimit
 import com.freya02.botcommands.internal.utils.throwInternal
+import dev.minn.jda.ktx.coroutines.await
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.exceptions.ErrorHandler
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.internal.requests.CompletedRestAction
 
 private val logger = KotlinLogging.logger { }
 private val spacePattern = Regex("\\s+")
@@ -121,7 +121,7 @@ internal class TextCommandsListener internal constructor(
         return false
     }
 
-    private fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
+    private suspend fun handleException(event: MessageReceivedEvent, e: Throwable, msg: String) {
         exceptionHandler.handleException(event, e, "text command '$msg'")
         replyError(event, context.getDefaultMessages(event.guild).generalErrorMsg)
     }
@@ -160,7 +160,7 @@ internal class TextCommandsListener internal constructor(
         return context.textConfig.prefixes
     }
 
-    private fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
+    private suspend fun canRun(event: MessageReceivedEvent, commandInfo: TextCommandInfo, isNotOwner: Boolean): Boolean {
         val member = event.member ?: throwInternal("Text command was executed out of a Guild")
         val usability = Usability.of(context, commandInfo, member, event.guildChannel, isNotOwner)
 
@@ -216,19 +216,15 @@ internal class TextCommandsListener internal constructor(
         return variation.execute(event, optionValues)
     }
 
-    private fun replyError(event: MessageReceivedEvent, msg: String) {
-        val action = when {
-            event.guildChannel.canTalk() -> CompletedRestAction(event.jda, event.channel)
-            else -> event.author.openPrivateChannel()
+    private suspend fun replyError(event: MessageReceivedEvent, msg: String) {
+        val channel = when {
+            event.guildChannel.canTalk() -> event.channel
+            else -> event.author.openPrivateChannel().await()
         }
 
-        action
-            .flatMap { it.sendMessage(msg) }
-            .queue(null, ErrorHandler()
-                .ignore(ErrorResponse.CANNOT_SEND_TO_USER)
-                .handle(Throwable::class.java) {
-                    exceptionHandler.handleException(event, it, "text command error reply")
-                })
+        runIgnoringResponse(ErrorResponse.CANNOT_SEND_TO_USER) {
+            channel.sendMessage(msg).await()
+        }
     }
 
     private fun onCommandNotFound(event: MessageReceivedEvent, commandName: CommandPath, isNotOwner: Boolean) {
