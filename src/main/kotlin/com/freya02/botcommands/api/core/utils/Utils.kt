@@ -65,27 +65,29 @@ fun <R> withResource(url: String, block: (InputStream) -> R): R {
 /**
  * Creates a [CoroutineScope] with incremental thread naming, uses [getDefaultScope] under the hood.
  *
- * @param job The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
+ * @param name         The base name of the threads and coroutines, will be prefixed by the number if [corePoolSize] > 1
+ * @param corePoolSize The number of threads to keep in the pool, even if they are idle
+ * @param job          The parent job used for coroutines which can be used to cancel all children, uses [SupervisorJob] by default
  * @param errorHandler The [CoroutineExceptionHandler] used for handling uncaught exceptions,
  *                     uses a logging handler which cancels the parent job on [Error] by default
- * @param context Any additional context to add to the scope, uses [EmptyCoroutineContext] by default
+ * @param context      Any additional context to add to the scope, uses [EmptyCoroutineContext] by default
  */
 fun namedDefaultScope(
     name: String,
-    poolSize: Int,
+    corePoolSize: Int,
     job: Job? = null,
     errorHandler: CoroutineExceptionHandler? = null,
     context: CoroutineContext = EmptyCoroutineContext
 ): CoroutineScope {
-    require(poolSize > 0) {
+    require(corePoolSize >= 0) {
         "Pool size must be positive"
     }
 
     val lock = ReentrantLock()
     var count = 0
-    val executor = Executors.newScheduledThreadPool(poolSize) {
+    val executor = Executors.newScheduledThreadPool(corePoolSize) {
         Thread(it).apply {
-            if (poolSize == 1) {
+            if (corePoolSize <= 1) {
                 this.name = name
             } else {
                 lock.withLock {
