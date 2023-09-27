@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.core
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.ReceiverConsumer
 import com.freya02.botcommands.api.commands.annotations.Command
-import com.freya02.botcommands.api.core.BBuilder.Companion.newBuilder
 import com.freya02.botcommands.api.core.config.BConfigBuilder
 import com.freya02.botcommands.api.core.events.BReadyEvent
 import com.freya02.botcommands.api.core.events.LoadEvent
@@ -23,71 +22,81 @@ import net.dv8tion.jda.api.events.session.ShutdownEvent
 import kotlin.time.Duration.Companion.minutes
 
 /**
- * The only class you'll need to initialize the framework.
+ * Entry point for the BotCommands framework.
  *
- * @see newBuilder
+ * Note: Building JDA before the framework will result in an error,
+ * I strongly recommend that you create a service which extends [JDAService].
+ *
+ * Creating a JDA instance when this method return is also fine.
+ *
+ * **Example** - Main.kt:
+ * ```kt
+ * val scope = getDefaultScope()
+ * val manager = CoroutineEventManager(scope, 1.minutes)
+ * manager.listener<ShutdownEvent> {
+ *     this.cancel() //"this" is a scope delegate
+ * }
+ *
+ * BBuilder.newBuilder(manager) {
+ *     addSearchPath("io.github.name.bot") //Change this
+ *
+ *     components {
+ *         useComponents = true
+ *     }
+ *
+ *     textCommands {
+ *         usePingAsPrefix = true
+ *     }
+ * }
+ * ```
+ *
+ * Bot.kt:
+ * ```kt
+ * @BService
+ * class Bot(private val config: Config) : JDAService() {
+ *     override val intents: Set<GatewayIntent> = defaultIntents
+ *
+ *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
+ *         light(config.token, enableCoroutines = false /* required */) {
+ *             //Configure JDA
+ *
+ *             setEventManager(eventManager) //Required
+ *         }
+ *     }
+ * }
+ * ```
+ *
+ * @see BService @BService
+ * @see InterfacedService @InterfacedService
+ * @see Command @Command
  */
 class BBuilder private constructor(configConsumer: ReceiverConsumer<BConfigBuilder>) {
     private val logger = KotlinLogging.logger { }
     private val config = configConsumer.applyTo(BConfigBuilder()).build()
 
     /**
-     * The only class you'll need to initialize the framework.
+     * Entry point for the BotCommands framework.
      *
-     * @see newBuilder
+     * @see BBuilder
      */
     companion object {
         /**
          * Creates a new instance of the framework.
          *
-         * Note: Building JDA before the framework will result in an error,
-         * I strongly recommend that you create a service which extends [JDAService].
-         *
-         * Creating a JDA instance when this method return is also fine.
-         *
-         * **Example** - Main.kt:
-         * ```kt
-         * val scope = getDefaultScope()
-         * val manager = CoroutineEventManager(scope, 1.minutes)
-         * manager.listener<ShutdownEvent> {
-         *     this.cancel() //"this" is a scope delegate
-         * }
-         *
-         * BBuilder.newBuilder(manager) {
-         *     addSearchPath("io.github.name.bot") //Change this
-         *
-         *     components {
-         *         useComponents = true
-         *     }
-         *
-         *     textCommands {
-         *         usePingAsPrefix = true
-         *     }
-         * }
-         * ```
-         *
-         * Bot.kt:
-         * ```kt
-         * @BService
-         * class Bot(private val config: Config) : JDAService() {
-         *     override val intents: Set<GatewayIntent> = defaultIntents
-         *
-         *     override fun createJDA(event: BReadyEvent, eventManager: IEventManager) {
-         *         light(config.token, enableCoroutines = false /* required */) {
-         *             //Configure JDA
-         *
-         *             setEventManager(eventManager) //Required
-         *         }
-         *     }
-         * }
-         * ```
-         *
-         * @see BService @BService
-         * @see InterfacedService @InterfacedService
-         * @see Command @Command
+         * @see BBuilder
          */
         @JvmStatic
-        @JvmOverloads
+        @JvmName("newBuilder")
+        fun newBuilderJava(configConsumer: ReceiverConsumer<BConfigBuilder>) {
+            newBuilder(configConsumer = configConsumer)
+        }
+
+        /**
+         * Creates a new instance of the framework.
+         *
+         * @see BBuilder
+         */
+        @JvmSynthetic
         fun newBuilder(manager: CoroutineEventManager = getDefaultManager(), configConsumer: ReceiverConsumer<BConfigBuilder>) {
             BBuilder(configConsumer).build(manager)
         }
