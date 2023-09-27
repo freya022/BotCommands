@@ -48,6 +48,7 @@ interface BConfig {
      * **Note:** you need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info
      *
      * @see ConnectionSupplier.getMaxTransactionDuration
+     * @see DebugProbes
      */
     val dumpLongTransactions: Boolean
     /**

@@ -418,8 +418,7 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-coroutines-debug</artifactId>
             <version>${kotlin.coroutine.version}</version>
-            <!-- TODO make optional -->
-<!--            <optional>true</optional>-->
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlinx</groupId>

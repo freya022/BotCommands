@@ -3,7 +3,6 @@ package com.freya02.botcommands.api.core.db
 import com.freya02.botcommands.api.Logging
 import com.freya02.botcommands.api.core.config.BConfig
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
-import com.freya02.botcommands.api.core.utils.getSignature
 import com.freya02.botcommands.api.core.utils.namedDefaultScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -111,16 +110,27 @@ internal fun releaseConnection(connection: Connection) {
     connection.close()
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
+private fun areDebugProbesInstalled(): Boolean {
+    try {
+        Class.forName("kotlinx.coroutines.debug.DebugProbes")
+    } catch (e: ClassNotFoundException) {
+        return false
+    }
+
+    return DebugProbes.isInstalled
+}
+
 @PublishedApi
 @OptIn(ExperimentalCoroutinesApi::class)
 internal fun createCoroutineDump(): String? = when {
-    DebugProbes.isInstalled -> {
+    areDebugProbesInstalled() -> {
         val outputStream = ByteArrayOutputStream()
         DebugProbes.dumpCoroutines(PrintStream(outputStream))
         outputStream.toByteArray().decodeToString()
     }
     else -> {
-        logger.warn("Skipping coroutine dump as debug probes are not installed, use ${DebugProbes::install.getSignature(source = false)}")
+        logger.warn("Skipping coroutine dump as debug probes are not installed, use DebugProbes#install from kotlinx-coroutines-debug")
         null
     }
 }
