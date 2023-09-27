@@ -1,0 +1,45 @@
+{
+  "ban": {
+    "name": "ban",
+    "description": "Bannis un utilisateur de cette guilde",
+    "options": {
+      "target": {
+        "name": "utilisateur",
+        "description": "L'utilisateur à bannir"
+      },
+      "time": {
+        "name": "durée",
+        "description": "La période de temps des messages à supprimer"
+      },
+      "unit": {
+        "name": "unité",
+        "description": "L'unité de la période de temps",
+        "choices": {
+          "seconds.name": "Secondes",
+          "minutes.name": "Minutes",
+          "hours.name": "Heures",
+          "days.name": "Jours"
+        }
+      },
+      "reason": {
+        "name": "raison",
+        "description": "La raison du bannissement"
+      }
+    },
+    "outputs": {
+      "defaultReason": "Pas de raison",
+      "confirmationMessage": "Voulez-vous vraiment bannir {userMention} ?",
+      "timeout": "Timeout",
+      "success": "{userMention} a été banni, {time} {unit} de messages ont été supprimés, raison: '{reason}'",
+      "cancelled": "Le bannissement a été annulé"
+    },
+    "errors": {
+      "bot.interactError": "Je ne peux pas bannir {userMention}",
+      "user.interactError": "Tu ne peux pas bannir {userMention}"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "confirm": "Confirmer"
+    }
+  }
+}
