@@ -52,7 +52,7 @@ internal class DatabaseImpl internal constructor(
     }
 
     override suspend fun fetchConnection(readOnly: Boolean): Connection = semaphore.withPermit {
-        connectionSupplier.connection.also {
+        connectionSupplier.getConnection().also {
             if (!::baseSchema.isInitialized) {
                 baseSchema = it.schema
             } else {
