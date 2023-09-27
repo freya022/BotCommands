@@ -141,22 +141,22 @@ class Components internal constructor(private val componentController: Component
 
     // -------------------- Persistent groups --------------------
 
-    fun newPersistentGroup(block: PersistentComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
+    fun newPersistentGroup(block: ReceiverConsumer<PersistentComponentGroupBuilder>, vararg components: ActionComponent): ComponentGroup = runBlocking {
         createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
     }
 
     @JvmSynthetic
-    suspend fun newPersistentGroup(vararg components: ActionComponent, block: PersistentComponentGroupBuilder.() -> Unit): ComponentGroup =
+    suspend fun newPersistentGroup(vararg components: ActionComponent, block: ReceiverConsumer<PersistentComponentGroupBuilder>): ComponentGroup =
         createGroup({ PersistentComponentGroupBuilder(it).apply(block) }, *components)
 
     // -------------------- Ephemeral groups --------------------
 
-    fun newEphemeralGroup(block: EphemeralComponentGroupBuilder.() -> Unit, vararg components: ActionComponent): ComponentGroup = runBlocking {
+    fun newEphemeralGroup(block: ReceiverConsumer<EphemeralComponentGroupBuilder>, vararg components: ActionComponent): ComponentGroup = runBlocking {
         createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
     }
 
     @JvmSynthetic
-    suspend fun newEphemeralGroup(vararg components: ActionComponent, block: EphemeralComponentGroupBuilder.() -> Unit): ComponentGroup =
+    suspend fun newEphemeralGroup(vararg components: ActionComponent, block: ReceiverConsumer<EphemeralComponentGroupBuilder>): ComponentGroup =
         createGroup({ EphemeralComponentGroupBuilder(it).apply(block) }, *components)
 
     // -------------------- Persistent buttons --------------------
