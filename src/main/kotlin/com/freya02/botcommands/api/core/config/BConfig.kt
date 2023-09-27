@@ -17,6 +17,7 @@ import com.freya02.botcommands.internal.core.config.ConfigDSL
 import kotlinx.coroutines.debug.DebugProbes
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
 @InjectedService
 interface BConfig {
@@ -143,32 +144,44 @@ class BConfigBuilder internal constructor() : BConfig {
         this.ownerIds += ownerIds
     }
 
-    //TODO take javadoc from master
     /**
-     * Adds the commands of this packages in this builder, all classes with valid annotations will be added<br></br>
-     * **You can have up to 2 nested sub-folders in the specified package**, this means you can have your package structure like this:
+     * Adds this package for class discovery.
+     * All services, commands, handlers, listeners, etc... will be read from these packages.
      *
-     * ```
-     * |
-     * |__slash
-     * |  |
-     * |  |__fun
-     * |     |
-     * |     |__Meme.java
-     * |        Fish.java
-     * |        ...
-     * |
-     * |__regular
-     * |
-     * |__moderation
-     * |
-     * |__Ban.java
-     * Mute.java
-     * ...
+     * **Tip:**: you can have your package structure such as:
+     *
+     * ```text
+     * commands/
+     * ├─ common/
+     * │  ├─ fun/
+     * │  │  ├─ CommonFish.java
+     * │  │  ├─ CommonMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ CommonBan.java
+     * ├─ slash/
+     * │  ├─ fun/
+     * │  │  ├─ SlashFish.java
+     * │  │  ├─ SlashMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ SlashBan.java
+     * ├─ text/
+     * │  ├─ fun/
+     * │  │  ├─ TextFish.java
+     * │  │  ├─ TextMeme.java
+     * │  ├─ moderation/
+     * │  │  ├─ TextBan.java
      * ```
      *
-     * @param commandPackageName The package name where all the commands are, ex: com.freya02.bot.commands
-     * @return This builder for chaining convenience
+     * The `common` package would have code that works for both the text and the slash commands,
+     * such as the methods that take the event's data (the command caller, guild, channel, parameters... instead of the event itself),
+     * and then return a [MessageCreateData] that lets you generate the message output, without actually knowing how to send the reply.
+     *
+     * This is only beneficial if you plan on having the same logic
+     * for multiple input types (text / slash commands, for example).
+     *
+     * @param commandPackageName The package name such as `io.github.freya022.bot.commands`
+     *
+     * @see addClass
      */
     fun addSearchPath(commandPackageName: String) {
         packages.add(commandPackageName)
