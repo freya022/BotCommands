@@ -5,6 +5,9 @@ import net.dv8tion.jda.api.events.Event
 import java.util.concurrent.*
 import java.util.function.Consumer
 import java.util.function.Predicate
+import kotlin.time.Duration
+import kotlin.time.toDuration
+import kotlin.time.toDurationUnit
 
 /**
  * Builder for [EventWaiter]
@@ -23,7 +26,20 @@ interface EventWaiterBuilder<T : Event> {
      *
      * @return This builder for chaining convenience
      */
-    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit): EventWaiterBuilder<T>
+    fun setTimeout(timeout: Long, timeoutUnit: TimeUnit): EventWaiterBuilder<T> =
+        setTimeout(timeout.toDuration(timeoutUnit.toDurationUnit()))
+
+    /**
+     * Sets the timeout for this event waiter;
+     * the action will no longer be usable after the time has elapsed.
+     *
+     * @param timeout     Amount of time before the timeout occurs
+     *
+     * @throws IllegalArgumentException If the timeout is not positive
+     *
+     * @return This builder for chaining convenience
+     */
+    fun setTimeout(timeout: Duration): EventWaiterBuilder<T>
 
     /**
      * Adds a precondition to this event waiter;

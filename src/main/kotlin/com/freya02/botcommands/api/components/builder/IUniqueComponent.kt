@@ -5,7 +5,7 @@ package com.freya02.botcommands.api.components.builder
  *
  * After the component is used, it will be deleted from the database.
  *
- * If the component is a group, then all of it's owned components will also be deleted.
+ * If the component is a group, then all of its owned components will also be deleted.
  *
  * If the component is inside a group, then all the group's components will also be deleted.
  */

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +70,23 @@ public abstract class ModalBuilder extends net.dv8tion.jda.api.interactions.moda
 	 * @return This builder for chaining convenience
 	 */
 	@NotNull
-	public abstract ModalBuilder setTimeout(long timeout, @NotNull TimeUnit unit, @NotNull Runnable onTimeout);
+	public final ModalBuilder setTimeout(long timeout, @NotNull TimeUnit unit, @NotNull Runnable onTimeout) {
+		return setTimeout(Duration.of(timeout, unit.toChronoUnit()), onTimeout);
+	}
+
+	/**
+	 * Sets the timeout for this modal, the modal will not be recognized after the timeout has passed
+	 * <br>The timeout will start when the modal is built
+	 *
+	 * <p><b>It is extremely recommended to put a timeout on your modals</b>, if your user dismisses the modal, so, never uses it, the data of the modal could stay in your RAM indefinitely
+	 *
+	 * @param timeout   The amount of time before the modal is removed
+	 * @param onTimeout The function to run when the timeout has been reached
+	 *
+	 * @return This builder for chaining convenience
+	 */
+	@NotNull
+	public abstract ModalBuilder setTimeout(@NotNull Duration timeout, @NotNull Runnable onTimeout);
 
 	/**
 	 * {@inheritDoc}
