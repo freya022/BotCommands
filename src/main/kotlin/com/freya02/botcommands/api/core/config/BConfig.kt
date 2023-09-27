@@ -5,6 +5,7 @@ import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.annotations.BEventListener
+import com.freya02.botcommands.api.core.db.ConnectionSupplier
 import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.ServiceContainer
 import com.freya02.botcommands.api.core.service.annotations.InjectedService
@@ -14,6 +15,7 @@ import com.freya02.botcommands.api.core.utils.toImmutableList
 import com.freya02.botcommands.api.core.utils.toImmutableSet
 import com.freya02.botcommands.api.core.waiter.EventWaiter
 import com.freya02.botcommands.internal.core.config.ConfigDSL
+import kotlinx.coroutines.debug.DebugProbes
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.requests.GatewayIntent
 
@@ -39,6 +41,18 @@ interface BConfig {
      */
     val disableAutocompleteCache: Boolean
 
+    /**
+     * Whether transactions should trigger a coroutine dump & thread dump
+     * when running longer than the [max transaction duration][ConnectionSupplier.getMaxTransactionDuration]
+     *
+     * **Note:** you need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
+     * do not forget to turn off [DebugProbes.enableCreationStackTraces] in production environments.
+     *
+     * @see ConnectionSupplier.getMaxTransactionDuration
+     * @see DebugProbes
+     * @see DebugProbes.enableCreationStackTraces
+     */
+    val dumpLongTransactions: Boolean
     /**
      * Determines whether the SQL queries should be logged
      *
@@ -90,6 +104,8 @@ class BConfigBuilder internal constructor() : BConfig {
     override var disableExceptionsInDMs = false
     override var disableAutocompleteCache = false
 
+    @set:DevConfig
+    override var dumpLongTransactions: Boolean = false
     override var logQueries: Boolean = true
     override var logQueryParameters: Boolean = true
 
@@ -186,6 +202,7 @@ class BConfigBuilder internal constructor() : BConfig {
         override val classes = this@BConfigBuilder.classes.toImmutableSet()
         override val disableExceptionsInDMs = this@BConfigBuilder.disableExceptionsInDMs
         override val disableAutocompleteCache = this@BConfigBuilder.disableAutocompleteCache
+        override val dumpLongTransactions = this@BConfigBuilder.dumpLongTransactions
         override val logQueries = this@BConfigBuilder.logQueries
         override val logQueryParameters = this@BConfigBuilder.logQueryParameters
         override val ignoredIntents = this@BConfigBuilder.ignoredIntents.toImmutableSet()

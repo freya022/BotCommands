@@ -3,10 +3,12 @@ package com.freya02.botcommands.test;
 import com.freya02.botcommands.api.core.db.ConnectionSupplier;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
 import org.postgresql.ds.PGSimpleDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 
 @BService
 public class TestDB implements ConnectionSupplier {
@@ -38,6 +40,13 @@ public class TestDB implements ConnectionSupplier {
 		return source.getMaximumPoolSize();
 	}
 
+	@NotNull
+	@Override
+	public Duration getMaxTransactionDuration() {
+		return Duration.ofMillis(source.getLeakDetectionThreshold());
+	}
+
+	@NotNull
 	@Override
 	public Connection getConnection() throws SQLException {
 		return source.getConnection();

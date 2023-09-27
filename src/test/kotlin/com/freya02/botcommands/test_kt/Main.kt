@@ -17,7 +17,6 @@ import kotlin.time.Duration.Companion.minutes
 object Main {
     private val logger = KotlinLogging.logger { }
 
-    @OptIn(DevConfig::class)
     @JvmStatic
     fun main(args: Array<out String>) {
         //stacktrace-decoroutinator seems to have issues when reloading with hotswap agent
@@ -43,6 +42,9 @@ object Main {
             addClass<TestDB>()
             addClass<BasicSettingsProvider>()
 
+            @OptIn(DevConfig::class)
+            dumpLongTransactions = true
+
             components {
                 useComponents = true
             }
@@ -52,6 +54,7 @@ object Main {
             }
 
             applicationCommands {
+                @OptIn(DevConfig::class)
                 onlineAppCommandCheckEnabled = true
                 addLocalizations("MyCommands", DiscordLocale.ENGLISH_US, DiscordLocale.ENGLISH_UK, DiscordLocale.FRENCH)
             }
