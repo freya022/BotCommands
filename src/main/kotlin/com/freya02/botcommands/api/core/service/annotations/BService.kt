@@ -7,7 +7,7 @@ import com.freya02.botcommands.api.core.service.ServiceStart
 /**
  * Marks this class as a service, or this function as a service factory.
  *
- * Service factories must be declared in a service class, or an `object`.
+ * Service factories must be static, or declared in a service class, or an `object`.
  *
  * By default, the service is eagerly loaded at startup, when it is in the [framework's classpath][BConfigBuilder.addSearchPath].
  *
