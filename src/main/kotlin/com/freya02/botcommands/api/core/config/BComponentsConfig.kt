@@ -20,6 +20,7 @@ interface BComponentsConfig {
 
 @ConfigDSL
 class BComponentsConfigBuilder internal constructor() : BComponentsConfig {
+    @set:JvmName("useComponents")
     override var useComponents: Boolean = false
 
     @JvmSynthetic

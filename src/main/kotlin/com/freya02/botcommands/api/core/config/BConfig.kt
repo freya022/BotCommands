@@ -43,12 +43,12 @@ interface BConfig {
 
     /**
      * Whether transactions should trigger a coroutine dump & thread dump
-     * when running longer than the [max transaction duration][ConnectionSupplier.getMaxTransactionDuration]
+     * when running longer than the [max transaction duration][ConnectionSupplier.maxTransactionDuration]
      *
      * **Note:** you need to [install the debug probes][DebugProbes.install] in order to dump coroutine debug info,
      * do not forget to turn off [DebugProbes.enableCreationStackTraces] in production environments.
      *
-     * @see ConnectionSupplier.getMaxTransactionDuration
+     * @see ConnectionSupplier.maxTransactionDuration
      * @see DebugProbes
      * @see DebugProbes.enableCreationStackTraces
      */
@@ -101,12 +101,17 @@ class BConfigBuilder internal constructor() : BConfig {
 
     override val ownerIds: MutableSet<Long> = HashSet()
 
+    @set:JvmName("disableExceptionsInDMs")
     override var disableExceptionsInDMs = false
+    @set:JvmName("disableAutocompleteCache")
     override var disableAutocompleteCache = false
 
     @set:DevConfig
+    @set:JvmName("dumpLongTransactions")
     override var dumpLongTransactions: Boolean = false
+    @set:JvmName("logQueries")
     override var logQueries: Boolean = true
+    @set:JvmName("logQueryParameters")
     override var logQueryParameters: Boolean = true
 
     override val ignoredIntents: MutableSet<GatewayIntent> = enumSetOf()
@@ -120,6 +125,7 @@ class BConfigBuilder internal constructor() : BConfig {
     override val textConfig = BTextConfigBuilder()
     override val applicationConfig = BApplicationConfigBuilder(serviceConfig)
     override val componentsConfig = BComponentsConfigBuilder()
+    @get:JvmSynthetic
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
@@ -174,7 +180,7 @@ class BConfigBuilder internal constructor() : BConfig {
     }
 
     @JvmSynthetic
-    inline fun <reified T> addClass() {
+    inline fun <reified T : Any> addClass() {
         addClass(T::class.java)
     }
 
@@ -182,6 +188,7 @@ class BConfigBuilder internal constructor() : BConfig {
         serviceConfig.apply(block)
     }
 
+    @JvmSynthetic
     fun coroutineScopes(block: ReceiverConsumer<BCoroutineScopesConfigBuilder>) {
         coroutineScopesConfig.apply(block)
     }

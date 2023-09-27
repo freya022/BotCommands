@@ -22,7 +22,9 @@ interface BDebugConfig {
 
 @ConfigDSL
 class BDebugConfigBuilder internal constructor() : BDebugConfig {
+    @set:JvmName("enableApplicationDiffsLogs")
     override var enableApplicationDiffsLogs: Boolean = false
+    @set:JvmName("enabledMissingLocalizationLogs")
     override var enabledMissingLocalizationLogs: Boolean = false
 
     @JvmSynthetic

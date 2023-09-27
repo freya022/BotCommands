@@ -64,7 +64,9 @@ class BApplicationConfigBuilder internal constructor(private val serviceConfig: 
     override val slashGuildIds: MutableList<Long> = mutableListOf()
     override val testGuildIds: MutableList<Long> = mutableListOf()
     @set:DevConfig
+    @set:JvmName("enableOnlineAppCommandChecks")
     override var onlineAppCommandCheckEnabled: Boolean = false
+    @set:JvmName("forceGuildCommands")
     override var forceGuildCommands: Boolean = false
 
     private val _baseNameToLocalesMap: MutableMap<String, MutableList<Locale>> = hashMapOf()
