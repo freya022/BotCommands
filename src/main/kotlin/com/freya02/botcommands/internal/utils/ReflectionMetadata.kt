@@ -2,6 +2,7 @@ package com.freya02.botcommands.internal.utils
 
 import com.freya02.botcommands.api.commands.annotations.Optional
 import com.freya02.botcommands.api.core.config.BConfig
+import com.freya02.botcommands.api.core.service.ClassGraphProcessor
 import com.freya02.botcommands.api.core.service.annotations.Condition
 import com.freya02.botcommands.api.core.utils.javaMethodOrConstructor
 import com.freya02.botcommands.api.core.utils.shortSignature
@@ -82,8 +83,10 @@ internal object ReflectionMetadata {
         }
 
         val lowercaseInnerClassRegex = Regex("\\$[a-z]")
-        // TODO Refactor to avoid multiple ClassGraphProcessor#postProcess
-        return scanned.flatMap { (scanResult, classes) ->
+        val classGraphProcessors = context.config.classGraphProcessors +
+                listOf(context.serviceProviders, context.customConditionsContainer) +
+                listOf(CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
+        return scanned.flatMap { (_, classes) ->
             classes
                 .filter {
                     it.annotationInfo.directOnly()["kotlin.Metadata"]?.let { annotationInfo ->
@@ -100,7 +103,7 @@ internal object ReflectionMetadata {
                     if (lowercaseInnerClassRegex.containsMatchIn(it.name)) return@filter false
                     return@filter !it.isSynthetic && !it.isEnum && !it.isRecord
                 }
-                .processClasses(context)
+                .processClasses(context, classGraphProcessors)
                 .map { classInfo ->
                     val kClass = classInfo.loadClass().kotlin
                     //Fill map with all the @Command, @Resolver, etc... declarations
@@ -118,9 +121,11 @@ internal object ReflectionMetadata {
 
                     kClass
                 }
-                .also {
-                    scanResult.close()
-                }
+        }.also {
+            classGraphProcessors.forEach { it.postProcess(context) }
+            scanned.forEach { (scanResult, _) -> scanResult.close() }
+
+            scannedParams = true
         }
     }
 
@@ -141,10 +146,7 @@ internal object ReflectionMetadata {
     private fun ClassInfo.isServiceOrHasFactories(config: BConfig) =
         isService(config) || methodInfo.any { it.isService(config) }
 
-    private fun List<ClassInfo>.processClasses(context: BContextImpl): List<ClassInfo> {
-        val classGraphProcessors = context.config.classGraphProcessors +
-                listOf(context.serviceProviders, context.customConditionsContainer, CommandsPresenceChecker(), ResolverSupertypeChecker(), HandlersPresenceChecker())
-
+    private fun List<ClassInfo>.processClasses(context: BContextImpl, classGraphProcessors: List<ClassGraphProcessor>): List<ClassInfo> {
         return onEach { classInfo ->
             try {
                 val kClass = classInfo.loadClass().kotlin
@@ -173,10 +175,6 @@ internal object ReflectionMetadata {
             } catch (e: Throwable) {
                 throw RuntimeException("An exception occurred while scanning class: ${classInfo.name}", e)
             }
-        }.also {
-            classGraphProcessors.forEach { it.postProcess(context) }
-
-            scannedParams = true
         }
     }
 
