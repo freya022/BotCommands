@@ -122,7 +122,20 @@ interface IEphemeralActionableComponent<E : GenericComponentInteractionCreateEve
      * @param handler The handler to run when the button is clicked
      */
     @JvmSynthetic
-    fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>> = ReceiverConsumer.noop())
+    fun bindTo(handler: suspend (E) -> Unit) = bindTo(handler, ReceiverConsumer.noop())
+
+    /**
+     * Binds the given handler to this component.
+     *
+     * **Be sure not to capture JDA entities in such handlers
+     * as [their lifetime could have expired](https://jda.wiki/using-jda/troubleshooting/#cannot-get-reference-as-it-has-already-been-garbage-collected)**.
+     *
+     * You can still use [User.ref] and such from JDA-KTX to circumvent this issue.
+     *
+     * @param handler The handler to run when the button is clicked
+     */
+    @JvmSynthetic
+    fun bindTo(handler: suspend (E) -> Unit, block: ReceiverConsumer<EphemeralHandlerBuilder<E>>)
 }
 
 inline fun <reified E : GenericComponentInteractionCreateEvent> IPersistentActionableComponent.bindTo(noinline func: suspend (event: E) -> Unit, block: ReceiverConsumer<PersistentHandlerBuilder> = ReceiverConsumer.noop()) {
