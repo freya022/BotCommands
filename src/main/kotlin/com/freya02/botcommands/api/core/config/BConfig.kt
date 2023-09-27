@@ -123,12 +123,19 @@ class BConfigBuilder internal constructor() : BConfig {
     override val coroutineScopesConfig = BCoroutineScopesConfigBuilder()
 
     /**
-     * Adds owners, they can access the commands annotated with [RequireOwner]
+     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
      *
      * @param ownerIds Owners Long IDs to add
      */
-    fun addOwners(vararg ownerIds: Long) {
-        this.ownerIds += ownerIds.asList()
+    fun addOwners(vararg ownerIds: Long) = addOwners(ownerIds.asList())
+
+    /**
+     * Adds owners, they can access the commands annotated with [RequireOwner] as well as bypass cooldowns.
+     *
+     * @param ownerIds Owners Long IDs to add
+     */
+    fun addOwners(ownerIds: Collection<Long>) {
+        this.ownerIds += ownerIds
     }
 
     //TODO take javadoc from master
