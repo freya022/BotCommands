@@ -15,6 +15,7 @@ import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
+import com.freya02.botcommands.api.core.utils.retrieveMemberOrNull
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
 import com.freya02.botcommands.api.localization.context.localize
@@ -55,13 +56,7 @@ class SlashBan(private val context: BContext, private val componentsService: Com
         timeframe: DeleteTimeframe,
         reason: String = localizationContext.localize("outputs.defaultReason")
     ) {
-        val targetMember: Member? = try {
-            event.guild.retrieveMember(target).await()
-        } catch (e: ErrorResponseException) {
-            if (e.errorResponse != ErrorResponse.UNKNOWN_MEMBER)
-                throw e
-            null
-        }
+        val targetMember: Member? = event.guild.retrieveMemberOrNull(target)
 
         if (targetMember != null) {
             if (!event.member.canInteract(targetMember)) {
