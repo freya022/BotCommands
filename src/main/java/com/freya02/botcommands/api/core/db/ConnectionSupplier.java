@@ -1,13 +1,16 @@
 package com.freya02.botcommands.api.core.db;
 
 import com.freya02.botcommands.api.core.config.BComponentsConfigBuilder;
+import com.freya02.botcommands.api.core.config.BConfig;
 import com.freya02.botcommands.api.core.config.BServiceConfigBuilder;
 import com.freya02.botcommands.api.core.service.annotations.BService;
 import com.freya02.botcommands.api.core.service.annotations.InjectedService;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Duration;
 
 /**
  * This interface allows the framework to access a PostgreSQL database.
@@ -25,5 +28,16 @@ import java.sql.SQLException;
 public interface ConnectionSupplier {
 	int getMaxConnections();
 
+	/**
+	 * Returns the duration until a thread/coroutine dump is attempted during a transaction.
+	 *
+	 * <p>This should be the same value as what HikariCP is using as the leak detection threshold.
+	 *
+	 * @see BConfig#getDumpLongTransactions()
+	 */
+	@NotNull
+	default Duration getMaxTransactionDuration() { return Duration.ZERO; }
+
+	@NotNull
 	Connection getConnection() throws SQLException;
 }

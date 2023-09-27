@@ -7,10 +7,12 @@ import com.freya02.botcommands.api.core.db.preparedStatement
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.Dependencies
 import com.freya02.botcommands.api.core.service.annotations.ServiceType
+import com.freya02.botcommands.internal.utils.ReflectionUtils.referenceString
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import java.sql.Connection
+import kotlin.time.toKotlinDuration
 
 // If the build script has 3.0.0-alpha.5_DEV, use the next release version, in this case 3.0.0-alpha.6
 private const val latestVersion = "3.0.0-alpha.6" // Change in the latest migration script too
@@ -19,7 +21,7 @@ private const val latestVersion = "3.0.0-alpha.6" // Change in the latest migrat
 @ServiceType(Database::class)
 @Dependencies(ConnectionSupplier::class)
 internal class DatabaseImpl internal constructor(
-    private val connectionSupplier: ConnectionSupplier,
+    override val connectionSupplier: ConnectionSupplier,
     override val config: BConfig
 ) : Database {
     //Prevents deadlock when a paused coroutine holds a Connection,
@@ -29,6 +31,10 @@ internal class DatabaseImpl internal constructor(
     private lateinit var baseSchema: String
 
     init {
+        check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
+            "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.referenceString} is enabled"
+        }
+
         runBlocking {
             preparedStatement("select version from bc.bc_version", readOnly = true) {
                 val rs = executeQuery().readOrNull() ?:
