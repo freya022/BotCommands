@@ -31,8 +31,10 @@ internal class DatabaseImpl internal constructor(
     private lateinit var baseSchema: String
 
     init {
-        check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
-            "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.referenceString} is enabled"
+        if (config.dumpLongTransactions) {
+            check(connectionSupplier.maxTransactionDuration.toKotlinDuration().isPositive()) {
+                "Maximum transaction duration must be positive when ${BConfig::dumpLongTransactions.referenceString} is enabled"
+            }
         }
 
         runBlocking {
