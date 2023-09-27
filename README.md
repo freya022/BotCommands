@@ -125,7 +125,7 @@ BBuilder.newBuilder(builder -> {
 
 You can then either build JDA after, or create a JDA service,
 which will get started automatically, as any other service.
-You can refer to the [bot template](BotTemplate/src/main/kotlin/io/github/freya022/bot/JDAService.kt) for more details.
+You can refer to the bot template ([Java](BotTemplate/BotTemplate-Java/src/main/kotlin/io/github/freya022/bot/Bot.java) / [Kotlin](BotTemplate/BotTemplate-Kotlin/src/main/kotlin/io/github/freya022/bot/Bot.kt)) for more details.
 
 ## Template bot
 
