@@ -3,8 +3,6 @@ package io.github.freya022.bot.config
 import java.nio.file.Path
 import kotlin.io.path.Path
 import kotlin.io.path.exists
-import kotlin.io.path.extension
-import kotlin.io.path.toPath
 
 object Environment {
     /**
@@ -15,18 +13,10 @@ object Environment {
 
     /**
      * The folder where the data and configuration directories reside.
+     *
+     * This is the current **working directory**.
      */
-    val folder: Path = when {
-        isDev -> Path("")
-        else -> {
-            val jarPath = javaClass.protectionDomain.codeSource.location.toURI().toPath()
-            if (jarPath.extension != "jar") {
-                throw IllegalStateException("Production environment detected (no 'dev-config' folder), but file at $jarPath isn't a JAR")
-            }
-
-            jarPath.parent
-        }
-    }
+    val folder: Path = Path("")
 
     val configFolder: Path =
         folder.resolve(if (isDev) "dev-config" else "config")
