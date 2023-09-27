@@ -1,7 +1,6 @@
 package com.freya02.botcommands.internal.components.builder
 
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.components.builder.IConstrainableComponent
 import com.freya02.botcommands.api.components.data.InteractionConstraints
 import net.dv8tion.jda.api.Permission

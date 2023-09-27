@@ -1,7 +1,6 @@
 package com.freya02.botcommands.api.core.config
 
 import com.freya02.botcommands.api.ReceiverConsumer
-import com.freya02.botcommands.api.apply
 import com.freya02.botcommands.api.commands.annotations.RequireOwner
 import com.freya02.botcommands.api.commands.application.slash.autocomplete.annotations.CacheAutocomplete
 import com.freya02.botcommands.api.core.annotations.BEventListener
@@ -35,7 +34,7 @@ interface BConfig {
     /**
      * Disables autocomplete caching, unless [CacheAutocomplete.forceCache] is set to `true`.
      *
-     * This could be useful when testing methods that use autocomplete caching, while using hotswap.
+     * This could be useful when testing methods that use autocomplete caching while using hotswap.
      *
      * Default: `false`
      */
