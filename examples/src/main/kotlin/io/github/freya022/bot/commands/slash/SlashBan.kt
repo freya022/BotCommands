@@ -15,12 +15,13 @@ import com.freya02.botcommands.api.components.awaitAny
 import com.freya02.botcommands.api.components.event.ButtonEvent
 import com.freya02.botcommands.api.core.service.annotations.BService
 import com.freya02.botcommands.api.core.service.annotations.ConditionalService
+import com.freya02.botcommands.api.core.utils.delay
 import com.freya02.botcommands.api.core.utils.retrieveMemberOrNull
 import com.freya02.botcommands.api.localization.annotations.LocalizationBundle
 import com.freya02.botcommands.api.localization.context.AppLocalizationContext
-import com.freya02.botcommands.api.localization.context.localize
-import dev.minn.jda.ktx.coroutines.await
-import dev.minn.jda.ktx.messages.reply_
+import com.freya02.botcommands.api.localization.context.editLocalized
+import com.freya02.botcommands.api.localization.context.replaceLocalized
+import com.freya02.botcommands.api.localization.context.replyLocalizedEphemeral
 import io.github.freya022.bot.commands.FrontendChooser
 import io.github.freya022.bot.commands.SimpleFrontend
 import io.github.freya022.bot.commands.ban.BanService
@@ -28,15 +29,11 @@ import io.github.freya022.bot.resolvers.localize
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
-import net.dv8tion.jda.api.requests.ErrorResponse
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.toJavaDuration
 
 private val logger = KotlinLogging.logger { }
 
@@ -57,14 +54,11 @@ class SlashBan(private val context: BContext, private val componentsService: Com
         timeframe: DeleteTimeframe,
         reason: String = localizationContext.localize("outputs.defaultReason")
     ) {
-        val targetMember: Member? = event.guild.retrieveMemberOrNull(target)
-
-        if (targetMember != null) {
+        event.guild.retrieveMemberOrNull(target)?.let { targetMember ->
             if (!event.member.canInteract(targetMember)) {
-                //TODO replace with replyLocalizedEphemeral
-                return event.reply_(localizationContext.localize("errors.user.interactError", "userMention" to target.asMention), ephemeral = true).queue()
+                return event.replyLocalizedEphemeral(localizationContext, "errors.user.interactError", "userMention" to target.asMention).queue()
             } else if (!event.guild.selfMember.canInteract(targetMember)) {
-                return event.reply_(localizationContext.localize("errors.bot.interactError", "userMention" to target.asMention), ephemeral = true).queue()
+                return event.replyLocalizedEphemeral(localizationContext, "errors.bot.interactError", "userMention" to target.asMention).queue()
             }
         }
 
@@ -83,15 +77,15 @@ class SlashBan(private val context: BContext, private val componentsService: Com
             timeout(1.minutes)
         }
 
-        event.reply_(localizationContext.localize("outputs.confirmationMessage", "userMention" to target.asMention), ephemeral = true)
+        event.replyLocalizedEphemeral(localizationContext, "outputs.confirmationMessage", "userMention" to target.asMention)
             .addActionRow(cancelButton, confirmButton)
             .queue()
 
         val componentEvent: ButtonEvent = try {
             componentGroup.awaitAny()
         } catch (e: TimeoutCancellationException) {
-            return event.hook.editOriginal(localizationContext.localize("outputs.timeout"))
-                .delay(5.seconds.toJavaDuration())
+            return event.hook.editLocalized(localizationContext, "outputs.timeout")
+                .delay(5.seconds)
                 .flatMap { event.hook.deleteOriginal() }
                 .queue()
         }
@@ -99,22 +93,21 @@ class SlashBan(private val context: BContext, private val componentsService: Com
         when (componentEvent.componentId) {
             cancelButton.id -> {
                 logger.debug { "Ban cancelled for ${target.id}" }
-                componentEvent.editMessage(localizationContext.localize("outputs.cancelled"))
-                    .setComponents()
-                    .queue()
+                componentEvent.replaceLocalized(localizationContext, "outputs.cancelled").queue()
 
                 //Cancel logic
             }
             confirmButton.id -> {
                 logger.debug { "Ban confirmed for ${target.id}, $timeframe of messages were deleted, reason: '$reason'" }
 
-                componentEvent.editMessage(localizationContext.localize(
+                componentEvent.replaceLocalized(
+                    localizationContext,
                     "outputs.success",
                     "userMention" to target.asMention,
                     "time" to timeframe.time,
-                    "unit" to timeframe.unit.localize(timeframe.time, context, localizationContext),
+                    "unit" to timeframe.unit.localize(timeframe.time, localizationContext),
                     "reason" to reason
-                )).setComponents().queue()
+                ).queue()
 
                 //Ban logic
             }

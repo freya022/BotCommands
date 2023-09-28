@@ -99,13 +99,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- Kotlin stuff -->
         <dependency>
@@ -139,7 +132,7 @@
         <dependency>
             <groupId>io.github.freya022</groupId>
             <artifactId>BotCommands</artifactId>
-            <version>3.0.0-alpha.5</version>
+            <version>3.0.0-alpha.5_DEV</version> <!-- TODO update to release -->
         </dependency>
 
         <!-- Needed for JDA and BotCommands logging -->
