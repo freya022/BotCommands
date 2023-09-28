@@ -27,7 +27,6 @@ import io.github.freya022.bot.resolvers.localize
 import kotlinx.coroutines.TimeoutCancellationException
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import java.util.concurrent.TimeUnit
@@ -53,9 +52,7 @@ class SlashBan(private val componentsService: Components) {
         timeframe: DeleteTimeframe,
         reason: String = localizationContext.localize("outputs.defaultReason")
     ) {
-        val targetMember: Member? = event.guild.retrieveMemberOrNull(target)
-
-        if (targetMember != null) {
+        event.guild.retrieveMemberOrNull(target)?.let { targetMember ->
             if (!event.member.canInteract(targetMember)) {
                 return event.replyLocalizedEphemeral(localizationContext, "errors.user.interactError", "userMention" to target.asMention).queue()
             } else if (!event.guild.selfMember.canInteract(targetMember)) {
@@ -64,10 +61,12 @@ class SlashBan(private val componentsService: Components) {
         }
 
         val cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel")) {
+            oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }
         val confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm")) {
+            oneUse = true
             // Restrict button to caller, not necessary since this is an ephemeral reply tho
             constraints += event.user
         }

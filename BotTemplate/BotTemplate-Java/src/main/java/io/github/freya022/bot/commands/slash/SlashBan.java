@@ -72,6 +72,7 @@ public class SlashBan extends ApplicationCommand {
                     final Button cancelButton = componentsService.ephemeralButton(ButtonStyle.PRIMARY, localizationContext.localize("buttons.cancel"), builder -> {
                         // Restrict button to caller, not necessary since this is an ephemeral reply tho
                         builder.addUserIds(event.getUser().getIdLong());
+                        builder.setOneUse(true);
 
                         builder.bindTo(buttonEvent -> {
                             LOGGER.debug("Ban cancelled for {}", target.getId());
@@ -86,6 +87,7 @@ public class SlashBan extends ApplicationCommand {
                     final Button confirmButton = componentsService.ephemeralButton(ButtonStyle.DANGER, localizationContext.localize("buttons.confirm"), builder -> {
                         // Restrict button to caller, not necessary since this is an ephemeral reply tho
                         builder.addUserIds(event.getUser().getIdLong());
+                        builder.setOneUse(true);
 
                         builder.bindTo(buttonEvent -> {
                             LOGGER.debug("Ban confirmed for {}, {} {} of messages were deleted, reason: '{}'", target.getId(), time, unit, finalReason);
