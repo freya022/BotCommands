@@ -23,7 +23,7 @@ internal class ServiceProviders : ClassGraphProcessor {
 
     internal fun putServiceProvider(serviceProvider: ServiceProvider) {
         if (serviceProvider.name in nameMap)
-            throw IllegalArgumentException("Service provider for ${serviceProvider.providerKey} already exists")
+            throw IllegalArgumentException("Service provider for '${serviceProvider.name}' already exists (tried to insert '${serviceProvider.providerKey}', existing provider: '${nameMap[serviceProvider.name]?.providerKey}')")
 
         nameMap[serviceProvider.name] = serviceProvider
         serviceProvider.types.forEach { type ->
