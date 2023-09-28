@@ -13,6 +13,8 @@ import com.freya02.botcommands.api.core.service.ServiceStart
  *
  * **Note:** The service will always be loaded eagerly if it has an event listener, be it a command, autocomplete, a modal handler, etc...
  *
+ * **Note 2:** Service factories are prioritized over class annotations, see [ServicePriority] for more details.
+ *
  * **Warning:** Top-level functions are not processed, you must have them in an object/class.
  *
  * @see InjectedService @InjectedService
@@ -47,7 +49,12 @@ annotation class BService( //Parameters tied to BServiceConfig#registerService
     /**
      * The priority of this service.
      *
-     * Higher value = Will be loaded first/shown first in interfaces service lists
+     * Higher value = Will be loaded first/shown first in interfaced services lists.
+     *
+     * By default, service providers are sorted:
+     * - By their priority
+     * - If at the same priority, service factories are prioritized
+     * - By their name (ascending alphabetical order)
      *
      * @see ServicePriority @ServicePriority
      */
