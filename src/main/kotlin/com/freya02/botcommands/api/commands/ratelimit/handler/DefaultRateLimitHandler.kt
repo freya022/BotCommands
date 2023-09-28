@@ -35,7 +35,7 @@ private val deleteScope = namedDefaultScope("Rate limit message delete", 1)
  *
  * All messages sent to the user are localized messages from [DefaultMessages] and will be deleted when expired.
  *
- * **Note:** the rate limit message won't be deleted in a private channel,
+ * **Note:** The rate limit message won't be deleted in a private channel,
  * or if the [refill delay][ConsumptionProbe.nanosToWaitForRefill] is longer than 10 minutes.
  *
  * @param scope          Scope of the rate limit, see [RateLimitScope] values.

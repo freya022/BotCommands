@@ -76,7 +76,7 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Sets the minimum and maximum values on the specified option.
      *
-     * **Note:** this is only for floating point number types!
+     * **Note:** This is only for floating point number types!
      *
      * @see DoubleRange
      * @see LongRange
@@ -86,7 +86,7 @@ class SlashCommandOptionBuilder internal constructor(
     /**
      * Sets the minimum and maximum string length on the specified option.
      *
-     * **Note:** this is only for string types!
+     * **Note:** This is only for string types!
      *
      * @see Length
      */

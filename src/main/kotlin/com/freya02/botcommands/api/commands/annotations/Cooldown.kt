@@ -34,7 +34,7 @@ annotation class Cooldown(
     /**
      * Whether the cooldown message should be deleted after the cooldown has expired.
      *
-     * **Note:** the cooldown message won't be deleted in a private channel,
+     * **Note:** The cooldown message won't be deleted in a private channel,
      * or if the cooldown is longer than 10 minutes.
      *
      * **Default:** `true`

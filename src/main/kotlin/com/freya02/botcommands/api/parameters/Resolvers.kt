@@ -98,7 +98,7 @@ object Resolvers {
      * }
      * ```
      *
-     * **Note:** you have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+     * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
      *
      * @param values       the accepted enumeration values
      * @param nameFunction the function transforming the enum value into the display name
@@ -137,7 +137,7 @@ object Resolvers {
  * }
  * ```
  *
- * **Note:** you have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
+ * **Note:** You have to enable [SlashOption.usePredefinedChoices] in order for the choices to appear.
  *
  * @param values       the accepted enumeration values
  * @param nameFunction the function transforming the enum value into the display name
