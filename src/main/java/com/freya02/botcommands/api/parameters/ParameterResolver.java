@@ -1,7 +1,7 @@
 package com.freya02.botcommands.api.parameters;
 
 import com.freya02.botcommands.api.Logging;
-import com.freya02.botcommands.api.core.entities.UserUnion;
+import com.freya02.botcommands.api.core.entities.InputUser;
 import com.freya02.botcommands.api.core.service.annotations.InterfacedService;
 import com.freya02.botcommands.api.core.utils.ReflectionUtils;
 import kotlin.reflect.KClass;
@@ -30,7 +30,7 @@ import org.slf4j.Logger;
  *     <li>{@link Role}</li>
  *     <li>{@link User}</li>
  *     <li>{@link Member}</li>
- *     <li>{@link UserUnion}</li>
+ *     <li>{@link InputUser}</li>
  *     <li>{@link GuildChannel all guild channels subtypes (in theory)}</li>
  *     <li>{@link Message} (only message context commands)</li>
  * </ul>

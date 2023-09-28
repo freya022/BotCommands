@@ -2,7 +2,7 @@ package com.freya02.botcommands.internal.parameters.resolvers
 
 import com.freya02.botcommands.api.BContext
 import com.freya02.botcommands.api.commands.prefixed.BaseCommandEvent
-import com.freya02.botcommands.api.core.entities.UserUnion
+import com.freya02.botcommands.api.core.entities.InputUser
 import com.freya02.botcommands.api.core.service.annotations.Resolver
 import com.freya02.botcommands.api.parameters.*
 import com.freya02.botcommands.internal.commands.application.context.user.UserCommandInfo
@@ -10,7 +10,7 @@ import com.freya02.botcommands.internal.commands.application.slash.SlashCommandI
 import com.freya02.botcommands.internal.commands.prefixed.TextCommandVariation
 import com.freya02.botcommands.internal.commands.prefixed.TextUtils.findEntity
 import com.freya02.botcommands.internal.components.ComponentDescriptor
-import com.freya02.botcommands.internal.core.entities.UserUnionImpl
+import com.freya02.botcommands.internal.core.entities.InputUserImpl
 import com.freya02.botcommands.internal.utils.throwInternal
 import com.freya02.botcommands.internal.utils.throwUser
 import dev.minn.jda.ktx.coroutines.await
@@ -25,11 +25,11 @@ import java.util.regex.Pattern
 import kotlin.reflect.KParameter
 
 @Resolver
-internal class UserUnionResolver internal constructor(): ParameterResolver<UserUnionResolver, UserUnion>(UserUnion::class),
-    RegexParameterResolver<UserUnionResolver, UserUnion>,
-    SlashParameterResolver<UserUnionResolver, UserUnion>,
-    ComponentParameterResolver<UserUnionResolver, UserUnion>,
-    UserContextParameterResolver<UserUnionResolver, UserUnion> {
+internal class InputUserResolver internal constructor(): ParameterResolver<InputUserResolver, InputUser>(InputUser::class),
+    RegexParameterResolver<InputUserResolver, InputUser>,
+    SlashParameterResolver<InputUserResolver, InputUser>,
+    ComponentParameterResolver<InputUserResolver, InputUser>,
+    UserContextParameterResolver<InputUserResolver, InputUser> {
 
     override val pattern: Pattern = Pattern.compile("(?:<@!?)?(\\d+)>?")
     override val testExample: String = "<@1234>"
@@ -45,9 +45,9 @@ internal class UserUnionResolver internal constructor(): ParameterResolver<UserU
         variation: TextCommandVariation,
         event: MessageReceivedEvent,
         args: Array<String?>
-    ): UserUnion? {
+    ): InputUser? {
         val id = args[0]?.toLong() ?: throwInternal("Required pattern group is missing")
-        return retrieveUserUnionOrNull(id, event.message)
+        return retrieveInputUserOrNull(id, event.message)
     }
 
     override fun resolve(
@@ -55,35 +55,32 @@ internal class UserUnionResolver internal constructor(): ParameterResolver<UserU
         info: SlashCommandInfo,
         event: CommandInteractionPayload,
         optionMapping: OptionMapping
-    ): UserUnion = UserUnionImpl(optionMapping.asUser, optionMapping.asMember)
+    ): InputUser = InputUserImpl(optionMapping.asUser, optionMapping.asMember)
 
     override suspend fun resolveSuspend(
         context: BContext,
         descriptor: ComponentDescriptor,
         event: GenericComponentInteractionCreateEvent,
         arg: String
-    ): UserUnion? {
+    ): InputUser? {
         val id = arg.toLongOrNull() ?: throwUser("Invalid user id: $arg")
-        return retrieveUserUnionOrNull(id, event.message)
+        return retrieveInputUserOrNull(id, event.message)
     }
 
-    override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): UserUnion =
-        UserUnionImpl(event.target, event.targetMember)
+    override fun resolve(context: BContext, info: UserCommandInfo, event: UserContextInteractionEvent): InputUser =
+        InputUserImpl(event.target, event.targetMember)
 
-    private suspend fun retrieveUserUnionOrNull(
-        userId: Long,
-        message: Message
-    ): UserUnion? {
+    private suspend fun retrieveInputUserOrNull(userId: Long, message: Message): InputUser? {
         val guild = if (message.isFromGuild) message.guild else null
         val memberResult = runCatching {
             if (guild == null)
                 return@runCatching null
-            message.mentions.members.findEntity(userId) { guild.retrieveMemberById(userId).await() }.let(::UserUnionImpl)
+            message.mentions.members.findEntity(userId) { guild.retrieveMemberById(userId).await() }.let(::InputUserImpl)
         }
         memberResult.getOrNull()?.let { return it }
 
         val userResult = runCatching {
-            message.mentions.users.findEntity(userId) { message.jda.retrieveUserById(userId).await() }.let(::UserUnionImpl)
+            message.mentions.users.findEntity(userId) { message.jda.retrieveUserById(userId).await() }.let(::InputUserImpl)
         }
         if (userResult.isSuccess) return userResult.getOrThrow()
 
